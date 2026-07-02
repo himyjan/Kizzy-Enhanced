@@ -55,8 +55,12 @@ class CustomRpcService : Service() {
         if (intent?.action.equals(Constants.ACTION_STOP_SERVICE)) stopSelf()
         else {
             val string = intent?.getStringExtra("RPC")
-            string?.let {
-                rpcData = Json.decodeFromString(it)
+            string?.takeIf { it.isNotBlank() }?.let {
+                rpcData = try {
+                    Json.decodeFromString(it)
+                } catch (e: Exception) {
+                    null
+                }
             }
 
             val stopIntent = Intent(this, CustomRpcService::class.java)

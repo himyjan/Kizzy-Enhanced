@@ -136,10 +136,16 @@ class ExperimentalRpc : Service() {
 
 
             mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
-            mediaSessionManager.addOnActiveSessionsChangedListener(
-                ::activeSessionsListener,
-                ComponentName(this, NotificationListener::class.java)
-            )
+            // Registering the session listener requires Notification Listener access.
+            // Without it this throws SecurityException, so guard to avoid crashing.
+            try {
+                mediaSessionManager.addOnActiveSessionsChangedListener(
+                    ::activeSessionsListener,
+                    ComponentName(this, NotificationListener::class.java)
+                )
+            } catch (e: SecurityException) {
+                logger.e(TAG, "No notification access, media part disabled: ${e.message}")
+            }
 
             // Always reload settings on start
             templateName = Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
@@ -154,9 +160,14 @@ class ExperimentalRpc : Service() {
                 emptyList()
             }
 
-            val initialMediaSessions = mediaSessionManager.getActiveSessions(
-                ComponentName(this, NotificationListener::class.java)
-            )
+            val initialMediaSessions = try {
+                mediaSessionManager.getActiveSessions(
+                    ComponentName(this, NotificationListener::class.java)
+                )
+            } catch (e: SecurityException) {
+                logger.e(TAG, "No notification access, skipping media sessions: ${e.message}")
+                emptyList()
+            }
             var mediaActiveInitially = false
             if (useMediaRpc && initialMediaSessions.isNotEmpty()) {
                 val firstActiveMediaController = initialMediaSessions.firstOrNull {
@@ -495,7 +506,15 @@ class ExperimentalRpc : Service() {
     }
 
     override fun onDestroy() {
-        mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
+        // mediaSessionManager is only initialized in the else-branch of onStartCommand;
+        // guard so destroying an un-started/permission-less service never crashes.
+        if (::mediaSessionManager.isInitialized) {
+            try {
+                mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
+            } catch (e: Exception) {
+                logger.e(TAG, "removeOnActiveSessionsChangedListener failed: ${e.message}")
+            }
+        }
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         scope.cancel()
         kizzyRPC.closeRPC()

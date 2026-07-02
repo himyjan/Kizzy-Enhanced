@@ -157,7 +157,7 @@ fun Context.shareAsFile(content: String?, fileName: String) {
 
 fun Context.shareFile(file: File?) {
     if (file == null) return
-    val uri = FileProvider.getUriForFile(this, "com.my.kizzy.provider", file)
+    val uri = FileProvider.getUriForFile(this, "$packageName.provider", file)
     val intent = ShareCompat.IntentBuilder(this).setType("text/plain")
         .setStream(uri).intent.setAction(Intent.ACTION_SEND).setDataAndType(uri, "text/*")
         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
