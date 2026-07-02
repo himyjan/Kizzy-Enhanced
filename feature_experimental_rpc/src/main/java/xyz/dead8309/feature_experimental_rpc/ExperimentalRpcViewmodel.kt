@@ -55,6 +55,9 @@ class ExperimentalRpcViewmodel @Inject constructor(
             button2Url = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL, ""],
             useCustomAppId = Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false],
             applicationId = Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID, ""],
+            timestampMode = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_MODE, "default"],
+            customTimestampStart = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START, ""],
+            customTimestampEnd = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END, ""],
         )
     )
     val uiState = _uiState.asStateFlow()
@@ -231,6 +234,34 @@ class ExperimentalRpcViewmodel @Inject constructor(
                 is UiEvent.SetApplicationId -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID] = event.value
                     _uiState.update { it.copy(applicationId = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetTimestampMode -> {
+                    Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_MODE] = event.value
+                    // Selecting "current" re-anchors the elapsed timer to now and
+                    // persists it, so it won't reset on restarts / after 24h.
+                    if (event.value == "current") {
+                        Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CURRENT_START] =
+                            System.currentTimeMillis()
+                    }
+                    _uiState.update { it.copy(timestampMode = event.value, timestampModeExpanded = false) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.TriggerTimestampModeDropDownMenu -> {
+                    _uiState.update { it.copy(timestampModeExpanded = !it.timestampModeExpanded) }
+                }
+
+                is UiEvent.SetCustomTimestampStart -> {
+                    Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START] = event.value
+                    _uiState.update { it.copy(customTimestampStart = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetCustomTimestampEnd -> {
+                    Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END] = event.value
+                    _uiState.update { it.copy(customTimestampEnd = event.value) }
                     restartServiceIfRunning()
                 }
             }

@@ -81,6 +81,16 @@ object Constants {
     )
 
     /**
+     * Timestamp source modes for Experimental RPC.
+     * label -> stored id
+     */
+    val TIMESTAMP_MODES = linkedMapOf(
+        "Media / App (default)" to "default",
+        "Same as your current time (not reset after 24h)" to "current",
+        "Custom" to "custom",
+    )
+
+    /**
      * Maps a spoof platform id to the gateway IDENTIFY connection properties
      * (browser / os / device). Mirrors Equicord's getPlatform browser mapping,
      * with os/device tuned so mobile ids register as a mobile client status.

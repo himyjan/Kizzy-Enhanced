@@ -293,8 +293,7 @@ class ExperimentalRpc : Service() {
             finalSmallText =
                 if (finalSmallImage == richMediaInfo?.appIcon) richMediaInfo?.appName else null
 
-            finalTimestamps = if (Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true])
-                richMediaInfo?.timestamps else null
+            finalTimestamps = resolveTimestamps(richMediaInfo?.timestamps)
 
         } else if (currentContextIsApp) {
             effectivePackageName = appInfo?.packageName
@@ -307,8 +306,7 @@ class ExperimentalRpc : Service() {
             finalSmallImage = appInfo?.smallImage
             finalLargeText = appInfo?.largeText
             finalSmallText = appInfo?.smallText
-            finalTimestamps =
-                if (Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]) appInfo?.time else null
+            finalTimestamps = resolveTimestamps(appInfo?.time)
         } else {
             logger.d(TAG, "No active context (App or Media) or both disabled.")
             if (kizzyRPC.isRpcRunning()) {
@@ -512,6 +510,34 @@ class ExperimentalRpc : Service() {
                     updatePresence(appInfo = null, richMediaInfo = null, rawMediaMetadata = null)
                 }
             }
+        }
+    }
+
+    /**
+     * Resolves which timestamps to show based on the user's selected mode:
+     *  - "default": timestamps coming from the media/app context (original behaviour)
+     *  - "current": a fixed start anchored to when the user picked this mode, so the
+     *    elapsed timer keeps counting and does NOT reset after 24h / restarts
+     *  - "custom": raw start/end epoch millis typed by the user
+     * Returns null when timestamps are globally disabled.
+     */
+    private fun resolveTimestamps(contextTimestamps: Timestamps?): Timestamps? {
+        if (!Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]) return null
+        return when (Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_MODE, "default"]) {
+            "current" -> {
+                var start = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CURRENT_START, 0L]
+                if (start <= 0L) {
+                    start = System.currentTimeMillis()
+                    Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CURRENT_START] = start
+                }
+                Timestamps(start = start)
+            }
+            "custom" -> {
+                val start = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START, ""].toLongOrNull()
+                val end = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END, ""].toLongOrNull()
+                if (start == null && end == null) null else Timestamps(start = start, end = end)
+            }
+            else -> contextTimestamps
         }
     }
 

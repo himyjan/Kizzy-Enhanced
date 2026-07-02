@@ -34,4 +34,8 @@ sealed interface UiEvent {
     data class SetButton2Url(val value: String) : UiEvent
     data class ToggleUseCustomAppId(val enabled: Boolean) : UiEvent
     data class SetApplicationId(val value: String) : UiEvent
+    data class SetTimestampMode(val value: String) : UiEvent
+    object TriggerTimestampModeDropDownMenu : UiEvent
+    data class SetCustomTimestampStart(val value: String) : UiEvent
+    data class SetCustomTimestampEnd(val value: String) : UiEvent
 }

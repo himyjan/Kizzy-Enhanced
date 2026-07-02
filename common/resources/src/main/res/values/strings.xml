@@ -35,6 +35,9 @@
     <string name="enable_album_name">Enable Album Name</string>
     <string name="show_app_icon">Show App Icon</string>
     <string name="enable_timestamps">Enable Timestamps</string>
+    <string name="timestamp_mode">Timestamp Mode</string>
+    <string name="start_timestamp_ms">Start Timestamp (in milliseconds)</string>
+    <string name="end_timestamp_ms">End Timestamp (in milliseconds)</string>
     <string name="text_after_permission_denied">Storage access is important for this app to store configs in public directories. Please grant the permission.</string>
     <string name="request_for_storage_access">Storage permission required for config features to work. Please grant the permission.</string>
     <string name="grant_permission">Grant Permission</string>

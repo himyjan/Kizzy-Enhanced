@@ -269,6 +269,62 @@ fun ExperimentalRpcScreen(
                         icon = Icons.Default.Timer
                     )
                 }
+                if (state.enableTimestamps) {
+                    item {
+                        val tsIcon = if (state.timestampModeExpanded)
+                            Icons.Default.KeyboardArrowUp
+                        else
+                            Icons.Default.KeyboardArrowDown
+
+                        val tsLabel = Constants.TIMESTAMP_MODES.entries
+                            .firstOrNull { it.value == state.timestampMode }?.key ?: state.timestampMode
+
+                        RpcField(
+                            value = tsLabel,
+                            label = R.string.timestamp_mode,
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = tsIcon,
+                                    contentDescription = null,
+                                    modifier = Modifier.clickable {
+                                        onEvent(UiEvent.TriggerTimestampModeDropDownMenu)
+                                    })
+                            },
+                            content = {
+                                DropdownMenu(
+                                    expanded = state.timestampModeExpanded,
+                                    onDismissRequest = {
+                                        onEvent(UiEvent.TriggerTimestampModeDropDownMenu)
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Constants.TIMESTAMP_MODES.forEach { (label, value) ->
+                                        DropdownMenuItem(
+                                            text = { Text(text = label) },
+                                            onClick = { onEvent(UiEvent.SetTimestampMode(value)) },
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    }
+                    if (state.timestampMode == "custom") {
+                        item {
+                            RpcField(
+                                value = state.customTimestampStart,
+                                label = R.string.start_timestamp_ms,
+                                onValueChange = { onEvent(UiEvent.SetCustomTimestampStart(it)) }
+                            )
+                        }
+                        item {
+                            RpcField(
+                                value = state.customTimestampEnd,
+                                label = R.string.end_timestamp_ms,
+                                onValueChange = { onEvent(UiEvent.SetCustomTimestampEnd(it)) }
+                            )
+                        }
+                    }
+                }
                 item {
                     PreferenceSwitch(
                         title = stringResource(R.string.hide_on_pause),

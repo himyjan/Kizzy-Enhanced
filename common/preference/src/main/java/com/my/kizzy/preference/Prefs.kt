@@ -250,6 +250,10 @@ object Prefs {
     const val EXPERIMENTAL_RPC_BUTTON2_URL = "experimental_rpc_button2_url"
     const val EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID = "experimental_rpc_use_custom_app_id"
     const val EXPERIMENTAL_RPC_APPLICATION_ID = "experimental_rpc_application_id"
+    const val EXPERIMENTAL_RPC_TIMESTAMP_MODE = "experimental_rpc_timestamp_mode"
+    const val EXPERIMENTAL_RPC_TIMESTAMP_CURRENT_START = "experimental_rpc_timestamp_current_start"
+    const val EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START = "experimental_rpc_timestamp_custom_start"
+    const val EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END = "experimental_rpc_timestamp_custom_end"
     fun saveAppActivityType(packageName: String, activityType: Int) {
         val json = get(EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES, "{}")
         val map: MutableMap<String, Int> = try {
