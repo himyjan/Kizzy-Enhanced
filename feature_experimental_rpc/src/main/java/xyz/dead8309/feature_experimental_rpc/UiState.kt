@@ -39,5 +39,7 @@ data class UiState(
     val button1Text: String = "",
     val button1Url: String = "",
     val button2Text: String = "",
-    val button2Url: String = ""
+    val button2Url: String = "",
+    val useCustomAppId: Boolean = false,
+    val applicationId: String = ""
 )

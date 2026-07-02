@@ -23,6 +23,7 @@ import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
 import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
@@ -259,7 +260,9 @@ class ExperimentalRpc : Service() {
             mediaMetadata = rawMediaMetadata,
             mediaPlayerAppName = richMediaInfo?.appName,
             mediaPlayerPackageName = richMediaInfo?.packageName,
-            detectedAppInfo = appInfo
+            detectedAppInfo = appInfo,
+            batteryLevel = currentBatteryLevel(),
+            playbackState = richMediaInfo?.playbackState
         )
 
         if (currentContextIsMedia) {
@@ -375,6 +378,13 @@ class ExperimentalRpc : Service() {
                     setButton1URL(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""].takeIf { it.isNotEmpty() })
                     setButton2(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_TEXT, ""].takeIf { it.isNotEmpty() })
                     setButton2URL(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL, ""].takeIf { it.isNotEmpty() })
+                }
+                // Custom Application ID controls the icon/name Discord shows for the
+                // activity. When disabled, fall back to the default (Kizzy) id.
+                if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false]) {
+                    setApplicationId(Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID, ""])
+                } else {
+                    setApplicationId(null)
                 }
                 build()
             }
@@ -503,6 +513,14 @@ class ExperimentalRpc : Service() {
                 }
             }
         }
+    }
+
+    /** Current battery percentage (0..100) for the {{battery}} template placeholder. */
+    private fun currentBatteryLevel(): Int? = try {
+        val bm = getSystemService(BATTERY_SERVICE) as BatteryManager
+        bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY).takeIf { it in 0..100 }
+    } catch (e: Exception) {
+        null
     }
 
     override fun onDestroy() {

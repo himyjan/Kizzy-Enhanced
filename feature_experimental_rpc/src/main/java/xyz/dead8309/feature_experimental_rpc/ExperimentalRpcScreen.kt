@@ -79,6 +79,13 @@ private val completions = listOf(
     TemplateKeys.MEDIA_TITLE to R.string.completion_media_title,
     TemplateKeys.MEDIA_ARTIST to R.string.completion_media_artist,
     TemplateKeys.MEDIA_AUTHOR to R.string.completion_media_author,
+    TemplateKeys.MEDIA_ALBUM to R.string.completion_media_album,
+    TemplateKeys.MEDIA_ALBUM_ARTIST to R.string.completion_media_album_artist,
+    TemplateKeys.MEDIA_DURATION to R.string.completion_media_duration,
+    TemplateKeys.MEDIA_WRITER to R.string.completion_media_writer,
+    TemplateKeys.MEDIA_COMPOSER to R.string.completion_media_composer,
+    TemplateKeys.BATTERY to R.string.completion_battery,
+    TemplateKeys.PLAYBACK to R.string.completion_playback,
     TemplateKeys.APP_NAME to R.string.completion_app_name,
 )
 
@@ -381,6 +388,29 @@ fun ExperimentalRpcScreen(
                             value = state.button2Url,
                             label = R.string.activity_button2_url,
                             onValueChange = { onEvent(UiEvent.SetButton2Url(it)) }
+                        )
+                    }
+                }
+
+                item {
+                    Subtitle(text = stringResource(R.string.application_id))
+                }
+                item {
+                    PreferenceSwitch(
+                        title = stringResource(R.string.custom_application_id),
+                        description = stringResource(R.string.custom_application_id_desc),
+                        isChecked = state.useCustomAppId,
+                        onClick = {
+                            onEvent(UiEvent.ToggleUseCustomAppId(!state.useCustomAppId))
+                        },
+                    )
+                }
+                if (state.useCustomAppId) {
+                    item {
+                        RpcField(
+                            value = state.applicationId,
+                            label = R.string.application_id,
+                            onValueChange = { onEvent(UiEvent.SetApplicationId(it)) }
                         )
                     }
                 }

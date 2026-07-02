@@ -260,6 +260,17 @@ class KizzyRPC(
         return this
     }
     /**
+     * Overrides the Discord Application ID used for the activity.
+     * The application's icon and name are what Discord shows on the presence,
+     * so a custom id lets the user swap the default (Kizzy) icon for their own.
+     * Passing null/blank falls back to the default application id.
+     */
+    fun setApplicationId(applicationId: String?): KizzyRPC {
+        this.applicationIdNumber = applicationId?.takeIf { it.isNotBlank() } ?: Constants.APPLICATION_ID
+        return this
+    }
+
+    /**
      * Streaming Url
      * @param url The streaming type currently only supports Twitch and YouTube.
      * Only https://twitch.tv/ and https://youtube.com/ urls will work

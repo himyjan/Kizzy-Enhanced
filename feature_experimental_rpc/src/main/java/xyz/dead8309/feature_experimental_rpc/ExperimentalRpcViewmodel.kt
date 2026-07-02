@@ -53,6 +53,8 @@ class ExperimentalRpcViewmodel @Inject constructor(
             button1Url = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""],
             button2Text = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_TEXT, ""],
             button2Url = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL, ""],
+            useCustomAppId = Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false],
+            applicationId = Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID, ""],
         )
     )
     val uiState = _uiState.asStateFlow()
@@ -218,6 +220,18 @@ class ExperimentalRpcViewmodel @Inject constructor(
                 is UiEvent.SetButton2Url -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL] = event.value
                     _uiState.update { it.copy(button2Url = event.value) }
+                }
+
+                is UiEvent.ToggleUseCustomAppId -> {
+                    Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID] = event.enabled
+                    _uiState.update { it.copy(useCustomAppId = event.enabled) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetApplicationId -> {
+                    Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID] = event.value
+                    _uiState.update { it.copy(applicationId = event.value) }
+                    restartServiceIfRunning()
                 }
             }
         }
