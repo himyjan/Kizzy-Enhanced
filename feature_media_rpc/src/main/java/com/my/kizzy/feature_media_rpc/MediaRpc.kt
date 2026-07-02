@@ -109,7 +109,7 @@ fun MediaRPC(
                 title = {
                     Text(
                         text = stringResource(id = R.string.main_mediaRpc),
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineLarge,
                     )
                 },
                 navigationIcon = { BackButton { onBackPressed() } },

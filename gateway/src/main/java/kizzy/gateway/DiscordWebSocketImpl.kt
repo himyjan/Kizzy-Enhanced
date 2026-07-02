@@ -38,9 +38,6 @@ open class DiscordWebSocketImpl(
     private var resumeGatewayUrl: String? = null
     private var heartbeatJob: Job? = null
     private var connected = false
-    private var deliberateClose = false
-    private var reconnectAttempts = 0
-    private var awaitingHeartbeatAck = false
     private var client: HttpClient = HttpClient {
         install(WebSockets)
     }
@@ -49,8 +46,8 @@ open class DiscordWebSocketImpl(
         encodeDefaults = true
     }
 
-    private val supervisorJob = SupervisorJob()
-    override val coroutineContext: CoroutineContext = supervisorJob + Dispatchers.Default
+    override val coroutineContext: CoroutineContext
+        get() = SupervisorJob() + Dispatchers.Default
 
     override suspend fun connect() {
         launch {
@@ -58,7 +55,6 @@ open class DiscordWebSocketImpl(
                 logger.i("Gateway","Connect called")
                 val url = resumeGatewayUrl ?: gatewayUrl
                 websocket = client.webSocketSession(url)
-                reconnectAttempts = 0
 
                 // start receiving messages
                 websocket!!.incoming.receiveAsFlow()
@@ -72,51 +68,25 @@ open class DiscordWebSocketImpl(
                         }
                     }
                 handleClose()
-            } catch (e: CancellationException) {
-                throw e
             } catch (e: Exception) {
                 logger.e("Gateway",e.message?:"")
-                scheduleReconnect()
-            }
-        }
-    }
-
-    private suspend fun handleClose() {
-        heartbeatJob?.cancel()
-        connected = false
-        awaitingHeartbeatAck = false
-        val close = websocket?.closeReason?.await()
-        val code = close?.code?.toInt()
-        logger.w("Gateway","Closed with code: $code, reason: ${close?.message}")
-        when {
-            deliberateClose -> {}
-            code == 4000 -> {
-                delay(200.milliseconds)
-                connect()
-            }
-            code == 4004 || (code != null && code in 4010..4014) -> {
-                logger.e("Gateway","Fatal close code $code — not reconnecting")
                 close()
             }
-            else -> scheduleReconnect()
         }
     }
 
-    private suspend fun scheduleReconnect() {
-        if (deliberateClose) return
+    private suspend fun handleClose(){
         heartbeatJob?.cancel()
         connected = false
-        awaitingHeartbeatAck = false
-        runCatching { websocket?.close() }
-        val delayMs = (2000L shl minOf(reconnectAttempts, 5)).coerceAtMost(60_000L)
-        reconnectAttempts++
-        if (reconnectAttempts >= 3) {
-            resumeGatewayUrl = null
-            sessionId = null
-        }
-        logger.w("Gateway","Connection lost — reconnecting in ${delayMs}ms (attempt $reconnectAttempts)")
-        delay(delayMs)
-        if (!deliberateClose) connect()
+        val close = websocket?.closeReason?.await()
+        logger.w("Gateway","Closed with code: ${close?.code}, " +
+                "reason: ${close?.message}, " +
+                "can_reconnect: ${close?.code?.toInt() == 4000}")
+        if (close?.code?.toInt() == 4000) {
+            delay(200.milliseconds)
+            connect()
+        } else
+            close()
     }
 
     private suspend fun onMessage(jsonString: String) {
@@ -132,10 +102,6 @@ open class DiscordWebSocketImpl(
             RECONNECT -> reconnectWebSocket()
             INVALID_SESSION -> handleInvalidSession()
             HELLO -> handleHello(jsonString)
-            HEARTBEAT_ACK -> {
-                awaitingHeartbeatAck = false
-                logger.d("Gateway", "Heartbeat ACK received")
-            }
             else -> {}
         }
     }
@@ -227,15 +193,8 @@ open class DiscordWebSocketImpl(
 
     private fun startHeartbeatJob(interval: Long) {
         heartbeatJob?.cancel()
-        awaitingHeartbeatAck = false
         heartbeatJob = launch {
             while (isActive) {
-                if (awaitingHeartbeatAck) {
-                    logger.w("Gateway", "No heartbeat ACK — zombie connection, reconnecting")
-                    reconnectWebSocket()
-                    return@launch
-                }
-                awaitingHeartbeatAck = true
                 sendHeartBeat()
                 delay(interval)
             }
@@ -264,7 +223,6 @@ open class DiscordWebSocketImpl(
     }
 
     override fun close() {
-        deliberateClose = true
         heartbeatJob?.cancel()
         heartbeatJob = null
         this.cancel()
@@ -278,14 +236,9 @@ open class DiscordWebSocketImpl(
     }
 
     override suspend fun sendActivity(presence: Presence) {
-        var waitedMs = 0L
-        while (!isSocketConnectedToAccount()) {
-            delay(50.milliseconds)
-            waitedMs += 50
-            if (waitedMs >= 60_000) {
-                logger.w("Gateway","Socket not connected after 60s — dropping presence update")
-                return
-            }
+        // TODO : Figure out a better way to wait for socket to be connected to account
+        while (!isSocketConnectedToAccount()){
+            delay(10.milliseconds)
         }
         logger.i("Gateway","Sending $PRESENCE_UPDATE")
         send(

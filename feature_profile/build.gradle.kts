@@ -12,7 +12,6 @@ android {
 dependencies {
     implementation (projects.theme)
     implementation (projects.gateway)
-    implementation (projects.featureRpcBase)
     implementation (libs.coil)
     implementation (libs.activity.compose)
     implementation (libs.kotlinx.serialization.json)

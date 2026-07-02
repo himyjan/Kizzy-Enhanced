@@ -33,10 +33,9 @@ class GetCurrentPlayingMedia @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     object Assets {
-        private const val MEDIA_ASSETS_APP_ID = "962990036020756480"
-        val PLAY = "app-assets/$MEDIA_ASSETS_APP_ID/1300361266212241430.png"
-        val PAUSE = "app-assets/$MEDIA_ASSETS_APP_ID/1300361619490209802.png"
-        val STOP = "app-assets/$MEDIA_ASSETS_APP_ID/1300361702621188160.png"
+        val PLAY = "app-assets/$APPLICATION_ID/1300361266212241430.png";
+        val PAUSE = "app-assets/$APPLICATION_ID/1300361619490209802.png";
+        val STOP = "app-assets/$APPLICATION_ID/1300361702621188160.png";
     }
 
     private fun getPlaybackStateIcon(playbackState: Int): RpcImage {
@@ -120,7 +119,7 @@ class GetCurrentPlayingMedia @Inject constructor(
                         state = album,
                         largeImage = largeIcon,
                         smallImage = smallIcon,
-                        largeText = album,
+                        largeText = appName,
                         smallText = smallText,
                         packageName = "$title::${mediaController.packageName}",
                         time = timestamps.takeIf { it != null }

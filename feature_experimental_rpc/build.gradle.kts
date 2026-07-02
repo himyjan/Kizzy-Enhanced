@@ -15,5 +15,4 @@ dependencies {
     implementation(libs.blankj.utilcodex)
     implementation(libs.coil)
     implementation(projects.featureRpcBase)
-    implementation(projects.featureProfile)
 }

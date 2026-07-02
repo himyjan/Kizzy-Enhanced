@@ -61,12 +61,12 @@ import com.my.kizzy.ui.theme.LocalSeedColor
 import com.my.kizzy.ui.theme.autoDark
 
 val colorList = listOf(
-    Color(DEFAULT_SEED_COLOR), // Red (#BF1527) — default
-    Color(0xFFAF92F1), // Original purple
+    Color(DEFAULT_SEED_COLOR),
     Color.Blue,
     Hct(60.0, 100.0, 70.0).toSrgb().toColor(),
     Hct(125.0, 50.0, 60.0).toSrgb().toColor(),
     Color.Cyan,
+    Color.Red,
     Color.Yellow,
     Color.Magenta
 )
@@ -81,7 +81,7 @@ fun Appearance(
         LargeTopAppBar(title = {
             Text(
                 text = stringResource(id = R.string.display),
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineLarge
             )
         }, navigationIcon = {
             BackButton {

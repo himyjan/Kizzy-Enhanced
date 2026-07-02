@@ -23,7 +23,6 @@ import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
-import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
 import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
@@ -41,7 +40,6 @@ import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
@@ -138,16 +136,10 @@ class ExperimentalRpc : Service() {
 
 
             mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
-            // Registering the session listener requires Notification Listener access.
-            // Without it this throws SecurityException, so guard to avoid crashing.
-            try {
-                mediaSessionManager.addOnActiveSessionsChangedListener(
-                    ::activeSessionsListener,
-                    ComponentName(this, NotificationListener::class.java)
-                )
-            } catch (e: SecurityException) {
-                logger.e(TAG, "No notification access, media part disabled: ${e.message}")
-            }
+            mediaSessionManager.addOnActiveSessionsChangedListener(
+                ::activeSessionsListener,
+                ComponentName(this, NotificationListener::class.java)
+            )
 
             // Always reload settings on start
             templateName = Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
@@ -162,14 +154,9 @@ class ExperimentalRpc : Service() {
                 emptyList()
             }
 
-            val initialMediaSessions = try {
-                mediaSessionManager.getActiveSessions(
-                    ComponentName(this, NotificationListener::class.java)
-                )
-            } catch (e: SecurityException) {
-                logger.e(TAG, "No notification access, skipping media sessions: ${e.message}")
-                emptyList()
-            }
+            val initialMediaSessions = mediaSessionManager.getActiveSessions(
+                ComponentName(this, NotificationListener::class.java)
+            )
             var mediaActiveInitially = false
             if (useMediaRpc && initialMediaSessions.isNotEmpty()) {
                 val firstActiveMediaController = initialMediaSessions.firstOrNull {
@@ -198,28 +185,22 @@ class ExperimentalRpc : Service() {
 
         scope.launch {
             while (isActive) {
-                try {
-                    val currentApp = getCurrentlyRunningApp()
+                val currentApp = getCurrentlyRunningApp()
 
-                    if (
-                        currentApp.name.isNotEmpty() &&
-                        currentApp.packageName != currentPackageName &&
-                        enabledExperimentalApps.contains(currentApp.packageName)
-                    ) {
-                        currentPackageName = currentApp.packageName
-                        updatePresence(appInfo = currentApp.copy(time = startTimestamps))
-                    } else if (currentApp.name.isNotEmpty() && currentApp.packageName != currentPackageName) {
-                        currentPackageName = ""
-                        if (!isMediaSessionActive || !useMediaRpc) {
-                            updatePresence(CommonRpc())
-                        }
+                if (
+                    currentApp.name.isNotEmpty() &&
+                    currentApp.packageName != currentPackageName &&
+                    enabledExperimentalApps.contains(currentApp.packageName)
+                ) {
+                    currentPackageName = currentApp.packageName
+                    updatePresence(appInfo = currentApp.copy(time = startTimestamps))
+                } else if (currentApp.name.isNotEmpty() && currentApp.packageName != currentPackageName) {
+                    currentPackageName = ""
+                    if (!isMediaSessionActive || !useMediaRpc) {
+                        updatePresence(CommonRpc())
                     }
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    logger.e(TAG, "Detection cycle failed: ${e.message}")
                 }
-                delay(2000)
+                delay(5000)
             }
         }
     }
@@ -267,30 +248,19 @@ class ExperimentalRpc : Service() {
             mediaMetadata = rawMediaMetadata,
             mediaPlayerAppName = richMediaInfo?.appName,
             mediaPlayerPackageName = richMediaInfo?.packageName,
-            detectedAppInfo = appInfo,
-            batteryLevel = currentBatteryLevel(),
-            playbackState = richMediaInfo?.playbackState
+            detectedAppInfo = appInfo
         )
 
         if (currentContextIsMedia) {
             effectivePackageName = richMediaInfo?.packageName
 
             logger.d(TAG, "Processing Rich Media Context")
-            if (Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE, false]) {
-                val titleSource = Prefs[Prefs.EXPERIMENTAL_RPC_TITLE_SOURCE, "title"]
-                finalName = if (titleSource == "artist") richMediaInfo?.artist else richMediaInfo?.title
-                finalDetails = processor.process(templateDetails) ?: richMediaInfo?.appName
-                finalState = processor.process(templateState) ?: richMediaInfo?.artist.takeIf { titleSource != "artist" }
-            } else {
-                finalName = processor.process(templateName) ?: richMediaInfo?.appName
-                finalDetails = processor.process(templateDetails) ?: richMediaInfo?.title
-                finalState = processor.process(templateState) ?: richMediaInfo?.artist
-            }
+            finalName = processor.process(templateName) ?: richMediaInfo?.appName
+            finalDetails = processor.process(templateDetails) ?: richMediaInfo?.title
+            finalState = processor.process(templateState) ?: richMediaInfo?.artist
 
             finalLargeImage = when {
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_COVER_ART, true] ->
-                    // Fall back to the player's app icon when cover art is unavailable
-                    richMediaInfo?.coverArt ?: richMediaInfo?.appIcon
+                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_COVER_ART, true] -> richMediaInfo?.coverArt
                 Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] -> richMediaInfo?.appIcon
                 else -> null
             }
@@ -309,7 +279,8 @@ class ExperimentalRpc : Service() {
             finalSmallText =
                 if (finalSmallImage == richMediaInfo?.appIcon) richMediaInfo?.appName else null
 
-            finalTimestamps = resolveTimestamps(richMediaInfo?.timestamps)
+            finalTimestamps = if (Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true])
+                richMediaInfo?.timestamps else null
 
         } else if (currentContextIsApp) {
             effectivePackageName = appInfo?.packageName
@@ -322,7 +293,8 @@ class ExperimentalRpc : Service() {
             finalSmallImage = appInfo?.smallImage
             finalLargeText = appInfo?.largeText
             finalSmallText = appInfo?.smallText
-            finalTimestamps = resolveTimestamps(appInfo?.time)
+            finalTimestamps =
+                if (Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]) appInfo?.time else null
         } else {
             logger.d(TAG, "No active context (App or Media) or both disabled.")
             if (kizzyRPC.isRpcRunning()) {
@@ -393,18 +365,11 @@ class ExperimentalRpc : Service() {
                     setButton2(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_TEXT, ""].takeIf { it.isNotEmpty() })
                     setButton2URL(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL, ""].takeIf { it.isNotEmpty() })
                 }
-                // Custom Application ID controls the icon/name Discord shows for the
-                // activity. When disabled, fall back to the default (Kizzy) id.
-                if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false]) {
-                    setApplicationId(Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID, ""])
-                } else {
-                    setApplicationId(null)
-                }
                 build()
             }
         }
 
-        val notifTitle = finalName.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.app_name_full)
+        val notifTitle = finalName.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.app_name)
         val notifText = finalDetails ?: finalState
 
         notificationManager.notify(
@@ -529,54 +494,8 @@ class ExperimentalRpc : Service() {
         }
     }
 
-    /**
-     * Resolves which timestamps to show based on the user's selected mode:
-     *  - "default": timestamps coming from the media/app context (original behaviour)
-     *  - "current": a fixed start anchored to when the user picked this mode, so the
-     *    elapsed timer keeps counting and does NOT reset after 24h / restarts
-     *  - "custom": raw start/end epoch millis typed by the user
-     * Returns null when timestamps are globally disabled.
-     */
-    private fun resolveTimestamps(contextTimestamps: Timestamps?): Timestamps? {
-        if (!Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]) return null
-        return when (Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_MODE, "default"]) {
-            "current" -> {
-                // Mirror Vencord's customRPC "TIME" mode:
-                // start = midnight of today → Discord shows elapsed = current time of day
-                val cal = java.util.Calendar.getInstance()
-                val midnightMs = System.currentTimeMillis() -
-                    (cal.get(java.util.Calendar.HOUR_OF_DAY) * 3600L +
-                     cal.get(java.util.Calendar.MINUTE) * 60L +
-                     cal.get(java.util.Calendar.SECOND)) * 1000L
-                Timestamps(start = midnightMs)
-            }
-            "custom" -> {
-                val start = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START, ""].toLongOrNull()
-                val end = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END, ""].toLongOrNull()
-                if (start == null && end == null) null else Timestamps(start = start, end = end)
-            }
-            else -> contextTimestamps
-        }
-    }
-
-    /** Current battery percentage (0..100) for the {{battery}} template placeholder. */
-    private fun currentBatteryLevel(): Int? = try {
-        val bm = getSystemService(BATTERY_SERVICE) as BatteryManager
-        bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY).takeIf { it in 0..100 }
-    } catch (e: Exception) {
-        null
-    }
-
     override fun onDestroy() {
-        // mediaSessionManager is only initialized in the else-branch of onStartCommand;
-        // guard so destroying an un-started/permission-less service never crashes.
-        if (::mediaSessionManager.isInitialized) {
-            try {
-                mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
-            } catch (e: Exception) {
-                logger.e(TAG, "removeOnActiveSessionsChangedListener failed: ${e.message}")
-            }
-        }
+        mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         scope.cancel()
         kizzyRPC.closeRPC()

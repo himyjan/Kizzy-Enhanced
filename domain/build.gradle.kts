@@ -10,8 +10,6 @@ java {
 dependencies{
     implementation(libs.javax)
     implementation(libs.kotlinx.coroutine)
-    implementation(libs.kotlinx.serialization.json)
-    // BOM needed here since :domain is a JVM module without the compose convention plugin
-    compileOnly(platform(libs.compose.bom))
+    implementation (libs.kotlinx.serialization.json)
     compileOnly(libs.compose.runtime)
 }

@@ -39,14 +39,5 @@ data class UiState(
     val button1Text: String = "",
     val button1Url: String = "",
     val button2Text: String = "",
-    val button2Url: String = "",
-    val useCustomAppId: Boolean = false,
-    val applicationId: String = "",
-    val timestampMode: String = "default",
-    val timestampModeExpanded: Boolean = false,
-    val customTimestampStart: String = "",
-    val customTimestampEnd: String = "",
-    val showSongAsTitle: Boolean = false,
-    val titleSource: String = "title", // "title" = song name, "artist" = artist name
-    val titleSourceExpanded: Boolean = false
+    val button2Url: String = ""
 )

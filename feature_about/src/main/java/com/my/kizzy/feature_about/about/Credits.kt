@@ -62,7 +62,6 @@ const val GPL_V3 = "GNU General Public License v3.0"
 const val APACHE_V2 = "Apache License, Version 2.0"
 const val MIT = "MIT License"
 
-const val originalKizzy = "https://github.com/dead8309/Kizzy"
 const val readYou = "https://github.com/Ashinch/ReadYou"
 const val seal = "https://github.com/JunkFood02/Seal"
 const val materialColor = "https://github.com/material-foundation/material-color-utilities"
@@ -71,7 +70,6 @@ const val XboxRpc = "https://github.com/MrCoolAndroid/Xbox-Rich-Presence-Discord
 const val monet = "https://github.com/Kyant0/Monet"
 
 val creditsList = listOf(
-    Credit("Kizzy (original app)", GPL_V3, originalKizzy),
     Credit("Read You", GPL_V3, readYou),
     Credit("Seal", GPL_V3, seal),
     Credit("material-color-utilities", APACHE_V2, materialColor),
@@ -100,7 +98,7 @@ fun Credits(state: CreditScreenState, onBackPressed: () -> Unit) {
                 title = {
                     Text(
                         text = stringResource(id = R.string.credits),
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineLarge,
                     )
                 },
                 navigationIcon = { BackButton { onBackPressed() } },

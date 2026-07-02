@@ -35,7 +35,6 @@ import androidx.compose.material.icons.outlined.AppSettingsAlt
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Title
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -80,13 +79,6 @@ private val completions = listOf(
     TemplateKeys.MEDIA_TITLE to R.string.completion_media_title,
     TemplateKeys.MEDIA_ARTIST to R.string.completion_media_artist,
     TemplateKeys.MEDIA_AUTHOR to R.string.completion_media_author,
-    TemplateKeys.MEDIA_ALBUM to R.string.completion_media_album,
-    TemplateKeys.MEDIA_ALBUM_ARTIST to R.string.completion_media_album_artist,
-    TemplateKeys.MEDIA_DURATION to R.string.completion_media_duration,
-    TemplateKeys.MEDIA_WRITER to R.string.completion_media_writer,
-    TemplateKeys.MEDIA_COMPOSER to R.string.completion_media_composer,
-    TemplateKeys.BATTERY to R.string.completion_battery,
-    TemplateKeys.PLAYBACK to R.string.completion_playback,
     TemplateKeys.APP_NAME to R.string.completion_app_name,
 )
 
@@ -116,7 +108,7 @@ fun ExperimentalRpcScreen(
                 title = {
                     Text(
                         text = stringResource(id = R.string.main_experimentalRpc),
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineLarge,
                     )
                 },
                 navigationIcon = { BackButton { onBackPressed() } },
@@ -228,58 +220,6 @@ fun ExperimentalRpcScreen(
                     )
                 }
 
-                // Title source selector
-                item {
-                    PreferenceSwitch(
-                        title = stringResource(R.string.experimental_rpc_title_toggle),
-                        description = stringResource(R.string.experimental_rpc_title_toggle_desc),
-                        isChecked = state.showSongAsTitle,
-                        onClick = { onEvent(UiEvent.ToggleShowSongAsTitle(!state.showSongAsTitle)) },
-                        icon = Icons.Outlined.Title,
-                    )
-                }
-                if (state.showSongAsTitle) {
-                    item {
-                        val titleSources = linkedMapOf(
-                            stringResource(R.string.title_source_song) to "title",
-                            stringResource(R.string.title_source_artist) to "artist",
-                        )
-                        val titleIcon = if (state.titleSourceExpanded)
-                            Icons.Default.KeyboardArrowUp
-                        else
-                            Icons.Default.KeyboardArrowDown
-                        val titleLabel = titleSources.entries
-                            .firstOrNull { it.value == state.titleSource }?.key ?: ""
-                        RpcField(
-                            value = titleLabel,
-                            label = R.string.experimental_rpc_title_toggle,
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = titleIcon,
-                                    contentDescription = null,
-                                    modifier = Modifier.clickable {
-                                        onEvent(UiEvent.TriggerTitleSourceDropDown)
-                                    }
-                                )
-                            },
-                            content = {
-                                DropdownMenu(
-                                    expanded = state.titleSourceExpanded,
-                                    onDismissRequest = { onEvent(UiEvent.TriggerTitleSourceDropDown) },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    titleSources.forEach { (label, value) ->
-                                        DropdownMenuItem(
-                                            text = { Text(text = label) },
-                                            onClick = { onEvent(UiEvent.SetTitleSource(value)) },
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
-
                 // Media Display Options
                 item {
                     PreferenceSwitch(
@@ -321,67 +261,6 @@ fun ExperimentalRpcScreen(
                         },
                         icon = Icons.Default.Timer
                     )
-                }
-                if (state.enableTimestamps) {
-                    item {
-                        val tsIcon = if (state.timestampModeExpanded)
-                            Icons.Default.KeyboardArrowUp
-                        else
-                            Icons.Default.KeyboardArrowDown
-
-                        val tsModes = linkedMapOf(
-                            stringResource(R.string.timestamp_mode_default) to "default",
-                            stringResource(R.string.timestamp_mode_current) to "current",
-                            stringResource(R.string.timestamp_mode_custom) to "custom",
-                        )
-                        val tsLabel = tsModes.entries
-                            .firstOrNull { it.value == state.timestampMode }?.key ?: state.timestampMode
-
-                        RpcField(
-                            value = tsLabel,
-                            label = R.string.timestamp_mode,
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = tsIcon,
-                                    contentDescription = null,
-                                    modifier = Modifier.clickable {
-                                        onEvent(UiEvent.TriggerTimestampModeDropDownMenu)
-                                    })
-                            },
-                            content = {
-                                DropdownMenu(
-                                    expanded = state.timestampModeExpanded,
-                                    onDismissRequest = {
-                                        onEvent(UiEvent.TriggerTimestampModeDropDownMenu)
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    tsModes.forEach { (label, value) ->
-                                        DropdownMenuItem(
-                                            text = { Text(text = label) },
-                                            onClick = { onEvent(UiEvent.SetTimestampMode(value)) },
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    }
-                    if (state.timestampMode == "custom") {
-                        item {
-                            RpcField(
-                                value = state.customTimestampStart,
-                                label = R.string.start_timestamp_ms,
-                                onValueChange = { onEvent(UiEvent.SetCustomTimestampStart(it)) }
-                            )
-                        }
-                        item {
-                            RpcField(
-                                value = state.customTimestampEnd,
-                                label = R.string.end_timestamp_ms,
-                                onValueChange = { onEvent(UiEvent.SetCustomTimestampEnd(it)) }
-                            )
-                        }
-                    }
                 }
                 item {
                     PreferenceSwitch(
@@ -427,17 +306,8 @@ fun ExperimentalRpcScreen(
                     else
                         Icons.Default.KeyboardArrowDown
 
-                    val platforms = linkedMapOf(
-                        stringResource(R.string.platform_none_desktop) to "",
-                        stringResource(R.string.platform_desktop) to "desktop",
-                        stringResource(R.string.platform_web) to "web",
-                        stringResource(R.string.platform_android) to "android",
-                        stringResource(R.string.platform_ios) to "ios",
-                        stringResource(R.string.platform_xbox) to "xbox",
-                        stringResource(R.string.platform_playstation) to "playstation",
-                        stringResource(R.string.platform_vr) to "vr",
-                    )
-                    val platformLabel = platforms.entries
+                    // Show the human-readable label (e.g. "Android") for the stored id.
+                    val platformLabel = Constants.SPOOF_PLATFORMS.entries
                         .firstOrNull { it.value == state.platform }?.key ?: state.platform
 
                     RpcField(
@@ -459,7 +329,7 @@ fun ExperimentalRpcScreen(
                                 },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                platforms.forEach { (label, value) ->
+                                Constants.SPOOF_PLATFORMS.forEach { (label, value) ->
                                     DropdownMenuItem(
                                         text = { Text(text = label) },
                                         onClick = { onEvent(UiEvent.SetPlatform(value)) },
@@ -511,29 +381,6 @@ fun ExperimentalRpcScreen(
                             value = state.button2Url,
                             label = R.string.activity_button2_url,
                             onValueChange = { onEvent(UiEvent.SetButton2Url(it)) }
-                        )
-                    }
-                }
-
-                item {
-                    Subtitle(text = stringResource(R.string.application_id))
-                }
-                item {
-                    PreferenceSwitch(
-                        title = stringResource(R.string.custom_application_id),
-                        description = stringResource(R.string.custom_application_id_desc),
-                        isChecked = state.useCustomAppId,
-                        onClick = {
-                            onEvent(UiEvent.ToggleUseCustomAppId(!state.useCustomAppId))
-                        },
-                    )
-                }
-                if (state.useCustomAppId) {
-                    item {
-                        RpcField(
-                            value = state.applicationId,
-                            label = R.string.application_id,
-                            onValueChange = { onEvent(UiEvent.SetApplicationId(it)) }
                         )
                     }
                 }

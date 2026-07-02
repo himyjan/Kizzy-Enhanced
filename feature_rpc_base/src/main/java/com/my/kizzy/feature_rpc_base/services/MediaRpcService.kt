@@ -114,7 +114,7 @@ class MediaRpcService : Service() {
         notificationManager.notify(
             Constants.NOTIFICATION_ID,
             notificationBuilder
-                .setContentTitle(playingMedia.name.ifEmpty { getString(R.string.app_name_full) })
+                .setContentTitle(playingMedia.name.ifEmpty { getString(R.string.app_name) })
                 .setContentText(
                     (playingMedia.details ?: "").ifEmpty { getString(R.string.idling_notification) }
                 )

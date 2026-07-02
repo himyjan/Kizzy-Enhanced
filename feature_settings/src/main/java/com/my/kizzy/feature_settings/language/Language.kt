@@ -31,7 +31,7 @@ fun Language(
                 title = {
                     Text(
                         text = stringResource(id = R.string.language),
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineLarge,
                     )
                 },
                 navigationIcon = {

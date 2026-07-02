@@ -32,13 +32,4 @@ sealed interface UiEvent {
     data class SetButton1Url(val value: String) : UiEvent
     data class SetButton2Text(val value: String) : UiEvent
     data class SetButton2Url(val value: String) : UiEvent
-    data class ToggleUseCustomAppId(val enabled: Boolean) : UiEvent
-    data class SetApplicationId(val value: String) : UiEvent
-    data class SetTimestampMode(val value: String) : UiEvent
-    object TriggerTimestampModeDropDownMenu : UiEvent
-    data class SetCustomTimestampStart(val value: String) : UiEvent
-    data class SetCustomTimestampEnd(val value: String) : UiEvent
-    data class ToggleShowSongAsTitle(val enabled: Boolean) : UiEvent
-    data class SetTitleSource(val value: String) : UiEvent
-    object TriggerTitleSourceDropDown : UiEvent
 }

@@ -10,7 +10,7 @@ android {
     namespace = "com.my.kizzy"
 
     defaultConfig {
-        applicationId = "com.my.kizzy.enhanced"
+        applicationId = "io.kizzy.fork"
         versionCode = libs.versions.version.code.get().toInt()
         versionName = libs.versions.version.name.get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

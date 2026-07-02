@@ -88,7 +88,7 @@ fun SettingsDrawer(
                         contentColor = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.offset(8.dp, (-8).dp)
                     ) {
-                        Text(text = "Enhanced")
+                        Text(text = BuildConfig.VERSION_NAME)
                     }
                 },
                 modifier = Modifier.padding(top = 8.dp, bottom = 10.dp)
@@ -149,6 +149,15 @@ fun SettingsDrawer(
                         icon = Icons.AutoMirrored.Rounded.HelpOutline
                     ) {
                         uriHandler.openUri("https://kizzy.vercel.app/#FAQ")
+                    }
+                }
+                item {
+                    SettingsItemCard(
+                        title = "Discord",
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_discord)
+                    ) {
+                        //Discord Server Link
+                        uriHandler.openUri(chips.first().url)
                     }
                 }
                 item {

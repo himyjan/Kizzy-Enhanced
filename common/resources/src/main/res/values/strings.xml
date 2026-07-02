@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <!-- Activities -->
@@ -36,9 +35,6 @@
     <string name="enable_album_name">Enable Album Name</string>
     <string name="show_app_icon">Show App Icon</string>
     <string name="enable_timestamps">Enable Timestamps</string>
-    <string name="timestamp_mode">Timestamp Mode</string>
-    <string name="start_timestamp_ms">Start Timestamp (in milliseconds)</string>
-    <string name="end_timestamp_ms">End Timestamp (in milliseconds)</string>
     <string name="text_after_permission_denied">Storage access is important for this app to store configs in public directories. Please grant the permission.</string>
     <string name="request_for_storage_access">Storage permission required for config features to work. Please grant the permission.</string>
     <string name="grant_permission">Grant Permission</string>
@@ -219,34 +215,8 @@
     <string name="show_cover_art_desc">Display album cover art as large image</string>
     <string name="enable_experimental_rpc">Enable Experimental RPC</string>
     <string name="completion_media_author">Main Author</string>
-    <string name="completion_media_album">Album Name</string>
-    <string name="completion_media_album_artist">Album Artist</string>
-    <string name="completion_media_duration">Track Duration</string>
-    <string name="completion_media_writer">Writer</string>
-    <string name="completion_media_composer">Composer</string>
-    <string name="completion_battery">Battery Level</string>
-    <string name="completion_playback">Playback State</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
     <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
-    <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="title_source_song">Song Name</string>
-    <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \'{{\'  to insert a variable</string>
-    <string name="app_selection">App Selection</string>
-    <string name="platform_none_desktop">None (Desktop)</string>
-    <string name="platform_desktop">Desktop</string>
-    <string name="platform_web">Web</string>
-    <string name="platform_android">Android</string>
-    <string name="platform_ios">iOS</string>
-    <string name="platform_xbox">Xbox</string>
-    <string name="platform_playstation">Playstation</string>
-    <string name="platform_vr">VR</string>
-    <string name="timestamp_mode_default">Media / App (default)</string>
-    <string name="timestamp_mode_current">Same as current time of day</string>
-    <string name="timestamp_mode_custom">Custom</string>
-    <string name="update_installing">Installing…</string>
-    <string name="update_download_error">Download failed. Try again.</string>
 </resources>

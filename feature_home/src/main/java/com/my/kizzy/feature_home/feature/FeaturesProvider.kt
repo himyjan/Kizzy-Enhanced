@@ -42,7 +42,7 @@ fun homeFeaturesProvider(
             icon = R.drawable.ic_media_rpc,
             route = Routes.MEDIA_RPC,
             isChecked = AppUtils.mediaRpcRunning(),
-            showSwitch = true,
+            showSwitch = hasNotificationAccess.value,
             onClick = {
                 navigateTo(it)
             },
@@ -81,32 +81,9 @@ fun homeFeaturesProvider(
                     ctx.stopService(Intent(ctx, CustomRpcService::class.java))
             },
             shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
-            showSwitch = true,
+            showSwitch = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty(),
             tooltipText = stringResource(id = R.string.main_customRpc_details),
             featureDocsLink = ToolTipContent.CUSTOM_RPC_DOCS_LINK
-        ),
-        HomeFeature(
-            title = stringResource(id = R.string.main_consoleRpc),
-            icon = R.drawable.ic_console_games,
-            route = Routes.CONSOLE_RPC,
-            isChecked = AppUtils.customRpcRunning(),
-            onClick = { navigateTo(it) },
-            onCheckedChange = {
-                if (it) {
-                    val lastRpc = Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
-                    val intent = Intent(ctx, CustomRpcService::class.java)
-                    intent.putExtra("RPC", lastRpc)
-                    ctx.stopService(Intent(ctx, MediaRpcService::class.java))
-                    ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
-                    ctx.stopService(Intent(ctx, AppDetectionService::class.java))
-                    ctx.startService(intent)
-                } else
-                    ctx.stopService(Intent(ctx, CustomRpcService::class.java))
-            },
-            shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-            showSwitch = true,
-            tooltipText = stringResource(id = R.string.main_consoleRpc_details),
-            featureDocsLink = ToolTipContent.CONSOLE_RPC_DOCS_LINK
         ),
         HomeFeature(
             title = stringResource(id = R.string.main_experimentalRpc),
@@ -124,7 +101,7 @@ fun homeFeaturesProvider(
                     ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
             },
             shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-            showSwitch = true,
+            showSwitch = hasUsageAccess.value && hasNotificationAccess.value && userVerified,
             tooltipText = stringResource(id = R.string.main_experimentalRpc_details),
             featureDocsLink = ToolTipContent.EXPERIMENTAL_RPC_DOCS_LINK
         )
