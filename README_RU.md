@@ -1,25 +1,22 @@
 <div align="center">
-  <img width="2048" height="989" alt="17831909936168749184217530060427" src="https://github.com/user-attachments/assets/9af64f16-8a70-4128-9736-f907f1e3c06d" />
-<h1><img src="https://github.com/user-attachments/assets/02086040-660d-42d8-8830-78053e1e05a4" height="30" style="vertical-align: middle;"> Kizzy Enhanced</h1>
-<h4>Расширенный форк <a href="https://github.com/dead8309/Kizzy">Kizzy</a> — менеджер Discord Rich Presence для Android, написанный на Kotlin.</h4>
+<h1>Kizzy Fork</h1>
+<h4>Кастомный форк <a href="https://github.com/dead8309/Kizzy">Kizzy</a> — менеджер Discord Rich Presence для Android, написанный на Kotlin.</h4>
 </div>
 
 <div align="center">
 <img src="https://img.shields.io/badge/Minimum%20SDK-27-%23?&style=flat-square&color=5b5ef7">
 <img src="https://img.shields.io/badge/kotlin-5b5ef7.svg?logo=kotlin&logoColor=white&style=flat-square">
-<img src="https://img.shields.io/badge/package-com.my.kizzy.enhanced-5b5ef7?style=flat-square">
-<img src="https://img.shields.io/badge/name-Kizzy%20Enhanced-5b5ef7?style=flat-square">
+<img src="https://img.shields.io/badge/package-io.kizzy.fork-5b5ef7?style=flat-square">
+</div>
+
 <div align="center">
 
 [![README in English](https://img.shields.io/badge/README-in%20English-blue?style=for-the-badge)](README.md)
-</div>
-<p>
-<img src="https://github.com/user-attachments/assets/f8402300-d628-4104-8f86-dc6021c9fbbe" width=60%/>
-</p>
+
 </div>
 
 > [!NOTE]
-> **Kizzy Enhanced** — личный форк [Kizzy](https://github.com/dead8309/Kizzy) от dead8309. Добавления форка отмечены ⭐.
+> Это личный форк [Kizzy](https://github.com/dead8309/Kizzy) от dead8309. Добавления форка отмечены ⭐.
 
 ## Возможности
 
@@ -32,7 +29,7 @@
 - [x] Material You тема
 - [x] Переводы
 - [x] Простая настройка
-- [x] RPC с консолей
+- [x] 300+ готовых пресетов
 - [x] Создание кастомных конфигов со своими изображениями и ссылками
 - [x] Превью RPC прямо в приложении
 - [x] Работает в фоне даже когда экран выключен
@@ -89,13 +86,13 @@
 - Исправлены крэши при переключении RPC-функций с главного экрана.
 
 ## Системные требования
-- ОС: Android 8.1 — 16
+- ОС: Android 8.1 — 14 *(на Android 14 возможны баги с экспериментальными функциями)*
 - ОЗУ: минимум 3 ГБ
 
 ## Скачать
 Последний подписанный `app-release.apk` находится на странице [**Releases**](../../releases/latest).
 
-**Kizzy Enhanced** использует package id **`com.my.kizzy.enhanced`**, поэтому устанавливается параллельно с оригинальным Kizzy.
+Форк использует package id **`io.kizzy.fork`**, поэтому устанавливается параллельно с оригинальным Kizzy.
 
 > [!WARNING]
 > Приложение использует подключение к Discord Gateway. Используй на свой страх и риск.
@@ -104,14 +101,14 @@
 > Требования: Android Studio, знакомство с Gradle, Kotlin и Jetpack Compose.
 
 ```console
-git clone https://github.com/milliarderr/Kizzy-Enhanced.git
+git clone https://github.com/milliarderr/Kizzy.git
 ```
 Открой проект в Android Studio, импортируй, затем собери и запусти. Релизные сборки собираются автоматически через GitHub Actions workflow **Build Release Apk**.
 
 ## Благодарности
-✨ [dead8309](https://github.com/dead8309/Kizzy) — оригинальное приложение и весь апстрим.
+Оригинальное приложение и весь апстрим — [dead8309](https://github.com/dead8309/Kizzy) и контрибьюторы.
 
-✨ [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy) — фиксы надёжности gateway.
+Фиксы надёжности gateway портированы из [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy).
 
 ✨ [Read You](https://github.com/Ashinch/ReadYou) и [Seal](https://github.com/JunkFood02/Seal) — UI компоненты
 
