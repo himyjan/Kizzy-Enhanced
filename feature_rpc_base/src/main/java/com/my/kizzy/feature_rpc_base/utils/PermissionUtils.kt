@@ -16,7 +16,7 @@ fun isNotificationListenerEnabled(context: Context): Boolean {
 }
 
 fun openNotificationListenerSettings(context: Context) {
-    val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+    val intent = android.content.Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
     context.startActivity(intent)
 }
 

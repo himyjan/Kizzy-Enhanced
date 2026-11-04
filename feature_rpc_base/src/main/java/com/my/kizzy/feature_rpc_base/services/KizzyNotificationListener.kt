@@ -10,7 +10,6 @@ import android.util.Log
 import com.my.kizzy.feature_rpc_base.security.SecureTokenStorage
 import com.my.kizzy.feature_rpc_base.utils.MediaMetadataParser
 import kizzy.gateway.DiscordWebSocketImpl
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -1,6 +1,7 @@
 package com.my.kizzy.feature_rpc_base.services
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -62,6 +63,8 @@ class MediaRpcService : Service() {
     private val notificationBuilder: NotificationCompat.Builder by lazy {
         NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_media_rpc)
+            .setContentTitle("Rich Presence Active")
+            .setContentText("Broadcasting media status")
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
     }
@@ -72,8 +75,6 @@ class MediaRpcService : Service() {
         val token = Prefs[TOKEN, ""]
         if (token.isEmpty()) stopSelf()
         setupWakeLock()
-
-        // Create notification channel for Android 8.0+
         createNotificationChannel()
 
         val intent = Intent(this, MediaRpcService::class.java)
@@ -119,7 +120,6 @@ class MediaRpcService : Service() {
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(::activeSessionsListener, ComponentName(this, NotificationListener::class.java))
 
-        // Register first media session
         activeSessionsListener(mediaSessionManager.getActiveSessions(ComponentName(this, NotificationListener::class.java)), false)
     }
 
@@ -127,7 +127,6 @@ class MediaRpcService : Service() {
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]
         val playingMedia = getCurrentPlayingMedia()
 
-        // Update notification with current media info
         notificationBuilder
             .setContentTitle(playingMedia.name.ifEmpty { getString(R.string.app_name_full) })
             .setContentText(
@@ -165,19 +164,18 @@ class MediaRpcService : Service() {
                     setSmallImage(playingMedia.smallImage, playingMedia.smallText)
                     if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
                         with(rpcButtons) {
-                            val btn1 = button1.toString().takeIf { it.isNotEmpty() }
-                            val btn2 = button2.toString().takeIf { it.isNotEmpty() }
+                            val btn1 = button1.takeIf { it.isNotEmpty() }
+                            val btn2 = button2.takeIf { it.isNotEmpty() }
                             if (btn1 != null) {
-                        val url1 = button1Url.takeIf { it.isNotEmpty() }
-                        setButton1(btn1, url1.orEmpty())
-                    }
-                    if (btn2 != null) {
-                        val url2 = button2Url.takeIf { it.isNotEmpty() }
-                        setButton2(btn2, url2.orEmpty())
-                    }
+                                val url1 = button1Url.takeIf { it.isNotEmpty() }
+                                setButton1(btn1, url1.orEmpty())
+                            }
+                            if (btn2 != null) {
+                                val url2 = button2Url.takeIf { it.isNotEmpty() }
+                                setButton2(btn2, url2.orEmpty())
+                            }
                         }
                     }
-                    build()
                 }
             }
         }
@@ -188,7 +186,6 @@ class MediaRpcService : Service() {
     private fun activeSessionsListener(mediaSessions: List<MediaController>?, isEvent: Boolean = true) {
         logger.d("MediaRPC", "Active sessions changed")
 
-        // For some reason, event is occasionally fired before session list is actually updated
         if (isEvent) runBlocking { delay(1500) }
 
         if (mediaSessions?.isNotEmpty() == true) {
@@ -204,11 +201,10 @@ class MediaRpcService : Service() {
         scope.launch { updatePresence() }
     }
 
-    private inner class MediaControllerCallback: MediaController.Callback() {
+    private inner class MediaControllerCallback : MediaController.Callback() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             super.onPlaybackStateChanged(state)
 
-            // Cancel all previous jobs and start new job to prevent conflict/spam
             scope.coroutineContext.cancelChildren()
             scope.launch {
                 delay(1000)
@@ -268,10 +264,6 @@ class MediaRpcService : Service() {
         return null
     }
 
-    /**
-     * Creates the notification channel required for Android 8.0+.
-     * Safe to call multiple times - if channel already exists, it's ignored.
-     */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
