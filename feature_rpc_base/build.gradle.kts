@@ -1,5 +1,6 @@
 plugins {
     id ("kizzy.android.library")
+    id ("kizzy.android.library.compose")
     id ("kizzy.android.feature")
     id ("kizzy.android.hilt")
 }
@@ -13,4 +14,5 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil)
+    implementation(libs.compose.ui)
 }

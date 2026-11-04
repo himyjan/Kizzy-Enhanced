@@ -53,7 +53,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.Subtitle

@@ -67,7 +67,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.toVersion
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_home.feature.Features

@@ -27,9 +27,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import com.google.android.material.color.DynamicColors
 import com.my.kizzy.resources.R
 import com.kyant.monet.Hct
@@ -115,31 +114,44 @@ fun Appearance(
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
-                val pagerState = rememberPagerState(initialPage = colorList.indexOf(Color(
-                    LocalSeedColor.current))
-                        .run { if (equals(-1)) 1 else this })
+                val pagerState = rememberPagerState(
+                    pageCount = { colorList.size },
+                    initialPage = colorList.indexOf(Color(LocalSeedColor.current))
+                        .run { if (equals(-1)) 1 else this }
+                )
                 HorizontalPager(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clearAndSetSemantics { }, state = pagerState,
-                    count = colorList.size, contentPadding = PaddingValues(horizontal = 12.dp)
-                ) {
+                        .clearAndSetSemantics { },
+                    state = pagerState,
+                    contentPadding = PaddingValues(horizontal = 12.dp)
+                ) { page ->
                     Row {
-                        ColorButtons(colorList[it],last = it == colorList.lastIndex)
+                        ColorButtons(colorList[page], last = page == colorList.lastIndex)
                     }
                 }
-                HorizontalPagerIndicator(
-                    pagerState = pagerState,
-                    pageCount = colorList.size,
+                Row(
                     modifier = Modifier
                         .clearAndSetSemantics { }
-                        .align(Alignment.CenterHorizontally)
                         .padding(vertical = 12.dp),
-                    activeColor = MaterialTheme.colorScheme.primary,
-                    inactiveColor = MaterialTheme.colorScheme.outlineVariant,
-                    indicatorHeight = 6.dp,
-                    indicatorWidth = 6.dp
-                )
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    repeat(pagerState.pageCount) { iteration ->
+                        val isSelected = pagerState.currentPage == iteration
+                        val color = if (isSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.outlineVariant
+                        }
+                        Box(
+                            modifier = Modifier
+                                .padding(2.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(if (isSelected) 8.dp else 6.dp)
+                        )
+                    }
+                }
             }
             if (DynamicColors.isDynamicColorAvailable()) {
                 PreferenceSwitch(title = stringResource(id = R.string.dynamic_color),

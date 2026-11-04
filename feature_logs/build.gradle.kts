@@ -12,4 +12,5 @@ android {
 dependencies {
     implementation (projects.theme)
     implementation(libs.activity.compose)
+    implementation(libs.material.icons.extended)
 }

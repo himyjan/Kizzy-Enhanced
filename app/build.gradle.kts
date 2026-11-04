@@ -71,7 +71,7 @@ dependencies {
 
     // Extras
     implementation (libs.app.compat)
-    implementation (libs.accompanist.navigation.animation)
+    implementation (libs.compose.navigation)
     implementation (libs.kotlinx.serialization.json)
 
 

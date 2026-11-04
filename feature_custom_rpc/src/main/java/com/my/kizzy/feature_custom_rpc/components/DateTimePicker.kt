@@ -235,7 +235,7 @@ private class TimePickerStateImpl(
 
     override var selection by mutableStateOf(TimePickerSelectionMode.Hour)
 
-    override var isAfternoon by mutableStateOf(initialHour >= 12)
+    var isAfternoon by mutableStateOf(initialHour >= 12)
 
     val hourState = mutableIntStateOf(initialHour % 12)
 

@@ -11,23 +11,24 @@ on:
       - 'metadata/**'
   workflow_dispatch:
 
+# Natively cancels previous runs for the same branch to save runner minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build Apk
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.5.0
-        with:
-          access_token: ${{ github.token }}
+      - name: Checkout Code
+        uses: actions/checkout@v7
 
-      - uses: actions/checkout@v3
-
-      - name: Setup jdk-17
-        uses: actions/setup-java@main
+      - name: Setup JDK 26
+        uses: actions/setup-java@v6
         with:
-          java-version: 17
-          distribution: 'adopt'
+          java-version: '26'
+          distribution: 'temurin' # Updated from the outdated 'adopt' 
           cache: gradle
 
       - name: Grant execute permission for gradlew

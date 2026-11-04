@@ -27,11 +27,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.size.Precision
-import coil.size.Scale
-import coil.size.Size
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.size.Scale
+import coil3.size.Size
 import com.caverock.androidsvg.SVG
 import com.kyant.monet.LocalTonalPalettes
 import com.kyant.monet.TonalPalettes
@@ -84,16 +83,13 @@ fun SvgImage(
     data: Any? = null,
     size: Size = Size.ORIGINAL,
     scale: Scale = Scale.FIT,
-    precision: Precision = Precision.AUTOMATIC,
     contentScale: ContentScale = ContentScale.Fit,
     contentDescription: String = ""
 ) {
     Image(
         painter = rememberAsyncImagePainter(
             ImageRequest.Builder(LocalContext.current).data(data = data).apply(block = fun ImageRequest.Builder.() {
-                crossfade(true)
                 scale(scale)
-                precision(precision)
                 size(size)
             }).build()
         ), contentDescription = contentDescription, contentScale = contentScale, modifier = modifier
