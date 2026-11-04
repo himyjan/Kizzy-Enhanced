@@ -23,4 +23,5 @@ dependencies {
     implementation(libs.tink.android)
     implementation(libs.hilt.navigation.compose)
     implementation(projects.gateway)
+    implementation(projects.data)
 }
