@@ -30,7 +30,7 @@ dependencies {
 }
 
 fun LibraryDefaultConfig.buildConfigFieldFromGradleProperty(fieldName: String, gradlePropertyName: String) {
-    val propertyValue = project.properties[gradlePropertyName] as? String
+    val propertyValue = project.findProperty(gradlePropertyName) as? String
     if (propertyValue != null) {
         buildConfigField("String", fieldName, propertyValue)
     }

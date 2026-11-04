@@ -13,6 +13,9 @@
 package com.my.kizzy.feature_logs
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -59,8 +62,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -86,7 +87,7 @@ import java.util.Date
 fun LogScreen(viewModel: LogsViewModel) {
     val ctx = LocalContext.current
     val lazyListState = rememberLazyListState()
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val clipboardManager: ClipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val visibleLogs = viewModel.filter()
     val autoScroll = viewModel.autoScroll.value
     Scaffold(
@@ -122,7 +123,7 @@ fun LogScreen(viewModel: LogsViewModel) {
                                     isExpanded.value = !isExpanded.value
                                 },
                                 onLongClick = {
-                                    clipboardManager.setText(AnnotatedString(it.text))
+                                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", it.text))
                                     Toast.makeText(
                                         ctx,
                                         ctx.getString(R.string.copied_to_clipboard),
@@ -244,7 +245,7 @@ fun ToolBar(viewModel: LogsViewModel) {
 fun LogsCard(logEvent: LogEvent) {
     val ctx = LocalContext.current
     val isExpanded = remember { mutableStateOf(false) }
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val clipboardManager: ClipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -292,7 +293,7 @@ fun LogsCard(logEvent: LogEvent) {
                                 isExpanded.value = !isExpanded.value
                             },
                             onLongClick = {
-                                clipboardManager.setText(AnnotatedString(logEvent.text))
+                                clipboardManager.setPrimaryClip(ClipData.newPlainText("", logEvent.text))
                                 Toast.makeText(
                                     ctx,
                                     ctx.getString(R.string.copied_to_clipboard),

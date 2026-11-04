@@ -254,13 +254,45 @@ This forces the Kotlin 2.4 compiler to emit class metadata blobs in the 2.2.0 fo
 
 **Result:** ✅
 
+### 20. AGP 9.x DSL Deprecation Fixes
+**Files affected:** `gradle.properties`, `app/build.gradle.kts`, `data/build.gradle.kts`
+
+**a) `android.newDsl=false` → `android.newDsl=true`**
+- **File:** `gradle.properties`
+- **Issue:** AGP 9.x deprecated `android.newDsl=false` which forces the legacy DSL. Will be removed in AGP 10.0.
+- **Fix:** Changed `android.newDsl=false` to `android.newDsl=true` and added `android.sync.suppressAgpWarnings=UNSUPPORTED_PROJECT_OPTION_USE`.
+- **Result:** ✅ — All `Project.android()` deprecation warnings eliminated. Hilt 2.60.1 continues to work.
+
+**b) `packagingOptions` → `packaging`**
+- **File:** `app/build.gradle.kts`
+- **Issue:** AGP 8.x+ deprecated `packagingOptions` in favor of `packaging`.
+- **Fix:** Changed `packagingOptions.resources.excludes.add(...)` → `packaging.resources.excludes.add(...)`.
+- **Result:** ✅
+
+**c) `project.properties` → `project.findProperty()`**
+- **File:** `data/build.gradle.kts:33`
+- **Issue:** Gradle 8+ deprecated `project.properties[name]` in favor of `project.findProperty(name)`.
+- **Fix:** Changed `project.properties[gradlePropertyName] as? String` → `project.findProperty(gradlePropertyName) as? String`.
+- **Result:** ✅
+
+### 21. LocalClipboardManager → Android ClipboardManager
+**Files affected:** `common/components/src/main/java/com/my/kizzy/ui/components/KTextField.kt`, `feature_logs/src/main/java/com/my/kizzy/feature_logs/LogScreen.kt`
+
+**Issue:** Jetpack Compose 1.7+ deprecated `LocalClipboardManager` in favor of `LocalClipboard` (async, suspend-based). However, `LocalClipboard`'s API (`clip` property, `getClip()`, `text`) was unresolved in this Compose version. Fixed by using Android's `ClipboardManager` directly via `LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE)`.
+
+**Fix:**
+- `KTextField.kt`: Replaced `LocalClipboardManager.current` → `LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager`, `clipboardManager.getText()` → `clipboardManager.primaryClip?.getItemAt(0)?.text?.toString()`
+- `LogScreen.kt`: Replaced `LocalClipboardManager.current` → same pattern, `clipboardManager.setText(...)` → `clipboardManager.setPrimaryClip(ClipData.newPlainText("", text))`
+- Removed `import androidx.compose.ui.platform.LocalClipboardManager`, added `import android.content.ClipboardManager`, `import android.content.Context`, `import android.content.ClipData`
+- **Result:** ✅
+
 ---
 
 ## Final Build Output
 
 ```
-BUILD SUCCESSFUL in 1m 49s
-739 actionable tasks: 735 executed, 4 up-to-date
+BUILD SUCCESSFUL in 5s
+716 actionable tasks: 48 executed, 668 up-to-date
 ```
 
 **APK location:** `app/build/outputs/apk/debug/app-debug.apk`
@@ -269,13 +301,13 @@ BUILD SUCCESSFUL in 1m 49s
 
 ## Known Non-Breaking Warnings
 
-- `android.newDsl=false` deprecated (AGP 10 will remove it)
-- Legacy `android { }` DSL block deprecated in AGP 9.x
+- Legacy `android { }` DSL block deprecated in AGP 9.x (cosmetic only)
 - Unnecessary safe-call warnings on non-null `RpcConfig` / `RichMediaMetadata` / `CommonRpc` receivers — cosmetic only
+- `statusBarColor`/`navigationBarColor` deprecated in Theme.kt — Android framework deprecation
 
 ---
 
-## Files Changed (41 files)
+## Files Changed (42 files)
 
 | Category | Files |
 |----------|-------|
