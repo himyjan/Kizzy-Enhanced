@@ -14,11 +14,17 @@ import kizzy.gateway.entities.Ready
 import kizzy.gateway.entities.Resume
 import kizzy.gateway.entities.op.OpCode
 import kizzy.gateway.entities.op.OpCode.*
+import kizzy.gateway.entities.presence.Assets
+import kizzy.gateway.entities.presence.Activity
 import kizzy.gateway.entities.presence.Presence
+import kizzy.gateway.entities.presence.Timestamps
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -26,6 +32,14 @@ import kotlinx.serialization.json.Json
 import kotlin.coroutines.CoroutineContext
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
+
+/// Connection lifecycle states exposed to UI/Service observers.
+sealed interface ConnectionState {
+    object Disconnected : ConnectionState
+    object Connecting : ConnectionState
+    data class Reconnecting(val attempt: Int) : ConnectionState
+    object Connected : ConnectionState
+}
 
 open class DiscordWebSocketImpl(
     private val token: String,
@@ -53,6 +67,10 @@ open class DiscordWebSocketImpl(
         encodeDefaults = true
     }
 
+    // Connection state observable by external components (UI, services, etc.)
+    private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
+    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+
     // Expose parsed gateway events to external observers (UI, services, etc.)
     private val _gatewayEvents = MutableSharedFlow<Payload>(replay = 1, extraBufferCapacity = 64)
     val gatewayEvents: SharedFlow<Payload> = _gatewayEvents.asSharedFlow()
@@ -64,6 +82,7 @@ open class DiscordWebSocketImpl(
         launch {
             try {
                 logger.i("Gateway","Connect called")
+                _connectionState.value = ConnectionState.Connecting
                 val url = resumeGatewayUrl ?: gatewayUrl
                 websocket = client.webSocketSession(url)
                 reconnectAttempts = 0
@@ -93,6 +112,7 @@ open class DiscordWebSocketImpl(
         heartbeatJob?.cancel()
         connected = false
         awaitingHeartbeatAck = false
+        _connectionState.value = ConnectionState.Disconnected
         val close = websocket?.closeReason?.await()
         val code = close?.code?.toInt()
         logger.w("Gateway","Closed with code: $code, reason: ${close?.message}")
@@ -124,6 +144,7 @@ open class DiscordWebSocketImpl(
             resumeGatewayUrl = null
             sessionId = null
         }
+        _connectionState.value = ConnectionState.Reconnecting(reconnectAttempts)
         logger.w("Gateway","Connection lost — reconnecting in ${totalDelay}ms (attempt $reconnectAttempts)")
         delay(totalDelay)
         if (!deliberateClose) connect()
@@ -162,6 +183,7 @@ open class DiscordWebSocketImpl(
                 logger.i("Gateway","resume_gateway_url updated to $resumeGatewayUrl")
                 logger.i("Gateway","session_id updated to $sessionId")
                 connected = true
+                _connectionState.value = ConnectionState.Connected
                 return
             }
             "RESUMED" -> {
@@ -284,6 +306,7 @@ open class DiscordWebSocketImpl(
         resumeGatewayUrl = null
         sessionId = null
         connected = false
+        _connectionState.value = ConnectionState.Disconnected
         runBlocking {
             websocket?.close()
             logger.e("Gateway","Connection to gateway closed")
@@ -301,6 +324,56 @@ open class DiscordWebSocketImpl(
             }
         }
         logger.i("Gateway","Sending $PRESENCE_UPDATE")
+        send(
+            op = PRESENCE_UPDATE,
+            d = presence
+        )
+    }
+
+    /// Updates Discord Rich Presence with custom fields.
+    /// Requires an active WebSocket connection (see [connectionState]).
+    suspend fun updatePresence(
+        name: String,
+        details: String? = null,
+        state: String? = null,
+        largeImageKey: String? = null,
+        largeText: String? = null,
+        smallImageKey: String? = null,
+        smallText: String? = null,
+        startTime: Long? = null,
+        endTime: Long? = null,
+        status: String = "online",
+        afk: Boolean = false
+    ) {
+        if (!isSocketConnectedToAccount()) {
+            logger.w("Gateway","Socket not connected — cannot update presence")
+            return
+        }
+
+        val timestamps = if (startTime != null || endTime != null) {
+            Timestamps(start = startTime, end = endTime)
+        } else null
+
+        val assets = if (largeImageKey != null || smallImageKey != null) {
+            Assets(largeImage = largeImageKey, smallImage = smallImageKey, largeText = largeText, smallText = smallText)
+        } else null
+
+        val activity = Activity(
+            name = name,
+            type = 0, // Playing
+            state = state,
+            details = details,
+            timestamps = timestamps,
+            assets = assets
+        )
+
+        val presence = Presence(
+            activities = listOf(activity),
+            status = status,
+            afk = afk
+        )
+
+        logger.i("Gateway","Sending $PRESENCE_UPDATE — name=$name, details=$details")
         send(
             op = PRESENCE_UPDATE,
             d = presence
