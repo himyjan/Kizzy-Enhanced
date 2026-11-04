@@ -2,36 +2,61 @@ package com.my.kizzy.feature_rpc_base.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.feature_rpc_base.security.SecureTokenStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RpcViewModel @Inject constructor(
-    private val tokenStorage: SecureTokenStorage
+    private val tokenStorage: SecureTokenStorage,
+    private val stateRepository: KizzyStateRepository
 ) : ViewModel() {
+
+    /// Expose token reactively as a StateFlow so the UI and WebSocket can observe changes
+    val authToken: StateFlow<String?> = tokenStorage.tokenFlow.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
+
+    /// Loading state while reading from secure storage
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    /// Connection state (delegated to shared repository)
+    val isConnected: StateFlow<Boolean> = stateRepository.isConnected
+
+    /// Pause state (delegated to shared repository)
+    val isPaused: StateFlow<Boolean> = stateRepository.isPaused
+
+    init {
+        viewModelScope.launch {
+            // Wait for initial token flow emission to determine loading state
+            tokenStorage.tokenFlow.first()
+            _isLoading.value = false
+        }
+    }
 
     /// Save Discord auth token securely
     fun saveToken(token: String) {
-        tokenStorage.saveToken(token)
-    }
-
-    /// Retrieve stored Discord auth token
-    fun getToken(): String? {
-        return tokenStorage.getToken()
+        viewModelScope.launch {
+            tokenStorage.saveToken(token)
+        }
     }
 
     /// Clear stored token (e.g., on logout)
     fun clearToken() {
-        tokenStorage.clearToken()
+        viewModelScope.launch {
+            tokenStorage.clearToken()
+        }
     }
-
-    /// Check current connection state
-    val isConnected: Boolean
-        get() = false // WebSocket client not injected; set externally
-
-    /// Observe connection state changes
-    val connectionState = androidx.lifecycle.MutableLiveData<kizzy.gateway.ConnectionState>(kizzy.gateway.ConnectionState.Disconnected)
 
     /// Update Discord Rich Presence
     suspend fun updatePresence(
@@ -47,6 +72,6 @@ class RpcViewModel @Inject constructor(
         status: String = "online",
         afk: Boolean = false
     ) {
-        // WebSocket client not injected; implement externally
+        // WebSocket client not injected; implement externally via stateRepository
     }
 }

@@ -30,6 +30,7 @@ espresso-core = "3.6.1"
 javax = "1"
 kotlinx-serialization-json = "1.8.0"
 tink-android = "1.15.0"
+hilt-navigation-compose = "1.1.0"
 
 [libraries]
 # Javax
@@ -93,6 +94,7 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 # KotlinX
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tink-android" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
@@ -106,3 +108,4 @@ kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", vers
 
 [bundles]
 network-ktor = ["ktor-core", "ktor-client-cio", "ktor-kotlinx-serialization"]
+secure-storage = ["datastore-preferences", "tink-android"]

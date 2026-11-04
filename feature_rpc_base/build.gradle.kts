@@ -15,7 +15,12 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil)
     implementation(libs.compose.ui)
+    implementation(libs.compose.runtime)
+    implementation(libs.material3)
+    implementation(libs.material3.windows.size)
+    implementation(libs.material.icons.extended)
     implementation(libs.datastore.preferences)
     implementation(libs.tink.android)
+    implementation(libs.hilt.navigation.compose)
     implementation(projects.gateway)
 }

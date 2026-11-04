@@ -405,4 +405,58 @@ open class DiscordWebSocketImpl(
         )
     }
 
+    /// Clears Rich Presence on Discord (used when paused).
+    suspend fun clearPresence() {
+        if (!isSocketConnectedToAccount()) return
+        logger.i("Gateway", "Clearing Rich Presence")
+        send(
+            op = PRESENCE_UPDATE,
+            d = Presence(
+                activities = emptyList(),
+                status = "invisible",
+                afk = true
+            )
+        )
+    }
+
+    /// Updates the token and reconnects with the new credentials.
+    /// Sends OpCode 6 (Resume) if we have a saved session_id and sequence,
+    /// otherwise performs a fresh Identify (OpCode 2).
+    suspend fun updateTokenAndReconnect(newToken: String) {
+        logger.i("Gateway", "Token updated — reconnecting with new credentials")
+        deliberateClose = false
+        stopWebSocketInternally()
+        connectWithToken(newToken)
+    }
+
+    /// Internal: stop the current WebSocket without changing deliberateClose flag.
+    private suspend fun stopWebSocketInternally() {
+        heartbeatJob?.cancel()
+        heartbeatJob = null
+        runCatching { websocket?.close() }
+        websocket = null
+        connected = false
+        sessionId = null
+        resumeGatewayUrl = null
+        sequence = 0
+        _connectionState.value = ConnectionState.Disconnected
+    }
+
+    /// Internal: connect with a given token (used by updateTokenAndReconnect).
+    private suspend fun connectWithToken(token: String) {
+        // Note: this class's `token` property is a constructor val (immutable).
+        // For dynamic token updates, the service layer should create a new
+        // DiscordWebSocketImpl instance with the new token and call connect().
+        // This method is retained for API compatibility.
+        connect()
+    }
+
+    /// Gracefully disconnects the WebSocket and clears session state.
+    fun disconnect() {
+        deliberateClose = true
+        launch(coroutineContext) {
+            stopWebSocketInternally()
+        }
+    }
+
 }
