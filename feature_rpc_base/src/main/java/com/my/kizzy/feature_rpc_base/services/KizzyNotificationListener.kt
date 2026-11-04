@@ -8,25 +8,22 @@ import android.media.session.MediaSessionManager
 import android.service.notification.NotificationListenerService
 import android.util.Log
 import com.my.kizzy.feature_rpc_base.security.SecureTokenStorage
+import com.my.kizzy.feature_rpc_base.utils.MediaMetadataParser
+import kizzy.gateway.DiscordWebSocketImpl
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Listens for media session changes across the device (Spotify, YouTube Music, etc.)
- * to capture track metadata for Discord Rich Presence updates.
- *
- * Requires BIND_NOTIFICATION_LISTENER_SERVICE permission in AndroidManifest.xml
- * and user-granted notification access in Settings > Apps > Special app access > Notification access.
- */
 @Singleton
 class KizzyNotificationListener @Inject constructor(
+    private val context: Context,
     private val tokenStorage: SecureTokenStorage
 ) : NotificationListenerService() {
 
     private lateinit var mediaSessionManager: MediaSessionManager
     private var activeController: MediaController? = null
+    private val metadataParser = MediaMetadataParser()
 
     private val activeSessionChangedListener = MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
         updateActiveController(controllers)
@@ -38,11 +35,8 @@ class KizzyNotificationListener @Inject constructor(
 
         try {
             val componentName = ComponentName(this, this::class.java)
-            // Get currently active media sessions
             val controllers = mediaSessionManager.getActiveSessions(componentName)
             updateActiveController(controllers)
-
-            // Listen for changes when apps start/stop playing music
             mediaSessionManager.addOnActiveSessionsChangedListener(activeSessionChangedListener, componentName)
         } catch (e: SecurityException) {
             Log.e("KizzyNotificationListener", "Notification access permission not granted", e)
@@ -50,15 +44,11 @@ class KizzyNotificationListener @Inject constructor(
     }
 
     private fun updateActiveController(controllers: List<MediaController>?) {
-        // Unregister previous controller callbacks if any
         activeController?.unregisterCallback(controllerCallback)
-
-        // Find the first playing controller (or fallback to first available)
         activeController = controllers?.firstOrNull()
 
         activeController?.registerCallback(controllerCallback)
 
-        // Read initial metadata from the active session
         extractMetadata(activeController)
     }
 
@@ -70,7 +60,6 @@ class KizzyNotificationListener @Inject constructor(
 
         override fun onPlaybackStateChanged(state: android.media.session.PlaybackState?) {
             super.onPlaybackStateChanged(state)
-            // Handle play/pause/stopped states here if needed
         }
     }
 
@@ -90,8 +79,19 @@ class KizzyNotificationListener @Inject constructor(
 
         Log.d("KizzyNotificationListener", "App: $packageName | Track: $title by $artist ($album)")
 
-        // TODO: Broadcast metadata to DiscordWebSocketImpl via SharedFlow or callback
-        // The WebSocket client can then update Discord Rich Presence with media info
+        DiscordWebSocketImpl.instance?.let { discord ->
+            runBlocking {
+                discord.updatePresence(
+                    name = title,
+                    details = artist,
+                    state = album,
+                    largeImageKey = null,
+                    largeText = "$artist - $album",
+                    status = "online",
+                    afk = false
+                )
+            }
+        }
     }
 
     override fun onDestroy() {

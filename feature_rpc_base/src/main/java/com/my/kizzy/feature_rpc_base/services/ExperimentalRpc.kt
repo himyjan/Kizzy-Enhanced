@@ -388,7 +388,7 @@ class ExperimentalRpc : Service() {
                 setSmallImage(finalSmallImage, finalSmallText)
                 clearButtons()
                 if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_BUTTONS, false]) {
-                    setButton1(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_TEXT, ""].takeIf { it.isNotEmpty() })
+                    setButton1(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_TEXT, ""].takeIf { it.isNotEmpty() }, Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""].takeIf { it.isNotEmpty() })
                     setButton1URL(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""].takeIf { it.isNotEmpty() })
                     setButton2(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_TEXT, ""].takeIf { it.isNotEmpty() })
                     setButton2URL(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL, ""].takeIf { it.isNotEmpty() })

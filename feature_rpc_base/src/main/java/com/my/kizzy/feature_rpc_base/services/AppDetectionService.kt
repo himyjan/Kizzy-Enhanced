@@ -195,10 +195,8 @@ class AppDetectionService : Service() {
                 setLargeImage(RpcImage.ApplicationIcon(packageName, this@AppDetectionService))
                 if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
                     with(rpcButtons) {
-                        setButton1(button1.takeIf { it.isNotEmpty() })
-                        setButton1URL(button1Url.takeIf { it.isNotEmpty() })
-                        setButton2(button2.takeIf { it.isNotEmpty() })
-                        setButton2URL(button2Url.takeIf { it.isNotEmpty() })
+                        setButton1(button1.takeIf { it.isNotEmpty() }, button1Url.takeIf { it.isNotEmpty() })
+                        setButton2(button2.takeIf { it.isNotEmpty() }, button2Url.takeIf { it.isNotEmpty() })
                     }
                 }
                 build()

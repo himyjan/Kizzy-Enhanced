@@ -16,6 +16,7 @@ import kizzy.gateway.entities.op.OpCode
 import kizzy.gateway.entities.op.OpCode.*
 import kizzy.gateway.entities.presence.Assets
 import kizzy.gateway.entities.presence.Activity
+import kizzy.gateway.entities.presence.ActivityButton
 import kizzy.gateway.entities.presence.Presence
 import kizzy.gateway.entities.presence.Timestamps
 import kotlinx.coroutines.*
@@ -51,6 +52,10 @@ open class DiscordWebSocketImpl(
     private val externalScope: CoroutineScope? = null,
     private val isOnlineState: StateFlow<Boolean>? = null
 ) : DiscordWebSocket {
+    companion object {
+        @Volatile
+        var instance: DiscordWebSocketImpl? = null
+    }
     private val gatewayUrl = "wss://gateway.discord.gg/?v=10&encoding=json"
     private var websocket: DefaultClientWebSocketSession? = null
     private var sequence = 0
@@ -87,6 +92,7 @@ open class DiscordWebSocketImpl(
         launch(coroutineContext) {
             try {
                 logger.i("Gateway", "Connect called")
+                instance = this@DiscordWebSocketImpl
                 _connectionState.value = ConnectionState.Connecting
                 val url = resumeGatewayUrl ?: gatewayUrl
                 websocket = client.webSocketSession(url)
@@ -360,7 +366,8 @@ open class DiscordWebSocketImpl(
         startTime: Long? = null,
         endTime: Long? = null,
         status: String = "online",
-        afk: Boolean = false
+        afk: Boolean = false,
+        buttons: List<ActivityButton>? = null
     ) {
         if (!isSocketConnectedToAccount()) {
             logger.w("Gateway", "Socket not connected — cannot update presence")
@@ -381,7 +388,8 @@ open class DiscordWebSocketImpl(
             state = state,
             details = details,
             timestamps = timestamps,
-            assets = assets
+            assets = assets,
+            buttons = buttons
         )
 
         val presence = Presence(

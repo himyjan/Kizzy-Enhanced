@@ -1,11 +1,11 @@
 /*
  *
  *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * KizzyRPC.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
+4:  *  *  * Copyright (C) 2022
+ *  *  *  * KizzyRPC.kt is part of Kizzy
+ *  *  *  *  and can not be copied and/or distributed without the express
+ *  *  *  * permission of yzziK(Vaibhav)
+ *  *  *  *****************************************************************
  *
  *
  */
@@ -18,6 +18,7 @@ import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.CUSTOM_ACTIVITY_TYPE
 import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.entities.presence.Activity
+import kizzy.gateway.entities.presence.ActivityButton
 import kizzy.gateway.entities.presence.Assets
 import kizzy.gateway.entities.presence.Metadata
 import kizzy.gateway.entities.presence.Party
@@ -46,8 +47,7 @@ class KizzyRPC(
     private var stopTimestamps: Long? = null
     private var type: Int = 0
     private var platform: String? = null
-    private var buttons = ArrayList<String>()
-    private var buttonUrl = ArrayList<String>()
+    private var buttons = ArrayList<ActivityButton>()
     private var url: String? = null
 
     fun closeRPC() {
@@ -125,6 +125,7 @@ class KizzyRPC(
 
     /**
      * Large image on rpc
+     *
      * How to get Image ?
      * Upload image to any discord chat and copy its media link it should look like "https://media.discordapp.net/attachments/90202992002/xyz.png" now just use the image link from attachments part
      * so it would look like: .setLargeImage("attachments/90202992002/xyz.png")
@@ -173,6 +174,7 @@ class KizzyRPC(
 
     /**
      * Activity Types
+     *
      * 0: Playing
      * 1: Streaming
      * 2: Listening
@@ -200,7 +202,8 @@ class KizzyRPC(
         return this
     }
 
-    /** Platform type for profile xbox,playstation,pc,ios,android etc.
+    /**
+     * Platform type for profile xbox,playstation,pc,ios,android etc.
      *
      * @param platform
      * @return
@@ -216,47 +219,52 @@ class KizzyRPC(
      */
     fun clearButtons(): KizzyRPC {
         buttons.clear()
-        buttonUrl.clear()
         return this
     }
 
     /**
-     * Button1 text
-     * @param button1_Text
+     * Button1 text and url
+     *
+     * @param label Button label text
+     * @param url Button URL
      * @return
      */
-    fun setButton1(button1_Text: String?): KizzyRPC {
-        button1_Text?.let { buttons.add(it) }
+    fun setButton1(label: String?, url: String?): KizzyRPC {
+        label?.let { buttons.add(ActivityButton(label = it, url = url.orEmpty())) }
         return this
     }
 
     /**
-     * Button2 text
-     * @param button2_text
+     * Button2 text and url
+     *
+     * @param button2_text Button label text
+     * @param url Button URL
      * @return
      */
-    fun setButton2(button2_text: String?): KizzyRPC {
-        button2_text?.let { buttons.add(it) }
+    fun setButton2(button2_text: String?, url: String? = null): KizzyRPC {
+        button2_text?.let { buttons.add(ActivityButton(label = it, url = url.orEmpty())) }
         return this
     }
 
     /**
      * Button1 url
+     *
      * @param url
      * @return
      */
     fun setButton1URL(url: String?): KizzyRPC {
-        url?.let { buttonUrl.add(it) }
+        // Deprecated - use setButton1(label, url) instead
         return this
     }
 
     /**
      * Button2 url
+     *
      * @param url
      * @return
      */
     fun setButton2URL(url: String?): KizzyRPC {
-        url?.let { buttonUrl.add(it) }
+        // Deprecated - use setButton2(text, url) instead
         return this
     }
     /**
@@ -266,12 +274,13 @@ class KizzyRPC(
      * Passing null/blank falls back to the default application id.
      */
     fun setApplicationId(applicationId: String?): KizzyRPC {
-        this.applicationIdNumber = applicationId?.takeIf { it.isNotBlank() } ?: Constants.APPLICATION_ID
+        this.applicationIdNumber = applicationId?.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID
         return this
     }
 
     /**
      * Streaming Url
+     *
      * @param url The streaming type currently only supports Twitch and YouTube.
      * Only https://twitch.tv/ and https://youtube.com/ urls will work
      */
@@ -308,8 +317,8 @@ class KizzyRPC(
                         largeText = largeText?.sanitize(),
                         smallText = smallText?.sanitize()
                     ).takeIf { largeImage != null || smallImage != null },
-                    buttons = buttons.takeIf { buttons.size > 0 },
-                    metadata = Metadata(buttonUrls = buttonUrl).takeIf { buttonUrl.size > 0 },
+                    buttons = buttons.takeIf { buttons.isNotEmpty() },
+                    metadata = Metadata(buttonUrls = emptyList()).takeIf { false }, // buttons now embedded in Activity
                     applicationId = applicationIdNumber.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID,
                     url = url
                 )
@@ -354,8 +363,8 @@ class KizzyRPC(
                                 smallText = commonRpc.smallText?.sanitize()
                             ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
                         party = party.takeIf { party != null },
-                        buttons = buttons.takeIf { buttons.size > 0 },
-                        metadata = Metadata(buttonUrls = buttonUrl).takeIf { buttonUrl.size > 0 },
+                        buttons = buttons.takeIf { buttons.isNotEmpty() },
+                        metadata = Metadata(buttonUrls = emptyList()).takeIf { false }, // buttons now embedded in Activity
                         applicationId = applicationIdNumber.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID
 
                     )

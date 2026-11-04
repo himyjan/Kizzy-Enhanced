@@ -165,10 +165,16 @@ class MediaRpcService : Service() {
                     setSmallImage(playingMedia.smallImage, playingMedia.smallText)
                     if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
                         with(rpcButtons) {
-                            setButton1(button1.takeIf { it.isNotEmpty() })
-                            setButton1URL(button1Url.takeIf { it.isNotEmpty() })
-                            setButton2(button2.takeIf { it.isNotEmpty() })
-                            setButton2URL(button2Url.takeIf { it.isNotEmpty() })
+                            val btn1 = button1.toString().takeIf { it.isNotEmpty() }
+                            val btn2 = button2.toString().takeIf { it.isNotEmpty() }
+                            if (btn1 != null) {
+                        val url1 = button1Url.takeIf { it.isNotEmpty() }
+                        setButton1(btn1, url1.orEmpty())
+                    }
+                    if (btn2 != null) {
+                        val url2 = button2Url.takeIf { it.isNotEmpty() }
+                        setButton2(btn2, url2.orEmpty())
+                    }
                         }
                     }
                     build()
