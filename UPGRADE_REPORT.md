@@ -3,8 +3,8 @@
 **Date:** November 5, 2026  
 **Branch:** `master`  
 **Status:** BUILD SUCCESSFUL — `app-debug.apk` generated  
-**Build time:** ~1m 45s  
-**Tasks executed:** 492 executed, 4 up-to-date
+**Build time:** ~1m 18s  
+**Tasks executed:** 496 executed, 80 up-to-date
 
 ---
 
@@ -291,11 +291,90 @@ This forces the Kotlin 2.4 compiler to emit class metadata blobs in the 2.2.0 fo
 ## Final Build Output
 
 ```
-BUILD SUCCESSFUL in 5s
-716 actionable tasks: 48 executed, 668 up-to-date
+BUILD SUCCESSFUL in 1m 18s
+496 actionable tasks: 416 executed, 80 up-to-date
 ```
 
 **APK location:** `app/build/outputs/apk/debug/app-debug.apk`
+
+---
+
+### 22. New RPC Features Implemented
+
+#### a) SecureTokenStorage (Tink + SharedPreferences Encryption)
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/security/SecureTokenStorage.kt` (rewritten)
+
+**Features:**
+- `tokenFlow: Flow<String?>` — reactive token stream for WebSocket/service observation
+- `saveToken(token)` / `clearToken()` — suspend functions with Tink encryption
+- **Security:** Google Tink AES-256-GCM backed by Android Keystore (`android-keystore://kizzy_master_key`)
+- **Error handling:** `.catch` on `GeneralSecurityException` / `IOException` wipes corrupted storage and emits empty state (prevents crash loops on keystore invalidation)
+
+#### b) KizzyStateRepository (Shared RPC State)
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/security/KizzyStateRepository.kt` (NEW)
+
+**Features:**
+- `@Singleton` shared between `KizzyRpcService` and `RpcViewModel` via Hilt
+- `isPaused: StateFlow<Boolean>` and `isConnected: StateFlow<Boolean>`
+- UI stays in sync whether paused/resumed from notification shade or app UI — no `IBinder` binding needed
+
+#### c) KizzyRpcService (Foreground Service)
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/KizzyRpcService.kt` (NEW)
+
+**Features:**
+- Foreground service with `connectedDevice` type (declared in `AndroidManifest.xml`)
+- Notification channel with `IMPORTANCE_LOW`
+- **Dynamic Pause/Resume button** — label/icon swap based on `isPaused`
+- **Disconnect button** — stops service and clears state
+- `updateNotificationText(title, artist)` — updates notification without service restart
+- Updates `KizzyStateRepository` on all state changes
+
+#### d) KizzyServiceController
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/utils/KizzyServiceController.kt` (NEW)
+
+**Features:**
+- `sendAction(context, action)` — sends `ACTION_TOGGLE` / `ACTION_DISCONNECT` intents from UI
+- Uses `startForegroundService` on API 26+, `startService` below
+- Unified codepath: notification buttons and UI buttons trigger identical intents
+
+#### e) RpcStatusCard (Material 3 UI)
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/ui/RpcStatusCard.kt` (NEW)
+
+**Features:**
+- Animated background color (green=connected, amber=paused, gray=disconnected)
+- Live status dot badge
+- Track title/artist display
+- Pause/Resume and Disconnect buttons
+- Requires `material-icons-extended`
+
+#### f) RpcStatusCardLoadingSkeleton (Shimmer UI)
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/ui/RpcStatusCardLoadingSkeleton.kt` (NEW)
+
+**Features:**
+- Pure Compose shimmer effect via `rememberInfiniteTransition` + `Brush.linearGradient`
+- Displayed during secure storage initialization
+
+#### g) KizzyDashboardScreen
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/ui/KizzyDashboardScreen.kt` (NEW)
+
+**Features:**
+- Collects `isLoading`, `isConnected`, `isPaused` via `LaunchedEffect`
+- Conditionally renders shimmer skeleton or live `RpcStatusCard`
+- Wires `KizzyServiceController.sendAction()` to action buttons
+
+#### h) Version Catalog Updates
+**File:** `gradle/libs.versions.toml`
+- Added `hilt-navigation-compose = "1.1.0"` library
+- Added `[bundles] secure-storage = ["datastore-preferences", "tink-android"]`
+
+#### i) DiscordWebSocketImpl Enhancements
+**File:** `gateway/src/main/java/kizzy/gateway/DiscordWebSocketImpl.kt`
+- Added `clearPresence()` — clears Rich Presence when paused
+- Added `updateTokenAndReconnect()` — reconnects with new token
+- Added `disconnect()` — graceful WebSocket teardown
+- OpCode 6 (Resume) support for session resumption
+
+**Result:** ✅ — All RPC features implemented and verified
 
 ---
 
