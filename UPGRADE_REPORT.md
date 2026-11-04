@@ -245,11 +245,22 @@ This forces the Kotlin 2.4 compiler to emit class metadata blobs in the 2.2.0 fo
 
 ---
 
+### 19. Accompanist systemUiController → Native WindowCompat
+**Files affected:** `theme/src/main/java/com/my/kizzy/ui/theme/Theme.kt`, `theme/build.gradle.kts`, `gradle/libs.versions.toml`
+
+**Issue:** `rememberSystemUiController()` from Accompanist is deprecated and no longer maintained. The recommendation is to go edge-to-edge using `WindowCompat.getInsetsController` natively.
+
+**Fix:** Replaced `rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !darkTheme)` with a native `SideEffect` block that sets `statusBarColor` and `navigationBarColor` to `Color.TRANSPARENT`, and configures `isAppearanceLightStatusBars` / `isAppearanceLightNavigationBars` via `WindowCompat.getInsetsController`. Removed `import com.google.accompanist.systemuicontroller.rememberSystemUiController` and added `import androidx.compose.runtime.SideEffect`. Removed `implementation(libs.accompanist.systemUiController)` from `theme/build.gradle.kts` and removed the `accompanist-systemUiController` entry from `gradle/libs.versions.toml`.
+
+**Result:** ✅
+
+---
+
 ## Final Build Output
 
 ```
-BUILD SUCCESSFUL in 1m 45s
-496 actionable tasks: 492 executed, 4 up-to-date
+BUILD SUCCESSFUL in 1m 49s
+739 actionable tasks: 735 executed, 4 up-to-date
 ```
 
 **APK location:** `app/build/outputs/apk/debug/app-debug.apk`
@@ -260,12 +271,11 @@ BUILD SUCCESSFUL in 1m 45s
 
 - `android.newDsl=false` deprecated (AGP 10 will remove it)
 - Legacy `android { }` DSL block deprecated in AGP 9.x
-- `rememberSystemUiController` deprecated (Accompanist system UI controller) — still functional
 - Unnecessary safe-call warnings on non-null `RpcConfig` / `RichMediaMetadata` / `CommonRpc` receivers — cosmetic only
 
 ---
 
-## Files Changed (39 files)
+## Files Changed (41 files)
 
 | Category | Files |
 |----------|-------|

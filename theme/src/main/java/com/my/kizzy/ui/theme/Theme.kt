@@ -22,11 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.material.color.DynamicColors
 import com.kyant.monet.dynamicColorScheme
 
@@ -77,11 +77,18 @@ fun KizzyTheme(
     val window = LocalView.current.context.findWindow()
     val view = LocalView.current
 
-    window?.let {
-        WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = darkTheme
+    // Modern native edge-to-edge layout: transparent status/navigation bars
+    if (!view.isInEditMode) {
+        SideEffect {
+            window?.let {
+                it.statusBarColor = android.graphics.Color.TRANSPARENT
+                it.navigationBarColor = android.graphics.Color.TRANSPARENT
+                val controller = WindowCompat.getInsetsController(it, view)
+                controller.isAppearanceLightStatusBars = !darkTheme
+                controller.isAppearanceLightNavigationBars = !darkTheme
+            }
+        }
     }
-
-    rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !darkTheme)
 
     MaterialTheme(
         colorScheme = colorScheme,
