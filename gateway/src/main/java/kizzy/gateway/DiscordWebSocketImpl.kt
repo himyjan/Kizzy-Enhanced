@@ -16,6 +16,9 @@ import kizzy.gateway.entities.op.OpCode
 import kizzy.gateway.entities.op.OpCode.*
 import kizzy.gateway.entities.presence.Presence
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -49,6 +52,10 @@ open class DiscordWebSocketImpl(
         ignoreUnknownKeys = true
         encodeDefaults = true
     }
+
+    // Expose parsed gateway events to external observers (UI, services, etc.)
+    private val _gatewayEvents = MutableSharedFlow<Payload>(replay = 1, extraBufferCapacity = 64)
+    val gatewayEvents: SharedFlow<Payload> = _gatewayEvents.asSharedFlow()
 
     private val supervisorJob = SupervisorJob()
     override val coroutineContext: CoroutineContext = supervisorJob + Dispatchers.Default
@@ -129,6 +136,9 @@ open class DiscordWebSocketImpl(
         payload.s?.let {
             sequence = it
         }
+        // Emit parsed payload to external observers
+        _gatewayEvents.emit(payload)
+
         when (payload.op) {
             DISPATCH -> payload.handleDispatch(jsonString)
             HEARTBEAT -> sendHeartBeat()
