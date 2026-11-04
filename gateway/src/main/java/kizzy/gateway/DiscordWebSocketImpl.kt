@@ -21,6 +21,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.CoroutineContext
+import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
 open class DiscordWebSocketImpl(
@@ -109,13 +110,15 @@ open class DiscordWebSocketImpl(
         awaitingHeartbeatAck = false
         runCatching { websocket?.close() }
         val delayMs = (2000L shl minOf(reconnectAttempts, 5)).coerceAtMost(60_000L)
+        val jitter = Random.nextLong(0L, 1000L)
+        val totalDelay = delayMs + jitter
         reconnectAttempts++
         if (reconnectAttempts >= 3) {
             resumeGatewayUrl = null
             sessionId = null
         }
-        logger.w("Gateway","Connection lost — reconnecting in ${delayMs}ms (attempt $reconnectAttempts)")
-        delay(delayMs)
+        logger.w("Gateway","Connection lost — reconnecting in ${totalDelay}ms (attempt $reconnectAttempts)")
+        delay(totalDelay)
         if (!deliberateClose) connect()
     }
 
