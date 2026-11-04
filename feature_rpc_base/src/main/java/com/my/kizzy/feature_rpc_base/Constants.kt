@@ -14,6 +14,7 @@ package com.my.kizzy.feature_rpc_base
 
 object Constants {
     const val CHANNEL_ID = "kizzy.notification"
+    const val NOTIFICATION_CHANNEL_ID = "kizzy.media_rpc_channel"
     const val CHANNEL_NAME = "Kizzy Enhanced RPC"
     const val CHANNEL_DESCRIPTION = "Background Service notification which runs rpc"
     const val NOTIFICATION_ID = 2022_03_04

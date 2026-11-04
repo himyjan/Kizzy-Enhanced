@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -46,7 +47,9 @@ open class DiscordWebSocketImpl(
     private val logger: Logger = NoOpLogger,
     private val identifyBrowser: String = "Discord Client",
     private val identifyOs: String = "Windows",
-    private val identifyDevice: String = "ktor"
+    private val identifyDevice: String = "ktor",
+    private val externalScope: CoroutineScope? = null,
+    private val isOnlineState: StateFlow<Boolean>? = null
 ) : DiscordWebSocket {
     private val gatewayUrl = "wss://gateway.discord.gg/?v=10&encoding=json"
     private var websocket: DefaultClientWebSocketSession? = null
@@ -62,7 +65,7 @@ open class DiscordWebSocketImpl(
     private var client: HttpClient = HttpClient {
         install(WebSockets)
     }
-    private val json = Json{
+    private val json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
     }
@@ -75,13 +78,15 @@ open class DiscordWebSocketImpl(
     private val _gatewayEvents = MutableSharedFlow<Payload>(replay = 1, extraBufferCapacity = 64)
     val gatewayEvents: SharedFlow<Payload> = _gatewayEvents.asSharedFlow()
 
+    // Use external scope if provided, otherwise create our own
+    private val externalCoroutineScope: CoroutineScope? = externalScope
     private val supervisorJob = SupervisorJob()
-    override val coroutineContext: CoroutineContext = supervisorJob + Dispatchers.Default
+    override val coroutineContext: CoroutineContext = (externalScope?.coroutineContext ?: supervisorJob) + Dispatchers.Default
 
     override suspend fun connect() {
-        launch {
+        launch(coroutineContext) {
             try {
-                logger.i("Gateway","Connect called")
+                logger.i("Gateway", "Connect called")
                 _connectionState.value = ConnectionState.Connecting
                 val url = resumeGatewayUrl ?: gatewayUrl
                 websocket = client.webSocketSession(url)
@@ -102,7 +107,7 @@ open class DiscordWebSocketImpl(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                logger.e("Gateway",e.message?:"")
+                logger.e("Gateway", e.message ?: "")
                 scheduleReconnect()
             }
         }
@@ -115,7 +120,7 @@ open class DiscordWebSocketImpl(
         _connectionState.value = ConnectionState.Disconnected
         val close = websocket?.closeReason?.await()
         val code = close?.code?.toInt()
-        logger.w("Gateway","Closed with code: $code, reason: ${close?.message}")
+        logger.w("Gateway", "Closed with code: $code, reason: ${close?.message}")
         when {
             deliberateClose -> {}
             code == 4000 -> {
@@ -123,7 +128,7 @@ open class DiscordWebSocketImpl(
                 connect()
             }
             code == 4004 || (code != null && code in 4010..4014) -> {
-                logger.e("Gateway","Fatal close code $code — not reconnecting")
+                logger.e("Gateway", "Fatal close code $code — not reconnecting")
                 close()
             }
             else -> scheduleReconnect()
@@ -136,23 +141,35 @@ open class DiscordWebSocketImpl(
         connected = false
         awaitingHeartbeatAck = false
         runCatching { websocket?.close() }
-        val delayMs = (2000L shl minOf(reconnectAttempts, 5)).coerceAtMost(60_000L)
-        val jitter = Random.nextLong(0L, 1000L)
-        val totalDelay = delayMs + jitter
         reconnectAttempts++
+
         if (reconnectAttempts >= 3) {
             resumeGatewayUrl = null
             sessionId = null
         }
+
         _connectionState.value = ConnectionState.Reconnecting(reconnectAttempts)
-        logger.w("Gateway","Connection lost — reconnecting in ${totalDelay}ms (attempt $reconnectAttempts)")
+
+        // Wait for network to come back online before reconnecting
+        isOnlineState?.let { onlineState ->
+            if (!onlineState.value) {
+                _connectionState.value = ConnectionState.Reconnecting(reconnectAttempts)
+                logger.w("Gateway", "Network offline — waiting for connection to return...")
+                onlineState.first { it }
+            }
+        }
+
+        val delayMs = (2000L shl minOf(reconnectAttempts, 5)).coerceAtMost(60_000L)
+        val jitter = Random.nextLong(0L, 1000L)
+        val totalDelay = delayMs + jitter
+        logger.w("Gateway", "Connection lost — reconnecting in ${totalDelay}ms (attempt $reconnectAttempts)")
         delay(totalDelay)
         if (!deliberateClose) connect()
     }
 
     private suspend fun onMessage(jsonString: String) {
         val payload = json.decodeFromString<Payload>(jsonString)
-        logger.d("Gateway","Received op:${payload.op}, seq:${payload.s}, event :${payload.t}")
+        logger.d("Gateway", "Received op:${payload.op}, seq:${payload.s}, event :${payload.t}")
 
         payload.s?.let {
             sequence = it
@@ -180,22 +197,22 @@ open class DiscordWebSocketImpl(
                 val ready = decodePayloadData<Ready>(jsonString) ?: return
                 sessionId = ready.sessionId
                 resumeGatewayUrl = ready.resumeGatewayUrl + "/?v=10&encoding=json"
-                logger.i("Gateway","resume_gateway_url updated to $resumeGatewayUrl")
-                logger.i("Gateway","session_id updated to $sessionId")
+                logger.i("Gateway", "resume_gateway_url updated to $resumeGatewayUrl")
+                logger.i("Gateway", "session_id updated to $sessionId")
                 connected = true
                 _connectionState.value = ConnectionState.Connected
                 return
             }
             "RESUMED" -> {
-                logger.i("Gateway","Session Resumed")
+                logger.i("Gateway", "Session Resumed")
             }
             else -> {}
         }
     }
 
     private suspend inline fun handleInvalidSession() {
-        logger.i("Gateway","Handling Invalid Session")
-        logger.d("Gateway","Sending Identify after 150ms")
+        logger.i("Gateway", "Handling Invalid Session")
+        logger.d("Gateway", "Sending Identify after 150ms")
         delay(150)
         sendIdentify()
     }
@@ -207,7 +224,7 @@ open class DiscordWebSocketImpl(
             sendIdentify()
         }
         heartbeatInterval = decodePayloadData<Heartbeat>(jsonString)?.heartbeatInterval ?: return
-        logger.i("Gateway","Setting heartbeatInterval= $heartbeatInterval")
+        logger.i("Gateway", "Setting heartbeatInterval= $heartbeatInterval")
         startHeartbeatJob(heartbeatInterval)
     }
 
@@ -220,7 +237,7 @@ open class DiscordWebSocketImpl(
     }
 
     private suspend fun sendHeartBeat() {
-        logger.i("Gateway","Sending $HEARTBEAT with seq: $sequence")
+        logger.i("Gateway", "Sending $HEARTBEAT with seq: $sequence")
         send(
             op = HEARTBEAT,
             d = if (sequence == 0) "null" else sequence.toString(),
@@ -237,7 +254,7 @@ open class DiscordWebSocketImpl(
     }
 
     private suspend fun sendIdentify() {
-        logger.i("Gateway","Sending $IDENTIFY")
+        logger.i("Gateway", "Sending $IDENTIFY")
         send(
             op = IDENTIFY,
             d = token.toIdentifyPayload(
@@ -249,7 +266,7 @@ open class DiscordWebSocketImpl(
     }
 
     private suspend fun sendResume() {
-        logger.i("Gateway","Sending $RESUME")
+        logger.i("Gateway", "Sending $RESUME")
         send(
             op = RESUME,
             d = Resume(
@@ -263,7 +280,7 @@ open class DiscordWebSocketImpl(
     private fun startHeartbeatJob(interval: Long) {
         heartbeatJob?.cancel()
         awaitingHeartbeatAck = false
-        heartbeatJob = launch {
+        heartbeatJob = launch(coroutineContext) {
             while (isActive) {
                 if (awaitingHeartbeatAck) {
                     logger.w("Gateway", "No heartbeat ACK — zombie connection, reconnecting")
@@ -309,7 +326,7 @@ open class DiscordWebSocketImpl(
         _connectionState.value = ConnectionState.Disconnected
         runBlocking {
             websocket?.close()
-            logger.e("Gateway","Connection to gateway closed")
+            logger.e("Gateway", "Connection to gateway closed")
         }
     }
 
@@ -319,11 +336,11 @@ open class DiscordWebSocketImpl(
             delay(50.milliseconds)
             waitedMs += 50
             if (waitedMs >= 60_000) {
-                logger.w("Gateway","Socket not connected after 60s — dropping presence update")
+                logger.w("Gateway", "Socket not connected after 60s — dropping presence update")
                 return
             }
         }
-        logger.i("Gateway","Sending $PRESENCE_UPDATE")
+        logger.i("Gateway", "Sending $PRESENCE_UPDATE")
         send(
             op = PRESENCE_UPDATE,
             d = presence
@@ -346,7 +363,7 @@ open class DiscordWebSocketImpl(
         afk: Boolean = false
     ) {
         if (!isSocketConnectedToAccount()) {
-            logger.w("Gateway","Socket not connected — cannot update presence")
+            logger.w("Gateway", "Socket not connected — cannot update presence")
             return
         }
 
@@ -373,7 +390,7 @@ open class DiscordWebSocketImpl(
             afk = afk
         )
 
-        logger.i("Gateway","Sending $PRESENCE_UPDATE — name=$name, details=$details")
+        logger.i("Gateway", "Sending $PRESENCE_UPDATE — name=$name, details=$details")
         send(
             op = PRESENCE_UPDATE,
             d = presence

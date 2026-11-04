@@ -15,4 +15,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil)
     implementation(libs.compose.ui)
+    implementation(libs.datastore.preferences)
+    implementation(libs.tink.android)
+    implementation(projects.gateway)
 }

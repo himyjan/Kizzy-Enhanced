@@ -18,6 +18,7 @@ compose-bom = "2026.09.00"
 compose-navigation = "2.8.5"
 core-ktx = "1.15.0"
 crashx = "v6.0.19"
+datastore-preferences = "1.1.1"
 hilt = "2.60.1"
 ktor = "3.1.0"
 kotlinx-coroutine = "1.10.1"
@@ -28,6 +29,7 @@ androidx-test-ext-junit = "1.2.1"
 espresso-core = "3.6.1"
 javax = "1"
 kotlinx-serialization-json = "1.8.0"
+tink-android = "1.15.0"
 
 [libraries]
 # Javax
@@ -38,6 +40,7 @@ core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-ktx" }
 app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
 androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 kotlinx-coroutine = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
@@ -89,6 +92,7 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 
 # KotlinX
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tink-android" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }

@@ -1,20 +1,12 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * MediaRpcService.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.feature_rpc_base.services
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.media.MediaMetadata
@@ -39,6 +31,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -61,12 +55,16 @@ class MediaRpcService : Service() {
     @Inject
     lateinit var notificationManager: NotificationManager
 
-    @Inject
-    lateinit var notificationBuilder: Notification.Builder
-
     private lateinit var mediaSessionManager: MediaSessionManager
 
     private var currentMediaController: MediaController? = null
+
+    private val notificationBuilder: NotificationCompat.Builder by lazy {
+        NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_media_rpc)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+    }
 
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
@@ -74,6 +72,10 @@ class MediaRpcService : Service() {
         val token = Prefs[TOKEN, ""]
         if (token.isEmpty()) stopSelf()
         setupWakeLock()
+
+        // Create notification channel for Android 8.0+
+        createNotificationChannel()
+
         val intent = Intent(this, MediaRpcService::class.java)
         intent.action = Constants.ACTION_STOP_SERVICE
         val pendingIntent = PendingIntent.getService(
@@ -88,16 +90,30 @@ class MediaRpcService : Service() {
             0, restartIntent, PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = notificationBuilder
+        val notification = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_media_rpc)
-            .addAction(R.drawable.ic_media_rpc, getString(R.string.restart), restartPendingIntent)
-            .addAction(R.drawable.ic_media_rpc, getString(R.string.exit), pendingIntent)
-            .setContentText(getString(R.string.idling_notification))
+            .setContentTitle("Rich Presence Active")
+            .setContentText("Broadcasting media status")
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_media_rpc,
+                    getString(R.string.restart),
+                    restartPendingIntent
+                ).build()
+            )
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_media_rpc,
+                    getString(R.string.exit),
+                    pendingIntent
+                ).build()
+            )
             .build()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            startForeground(Constants.NOTIFICATION_ID, notification)
-        } else {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+        } else {
+            startForeground(Constants.NOTIFICATION_ID, notification)
         }
 
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
@@ -111,18 +127,15 @@ class MediaRpcService : Service() {
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]
         val playingMedia = getCurrentPlayingMedia()
 
+        // Update notification with current media info
+        notificationBuilder
+            .setContentTitle(playingMedia.name.ifEmpty { getString(R.string.app_name_full) })
+            .setContentText(
+                (playingMedia.details ?: "").ifEmpty { getString(R.string.idling_notification) }
+            )
         notificationManager.notify(
             Constants.NOTIFICATION_ID,
-            notificationBuilder
-                .setContentTitle(playingMedia.name.ifEmpty { getString(R.string.app_name_full) })
-                .setContentText(
-                    (playingMedia.details ?: "").ifEmpty { getString(R.string.idling_notification) }
-                )
-                .setLargeIcon(
-                    rpcImage = playingMedia.largeImage,
-                    context = this@MediaRpcService
-                )
-                .build()
+            notificationBuilder.build()
         )
 
         val rpcButtonsString = Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]
@@ -231,7 +244,7 @@ class MediaRpcService : Service() {
                 }
             }
         }
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     override fun onDestroy() {
@@ -247,5 +260,25 @@ class MediaRpcService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    /**
+     * Creates the notification channel required for Android 8.0+.
+     * Safe to call multiple times - if channel already exists, it's ignored.
+     */
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                Constants.NOTIFICATION_CHANNEL_ID,
+                "Media Rich Presence",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Keeps your Discord Rich Presence active in the background"
+                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+            }
+
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 }
