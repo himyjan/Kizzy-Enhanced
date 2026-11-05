@@ -61,6 +61,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.RpcField
@@ -80,6 +81,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var configsDir by remember { mutableStateOf(Prefs[Prefs.CONFIGS_DIRECTORY, ""]) }
     var showDirConfigDialog by remember { mutableStateOf(false) }
     var useButtonConfigs by remember { mutableStateOf(Prefs[Prefs.USE_RPC_BUTTONS, false]) }
+    var useYoutubeButton by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON, false]) }
     var showButtonsConfigDialog by remember { mutableStateOf(false) }
     var rpcButtons by remember {
         mutableStateOf(Json.decodeFromString<RpcButtons>(Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]))
@@ -140,6 +142,17 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 ) {
                     useButtonConfigs = !useButtonConfigs
                     Prefs[Prefs.USE_RPC_BUTTONS] = useButtonConfigs
+                }
+            }
+            item {
+                PreferenceSwitch(
+                    title = stringResource(id = R.string.use_youtube_button),
+                    description = stringResource(id = R.string.use_youtube_button_desc),
+                    icon = Icons.Default.OpenInNew,
+                    isChecked = useYoutubeButton,
+                ) {
+                    useYoutubeButton = !useYoutubeButton
+                    Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON] = useYoutubeButton
                 }
             }
             item {

@@ -120,4 +120,93 @@ class MetadataResolver @Inject constructor() {
             .find(album)
         return channelMatch?.value?.capitalize()
     }
-}
+
+    /**
+     * Extracts the media URL from media metadata.
+     * Supports YouTube, Spotify, Apple Music, Deezer, SoundCloud, and other
+     * players that expose source URLs or watch links in metadata.
+     * Returns null if no playable URL is found.
+     */
+    fun getMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
+        // Try standard source URL key first
+        val sourceUrl = metadata.getString(MediaMetadata.METADATA_KEY_SOURCE_URL)
+        if (sourceUrl.isNotNullOrEmpty() && isValidMediaUrl(sourceUrl)) {
+            return sourceUrl
+        }
+
+        // Try common custom keys used by various players
+        val customKeys = listOf(
+            "youtube_url",
+            "video_url",
+            "source_url",
+            "media_url",
+            "content_url",
+            "spotify_url",
+            "apple_music_url",
+            "deezer_url",
+            "soundcloud_url"
+        )
+        for (key in customKeys) {
+            val value = metadata.getString(key)
+            if (value.isNotNullOrEmpty() && isValidMediaUrl(value)) {
+                return value
+            }
+        }
+
+        // Build URL from package name if we know the app's URL pattern
+        packageName?.let { pkg ->
+            return when {
+                pkg.contains("youtube") || pkg.contains("youtubemusic") -> {
+                    // Try to extract video ID from title or other metadata
+                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+                    if (title.isNotNullOrEmpty()) {
+                        "https://www.youtube.com/results?search_query=${title.encodeToUriComponent()}"
+                    } else null
+                }
+                pkg == "com.spotify.music" -> {
+                    // Spotify: try to find track ID in metadata
+                    val albumUri = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
+                    if (albumUri.isNotNullOrEmpty() && albumUri.contains("spotify")) {
+                        "https://open.spotify.com/search/${albumUri.encodeToUriComponent()}"
+                    } else {
+                        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+                        if (title.isNotNullOrEmpty()) {
+                            "https://open.spotify.com/search/${title.encodeToUriComponent()}"
+                        } else null
+                    }
+                }
+                pkg.contains("apple") || pkg.contains("itunes") -> {
+                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+                    if (title.isNotNullOrEmpty()) {
+                        "https://music.apple.com/search?term=${title.encodeToUriComponent()}"
+                    } else null
+                }
+                pkg.contains("deezer") -> {
+                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+                    if (title.isNotNullOrEmpty()) {
+                        "https://www.deezer.com/search/${title.encodeToUriComponent()}"
+                    } else null
+                }
+                pkg.contains("soundcloud") -> {
+                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+                    if (title.isNotNullOrEmpty()) {
+                        "https://soundcloud.com/search/${title.encodeToUriComponent()}"
+                    } else null
+                }
+                else -> null
+            }
+        }
+
+        return null
+    }
+
+    private fun String.isValidMediaUrl(): Boolean {
+        return contains("youtube.com/watch") ||
+            contains("youtube.com/results") ||
+            contains("open.spotify.com") ||
+            contains("music.apple.com") ||
+            contains("deezer.com") ||
+            contains("soundcloud.com") ||
+            contains("spotify.com") ||
+            contains("itunes.apple.com")
+    }

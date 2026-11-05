@@ -19,6 +19,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
+import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcButtons
@@ -27,6 +28,7 @@ import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
 import com.my.kizzy.preference.Prefs.TOKEN
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,6 +57,9 @@ class MediaRpcService : Service() {
 
     @Inject
     lateinit var stateRepository: KizzyStateRepository
+
+    @Inject
+    lateinit var metadataResolver: MetadataResolver
 
     private var wakeLock: WakeLock? = null
 
@@ -248,6 +253,21 @@ class MediaRpcService : Service() {
                 } else {
                     stateRepository.setConnected(true)
                     stateRepository.setPaused(isPaused)
+                    // Add media button if enabled and media URL is available
+                    if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false]) {
+                        playingMedia.mediaUrl?.let { url ->
+                            val label = when {
+                                playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Watch on YouTube"
+                                playingMedia.packageName == "com.spotify.music" -> "Listen on Spotify"
+                                playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
+                                playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
+                                playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
+                                else -> "Open Media Link"
+                            }
+                            kizzyRPC.clearButtons()
+                            kizzyRPC.setButton1(label, url)
+                        }
+                    }
                     kizzyRPC.updateRPC(playingMedia, enableTimestamps)
                 }
             }
@@ -261,6 +281,21 @@ class MediaRpcService : Service() {
                 }
                 stateRepository.setConnected(true)
                 stateRepository.setPaused(isPaused)
+                // Add media button if enabled and media URL is available
+                if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false]) {
+                    playingMedia.mediaUrl?.let { url ->
+                        val label = when {
+                            playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Watch on YouTube"
+                            playingMedia.packageName == "com.spotify.music" -> "Listen on Spotify"
+                            playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
+                            playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
+                            playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
+                            else -> "Open Media Link"
+                        }
+                        kizzyRPC.clearButtons()
+                        kizzyRPC.setButton1(label, url)
+                    }
+                }
                 kizzyRPC.apply {
                     setName(playingMedia.name)
                     setType(Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0])

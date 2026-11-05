@@ -158,7 +158,8 @@ class GetCurrentPlayingMedia @Inject constructor(
                     largeText = album,
                     smallText = smallText,
                     packageName = "$title::${primary.mediaController.packageName}",
-                    time = timestamps.takeIf { it != null }
+                    time = timestamps.takeIf { it != null },
+                    mediaUrl = metadataResolver.getMediaUrl(metadata, primary.mediaController.packageName)
                 )
             } else {
                 CommonRpc(
@@ -170,7 +171,8 @@ class GetCurrentPlayingMedia @Inject constructor(
                     largeText = album,
                     smallText = smallText,
                     packageName = "$title::${primary.mediaController.packageName}",
-                    time = timestamps.takeIf { it != null }
+                    time = timestamps.takeIf { it != null },
+                    mediaUrl = metadataResolver.getMediaUrl(metadata, primary.mediaController.packageName)
                 )
             }
         }
