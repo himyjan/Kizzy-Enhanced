@@ -47,6 +47,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -76,6 +77,7 @@ import androidx.compose.ui.unit.sp
 import com.my.kizzy.domain.model.logs.LogEvent
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
+import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.KSwitch
 import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.theme.LogColors.color
@@ -84,7 +86,7 @@ import java.util.Date
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LogScreen(viewModel: LogsViewModel) {
+fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
     val ctx = LocalContext.current
     val lazyListState = rememberLazyListState()
     val clipboardManager: ClipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -92,7 +94,7 @@ fun LogScreen(viewModel: LogsViewModel) {
     val autoScroll = viewModel.autoScroll.value
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { ToolBar(viewModel) }
+        topBar = { ToolBar(viewModel, onBackPressed) }
     ) { paddingValues ->
         LaunchedEffect(visibleLogs.lastOrNull(), autoScroll) {
             if (visibleLogs.isNotEmpty() && autoScroll)

@@ -58,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.blankj.utilcode.util.AppUtils
 import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
@@ -81,11 +82,13 @@ fun GamesScreen(
     onEvent: (UiEvent) -> Unit,
     state: GamesState,
     isSearchBarVisible: Boolean,
+    serviceEnabled: Boolean = false,
 ) {
     val context = LocalContext.current
     var isConsoleRpcRunning by remember {
         mutableStateOf(AppUtils.customRpcRunning())
     }
+    var selected by remember { mutableStateOf("") }
     var searchText by remember { mutableStateOf("") }
 
     val intent = Intent(context, CustomRpcService::class.java)
