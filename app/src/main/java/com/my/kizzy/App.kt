@@ -6,6 +6,7 @@ import com.my.kizzy.feature_crash_handler.CrashHandlerConfig
 import com.my.kizzy.feature_logs.LoggerProvider
 import com.my.kizzy.preference.PreferenceConfig
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.data.work.WorkManagerHelper
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import androidx.hilt.work.HiltWorkerFactory
@@ -28,5 +29,6 @@ class App : Application(), Configuration.Provider {
         PreferenceConfig.apply(this)
         LoggerProvider.init(this)
         AppUtils.init(this)
+        WorkManagerHelper.scheduleDailyCleanup(this)
     }
 }

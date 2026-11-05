@@ -5,7 +5,6 @@ import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
@@ -29,11 +28,19 @@ object WorkManagerHelper {
         .build()
 
     /**
+     * Constraints for cleanup work - runs when device is idle and battery is not low.
+     */
+    val cleanupConstraints = Constraints.Builder()
+        .setRequiresDeviceIdle(true)
+        .setRequiresBatteryNotLow(true)
+        .build()
+
+    /**
      * Schedules periodic RPC sync work.
      * Runs every hour by default.
      */
     fun scheduleRpcSync(context: Context, repeatIntervalHours: Long = 1) {
-        val request = PeriodicWorkRequestBuilder<RpcSyncWorker>(
+        val request = PeriodicWorkRequestBuilder<RpcSyncHiltWorker>(
             repeatIntervalHours, TimeUnit.HOURS
         )
             .setConstraints(networkConstraints)
@@ -46,12 +53,13 @@ object WorkManagerHelper {
     /**
      * Schedules periodic log cleanup work.
      * Runs every 24 hours by default.
+     * Only runs when device is idle and battery is not low.
      */
     fun scheduleLogCleanup(context: Context, repeatIntervalHours: Long = 24) {
-        val request = PeriodicWorkRequestBuilder<LogCleanupWorker>(
+        val request = PeriodicWorkRequestBuilder<CleanupHiltWorker>(
             repeatIntervalHours, TimeUnit.HOURS
         )
-            .setConstraints(networkConstraints)
+            .setConstraints(cleanupConstraints)
             .build()
 
         WorkManager.getInstance(context)
@@ -63,7 +71,7 @@ object WorkManagerHelper {
      * Runs every 30 minutes by default.
      */
     fun scheduleAppDetection(context: Context, repeatIntervalMinutes: Long = 30) {
-        val request = PeriodicWorkRequestBuilder<AppDetectionWorker>(
+        val request = PeriodicWorkRequestBuilder<AppDetectionHiltWorker>(
             repeatIntervalMinutes, TimeUnit.MINUTES
         )
             .setConstraints(networkConstraints)
@@ -71,6 +79,21 @@ object WorkManagerHelper {
 
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork(WORK_APP_DETECTION, ExistingPeriodicWorkPolicy.KEEP, request)
+    }
+
+    /**
+     * Schedules daily cleanup work (combines log and cache cleanup).
+     * Runs every 24 hours when device is idle.
+     */
+    fun scheduleDailyCleanup(context: Context) {
+        val request = PeriodicWorkRequestBuilder<CleanupHiltWorker>(
+            24, TimeUnit.HOURS
+        )
+            .setConstraints(cleanupConstraints)
+            .build()
+
+        WorkManager.getInstance(context)
+            .enqueueUniquePeriodicWork(WORK_LOG_CLEANUP, ExistingPeriodicWorkPolicy.KEEP, request)
     }
 
     /**

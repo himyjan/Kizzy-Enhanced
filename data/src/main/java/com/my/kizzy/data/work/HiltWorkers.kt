@@ -9,6 +9,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.work.ListenableWorker.Result
+import java.io.File
 
 /**
  * Hilt-injected worker for Discord RPC sync.
@@ -36,9 +37,10 @@ class RpcSyncHiltWorker @AssistedInject constructor(
 
 /**
  * Hilt-injected worker for log cleanup.
+ * Clears application cache and log files daily.
  */
 @HiltWorker
-class LogCleanupHiltWorker @AssistedInject constructor(
+class CleanupHiltWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters
 ) : androidx.work.CoroutineWorker(appContext, workerParams) {
@@ -46,11 +48,38 @@ class LogCleanupHiltWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
             try {
-                // Clean old logs
+                // 1. Clear application cache directory
+                val cacheDir = applicationContext.cacheDir
+                deleteRecursive(cacheDir)
+
+                // 2. Clear application logs directory (if stored locally)
+                val logsDir = File(applicationContext.filesDir, "logs")
+                if (logsDir.exists()) {
+                    deleteRecursive(logsDir)
+                }
+
                 Result.success()
             } catch (e: Exception) {
-                Result.failure()
+                // If an error occurs, WorkManager can safely retry later
+                Result.retry()
             }
+        }
+    }
+
+    /**
+     * Recursively deletes file contents while preserving the root directory itself.
+     */
+    private fun deleteRecursive(fileOrDirectory: File) {
+        if (fileOrDirectory.isDirectory) {
+            fileOrDirectory.listFiles()?.forEach { child ->
+                deleteRecursive(child)
+            }
+        }
+        // Keep the root folder itself, only delete its contents
+        if (fileOrDirectory != applicationContext.cacheDir &&
+            fileOrDirectory != File(applicationContext.filesDir, "logs")
+        ) {
+            fileOrDirectory.delete()
         }
     }
 }
