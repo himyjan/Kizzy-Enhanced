@@ -96,8 +96,8 @@ fun SearchBar(
                 contentPadding = PaddingValues(
                     start = 14.dp,
                     end = 12.dp,
-                    top = 10.dp,
-                    bottom = 10.dp
+                    top = 6.dp,
+                    bottom = 6.dp
                 ),
             )
         }
@@ -108,7 +108,8 @@ fun SearchBar(
 @Composable
 fun Search() {
     SearchBar(
-        text = "test"
+        text = "test",
+        onTextChanged = {}
     ) {
     }
 }
