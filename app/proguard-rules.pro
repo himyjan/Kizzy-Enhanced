@@ -19,3 +19,15 @@
 
 # --- Runtime Type Preservation ---
 -keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+
+# --- Hilt / Dagger Generated Components & Factories ---
+-keep class **_Factory { *; }
+-keep class **_MembersInjector { *; }
+-keep class **_HiltModules* { *; }
+-keep class * extends dagger.hilt.internal.UnstableApi { *; }
+
+# Keep Dagger/Hilt annotations & entry points
+-keep @dagger.hilt.EntryPoint class * { *; }
+-keep @dagger.hilt.android.HiltAndroidApp class * { *; }
+-keep @dagger.hilt.android.AndroidEntryPoint class * { *; }
+-keep @dagger.hilt.lifecycle.HiltViewModel class * { *; }
