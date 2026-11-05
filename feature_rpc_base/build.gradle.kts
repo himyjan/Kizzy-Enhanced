@@ -7,6 +7,15 @@ plugins {
 
 android {
     namespace = "com.my.kizzy.feature_rpc_base"
+
+    buildTypes {
+        release {
+            matchingFallbacks = ['release', 'debug']
+        }
+        debug {
+            matchingFallbacks = ['debug', 'release']
+        }
+    }
 }
 
 dependencies {
