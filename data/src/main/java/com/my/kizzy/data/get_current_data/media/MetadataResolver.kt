@@ -282,4 +282,46 @@ class MetadataResolver @Inject constructor() {
             contains("spotify.com") ||
             contains("itunes.apple.com")
     }
+
+    /**
+     * Extracts an artist channel URL from media metadata.
+     * Builds an artist-specific URL based on the artist name and app package.
+     * Returns null if no artist name is available.
+     */
+    fun getArtistUrl(metadata: MediaMetadata, packageName: String?): String? {
+        val artist = metadataResolverArtistName(metadata)
+        if (artist.isNullOrEmpty()) return null
+
+        return when {
+            packageName?.contains("youtube") == true || packageName?.contains("youtubemusic") == true -> {
+                // YouTube artist channel: @ArtistName or search
+                "https://www.youtube.com/@${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
+            }
+            packageName == "com.spotify.music" -> {
+                "https://open.spotify.com/search/${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
+            }
+            packageName?.contains("apple") == true || packageName?.contains("itunes") == true -> {
+                "https://music.apple.com/search?term=${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
+            }
+            packageName?.contains("deezer") == true -> {
+                "https://www.deezer.com/search/${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
+            }
+            packageName?.contains("soundcloud") == true -> {
+                "https://soundcloud.com/search/${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
+            }
+            packageName?.contains("streetvoice") == true -> {
+                "https://streetvoice.com/search?q=${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
+            }
+            packageName?.contains("ymusicapp") == true -> {
+                "https://ymusicapp.com/watch?v=${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
+            }
+            else -> null
+        }
+    }
+
+    private fun metadataResolverArtistName(metadata: MediaMetadata): String? {
+        return metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.takeIf { it.isNotEmpty() }
+            ?: metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR)?.takeIf { it.isNotEmpty() }
+            ?: metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.takeIf { it.isNotEmpty() }
+    }
 }

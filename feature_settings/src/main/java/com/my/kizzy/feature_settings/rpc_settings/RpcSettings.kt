@@ -61,6 +61,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
@@ -82,6 +83,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var showDirConfigDialog by remember { mutableStateOf(false) }
     var useButtonConfigs by remember { mutableStateOf(Prefs[Prefs.USE_RPC_BUTTONS, false]) }
     var useYoutubeButton by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON, false]) }
+    var linkToArtistChannel by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_ARTIST_LINK, false]) }
     var showButtonsConfigDialog by remember { mutableStateOf(false) }
     var rpcButtons by remember {
         mutableStateOf(Json.decodeFromString<RpcButtons>(Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]))
@@ -153,6 +155,17 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 ) {
                     useYoutubeButton = !useYoutubeButton
                     Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON] = useYoutubeButton
+                }
+            }
+            item {
+                PreferenceSwitch(
+                    title = stringResource(id = R.string.link_to_artist_channel),
+                    description = stringResource(id = R.string.link_to_artist_channel_desc),
+                    icon = Icons.Default.Person,
+                    isChecked = linkToArtistChannel,
+                ) {
+                    linkToArtistChannel = !linkToArtistChannel
+                    Prefs[Prefs.MEDIA_RPC_ARTIST_LINK] = linkToArtistChannel
                 }
             }
             item {
