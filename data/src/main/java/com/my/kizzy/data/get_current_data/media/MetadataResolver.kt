@@ -159,7 +159,12 @@ class MetadataResolver @Inject constructor() {
         packageName?.let { pkg ->
             return when {
                 pkg.contains("youtube") || pkg.contains("youtubemusic") -> {
-                    // Try to extract video ID from title or other metadata
+                    // First, try to extract any YouTube URL from metadata keys
+                    val youtubeUrl = extractYouTubeUrl(metadata)
+                    if (!youtubeUrl.isNullOrEmpty()) {
+                        return youtubeUrl
+                    }
+                    // Fall back to search URL using video title
                     val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
                     if (!title.isNullOrEmpty()) {
                         "https://www.youtube.com/results?search_query=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
@@ -202,9 +207,60 @@ class MetadataResolver @Inject constructor() {
         return null
     }
 
+    /**
+     * Extracts a YouTube URL from media metadata. Handles all YouTube URL formats:
+     * - https://www.youtube.com/watch?v=VIDEO_ID
+     * - https://www.youtube.com/watch?v=VIDEO_ID&list=PLAYLIST_ID
+     * - https://music.youtube.com/watch?v=VIDEO_ID
+     * - https://music.youtube.com/playlist?list=PLAYLIST_ID
+     * - https://www.youtube.com/playlist?list=PLAYLIST_ID
+     * - https://youtu.be/VIDEO_ID?t=SECONDS
+     * - https://www.youtube.com/live/VIDEO_ID
+     */
+    private fun extractYouTubeUrl(metadata: MediaMetadata): String? {
+        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+
+        // Check METADATA_KEY_SOURCE_URL for any YouTube URL
+        val sourceUrl = metadata.getString(MediaMetadata.METADATA_KEY_SOURCE_URL)
+        if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be"))) {
+            return sourceUrl
+        }
+
+        // Check custom keys that might contain YouTube URLs
+        val youtubeKeys = listOf(
+            "youtube_url",
+            "video_url",
+            "source_url",
+            "media_url",
+            "content_url",
+            "yt_url",
+            "youtube_video_url",
+            "youtube_watch_url"
+        )
+        for (key in youtubeKeys) {
+            val value = metadata.getString(key)
+            if (!value.isNullOrEmpty() && (value.contains("youtube.com") || value.contains("youtu.be"))) {
+                return value
+            }
+        }
+
+        // Try to extract video ID from METADATA_KEY_MEDIA_ID or similar
+        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
+        if (!mediaId.isNullOrEmpty() && mediaId.contains("youtube.com/watch?v=")) {
+            return mediaId
+        }
+
+        // If we have a title but no URL, build a search URL (fallback)
+        if (!title.isNullOrEmpty()) {
+            return "https://www.youtube.com/results?search_query=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
+        }
+
+        return null
+    }
+
     private fun String.isValidMediaUrl(): Boolean {
-        return contains("youtube.com/watch") ||
-            contains("youtube.com/results") ||
+        return contains("youtube.com") ||
+            contains("youtu.be") ||
             contains("open.spotify.com") ||
             contains("music.apple.com") ||
             contains("deezer.com") ||
