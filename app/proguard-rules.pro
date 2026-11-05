@@ -22,6 +22,7 @@
 
 # --- Hilt / Dagger Generated Components & Factories ---
 -keep class **_Factory { *; }
+-keep class **_HiltFactory { *; }
 -keep class **_MembersInjector { *; }
 -keep class **_HiltModules* { *; }
 -keep class * extends dagger.hilt.internal.UnstableApi { *; }
@@ -43,6 +44,7 @@
 -keep @dagger.hilt.android.HiltAndroidApp class * { *; }
 -keep @dagger.hilt.android.AndroidEntryPoint class * { *; }
 -keep @dagger.hilt.lifecycle.HiltViewModel class * { *; }
+-keepnames class * extends androidx.lifecycle.ViewModel { *; }
 
 # Keep Dagger runtime internals needed by generated code
 -keep class dagger.internal.Factory { *; }

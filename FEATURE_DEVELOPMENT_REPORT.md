@@ -32,8 +32,9 @@
 20. [Proguard / R8 Hardening](#proguard--r8-hardening)
 21. [Bug Fix: Crash Handler Missing Dependencies](#bug-fix-crash-handler-missing-dependencies)
 22. [Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor](#bug-fix-homescreenviewmodel-hilt-missing-ksp-processor)
-23. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-24. [Build Verification](#build-verification)
+23. [Bug Fix: R8 Stripping Hilt ViewModel Factories](#bug-fix-r8-stripping-hilt-viewmodel-factories)
+24. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+25. [Build Verification](#build-verification)
 
 ---
 
@@ -414,7 +415,33 @@ dependencies {
 
 ---
 
-## 23. Known Non-Breaking Warnings
+## 23. Bug Fix: R8 Stripping Hilt ViewModel Factories
+
+**File:** `app/proguard-rules.pro`
+
+### Problem
+Crash report from user device (Samsung SM-X516B, Android 16):
+
+```
+java.lang.RuntimeException: Cannot create an instance of class com.my.kizzy.feature_profile.ui.user.UserViewModel
+Caused by: java.lang.NoSuchMethodException: com.my.kizzy.feature_profile.ui.user.UserViewModel.<init> []
+```
+
+Even though `:feature_profile` already has `ksp(libs.hilt.compiler)`, release builds with R8 minification were stripping Hilt's generated ViewModel factory classes (`UserViewModel_HiltFactory`). The existing ProGuard rule `-keep class **_Factory { *; }` did **not** match Hilt's naming convention (`*_HiltFactory`, not `*_Factory`).
+
+### Fix
+Added two rules to `app/proguard-rules.pro`:
+
+1. `-keep class **_HiltFactory { *; }` — preserves Hilt-generated ViewModel factories
+2. `-keepnames class * extends androidx.lifecycle.ViewModel { *; }` — preserves ViewModel class names
+
+### Verification
+- `app:assembleDebug`: BUILD SUCCESSFUL
+- `app:assembleRelease`: BUILD SUCCESSFUL (R8 minification enabled)
+
+---
+
+## 24. Known Non-Breaking Warnings
 
 | Warning | Location | Severity |
 |---------|----------|----------|
