@@ -10,3 +10,4 @@
     <string name="enable_mediaRpc">Активирайте медийен RPC</string>
     <string name="enable_customRpc">Активирайте персонализиран RPC</string>
     <string name="enable_experimental_rpc">Активирайте експерименталния RPC</string>
+</resources>
