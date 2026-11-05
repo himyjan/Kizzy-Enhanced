@@ -38,10 +38,8 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Kizzy"
-        tools:targetApi="tiramisu">
-        <provider
-            android:name="androidx.work.WorkManagerInitializer"
-            tools:node="remove" />
+        tools:targetApi="tiramisu"
+        tools:ignore="RemoveWorkManagerInitializer">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
