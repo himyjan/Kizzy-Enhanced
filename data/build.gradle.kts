@@ -25,6 +25,15 @@ android {
             matchingFallbacks.addAll(listOf("debug", "release"))
         }
     }
+
+    publishing {
+        singleVariant("debug") {
+            withSourcesJar()
+        }
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
