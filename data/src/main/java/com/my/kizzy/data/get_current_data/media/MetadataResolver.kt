@@ -132,7 +132,7 @@ class MetadataResolver @Inject constructor() {
     fun getMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
         // Try standard source URL key first
         val sourceUrl = metadata.getString(MediaMetadata.METADATA_KEY_SOURCE_URL)
-        if (!sourceUrl.isNullOrEmpty() && isValidMediaUrl(sourceUrl)) {
+        if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
             return sourceUrl
         }
 
@@ -150,7 +150,7 @@ class MetadataResolver @Inject constructor() {
         )
         for (key in customKeys) {
             val value = metadata.getString(key)
-            if (!value.isNullOrEmpty() && isValidMediaUrl(value)) {
+            if (value != null && value.isValidMediaUrl()) {
                 return value
             }
         }
