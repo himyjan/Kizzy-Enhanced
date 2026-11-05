@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cached
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DoNotDisturbOn
@@ -150,7 +151,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_youtube_button),
                     description = stringResource(id = R.string.use_youtube_button_desc),
-                    icon = Icons.AutoMirrored.Filled.OpenInNew,
+                    icon = OpenInNew,
                     isChecked = useYoutubeButton,
                 ) {
                     useYoutubeButton = !useYoutubeButton
