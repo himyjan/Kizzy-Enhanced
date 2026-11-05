@@ -254,23 +254,9 @@
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
 
-    <string name="locale_en">English</string>
-    <string name="locale_ru">Русский</string>
-    <string name="locale_ja">日本語</string>
     <string name="locale_ko">한국어</string>
     <string name="locale_zh">中文（简体）</string>
     <string name="locale_zh_TW">中文（繁體）</string>
-    <string name="locale_es">Español</string>
-    <string name="locale_fr">Français</string>
-    <string name="locale_de">Deutsch</string>
-    <string name="locale_it">Italiano</string>
-    <string name="locale_pt">Português</string>
-    <string name="locale_tr">Türkçe</string>
-    <string name="locale_nl">Nederlands</string>
-    <string name="locale_pl">Polski</string>
-    <string name="locale_in">Bahasa Indonesia</string>
-    <string name="locale_ar">العربية</string>
-    <string name="locale_he">עברית</string>
     <string name="locale_bg">Български</string>
     <string name="locale_cs">Čeština</string>
     <string name="locale_da">Dansk</string>
