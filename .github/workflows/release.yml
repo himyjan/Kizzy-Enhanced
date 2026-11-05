@@ -80,15 +80,19 @@ jobs:
           KEY_PASSWORD: kizzyfork
         run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease
 
+      - name: Rename APK
+        run: |
+          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}.apk
+
       - name: Upload APK
         uses: actions/upload-artifact@v6
         with:
           name: apk-release
-          path: app/build/outputs/apk/release/**.apk
+          path: app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}.apk
 
       - name: Find APK
         id: apk
-        run: echo "path=$(find app/build/outputs/apk/release -name '*.apk' | head -1)" >> "$GITHUB_OUTPUT"
+        run: echo "path=$(find app/build/outputs/apk/release -name 'KizzyEnhanced-*.apk' | head -1)" >> "$GITHUB_OUTPUT"
 
       - name: Generate git changelog
         id: changelog
