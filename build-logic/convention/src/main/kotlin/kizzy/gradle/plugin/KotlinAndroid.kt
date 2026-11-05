@@ -22,15 +22,6 @@ private fun Project.configureCommonAndroidBody(commonExtension: CommonExtension)
     commonExtension.compileOptions.sourceCompatibility = JavaVersion.VERSION_26
     commonExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_26
 
-    commonExtension.buildTypes.named("release").configure {
-        isMinifyEnabled = true
-
-        proguardFiles(
-            commonExtension.getDefaultProguardFile("proguard-android-optimize.txt"),
-            "${rootProject.rootDir.absolutePath}/app/proguard-rules.pro"
-        )
-    }
-
     // Configures all Kotlin tasks inside this module to target Java 26 bytecode
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
@@ -39,14 +30,29 @@ private fun Project.configureCommonAndroidBody(commonExtension: CommonExtension)
     }
 }
 
-// Overload entry point for Application modules
+// Overload entry point for Application modules — only the app container
+// should run R8 minification/shrinking since it sees the full dependency graph.
 fun Project.configureKotlinAndroid(commonExtension: ApplicationExtension) {
     configureCommonAndroidBody(commonExtension)
+    commonExtension.buildTypes.named("release").configure {
+        isMinifyEnabled = true
+        isShrinkResources = true
+
+        proguardFiles(
+            commonExtension.getDefaultProguardFile("proguard-android-optimize.txt"),
+            "${rootProject.rootDir.absolutePath}/app/proguard-rules.pro"
+        )
+    }
 }
 
-// Overload entry point for Library modules
+// Overload entry point for Library modules — libraries must NOT minify
+// themselves; R8 runs once at the :app level where all 17 modules are visible.
 fun Project.configureKotlinAndroid(commonExtension: LibraryExtension) {
     configureCommonAndroidBody(commonExtension)
+    commonExtension.buildTypes.named("release").configure {
+        isMinifyEnabled = false
+        isShrinkResources = false
+    }
 }
 
 // Overload entry point for CommonExtension (generic fallback)
