@@ -36,7 +36,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun UserScreen(
     state: UserState,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onLogout: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -91,13 +92,8 @@ fun UserScreen(
                                 withDismissAction = true
                             ).run {
                                 when (this) {
-                                    SnackbarResult.ActionPerformed -> try {
-                                        val runtime = Runtime.getRuntime()
-                                        // running shell command to clear data
-                                        // TODO replace with deleting directories and restarting the app to have multiple user accounts
-                                        runtime.exec("pm clear com.my.kizzy")
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
+                                    SnackbarResult.ActionPerformed -> {
+                                        onLogout()
                                     }
 
                                     SnackbarResult.Dismissed -> Unit
@@ -135,6 +131,7 @@ fun UserScreenPreview() {
     UserScreen(
         state = UserState.Loading,
         onBackPressed = {},
+        onLogout = {}
     )
 }
 @Preview
@@ -146,7 +143,8 @@ fun UserScreenPreview2() {
             user = fakeUser,
             rpcConfig = RpcConfig(name = "Kizzy", details = "Using Kizzy")
         ),
-        onBackPressed = {}
+        onBackPressed = {},
+        onLogout = {}
     )
 }
 @Preview
@@ -157,6 +155,7 @@ fun UserScreenPreview3() {
             user = fakeUser,
             rpcConfig = RpcConfig(name = "Kizzy", details = "Using Kizzy")
         ),
-        onBackPressed = {}
+        onBackPressed = {},
+        onLogout = {}
     )
 }

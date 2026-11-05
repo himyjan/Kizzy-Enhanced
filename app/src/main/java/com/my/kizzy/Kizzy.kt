@@ -171,7 +171,16 @@ internal fun ComponentActivity.Kizzy(
                     val viewModel by viewModels<UserViewModel>()
                     UserScreen(
                         state = viewModel.state.value,
-                        onBackPressed = navController::popBackStack
+                        onBackPressed = navController::popBackStack,
+                        onLogout = {
+                            // Clear all user-related preferences
+                            Prefs.remove(Prefs.TOKEN)
+                            Prefs.remove(Prefs.USER_ID)
+                            Prefs.remove(Prefs.USER_DATA)
+                            Prefs.remove(Prefs.USER_BIO)
+                            Prefs.remove(Prefs.USER_NITRO)
+                            loggedIn = false
+                        }
                     )
                 } else {
                     LoginScreen(
