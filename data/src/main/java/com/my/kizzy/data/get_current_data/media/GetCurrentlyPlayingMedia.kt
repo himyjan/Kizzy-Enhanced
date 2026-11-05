@@ -139,10 +139,10 @@ class GetCurrentPlayingMedia @Inject constructor(
 
             // Build state with multi-artist and multi-channel info
             var stateBuilder = StringBuilder()
-            if (author.isNotNullOrEmpty()) {
+            if (!author.isNullOrEmpty()) {
                 stateBuilder.append(author)
             }
-            if (audioChannels.isNotNullOrEmpty()) {
+            if (!audioChannels.isNullOrEmpty()) {
                 if (stateBuilder.isNotEmpty()) stateBuilder.append(" • ")
                 stateBuilder.append(audioChannels)
             }
