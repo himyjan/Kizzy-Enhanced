@@ -202,7 +202,7 @@
     <string name="custom_application_id">App ID da atividade personalizado</string>
     <string name="custom_application_id_desc">Substitui o ID de aplicação padrão do Discord</string>
     <string name="use_a_vpn_desc">O login do Discord pode não funcionar no seu país sem um VPN/DPI. Por favor, use um VPN/DPI para prosseguir.</string>
-    <string name="rpc_templates_note">Use placeholders como {{app_name}}, {{media_title}}, {{media_artist}}, etc. Campos vazios usarão o comportamento padrão ou serão omitidos.</string>
+    <string name="rpc_templates_note">"Use placeholders como {{app_name}}, {{media_title}}, {{media_artist}}, etc. Campos vazios usarão o comportamento padrão ou serão omitidos."</string>
     <string name="experimental_rpc_detect_apps">Permita que RPC experimental detecte apps rodando</string>
     <string name="experimental_rpc_detect_media">Permita que RPC experimental detecte playback de mídia</string>
     <string name="app_preferences">Preferências do app</string>

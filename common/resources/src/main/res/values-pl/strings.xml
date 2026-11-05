@@ -203,7 +203,7 @@
     <string name="custom_application_id">ID aplikacji własnej aktywności</string>
     <string name="custom_application_id_desc">Podmienia domyślne ID Aplikacji Discord\'a</string>
     <string name="use_a_vpn_desc">Logowanie do Discorda w twoim kraju może nie działać bez użycia VPN/DPI. Proszę użyć VPN/DPI aby kontynuować.</string>
-    <string name="rpc_templates_note">Użyj placeholderów takich jak {{app_name}}, {{media_title}}, {{media_artist}}, itd. Puste pola będą używać domyślnych wartości lub zostaną pominięte.</string>
+    <string name="rpc_templates_note">"Użyj placeholderów takich jak {{app_name}}, {{media_title}}, {{media_artist}}, itd. Puste pola będą używać domyślnych wartości lub zostaną pominięte."</string>
     <string name="experimental_rpc_detect_apps">Pozwól Eksperymentalnemu RPC do wykrywania uruchomionych aplikacji</string>
     <string name="experimental_rpc_detect_media">Pozwól Eksperymentalnemu RPC do wykrywania odtwarzacza multimediów</string>
     <string name="app_preferences">Preferencje Aplikacji</string>

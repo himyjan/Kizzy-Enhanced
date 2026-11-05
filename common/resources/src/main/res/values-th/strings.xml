@@ -202,7 +202,7 @@
     <string name="custom_application_id">กำหนดสถานะกิจกรรมไอดีแอปพลิเคชั่น</string>
     <string name="custom_application_id_desc">เขียนทับไอดีแอปพลิเคชั่นดั้งเดิมของ Discord</string>
     <string name="use_a_vpn_desc">การล็อกอินผ่าน Discord อาจจะใช้งานไม่ได้หากไม่ได้ใช้ร่วมกับ VPN/DPI โปรดใช้ VPN/DPI เพื่อใช้งานต่อ</string>
-    <string name="rpc_templates_note">ใช้ข้อความตัวอย่าง เช่น {{app_name}}, {{media_title}}, {{media_artist}} ฯลฯ หากเว้นว่างไว้ ระบบจะใช้เป็นค่าเริ่มต้นหรือข้ามไป</string>
+    <string name="rpc_templates_note">"ใช้ข้อความตัวอย่าง เช่น {{app_name}}, {{media_title}}, {{media_artist}} ฯลฯ หากเว้นว่างไว้ ระบบจะใช้เป็นค่าเริ่มต้นหรือข้ามไป"</string>
     <string name="experimental_rpc_detect_apps">อนุญาตให้ Experimental RPC ตรวจจับแอปที่กำลังทำงานอยู่</string>
     <string name="experimental_rpc_detect_media">อนุญาตให้ Experimental RPC ตรวจจับสื่อที่กำลังเล่นอยู่</string>
     <string name="app_preferences">การตั้งค่าแอป</string>

@@ -203,7 +203,7 @@
     <string name="custom_application_id">מזהה יישום פעילות מותאמת אישית</string>
     <string name="custom_application_id_desc">עוקף את מזהה יישום ברירת המחדל של דיסקורד</string>
     <string name="use_a_vpn_desc">ייתכן שכניסה לדיסקורד לא תעבוד במדינתך ללא VPN/DPI. אנא השתמש ב-VPN/DPI כדי להמשיך.</string>
-    <string name="rpc_templates_note">השתמשו ב-placeholders כמו {{app_name}}, {{media_title}} וכו\'. שדות ריקים ישתמשו בהתנהגות ברירת מחדל או יושמטו.</string>
+    <string name="rpc_templates_note">"השתמשו ב-placeholders כמו {{app_name}}, {{media_title}} וכו\'. שדות ריקים ישתמשו בהתנהגות ברירת מחדל או יושמטו."</string>
     <string name="experimental_rpc_detect_apps">אפשר ל-RPC ניסיוני לזהות אפליקציות פועלות</string>
     <string name="experimental_rpc_detect_media">אפשר ל-RPC ניסיוני לזהות השמעת מדיה</string>
     <string name="app_preferences">העדפות אפליקציה</string>

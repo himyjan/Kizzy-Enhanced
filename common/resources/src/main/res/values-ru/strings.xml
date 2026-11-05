@@ -203,7 +203,7 @@
     <string name="custom_application_id">Свой ID приложения активности</string>
     <string name="custom_application_id_desc">Меняет стандартный ID приложения Discord на ваш</string>
     <string name="use_a_vpn_desc">Discord заблокирован в России, поэтому вход может не работать.</string>
-    <string name="rpc_templates_note">Используйте плейсхолдеры: {{app_name}}, {{media_title}}, {{media_artist}}, и т.д. Пустые поля будут работать по умолчанию или же останутся пусты.</string>
+    <string name="rpc_templates_note">"Используйте плейсхолдеры: {{app_name}}, {{media_title}}, {{media_artist}}, и т.д. Пустые поля будут работать по умолчанию или же останутся пусты."</string>
     <string name="experimental_rpc_detect_apps">Разрешить экспериментальному RPC видеть запущенные программы</string>
     <string name="experimental_rpc_detect_media">Разрешить экспериментальному RPC видеть медиа-данные</string>
     <string name="app_preferences">Настройки программ</string>

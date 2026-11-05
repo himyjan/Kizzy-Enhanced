@@ -202,7 +202,7 @@
     <string name="custom_application_id">Özel Uygulama ID\'si</string>
     <string name="custom_application_id_desc">Varsayılan Discord Uygulama ID\'sini geçersiz kılar</string>
     <string name="use_a_vpn_desc">Discord girişi VPN/DPI servisi olmadan ülkende çalışmayabilir. Lütfen devam etmek için bir VPN/DPI servisi kullan.</string>
-    <string name="rpc_templates_note">{{app_name}}, {{media_title}} gibi değişkenler kullanabilirsin. Boş bırakılan alanlar varsayılan davranışı uygular veya gösterilmez.</string>
+    <string name="rpc_templates_note">"{{app_name}}, {{media_title}} gibi değişkenler kullanabilirsin. Boş bırakılan alanlar varsayılan davranışı uygular veya gösterilmez."</string>
     <string name="experimental_rpc_detect_apps">Deneysel RPC\'nin çalışan uygulamaları algılamasına izin ver</string>
     <string name="experimental_rpc_detect_media">Deneysel RPC\’nin medya oynatımını algılamasına izin ver</string>
     <string name="app_preferences">Uyg. Tercihleri</string>
