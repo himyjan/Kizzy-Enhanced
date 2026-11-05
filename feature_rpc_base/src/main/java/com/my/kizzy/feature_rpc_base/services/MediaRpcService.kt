@@ -29,7 +29,6 @@ import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
-import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
 import com.my.kizzy.preference.Prefs.TOKEN
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -171,7 +170,7 @@ class MediaRpcService : Service() {
     }
 
     /**
-     * Heartbeat: re-evaluates presence every 3 seconds to catch "next song" changes
+     * Heartbeat: re-evaluates presence every 3 seconds to catch missed "next song" changes
      * that media session callbacks might miss (especially when switching between apps).
      */
     private fun startHeartbeat() {
@@ -301,40 +300,7 @@ class MediaRpcService : Service() {
                 }
                 stateRepository.setConnected(true)
                 stateRepository.setPaused(isPaused)
-                // Add media button(s) if enabled
-                if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
-                    kizzyRPC.clearButtons()
-                    if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false]) {
-                        playingMedia.mediaUrl?.let { url ->
-                            val label = when {
-                                playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Watch on YouTube"
-                                playingMedia.packageName == "com.spotify.music" -> "Listen on Spotify"
-                                playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
-                                playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
-                                playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
-                                playingMedia.packageName.contains("streetvoice") -> "Listen on StreetVoice"
-                                playingMedia.packageName.contains("ymusicapp") -> "Play on YMusic"
-                                else -> "Open Media Link"
-                            }
-                            kizzyRPC.setButton1(label, url)
-                        }
-                    }
-                    if (Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
-                        metadataResolver.getArtistUrl(playingMedia.metadata, playingMedia.packageName)?.let { url ->
-                            val label = when {
-                                playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Artist on YouTube"
-                                playingMedia.packageName == "com.spotify.music" -> "Artist on Spotify"
-                                playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Artist on Apple Music"
-                                playingMedia.packageName.contains("deezer") -> "Artist on Deezer"
-                                playingMedia.packageName.contains("soundcloud") -> "Artist on SoundCloud"
-                                playingMedia.packageName.contains("streetvoice") -> "Artist on StreetVoice"
-                                playingMedia.packageName.contains("ymusicapp") -> "Artist on YMusic"
-                                else -> "Artist Channel"
-                            }
-                            kizzyRPC.setButton2(label, url)
-                        }
-                    }
-                    kizzyRPC.apply {
+                kizzyRPC.apply {
                     setName(playingMedia.name)
                     setType(Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0])
                     setDetails(playingMedia.state)
@@ -454,7 +420,7 @@ class MediaRpcService : Service() {
     }
 
     private fun activeSessionsListener(mediaSessions: List<MediaController>?, isEvent: Boolean = true) {
-        logger.d("MediaRPC", "Active sessions changed: ${mediaSessions?.size ?: 0}")
+        logger.d("MediaRPC", "Active sessions changed")
 
         if (isEvent) {
             // Give the new session time to populate metadata
@@ -557,21 +523,5 @@ class MediaRpcService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                Constants.NOTIFICATION_CHANNEL_ID,
-                "Media Rich Presence",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Keeps your Discord Rich Presence active in the background"
-                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
-            }
-
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
     }
 }
