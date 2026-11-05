@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="welcome">Galego</string>
+    <string name="settings">Configuración</string>
+    <string name="language">Idioma</string>
+    <string name="follow_system">Seguir o sistema</string>
+    <string name="locale_gl">Galego</string>
+    <string name="enable_appsRpc">Enable App Detection</string>
+    <string name="enable_mediaRpc">Enable Media RPC</string>
+    <string name="enable_customRpc">Enable Custom RPC</string>
+    <string name="enable_experimental_rpc">Enable Experimental RPC</string>
+</resources>

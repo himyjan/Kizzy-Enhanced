@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="welcome">Беларуская</string>
+    <string name="settings">Пакноўкі</string>
+    <string name="language">Мова</string>
+    <string name="follow_system">Палісаванне сістэмы</string>
+    <string name="locale_be">Беларуская</string>
+    <string name="enable_appsRpc">Enable App Detection</string>
+    <string name="enable_mediaRpc">Enable Media RPC</string>
+    <string name="enable_customRpc">Enable Custom RPC</string>
+    <string name="enable_experimental_rpc">Enable Experimental RPC</string>
+</resources>

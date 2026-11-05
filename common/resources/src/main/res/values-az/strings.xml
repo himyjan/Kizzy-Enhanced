@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="welcome">Azərbaycanca</string>
+    <string name="settings">Parametrlər</string>
+    <string name="language">Dil</string>
+    <string name="follow_system">Sistemə uyğun olmaq</string>
+    <string name="locale_az">Azərbaycanca</string>
+    <string name="enable_appsRpc">Enable App Detection</string>
+    <string name="enable_mediaRpc">Enable Media RPC</string>
+    <string name="enable_customRpc">Enable Custom RPC</string>
+    <string name="enable_experimental_rpc">Enable Experimental RPC</string>
+</resources>

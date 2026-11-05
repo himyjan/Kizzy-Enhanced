@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="welcome">Български</string>
+    <string name="settings">Настройки</string>
+    <string name="language">Език</string>
+    <string name="follow_system">Следете системата</string>
+    <string name="locale_bg">Български</string>
+    <string name="enable_appsRpc">Активирайте приложението за откриване на приложения</string>
+    <string name="enable_mediaRpc">Активирайте медийен RPC</string>
+    <string name="enable_customRpc">Активирайте персонализиран RPC</string>
+    <string name="enable_experimental_rpc">Активирайте експерименталния RPC</string>
