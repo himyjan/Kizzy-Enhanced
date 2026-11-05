@@ -30,8 +30,9 @@
 18. [New Feature: PermissionUtils](#new-feature-permission-utils)
 19. [Hilt Dependency Injection Fix](#hilt-dependency-injection-fix)
 20. [Proguard / R8 Hardening](#proguard--r8-hardening)
-21. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-22. [Build Verification](#build-verification)
+21. [Bug Fix: Crash Handler Missing Dependencies](#bug-fix-crash-handler-missing-dependencies)
+22. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+23. [Build Verification](#build-verification)
 
 ---
 
@@ -355,7 +356,32 @@ Material 3 reactive composable:
 
 ---
 
-## 21. Known Non-Breaking Warnings
+## 21. Bug Fix: Crash Handler Missing Dependencies
+
+**File:** `feature_crash_handler/build.gradle.kts`
+
+### Problem
+`CrashScreen.kt` in `:feature_crash_handler` imports:
+- `com.my.kizzy.data.utils.shareAsFile` — from `:data` module
+- `com.my.kizzy.resources.R` — from `:common:resources` module
+
+But `feature_crash_handler/build.gradle.kts` only declared `projects.theme`, causing unresolved reference compilation errors when the crash report screen was rendered.
+
+### Fix
+Added the missing implementation dependencies:
+
+```kotlin
+implementation (projects.data)
+implementation (projects.common.resources)
+```
+
+### Verification
+- Gradle sync: successful
+- `app:assembleDebug`: BUILD SUCCESSFUL
+
+---
+
+## 22. Known Non-Breaking Warnings
 
 | Warning | Location | Severity |
 |---------|----------|----------|
@@ -365,7 +391,7 @@ Material 3 reactive composable:
 
 ---
 
-## 22. Build Verification
+## 23. Build Verification
 
 ```
 BUILD SUCCESSFUL in 1m 18s

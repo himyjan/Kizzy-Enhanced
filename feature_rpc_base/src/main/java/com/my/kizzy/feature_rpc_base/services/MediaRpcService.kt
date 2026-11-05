@@ -110,10 +110,29 @@ class MediaRpcService : Service() {
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
         super.onCreate()
+
+        // CRITICAL: Call startForeground() immediately to satisfy Android's 5-second
+        // foreground service timeout. We use a minimal notification here and update
+        // it with full content afterwards.
+        createNotificationChannel()
+        val basicNotification = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_media_rpc)
+            .setContentTitle("Rich Presence Active")
+            .setContentText("Starting...")
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            startForeground(Constants.NOTIFICATION_ID, basicNotification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+        } else {
+            startForeground(Constants.NOTIFICATION_ID, basicNotification)
+        }
+
+        // Now safe to do remaining initialization
         val token = Prefs[TOKEN, ""]
         if (token.isEmpty()) stopSelf()
         setupWakeLock()
-        createNotificationChannel()
 
         val intent = Intent(this, MediaRpcService::class.java)
         intent.action = Constants.ACTION_STOP_SERVICE
@@ -149,16 +168,19 @@ class MediaRpcService : Service() {
             )
             .build()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
-        } else {
-            startForeground(Constants.NOTIFICATION_ID, notification)
-        }
+        notificationManager.notify(Constants.NOTIFICATION_ID, notification)
 
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(::activeSessionsListener, ComponentName(this, NotificationListener::class.java))
 
-        activeSessionsListener(mediaSessionManager.getActiveSessions(ComponentName(this, NotificationListener::class.java)), false)
+        val sessions: List<android.media.session.MediaController> = try {
+            mediaSessionManager.getActiveSessions(ComponentName(this, NotificationListener::class.java))
+        } catch (_: SecurityException) {
+            // MEDIA_CONTENT_CONTROL permission is signatureOrSystem on API 34+;
+            // regular third-party apps cannot hold it. Fail gracefully.
+            emptyList()
+        }
+        activeSessionsListener(sessions, false)
 
         // Heartbeat: periodically re-check presence to catch missed "next song" events
         startHeartbeat()

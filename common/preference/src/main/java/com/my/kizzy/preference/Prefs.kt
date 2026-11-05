@@ -22,7 +22,13 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.hours
 
 object Prefs {
-    val kv = MMKV.defaultMMKV()
+    private var _kv: MMKV? = null
+
+    val kv: MMKV
+        get() = _kv ?: error(
+            "Prefs not initialized. Call PreferenceConfig.apply(context) before accessing Prefs."
+        )
+
     operator fun set(key: String, value: Any?) =
         when (value) {
             is String? -> kv.encode(key, value)
@@ -47,6 +53,12 @@ object Prefs {
 
     fun remove(key: String) {
         kv.removeValueForKey(key)
+    }
+
+    internal fun initMMKV() {
+        if (_kv == null) {
+            _kv = MMKV.defaultMMKV()
+        }
     }
 
     fun isAppEnabled(packageName: String?): Boolean {

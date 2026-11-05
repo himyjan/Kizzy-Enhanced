@@ -54,7 +54,13 @@ class GetCurrentPlayingMedia @Inject constructor(
         var timestamps: Timestamps? = null
         val mediaSessionManager =
             context.getSystemService(Service.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        val sessions = mediaSessionManager.getActiveSessions(componentName)
+        val sessions: List<android.media.session.MediaController> = try {
+            mediaSessionManager.getActiveSessions(componentName)
+        } catch (_: SecurityException) {
+            // MEDIA_CONTENT_CONTROL permission is signatureOrSystem on API 34+;
+            // regular third-party apps cannot hold it. Fail gracefully.
+            emptyList()
+        }
 
         // Collect all valid sessions to support multi-channel/multi-artist aggregation
         val validSessions = mutableListOf<MediaControllerWithMetadata>()

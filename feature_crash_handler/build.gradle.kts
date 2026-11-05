@@ -14,4 +14,6 @@ dependencies {
     implementation (libs.blankj.utilcodex)
     implementation (libs.material.icons.extended)
     implementation (projects.theme)
+    implementation (projects.data)
+    implementation (projects.common.resources)
 }

@@ -50,7 +50,13 @@ class GetCurrentPlayingMediaAll @Inject constructor(
     operator fun invoke(): RichMediaMetadata {
         val mediaSessionManager =
             context.getSystemService(Service.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        val sessions = mediaSessionManager.getActiveSessions(componentName)
+        val sessions: List<android.media.session.MediaController> = try {
+            mediaSessionManager.getActiveSessions(componentName)
+        } catch (_: SecurityException) {
+            // MEDIA_CONTENT_CONTROL permission is signatureOrSystem on API 34+;
+            // regular third-party apps cannot hold it. Fail gracefully.
+            emptyList()
+        }
         for (mediaController in sessions) {
             val metadata = mediaController.metadata
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
