@@ -162,7 +162,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.link_to_artist_channel),
                     description = stringResource(id = R.string.link_to_artist_channel_desc),
-                    icon = Icons.Filled.Person,
+                    icon = Icons.Outlined.Person,
                     isChecked = linkToArtistChannel,
                 ) {
                     linkToArtistChannel = !linkToArtistChannel
