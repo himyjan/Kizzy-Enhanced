@@ -55,9 +55,13 @@ class GetCurrentPlayingMediaAll @Inject constructor(
             val metadata = mediaController.metadata
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
             val appName = AppUtils.getAppName(mediaController.packageName)
-            val author = metadata?.let { metadataResolver.getArtistOrAuthor(it) }
+            val author = metadata?.let { metadataResolver.formatArtists(it) }
             val album = metadata?.let { metadataResolver.getAlbum(it) }
             val bitmap = metadata?.let { metadataResolver.getCoverArt(it) }
+
+            // Multi-channel audio detection (e.g., "5.1 Surround", "Dolby Atmos")
+            val audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) }
+
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
             val position = mediaController.playbackState?.position
             val playbackState = mediaController.playbackState?.state
@@ -99,7 +103,9 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                     playbackState = playbackState,
                     duration = duration,
                     position = position,
-                    timestamps = timestamps
+                    timestamps = timestamps,
+                    audioChannels = audioChannels,
+                    allArtists = metadataResolver.getAllArtists(metadata)
                 )
             }
         }
@@ -120,5 +126,7 @@ data class RichMediaMetadata(
     val duration: Long? = null,
     val position: Long? = null,
     val timestamps: Timestamps? = null,
+    val audioChannels: String? = null,
+    val allArtists: List<String> = emptyList(),
 )
 
