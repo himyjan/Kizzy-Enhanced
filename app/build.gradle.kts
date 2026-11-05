@@ -52,6 +52,7 @@ android {
 }
 dependencies {
     implementation (projects.domain)
+    implementation (projects.data)
     implementation (projects.theme)
     implementation (projects.featureStartup)
     implementation (projects.featureCrashHandler)
