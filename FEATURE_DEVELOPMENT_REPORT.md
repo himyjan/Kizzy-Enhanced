@@ -31,8 +31,9 @@
 19. [Hilt Dependency Injection Fix](#hilt-dependency-injection-fix)
 20. [Proguard / R8 Hardening](#proguard--r8-hardening)
 21. [Bug Fix: Crash Handler Missing Dependencies](#bug-fix-crash-handler-missing-dependencies)
-22. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-23. [Build Verification](#build-verification)
+22. [Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor](#bug-fix-homescreenviewmodel-hilt-missing-ksp-processor)
+23. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+24. [Build Verification](#build-verification)
 
 ---
 
@@ -381,7 +382,39 @@ implementation (projects.common.resources)
 
 ---
 
-## 22. Known Non-Breaking Warnings
+## 22. Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor
+
+**File:** `feature_home/build.gradle.kts`
+
+### Problem
+Crash report from user device (Samsung SM-X516B, Android 16):
+
+```
+java.lang.RuntimeException: Cannot create an instance of class com.my.kizzy.feature_home.HomeScreenViewModel
+Caused by: java.lang.NoSuchMethodException: com.my.kizzy.feature_home.HomeScreenViewModel.<init> []
+```
+
+`HomeScreenViewModel` is annotated with `@HiltViewModel` and uses `@Inject constructor`, but `:feature_home` was missing the Hilt KSP annotation processor. Without it, Hilt cannot generate the ViewModel factory, so the no-arg constructor doesn't exist at runtime.
+
+### Fix
+Added `ksp(libs.hilt.compiler)` to `feature_home/build.gradle.kts`:
+
+```kotlin
+dependencies {
+    // ... existing deps ...
+
+    // Hilt annotation processor required for @HiltViewModel
+    ksp(libs.hilt.compiler)
+}
+```
+
+### Verification
+- Gradle sync: successful
+- `app:assembleDebug`: BUILD SUCCESSFUL
+
+---
+
+## 23. Known Non-Breaking Warnings
 
 | Warning | Location | Severity |
 |---------|----------|----------|

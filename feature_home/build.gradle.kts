@@ -19,4 +19,7 @@ dependencies {
     implementation (projects.common.navigation)
     implementation (libs.coil)
     implementation (libs.activity.compose)
+
+    // Hilt annotation processor required for @HiltViewModel
+    ksp(libs.hilt.compiler)
 }
