@@ -47,7 +47,6 @@ import com.my.kizzy.feature_media_rpc.MediaScreenViewModel
 import com.my.kizzy.feature_profile.ui.login.LoginScreen
 import com.my.kizzy.feature_profile.ui.user.UserScreen
 import com.my.kizzy.feature_profile.ui.user.UserViewModel
-import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_settings.language.Language
 import com.my.kizzy.feature_settings.rpc_settings.RpcSettings
 import com.my.kizzy.feature_settings.style.Appearance
@@ -190,7 +189,6 @@ internal fun ComponentActivity.Kizzy(
                     onEvent = { viewModel.onUiEvent(it) },
                     isSearchBarVisible = viewModel.isSearchBarVisible.value,
                     state = viewModel.state.value,
-                    serviceEnabled = AppUtils.customRpcRunning()
                 )
             }
             composable(Routes.LANGUAGES) {

@@ -80,16 +80,11 @@ fun GamesScreen(
     onBackPressed: () -> Unit,
     onEvent: (UiEvent) -> Unit,
     state: GamesState,
-    serviceEnabled: Boolean,
     isSearchBarVisible: Boolean,
 ) {
-    var selected by remember {
-        mutableStateOf("")
-    }
-
     val context = LocalContext.current
     var isConsoleRpcRunning by remember {
-        mutableStateOf(serviceEnabled)
+        mutableStateOf(AppUtils.customRpcRunning())
     }
     var searchText by remember { mutableStateOf("") }
 
