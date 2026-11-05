@@ -200,6 +200,18 @@ class MetadataResolver @Inject constructor() {
                         "https://soundcloud.com/search/${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
                     } else null
                 }
+                pkg.contains("streetvoice") -> {
+                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+                    if (!title.isNullOrEmpty()) {
+                        "https://streetvoice.com/search?q=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
+                    } else null
+                }
+                pkg.contains("ymusicapp") -> {
+                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+                    if (!title.isNullOrEmpty()) {
+                        "https://ymusicapp.com/watch?v=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
+                    } else null
+                }
                 else -> null
             }
         }
@@ -261,6 +273,8 @@ class MetadataResolver @Inject constructor() {
     private fun String.isValidMediaUrl(): Boolean {
         return contains("youtube.com") ||
             contains("youtu.be") ||
+            contains("streetvoice.com") ||
+            contains("ymusicapp.com") ||
             contains("open.spotify.com") ||
             contains("music.apple.com") ||
             contains("deezer.com") ||

@@ -262,6 +262,8 @@ class MediaRpcService : Service() {
                                 playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
                                 playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
                                 playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
+                                playingMedia.packageName.contains("streetvoice") -> "Listen on StreetVoice"
+                                playingMedia.packageName.contains("ymusicapp") -> "Play on YMusic"
                                 else -> "Open Media Link"
                             }
                             kizzyRPC.clearButtons()
@@ -290,6 +292,8 @@ class MediaRpcService : Service() {
                             playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
                             playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
                             playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
+                            playingMedia.packageName.contains("streetvoice") -> "Listen on StreetVoice"
+                            playingMedia.packageName.contains("ymusicapp") -> "Play on YMusic"
                             else -> "Open Media Link"
                         }
                         kizzyRPC.clearButtons()
