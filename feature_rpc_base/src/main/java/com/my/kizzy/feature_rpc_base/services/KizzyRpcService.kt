@@ -26,6 +26,8 @@ class KizzyRpcService : Service() {
 
         const val ACTION_DISCONNECT = "kizzy.action.DISCONNECT"
         const val ACTION_TOGGLE = "kizzy.action.TOGGLE"
+        const val ACTION_RETRY = "kizzy.action.RETRY"
+        const val ACTION_EXIT = "kizzy.action.EXIT"
     }
 
     @Inject
@@ -67,6 +69,23 @@ class KizzyRpcService : Service() {
                 }
                 return START_STICKY
             }
+            ACTION_RETRY -> {
+                isPaused = false
+                stateRepository.setPaused(false)
+                lastKnownTitle?.let { title ->
+                    lastKnownArtist?.let { artist ->
+                        updateNotificationText(title, artist)
+                    }
+                } ?: updateNotificationText("Kizzy RPC", "Listening for media...")
+                return START_STICKY
+            }
+            ACTION_EXIT -> {
+                stateRepository.setConnected(false)
+                stateRepository.setPaused(false)
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+                return START_NOT_STICKY
+            }
         }
 
         // Default: start foreground service with persistent notification
@@ -103,30 +122,60 @@ class KizzyRpcService : Service() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        // Dynamically choose button label and icon based on pause state
-        val toggleLabel = if (isPaused) "Resume" else "Pause"
-        val toggleIcon = if (isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause
+        // PendingIntent for the Retry Action
+        val retryIntent = Intent(this, KizzyRpcService::class.java).apply {
+            action = ACTION_RETRY
+        }
+        val retryPendingIntent = PendingIntent.getService(
+            this, 3, retryIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
+        // When paused/idle, show Retry and Exit buttons
+        // When active, show Pause and Disconnect buttons
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(content)
             .setSmallIcon(R.drawable.ic_media_rpc)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
-            .addAction(
-                NotificationCompat.Action.Builder(
-                    toggleIcon,
-                    toggleLabel,
-                    togglePendingIntent
-                ).build()
-            )
-            .addAction(
-                NotificationCompat.Action.Builder(
-                    android.R.drawable.ic_menu_close_clear_cancel,
-                    "Disconnect",
-                    disconnectPendingIntent
-                ).build()
-            )
+            .apply {
+                if (isPaused) {
+                    // Retry button - resumes RPC
+                    addAction(
+                        NotificationCompat.Action.Builder(
+                            android.R.drawable.ic_media_play,
+                            "Retry",
+                            retryPendingIntent
+                        ).build()
+                    )
+                    // Exit button - stops the service
+                    addAction(
+                        NotificationCompat.Action.Builder(
+                            android.R.drawable.ic_menu_close_clear_cancel,
+                            "Exit",
+                            disconnectPendingIntent
+                        ).build()
+                    )
+                } else {
+                    // Pause button
+                    addAction(
+                        NotificationCompat.Action.Builder(
+                            android.R.drawable.ic_media_pause,
+                            "Pause",
+                            togglePendingIntent
+                        ).build()
+                    )
+                    // Disconnect button
+                    addAction(
+                        NotificationCompat.Action.Builder(
+                            android.R.drawable.ic_menu_close_clear_cancel,
+                            "Disconnect",
+                            disconnectPendingIntent
+                        ).build()
+                    )
+                }
+            }
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
     }
