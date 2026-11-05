@@ -25,6 +25,7 @@ dependencies {
     implementation (libs.work.runtime.ktx)
     implementation (libs.hilt.work)
     ksp(libs.hilt.work)
+    ksp(projects.domain)
     implementation (projects.common.preference)
     implementation (projects.common.resources)
     implementation (projects.gateway)
