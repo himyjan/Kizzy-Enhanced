@@ -26,8 +26,6 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,20 +79,15 @@ fun SettingsDrawer(
         Column(
             modifier = Modifier.padding(15.dp)
         ) {
-            BadgedBox(
-                badge = {
-                    Badge(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.offset(8.dp, (-8).dp)
-                    ) {
-                        Text(text = "Enhanced")
-                    }
-                },
+            Row(
                 modifier = Modifier.padding(top = 8.dp, bottom = 10.dp)
             ) {
                 Text(
                     text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Text(
+                    text = "Enhanced",
                     style = MaterialTheme.typography.titleSmall
                 )
             }

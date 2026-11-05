@@ -163,6 +163,7 @@ fun Home(
                             style = MaterialTheme.typography.headlineMedium,
                             maxLines = 1,
                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     },
                     navigationIcon = {
