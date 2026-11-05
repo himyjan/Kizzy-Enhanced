@@ -39,6 +39,7 @@ android {
     }
 
     packaging.resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+    packaging.resources.excludes.add("/META-INF/gradle/incremental.annotation.processors")
 
     // Disables dependency metadata when building APKs.
     dependenciesInfo {
@@ -84,6 +85,6 @@ dependencies {
     implementation (libs.material3.windows.size)
 
     // WorkManager + Hilt Work
-    implementation (libs.work.runtime.ktx())
-    implementation (libs.hilt.work())
+    implementation (libs.work.runtime.ktx)
+    implementation (libs.hilt.work)
 }
