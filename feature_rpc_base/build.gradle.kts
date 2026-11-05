@@ -35,4 +35,5 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(projects.gateway)
     implementation(projects.domain)
+    ksp(projects.data)
 }
