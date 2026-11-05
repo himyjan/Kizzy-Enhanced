@@ -69,7 +69,7 @@ fun Features(
             if (item.tooltipText.isNotBlank()) {
                 TooltipBox(
                     positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                        anchorPosition = TooltipAnchorPosition.Above
+                        positioning = TooltipAnchorPosition.Above
                     ),
                     state = rememberTooltipState(),
                     tooltip = {
