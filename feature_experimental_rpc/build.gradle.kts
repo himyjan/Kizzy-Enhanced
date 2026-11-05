@@ -16,4 +16,7 @@ dependencies {
     implementation(libs.coil)
     implementation(projects.featureRpcBase)
     implementation(projects.featureProfile)
+
+    // Hilt annotation processor required for @HiltViewModel
+    ksp(libs.hilt.compiler)
 }
