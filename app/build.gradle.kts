@@ -27,6 +27,15 @@ android {
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("KEY_ALIAS")
                 keyPassword = System.getenv("KEY_PASSWORD")
+            } ?: run {
+                // Fallback to debug keystore for local release builds
+                val debugKeystore = file(System.getProperty("user.home") + "/.android/debug.keystore")
+                if (debugKeystore.exists()) {
+                    storeFile = debugKeystore
+                    storePassword = "android"
+                    keyAlias = "androiddebugkey"
+                    keyPassword = "android"
+                }
             }
         }
     }
@@ -35,6 +44,10 @@ android {
             isShrinkResources = true
             isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                file("proguard-rules.pro")
+            )
         }
     }
 
@@ -87,4 +100,17 @@ dependencies {
     // WorkManager + Hilt Work
     implementation (libs.work.runtime.ktx)
     implementation (libs.hilt.work)
+
+    // Hilt annotation processor
+    ksp(libs.hilt.compiler)
+}
+
+configurations {
+    // Code generation libraries should not be in the runtime APK
+    implementation {
+        exclude(group = "com.google.dagger", module = "dagger-compiler")
+        exclude(group = "com.squareup", module = "javapoet")
+        exclude(group = "com.squareup", module = "kotlinpoet")
+        exclude(group = "androidx.room", module = "room-compiler")
+    }
 }

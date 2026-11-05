@@ -40,6 +40,9 @@
         android:theme="@style/Theme.Kizzy"
         tools:targetApi="tiramisu">
         <provider
+            android:name="androidx.work.WorkManagerInitializer"
+            tools:node="remove" />
+        <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
