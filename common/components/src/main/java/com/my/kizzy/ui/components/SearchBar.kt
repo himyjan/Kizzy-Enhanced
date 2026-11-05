@@ -116,6 +116,5 @@ fun Search() {
     SearchBar(
         text = "test",
         onTextChanged = {}
-    ) {
-    }
+    )
 }
