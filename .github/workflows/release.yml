@@ -83,7 +83,7 @@ jobs:
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew assembleRelease
+        run: ./gradlew clean :data:compileReleaseKotlin :app:assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
