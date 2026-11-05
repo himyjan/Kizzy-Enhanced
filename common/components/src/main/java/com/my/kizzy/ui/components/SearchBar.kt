@@ -70,7 +70,7 @@ fun SearchBar(
                 RoundedCornerShape(200.dp)
             ),
         decorationBox = { innerTextField ->
-            val containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp)
+            val containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             TextFieldDefaults.DecorationBox(
                 value = text,
                 innerTextField = innerTextField,
