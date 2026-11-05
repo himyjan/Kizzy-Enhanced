@@ -14,7 +14,8 @@ package com.my.kizzy.data.rpc
 
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
-import javax.inject.Injectimport com.my.kizzy.preference.Prefs
+import javax.inject.Inject
+import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.CUSTOM_ACTIVITY_TYPE
 import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.entities.presence.Activity
