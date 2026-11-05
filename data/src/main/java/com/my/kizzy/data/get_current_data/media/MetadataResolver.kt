@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 class MetadataResolver @Inject constructor() {
+    private const val METADATA_KEY_SOURCE_URL = "android.media.metadata.SOURCE_URL"
+
     fun getCoverArt(metadata: MediaMetadata): Bitmap? {
         return if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) metadata.getBitmap(
             MediaMetadata.METADATA_KEY_ALBUM_ART
@@ -131,7 +133,7 @@ class MetadataResolver @Inject constructor() {
      */
     fun getMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
         // Try standard source URL key first
-        val sourceUrl = metadata.getString(MediaMetadata.METADATA_KEY_SOURCE_URL)
+        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
             return sourceUrl
         }
@@ -233,7 +235,7 @@ class MetadataResolver @Inject constructor() {
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
 
         // Check METADATA_KEY_SOURCE_URL for any YouTube URL
-        val sourceUrl = metadata.getString(MediaMetadata.METADATA_KEY_SOURCE_URL)
+        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be"))) {
             return sourceUrl
         }
