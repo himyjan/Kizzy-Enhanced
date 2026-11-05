@@ -144,11 +144,11 @@ fun LogScreen(viewModel: LogsViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToolBar(viewModel: LogsViewModel) {
+fun ToolBar(viewModel: LogsViewModel, onBackPressed: () -> Unit) {
     var menuClicked by remember {
         mutableStateOf(false)
     }
-    TopAppBar(
+    LargeTopAppBar(
         title = {
             if (viewModel.isSearchBarVisible.value) {
                 SearchBar(
@@ -163,6 +163,11 @@ fun ToolBar(viewModel: LogsViewModel) {
                     text = stringResource(R.string.logs),
                     style = MaterialTheme.typography.headlineMedium
                 )
+        },
+        navigationIcon = {
+            BackButton {
+                onBackPressed()
+            }
         },
         actions = {
             if (!viewModel.isSearchBarVisible.value) {

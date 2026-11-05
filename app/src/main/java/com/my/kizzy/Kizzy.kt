@@ -214,7 +214,7 @@ internal fun ComponentActivity.Kizzy(
             }
             composable(Routes.LOGS_SCREEN) {
                 val viewModel by viewModels<LogsViewModel>()
-                LogScreen(viewModel)
+                LogScreen(viewModel, onBackPressed = { navController.popBackStack() })
             }
             composable(Routes.ABOUT) {
                 About(
