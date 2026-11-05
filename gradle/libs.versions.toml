@@ -20,6 +20,7 @@ core-ktx = "1.15.0"
 crashx = "v6.0.19"
 datastore-preferences = "1.1.1"
 hilt = "2.60.1"
+hiltWork = "1.2.0"
 ktor = "3.1.0"
 kotlinx-coroutine = "1.10.1"
 lifecycle-ktx = "2.8.7"
@@ -97,7 +98,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tink-android" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workmanager" }
-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt" }
+hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
