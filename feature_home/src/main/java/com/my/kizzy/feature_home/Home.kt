@@ -49,6 +49,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -108,6 +109,13 @@ fun Home(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState(),
             canScroll = { false })
+
+    // Keep homeItems in sync with features so that enabling a feature from its
+    // own screen (e.g. Media RPC screen) is immediately reflected in the home
+    // switch state when the user returns to the home screen.
+    LaunchedEffect(features) {
+        homeItems = features
+    }
 
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
