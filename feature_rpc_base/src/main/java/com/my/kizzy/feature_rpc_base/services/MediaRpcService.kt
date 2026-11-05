@@ -31,6 +31,7 @@ import com.my.kizzy.preference.Prefs.TOKEN
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import androidx.core.app.NotificationCompat
@@ -57,11 +58,15 @@ class MediaRpcService : Service() {
 
     private var wakeLock: WakeLock? = null
 
+    // Playback state
     private var isPaused = false
+    private var currentPackageName: String? = null
     private var lastKnownTrackTitle: String? = null
     private var lastKnownTrackArtist: String? = null
 
+    // Jobs
     private val timelineJob = MutableStateFlow<Job?>(null)
+    private val heartbeatJob = MutableStateFlow<Job?>(null)
 
     @Inject
     lateinit var notificationManager: NotificationManager
@@ -131,18 +136,19 @@ class MediaRpcService : Service() {
         mediaSessionManager.addOnActiveSessionsChangedListener(::activeSessionsListener, ComponentName(this, NotificationListener::class.java))
 
         activeSessionsListener(mediaSessionManager.getActiveSessions(ComponentName(this, NotificationListener::class.java)), false)
+
+        // Heartbeat: periodically re-check presence to catch missed "next song" events
+        startHeartbeat()
     }
 
     /**
      * Continuously updates the timeline (elapsed time) every second while media is playing.
-     * This ensures the Discord progress bar advances correctly.
      */
     private fun startTimelineUpdates() {
         stopTimelineUpdates()
         timelineJob.value = scope.launch {
             while (isActive) {
                 delay(1000)
-                // Only update timeline if we're actively playing (not paused/stopped)
                 if (!isPaused && kizzyRPC.isRpcRunning()) {
                     val playingMedia = getCurrentPlayingMedia()
                     if (playingMedia.name.isNotBlank()) {
@@ -159,18 +165,61 @@ class MediaRpcService : Service() {
     }
 
     /**
-     * Updates presence with the current media state.
-     * Handles play/pause icon switching and track info persistence.
+     * Heartbeat: re-evaluates presence every 3 seconds to catch "next song" changes
+     * that media session callbacks might miss (especially when switching between apps).
      */
-    suspend private fun updatePresence() {
+    private fun startHeartbeat() {
+        stopHeartbeat()
+        heartbeatJob.value = scope.launch {
+            while (isActive) {
+                delay(3000)
+                scope.launch { updatePresence(forceRefresh = true) }
+            }
+        }
+    }
+
+    private fun stopHeartbeat() {
+        heartbeatJob.value?.cancel()
+        heartbeatJob.value = null
+    }
+
+    /**
+     * Updates presence with the current media state.
+     * @param forceRefresh if true, skips caching logic and always re-fetches media data
+     */
+    suspend private fun updatePresence(forceRefresh: Boolean = false) {
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]
         val playingMedia = getCurrentPlayingMedia()
+
+        // Detect session switch (new app/package) and reset state
+        val currentPkg = currentMediaController?.packageName.takeIf { it.isNotBlank() }
+        if (currentPkg != null && currentPkg != currentPackageName) {
+            logger.d("MediaRPC", "Session switched: $currentPackageName -> $currentPkg")
+            currentPackageName = currentPkg
+            isPaused = false // Reset pause state for new session
+            lastKnownTrackTitle = null
+            lastKnownTrackArtist = null
+            stateRepository.setPaused(false)
+        } else if (currentPkg == null) {
+            // No active media - clear everything
+            if (currentPackageName != null) {
+                currentPackageName = null
+                isPaused = false
+                lastKnownTrackTitle = null
+                lastKnownTrackArtist = null
+                stateRepository.setConnected(false)
+                stateRepository.clearTrackInfo()
+                stopTimelineUpdates()
+                kizzyRPC.closeRPC()
+                return
+            }
+        }
 
         // Update state repository so UI reflects current track
         stateRepository.setTrackInfo(
             title = playingMedia.name.takeIf { it.isNotBlank() },
             artist = playingMedia.state,
-            album = null // album not exposed by CommonRpc directly
+            album = null
         )
         lastKnownTrackTitle = playingMedia.name.takeIf { it.isNotBlank() }
         lastKnownTrackArtist = playingMedia.state
@@ -195,6 +244,7 @@ class MediaRpcService : Service() {
                     kizzyRPC.closeRPC()
                     stateRepository.setConnected(false)
                     stateRepository.clearTrackInfo()
+                    stopTimelineUpdates()
                 } else {
                     stateRepository.setConnected(true)
                     stateRepository.setPaused(isPaused)
@@ -206,6 +256,7 @@ class MediaRpcService : Service() {
                     logger.d("MediaRPC", "Skipping RPC update with empty data")
                     stateRepository.setConnected(false)
                     stateRepository.clearTrackInfo()
+                    stopTimelineUpdates()
                     return
                 }
                 stateRepository.setConnected(true)
@@ -239,7 +290,7 @@ class MediaRpcService : Service() {
             }
         }
 
-        // Restart timeline updates so the progress bar keeps advancing
+        // Manage timeline updates
         if (playingMedia.name.isNotBlank() && !isPaused) {
             startTimelineUpdates()
         } else {
@@ -247,49 +298,21 @@ class MediaRpcService : Service() {
         }
     }
 
-    private val mediaControllerCallback = MediaControllerCallback()
-
-    private fun activeSessionsListener(mediaSessions: List<MediaController>?, isEvent: Boolean = true) {
-        logger.d("MediaRPC", "Active sessions changed")
-
-        if (isEvent) runBlocking { delay(1500) }
-
-        if (mediaSessions?.isNotEmpty() == true) {
-            currentMediaController?.unregisterCallback(mediaControllerCallback)
-            // Pick the first session that is actually playing media
-            val playingSession = mediaSessions.firstOrNull { it.metadata != null }
-                ?: mediaSessions.firstOrNull()
-            currentMediaController = playingSession
-            currentMediaController?.registerCallback(mediaControllerCallback)
-        } else {
-            currentMediaController?.unregisterCallback(mediaControllerCallback)
-            currentMediaController = null
-        }
-
-        scope.coroutineContext.cancelChildren()
-        scope.launch { updatePresence() }
-    }
-
-    private inner class MediaControllerCallback : MediaController.Callback() {
+    private val mediaControllerCallback = object : MediaController.Callback() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             super.onPlaybackStateChanged(state)
 
-            // Detect pause/play state change
-            val wasPaused = isPaused
-            isPaused = state != PlaybackState.STATE_PLAYING
-
-            // Sync with state repository
-            stateRepository.setPaused(isPaused)
-
-            if (wasPaused != isPaused) {
+            val newPaused = state != PlaybackState.STATE_PLAYING
+            if (isPaused != newPaused) {
+                isPaused = newPaused
+                stateRepository.setPaused(isPaused)
                 logger.d("MediaRPC", "Playback state changed: paused=$isPaused")
-                // Update notification pause button icon dynamically
                 updateNotificationPauseButton()
             }
 
-            scope.coroutineContext.cancelChildren()
+            // Immediate presence update on state change
             scope.launch {
-                delay(1000)
+                delay(500)
                 updatePresence()
             }
         }
@@ -297,9 +320,9 @@ class MediaRpcService : Service() {
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
 
-            scope.coroutineContext.cancelChildren()
+            // Immediate presence update on metadata change (next song!)
             scope.launch {
-                delay(1000)
+                delay(800)
                 updatePresence()
             }
         }
@@ -307,7 +330,6 @@ class MediaRpcService : Service() {
         override fun onSessionDestroyed() {
             super.onSessionDestroyed()
 
-            scope.coroutineContext.cancelChildren()
             scope.launch {
                 updatePresence()
             }
@@ -319,9 +341,10 @@ class MediaRpcService : Service() {
      * without recreating the entire notification.
      */
     private fun updateNotificationPauseButton() {
-        // Rebuild notification with updated pause icon and re-post
-        val notification = buildNotification(if (isPaused) "RPC Paused" else "Rich Presence Active",
-            if (isPaused) "Tap Resume to continue syncing" else "Broadcasting media status")
+        val notification = buildNotification(
+            if (isPaused) "RPC Paused" else "Rich Presence Active",
+            if (isPaused) "Tap Resume to continue syncing" else "Broadcasting media status"
+        )
         notificationManager.notify(Constants.NOTIFICATION_ID, notification)
     }
 
@@ -355,6 +378,59 @@ class MediaRpcService : Service() {
                 ).build()
             )
             .build()
+    }
+
+    private fun activeSessionsListener(mediaSessions: List<MediaController>?, isEvent: Boolean = true) {
+        logger.d("MediaRPC", "Active sessions changed: ${mediaSessions?.size ?: 0}")
+
+        if (isEvent) {
+            // Give the new session time to populate metadata
+            scope.launch {
+                delay(1000)
+                applySessionChange(mediaSessions)
+            }
+        } else {
+            applySessionChange(mediaSessions)
+        }
+    }
+
+    private fun applySessionChange(mediaSessions: List<MediaController>?) {
+        // Unregister from old session
+        currentMediaController?.unregisterCallback(mediaControllerCallback)
+
+        if (mediaSessions?.isNotEmpty() == true) {
+            // Smart session selection:
+            // 1. Prefer a session that is currently PLAYING
+            // 2. Then prefer a session with metadata
+            // 3. Then any session
+            val selectedSession = mediaSessions.firstOrNull {
+                it.playbackState?.state == PlaybackState.STATE_PLAYING && it.metadata != null
+            } ?: mediaSessions.firstOrNull { it.metadata != null }
+                ?: mediaSessions.firstOrNull()
+
+            currentMediaController = selectedSession
+            currentMediaController?.registerCallback(mediaControllerCallback)
+
+            logger.d("MediaRPC", "Tracking session: ${selectedSession?.packageName} (${selectedSession?.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "no title"})")
+
+            scope.launch {
+                delay(500)
+                updatePresence()
+            }
+        } else {
+            currentMediaController = null
+            currentPackageName = null
+            isPaused = false
+            lastKnownTrackTitle = null
+            lastKnownTrackArtist = null
+            stateRepository.setConnected(false)
+            stateRepository.clearTrackInfo()
+            stopTimelineUpdates()
+
+            scope.launch {
+                updatePresence()
+            }
+        }
     }
 
     @SuppressLint("WakelockTimeout")
@@ -392,6 +468,7 @@ class MediaRpcService : Service() {
 
     override fun onDestroy() {
         stopTimelineUpdates()
+        stopHeartbeat()
         mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         scope.cancel()
