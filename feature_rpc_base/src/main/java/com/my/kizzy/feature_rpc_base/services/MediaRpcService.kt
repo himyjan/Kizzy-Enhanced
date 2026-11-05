@@ -170,7 +170,7 @@ class MediaRpcService : Service() {
     }
 
     /**
-     * Heartbeat: re-evaluates presence every 3 seconds to catch missed "next song" changes
+     * Heartbeat: periodically re-check presence to catch missed "next song" events
      * that media session callbacks might miss (especially when switching between apps).
      */
     private fun startHeartbeat() {
