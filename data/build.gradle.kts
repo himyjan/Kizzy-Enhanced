@@ -12,7 +12,7 @@ android {
         buildConfigFieldFromGradleProperty("BASE_URL","BASE_URL")
         buildConfigFieldFromGradleProperty("DISCORD_API_BASE_URL","DISCORD_API_URL")
         buildConfigFieldFromGradleProperty("GITHUB_API_BASE_URL","GITHUB_API_URL")
-        buildConfigFieldFromGradleProperty("IMGUR_API_BASE_URL", "IMGUR_API_BASE_URL")
+        buildConfigFieldFromGradleProperty("IMGUR_API_BASE_URL", "imgur-api-base-url")
     }
 
     buildTypes {
@@ -45,6 +45,7 @@ dependencies {
     implementation (libs.work.runtime.ktx)
     implementation (libs.hilt.work)
     ksp(libs.hilt.work)
+    ksp(projects.domain)
     implementation (projects.common.preference)
     implementation (projects.common.resources)
     implementation (projects.gateway)
