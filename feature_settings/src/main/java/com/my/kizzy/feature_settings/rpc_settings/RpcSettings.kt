@@ -150,7 +150,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_youtube_button),
                     description = stringResource(id = R.string.use_youtube_button_desc),
-                    icon = OpenInNew,
+                    icon = Icons.AutoMirrored.Filled.OpenInNew,
                     isChecked = useYoutubeButton,
                 ) {
                     useYoutubeButton = !useYoutubeButton
@@ -161,7 +161,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.link_to_artist_channel),
                     description = stringResource(id = R.string.link_to_artist_channel_desc),
-                    icon = Icons.Default.Person,
+                    icon = Icons.Filled.Person,
                     isChecked = linkToArtistChannel,
                 ) {
                     linkToArtistChannel = !linkToArtistChannel

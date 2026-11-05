@@ -90,6 +90,18 @@ class MediaRpcService : Service() {
             .setPriority(NotificationCompat.PRIORITY_LOW)
     }
 
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                Constants.NOTIFICATION_CHANNEL_ID,
+                "Kizzy Media RPC",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            channel.description = "Media Rich Presence notification channel"
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
         super.onCreate()
@@ -198,7 +210,7 @@ class MediaRpcService : Service() {
         val playingMedia = getCurrentPlayingMedia()
 
         // Detect session switch (new app/package) and reset state
-        val currentPkg = currentMediaController?.packageName.takeIf { it.isNotBlank() }
+        val currentPkg = currentMediaController?.packageName?.takeIf { it.isNotBlank() }
         if (currentPkg != null && currentPkg != currentPackageName) {
             logger.d("MediaRPC", "Session switched: $currentPackageName -> $currentPkg")
             currentPackageName = currentPkg
@@ -273,7 +285,8 @@ class MediaRpcService : Service() {
                             }
                         }
                         if (Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
-                            metadataResolver.getArtistUrl(playingMedia.metadata, playingMedia.packageName)?.let { url ->
+                            currentMediaController?.metadata?.let { metadata ->
+                                metadataResolver.getArtistUrl(metadata, playingMedia.packageName)?.let { url ->
                                 val label = when {
                                     playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Artist on YouTube"
                                     playingMedia.packageName == "com.spotify.music" -> "Artist on Spotify"
@@ -342,7 +355,7 @@ class MediaRpcService : Service() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             super.onPlaybackStateChanged(state)
 
-            val newPaused = state != PlaybackState.STATE_PLAYING
+            val newPaused = state?.state != PlaybackState.STATE_PLAYING
             if (isPaused != newPaused) {
                 isPaused = newPaused
                 stateRepository.setPaused(isPaused)
