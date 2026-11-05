@@ -224,7 +224,6 @@
     <string name="timestamp_mode">Timestamp Mode</string>
     <string name="start_timestamp_ms">Start Timestamp (in milliseconds)</string>
     <string name="end_timestamp_ms">End Timestamp (in milliseconds)</string>
-    <string name="party_less_than_zero">Party size must be greater than zero</string>
     <string name="completion_media_album">Album Name</string>
     <string name="completion_media_album_artist">Album Artist</string>
     <string name="completion_media_duration">Track Duration</string>
