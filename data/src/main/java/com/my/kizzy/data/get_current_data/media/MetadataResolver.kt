@@ -13,6 +13,8 @@ package com.my.kizzy.data.get_current_data.media
 
 import android.graphics.Bitmap
 import android.media.MediaMetadata
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 class MetadataResolver @Inject constructor() {
@@ -116,7 +118,7 @@ class MetadataResolver @Inject constructor() {
 
         // Check if album or genre field contains channel info (some players put it there)
         val album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
-        val channelMatch = Regex("""(5\.1|7\.1|2\.0|stereo|surround|atmos)""", RegexOption.IGNORECASE)
+        val channelMatch = Regex("""(5\.1|7\.1|2\.0|stereo|surround|atmos)""", RegexOption.IGNORE_CASE)
             .find(album)
         return channelMatch?.value?.capitalize()
     }
@@ -130,7 +132,7 @@ class MetadataResolver @Inject constructor() {
     fun getMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
         // Try standard source URL key first
         val sourceUrl = metadata.getString(MediaMetadata.METADATA_KEY_SOURCE_URL)
-        if (sourceUrl.isNotNullOrEmpty() && isValidMediaUrl(sourceUrl)) {
+        if (!sourceUrl.isNullOrEmpty() && isValidMediaUrl(sourceUrl)) {
             return sourceUrl
         }
 
@@ -148,7 +150,7 @@ class MetadataResolver @Inject constructor() {
         )
         for (key in customKeys) {
             val value = metadata.getString(key)
-            if (value.isNotNullOrEmpty() && isValidMediaUrl(value)) {
+            if (!value.isNullOrEmpty() && isValidMediaUrl(value)) {
                 return value
             }
         }
@@ -159,38 +161,38 @@ class MetadataResolver @Inject constructor() {
                 pkg.contains("youtube") || pkg.contains("youtubemusic") -> {
                     // Try to extract video ID from title or other metadata
                     val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (title.isNotNullOrEmpty()) {
-                        "https://www.youtube.com/results?search_query=${title.encodeToUriComponent()}"
+                    if (!title.isNullOrEmpty()) {
+                        "https://www.youtube.com/results?search_query=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
                     } else null
                 }
                 pkg == "com.spotify.music" -> {
                     // Spotify: try to find track ID in metadata
                     val albumUri = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
-                    if (albumUri.isNotNullOrEmpty() && albumUri.contains("spotify")) {
-                        "https://open.spotify.com/search/${albumUri.encodeToUriComponent()}"
+                    if (!albumUri.isNullOrEmpty() && albumUri.contains("spotify")) {
+                        "https://open.spotify.com/search/${URLEncoder.encode(albumUri, StandardCharsets.UTF_8.toString())}"
                     } else {
                         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                        if (title.isNotNullOrEmpty()) {
-                            "https://open.spotify.com/search/${title.encodeToUriComponent()}"
+                        if (!title.isNullOrEmpty()) {
+                            "https://open.spotify.com/search/${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
                         } else null
                     }
                 }
                 pkg.contains("apple") || pkg.contains("itunes") -> {
                     val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (title.isNotNullOrEmpty()) {
-                        "https://music.apple.com/search?term=${title.encodeToUriComponent()}"
+                    if (!title.isNullOrEmpty()) {
+                        "https://music.apple.com/search?term=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
                     } else null
                 }
                 pkg.contains("deezer") -> {
                     val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (title.isNotNullOrEmpty()) {
-                        "https://www.deezer.com/search/${title.encodeToUriComponent()}"
+                    if (!title.isNullOrEmpty()) {
+                        "https://www.deezer.com/search/${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
                     } else null
                 }
                 pkg.contains("soundcloud") -> {
                     val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (title.isNotNullOrEmpty()) {
-                        "https://soundcloud.com/search/${title.encodeToUriComponent()}"
+                    if (!title.isNullOrEmpty()) {
+                        "https://soundcloud.com/search/${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
                     } else null
                 }
                 else -> null
@@ -210,3 +212,4 @@ class MetadataResolver @Inject constructor() {
             contains("spotify.com") ||
             contains("itunes.apple.com")
     }
+}
