@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import androidx.work.impl.utils.futures.SettableFuture
+import androidx.concurrent.futures.CallbackToFutureAdapter
+import com.google.common.util.concurrent.ListenableFuture
 import com.my.kizzy.preference.Prefs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,16 +24,17 @@ abstract class BaseWorker(
 ) : ListenableWorker(appContext, workerParams) {
 
     override fun startWork(): ListenableFuture<Result> {
-        val future = SettableFuture<Result>()
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val result = doWork()
-                future.set(result)
-            } catch (e: Exception) {
-                future.set(Result.failure())
+        return CallbackToFutureAdapter.getFuture { completer ->
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val result = doWork()
+                    completer.set(result)
+                } catch (e: Exception) {
+                    completer.setException(e)
+                }
             }
+            "BaseWorker"
         }
-        return future
     }
 
     /**
