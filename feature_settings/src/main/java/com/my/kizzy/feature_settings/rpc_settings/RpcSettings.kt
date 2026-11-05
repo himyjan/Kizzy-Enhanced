@@ -33,8 +33,7 @@ import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.OpenInNew
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Pin
 import androidx.compose.material.icons.filled.SmartButton
 import androidx.compose.material.icons.filled.Storage
@@ -152,7 +151,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_youtube_button),
                     description = stringResource(id = R.string.use_youtube_button_desc),
-                    icon = OpenInNew,
+                    icon = Icons.AutoMirrored.Filled.OpenInNew,
                     isChecked = useYoutubeButton,
                 ) {
                     useYoutubeButton = !useYoutubeButton
@@ -163,7 +162,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.link_to_artist_channel),
                     description = stringResource(id = R.string.link_to_artist_channel_desc),
-                    icon = Person,
+                    icon = Icons.Default.Person,
                     isChecked = linkToArtistChannel,
                 ) {
                     linkToArtistChannel = !linkToArtistChannel
