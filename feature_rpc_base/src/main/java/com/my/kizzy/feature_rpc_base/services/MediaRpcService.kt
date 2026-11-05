@@ -21,6 +21,8 @@ import android.os.PowerManager.WakeLock
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.KizzyRPC
+import com.my.kizzy.data.work.RpcRecoveryHiltWorker
+import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.Constants
@@ -39,6 +41,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -514,7 +519,35 @@ class MediaRpcService : Service() {
                 }
             }
         }
-        return START_STICKY
+        return START_REDELIVER_INTENT
+    }
+
+    /**
+     * Called when the user removes the task from the Recents menu.
+     * Instead of letting the app die silently, we schedule a WorkManager
+     * recovery job if RPC is enabled, so presence can be restored after
+     * aggressive task removal or process termination.
+     */
+    override fun onTaskRemoved(intent: Intent?) {
+        logger.d("MediaRPC", "onTaskRemoved: user swiped app from Recents")
+
+        // Stop foreground service gracefully
+        stopForeground(Service.STOP_FOREGROUND_REMOVE)
+        stopSelf()
+
+        // If RPC is enabled, schedule recovery work to restore presence later
+        if (Prefs[Prefs.USE_RPC_BUTTONS, false] || Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
+            logger.d("MediaRPC", "Scheduling RPC recovery work after task removal")
+            WorkManager.getInstance(this)
+                .enqueueUniqueWork(
+                    "kizzy_rpc_recovery",
+                    ExistingWorkPolicy.KEEP,
+                    OneTimeWorkRequestBuilder<RpcRecoveryHiltWorker>()
+                        .build()
+                )
+        }
+
+        super.onTaskRemoved(intent)
     }
 
     override fun onDestroy() {
