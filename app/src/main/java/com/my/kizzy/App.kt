@@ -16,7 +16,7 @@ class App: Application() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         CrashHandlerConfig.apply()
         PreferenceConfig.apply(this)
-        LoggerProvider.init()
+        LoggerProvider.init(this)
         AppUtils.init(this)
     }
 }

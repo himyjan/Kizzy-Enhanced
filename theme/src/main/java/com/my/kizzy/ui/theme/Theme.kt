@@ -78,11 +78,10 @@ fun KizzyTheme(
     val view = LocalView.current
 
     // Modern native edge-to-edge layout: transparent status/navigation bars
+    // Icon appearance (light/dark) controlled via WindowInsetsControllerCompat
     if (!view.isInEditMode) {
         SideEffect {
             window?.let {
-                it.statusBarColor = android.graphics.Color.TRANSPARENT
-                it.navigationBarColor = android.graphics.Color.TRANSPARENT
                 val controller = WindowCompat.getInsetsController(it, view)
                 controller.isAppearanceLightStatusBars = !darkTheme
                 controller.isAppearanceLightNavigationBars = !darkTheme
