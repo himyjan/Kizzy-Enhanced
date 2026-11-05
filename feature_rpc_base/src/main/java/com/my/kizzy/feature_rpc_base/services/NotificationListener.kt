@@ -1,6 +1,5 @@
 package com.my.kizzy.feature_rpc_base.services
 
-import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,23 +10,16 @@ import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.util.Log
 import com.my.kizzy.feature_rpc_base.Constants
-import com.my.kizzy.feature_rpc_base.security.SecureTokenStorage
 import com.my.kizzy.feature_rpc_base.utils.MediaMetadataParser
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
-import javax.inject.Singleton
 import kizzy.gateway.DiscordWebSocketImpl
 
-@AndroidEntryPoint
-@Singleton
-class NotificationListener: NotificationListenerService() {
+class NotificationListener : NotificationListenerService() {
 
     private lateinit var mediaSessionManager: MediaSessionManager
     private var activeController: MediaController? = null
-    private val metadataParser = MediaMetadataParser()
 
     private val activeSessionChangedListener = MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
         updateActiveController(controllers)
