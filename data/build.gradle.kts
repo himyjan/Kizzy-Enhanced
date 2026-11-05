@@ -12,7 +12,7 @@ android {
         buildConfigFieldFromGradleProperty("BASE_URL","BASE_URL")
         buildConfigFieldFromGradleProperty("DISCORD_API_BASE_URL","DISCORD_API_URL")
         buildConfigFieldFromGradleProperty("GITHUB_API_BASE_URL","GITHUB_API_URL")
-        buildConfigFieldFromGradleProperty("IMGUR_API_BASE_URL", "imgur-api-base-url")
+        buildConfigField("String", "IMGUR_API_BASE_URL", "\"https://api.imgur.com/3\"")
     }
 
     buildTypes {
@@ -39,7 +39,6 @@ android {
 dependencies {
     implementation (libs.core.ktx)
     implementation (projects.domain)
-    ksp(projects.domain)
     implementation (libs.bundles.network.ktor)
     implementation (libs.ktor.content.negotiation)
     implementation (libs.ktor.logging)
@@ -50,6 +49,8 @@ dependencies {
     implementation (projects.common.resources)
     implementation (projects.gateway)
     implementation (libs.blankj.utilcodex)
+    implementation ("com.google.guava:listenablefuture:99.0.0-empty-to-avoid-conflict-with-guava")
+    implementation ("androidx.concurrent:concurrent-futures-ktx:1.2.0")
     testImplementation(libs.junit)
 }
 

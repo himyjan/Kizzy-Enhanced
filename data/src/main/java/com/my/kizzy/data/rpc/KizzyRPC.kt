@@ -26,7 +26,7 @@ import kizzy.gateway.entities.presence.Presence
 import kizzy.gateway.entities.presence.Timestamps
 import kotlinx.coroutines.isActive
 
-class KizzyRPC(
+class KizzyRPC @Inject constructor(
     private val token: String,
     private val kizzyRepository: KizzyRepository,
     private val discordWebSocket: DiscordWebSocket,
