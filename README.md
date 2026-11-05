@@ -12,6 +12,10 @@
 <div align="center">
   
 [![README на русском](https://img.shields.io/badge/README-на%20русском%20языке-blue?style=for-the-badge)](README_RU.md)
+[![README in 日本語](https://img.shields.io/badge/README-in%20日本語-blue?style=for-the-badge)](README_JP.md)
+[![README in 한국어](https://img.shields.io/badge/README-in%20한국어-blue?style=for-the-badge)](README_KR.md)
+[![README in 中文（简体）](https://img.shields.io/badge/README-in%20中文（简体）-blue?style=for-the-badge)](README_ZH-HANS.md)
+[![README in 中文（繁體）](https://img.shields.io/badge/README-in%20中文（繁體）-blue?style=for-the-badge)](README_ZH-HANT.md)
 </div>
 <p>
 <img src="https://github.com/user-attachments/assets/f8402300-d628-4104-8f86-dc6021c9fbbe" width=60%/>
