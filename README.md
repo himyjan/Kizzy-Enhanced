@@ -16,6 +16,17 @@
 [![README in 한국어](https://img.shields.io/badge/README-in%20한국어-blue?style=for-the-badge)](README_KR.md)
 [![README in 中文（简体）](https://img.shields.io/badge/README-in%20中文（简体）-blue?style=for-the-badge)](README_ZH-HANS.md)
 [![README in 中文（繁體）](https://img.shields.io/badge/README-in%20中文（繁體）-blue?style=for-the-badge)](README_ZH-HANT.md)
+[![README en español](https://img.shields.io/badge/README-en%20espa%C3%B1ol-blue?style=for-the-badge)](README_ES.md)
+[![README en français](https://img.shields.io/badge/README-en%20français-blue?style=for-the-badge)](README_FR.md)
+[![README auf Deutsch](https://img.shields.io/badge/README-auf%20Deutsch-blue?style=for-the-badge)](README_DE.md)
+[![README in italiano](https://img.shields.io/badge/README-in%20italiano-blue?style=for-the-badge)](README_IT.md)
+[![README em português](https://img.shields.io/badge/README-em%20português-blue?style=for-the-badge)](README_PT.md)
+[![README Türkçe'de](https://img.shields.io/badge/README-Türkçe'de-blue?style=for-the-badge)](README_TR.md)
+[![README بالعربية](https://img.shields.io/badge/README-بالعربية-blue?style=for-the-badge)](README_AR.md)
+[![README हिंदी में](https://img.shields.io/badge/README-हिंदी%20में-blue?style=for-the-badge)](README_HI.md)
+[![README ภาษาไทย](https://img.shields.io/badge/README-ภาษาไทย-blue?style=for-the-badge)](README_TH.md)
+[![README bằng tiếng Việt](https://img.shields.io/badge/README-bằng%20tiếng%20Việt-blue?style=for-the-badge)](README_VI.md)
+[![README dalam Bahasa Indonesia](https://img.shields.io/badge/README-dalam%20Bahasa%20Indonesia-blue?style=for-the-badge)](README_ID.md)
 </div>
 <p>
 <img src="https://github.com/user-attachments/assets/f8402300-d628-4104-8f86-dc6021c9fbbe" width=60%/>
