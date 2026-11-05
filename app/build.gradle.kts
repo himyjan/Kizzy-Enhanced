@@ -82,4 +82,8 @@ dependencies {
     implementation (libs.material3)
     implementation (libs.androidx.material)
     implementation (libs.material3.windows.size)
+
+    // WorkManager + Hilt Work
+    implementation (libs.work.runtime.ktx())
+    implementation (libs.hilt.work())
 }
