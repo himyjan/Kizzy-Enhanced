@@ -69,6 +69,8 @@ dependencies {
     implementation (projects.featureHome)
     implementation (projects.common.preference)
     implementation (projects.common.navigation)
+    implementation (projects.common.components)
+    implementation (projects.common.resources)
 
     // Extras
     implementation (libs.app.compat)
