@@ -10,10 +10,10 @@ android {
 
     buildTypes {
         release {
-            matchingFallbacks = ['release', 'debug']
+            matchingFallbacks = listOf("release", "debug")
         }
         debug {
-            matchingFallbacks = ['debug', 'release']
+            matchingFallbacks = listOf("debug", "release")
         }
     }
 }
