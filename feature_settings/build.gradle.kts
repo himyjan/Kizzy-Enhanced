@@ -23,4 +23,5 @@ dependencies {
 
     implementation(projects.color)
     implementation(projects.theme)
+    implementation(libs.hilt.navigation.compose)
 }

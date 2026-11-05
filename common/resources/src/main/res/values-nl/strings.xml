@@ -27,22 +27,29 @@
     <string name="github_latest_release">"Github laatste release "</string>
     <string name="github_latest_release_desc">Zoek naar een nieuwe versie en of de laatste changelog</string>
     <string name="github_issue">Github probleem</string>
-    <string name="github_issue_desc">Laat hier je problemen en bugs weten voor oplossingen in nieuwe versies van de app</string>
+    <string name="github_issue_desc">Laat hier je problemen en bugs weten voor oplossingen in nieuwe
+        versies van de app</string>
     <string name="credits">Credits</string>
     <string name="credits_desc">Credits to libraries used and contributors</string>
     <string name="enable_artist_name">Laat artiest naam zien</string>
     <string name="enable_album_name">Enable Album Name</string>
     <string name="show_app_icon">Laat app icoon zien</string>
     <string name="enable_timestamps">Laat verstreken tijd zien</string>
-    <string name="text_after_permission_denied">Geef de app permissie om de opslag te gebruiken, het is erg belangrijk en word gebruikt om de configuraties op te slaan.</string>
-    <string name="request_for_storage_access">Opslag permissies is erg belangrijk voor configuratie opties, geef alstublieft opslag permissies.</string>
+    <string name="text_after_permission_denied">Geef de app permissie om de opslag te gebruiken, het
+        is erg belangrijk en word gebruikt om de configuraties op te slaan.</string>
+    <string name="request_for_storage_access">Opslag permissies is erg belangrijk voor configuratie
+        opties, geef alstublieft opslag permissies.</string>
     <string name="grant_permission">Geef Permissie</string>
     <string name="use_low_res_icon">Use Low Resolution Images</string>
-    <string name="use_low_res_icon_desc">Gebruik een lagere resolutie voor de app icoon/logo op rpc (schakel dit in als de rpc crasht). Deze instelling wordt ook toegepast op Apps Rpc.</string>
+    <string name="use_low_res_icon_desc">Gebruik een lagere resolutie voor de app icoon/logo op rpc
+        (schakel dit in als de rpc crasht). Deze instelling wordt ook toegepast op Apps Rpc.</string>
     <string name="delete_saved_icon_urls">Verwijder opgeslagen Icoon links</string>
-    <string name="delete_saved_icon_urls_desc">Verwijder alle opgeslagen icoon/logo urls op de telefoon (gebruik dit alleen in speciale momenten, deze optie stuurt slle afbeeldingen naar discord servers en verbruit meer data)</string>
+    <string name="delete_saved_icon_urls_desc">Verwijder alle opgeslagen icoon/logo urls op de
+        telefoon (gebruik dit alleen in speciale momenten, deze optie stuurt slle afbeeldingen naar
+        discord servers en verbruit meer data)</string>
     <string name="app_crashed">De App is GeCrashed</string>
-    <string name="share_crash_logs_desc">Stuur De Logs Naar Het Discord-kanaal Met De Volgende Stacktrace :</string>
+    <string name="share_crash_logs_desc">Stuur De Logs Naar Het Discord-kanaal Met De Volgende
+        Stacktrace :</string>
     <string name="share_crash_logs">DEEL LOGS</string>
     <string name="welcome">Welkom</string>
     <string name="features">Functies</string>
@@ -64,7 +71,8 @@
     <string name="enable_console_rpc">Zet Console Rpc aan</string>
     <string name="rpc_settings_button_configs">Knop(pen) Instellingen voor Media and AppDetectie Rpc</string>
     <string name="use_custom_buttons">Gebruik Aangepaste Knoppen</string>
-    <string name="use_custom_buttons_desc">Gebruik Vooraf ingestelde knoppen om op Media and AppDetection rpc te laten zien</string>
+    <string name="use_custom_buttons_desc">Gebruik Vooraf ingestelde knoppen om op Media and
+        AppDetection rpc te laten zien</string>
     <string name="follow_system">Hetzelfde als Systeem</string>
     <string name="advance_settings">Geavanceerde Instellingen</string>
     <string name="amoled">Amoled Thema</string>
@@ -78,7 +86,8 @@
     <string name="android_off">Uit</string>
     <string name="setup">Instellen</string>
     <string name="user_data_policy">Deze app verzamelt geen gebruikersgegevens</string>
-    <string name="setup_desc">Voordat u verder gaat, is het raadzaam om de nodige acties uit te voeren om ervoor te zorgen dat alle functies van de app werken.</string>
+    <string name="setup_desc">Voordat u verder gaat, is het raadzaam om de nodige acties uit te
+        voeren om ervoor te zorgen dat alle functies van de app werken.</string>
     <string name="permission_granted">Toegekend</string>
     <string name="permission_not_granted">Niet Toegekend, Klik om Toe Te Staan</string>
     <string name="activity_large_text">Activieit Grote Text</string>
@@ -87,15 +96,18 @@
     <string name="stream_url">Stream Url</string>
     <string name="stream_url_info">Only https://twitch.tv/ and https://youtube.com/ urls will work.</string>
     <string name="activity_button_max_character">Max character limit is 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom Rpc Fields</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom rpc from the last run rpc</string>
+    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom Rpc
+        Fields</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom rpc
+        from the last run rpc</string>
     <string name="clear_all_fields">Clear All Fields</string>
     <string name="share_config">Share Config</string>
     <string name="change_log">Change Log</string>
     <string name="update">Update</string>
     <string name="configs_directory">Configs Directory</string>
     <string name="custom_activity_type">Custom Activity Type</string>
-    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media and experimental rpc only</string>
+    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
+        and experimental rpc only</string>
     <string name="custom_activity_status">Custom Activity Status</string>
     <string name="custom_activity_status_desc">Overrides the default activity status</string>
     <string name="search">Search</string>
@@ -104,15 +116,20 @@
     <string name="hide_on_pause">Hide RPC on Pause</string>
     <string name="idling_notification">Idling…</string>
     <string name="main_appDetection">App Detection</string>
-    <string name="main_appDetection_details">Kizzy allows you to share your current activity on Discord by detecting what app you\'re using on your device.</string>
+    <string name="main_appDetection_details">Kizzy allows you to share your current activity on
+        Discord by detecting what app you\'re using on your device.</string>
     <string name="main_mediaRpc">Media RPC</string>
-    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on Discord, such as the song or video you\'re currently listening to or watching.</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you\'re currently listening to or watching.</string>
     <string name="main_customRpc">Custom RPC</string>
     <string name="main_consoleRpc">Console RPC</string>
-    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set your presence on Discord.</string>
+    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
+        your presence on Discord.</string>
     <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that constantly switches between Apps RPC and Media RPC.</string>
-    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable rich presence for Discord.</string>
+    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
+        rich presence for Discord.</string>
     <string name="main_comingSoon">Coming Soon</string>
     <string name="exit">Exit</string>
     <string name="logs">Logs</string>
@@ -121,7 +138,8 @@
     <string name="go_to_profile">Go to Profile</string>
     <string name="version">Version</string>
     <string name="try_again">Retry</string>
-    <string name="request_for_notification_access">Notification Access is needed for app to extract media information.</string>
+    <string name="request_for_notification_access">Notification Access is needed for app to extract
+        media information.</string>
     <string name="update_check_for_update">Checking for update…</string>
     <string name="update_no_updates_available">No updates available</string>
     <string name="compact_mode">Compact Mode</string>
@@ -201,8 +219,10 @@
     <string name="application_id">Application ID</string>
     <string name="custom_application_id">Custom Activity Application ID</string>
     <string name="custom_application_id_desc">Overrides the default Discord Application ID</string>
-    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI. Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}}, {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
+        Please use a VPN/DPI to proceed.</string>
+    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}},
+        {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -216,7 +236,8 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting your own Client ID</string>
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+        setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
     <string name="app_name_full">Kizzy Enhanced</string>
@@ -231,14 +252,16 @@
     <string name="completion_battery">Battery Level</string>
     <string name="completion_playback">Playback State</string>
     <string name="use_youtube_button">Add Media Button</string>
-    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
     <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{  to insert a variable</string>
+    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
@@ -316,7 +339,6 @@
     <string name="locale_ps">پښتو</string>
     <string name="locale_sa">संस्कृतम्</string>
     <string name="locale_bo">བོད་སྐད།</string>
-    <string name="locale_uz">Oʻzbekcha</string>
     <string name="locale_cy">Cymraeg</string>
     <string name="locale_zu">isiZulu</string>
 </resources>

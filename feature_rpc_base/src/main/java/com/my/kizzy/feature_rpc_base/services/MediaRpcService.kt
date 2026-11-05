@@ -254,19 +254,22 @@ class MediaRpcService : Service() {
                     stateRepository.setConnected(true)
                     stateRepository.setPaused(isPaused)
                     // Add media button(s) if enabled
-                    if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false]) {
-                        playingMedia.mediaUrl?.let { url ->
-                            val label = when {
-                                playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Watch on YouTube"
-                                playingMedia.packageName == "com.spotify.music" -> "Listen on Spotify"
-                                playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Artist on Apple Music"
-                                playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
-                                playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
-                                playingMedia.packageName.contains("streetvoice") -> "Listen on StreetVoice"
-                                playingMedia.packageName.contains("ymusicapp") -> "Play on YMusic"
-                                else -> "Open Media Link"
+                    if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
+                        kizzyRPC.clearButtons()
+                        if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false]) {
+                            playingMedia.mediaUrl?.let { url ->
+                                val label = when {
+                                    playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Watch on YouTube"
+                                    playingMedia.packageName == "com.spotify.music" -> "Listen on Spotify"
+                                    playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
+                                    playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
+                                    playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
+                                    playingMedia.packageName.contains("streetvoice") -> "Listen on StreetVoice"
+                                    playingMedia.packageName.contains("ymusicapp") -> "Play on YMusic"
+                                    else -> "Open Media Link"
+                                }
+                                kizzyRPC.setButton1(label, url)
                             }
-                            kizzyRPC.setButton1(label, url)
                         }
                         if (Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
                             metadataResolver.getArtistUrl(playingMedia.metadata, playingMedia.packageName)?.let { url ->

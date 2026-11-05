@@ -35,13 +35,18 @@
     <string name="enable_album_name">Tampilkan Nama Album</string>
     <string name="show_app_icon">Tampilkan Ikon Aplikasi</string>
     <string name="enable_timestamps">Tampilkan Waktu</string>
-    <string name="text_after_permission_denied">Akses penyimpanan diperlukan agar aplikasi ini dapat menyimpan konfigurasi di folder publik. Mohon izinkan.</string>
-    <string name="request_for_storage_access">Izin penyimpanan diperlukan agar fitur konfigurasi dapat berfungsi. Mohon izinkan.</string>
+    <string name="text_after_permission_denied">Akses penyimpanan diperlukan agar aplikasi ini dapat
+        menyimpan konfigurasi di folder publik. Mohon izinkan.</string>
+    <string name="request_for_storage_access">Izin penyimpanan diperlukan agar fitur konfigurasi
+        dapat berfungsi. Mohon izinkan.</string>
     <string name="grant_permission">Izinkan</string>
     <string name="use_low_res_icon">Gunakan Ikon Resolusi Rendah</string>
-    <string name="use_low_res_icon_desc">Gunakan ikon beresolusi rendah untuk ditampilkan di RPC (Aktifkan ini jika RPC mengalami crash). Pengaturan ini juga berlaku untuk Apps RPC.</string>
+    <string name="use_low_res_icon_desc">Gunakan ikon beresolusi rendah untuk ditampilkan di RPC
+        (Aktifkan ini jika RPC mengalami crash). Pengaturan ini juga berlaku untuk Apps RPC.</string>
     <string name="delete_saved_icon_urls">Hapus Tautan Ikon Yang Tersimpan</string>
-    <string name="delete_saved_icon_urls_desc">Menghapus URL ikon yang tersimpan (Gunakan ini jika diperlukan, karena ini akan mengirimkan ulang ikon ke server Discord lagi, sehingga akan menghabiskan banyak data)</string>
+    <string name="delete_saved_icon_urls_desc">Menghapus URL ikon yang tersimpan (Gunakan ini jika
+        diperlukan, karena ini akan mengirimkan ulang ikon ke server Discord lagi, sehingga akan
+        menghabiskan banyak data)</string>
     <string name="app_crashed">Aplikasi Error</string>
     <string name="share_crash_logs_desc">Mohon kirim log ini di channel Discord dengan stacktrace:</string>
     <string name="share_crash_logs">BAGIKAN LOG</string>
@@ -55,7 +60,8 @@
     <string name="design_credits">Kredit Desain</string>
     <string name="enable_appsRpc">Aktifkan Deteksi Aplikasi</string>
     <string name="usage_access">Akses Penggunaan Diperlukan</string>
-    <string name="usage_access_desc">Akses penggunaan diperlukan agar dapat mendeteksi aplikasi yang sedang digunakan</string>
+    <string name="usage_access_desc">Akses penggunaan diperlukan agar dapat mendeteksi aplikasi yang
+        sedang digunakan</string>
     <string name="enable_mediaRpc">Aktifkan Media RPC</string>
     <string name="permission_required">Izin Diperlukan</string>
     <string name="enable_customRpc">Aktifkan Custom RPC</string>
@@ -65,7 +71,8 @@
     <string name="enable_console_rpc">Aktifkan Console RPC</string>
     <string name="rpc_settings_button_configs">Konfigurasi tombol untuk Media dan AppDetection RPC</string>
     <string name="use_custom_buttons">Gunakan Tombol Kustom</string>
-    <string name="use_custom_buttons_desc">Gunakan tombol yang telah ditentukan untuk ditampilkan pada Media dan AppDetection RPC</string>
+    <string name="use_custom_buttons_desc">Gunakan tombol yang telah ditentukan untuk ditampilkan
+        pada Media dan AppDetection RPC</string>
     <string name="follow_system">Ikuti Sistem</string>
     <string name="advance_settings">Pengaturan Lanjutan</string>
     <string name="amoled">Tema AMOLED</string>
@@ -79,24 +86,29 @@
     <string name="android_off">Nonaktif</string>
     <string name="setup">Atur</string>
     <string name="user_data_policy">Aplikasi ini tidak mengumpulkan data pengguna</string>
-    <string name="setup_desc">Sebelum melanjutkan, pastikan semua fitur berfungsi dengan mengikuti langkah ini.</string>
+    <string name="setup_desc">Sebelum melanjutkan, pastikan semua fitur berfungsi dengan mengikuti
+        langkah ini.</string>
     <string name="permission_granted">Izin Diberikan</string>
     <string name="permission_not_granted">Izin Belum Diberikan, Klik untuk Memberikan Izin</string>
     <string name="activity_large_text">Teks Besar</string>
     <string name="activity_small_text">Teks Kecil</string>
     <string name="contributors">Kontributor</string>
     <string name="stream_url">URL Stream</string>
-    <string name="stream_url_info">Hanya url https://twitch.tv/ dan https://youtube.com/ yang akan berfungsi.</string>
+    <string name="stream_url_info">Hanya url https://twitch.tv/ dan https://youtube.com/ yang akan
+        berfungsi.</string>
     <string name="activity_button_max_character">Maks 31 karakter</string>
-    <string name="set_previous_run_config_in_custom_rpc">Isi Field Custom RPC dari Konfigurasi yang Dijalankan Sebelumnya</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Otomatis mengisi field Custom RPC dari konfigurasi RPC yang terakhir dijalankan</string>
+    <string name="set_previous_run_config_in_custom_rpc">Isi Field Custom RPC dari Konfigurasi yang
+        Dijalankan Sebelumnya</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Otomatis mengisi field Custom RPC dari
+        konfigurasi RPC yang terakhir dijalankan</string>
     <string name="clear_all_fields">Hapus Semua Field</string>
     <string name="share_config">Bagikan Konfigurasi</string>
     <string name="change_log">Catatan Perubahan</string>
     <string name="update">Perbarui</string>
     <string name="configs_directory">Folder Konfigurasi</string>
     <string name="custom_activity_type">Jenis Aktivitas Kustom</string>
-    <string name="custom_activity_type_desc">Mengganti jenis aktivitas default. Hanya berfungsi untuk media dan experimental RPC</string>
+    <string name="custom_activity_type_desc">Mengganti jenis aktivitas default. Hanya berfungsi
+        untuk media dan experimental RPC</string>
     <string name="custom_activity_status">Status Aktivitas Kustom</string>
     <string name="custom_activity_status_desc">Mengganti status aktivitas default</string>
     <string name="search">Cari</string>
@@ -105,15 +117,20 @@
     <string name="hide_on_pause">Sembunyikan RPC saat Pause</string>
     <string name="idling_notification">Sedang Idle…</string>
     <string name="main_appDetection">Deteksi Aplikasi</string>
-    <string name="main_appDetection_details">Kizzy memungkinkan Anda untuk membagikan aktivitas Anda saat ini di Discord dengan mendeteksi aplikasi apa yang Anda gunakan di perangkat Anda.</string>
+    <string name="main_appDetection_details">Kizzy memungkinkan Anda untuk membagikan aktivitas Anda
+        saat ini di Discord dengan mendeteksi aplikasi apa yang Anda gunakan di perangkat Anda.</string>
     <string name="main_mediaRpc">Media RPC</string>
-    <string name="main_mediaRpc_details">Kizzy memungkinkan Anda untuk membagikan aktivitas media Anda saat ini di Discord, seperti lagu atau video yang sedang Anda dengarkan atau tonton.</string>
+    <string name="main_mediaRpc_details">Kizzy memungkinkan Anda untuk membagikan aktivitas media
+        Anda saat ini di Discord, seperti lagu atau video yang sedang Anda dengarkan atau tonton.</string>
     <string name="main_customRpc">Custom RPC</string>
     <string name="main_consoleRpc">Console RPC</string>
-    <string name="main_consoleRpc_details">Kizzy memungkinkan Anda untuk menggunakan beberapa preset bawaan untuk mengatur presence Anda di Discord.</string>
+    <string name="main_consoleRpc_details">Kizzy memungkinkan Anda untuk menggunakan beberapa preset
+        bawaan untuk mengatur presence Anda di Discord.</string>
     <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC adalah fitur di Kizzy yang dapat beralih secara konstan antara Apps RPC dan Media RPC.</string>
-    <string name="main_customRpc_details">Kizzy memungkinkan Anda untuk membuat rich presence sendiri yang dapat dikustomisasi sepenuhnya.</string>
+    <string name="main_experimentalRpc_details">Experimental RPC adalah fitur di Kizzy yang dapat
+        beralih secara konstan antara Apps RPC dan Media RPC.</string>
+    <string name="main_customRpc_details">Kizzy memungkinkan Anda untuk membuat rich presence
+        sendiri yang dapat dikustomisasi sepenuhnya.</string>
     <string name="main_comingSoon">Segera Hadir</string>
     <string name="exit">Keluar</string>
     <string name="logs">Log</string>
@@ -122,7 +139,8 @@
     <string name="go_to_profile">Lihat Profil</string>
     <string name="version">Versi</string>
     <string name="try_again">Coba Lagi</string>
-    <string name="request_for_notification_access">Akses notifikasi diperlukan agar aplikasi dapat mengekstrak informasi media.</string>
+    <string name="request_for_notification_access">Akses notifikasi diperlukan agar aplikasi dapat
+        mengekstrak informasi media.</string>
     <string name="update_check_for_update">Cek pembaruan…</string>
     <string name="update_no_updates_available">Tidak ada pembaruan</string>
     <string name="compact_mode">Mode Ringkas</string>
@@ -155,7 +173,8 @@
     <string name="auto_scroll">Gulir Otomatis</string>
     <string name="party_invalid_number">Ukuran party harus berupa angka</string>
     <string name="party_less_than_zero">Ukuran party harus lebih besar dari 0</string>
-    <string name="party_greater_than_max">Ukuran party saat ini tidak boleh melebihi maks ukuran party</string>
+    <string name="party_greater_than_max">Ukuran party saat ini tidak boleh melebihi maks ukuran
+        party</string>
     <string name="party_max_cannot_be_empty">Maks ukuran party tidak boleh kosong</string>
     <string name="learn_more">Pelajari Lebih Lanjut</string>
     <string name="browse_files">Jelajahi File</string>
@@ -202,8 +221,10 @@
     <string name="application_id">ID Aplikasi</string>
     <string name="custom_application_id">ID Aplikasi Kustom</string>
     <string name="custom_application_id_desc">Mengganti default Discord Application ID</string>
-    <string name="use_a_vpn_desc">Login Discord mungkin tidak berfungsi di negara Anda tanpa VPN/DPI. Silakan gunakan VPN/DPI untuk melanjutkan.</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}}, {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="use_a_vpn_desc">Login Discord mungkin tidak berfungsi di negara Anda tanpa
+        VPN/DPI. Silakan gunakan VPN/DPI untuk melanjutkan.</string>
+    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}},
+        {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -217,7 +238,8 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting your own Client ID</string>
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+        setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
     <string name="app_name_full">Kizzy Enhanced</string>
@@ -232,14 +254,16 @@
     <string name="completion_battery">Battery Level</string>
     <string name="completion_playback">Playback State</string>
     <string name="use_youtube_button">Add Media Button</string>
-    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
     <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{  to insert a variable</string>
+    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
@@ -317,7 +341,6 @@
     <string name="locale_ps">پښتو</string>
     <string name="locale_sa">संस्कृतम्</string>
     <string name="locale_bo">བོད་སྐད།</string>
-    <string name="locale_uz">Oʻzbekcha</string>
     <string name="locale_cy">Cymraeg</string>
     <string name="locale_zu">isiZulu</string>
 </resources>

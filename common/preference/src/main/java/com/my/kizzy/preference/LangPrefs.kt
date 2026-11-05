@@ -261,7 +261,6 @@ fun getLanguageDesc(language: Int = getLanguageNumber()): String {
             PASHTO -> R.string.locale_ps
             SANSKRIT -> R.string.locale_sa
             TIBETAN -> R.string.locale_bo
-            UZBEK -> R.string.locale_uz
             WELSH -> R.string.locale_cy
             ZULU -> R.string.locale_zu
             else -> R.string.follow_system

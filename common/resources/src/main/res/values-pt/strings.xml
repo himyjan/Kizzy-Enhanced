@@ -34,15 +34,22 @@
     <string name="enable_album_name">Mostrar nome do álbum</string>
     <string name="show_app_icon">Mostrar ícone do aplicativo</string>
     <string name="enable_timestamps">Ativar tempo de atividade</string>
-    <string name="text_after_permission_denied">O acesso à memória é importante para este aplicativo armazenar configurações em diretórios públicos. Por favor, conceda esta permissão.</string>
-    <string name="request_for_storage_access">A permissão de armazenamento é necessária para que os recursos de configuração funcionem. Por favor, conceda esta permissão.</string>
+    <string name="text_after_permission_denied">O acesso à memória é importante para este aplicativo
+        armazenar configurações em diretórios públicos. Por favor, conceda esta permissão.</string>
+    <string name="request_for_storage_access">A permissão de armazenamento é necessária para que os
+        recursos de configuração funcionem. Por favor, conceda esta permissão.</string>
     <string name="grant_permission">Conceder permissão</string>
     <string name="use_low_res_icon">Usar imagens com baixa resolução</string>
-    <string name="use_low_res_icon_desc">Usar ícones de aplicativo de menor resolução para exibir no RPC (ative isso se o RPC estiver travando). Esta configuração também será aplicada aos apps RPC.</string>
+    <string name="use_low_res_icon_desc">Usar ícones de aplicativo de menor resolução para exibir no
+        RPC (ative isso se o RPC estiver travando). Esta configuração também será aplicada aos apps
+        RPC.</string>
     <string name="delete_saved_icon_urls">Excluir links de ícones salvos</string>
-    <string name="delete_saved_icon_urls_desc">Excluir URLs de ícones de aplicativos salvos em arquivos locais (use apenas em casos raros, pois isso reenviará todas as imagens para os servidores do Discord, consumindo mais dados).</string>
+    <string name="delete_saved_icon_urls_desc">Excluir URLs de ícones de aplicativos salvos em
+        arquivos locais (use apenas em casos raros, pois isso reenviará todas as imagens para os
+        servidores do Discord, consumindo mais dados).</string>
     <string name="app_crashed">O app crashou</string>
-    <string name="share_crash_logs_desc">Por favor, envie os logs no canal do Discord com o seguinte stacktreak:</string>
+    <string name="share_crash_logs_desc">Por favor, envie os logs no canal do Discord com o seguinte
+        stacktreak:</string>
     <string name="share_crash_logs">COMPARTILHAR LOGS</string>
     <string name="welcome">Bem-vindo(a)</string>
     <string name="features">Funções</string>
@@ -54,7 +61,8 @@
     <string name="design_credits">Créditos do design</string>
     <string name="enable_appsRpc">Ativar detecção de app</string>
     <string name="usage_access">Acesso aos dados de uso</string>
-    <string name="usage_access_desc">O acesso aos dados de uso é necessário para que o Kizzy saiba qual app está atualmente em execução.</string>
+    <string name="usage_access_desc">O acesso aos dados de uso é necessário para que o Kizzy saiba
+        qual app está atualmente em execução.</string>
     <string name="enable_mediaRpc">Ativar RPC de mídia</string>
     <string name="permission_required">Permissão necessária</string>
     <string name="enable_customRpc">Ativar RPC custom.</string>
@@ -62,9 +70,11 @@
     <string name="privacy_policy">Política de Privacidade</string>
     <string name="privacy_policy_desc">Confira a Política de Privacidade</string>
     <string name="enable_console_rpc">Ativar RPC de console</string>
-    <string name="rpc_settings_button_configs">Configurar botões para RPCs de mídia e detecção de app.</string>
+    <string name="rpc_settings_button_configs">Configurar botões para RPCs de mídia e detecção de
+        app.</string>
     <string name="use_custom_buttons">Usar botões personalizados</string>
-    <string name="use_custom_buttons_desc">Usar botões predefinidos para mostrar em RPCs de mídia e detecção de app.</string>
+    <string name="use_custom_buttons_desc">Usar botões predefinidos para mostrar em RPCs de mídia e
+        detecção de app.</string>
     <string name="follow_system">Seguir o sistema</string>
     <string name="advance_settings">Configurações avançadas</string>
     <string name="amoled">Tema amoled</string>
@@ -78,24 +88,29 @@
     <string name="android_off">Desligado</string>
     <string name="setup">Configurar</string>
     <string name="user_data_policy">Este app não coleta nenhum dado do usuário.</string>
-    <string name="setup_desc">Antes de prosseguir, é recomendado executar as ações necessárias abaixo para garantir que todos os recursos do app funcionem corretamente.</string>
+    <string name="setup_desc">Antes de prosseguir, é recomendado executar as ações necessárias
+        abaixo para garantir que todos os recursos do app funcionem corretamente.</string>
     <string name="permission_granted">Concedido</string>
     <string name="permission_not_granted">Não concedido, clique para conceder</string>
     <string name="activity_large_text">Texto grande da atividade</string>
     <string name="activity_small_text">Texto pequeno da atividade</string>
     <string name="contributors">Contribuidores</string>
     <string name="stream_url">URL da transmissão</string>
-    <string name="stream_url_info">Somente https://twitch.tv/ e https://youtube.com/ são aceitos como links válidos.</string>
+    <string name="stream_url_info">Somente https://twitch.tv/ e https://youtube.com/ são aceitos
+        como links válidos.</string>
     <string name="activity_button_max_character">O limite de caracteres é de 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Definir configuração de execução anterior para RPC custom.</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Automaticamente define os campos do RPC custom. para o antigo RPC custom.</string>
+    <string name="set_previous_run_config_in_custom_rpc">Definir configuração de execução anterior
+        para RPC custom.</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automaticamente define os campos do
+        RPC custom. para o antigo RPC custom.</string>
     <string name="clear_all_fields">Limpar todos os campos</string>
     <string name="share_config">Compartilhar configuração</string>
     <string name="change_log">Registro de alterações</string>
     <string name="update">Atualizar</string>
     <string name="configs_directory">Diretório de configurações</string>
     <string name="custom_activity_type">Tipo de atividade personalizado</string>
-    <string name="custom_activity_type_desc">Substitui o tipo de atividade padrão. Funciona apenas com RPCs de mídia e experimentais.</string>
+    <string name="custom_activity_type_desc">Substitui o tipo de atividade padrão. Funciona apenas
+        com RPCs de mídia e experimentais.</string>
     <string name="custom_activity_status">Status de atividade personalizado</string>
     <string name="custom_activity_status_desc">Substitui o status de atividade padrão.</string>
     <string name="search">Pesquisar</string>
@@ -104,15 +119,20 @@
     <string name="hide_on_pause">Esconder RPC ao pausar</string>
     <string name="idling_notification">Ausente…</string>
     <string name="main_appDetection">Detecção de App</string>
-    <string name="main_appDetection_details">O Kizzy te permite compartilhar sua atividade atual no Discord detectando qual app você está usando no seu dispositivo.</string>
+    <string name="main_appDetection_details">O Kizzy te permite compartilhar sua atividade atual no
+        Discord detectando qual app você está usando no seu dispositivo.</string>
     <string name="main_mediaRpc">RPC de Mídia</string>
-    <string name="main_mediaRpc_details">O Kizzy te permite compartilhar sua atividade de mídia atual no Discord, como a música ou o vídeo que você está atualmente ouvindo ou assistindo.</string>
+    <string name="main_mediaRpc_details">O Kizzy te permite compartilhar sua atividade de mídia
+        atual no Discord, como a música ou o vídeo que você está atualmente ouvindo ou assistindo.</string>
     <string name="main_customRpc">RPC Custom.</string>
     <string name="main_consoleRpc">RPC de Console</string>
-    <string name="main_consoleRpc_details">O Kizzy te permite usar algumas predefinições para definir sua atividade no Discord.</string>
+    <string name="main_consoleRpc_details">O Kizzy te permite usar algumas predefinições para
+        definir sua atividade no Discord.</string>
     <string name="main_experimentalRpc">RPC Experimental</string>
-    <string name="main_experimentalRpc_details">O RPC Experimental é um recurso do Kizzy que alterna constantemente entre RPCs de apps e RPCs de mídia.</string>
-    <string name="main_customRpc_details">O Kizzy te permite criar seu próprio rich presence completamente personalizável para o Discord.</string>
+    <string name="main_experimentalRpc_details">O RPC Experimental é um recurso do Kizzy que alterna
+        constantemente entre RPCs de apps e RPCs de mídia.</string>
+    <string name="main_customRpc_details">O Kizzy te permite criar seu próprio rich presence
+        completamente personalizável para o Discord.</string>
     <string name="main_comingSoon">Em breve</string>
     <string name="exit">Sair</string>
     <string name="logs">Logs</string>
@@ -121,7 +141,8 @@
     <string name="go_to_profile">Ir para o perfil</string>
     <string name="version">Versão</string>
     <string name="try_again">Tentar novamente</string>
-    <string name="request_for_notification_access">Acesso às notificações é necessário para o app extrair informações de mídia.</string>
+    <string name="request_for_notification_access">Acesso às notificações é necessário para o app
+        extrair informações de mídia.</string>
     <string name="update_check_for_update">Verificando atualizações…</string>
     <string name="update_no_updates_available">Sem atualizações</string>
     <string name="compact_mode">Modo compacto</string>
@@ -201,12 +222,16 @@
     <string name="application_id">ID da aplicação</string>
     <string name="custom_application_id">App ID da atividade personalizado</string>
     <string name="custom_application_id_desc">Substitui o ID de aplicação padrão do Discord</string>
-    <string name="use_a_vpn_desc">O login do Discord pode não funcionar no seu país sem um VPN/DPI. Por favor, use um VPN/DPI para prosseguir.</string>
-    <string name="rpc_templates_note">"Use placeholders como {{app_name}}, {{media_title}}, {{media_artist}}, etc. Campos vazios usarão o comportamento padrão ou serão omitidos."</string>
+    <string name="use_a_vpn_desc">O login do Discord pode não funcionar no seu país sem um VPN/DPI.
+        Por favor, use um VPN/DPI para prosseguir.</string>
+    <string name="rpc_templates_note">"Use placeholders como {{app_name}}, {{media_title}},
+        {{media_artist}}, etc. Campos vazios usarão o comportamento padrão ou serão omitidos."</string>
     <string name="experimental_rpc_detect_apps">Permita que RPC experimental detecte apps rodando</string>
-    <string name="experimental_rpc_detect_media">Permita que RPC experimental detecte playback de mídia</string>
+    <string name="experimental_rpc_detect_media">Permita que RPC experimental detecte playback de
+        mídia</string>
     <string name="app_preferences">Preferências do app</string>
-    <string name="app_preferences_desc">Selecione quais aplicativos estão ativados para RPC experimental</string>
+    <string name="app_preferences_desc">Selecione quais aplicativos estão ativados para RPC
+        experimental</string>
     <string name="completion_media_title">Título da música/vídeo</string>
     <string name="completion_media_artist">Artista principal</string>
     <string name="completion_app_name">Nome do app detectado</string>
@@ -216,7 +241,8 @@
     <string name="completion_media_author">Autor principal</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting your own Client ID</string>
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+        setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
     <string name="app_name_full">Kizzy Enhanced</string>
@@ -231,14 +257,16 @@
     <string name="completion_battery">Battery Level</string>
     <string name="completion_playback">Playback State</string>
     <string name="use_youtube_button">Add Media Button</string>
-    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
     <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{  to insert a variable</string>
+    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
@@ -316,7 +344,6 @@
     <string name="locale_ps">پښتو</string>
     <string name="locale_sa">संस्कृतम्</string>
     <string name="locale_bo">བོད་སྐད།</string>
-    <string name="locale_uz">Oʻzbekcha</string>
     <string name="locale_cy">Cymraeg</string>
     <string name="locale_zu">isiZulu</string>
 </resources>

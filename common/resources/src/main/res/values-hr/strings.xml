@@ -27,21 +27,27 @@
     <string name="github_latest_release">Najnovija verzija</string>
     <string name="github_latest_release_desc">Pregledajte nove verzije i dnevnik promjena</string>
     <string name="github_issue">GitHub problem</string>
-    <string name="github_issue_desc">Pošaljite problem za prijavu greške ili zahtjev za funkcionalnost</string>
+    <string name="github_issue_desc">Pošaljite problem za prijavu greške ili zahtjev za
+        funkcionalnost</string>
     <string name="credits">Zasluge</string>
     <string name="credits_desc">Zasluge za korištene knjižnice i doprinositelje</string>
     <string name="enable_artist_name">Omogući naziv umjetnika</string>
     <string name="enable_album_name">Enable Album Name</string>
     <string name="show_app_icon">Prikaži ikonu aplikacije</string>
     <string name="enable_timestamps">Omogući vremenske oznake</string>
-    <string name="text_after_permission_denied">Pristup pohrani je važan za ovu aplikaciju kako bi se postavke pohranile u javne direktorije. Molimo odobrite pristup.</string>
-    <string name="request_for_storage_access">Potrebna je dozvola za pohranu za rad postavki. Molimo odobrite pristup.</string>
+    <string name="text_after_permission_denied">Pristup pohrani je važan za ovu aplikaciju kako bi
+        se postavke pohranile u javne direktorije. Molimo odobrite pristup.</string>
+    <string name="request_for_storage_access">Potrebna je dozvola za pohranu za rad postavki. Molimo
+        odobrite pristup.</string>
     <string name="grant_permission">Odobri dozvolu</string>
     <string name="use_low_res_icon">Koristi sliku niske rezolucije</string>
-    <string name="use_low_res_icon_desc">Koristite sliku aplikacije niske rezolucije za prikaz na RPC-u (uključite ovo ako se RPC ruši). Ova postavka će se primijeniti i na Apps RPC.</string>
-    
+    <string name="use_low_res_icon_desc">Koristite sliku aplikacije niske rezolucije za prikaz na
+        RPC-u (uključite ovo ako se RPC ruši). Ova postavka će se primijeniti i na Apps RPC.</string>
+
     <string name="delete_saved_icon_urls">Izbriši spremljene poveznice ikona</string>
-    <string name="delete_saved_icon_urls_desc">Izbrišite URL-ove ikona aplikacija spremljene u lokalnim datotekama (koristite ovo samo u rijetkim slučajevima jer će sve slike ponovno poslati na poslužitelje Discorda što će potrošiti više podataka)</string>
+    <string name="delete_saved_icon_urls_desc">Izbrišite URL-ove ikona aplikacija spremljene u
+        lokalnim datotekama (koristite ovo samo u rijetkim slučajevima jer će sve slike ponovno
+        poslati na poslužitelje Discorda što će potrošiti više podataka)</string>
     <string name="app_crashed">Aplikacija se srušila</string>
     <string name="share_crash_logs_desc">Pošaljite dnevnike na Discord kanalu s ​​sljedećim stogom:</string>
     <string name="share_crash_logs">PODIJELI DNEVNIKE</string>
@@ -55,7 +61,8 @@
     <string name="design_credits">Zasluge za dizajn</string>
     <string name="enable_appsRpc">Omogući otkrivanje aplikacija</string>
     <string name="usage_access">Potrebna je Dozvola za upotrebu</string>
-    <string name="usage_access_desc">Dozvola za upotrebu potrebna je aplikaciji za dobivanje trenutno pokrenute aplikacije</string>
+    <string name="usage_access_desc">Dozvola za upotrebu potrebna je aplikaciji za dobivanje
+        trenutno pokrenute aplikacije</string>
     <string name="enable_mediaRpc">Omogući Media Rpc</string>
     <string name="permission_required">Potrebna je dozvola</string>
     <string name="enable_customRpc">Omogući prilagođeni Rpc</string>
@@ -63,9 +70,11 @@
     <string name="privacy_policy">Politika privatnosti</string>
     <string name="privacy_policy_desc">Provjerite Politiku privatnosti</string>
     <string name="enable_console_rpc">Omogući konzolni Rpc</string>
-    <string name="rpc_settings_button_configs">Konfiguracija gumba za Media i otkrivanje aplikacija Rpc</string>
+    <string name="rpc_settings_button_configs">Konfiguracija gumba za Media i otkrivanje aplikacija
+        Rpc</string>
     <string name="use_custom_buttons">Koristite prilagođene gumbe</string>
-    <string name="use_custom_buttons_desc">Koristite predefinirane gumbe za prikaz na Media i otkrivanje aplikacija Rpc</string>
+    <string name="use_custom_buttons_desc">Koristite predefinirane gumbe za prikaz na Media i
+        otkrivanje aplikacija Rpc</string>
     <string name="follow_system">Slijedite sustav</string>
     <string name="advance_settings">Napredne postavke</string>
     <string name="amoled">AMOLED tema</string>
@@ -79,7 +88,8 @@
     <string name="android_off">Isključeno</string>
     <string name="setup">Postavljanje</string>
     <string name="user_data_policy">Ova aplikacija ne prikuplja nikakve podatke korisnika</string>
-    <string name="setup_desc">Prije nego što nastavite, preporuča se poduzeti potrebne radnje kako bi se osiguralo da sve značajke aplikacije rade.</string>
+    <string name="setup_desc">Prije nego što nastavite, preporuča se poduzeti potrebne radnje kako
+        bi se osiguralo da sve značajke aplikacije rade.</string>
     <string name="permission_granted">Odobreno</string>
     <string name="permission_not_granted">Nije odobreno, Kliknite da biste dopustili</string>
     <string name="activity_large_text">Tekst velike aktivnosti</string>
@@ -88,15 +98,18 @@
     <string name="stream_url">URL adresa struje</string>
     <string name="stream_url_info">Samo URL-ovi https://twitch.tv/ i https://youtube.com/ će raditi.</string>
     <string name="activity_button_max_character">Maksimalno ograničenje znakova je 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Postavite zadnju konfiguraciju za pokretanje u polja prilagođenog Rpc-a</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Automatski postavite polja u prilagođenom rpc-u iz posljednjeg rpc-a</string>
+    <string name="set_previous_run_config_in_custom_rpc">Postavite zadnju konfiguraciju za
+        pokretanje u polja prilagođenog Rpc-a</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatski postavite polja u
+        prilagođenom rpc-u iz posljednjeg rpc-a</string>
     <string name="clear_all_fields">Očisti sva polja</string>
     <string name="share_config">Share Config</string>
     <string name="change_log">Change Log</string>
     <string name="update">Update</string>
     <string name="configs_directory">Configs Directory</string>
     <string name="custom_activity_type">Custom Activity Type</string>
-    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media and experimental rpc only</string>
+    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
+        and experimental rpc only</string>
     <string name="custom_activity_status">Custom Activity Status</string>
     <string name="custom_activity_status_desc">Overrides the default activity status</string>
     <string name="search">Search</string>
@@ -105,15 +118,20 @@
     <string name="hide_on_pause">Hide RPC on Pause</string>
     <string name="idling_notification">Idling…</string>
     <string name="main_appDetection">App Detection</string>
-    <string name="main_appDetection_details">Kizzy allows you to share your current activity on Discord by detecting what app you\'re using on your device.</string>
+    <string name="main_appDetection_details">Kizzy allows you to share your current activity on
+        Discord by detecting what app you\'re using on your device.</string>
     <string name="main_mediaRpc">Media RPC</string>
-    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on Discord, such as the song or video you\'re currently listening to or watching.</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you\'re currently listening to or watching.</string>
     <string name="main_customRpc">Custom RPC</string>
     <string name="main_consoleRpc">Console RPC</string>
-    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set your presence on Discord.</string>
+    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
+        your presence on Discord.</string>
     <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that constantly switches between Apps RPC and Media RPC.</string>
-    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable rich presence for Discord.</string>
+    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
+        rich presence for Discord.</string>
     <string name="main_comingSoon">Coming Soon</string>
     <string name="exit">Exit</string>
     <string name="logs">Logs</string>
@@ -122,7 +140,8 @@
     <string name="go_to_profile">Go to Profile</string>
     <string name="version">Version</string>
     <string name="try_again">Retry</string>
-    <string name="request_for_notification_access">Notification Access is needed for app to extract media information.</string>
+    <string name="request_for_notification_access">Notification Access is needed for app to extract
+        media information.</string>
     <string name="update_check_for_update">Checking for update…</string>
     <string name="update_no_updates_available">No updates available</string>
     <string name="compact_mode">Compact Mode</string>
@@ -202,8 +221,10 @@
     <string name="application_id">Application ID</string>
     <string name="custom_application_id">Custom Activity Application ID</string>
     <string name="custom_application_id_desc">Overrides the default Discord Application ID</string>
-    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI. Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}}, {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
+        Please use a VPN/DPI to proceed.</string>
+    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}},
+        {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -217,7 +238,8 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting your own Client ID</string>
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+        setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
     <string name="app_name_full">Kizzy Enhanced</string>
@@ -232,14 +254,16 @@
     <string name="completion_battery">Battery Level</string>
     <string name="completion_playback">Playback State</string>
     <string name="use_youtube_button">Add Media Button</string>
-    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
     <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{  to insert a variable</string>
+    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
@@ -317,7 +341,6 @@
     <string name="locale_ps">پښتو</string>
     <string name="locale_sa">संस्कृतम्</string>
     <string name="locale_bo">བོད་སྐད།</string>
-    <string name="locale_uz">Oʻzbekcha</string>
     <string name="locale_cy">Cymraeg</string>
     <string name="locale_zu">isiZulu</string>
 </resources>

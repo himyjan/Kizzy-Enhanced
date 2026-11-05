@@ -3,7 +3,7 @@ package com.my.kizzy.data.work
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.WorkerParameters
-import com.my.kizzy.data.repository.KizzyRepository
+import com.my.kizzy.domain.repository.KizzyRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers

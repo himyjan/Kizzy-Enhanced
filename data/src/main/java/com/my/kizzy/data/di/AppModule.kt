@@ -40,25 +40,25 @@ object AppModule {
     @Provides
     @Singleton
     @Base
-    fun provideBaseUrl() = BuildConfig.BASE_URL
+    fun provideBaseUrl(): String = BuildConfig.BASE_URL
 
     @Provides
     @Singleton
     @Discord
-    fun provideDiscordBaseUrl() = BuildConfig.DISCORD_API_BASE_URL
+    fun provideDiscordBaseUrl(): String = BuildConfig.DISCORD_API_BASE_URL
 
     @Provides
     @Singleton
     @Github
-    fun provideGithubBaseUrl() = BuildConfig.GITHUB_API_BASE_URL
+    fun provideGithubBaseUrl(): String = BuildConfig.GITHUB_API_BASE_URL
 
     @Provides
     @Singleton
     @Imgur
-    fun provideImgurBaseUrl() = BuildConfig.IMGUR_API_BASE_URL
+    fun provideImgurBaseUrl(): String = BuildConfig.IMGUR_API_BASE_URL
 
     @Provides
-    fun provideJson() = Json {
+    fun provideJson(): Json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
     }

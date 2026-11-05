@@ -7,7 +7,8 @@
     <string name="activity_state">Trạng thái hoạt động</string>
     <string name="activity_start_timestamps">Thời gian bắt đầu hoạt động</string>
     <string name="activity_stop_timestamps">Thời gian kết thúc hoạt động</string>
-    <string name="activity_status_online_idle_dnd">Trạng thái hoạt động (\"online\", \"idle\", \"dnd\")</string>
+    <string name="activity_status_online_idle_dnd">Trạng thái hoạt động (\"online\", \"idle\",
+        \"dnd\")</string>
     <string name="activity_button1_text">Văn bản nút hoạt động 1</string>
     <string name="activity_button2_text">Văn bản nút hoạt động 2</string>
     <string name="activity_button1_url">Liên kết nút 1</string>
@@ -34,15 +35,21 @@
     <string name="enable_album_name">Hiện tên album</string>
     <string name="show_app_icon">Hiển thị biểu tượng ứng dụng</string>
     <string name="enable_timestamps">Hiện thời gian</string>
-    <string name="text_after_permission_denied">Ứng dụng cần được cấp quyền Truy cập bộ nhớ để lưu trữ cấu hình ứng dụng.</string>
-    <string name="request_for_storage_access">Ứng dụng cần được cấp quyền Truy cập vào bộ nhớ để sử dụng các tính năng phụ thuộc vào cấu hình được lưu.</string>
+    <string name="text_after_permission_denied">Ứng dụng cần được cấp quyền Truy cập bộ nhớ để lưu
+        trữ cấu hình ứng dụng.</string>
+    <string name="request_for_storage_access">Ứng dụng cần được cấp quyền Truy cập vào bộ nhớ để sử
+        dụng các tính năng phụ thuộc vào cấu hình được lưu.</string>
     <string name="grant_permission">Cấp quyền</string>
     <string name="use_low_res_icon">Sử dụng hình ảnh có độ phân giải thấp</string>
-    <string name="use_low_res_icon_desc">Hiển thị hình ảnh có độ phân giải thấp hơn (bật tùy chọn này nếu ứng dụng gặp sự cố).</string>
+    <string name="use_low_res_icon_desc">Hiển thị hình ảnh có độ phân giải thấp hơn (bật tùy chọn
+        này nếu ứng dụng gặp sự cố).</string>
     <string name="delete_saved_icon_urls">Xóa liên kết hình ảnh đã lưu</string>
-    <string name="delete_saved_icon_urls_desc">Xóa các liên kết hình ảnh đã lưu (Chỉ sử dụng tùy chọn này khi cần thiết, ứng dụng sẽ tiêu tốn nhiều tài nguyên hơn để gửi lại tất cả hình ảnh đến máy chủ).</string>
+    <string name="delete_saved_icon_urls_desc">Xóa các liên kết hình ảnh đã lưu (Chỉ sử dụng tùy
+        chọn này khi cần thiết, ứng dụng sẽ tiêu tốn nhiều tài nguyên hơn để gửi lại tất cả hình ảnh
+        đến máy chủ).</string>
     <string name="app_crashed">Lỗi nghiêm trọng</string>
-    <string name="share_crash_logs_desc">Vui lòng gửi báo cáo lỗi thông qua kênh Discord với mẫu sau:</string>
+    <string name="share_crash_logs_desc">Vui lòng gửi báo cáo lỗi thông qua kênh Discord với mẫu
+        sau:</string>
     <string name="share_crash_logs">CHIA SẺ BÁO CÁO LỖI</string>
     <string name="welcome">Chào mừng</string>
     <string name="features">Tính năng</string>
@@ -54,7 +61,8 @@
     <string name="design_credits">Ghi nhận các thư viện được sử dụng</string>
     <string name="enable_appsRpc">Bật nhận diện ứng dụng</string>
     <string name="usage_access">Quyền Theo dõi truy cập ứng dụng</string>
-    <string name="usage_access_desc">Ứng dụng cần được cấp quyền Theo dõi truy cập ứng dụng để lấy thông tin về ứng dụng đang chạy</string>
+    <string name="usage_access_desc">Ứng dụng cần được cấp quyền Theo dõi truy cập ứng dụng để lấy
+        thông tin về ứng dụng đang chạy</string>
     <string name="enable_mediaRpc">Bật trạng thái trình phát</string>
     <string name="permission_required">Yêu cầu quyền</string>
     <string name="enable_customRpc">Bật trạng thái tùy chỉnh</string>
@@ -62,9 +70,11 @@
     <string name="privacy_policy">Chính sách bảo mật</string>
     <string name="privacy_policy_desc">Xem Chính sách bảo mật</string>
     <string name="enable_console_rpc">Bật trạng thái trò chơi</string>
-    <string name="rpc_settings_button_configs">Cấu hình nút hoạt động cho Trạng thái phương tiện và nhận diện ứng dụng</string>
+    <string name="rpc_settings_button_configs">Cấu hình nút hoạt động cho Trạng thái phương tiện và
+        nhận diện ứng dụng</string>
     <string name="use_custom_buttons">Sử dụng nút tùy chỉnh</string>
-    <string name="use_custom_buttons_desc">Sử dụng các nút đã cấu hình trước để hiển thị hoạt động trên Trạng thái trình phát và nhận diện ứng dụng</string>
+    <string name="use_custom_buttons_desc">Sử dụng các nút đã cấu hình trước để hiển thị hoạt động
+        trên Trạng thái trình phát và nhận diện ứng dụng</string>
     <string name="follow_system">Mặc định hệ thống</string>
     <string name="advance_settings">Cài đặt nâng cao</string>
     <string name="amoled">Chủ đề AMOLED</string>
@@ -78,24 +88,29 @@
     <string name="android_off">Tắt</string>
     <string name="setup">Cài đặt</string>
     <string name="user_data_policy">Ứng dụng không thu thập dữ liệu người dùng</string>
-    <string name="setup_desc">Trước khi tiếp tục, bạn nên thực hiện các hành động cần thiết để đảm bảo tất cả các tính năng của ứng dụng hoạt động.</string>
+    <string name="setup_desc">Trước khi tiếp tục, bạn nên thực hiện các hành động cần thiết để đảm
+        bảo tất cả các tính năng của ứng dụng hoạt động.</string>
     <string name="permission_granted">Đã được cấp quyền</string>
     <string name="permission_not_granted">Không được cấp quyền, Nhấn để cấp quyền</string>
     <string name="activity_large_text">Văn bản hoạt động lớn</string>
     <string name="activity_small_text">Văn bản hoạt động nhỏ</string>
     <string name="contributors">Những người đóng góp</string>
     <string name="stream_url">URL phát trực tiếp</string>
-    <string name="stream_url_info">Chỉ các URL từ https://twitch.tv/ và https://youtube.com/ sẽ hoạt động.</string>
+    <string name="stream_url_info">Chỉ các URL từ https://twitch.tv/ và https://youtube.com/ sẽ hoạt
+        động.</string>
     <string name="activity_button_max_character">Giới hạn ký tự tối đa là 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Đặt cấu hình chạy trước vào Trường tùy chỉnh trạng thái</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Tự động đặt các trường trong trạng thái tùy chỉnh từ chạy trước đó</string>
+    <string name="set_previous_run_config_in_custom_rpc">Đặt cấu hình chạy trước vào Trường tùy
+        chỉnh trạng thái</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Tự động đặt các trường trong trạng
+        thái tùy chỉnh từ chạy trước đó</string>
     <string name="clear_all_fields">Xóa tất cả các trường</string>
     <string name="share_config">Chia sẻ Cấu hình</string>
     <string name="change_log">Nhật ký thay đổi</string>
     <string name="update">Cập nhật</string>
     <string name="configs_directory">Thư mục cấu hình</string>
     <string name="custom_activity_type">Loại hoạt động tùy chỉnh</string>
-    <string name="custom_activity_type_desc">Ghi đè loại hoạt động mặc định. Chỉ hoạt động cho phương tiện và trạng thái thử nghiệm</string>
+    <string name="custom_activity_type_desc">Ghi đè loại hoạt động mặc định. Chỉ hoạt động cho
+        phương tiện và trạng thái thử nghiệm</string>
     <string name="custom_activity_status">Trạng thái hoạt động tùy chỉnh</string>
     <string name="custom_activity_status_desc">Ghi đè trạng thái hoạt động mặc định</string>
     <string name="search">Tìm kiếm</string>
@@ -104,15 +119,20 @@
     <string name="hide_on_pause">Ẩn hoạt động khi dừng</string>
     <string name="idling_notification">Đang ngưng…</string>
     <string name="main_appDetection">Nhận diện Ứng dụng</string>
-    <string name="main_appDetection_details">Kizzy cho phép bạn chia sẻ ứng dụng bạn đang sử dụng bằng hoạt động Discord.</string>
+    <string name="main_appDetection_details">Kizzy cho phép bạn chia sẻ ứng dụng bạn đang sử dụng
+        bằng hoạt động Discord.</string>
     <string name="main_mediaRpc">RPC Trình Phát</string>
-    <string name="main_mediaRpc_details">Kizzy cho phép bạn chia sẻ hoạt động đa phương tiện của bạn, như bài hát bạn đang nghe hay video đang xem, lên Discord</string>
+    <string name="main_mediaRpc_details">Kizzy cho phép bạn chia sẻ hoạt động đa phương tiện của
+        bạn, như bài hát bạn đang nghe hay video đang xem, lên Discord</string>
     <string name="main_customRpc">RPC Tùy Chỉnh</string>
     <string name="main_consoleRpc">RPC Trò Chơi</string>
-    <string name="main_consoleRpc_details">Kizzy cho phép bạn sử dụng một vài cấu hình đã định sẵn để thêm vào hoạt động Discord.</string>
+    <string name="main_consoleRpc_details">Kizzy cho phép bạn sử dụng một vài cấu hình đã định sẵn
+        để thêm vào hoạt động Discord.</string>
     <string name="main_experimentalRpc">RPC Thử Nghiệm</string>
-    <string name="main_experimentalRpc_details">RPC Thử Nghiệm là tính năng tự động chuyền đổi giữa Nhận diện ứng dụng và RPC trình phát.</string>
-    <string name="main_customRpc_details">Kizzy cho phép bạn tạo một hoạt động tùy chỉnh cho Discord.</string>
+    <string name="main_experimentalRpc_details">RPC Thử Nghiệm là tính năng tự động chuyền đổi giữa
+        Nhận diện ứng dụng và RPC trình phát.</string>
+    <string name="main_customRpc_details">Kizzy cho phép bạn tạo một hoạt động tùy chỉnh cho
+        Discord.</string>
     <string name="main_comingSoon">Sắp Ra Mắt</string>
     <string name="exit">Thoát</string>
     <string name="logs">Log</string>
@@ -121,7 +141,8 @@
     <string name="go_to_profile">Đi tới Hồ sơ</string>
     <string name="version">Phiên bản</string>
     <string name="try_again">Thử lại</string>
-    <string name="request_for_notification_access">Ứng dụng cần được cấp quyền Đọc thông báo để nhận thông tin về trình phát đa phương tiện.</string>
+    <string name="request_for_notification_access">Ứng dụng cần được cấp quyền Đọc thông báo để nhận
+        thông tin về trình phát đa phương tiện.</string>
     <string name="update_check_for_update">Đang kiểm tra cập nhật…</string>
     <string name="update_no_updates_available">Không có phiên bản mới</string>
     <string name="compact_mode">Thu gọn</string>
@@ -201,8 +222,10 @@
     <string name="application_id">ID Ứng dụng</string>
     <string name="custom_application_id">ID Ứng dụng tùy chỉnh</string>
     <string name="custom_application_id_desc">Ghi đè ID Ứng dụng Discord</string>
-    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI. Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}}, {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
+        Please use a VPN/DPI to proceed.</string>
+    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}},
+        {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -216,7 +239,8 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Đặt Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">Nếu hình ảnh không hiện lên khi sử dụng Imgur, bạn có thể sử dung Client ID của mình</string>
+    <string name="set_imgur_client_id_desc">Nếu hình ảnh không hiện lên khi sử dụng Imgur, bạn có
+        thể sử dung Client ID của mình</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
     <string name="app_name_full">Kizzy Enhanced</string>
@@ -231,14 +255,16 @@
     <string name="completion_battery">Battery Level</string>
     <string name="completion_playback">Playback State</string>
     <string name="use_youtube_button">Add Media Button</string>
-    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
     <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{  to insert a variable</string>
+    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
@@ -316,7 +342,6 @@
     <string name="locale_ps">پښتو</string>
     <string name="locale_sa">संस्कृतम्</string>
     <string name="locale_bo">བོད་སྐད།</string>
-    <string name="locale_uz">Oʻzbekcha</string>
     <string name="locale_cy">Cymraeg</string>
     <string name="locale_zu">isiZulu</string>
 </resources>

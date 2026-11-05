@@ -8,7 +8,8 @@
     <string name="activity_state">מצב פעילות</string>
     <string name="activity_start_timestamps">חותמות זמן של התחל</string>
     <string name="activity_stop_timestamps">עצור חותמות זמן</string>
-    <string name="activity_status_online_idle_dnd">מצב פעילות (\"באינטרנט\", \ " סרק\", \ " נא לא להפריע\")</string>
+    <string name="activity_status_online_idle_dnd">מצב פעילות (\"באינטרנט\", \ " סרק\", \ " נא לא
+        להפריע\")</string>
     <string name="activity_button1_text">לחצן הפעילות1 טקסט</string>
     <string name="activity_button2_text">לחצן פעילות2 טקסט</string>
     <string name="activity_button1_url">כתובת URL של כפתור 1</string>
@@ -35,13 +36,18 @@
     <string name="enable_album_name">הפעל שם אלבום</string>
     <string name="show_app_icon">הצג סמל אפליקציה</string>
     <string name="enable_timestamps">הפעל חותמות זמן</string>
-    <string name="text_after_permission_denied">גישה לאחסון חשובה לאפליקציה זו כדי לאחסן תצורות בספריות ציבוריות. אנא הענק את ההרשאה.</string>
-    <string name="request_for_storage_access">נדרשת הרשאת אחסון כדי שתכונות התצורה יפעלו. אנא הענק את ההרשאה.</string>
+    <string name="text_after_permission_denied">גישה לאחסון חשובה לאפליקציה זו כדי לאחסן תצורות
+        בספריות ציבוריות. אנא הענק את ההרשאה.</string>
+    <string name="request_for_storage_access">נדרשת הרשאת אחסון כדי שתכונות התצורה יפעלו. אנא הענק
+        את ההרשאה.</string>
     <string name="grant_permission">הענק הרשאה</string>
     <string name="use_low_res_icon">השתמש בתמונות ברזולוציה נמוכה</string>
-    <string name="use_low_res_icon_desc">השתמש בסמל אפליקציה ברזולוציה נמוכה יותר להצגה ב-RPC (הפעל הגדרה זו אם ה-RPC קורס). הגדרה זו תחול גם על אפליקציות.</string>
+    <string name="use_low_res_icon_desc">השתמש בסמל אפליקציה ברזולוציה נמוכה יותר להצגה ב-RPC (הפעל
+        הגדרה זו אם ה-RPC קורס). הגדרה זו תחול גם על אפליקציות.</string>
     <string name="delete_saved_icon_urls">מחיקת קישורי סמלים שמורים</string>
-    <string name="delete_saved_icon_urls_desc">מחיקת כתובות URL של סמלי אפליקציה שנשמרו בקבצים מקומיים (השתמשו באפשרות זו רק לפי הצורך, שכן היא תשלח תמונות שוב לשרתי דיסקורד, מה שיצרוך יותר נתונים)</string>
+    <string name="delete_saved_icon_urls_desc">מחיקת כתובות URL של סמלי אפליקציה שנשמרו בקבצים
+        מקומיים (השתמשו באפשרות זו רק לפי הצורך, שכן היא תשלח תמונות שוב לשרתי דיסקורד, מה שיצרוך
+        יותר נתונים)</string>
     <string name="app_crashed">האפליקציה קרסה</string>
     <string name="share_crash_logs_desc">אנא שלח את היומנים בערוץ דיסקורד עם המסלול הבא :</string>
     <string name="share_crash_logs">שתף יומנים</string>
@@ -55,7 +61,8 @@
     <string name="design_credits">קרדיטים לעיצוב</string>
     <string name="enable_appsRpc">אפשר זיהוי אפליקציות</string>
     <string name="usage_access">נדרשת גישה לשימוש</string>
-    <string name="usage_access_desc">יש צורך בגישה לשימוש כדי שהאפליקציה תקבל את האפליקציה הפועלת הנוכחית</string>
+    <string name="usage_access_desc">יש צורך בגישה לשימוש כדי שהאפליקציה תקבל את האפליקציה הפועלת
+        הנוכחית</string>
     <string name="enable_mediaRpc">הפעלת RPC של מדיה</string>
     <string name="permission_required">נדרשת הרשאה</string>
     <string name="enable_customRpc">הפעל RPC מותאם אישית</string>
@@ -65,7 +72,8 @@
     <string name="enable_console_rpc">Enable Console RPC</string>
     <string name="rpc_settings_button_configs">Button configuration for Media and AppDetection RPC</string>
     <string name="use_custom_buttons">Use Custom Buttons</string>
-    <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection RPC</string>
+    <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
+        RPC</string>
     <string name="follow_system">Follow System</string>
     <string name="advance_settings">Advanced Settings</string>
     <string name="amoled">AMOLED Theme</string>
@@ -79,7 +87,8 @@
     <string name="android_off">Off</string>
     <string name="setup">Setup</string>
     <string name="user_data_policy">This app does not collect any user data</string>
-    <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions to make sure all the features of the app work.</string>
+    <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions
+        to make sure all the features of the app work.</string>
     <string name="permission_granted">Granted</string>
     <string name="permission_not_granted">Not Granted, Click to Allow</string>
     <string name="activity_large_text">Activity Large Text</string>
@@ -88,15 +97,18 @@
     <string name="stream_url">Stream Url</string>
     <string name="stream_url_info">Only https://twitch.tv/ and https://youtube.com/ urls will work.</string>
     <string name="activity_button_max_character">Max character limit is 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom RPC Fields</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom RPC from the last run RPC</string>
+    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom RPC
+        Fields</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom RPC
+        from the last run RPC</string>
     <string name="clear_all_fields">Clear All Fields</string>
     <string name="share_config">Share Config</string>
     <string name="change_log">יומן שינויים</string>
     <string name="update">לְעַדְכֵּן</string>
     <string name="configs_directory">ספריית תצורות</string>
     <string name="custom_activity_type">סוג פעילות מותאם אישית</string>
-    <string name="custom_activity_type_desc">עוקף את סוג הפעילות המוגדר כברירת מחדל. עובד רק עבור מדיה ו-RPC ניסיוני</string>
+    <string name="custom_activity_type_desc">עוקף את סוג הפעילות המוגדר כברירת מחדל. עובד רק עבור
+        מדיה ו-RPC ניסיוני</string>
     <string name="custom_activity_status">סטטוס פעילות מותאם אישית</string>
     <string name="custom_activity_status_desc">עוקף את סטטוס הפעילות המוגדר כברירת מחדל</string>
     <string name="search">לְחַפֵּשׂ</string>
@@ -105,15 +117,20 @@
     <string name="hide_on_pause">הסתר RPC בהשהיה</string>
     <string name="idling_notification">הִתבַּטְלוּת…</string>
     <string name="main_appDetection">זיהוי אפליקציות</string>
-    <string name="main_appDetection_details">Kizzy מאפשר לך לשתף את הפעילות הנוכחית שלך בדיסקורד על ידי זיהוי האפליקציה שבה אתה משתמש במכשיר שלך.</string>
+    <string name="main_appDetection_details">Kizzy מאפשר לך לשתף את הפעילות הנוכחית שלך בדיסקורד על
+        ידי זיהוי האפליקציה שבה אתה משתמש במכשיר שלך.</string>
     <string name="main_mediaRpc">RPC של המדיה</string>
-    <string name="main_mediaRpc_details">Kizzy מאפשר לך לשתף את פעילות המדיה הנוכחית שלך בדיסקורד, כמו השיר או הסרטון שאתה מאזין לו או צופה בו כרגע.</string>
+    <string name="main_mediaRpc_details">Kizzy מאפשר לך לשתף את פעילות המדיה הנוכחית שלך בדיסקורד,
+        כמו השיר או הסרטון שאתה מאזין לו או צופה בו כרגע.</string>
     <string name="main_customRpc">RPC מותאם אישית</string>
     <string name="main_consoleRpc">קונסולה RPC</string>
-    <string name="main_consoleRpc_details">Kizzy מאפשר לך להשתמש בכמה הגדרות קבועות מראש כדי להגדיר את הנוכחות שלך בדיסקורד.</string>
+    <string name="main_consoleRpc_details">Kizzy מאפשר לך להשתמש בכמה הגדרות קבועות מראש כדי להגדיר
+        את הנוכחות שלך בדיסקורד.</string>
     <string name="main_experimentalRpc">RPC ניסיוני</string>
-    <string name="main_experimentalRpc_details">RPC ניסיוני הוא תכונה ב-Kizzy שעוברת כל הזמן בין RPC של אפליקציות ל-RPC של מדיה.</string>
-    <string name="main_customRpc_details">Kizzy מאפשרת לך ליצור נוכחות עשירה משלך עבור דיסקורד, הניתנת להתאמה אישית מלאה.</string>
+    <string name="main_experimentalRpc_details">RPC ניסיוני הוא תכונה ב-Kizzy שעוברת כל הזמן בין RPC
+        של אפליקציות ל-RPC של מדיה.</string>
+    <string name="main_customRpc_details">Kizzy מאפשרת לך ליצור נוכחות עשירה משלך עבור דיסקורד,
+        הניתנת להתאמה אישית מלאה.</string>
     <string name="main_comingSoon">בקרוב</string>
     <string name="exit">יְצִיאָה</string>
     <string name="logs">יומני רישום</string>
@@ -122,7 +139,8 @@
     <string name="go_to_profile">עבור לפרופיל</string>
     <string name="version">גִרְסָה</string>
     <string name="try_again">נסה שוב</string>
-    <string name="request_for_notification_access">יש צורך בגישה להודעות כדי שהאפליקציה תחלץ מידע על מדיה.</string>
+    <string name="request_for_notification_access">יש צורך בגישה להודעות כדי שהאפליקציה תחלץ מידע על
+        מדיה.</string>
     <string name="update_check_for_update">בודק אם יש עדכון…</string>
     <string name="update_no_updates_available">אין עדכונים זמינים</string>
     <string name="compact_mode">מצב קומפקטי</string>
@@ -202,8 +220,10 @@
     <string name="application_id">מזהה יישום</string>
     <string name="custom_application_id">מזהה יישום פעילות מותאמת אישית</string>
     <string name="custom_application_id_desc">עוקף את מזהה יישום ברירת המחדל של דיסקורד</string>
-    <string name="use_a_vpn_desc">ייתכן שכניסה לדיסקורד לא תעבוד במדינתך ללא VPN/DPI. אנא השתמש ב-VPN/DPI כדי להמשיך.</string>
-    <string name="rpc_templates_note">"השתמשו ב-placeholders כמו {{app_name}}, {{media_title}} וכו\'. שדות ריקים ישתמשו בהתנהגות ברירת מחדל או יושמטו."</string>
+    <string name="use_a_vpn_desc">ייתכן שכניסה לדיסקורד לא תעבוד במדינתך ללא VPN/DPI. אנא השתמש
+        ב-VPN/DPI כדי להמשיך.</string>
+    <string name="rpc_templates_note">"השתמשו ב-placeholders כמו {{app_name}}, {{media_title}}
+        וכו\'. שדות ריקים ישתמשו בהתנהגות ברירת מחדל או יושמטו."</string>
     <string name="experimental_rpc_detect_apps">אפשר ל-RPC ניסיוני לזהות אפליקציות פועלות</string>
     <string name="experimental_rpc_detect_media">אפשר ל-RPC ניסיוני לזהות השמעת מדיה</string>
     <string name="app_preferences">העדפות אפליקציה</string>
@@ -217,7 +237,8 @@
     <string name="completion_media_author">מחבר ראשי</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting your own Client ID</string>
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+        setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
 
@@ -233,14 +254,16 @@
     <string name="completion_battery">Battery Level</string>
     <string name="completion_playback">Playback State</string>
     <string name="use_youtube_button">Add Media Button</string>
-    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
     <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{  to insert a variable</string>
+    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
@@ -318,7 +341,6 @@
     <string name="locale_ps">پښتو</string>
     <string name="locale_sa">संस्कृतम्</string>
     <string name="locale_bo">བོད་སྐད།</string>
-    <string name="locale_uz">Oʻzbekcha</string>
     <string name="locale_cy">Cymraeg</string>
     <string name="locale_zu">isiZulu</string>
 </resources>

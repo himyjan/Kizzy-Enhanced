@@ -25,22 +25,34 @@
     <string name="github_readme">README</string>
     <string name="github_readme_desc">กดตรงนี้เพื่อเข้าดู Github repository ของเรา!</string>
     <string name="github_latest_release">ดูเวอร์ชั่นล่าสุดที่ออกมาใหม่</string>
-    <string name="github_latest_release_desc">บางทีแอปนี้อาจจะอัปเดตอะไรใหม่ ลองกดไปดูที่ changelog ได้นะ</string>
+    <string name="github_latest_release_desc">บางทีแอปนี้อาจจะอัปเดตอะไรใหม่ ลองกดไปดูที่ changelog
+        ได้นะ</string>
     <string name="github_issue">รายงานพบปัญหาการใช้งาน</string>
-    <string name="github_issue_desc">รายงานปัญหาในการใช้งานเพื่อให้เราช่วยแก้ บัค ให้ท่าน หรือมีไอเดียฟีเจอร์สุดเจ๋งแจ๋วก็สามารถส่งคำขอให้พวกเราได้!</string>
+    <string name="github_issue_desc">รายงานปัญหาในการใช้งานเพื่อให้เราช่วยแก้ บัค ให้ท่าน
+        หรือมีไอเดียฟีเจอร์สุดเจ๋งแจ๋วก็สามารถส่งคำขอให้พวกเราได้!</string>
     <string name="credits">เครดิต</string>
-    <string name="credits_desc">เครดิตแก่ libraries ที่ใช้และผู้ที่มีส่วนร่วมที่ทำให้แอปนี้เป็นแอปสุดเจ๋ง!</string>
+    <string name="credits_desc">เครดิตแก่ libraries
+        ที่ใช้และผู้ที่มีส่วนร่วมที่ทำให้แอปนี้เป็นแอปสุดเจ๋ง!</string>
     <string name="enable_artist_name">เปิดใช้งาน การแสดงชื่อของศิลปินสุดแสนวิเศษ</string>
     <string name="enable_album_name">เปิดใช้งานชื่อศิลปิน</string>
     <string name="show_app_icon">แสดงไอคอนของแอปสุดเฟี้ยว</string>
     <string name="enable_timestamps">เปิดใช้งานการประทับเวลา</string>
-    <string name="text_after_permission_denied">เฮ้! การเข้าถึงพื้นที่จัดเก็บข้อมูลในโทรศัพท์ของคุณเป็นความสำคัญต่อแอปในการเก็บพวกเหล่าการตั้งค่าต่างๆของคุณให้มี ที่ซุกหัวนอนภายในพื้นที่โทรศัพท์อ่ะนะ ขอมาขนาดนี้ให้สิทธิ์การเข้าถึงพื้นที่จัดเก็บมือถือด้วยล่ะ มันง่ายกว่าไปรักเขาข้างเดียวอีก!</string>
-    <string name="request_for_storage_access">นี้พวกคือ.. เปิดใช้งานการเข้าถึงพื้นที่จัดเก็บข้อมูลเถอะ เพื่อเป็นการให้เหล่า ตั้งค่าฟีเจอร์ต่างๆ ได้ออกมาเฉิดฉายอย่างสง่างามไง! อย่าลืมเปิดด้วยล่ะ</string>
+    <string name="text_after_permission_denied">เฮ้!
+        การเข้าถึงพื้นที่จัดเก็บข้อมูลในโทรศัพท์ของคุณเป็นความสำคัญต่อแอปในการเก็บพวกเหล่าการตั้งค่าต่างๆของคุณให้มี
+        ที่ซุกหัวนอนภายในพื้นที่โทรศัพท์อ่ะนะ
+        ขอมาขนาดนี้ให้สิทธิ์การเข้าถึงพื้นที่จัดเก็บมือถือด้วยล่ะ มันง่ายกว่าไปรักเขาข้างเดียวอีก!</string>
+    <string name="request_for_storage_access">นี้พวกคือ..
+        เปิดใช้งานการเข้าถึงพื้นที่จัดเก็บข้อมูลเถอะ เพื่อเป็นการให้เหล่า ตั้งค่าฟีเจอร์ต่างๆ
+        ได้ออกมาเฉิดฉายอย่างสง่างามไง! อย่าลืมเปิดด้วยล่ะ</string>
     <string name="grant_permission">อนุญาตการเข้าถึง</string>
     <string name="use_low_res_icon">ลดคุณภาพของภาพลง</string>
-    <string name="use_low_res_icon_desc">การลดคุณภาพของภาพลงของเหล่าไอคอนแอปที่กำลังจะได้เฉิดฉายบน RPC (ถ้า RPC ขัดข้องลองเปิดดูนะ!) การตั้งค่านี้จะนำไปใช้กับ Apps Rpc ด้วยนะ!</string>
+    <string name="use_low_res_icon_desc">การลดคุณภาพของภาพลงของเหล่าไอคอนแอปที่กำลังจะได้เฉิดฉายบน
+        RPC (ถ้า RPC ขัดข้องลองเปิดดูนะ!) การตั้งค่านี้จะนำไปใช้กับ Apps Rpc ด้วยนะ!</string>
     <string name="delete_saved_icon_urls">ลบลิงค์ไอคอนที่บันทึกไว้</string>
-    <string name="delete_saved_icon_urls_desc">ลบไอคอนแอปที่บันทึกไว้ในไฟล์ในเครื่องของคุณ (ใช้เจ้านี้ในช่วงในช่วงยามจำเป็นเท่านั้นนะ เพราะว่ามันจะส่งภาพทั้งหมดอีกครั้งไปยังเซิร์ฟเวอร์ของ discord ซึ่งแน่นอนมันจะใช้ทรัพยากรข้อมูลมากขึ้น!)</string>
+    <string name="delete_saved_icon_urls_desc">ลบไอคอนแอปที่บันทึกไว้ในไฟล์ในเครื่องของคุณ
+        (ใช้เจ้านี้ในช่วงในช่วงยามจำเป็นเท่านั้นนะ
+        เพราะว่ามันจะส่งภาพทั้งหมดอีกครั้งไปยังเซิร์ฟเวอร์ของ discord
+        ซึ่งแน่นอนมันจะใช้ทรัพยากรข้อมูลมากขึ้น!)</string>
     <string name="app_crashed">แอปเกิดข้อผิดพลาด!</string>
     <string name="share_crash_logs_desc">โปรดส่ง Logs ในช่อง Discord พร้อมด้วย stacktrace ต่อไปนี้:</string>
     <string name="share_crash_logs">แชร์ LOGS</string>
@@ -54,7 +66,8 @@
     <string name="design_credits">เครดิตการออกแบบ</string>
     <string name="enable_appsRpc">เปิดใช้งาน App Detection</string>
     <string name="usage_access">จำเป็นต้องเข้าถึงการใช้งาน</string>
-    <string name="usage_access_desc">จำเป็นต้องมีการเข้าถึงการใช้งานสำหรับแอปเพื่อรับแอปที่กำลังทำงานอย่างขยันสุดความสามารถในตอนนี้</string>
+    <string name="usage_access_desc">
+        จำเป็นต้องมีการเข้าถึงการใช้งานสำหรับแอปเพื่อรับแอปที่กำลังทำงานอย่างขยันสุดความสามารถในตอนนี้</string>
     <string name="enable_mediaRpc">เปิดใช้งาน Media Rpc</string>
     <string name="permission_required">ต้องการสิทธิ์ในการเข้าถึง</string>
     <string name="enable_customRpc">เปิดใช้งาน Custom Rpc</string>
@@ -64,7 +77,8 @@
     <string name="enable_console_rpc">เปิดใช้งาน Console Rpc</string>
     <string name="rpc_settings_button_configs">กำหนดค่าปุ่มสำหรับ Media และ AppDetection Rpc</string>
     <string name="use_custom_buttons">ใช้งานการตั้งค่าปุ่มสุดแสนวิเศษ</string>
-    <string name="use_custom_buttons_desc">ใช้ปุ่มที่กำหนดไว้ล่วงหน้าเพื่อแสดงบน Media และ AppDetection rpc</string>
+    <string name="use_custom_buttons_desc">ใช้ปุ่มที่กำหนดไว้ล่วงหน้าเพื่อแสดงบน Media และ
+        AppDetection rpc</string>
     <string name="follow_system">ตามตั้งค่าของระบบ</string>
     <string name="advance_settings">ตั้งค่าขั้นสูง</string>
     <string name="amoled">โหมดมืดแบบ Amoled</string>
@@ -77,25 +91,32 @@
     <string name="android_on">เปิด</string>
     <string name="android_off">ปิด</string>
     <string name="setup">มาตั้งค่าสิทธิ์กันก่อน!</string>
-    <string name="user_data_policy">แอปนี้จะไม่เก็บข้อมูลส่วนตัวของท่านหรือลักลอบเอาข้อมูลของท่านระหว่างมีปาร์ตี้เฮฮา ใดๆทั้งสิ้น!</string>
-    <string name="setup_desc">ช้าก่อนพวก! ก่อนที่จะไปส่วนอื่น รบกวนสักนิด พอดีขอแนะนำให้คุณดำเนินการอะไรที่จำเป็นนิดหน่อยเพื่อให้แน่ใจว่าคุณสมบัติทั้งหมดของแอปทำงานได้ปกติอ่ะนะ</string>
+    <string name="user_data_policy">แอปนี้จะไม่เก็บข้อมูลส่วนตัวของท่านหรือลักลอบเอาข้อมูลของท่านระหว่างมีปาร์ตี้เฮฮา
+        ใดๆทั้งสิ้น!</string>
+    <string name="setup_desc">
+        ช้าก่อนพวก! ก่อนที่จะไปส่วนอื่น รบกวนสักนิด
+        พอดีขอแนะนำให้คุณดำเนินการอะไรที่จำเป็นนิดหน่อยเพื่อให้แน่ใจว่าคุณสมบัติทั้งหมดของแอปทำงานได้ปกติอ่ะนะ</string>
     <string name="permission_granted">อนุญาตการเข้าถึงแล้ว!</string>
     <string name="permission_not_granted">ยังไม่ได้ให้การอนุญาตการเข้าถึง, กดตรงนี้เพื่ออนุญาตสิทธิ์</string>
     <string name="activity_large_text">ใส่ข้อความสุขแสนวิเศษ ให้กับภาพขนาดใหญ่สุดเฟี้ยวฟ๊าวของคุณ!</string>
     <string name="activity_small_text">ใส่ข้อความแสนน่ารัก ให้กับภาพขนาดเล็กสุดแสนน่ารักของคุณ!</string>
     <string name="contributors">ผู้ที่มีส่วนร่วมสุดแสนวิเศษ!</string>
     <string name="stream_url">ใส่ลิ้งค์ Stream Url นะ</string>
-    <string name="stream_url_info">ลิ้งค์ที่จะใส่ได้มีแค่พวกลิ้งค์ https://twitch.tv/ และ https://youtube.com/ ถึงจะทำงานได้ปกติ</string>
+    <string name="stream_url_info">ลิ้งค์ที่จะใส่ได้มีแค่พวกลิ้งค์ https://twitch.tv/ และ
+        https://youtube.com/ ถึงจะทำงานได้ปกติ</string>
     <string name="activity_button_max_character">จำกัดตัวอักษรแค่ 31 ตัว</string>
-    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom Rpc Fields</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom rpc from the last run rpc</string>
+    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom Rpc
+        Fields</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom rpc
+        from the last run rpc</string>
     <string name="clear_all_fields">ลบข้อความที่กรอกไปทั้งหมด</string>
     <string name="share_config">แชร์ log</string>
     <string name="change_log">Change Log</string>
     <string name="update">อัปเดต</string>
     <string name="configs_directory">ตั้งค่าไดเรกทอรี</string>
     <string name="custom_activity_type">ตั้งค่าประเภทกิจกรรม</string>
-    <string name="custom_activity_type_desc">การเขียนทับประเภทดั้งเดิมของกิจกรรม จะใช้ได้เฉพาะแค่ media หรือ experimental rpc เท่านั้น!</string>
+    <string name="custom_activity_type_desc">การเขียนทับประเภทดั้งเดิมของกิจกรรม จะใช้ได้เฉพาะแค่
+        media หรือ experimental rpc เท่านั้น!</string>
     <string name="custom_activity_status">ตั้งค่าสถานะของกิจกรรม</string>
     <string name="custom_activity_status_desc">เขียนทับสถานะดั้งเดิมของกิจกรรม</string>
     <string name="search">ค้นหา</string>
@@ -104,15 +125,21 @@
     <string name="hide_on_pause">ซ่อน RPC ระหว่างหยุดการใช้งาน</string>
     <string name="idling_notification">กำลังว่าง…</string>
     <string name="main_appDetection">App Detection</string>
-    <string name="main_appDetection_details">Kizzy อนุญาตให้คุณแชร์กิจกรรมที่กำลังเล่นอยู่บน Discord โดยที่ตัวแอปจะตรวจสอบว่าคุณใช้แอปอะไรอยู่ในมือถือของคุณ</string>
+    <string name="main_appDetection_details">Kizzy อนุญาตให้คุณแชร์กิจกรรมที่กำลังเล่นอยู่บน Discord
+        โดยที่ตัวแอปจะตรวจสอบว่าคุณใช้แอปอะไรอยู่ในมือถือของคุณ</string>
     <string name="main_mediaRpc">Media RPC</string>
-    <string name="main_mediaRpc_details">Kizzy อนุญาตให้คุณแชร์สถานะกิจกรรมสื่อมีเดียที่กำลังดูหรือฟังอยู่บน Discord โดยแอปจะตรวจเพลงหรือวิดีโอที่คุณกำลังฟังหรือดูอยู่</string>
+    <string name="main_mediaRpc_details">Kizzy
+        อนุญาตให้คุณแชร์สถานะกิจกรรมสื่อมีเดียที่กำลังดูหรือฟังอยู่บน Discord
+        โดยแอปจะตรวจเพลงหรือวิดีโอที่คุณกำลังฟังหรือดูอยู่</string>
     <string name="main_customRpc">Custom RPC</string>
     <string name="main_consoleRpc">Console RPC</string>
-    <string name="main_consoleRpc_details">Kizzy อนุญาตให้คุณใช้พรีเซ็ตที่กำหนดไว้ล่วงหน้าเพื่อกำหนดสถานะของคุณบน Discord ได้</string>
+    <string name="main_consoleRpc_details">Kizzy
+        อนุญาตให้คุณใช้พรีเซ็ตที่กำหนดไว้ล่วงหน้าเพื่อกำหนดสถานะของคุณบน Discord ได้</string>
     <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC เป็นฟีเจอร์ในแอป Kizzy มีการสลับการใช้ฟีเจอร์ระหว่าง Apps RPC และ Media RPC อย่างเรียบเนียบ</string>
-    <string name="main_customRpc_details">Kizzy ยอมให้คุณสร้างสถานะกิจกรรมของdiscord ตามใจชอบแบบเต็มพิกัดได้เลย!</string>
+    <string name="main_experimentalRpc_details">Experimental RPC เป็นฟีเจอร์ในแอป Kizzy
+        มีการสลับการใช้ฟีเจอร์ระหว่าง Apps RPC และ Media RPC อย่างเรียบเนียบ</string>
+    <string name="main_customRpc_details">Kizzy ยอมให้คุณสร้างสถานะกิจกรรมของdiscord
+        ตามใจชอบแบบเต็มพิกัดได้เลย!</string>
     <string name="main_comingSoon">อดใจไว้ก่อน ฟีเจอร์ใหม่ยังไม่มา</string>
     <string name="exit">ออก</string>
     <string name="logs">บันทึกการทำงาน</string>
@@ -121,7 +148,8 @@
     <string name="go_to_profile">ไปที่โปรไฟล์ของคุณ</string>
     <string name="version">เวอร์ชั่น</string>
     <string name="try_again">ลองใหม่อีกครั้ง</string>
-    <string name="request_for_notification_access">การอนุญาตเข้าถึงการแจ้งเตือนจะทำให้สามารถถึงข้อมูลจากสื่อแอปต่างๆได้ไงล่ะ!</string>
+    <string name="request_for_notification_access">
+        การอนุญาตเข้าถึงการแจ้งเตือนจะทำให้สามารถถึงข้อมูลจากสื่อแอปต่างๆได้ไงล่ะ!</string>
     <string name="update_check_for_update">กำลังตรวจสอบอัปเดต…</string>
     <string name="update_no_updates_available">ไม่มีอัปเดต นี้คือเวอร์ชั่นปัจจุบันแล้ว</string>
     <string name="compact_mode">โหมดกะทัดรัด</string>
@@ -140,7 +168,8 @@
     <string name="status_online">ออนไลน์</string>
     <string name="status_idle">ไม่อยู่</string>
     <string name="status_dnd">ห้ามรบกวน</string>
-    <string name="status_invisible_offline">ไม่ระบุ [บัญชีของคุณจะขึ้นว่าออฟไลน์แต่ไม่ได้ออฟไลน์จริงๆ]</string>
+    <string name="status_invisible_offline">ไม่ระบุ
+        [บัญชีของคุณจะขึ้นว่าออฟไลน์แต่ไม่ได้ออฟไลน์จริงๆ]</string>
     <string name="status_offline">ออฟไลน์</string>
     <string name="notification_access">การอนุญาตการเข้าถึงการแจ้งเตือน</string>
     <string name="post_notification">การแจ้งเตือนโพสต์</string>
@@ -201,10 +230,14 @@
     <string name="application_id">ไอดีแอปพลิเคชั่น</string>
     <string name="custom_application_id">กำหนดสถานะกิจกรรมไอดีแอปพลิเคชั่น</string>
     <string name="custom_application_id_desc">เขียนทับไอดีแอปพลิเคชั่นดั้งเดิมของ Discord</string>
-    <string name="use_a_vpn_desc">การล็อกอินผ่าน Discord อาจจะใช้งานไม่ได้หากไม่ได้ใช้ร่วมกับ VPN/DPI โปรดใช้ VPN/DPI เพื่อใช้งานต่อ</string>
-    <string name="rpc_templates_note">"ใช้ข้อความตัวอย่าง เช่น {{app_name}}, {{media_title}}, {{media_artist}} ฯลฯ หากเว้นว่างไว้ ระบบจะใช้เป็นค่าเริ่มต้นหรือข้ามไป"</string>
-    <string name="experimental_rpc_detect_apps">อนุญาตให้ Experimental RPC ตรวจจับแอปที่กำลังทำงานอยู่</string>
-    <string name="experimental_rpc_detect_media">อนุญาตให้ Experimental RPC ตรวจจับสื่อที่กำลังเล่นอยู่</string>
+    <string name="use_a_vpn_desc">การล็อกอินผ่าน Discord อาจจะใช้งานไม่ได้หากไม่ได้ใช้ร่วมกับ
+        VPN/DPI โปรดใช้ VPN/DPI เพื่อใช้งานต่อ</string>
+    <string name="rpc_templates_note">"ใช้ข้อความตัวอย่าง เช่น {{app_name}}, {{media_title}},
+        {{media_artist}} ฯลฯ หากเว้นว่างไว้ ระบบจะใช้เป็นค่าเริ่มต้นหรือข้ามไป"</string>
+    <string name="experimental_rpc_detect_apps">อนุญาตให้ Experimental RPC
+        ตรวจจับแอปที่กำลังทำงานอยู่</string>
+    <string name="experimental_rpc_detect_media">อนุญาตให้ Experimental RPC
+        ตรวจจับสื่อที่กำลังเล่นอยู่</string>
     <string name="app_preferences">การตั้งค่าแอป</string>
     <string name="app_preferences_desc">เลือกแอปที่จะเปิดใช้งาน Experimental RPC</string>
     <string name="completion_media_title">ชื่อเพลง/วิดีโอ</string>
@@ -216,7 +249,8 @@
     <string name="completion_media_author">ผู้แต่งหลัก</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">ตั้งค่า Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">หากรูปภาพไม่แสดงเมื่อใช้ Imgur คุณสามารถลองตั้งค่า Client ID ของคุณเองได้</string>
+    <string name="set_imgur_client_id_desc">หากรูปภาพไม่แสดงเมื่อใช้ Imgur คุณสามารถลองตั้งค่า
+        Client ID ของคุณเองได้</string>
     <string name="show_song_as_title">แสดงชื่อเพลงเป็นชื่อหัวข้อ</string>
 
     <string name="app_name_full">Kizzy Enhanced</string>
@@ -231,14 +265,16 @@
     <string name="completion_battery">Battery Level</string>
     <string name="completion_playback">Playback State</string>
     <string name="use_youtube_button">Add Media Button</string>
-    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
     <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{  to insert a variable</string>
+    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
@@ -316,7 +352,6 @@
     <string name="locale_ps">پښتو</string>
     <string name="locale_sa">संस्कृतम्</string>
     <string name="locale_bo">བོད་སྐད།</string>
-    <string name="locale_uz">Oʻzbekcha</string>
     <string name="locale_cy">Cymraeg</string>
     <string name="locale_zu">isiZulu</string>
 </resources>

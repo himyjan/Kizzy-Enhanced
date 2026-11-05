@@ -18,7 +18,9 @@ import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 class MetadataResolver @Inject constructor() {
-    private const val METADATA_KEY_SOURCE_URL = "android.media.metadata.SOURCE_URL"
+    companion object {
+        private const val METADATA_KEY_SOURCE_URL = "android.media.metadata.SOURCE_URL"
+    }
 
     fun getCoverArt(metadata: MediaMetadata): Bitmap? {
         return if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) metadata.getBitmap(
