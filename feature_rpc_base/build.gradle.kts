@@ -36,4 +36,7 @@ dependencies {
     implementation(projects.gateway)
     implementation(projects.domain)
     implementation(projects.data)
+
+    // Hilt annotation processor
+    ksp(libs.hilt.compiler)
 }

@@ -52,6 +52,9 @@ dependencies {
     implementation ("com.google.guava:listenablefuture:99.0.0-empty-to-avoid-conflict-with-guava")
     implementation ("androidx.concurrent:concurrent-futures-ktx:1.2.0")
     testImplementation(libs.junit)
+
+    // Hilt annotation processor
+    ksp(libs.hilt.compiler)
 }
 
 fun LibraryDefaultConfig.buildConfigFieldFromGradleProperty(fieldName: String, gradlePropertyName: String) {
