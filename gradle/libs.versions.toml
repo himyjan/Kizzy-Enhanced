@@ -31,6 +31,7 @@ javax = "1"
 kotlinx-serialization-json = "1.8.0"
 tink-android = "1.15.0"
 hilt-navigation-compose = "1.1.0"
+workmanager = "2.10.1"
 
 [libraries]
 # Javax
@@ -95,6 +96,8 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tink-android" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workmanager" }
+hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
