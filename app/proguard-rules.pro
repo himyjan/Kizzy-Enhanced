@@ -38,6 +38,7 @@
 -keep class com.my.kizzy.Hilt_* { *; }
 -keep class com.my.kizzy.feature_**.Hilt_* { *; }
 -keep class com.my.kizzy.feature_**.services.Hilt_* { *; }
+-keep class xyz.dead8309.**.Hilt_* { *; }
 
 # Keep Dagger/Hilt annotations & entry points
 -keep @dagger.hilt.EntryPoint class * { *; }
