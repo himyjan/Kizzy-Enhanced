@@ -255,38 +255,37 @@ class MediaRpcService : Service() {
 
         val rpcButtonsString = Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]
         val rpcButtons = Json.decodeFromString<RpcButtons>(rpcButtonsString)
-        when (kizzyRPC.isRpcRunning()) {
-            true -> {
-                if (playingMedia.name.isBlank()) {
-                    logger.d("MediaRPC", "Updating RPC with empty data, stopping RPC")
-                    kizzyRPC.closeRPC()
-                    stateRepository.setConnected(false)
-                    stateRepository.clearTrackInfo()
-                    stopTimelineUpdates()
-                } else {
-                    stateRepository.setConnected(true)
-                    stateRepository.setPaused(isPaused)
-                    // Add media button(s) if enabled
-                    if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
-                        kizzyRPC.clearButtons()
-                        if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false]) {
-                            playingMedia.mediaUrl?.let { url ->
-                                val label = when {
-                                    playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Watch on YouTube"
-                                    playingMedia.packageName == "com.spotify.music" -> "Listen on Spotify"
-                                    playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
-                                    playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
-                                    playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
-                                    playingMedia.packageName.contains("streetvoice") -> "Listen on StreetVoice"
-                                    playingMedia.packageName.contains("ymusicapp") -> "Play on YMusic"
-                                    else -> "Open Media Link"
-                                }
-                                kizzyRPC.setButton1(label, url)
+        if (kizzyRPC.isRpcRunning()) {
+            if (playingMedia.name.isBlank()) {
+                logger.d("MediaRPC", "Updating RPC with empty data, stopping RPC")
+                kizzyRPC.closeRPC()
+                stateRepository.setConnected(false)
+                stateRepository.clearTrackInfo()
+                stopTimelineUpdates()
+            } else {
+                stateRepository.setConnected(true)
+                stateRepository.setPaused(isPaused)
+                // Add media button(s) if enabled
+                if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
+                    kizzyRPC.clearButtons()
+                    if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false]) {
+                        playingMedia.mediaUrl?.let { url ->
+                            val label = when {
+                                playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Watch on YouTube"
+                                playingMedia.packageName == "com.spotify.music" -> "Listen on Spotify"
+                                playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
+                                playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
+                                playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
+                                playingMedia.packageName.contains("streetvoice") -> "Listen on StreetVoice"
+                                playingMedia.packageName.contains("ymusicapp") -> "Play on YMusic"
+                                else -> "Open Media Link"
                             }
+                            kizzyRPC.setButton1(label, url)
                         }
-                        if (Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
-                            currentMediaController?.metadata?.let { metadata ->
-                                metadataResolver.getArtistUrl(metadata, playingMedia.packageName)?.let { url ->
+                    }
+                    if (Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
+                        currentMediaController?.metadata?.let { metadata ->
+                            metadataResolver.getArtistUrl(metadata, playingMedia.packageName)?.let { url ->
                                 val label = when {
                                     playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Artist on YouTube"
                                     playingMedia.packageName == "com.spotify.music" -> "Artist on Spotify"
@@ -304,42 +303,41 @@ class MediaRpcService : Service() {
                     kizzyRPC.updateRPC(playingMedia, enableTimestamps)
                 }
             }
-            false -> {
-                if (playingMedia.name.isBlank()) {
-                    logger.d("MediaRPC", "Skipping RPC update with empty data")
-                    stateRepository.setConnected(false)
-                    stateRepository.clearTrackInfo()
-                    stopTimelineUpdates()
-                    return
-                }
-                stateRepository.setConnected(true)
-                stateRepository.setPaused(isPaused)
-                kizzyRPC.apply {
-                    setName(playingMedia.name)
-                    setType(Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0])
-                    setDetails(playingMedia.state)
-                    setState(playingMedia.state)
-                    setStartTimestamps(if (enableTimestamps) playingMedia.time?.start else null)
-                    setStopTimestamps(if (enableTimestamps) playingMedia.time?.end else null)
-                    setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
-                    setLargeImage(playingMedia.largeImage, playingMedia.largeText)
-                    setSmallImage(playingMedia.smallImage, playingMedia.smallText)
-                    if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
-                        with(rpcButtons) {
-                            val btn1 = button1.takeIf { it.isNotEmpty() }
-                            val btn2 = button2.takeIf { it.isNotEmpty() }
-                            if (btn1 != null) {
-                                val url1 = button1Url.takeIf { it.isNotEmpty() }
-                                setButton1(btn1, url1.orEmpty())
-                            }
-                            if (btn2 != null) {
-                                val url2 = button2Url.takeIf { it.isNotEmpty() }
-                                setButton2(btn2, url2.orEmpty())
-                            }
+        } else {
+            if (playingMedia.name.isBlank()) {
+                logger.d("MediaRPC", "Skipping RPC update with empty data")
+                stateRepository.setConnected(false)
+                stateRepository.clearTrackInfo()
+                stopTimelineUpdates()
+                return
+            }
+            stateRepository.setConnected(true)
+            stateRepository.setPaused(isPaused)
+            kizzyRPC.apply {
+                setName(playingMedia.name)
+                setType(Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0])
+                setDetails(playingMedia.state)
+                setState(playingMedia.state)
+                setStartTimestamps(if (enableTimestamps) playingMedia.time?.start else null)
+                setStopTimestamps(if (enableTimestamps) playingMedia.time?.end else null)
+                setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
+                setLargeImage(playingMedia.largeImage, playingMedia.largeText)
+                setSmallImage(playingMedia.smallImage, playingMedia.smallText)
+                if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
+                    with(rpcButtons) {
+                        val btn1 = button1.takeIf { it.isNotEmpty() }
+                        val btn2 = button2.takeIf { it.isNotEmpty() }
+                        if (btn1 != null) {
+                            val url1 = button1Url.takeIf { it.isNotEmpty() }
+                            setButton1(btn1, url1.orEmpty())
+                        }
+                        if (btn2 != null) {
+                            val url2 = button2Url.takeIf { it.isNotEmpty() }
+                            setButton2(btn2, url2.orEmpty())
                         }
                     }
-                    build()
                 }
+                build()
             }
         }
 
