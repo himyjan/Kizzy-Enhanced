@@ -104,7 +104,7 @@
 > Требования: Android Studio, знакомство с Gradle, Kotlin и Jetpack Compose.
 
 ```console
-git clone https://github.com/milliarderr/Kizzy-Enhanced.git
+git clone https://github.com/himyjan/Kizzy-Enhanced.git
 ```
 Открой проект в Android Studio, импортируй, затем собери и запусти. Релизные сборки собираются автоматически через GitHub Actions workflow **Build Release Apk**.
 
