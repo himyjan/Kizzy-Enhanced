@@ -487,7 +487,11 @@ class MediaRpcService : Service() {
                 ?: mediaSessions.firstOrNull()
 
             currentMediaController = selectedSession
-            currentMediaController?.registerCallback(mediaControllerCallback)
+
+            // registerCallback requires a Looper — marshal to main thread
+            scope.launch(Dispatchers.Main) {
+                currentMediaController?.registerCallback(mediaControllerCallback)
+            }
 
             logger.d("MediaRPC", "Tracking session: ${selectedSession?.packageName} (${selectedSession?.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "no title"})")
 
