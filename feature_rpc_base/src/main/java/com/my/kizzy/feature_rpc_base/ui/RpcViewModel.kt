@@ -36,6 +36,15 @@ class RpcViewModel @Inject constructor(
     /// Pause state (delegated to shared repository)
     val isPaused: StateFlow<Boolean> = stateRepository.isPaused
 
+    /// Current track title (delegated to shared repository)
+    val currentTrackTitle: StateFlow<String?> = stateRepository.currentTrackTitle
+
+    /// Current track artist (delegated to shared repository)
+    val currentArtist: StateFlow<String?> = stateRepository.currentArtist
+
+    /// Current track album (delegated to shared repository)
+    val currentAlbum: StateFlow<String?> = stateRepository.currentAlbum
+
     init {
         viewModelScope.launch {
             // Wait for initial token flow emission to determine loading state

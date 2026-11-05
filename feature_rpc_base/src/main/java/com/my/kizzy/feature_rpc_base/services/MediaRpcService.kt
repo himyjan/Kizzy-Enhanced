@@ -23,6 +23,7 @@ import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
@@ -51,7 +52,16 @@ class MediaRpcService : Service() {
     @Inject
     lateinit var logger: Logger
 
+    @Inject
+    lateinit var stateRepository: KizzyStateRepository
+
     private var wakeLock: WakeLock? = null
+
+    private var isPaused = false
+    private var lastKnownTrackTitle: String? = null
+    private var lastKnownTrackArtist: String? = null
+
+    private val timelineJob = MutableStateFlow<Job?>(null)
 
     @Inject
     lateinit var notificationManager: NotificationManager
@@ -123,14 +133,53 @@ class MediaRpcService : Service() {
         activeSessionsListener(mediaSessionManager.getActiveSessions(ComponentName(this, NotificationListener::class.java)), false)
     }
 
+    /**
+     * Continuously updates the timeline (elapsed time) every second while media is playing.
+     * This ensures the Discord progress bar advances correctly.
+     */
+    private fun startTimelineUpdates() {
+        stopTimelineUpdates()
+        timelineJob.value = scope.launch {
+            while (isActive) {
+                delay(1000)
+                // Only update timeline if we're actively playing (not paused/stopped)
+                if (!isPaused && kizzyRPC.isRpcRunning()) {
+                    val playingMedia = getCurrentPlayingMedia()
+                    if (playingMedia.name.isNotBlank()) {
+                        kizzyRPC.updateRPC(playingMedia, Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false])
+                    }
+                }
+            }
+        }
+    }
+
+    private fun stopTimelineUpdates() {
+        timelineJob.value?.cancel()
+        timelineJob.value = null
+    }
+
+    /**
+     * Updates presence with the current media state.
+     * Handles play/pause icon switching and track info persistence.
+     */
     suspend private fun updatePresence() {
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]
         val playingMedia = getCurrentPlayingMedia()
 
+        // Update state repository so UI reflects current track
+        stateRepository.setTrackInfo(
+            title = playingMedia.name.takeIf { it.isNotBlank() },
+            artist = playingMedia.state,
+            album = null // album not exposed by CommonRpc directly
+        )
+        lastKnownTrackTitle = playingMedia.name.takeIf { it.isNotBlank() }
+        lastKnownTrackArtist = playingMedia.state
+
+        // Update notification text
         notificationBuilder
             .setContentTitle(playingMedia.name.ifEmpty { getString(R.string.app_name_full) })
             .setContentText(
-                (playingMedia.details ?: "").ifEmpty { getString(R.string.idling_notification) }
+                (playingMedia.state ?: "").ifEmpty { getString(R.string.idling_notification) }
             )
         notificationManager.notify(
             Constants.NOTIFICATION_ID,
@@ -144,18 +193,27 @@ class MediaRpcService : Service() {
                 if (playingMedia.name.isBlank()) {
                     logger.d("MediaRPC", "Updating RPC with empty data, stopping RPC")
                     kizzyRPC.closeRPC()
+                    stateRepository.setConnected(false)
+                    stateRepository.clearTrackInfo()
+                } else {
+                    stateRepository.setConnected(true)
+                    stateRepository.setPaused(isPaused)
+                    kizzyRPC.updateRPC(playingMedia, enableTimestamps)
                 }
-                kizzyRPC.updateRPC(playingMedia, enableTimestamps)
             }
             false -> {
                 if (playingMedia.name.isBlank()) {
                     logger.d("MediaRPC", "Skipping RPC update with empty data")
+                    stateRepository.setConnected(false)
+                    stateRepository.clearTrackInfo()
                     return
                 }
+                stateRepository.setConnected(true)
+                stateRepository.setPaused(isPaused)
                 kizzyRPC.apply {
                     setName(playingMedia.name)
                     setType(Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0])
-                    setDetails(playingMedia.details)
+                    setDetails(playingMedia.state)
                     setState(playingMedia.state)
                     setStartTimestamps(if (enableTimestamps) playingMedia.time?.start else null)
                     setStopTimestamps(if (enableTimestamps) playingMedia.time?.end else null)
@@ -176,8 +234,16 @@ class MediaRpcService : Service() {
                             }
                         }
                     }
+                    build()
                 }
             }
+        }
+
+        // Restart timeline updates so the progress bar keeps advancing
+        if (playingMedia.name.isNotBlank() && !isPaused) {
+            startTimelineUpdates()
+        } else {
+            stopTimelineUpdates()
         }
     }
 
@@ -190,7 +256,10 @@ class MediaRpcService : Service() {
 
         if (mediaSessions?.isNotEmpty() == true) {
             currentMediaController?.unregisterCallback(mediaControllerCallback)
-            currentMediaController = mediaSessionManager.getActiveSessions(ComponentName(this, NotificationListener::class.java)).firstOrNull()
+            // Pick the first session that is actually playing media
+            val playingSession = mediaSessions.firstOrNull { it.metadata != null }
+                ?: mediaSessions.firstOrNull()
+            currentMediaController = playingSession
             currentMediaController?.registerCallback(mediaControllerCallback)
         } else {
             currentMediaController?.unregisterCallback(mediaControllerCallback)
@@ -205,12 +274,26 @@ class MediaRpcService : Service() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             super.onPlaybackStateChanged(state)
 
+            // Detect pause/play state change
+            val wasPaused = isPaused
+            isPaused = state != PlaybackState.STATE_PLAYING
+
+            // Sync with state repository
+            stateRepository.setPaused(isPaused)
+
+            if (wasPaused != isPaused) {
+                logger.d("MediaRPC", "Playback state changed: paused=$isPaused")
+                // Update notification pause button icon dynamically
+                updateNotificationPauseButton()
+            }
+
             scope.coroutineContext.cancelChildren()
             scope.launch {
                 delay(1000)
                 updatePresence()
             }
         }
+
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
 
@@ -220,12 +303,58 @@ class MediaRpcService : Service() {
                 updatePresence()
             }
         }
+
         override fun onSessionDestroyed() {
             super.onSessionDestroyed()
 
             scope.coroutineContext.cancelChildren()
-            scope.launch { updatePresence() }
+            scope.launch {
+                updatePresence()
+            }
         }
+    }
+
+    /**
+     * Updates the foreground notification's Pause/Resume button icon dynamically
+     * without recreating the entire notification.
+     */
+    private fun updateNotificationPauseButton() {
+        // Rebuild notification with updated pause icon and re-post
+        val notification = buildNotification(if (isPaused) "RPC Paused" else "Rich Presence Active",
+            if (isPaused) "Tap Resume to continue syncing" else "Broadcasting media status")
+        notificationManager.notify(Constants.NOTIFICATION_ID, notification)
+    }
+
+    private fun buildNotification(title: String, content: String): Notification {
+        return NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_media_rpc)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_media_rpc,
+                    getString(R.string.restart),
+                    PendingIntent.getService(
+                        this, 0,
+                        Intent(this, MediaRpcService::class.java).apply { action = Constants.ACTION_RESTART_SERVICE },
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                ).build()
+            )
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_media_rpc,
+                    getString(R.string.exit),
+                    PendingIntent.getService(
+                        this, 0,
+                        Intent(this, MediaRpcService::class.java).apply { action = Constants.ACTION_STOP_SERVICE },
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                ).build()
+            )
+            .build()
     }
 
     @SuppressLint("WakelockTimeout")
@@ -238,11 +367,23 @@ class MediaRpcService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             it.action?.let { ac ->
-                if (ac == Constants.ACTION_STOP_SERVICE)
+                if (ac == Constants.ACTION_STOP_SERVICE) {
                     stopSelf()
-                else if (ac == Constants.ACTION_RESTART_SERVICE) {
+                } else if (ac == Constants.ACTION_RESTART_SERVICE) {
                     stopSelf()
                     startService(Intent(this, MediaRpcService::class.java))
+                } else if (ac == Constants.ACTION_TOGGLE) {
+                    isPaused = !isPaused
+                    stateRepository.setPaused(isPaused)
+                    logger.d("MediaRPC", "Toggle pressed: paused=$isPaused")
+                    updateNotificationPauseButton()
+                    if (!isPaused) {
+                        scope.launch { updatePresence() }
+                    } else {
+                        stopTimelineUpdates()
+                        kizzyRPC.closeRPC()
+                        stateRepository.setConnected(false)
+                    }
                 }
             }
         }
@@ -250,10 +391,14 @@ class MediaRpcService : Service() {
     }
 
     override fun onDestroy() {
+        stopTimelineUpdates()
         mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         scope.cancel()
         kizzyRPC.closeRPC()
+        stateRepository.setConnected(false)
+        stateRepository.setPaused(false)
+        stateRepository.clearTrackInfo()
         wakeLock?.let {
             if (it.isHeld) it.release()
         }
