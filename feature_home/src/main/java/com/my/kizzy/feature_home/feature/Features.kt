@@ -67,7 +67,7 @@ fun Features(
             val item = homeItems[i]
             if (item.tooltipText.isNotBlank()) {
                 TooltipBox(
-                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
                     state = rememberTooltipState(),
                     tooltip = {
                         RichTooltip(
