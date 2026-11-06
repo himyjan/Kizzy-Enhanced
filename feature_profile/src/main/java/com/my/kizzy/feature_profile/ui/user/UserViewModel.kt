@@ -20,8 +20,8 @@ import androidx.lifecycle.viewModelScope
 import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
-import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn

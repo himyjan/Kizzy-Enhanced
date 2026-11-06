@@ -11,7 +11,6 @@ android {
 dependencies {
     implementation (libs.activity.compose)
     implementation(libs.crashx)
-    implementation (libs.blankj.utilcodex)
     implementation (libs.material.icons.extended)
     implementation (projects.theme)
     implementation (projects.data)

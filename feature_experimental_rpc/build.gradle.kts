@@ -12,7 +12,6 @@ android {
 dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.activity.compose)
-    implementation(libs.blankj.utilcodex)
     implementation(libs.coil)
     implementation(projects.featureRpcBase)
     implementation(projects.featureProfile)

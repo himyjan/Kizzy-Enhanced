@@ -20,12 +20,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.blankj.utilcode.util.AppUtils
 
 @Composable
 fun AppsItem(
@@ -35,8 +35,9 @@ fun AppsItem(
     onClick: () -> Unit = {},
 ) {
     // Cache app icon loading to avoid synchronous package manager calls during scroll
+    val ctx = LocalContext.current
     val appIcon = remember(pkg) {
-        AppUtils.getAppIcon(pkg)
+        ctx.packageManager.getApplicationIcon(pkg)
     }
 
     Surface(

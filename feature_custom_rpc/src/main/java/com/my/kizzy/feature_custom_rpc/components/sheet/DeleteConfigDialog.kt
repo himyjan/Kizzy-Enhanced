@@ -30,8 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.blankj.utilcode.util.FileUtils
 import com.my.kizzy.resources.R
+import java.io.File
 import com.my.kizzy.ui.components.dialog.MultiChoiceItem
 
 @Composable
@@ -53,7 +53,7 @@ fun DeleteConfigDialog(
                 onClick = {
                     onDismiss()
                     configs.value.forEach {
-                        FileUtils.delete("$dir/$it")
+                        File("$dir/$it").deleteRecursively()
                         onFilesDeleted(ctx.getString(R.string.delete_config_successfully_toast, it.dropLast(5)))
                     }
                 },

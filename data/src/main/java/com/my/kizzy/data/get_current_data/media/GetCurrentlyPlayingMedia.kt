@@ -17,7 +17,6 @@ import android.content.Context
 import android.media.MediaMetadata
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
-import com.blankj.utilcode.util.AppUtils
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.Constants.APPLICATION_ID
 import com.my.kizzy.data.rpc.Timestamps
@@ -95,7 +94,7 @@ class GetCurrentPlayingMedia @Inject constructor(
         val primary = validSessions.first()
         val metadata = primary.metadata
         val title = primary.title
-        val appName = AppUtils.getAppName(primary.mediaController.packageName)
+        val appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(primary.mediaController.packageName, 0)).toString()
 
         // Multi-artist support: show all collaborating artists
         val allArtists = metadataResolver.getAllArtists(metadata)

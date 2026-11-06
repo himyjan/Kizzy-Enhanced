@@ -25,7 +25,6 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import com.blankj.utilcode.util.AppUtils
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.data.rpc.RpcImage
@@ -180,7 +179,7 @@ class AppDetectionService : Service() {
         if (kizzyRPC.isRpcRunning()) {
             kizzyRPC.updateRPC(
                 CommonRpc(
-                    name = AppUtils.getAppName(packageName),
+                    name = this.packageManager.getApplicationLabel(this.packageManager.getApplicationInfo(packageName, 0)).toString(),
                     largeImage = RpcImage.ApplicationIcon(packageName, this@AppDetectionService),
                     time = Timestamps(start = System.currentTimeMillis()),
                     packageName = packageName
@@ -189,7 +188,7 @@ class AppDetectionService : Service() {
             )
         } else {
             kizzyRPC.apply {
-                setName(AppUtils.getAppName(packageName))
+                setName(this@AppDetectionService.packageManager.getApplicationLabel(this@AppDetectionService.packageManager.getApplicationInfo(packageName, 0)).toString())
                 setStartTimestamps(System.currentTimeMillis())
                 setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
                 setLargeImage(RpcImage.ApplicationIcon(packageName, this@AppDetectionService))

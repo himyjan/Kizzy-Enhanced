@@ -12,11 +12,12 @@
 
 package com.my.kizzy.feature_crash_handler
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.blankj.utilcode.util.AppUtils
-import com.blankj.utilcode.util.DeviceUtils
 import com.developer.crashx.CrashActivity
 import com.my.kizzy.ui.theme.KizzyTheme
 import com.my.kizzy.ui.theme.LocalDarkTheme
@@ -33,16 +34,22 @@ class CrashHandler : ComponentActivity() {
                 isHighContrastModeEnabled = LocalDarkTheme.current.isHighContrastModeEnabled,
                 isDynamicColorEnabled = LocalDynamicColorSwitch.current,
             ){
-                CrashScreen(trace = report.buildCrashLog())
+                CrashScreen(trace = buildCrashLog())
             }
         }
     }
-    private fun String?.buildCrashLog(): String {
+    private fun Context.buildCrashLog(): String {
+        val packageName = this.packageName
+        val packageInfo = try {
+            packageManager.getPackageInfo(packageName, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            null
+        }
         return """Kizzy crash report
-Manufacturer: ${DeviceUtils.getManufacturer()}
-Device: ${DeviceUtils.getModel()}
-Android version: ${DeviceUtils.getSDKVersionName()}
-App version: ${AppUtils.getAppVersionName()} (${AppUtils.getAppVersionCode()})
+Manufacturer: ${Build.MANUFACTURER}
+Device: ${Build.MODEL}
+Android version: ${Build.VERSION.RELEASE}
+App version: ${packageInfo?.versionName ?: "unknown"} (${packageInfo?.versionCode?.toString() ?: "unknown"})
 Stacktrace: 
 $this"""
     }

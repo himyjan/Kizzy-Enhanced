@@ -12,7 +12,6 @@ android {
 dependencies {
     implementation (libs.material.icons.extended)
     implementation(libs.activity.compose)
-    implementation(libs.blankj.utilcodex)
     implementation(libs.coil)
     implementation(libs.kotlinx.serialization.json)
     implementation(projects.featureRpcBase)

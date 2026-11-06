@@ -47,7 +47,6 @@ dependencies {
     implementation(libs.hilt.work)
     implementation(projects.common.resources)
     implementation(projects.gateway)
-    implementation(libs.blankj.utilcodex)
     implementation(libs.guava.listenablefuture)
     implementation(libs.concurrent.futures.ktx)
     testImplementation(libs.junit)

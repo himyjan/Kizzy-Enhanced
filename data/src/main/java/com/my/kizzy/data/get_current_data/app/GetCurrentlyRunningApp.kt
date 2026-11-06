@@ -15,7 +15,6 @@ package com.my.kizzy.data.get_current_data.app
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
-import com.blankj.utilcode.util.AppUtils
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.preference.Prefs
@@ -46,7 +45,7 @@ class GetCurrentlyRunningApp @Inject constructor(
                 val packageName = treeMap[treeMap.lastKey()]!!.packageName
                 Objects.requireNonNull(packageName)
                 return CommonRpc(
-                    name = AppUtils.getAppName(packageName),
+                    name = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(packageName, 0)).toString(),
                     details = null,
                     state = null,
                     largeImage = RpcImage.ApplicationIcon(packageName, context),

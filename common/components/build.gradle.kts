@@ -14,5 +14,4 @@ dependencies {
     implementation (libs.coil)
     implementation (projects.common.resources)
     implementation (libs.material.icons.extended)
-    implementation (libs.blankj.utilcodex)
 }
