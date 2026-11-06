@@ -356,10 +356,12 @@ class ExperimentalRpc : Service() {
             finalTimestamps = resolveTimestamps(appInfo?.time)
         } else {
             logger.d(TAG, "No active context (App or Media) — using default template presence")
-            // Use default template values when no media/app is active
-            finalName = templateName
-            finalDetails = templateDetails
-            finalState = templateState
+            // Use readable default text when no media/app is active
+            // templateName etc. contain template keys (e.g. {{app_name}}) that need
+            // media context to resolve; without context they show raw keys.
+            finalName = "Kizzy"
+            finalDetails = "Using Kizzy RPC"
+            finalState = "Idle"
             finalLargeImage = null
             finalSmallImage = null
             finalLargeText = null
