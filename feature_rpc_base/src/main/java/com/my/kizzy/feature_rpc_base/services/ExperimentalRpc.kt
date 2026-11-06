@@ -310,12 +310,12 @@ class ExperimentalRpc : Service() {
             if (Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE, false]) {
                 val titleSource = Prefs[Prefs.EXPERIMENTAL_RPC_TITLE_SOURCE, "title"]
                 finalName = if (titleSource == "artist") richMediaInfo?.artist else richMediaInfo?.title
-                finalDetails = processor.process(templateDetails) ?: richMediaInfo?.appName
-                finalState = processor.process(templateState) ?: richMediaInfo?.artist.takeIf { titleSource != "artist" }
+                finalDetails = resolveTemplateValue(processor.process(templateDetails), richMediaInfo?.appName)
+                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo?.artist.takeIf { titleSource != "artist" })
             } else {
-                finalName = processor.process(templateName) ?: richMediaInfo?.appName
-                finalDetails = processor.process(templateDetails) ?: richMediaInfo?.title
-                finalState = processor.process(templateState) ?: richMediaInfo?.artist
+                finalName = resolveTemplateValue(processor.process(templateName), richMediaInfo?.appName)
+                finalDetails = resolveTemplateValue(processor.process(templateDetails), richMediaInfo?.title)
+                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo?.artist)
             }
 
             finalLargeImage = when {
@@ -332,7 +332,6 @@ class ExperimentalRpc : Service() {
 
                 Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] && finalLargeImage != richMediaInfo?.appIcon ->
                     richMediaInfo?.appIcon
-
                 else -> null
             }
 
@@ -345,9 +344,9 @@ class ExperimentalRpc : Service() {
         } else if (currentContextIsApp) {
             effectivePackageName = appInfo?.packageName
             logger.d(TAG, "Processing App Context")
-            finalName = processor.process(templateName) ?: appInfo?.name
-            finalDetails = processor.process(templateDetails) ?: appInfo?.details
-            finalState = processor.process(templateState) ?: appInfo?.state
+            finalName = resolveTemplateValue(processor.process(templateName), appInfo?.name)
+            finalDetails = resolveTemplateValue(processor.process(templateDetails), appInfo?.details)
+            finalState = resolveTemplateValue(processor.process(templateState), appInfo?.state)
 
             finalLargeImage = appInfo?.largeImage
             finalSmallImage = appInfo?.smallImage
@@ -613,6 +612,18 @@ class ExperimentalRpc : Service() {
         bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY).takeIf { it in 0..100 }
     } catch (e: Exception) {
         null
+    }
+
+    /**
+     * Resolves a template processor result, falling back to [fallback] if the result is null,
+     * empty, or still contains unresolved template keys (e.g. {{app_name}}).
+     */
+    private fun resolveTemplateValue(result: String?, fallback: String?): String? {
+        val resolved = result?.trim()
+        if (resolved == null || resolved.isEmpty() || resolved.startsWith("{")) {
+            return fallback
+        }
+        return resolved
     }
 
     override fun onDestroy() {
