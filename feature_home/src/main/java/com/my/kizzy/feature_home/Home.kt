@@ -248,16 +248,17 @@ fun Home(
             }
         ) { paddingValues ->
             LazyColumn(
-                modifier = Modifier.padding(paddingValues),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
                 userScrollEnabled = false
             ) {
                 item {
-                    ChipSection()
                     Text(
                         text = stringResource(id = R.string.features),
                         style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(start = 15.dp)
+                        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 8.dp)
                     )
                 }
                 item {

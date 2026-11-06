@@ -47,11 +47,14 @@ fun SearchBar(
     text: String = "",
     placeholder: String = "",
     onClose: () -> Unit = {},
+    autoFocus: Boolean = false,
     onTextChanged: ((String) -> Unit),
 ) {
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    if (autoFocus) {
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
     }
 
     BasicTextField(
