@@ -443,6 +443,7 @@ class ExperimentalRpc : Service() {
         currentMediaController = null
 
         if (mediaSessions?.isNotEmpty() == true) {
+            // Try to register callback on a matching session for playback state updates
             currentMediaController = mediaSessions.firstOrNull {
                 enabledExperimentalApps.contains(it.packageName)
             }
@@ -452,19 +453,19 @@ class ExperimentalRpc : Service() {
         scope.coroutineContext.cancelChildren()
         scope.launch {
             val richMediaData = getCurrentPlayingMediaAll()
-            isMediaSessionActive = richMediaData.appName != null && currentMediaController != null
+            // Process media data even without a registered controller — controller is only
+            // needed for playback callbacks, presence updates just need media data
+            val hasMediaData = richMediaData.appName != null
 
-            if (isMediaSessionActive) {
+            if (hasMediaData && useMediaRpc) {
                 updatePresence(
                     richMediaInfo = richMediaData,
                     rawMediaMetadata = currentMediaController?.metadata
                 )
+            } else if (useAppsRpc) {
+                startAppDetectionCoroutine()
             } else {
-                if (useAppsRpc) {
-                    startAppDetectionCoroutine()
-                } else {
-                    updatePresence(appInfo = null, richMediaInfo = null, rawMediaMetadata = null)
-                }
+                updatePresence(appInfo = null, richMediaInfo = null, rawMediaMetadata = null)
             }
         }
     }
@@ -477,13 +478,21 @@ class ExperimentalRpc : Service() {
             scope.launch {
                 delay(1000)
                 val richMediaData = getCurrentPlayingMediaAll()
-                isMediaSessionActive =
-                    richMediaData.appName != null && currentMediaController != null
+                val hasMediaData = richMediaData.appName != null
 
-                if (isMediaSessionActive) {
+                if (hasMediaData && useMediaRpc) {
+                    // Re-acquire controller from fresh session list so metadata matches the
+                    // current song (not the old paused session).
+                    val freshController = try {
+                        mediaSessionManager
+                            .getActiveSessions(ComponentName(this@ExperimentalRpc, NotificationListener::class.java))
+                            .firstOrNull { it.packageName == richMediaData.packageName }
+                    } catch (_: Exception) {
+                        null
+                    }
                     updatePresence(
                         richMediaInfo = richMediaData,
-                        rawMediaMetadata = currentMediaController?.metadata
+                        rawMediaMetadata = freshController?.metadata
                     )
                 } else {
                     if (useAppsRpc) {
