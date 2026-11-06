@@ -236,16 +236,18 @@ class MediaRpcService : Service() {
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]
         val playingMedia = getCurrentPlayingMedia()
 
+        // Use packageName from fresh media data, not stale currentMediaController
+        val playingPkg = playingMedia.packageName.takeIf { it.isNotBlank() }
+
         // Detect session switch (new app/package) and reset state
-        val currentPkg = currentMediaController?.packageName?.takeIf { it.isNotBlank() }
-        if (currentPkg != null && currentPkg != currentPackageName) {
-            logger.d("MediaRPC", "Session switched: $currentPackageName -> $currentPkg")
-            currentPackageName = currentPkg
+        if (playingPkg != null && playingPkg != currentPackageName) {
+            logger.d("MediaRPC", "Session switched: $currentPackageName -> $playingPkg")
+            currentPackageName = playingPkg
             isPaused = false // Reset pause state for new session
             lastKnownTrackTitle = null
             lastKnownTrackArtist = null
             stateRepository.setPaused(false)
-        } else if (currentPkg == null) {
+        } else if (playingPkg == null) {
             // No active media - clear everything
             if (currentPackageName != null) {
                 currentPackageName = null
