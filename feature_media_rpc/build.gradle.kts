@@ -14,4 +14,7 @@ dependencies {
     implementation(projects.data)
     implementation(projects.common.preference)
     implementation(libs.material.icons.extended)
+
+    // Hilt annotation processor required for @HiltViewModel
+    ksp(libs.hilt.compiler)
 }
