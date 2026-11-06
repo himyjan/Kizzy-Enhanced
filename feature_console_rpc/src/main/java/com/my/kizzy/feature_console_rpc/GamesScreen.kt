@@ -83,10 +83,12 @@ fun GamesScreen(
     state: GamesState,
     isSearchBarVisible: Boolean,
     serviceEnabled: Boolean = false,
+    consoleRpcRunning: Boolean = AppUtils.customRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning(),
+    otherRpcServicesRunning: Boolean = AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning() || AppUtils.appDetectionRunning(),
 ) {
     val context = LocalContext.current
     var isConsoleRpcRunning by remember {
-        mutableStateOf(AppUtils.customRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning())
+        mutableStateOf(consoleRpcRunning)
     }
     var selected by remember { mutableStateOf("") }
     var searchText by remember { mutableStateOf("") }
@@ -170,7 +172,7 @@ fun GamesScreen(
                         SwitchBar(
                             title = stringResource(id = R.string.enable_console_rpc),
                             isChecked = isConsoleRpcRunning,
-                            enabled = !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning()
+                            enabled = !otherRpcServicesRunning
                         ) {
                             isConsoleRpcRunning = !isConsoleRpcRunning
                             when (isConsoleRpcRunning) {
@@ -338,7 +340,9 @@ fun GamesScreenPreview() {
         onBackPressed = {},
         state = GamesState.Loading,
         isSearchBarVisible = false,
-        serviceEnabled = false
+        serviceEnabled = false,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -349,7 +353,9 @@ fun GamesScreenPreview2() {
         onBackPressed = {},
         state = GamesState.Error(stringResource(id = R.string.no_internet_connection)),
         isSearchBarVisible = false,
-        serviceEnabled = false
+        serviceEnabled = false,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -362,7 +368,9 @@ fun GamesScreenPreview3() {
             games = fakeGames
         ),
         isSearchBarVisible = false,
-        serviceEnabled = false
+        serviceEnabled = false,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -373,7 +381,9 @@ fun GamesScreenPreview4() {
         onBackPressed = {},
         state = GamesState.Loading,
         isSearchBarVisible = true,
-        serviceEnabled = true
+        serviceEnabled = true,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -384,7 +394,9 @@ fun GamesScreenPreview5() {
         onBackPressed = {},
         state = GamesState.Error(stringResource(id = R.string.no_internet_connection)),
         isSearchBarVisible = true,
-        serviceEnabled = true
+        serviceEnabled = true,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -395,6 +407,8 @@ fun GamesScreenPreview6() {
         onBackPressed = {},
         state = GamesState.Success(games = fakeGames),
         isSearchBarVisible = true,
-        serviceEnabled = true
+        serviceEnabled = true,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
