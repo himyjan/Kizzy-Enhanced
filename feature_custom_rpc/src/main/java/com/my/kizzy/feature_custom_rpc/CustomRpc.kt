@@ -218,7 +218,7 @@ private fun RpcTextFieldsColumn(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var isCustomRpcEnabled by remember {
-        mutableStateOf(AppUtils.customRpcRunning())
+        mutableStateOf(AppUtils.customRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning())
     }
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -226,7 +226,8 @@ private fun RpcTextFieldsColumn(
         item {
             SwitchBar(
                 title = stringResource(id = R.string.enable_customRpc),
-                isChecked = isCustomRpcEnabled
+                isChecked = isCustomRpcEnabled,
+                enabled = !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning()
             ) {
                 isCustomRpcEnabled = !isCustomRpcEnabled
                 when (isCustomRpcEnabled) {

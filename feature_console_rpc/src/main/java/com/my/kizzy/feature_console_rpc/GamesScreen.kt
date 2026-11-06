@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.rpc.RpcConfig
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
@@ -84,7 +85,9 @@ fun GamesScreen(
     serviceEnabled: Boolean = false,
 ) {
     val context = LocalContext.current
-    var isConsoleRpcRunning by remember { mutableStateOf(false) }
+    var isConsoleRpcRunning by remember {
+        mutableStateOf(AppUtils.customRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning())
+    }
     var selected by remember { mutableStateOf("") }
     var searchText by remember { mutableStateOf("") }
 
@@ -166,7 +169,8 @@ fun GamesScreen(
                     ) {
                         SwitchBar(
                             title = stringResource(id = R.string.enable_console_rpc),
-                            isChecked = isConsoleRpcRunning
+                            isChecked = isConsoleRpcRunning,
+                            enabled = !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning()
                         ) {
                             isConsoleRpcRunning = !isConsoleRpcRunning
                             when (isConsoleRpcRunning) {
