@@ -60,7 +60,7 @@ import com.my.kizzy.preference.languages
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.Subtitle
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartUp(
     usageAccessStatus: MutableState<Boolean>,
@@ -71,9 +71,18 @@ fun StartUp(
 ) {
     val user = Prefs.getUser()
     val context = LocalContext.current
-    val storagePermissionState = rememberPermissionState(
-        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-    )
+    var storagePermissionGranted by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val storageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
+            onResult = { isGranted ->
+                storagePermissionGranted = isGranted
+            })
     var notificationPostingPerm by remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             mutableStateOf(
@@ -184,13 +193,10 @@ fun StartUp(
                         SetupCard(
                             title = stringResource(id = R.string.storage_access),
                             description = stringResource(id = R.string.request_for_storage_access),
-                            status = storagePermissionState.status.isGranted
+                            status = storagePermissionGranted
                         ) {
-                            when (storagePermissionState.status) {
-                                PermissionStatus.Granted -> {}
-                                is PermissionStatus.Denied -> {
-                                    storagePermissionState.launchPermissionRequest()
-                                }
+                            if (!storagePermissionGranted) {
+                                storageLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             }
                         }
                     }

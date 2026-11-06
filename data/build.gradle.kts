@@ -39,6 +39,7 @@ android {
 dependencies {
     implementation(libs.core.ktx)
     implementation(projects.domain)
+    implementation(projects.common.preference)
     implementation(libs.bundles.network.ktor)
     implementation(libs.ktor.content.negotiation)
     implementation(libs.ktor.logging)
@@ -47,8 +48,8 @@ dependencies {
     implementation(projects.common.resources)
     implementation(projects.gateway)
     implementation(libs.blankj.utilcodex)
-    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
-    implementation("androidx.concurrent:concurrent-futures-ktx:1.3.0")
+    implementation(libs.guava.listenablefuture)
+    implementation(libs.concurrent.futures.ktx)
     testImplementation(libs.junit)
 
     // Hilt annotation processor

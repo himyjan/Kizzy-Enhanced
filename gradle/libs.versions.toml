@@ -14,7 +14,7 @@ androidx-material = "1.14.0"
 app-compat = "1.8.0"
 blankj-utilcodex = "1.31.1"
 coil = "3.6.3"
-compose-bom = "2023.01.00"
+compose-bom = "2023.06.00"
 compose-navigation = "2.10.2"
 core-ktx = "1.19.1"
 crashx = "v6.0.19"
@@ -27,7 +27,10 @@ kotlinx-coroutine = "1.11.0"
 lifecycle-ktx = "2.11.0"
 mmkv = "2.4.3"
 junit = "4.13.2"
+guava-listenablefuture = "9999.0-empty-to-avoid-conflict-with-guava"
+concurrent-futures-ktx = "1.3.0"
 jakarta-inject = "2.0.1"
+javax = "1"
 kotlinx-serialization-json = "1.12.0"
 tink-android = "1.24.0"
 hilt-navigation-compose = "1.4.0"
@@ -36,6 +39,7 @@ workmanager = "2.12.0"
 [libraries]
 # Jakarta
 jakarta-inject = { module = "jakarta.inject:jakarta.inject-api", version.ref = "jakarta-inject" }
+javax = { module = "javax.inject:javax.inject", version.ref = "javax" }
 
 # Androidx
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
@@ -58,7 +62,7 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose-bom" }
+compose-runtime = { module = "androidx.compose.runtime:runtime" }
 
 # Accompanist (Note: Migrate pager, flowlayout, and nav-animation to native Compose alternatives)
 accompanist-permission = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
@@ -88,6 +92,8 @@ coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
 android-svg = { module = "com.caverock:androidsvg-aar", version.ref = "android-svg" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+guava-listenablefuture = { module = "com.google.guava:listenablefuture", version.ref = "guava-listenablefuture" }
+concurrent-futures-ktx = { module = "androidx.concurrent:concurrent-futures-ktx", version.ref = "concurrent-futures-ktx" }
 
 # KotlinX
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }

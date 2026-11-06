@@ -122,7 +122,8 @@ fun CustomRPC(
     }
     if (state.showStoragePermissionRequestDialog) {
         RequestStoragePermissionDialog(
-            onDismiss = { onEvent(UiEvent.SheetEvent.TriggerStoragePermissionRequest) }
+            onDismiss = { onEvent(UiEvent.SheetEvent.TriggerStoragePermissionRequest) },
+            context = LocalContext.current
         )
     }
     if (state.showSaveDialog) {

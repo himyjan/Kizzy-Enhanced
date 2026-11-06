@@ -5,6 +5,7 @@
     <string name="settings">Gosodiadau</string>
     <string name="language">Iaith</string>
     <string name="follow_system">Sydd â system</string>
+    <string name="locale_uz">Oʻzbekcha</string>
     <string name="locale_cy">Cymraeg</string>
     <string name="enable_appsRpc">Enable App Detection</string>
     <string name="enable_mediaRpc">Enable Media RPC</string>
