@@ -9,7 +9,6 @@ version-code = "14"
 # app level
 accompanist = "0.37.3"
 activity-compose = "1.13.0"
-android-svg = "1.4"
 androidx-material = "1.14.0"
 app-compat = "1.8.0"
 blankj-utilcodex = "1.31.1"
@@ -89,8 +88,6 @@ blankj-utilcodex = { module = "com.blankj:utilcodex", version.ref = "blankj-util
 crashx = { module = "com.github.TutorialsAndroid:crashx", version.ref = "crashx" }
 mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
-android-svg = { module = "com.caverock:androidsvg-aar", version.ref = "android-svg" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 guava-listenablefuture = { module = "com.google.guava:listenablefuture", version.ref = "guava-listenablefuture" }
 concurrent-futures-ktx = { module = "androidx.concurrent:concurrent-futures-ktx", version.ref = "concurrent-futures-ktx" }
