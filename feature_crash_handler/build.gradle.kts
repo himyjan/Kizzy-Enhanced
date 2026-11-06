@@ -10,8 +10,6 @@ android {
 
 dependencies {
     implementation (libs.activity.compose)
-    implementation(libs.crashx)
-    implementation (libs.material.icons.extended)
     implementation (projects.theme)
     implementation (projects.data)
     implementation (projects.common.resources)

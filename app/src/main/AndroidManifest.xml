@@ -72,6 +72,11 @@
             android:name=".feature_crash_handler.CrashHandler"
             android:exported="false" />
         <activity
+            android:name=".CrashReportActivity"
+            android:process=":crash_handler"
+            android:exported="false"
+            android:theme="@style/Theme.Kizzy" />
+        <activity
             android:name=".feature_rpc_base.services.DialogActivity"
             android:exported="true"
             android:theme="@style/ActivityTranslucent">

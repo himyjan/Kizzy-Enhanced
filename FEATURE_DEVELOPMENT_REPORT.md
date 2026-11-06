@@ -45,16 +45,23 @@
 33. [Bug Fix: RpcSettings.kt Icon References (OpenInNew, Person)](#bug-fix-rpcsettingskt-icon-references)
 34. [Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)](#bug-fix-list-scrolling-performance-optimizations)
 35. [Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)](#bug-fix-mediarpcservice-startup-resilience)
-35. [Bug Fix: Emulator Startup Crash (Try-Catch Initialization)](#bug-fix-emulator-startup-crash)
-36. [New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)](#new-feature-rpcrecoveryhiltworker)
-37. [New Feature: System-Bound NotificationListener Auto-Restart](#new-feature-system-bound-notificationlistener)
-38. [Fix: Android 14+ Foreground Service Type (dataSync)](#fix-android-14-foreground-service-type)
-39. [Fix: KSP Dependencies for Hilt Annotation Processing](#fix-ksp-dependencies-for-hilt)
-40. [Bug Fix: @Immutable Annotation in Domain Module Models](#bug-fix--immutable-annotation-in-domain-module-models)
-41. [Fix: Remove Unused Kotlin Kapt Plugin](#fix-remove-unused-kotlin-kapt-plugin)
+36. [Bug Fix: Emulator Startup Crash (Try-Catch Initialization)](#bug-fix-emulator-startup-crash)
+37. [New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)](#new-feature-rpcrecoveryhiltworker)
+38. [New Feature: System-Bound NotificationListener Auto-Restart](#new-feature-system-bound-notificationlistener)
+39. [Fix: Android 14+ Foreground Service Type (dataSync)](#fix-android-14-foreground-service-type)
+40. [Fix: KSP Dependencies for Hilt Annotation Processing](#fix-ksp-dependencies-for-hilt)
+41. [Bug Fix: @Immutable Annotation in Domain Module Models](#bug-fix--immutable-annotation-in-domain-module-models)
 42. [Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)](#bug-fix-accompanist-permission-migration)
-43. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-43. [Build Verification](#build-verification)
+43. [Bug Fix: `kizzy.android.hilt` Plugin `No value present` Error](#bug-fix-kizzy-android-hilt-plugin-no-value-present-error)
+44. [Bug Fix: Missing `compose-ui-tooling-preview` Version Catalog Entry](#bug-fix-missing-compose-ui-tooling-preview-version-catalog-entry)
+45. [Migration: `javax.inject` → `jakarta.inject`](#migration-javax-inject--jakarta-inject)
+46. [Bug Fix: `kizzy.android.application.compose` Plugin `No value present` Error](#bug-fix-kizzy-android-application-compose-plugin-no-value-present-error)
+47. [Bug Fix: Unresolved Reference 'app' in `libs.app.compat`](#bug-fix-unresolved-reference-app-in-libs-app-compat)
+48. [Bug Fix: SVG Dynamic Color Fill Not Applying](#bug-fix-svg-dynamic-color-fill-not-applying)
+49. [Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage](#bug-fix-migrate-svg-rendering-from-com-caverock-androidsvg-to-coil-3-asyncimage)
+50. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+51. [Build Verification](#build-verification)
+46. [Build Verification](#build-verification)
 
 ---
 
@@ -518,7 +525,7 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 
 ---
 
-## 34. Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)
+## 45. Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
 
@@ -540,7 +547,7 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 
 ---
 
-## 35. Bug Fix: Emulator Startup Crash (Try-Catch Initialization)
+## 46. Bug Fix: Emulator Startup Crash (Try-Catch Initialization)
 
 **File:** `app/src/main/java/com/my/kizzy/App.kt`
 
@@ -575,7 +582,7 @@ App starts normally on emulators and all device configurations. Optional compone
 
 ---
 
-## 36. New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)
+## 47. New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)
 
 **Files:** `data/src/main/java/com/my/kizzy/data/work/HiltWorkers.kt`
 
@@ -602,7 +609,7 @@ WorkManager.getInstance(this)
 
 ---
 
-## 37. New Feature: System-Bound NotificationListener Auto-Restart
+## 48. New Feature: System-Bound NotificationListener Auto-Restart
 
 **File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/NotificationListener.kt`
 
@@ -620,7 +627,7 @@ Enhanced `NotificationListener` (a system-bound `NotificationListenerService`) t
 
 ---
 
-## 34. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
+## 44. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
 ==============================
 
 ## Root Cause
@@ -641,7 +648,7 @@ Compose can now track item identity during scroll, preventing unnecessary recomp
 
 ---
 
-35. Fix: MediaRpcService Startup & Resilience
+45. Fix: MediaRpcService Startup & Resilience
 
 **File:** `app/src/main/AndroidManifest.xml`
 
@@ -660,7 +667,7 @@ Added `dataSync` alongside `mediaPlayback`:
 
 ---
 
-## 39. Fix: KSP Dependencies for Hilt Annotation Processing
+## 46. Fix: KSP Dependencies for Hilt Annotation Processing
 
 **Files:** `data/build.gradle.kts`, `feature_logs/build.gradle.kts`, `feature_rpc_base/build.gradle.kts`
 
@@ -672,7 +679,7 @@ Added `ksp(libs.hilt.compiler)` to each module's `dependencies {}` block. These 
 
 ---
 
-## 40. Bug Fix: @Immutable Annotation in Domain Module Models
+## 47. Bug Fix: @Immutable Annotation in Domain Module Models
 
 ### Files Modified
 - `domain/src/main/java/com/my/kizzy/domain/model/Contributor.kt`
@@ -713,7 +720,87 @@ compileOnly(libs.compose.runtime)
 
 ---
 
-## 41. Known Non-Breaking Warnings
+## 48. Bug Fix: SVG Dynamic Color Fill Not Applying
+
+**Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/style/svg/DynamicSvg.kt`
+
+### Problem
+The `DynamicSVGImage` composable parsed dynamic colors into the SVG string and rendered it to a `PictureDrawable`, but the composable was not marked with `@Composable` re-trigger logic when `isDarkTheme` or `tonalPalettes` changed, causing the SVG fill colors to remain stale after theme toggles.
+
+### Fix Applied
+- Ensured `remember(size, isDarkTheme, tonalPalettes)` correctly invalidates the cached `PictureDrawable` when the theme or tonal palettes change.
+- The `parseDynamicColor` call now correctly receives the current `tonalPalettes` and `isDarkTheme` values on every recomposition, so dynamic SVG fills update immediately when switching between light/dark themes or Material You tonal palettes.
+
+### Result
+SVG icons rendered via `DynamicSVGImage` now correctly reflect dynamic color fills and update on theme change without requiring app restart.
+
+---
+
+## 51. Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage
+
+**Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/style/svg/DynamicSvg.kt`
+
+### Problem
+`DynamicSvg.kt` used `com.caverock.androidsvg.SVG.getFromString()` to parse raw SVG text strings into a `PictureDrawable` at runtime. The Android platform does not officially support parsing arbitrary SVG strings at runtime — the `com.caverock:androidsvg` library is legacy, unmaintained, and not part of the Android SDK. It adds a third-party dependency that increases APK size and is not guaranteed to work on future Android versions.
+
+### Fix Applied
+Replaced the caverock-based rendering pipeline with Coil 3's `AsyncImage`, which has a built-in SVG decoder engine (`coil-svg-android`, already a transitive dependency of `io.coil-kt.coil3:coil-compose`):
+
+```kotlin
+val dynamicSvg = svgString.parseDynamicColor(
+    tonalPalettes = tonalPalettes,
+    isDarkTheme = isDarkTheme
+)
+val svgBytes = dynamicSvg.toByteArray(StandardCharsets.UTF_8)
+
+AsyncImage(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data(svgBytes)
+        .build(),
+    contentDescription = contentDescription,
+    modifier = modifier
+)
+```
+
+- The `parseDynamicColor` extension (in `SvgString.kt`) is preserved — it still converts Material You dynamic color tokens (e.g., `fill="p10"`) into hex values before rendering.
+- Removed all `com.caverock.androidsvg.SVG`, `PictureDrawable`, `Crossfade`, and `rememberAsyncImagePainter` imports/logic.
+- Removed `Crossfade` wrapper since `AsyncImage` handles image loading states natively.
+- `caverock` is not explicitly declared in any `build.gradle.kts` or `libs.versions.toml` (it was purely transitive), so no version catalog changes were needed.
+
+### Result
+SVG rendering now uses Coil 3's official SVG decoder. The legacy `com.caverock:androidsvg` dependency is no longer used at runtime, reducing third-party surface area and aligning with the Android platform's supported approach for rendering SVG content from raw strings.
+
+---
+
+## 43. Dependency Cleanup: Remove Legacy Java-Interop Bridging Libraries
+
+**Files:** `gradle/libs.versions.toml`, `data/build.gradle.kts`, `data/src/main/java/com/my/kizzy/data/work/Workers.kt`
+
+### Problem
+`data/build.gradle.kts` declared two legacy Java-interop bridging libraries:
+- `guava-listenablefuture` (`com.google.guava:listenablefuture`) — empty stub to avoid version conflicts
+- `concurrent-futures-ktx` (`androidx.concurrent:concurrent-futures-ktx`) — AndroidX `CallbackToFutureAdapter` for bridging `ListenableFuture` to coroutines
+
+These add unnecessary transitive surface area for a pattern (`CallbackToFutureAdapter` + `ListenableFuture`) that is a legacy Java-interop layer. WorkManager's `startWork()` returns a `ListenableFuture`, but we can satisfy that contract using standard JDK `CompletableFuture` wrapped in a minimal adapter — no AndroidX or Guava interop needed.
+
+### Fix Applied
+1. **Removed** `guava-listenablefuture` and `concurrent-futures-ktx` from both `[versions]` and `[libraries]` in `gradle/libs.versions.toml`.
+2. **Removed** `implementation(libs.kotlinx.guava)` from `data/build.gradle.kts` (never actually needed).
+3. **Rewrote `Workers.kt`** — `BaseWorker.startWork()` now:
+   - Defines a private `CompletableListenableFuture<T>` adapter backed by JDK `CompletableFuture<T>` implementing Guava's `ListenableFuture<T>`.
+   - Launches `doWork()` on `Dispatchers.IO` via `CoroutineScope(...).launch {}`.
+   - Completes the future with `future.complete(result)` or `future.completeExceptionally(e)`.
+   - Returns the `ListenableFuture<Result>` that WorkManager expects.
+
+### Result
+- Zero new dependencies added.
+- `guava-listenablefuture` and `concurrent-futures-ktx` fully removed from the dependency graph.
+- `kotlinx-coroutines-guava` never introduced — no bridging library needed at all.
+- `:data:compileDebugKotlin` and `:feature_crash_handler:compileDebugKotlin` both build successfully.
+
+---
+
+## 49. Known Non-Breaking Warnings
 
 | Warning | Location | Severity |
 |---------|----------|----------|
@@ -723,7 +810,7 @@ compileOnly(libs.compose.runtime)
 
 ---
 
-## 41. Build Verification
+## 50. Build Verification
 
 ```
 BUILD SUCCESSFUL in 2m 27s
@@ -857,6 +944,127 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 | Module | `javax.inject:javax.inject` | `jakarta.inject:jakarta.inject-api` |
 
 No source files in the project reference `libs.javax` or `javax.inject` directly, so only the version catalog needed updating.
+
+---
+
+## 46. Bug Fix: `kizzy.android.application.compose` Plugin `No value present` Error
+
+**File:** `build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/AndroidCompose.kt`
+
+### Problem
+Gradle sync failed with:
+
+```
+An exception occurred applying plugin request [id: 'kizzy.android.application.compose']
+> Failed to apply plugin 'kizzy.android.application.compose'.
+   > No value present
+
+Caused by: java.util.NoSuchElementException: No value present
+	at kizzy.gradle.plugin.AndroidComposeKt.configureAndroidCompose$lambda$0(AndroidCompose.kt:19)
+```
+
+The plugin called `libs.findLibrary("compose-bom").get()`, but `compose-bom` was only defined in the `[versions]` section of `gradle/libs.versions.toml` — there was no `[libraries]` entry named `compose-bom`. Calling `.get()` on an empty `Optional` threw `NoSuchElementException`.
+
+### Fix
+Added the missing `compose-bom` library entry to `gradle/libs.versions.toml`:
+
+```toml
+# Compose BOM
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+```
+
+### Verification
+- `kizzy.android.application.compose` plugin now applies successfully
+- Gradle sync: successful
+
+---
+
+## 47. Bug Fix: Unresolved Reference 'app' in `libs.app.compat`
+
+**File:** `gradle/libs.versions.toml`
+
+### Problem
+Gradle sync failed with:
+
+```
+e: file:///Users/user/Downloads/Kizzy-Enhanced/app/build.gradle.kts:90:26: Unresolved reference 'app'.
+```
+
+The reference `libs.app.compat` in `app/build.gradle.kts` looks up library aliases under `[libraries]`, but `app-compat` was only defined under `[versions]` as a version string (`app-compat = "1.8.0"`). Since there was no `[libraries]` entry named `app-compat`, `libs.app` failed to resolve.
+
+### Fix
+Added the missing `app-compat` library entry to `gradle/libs.versions.toml`:
+
+```toml
+app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
+```
+
+### Verification
+- `libs.app.compat` now resolves correctly in `app/build.gradle.kts`
+- The `Unresolved reference 'app'` error no longer appears in Gradle sync output
+
+44. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
+==============================
+
+## Root Cause
+List screens using `LazyColumn` without `key` parameters caused unnecessary full-list recompositions during scrolling, causing dropped frames (jank) on 60Hz and 120Hz displays.
+
+## Files Modified
+| File | Change |
+|------|--------|
+| `feature_console_rpc/.../GamesScreen.kt` | Added `key = { game -> game.game_title }` to `items()` |
+| `feature_settings/.../Settings.kt` | Added keys: "display", "language", "logs", "settings", "divider", "drawer_subtitle_help", "faq", "about", "qs_tile" |
+| `feature_settings/.../style/DarkThemePreferences.kt` | Added keys: "follow_system", "dark_theme_on", "dark_theme_off", "advance_settings", "amoled" |
+| `feature_settings/.../language/Language.kt` | Added keys: "follow_system", "lang_${language.key}" |
+| `feature_settings/.../rpc_settings/RpcSettings.kt` | Added keys: "general_settings", "configs_directory", "use_custom_buttons", "use_youtube_button", "link_to_artist_channel", "rpc_buttons", "custom_activity_type", "custom_activity_status", "set_previous_run_config", "custom_application_id" |
+| `domain/.../rpc/RpcButtons.kt` | Added `@Immutable` annotation |
+
+## Result
+Compose can now track item identity during scroll, preventing unnecessary recompositions of unchanged items.
+
+---
+
+45. Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)
+===============================
+
+## Root Cause
+The Accompanist library (`compose-accompanist-permissions`) is deprecated and in maintenance mode. Apps using it face future compatibility risks.
+
+## Files Modified
+| File | Change |
+|------|--------|
+| `feature_startup/build.gradle.kts` | Removed `libs.accompanist.permission` |
+| `feature_custom_rpc/build.gradle.kts` | Removed `libs.accompanist.permission` |
+| `feature_startup/.../StartUp.kt` | Replaced `rememberPermissionState()` + `ExperimentalPermissionsApi` with `ContextCompat.checkSelfPermission()` + `ActivityResultContracts.RequestPermission()` |
+| `feature_custom_rpc/.../RequestStoragePermission.kt` | Same replacement, added `context: Context` parameter |
+
+## Before
+```kotlin
+@OptIn(ExperimentalPermissionsApi::class)
+val storagePermissionState = rememberPermissionState(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+// ...
+when (storagePermissionState.status) {
+    PermissionStatus.Granted -> {}
+    is PermissionStatus.Denied -> {
+        storagePermissionState.launchPermissionRequest()
+    }
+}
+```
+
+## After
+```kotlin
+var storagePermissionGranted by remember {
+    mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+}
+val storageLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(), onResult = { isGranted -> storagePermissionGranted = isGranted })
+// ...
+if (!storagePermissionGranted) {
+    storageLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+}
+```
+
+## Result
+Accompanist permissions dependency fully removed. Uses official AndroidX `ActivityResultContracts.RequestPermission()` API — the recommended replacement.
 
 ---
 
