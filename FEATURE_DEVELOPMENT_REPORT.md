@@ -1,3 +1,672 @@
+# Kizzy-Enhanced Feature Development Report
+
+**Date:** November 6, 2026  
+**Branch:** `master`  
+**Status:** BUILD SUCCESSFUL — `app-debug.apk` and `app-release.apk` generated  
+**Total files changed:** ~60 files  
+**Total build tasks:** 1316 tasks completed successfully
+
+---
+
+## Table of Contents
+
+1. [Toolchain Upgrades](#toolchain-upgrades)
+2. [AGP 9.x Migration](#agp-9x-migration)
+3. [Accompanist → Native Compose Migration](#accompanist--native-compose-migration)
+4. [Coil 2.x → Coil 3.x Migration](#coil-2x--coil-3x-migration)
+5. [New Feature: ConnectionState StateFlow](#new-feature-connectionstate-stateflow)
+6. [New Feature: updatePresence with Buttons](#new-feature-updatepresence-with-buttons)
+7. [New Feature: NetworkMonitor](#new-feature-networkmonitor)
+8. [New Feature: RpcViewModel](#new-feature-rpcviewmodel)
+9. [New Feature: KizzyNotificationListener](#new-feature-kizzy-notification-listener)
+10. [New Feature: MediaMetadataParser](#new-feature-media-metadata-parser)
+11. [New Feature: SecureTokenStorage](#new-feature-secure-token-storage)
+12. [New Feature: KizzyStateRepository](#new-feature-kizzy-state-repository)
+13. [New Feature: KizzyRpcService (Foreground Service)](#new-feature-kizzyrpcservice)
+14. [New Feature: KizzyServiceController](#new-feature-kizzyservicecontroller)
+15. [New Feature: RpcStatusCard UI](#new-feature-rpcstatuscard-ui)
+16. [New Feature: RpcStatusCardLoadingSkeleton](#new-feature-rpcstatuscardloadingskeleton)
+17. [New Feature: KizzyDashboardScreen](#new-feature-kizzydashboardscreen)
+18. [New Feature: PermissionUtils](#new-feature-permission-utils)
+19. [Hilt Dependency Injection Fix](#hilt-dependency-injection-fix)
+20. [Proguard / R8 Hardening](#proguard--r8-hardening)
+21. [Bug Fix: Crash Handler Missing Dependencies](#bug-fix-crash-handler-missing-dependencies)
+22. [Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor](#bug-fix-homescreenviewmodel-hilt-missing-ksp-processor)
+23. [Bug Fix: R8 Stripping Hilt ViewModel Factories](#bug-fix-r8-stripping-hilt-viewmodel-factories)
+24. [Bug Fix: Startup Crash on Android 14+ (SecurityException)](#bug-fix-startup-crash-on-android-14-securityexception)
+25. [Bug Fix: Notification Click Not Opening App UI](#bug-fix-notification-click-not-opening-app-ui)
+26. [Bug Fix: Experimental RPC Always Idling](#bug-fix-experimental-rpc-always-idling)
+27. [Bug Fix: Experimental RPC Song Change After Pause](#bug-fix-experimental-rpc-song-change-after-pause)
+28. [Bug Fix: Experimental RPC Text Showing Template Keys](#bug-fix-experimental-rpc-text-showing-template-keys)
+29. [Bug Fix: Experimental RPC Idle Presence](#bug-fix-experimental-rpc-idle-presence)
+30. [Bug Fix: RPC Switches Mutually Exclusive](#bug-fix-rpc-switches-mutually-exclusive)
+31. [Bug Fix: Apps List Scroll Lag](#bug-fix-apps-list-scroll-lag)
+32. [Bug Fix: GamesScreen.kt Issues](#bug-fix-gamescreenkt-issues)
+33. [Bug Fix: RpcSettings.kt Icon References (OpenInNew, Person)](#bug-fix-rpcsettingskt-icon-references)
+34. [Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)](#bug-fix-list-scrolling-performance-optimizations)
+35. [Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)](#bug-fix-mediarpcservice-startup-resilience)
+35. [Bug Fix: Emulator Startup Crash (Try-Catch Initialization)](#bug-fix-emulator-startup-crash)
+36. [New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)](#new-feature-rpcrecoveryhiltworker)
+37. [New Feature: System-Bound NotificationListener Auto-Restart](#new-feature-system-bound-notificationlistener)
+38. [Fix: Android 14+ Foreground Service Type (dataSync)](#fix-android-14-foreground-service-type)
+39. [Fix: KSP Dependencies for Hilt Annotation Processing](#fix-ksp-dependencies-for-hilt)
+40. [Bug Fix: @Immutable Annotation in Domain Module Models](#bug-fix--immutable-annotation-in-domain-module-models)
+41. [Fix: Remove Unused Kotlin Kapt Plugin](#fix-remove-unused-kotlin-kapt-plugin)
+42. [Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)](#bug-fix-accompanist-permission-migration)
+43. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+43. [Build Verification](#build-verification)
+
+---
+
+## 1. Toolchain Upgrades
+
+| Component | Before | After | Status |
+|-----------|--------|-------|--------|
+| Gradle Wrapper | 8.13 | 9.8.2 | ✅ |
+| Android Gradle Plugin (AGP) | 8.13.2 | 9.6.0-alpha02 | ✅ |
+| Kotlin | 2.1.20 | 2.4.21 | ✅ |
+| KSP | 2.1.20-1.0.31 | 2.3.13 | ✅ |
+| Hilt | 2.56.2 | 2.60.1 | ✅ |
+| Ktor | 2.3.0 | 3.1.0 | ✅ |
+| Coil | 2.x (`io.coil-kt`) | 3.x (`io.coil-kt.coil3`) | ✅ |
+| Compose BOM | 2025.06.01 | 2026.09.00 | ✅ |
+| Java/Kotlin bytecode target | VERSION_11 | VERSION_26 | ✅ |
+| compileSdk | 36 | 37 | ✅ |
+
+### Decision Rationale
+
+- **AGP 9.6.0-alpha02**: AGP 9.8.2 was not yet published on Google's Maven at time of upgrade.
+- **KSP 2.3.13**: KSP 2.4.x for Kotlin 2.4.21 was not published. KSP 2.3.13 is backward-compatible with Kotlin 2.4.21.
+- **Gradle wrapper 9.8.2 and AGP 9.6.0-alpha02**: Independent versions.
+
+---
+
+## 2. AGP 9.x Migration
+
+### File: `gradle/wrapper/gradle-wrapper.properties`
+**Change:** `gradle-8.13-bin.zip` → `gradle-9.8.2-bin.zip`
+
+### File: `gradle/libs.versions.toml`
+**Change:** AGP `8.13.2` → `9.6.0-alpha02`
+
+### Files: Convention Plugins (`build-logic/convention/`)
+- `com.android.build.gradle.LibraryExtension` → `com.android.build.api.dsl.LibraryExtension`
+- Removed `CommonExtension<*,*,*,*,*,*>` generic type parameters
+- `kotlinOptions.jvmTarget` → `compilerOptions { jvmTarget.set(JvmTarget.JVM_26) }`
+- Removed redundant `org.jetbrains.kotlin.android` plugin application
+
+### File: `build.gradle.kts`
+- `kotlinOptions.jvmTarget = "26"` → `compilerOptions { jvmTarget.set(JvmTarget.JVM_26) }`
+- `freeCompilerArgs += listOf(...)` → `freeCompilerArgs.addAll(listOf(...))`
+- `project.buildDir` → `project.layout.buildDirectory`
+- Added `-Xmetadata-version=2.2.0` for Hilt metadata compatibility
+
+---
+
+## 3. Accompanist → Native Compose Migration
+
+| Accompanist Artifact | Removed | Native Replacement |
+|---------------------|---------|-------------------|
+| `navigation-animation` | `AnimatedNavHost`, `rememberAnimatedNavController` | `NavHost`, `rememberNavController`, `composable` |
+| `pager.layouts` / `pager.indicators` | `HorizontalPager`, `HorizontalPagerIndicator` | `androidx.compose.foundation.pager.HorizontalPager` + custom `Row`-based indicator |
+| `systemuicontroller` | `rememberSystemUiController` | `WindowCompat.getInsetsController` + `SideEffect` |
+| `flowLayout` | Flow layouts | Native Compose `ContextualFlowRow`/`ContextualFlowColumn` |
+| `permissions` | Permission APIs | Native Android permission APIs |
+
+---
+
+## 4. Coil 2.x → Coil 3.x Migration
+
+**Change:** `io.coil-kt` → `io.coil-kt.coil3` (9 source files + 12 build files)  
+**API fixes:** `Precision.AUTOMATIC` removed, `crossfade(true)` removed, Coil 3.x target() expects `coil3.Image` type
+
+---
+
+## 5. New Feature: ConnectionState StateFlow
+
+**File:** `gateway/src/main/java/kizzy/gateway/DiscordWebSocketImpl.kt`
+
+```kotlin
+sealed interface ConnectionState {
+    object Disconnected : ConnectionState
+    object Connecting : ConnectionState
+    data class Reconnecting(val attempt: Int) : ConnectionState
+    object Connected : ConnectionState
+}
+```
+
+- `connectionState: StateFlow<ConnectionState>` — observable connection lifecycle state
+- `gatewayEvents: SharedFlow<Payload>` — parsed gateway events for external observers
+- Exponential backoff with jitter (2s→60s max + 0-999ms random)
+- Network-aware reconnection (pauses when offline via `isOnlineState`)
+
+---
+
+## 6. New Feature: updatePresence with Buttons
+
+**Files:** `MediaRpcService.kt`, `DiscordWebSocketImpl.kt`
+
+- `updatePresence()` supports `ActivityButton` (label + url) for Discord RPC buttons
+- **Fix:** Replaced `takeIf { it.isNotEmpty() }` with explicit `if (btn1Str.isNotBlank())` checks to resolve Kotlin `Char` vs `String` type inference ambiguity inside `with(rpcButtons)` scope
+
+---
+
+## 7. New Feature: NetworkMonitor
+
+**File:** `feature_rpc_base/.../network/NetworkMonitor.kt`
+
+- `Flow<Boolean>` via `ConnectivityManager.NetworkCallback` with `NET_CAPABILITY_INTERNET`
+- `distinctUntilChanged()` to avoid redundant emissions
+- `asStateFlow(scope)` for lifecycle-safe UI observation
+- Pauses WebSocket reconnection when network is offline
+
+---
+
+## 8. New Feature: RpcViewModel
+
+**File:** `feature_rpc_base/.../ui/RpcViewModel.kt`
+
+```kotlin
+@HiltViewModel
+class RpcViewModel @Inject constructor(
+    private val tokenStorage: SecureTokenStorage,
+    private val stateRepository: KizzyStateRepository
+) : ViewModel() {
+
+    val authToken: StateFlow<String?>          // Reactive token from SecureTokenStorage
+    val isLoading: StateFlow<Boolean>          // Loading state during DataStore read
+    val isConnected: StateFlow<Boolean>        // Delegated from KizzyStateRepository
+    val isPaused: StateFlow<Boolean>           // Delegated from KizzyStateRepository
+
+    fun saveToken(token: String)
+    fun clearToken()
+    suspend fun updatePresence(...)
+}
+```
+
+- `authToken` exposed as `StateFlow` so UI and WebSocket react to token changes instantly
+- `isLoading` tracks secure storage initialization (shimmer skeleton UI during load)
+- `isConnected` / `isPaused` delegated from shared `KizzyStateRepository`
+
+---
+
+## 9. New Feature: KizzyNotificationListener
+
+**File:** `feature_rpc_base/.../services/KizzyNotificationListener.kt`
+
+- `NotificationListenerService` for system-wide media session tracking
+- Parses `MediaMetadata` (title, artist, album, duration)
+- Broadcasts to `DiscordWebSocketImpl.instance?.updatePresence()`
+- **Fix:** `Settings.Secure.ENABLED_NOTIFICATION_LISTENERS` → raw string `"enabled_notification_listeners"`
+
+---
+
+## 10. New Feature: MediaMetadataParser
+
+**File:** `feature_rpc_base/.../utils/MediaMetadataParser.kt`
+
+- Parses track metadata from notification extras (Spotify, YouTube Music, Apple Music, SimpMusic, Meld, YMusic, Morphe)
+- Falls back for modded/alternative clients without standard MediaSession tokens
+
+---
+
+## 11. New Feature: SecureTokenStorage
+
+**File:** `feature_rpc_base/.../security/SecureTokenStorage.kt`
+
+### Implementation (Updated with Tink Encryption)
+
+```kotlin
+@Singleton
+class SecureTokenStorage @Inject constructor(
+    @ApplicationContext private val context: Context
+) : ... {
+    val tokenFlow: Flow<String?>          // Reactive token stream
+    suspend fun saveToken(token: String)  // Encrypts via Tink + SharedPreferences
+    suspend fun clearToken()              // Clears encrypted token
+}
+```
+
+### Security Architecture
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Encryption | Google Tink AES-256-GCM | Field-level token encryption |
+| Key Protection | Android Keystore (`android-keystore://kizzy_master_key`) | Hardware-backed master key |
+| Keyset Storage | `AndroidKeysetManager` + SharedPreferences | Encrypted keyset at rest |
+| Token Storage | SharedPreferences (`secure_discord_prefs`) | Base64-encoded ciphertext |
+| Error Handling | `catch` + `GeneralSecurityException` | Graceful fallback on keystore invalidation |
+
+**Failure:** `GeneralSecurityException` on keystore invalidation (e.g., lock screen change) crashes app  
+**Fix:** `.catch` block wipes corrupted storage and emits empty state, routing user to re-login
+
+---
+
+## 12. New Feature: KizzyStateRepository
+
+**File:** `feature_rpc_base/.../security/KizzyStateRepository.kt` (NEW)
+
+```kotlin
+@Singleton
+class KizzyStateRepository @Inject constructor() {
+    val isPaused: StateFlow<Boolean>
+    val isConnected: StateFlow<Boolean>
+    fun setPaused(paused: Boolean)
+    fun setConnected(connected: Boolean)
+}
+```
+
+- Hilt `@Singleton` shared across `KizzyRpcService` and `RpcViewModel`
+- UI updates reactively whether paused/resumed from notification shade or app UI
+- No `IBinder` binding needed — singleton instance shared via Hilt
+
+---
+
+## 13. New Feature: KizzyRpcService (Foreground Service)
+
+**File:** `feature_rpc_base/.../services/KizzyRpcService.kt` (NEW)
+
+```kotlin
+@AndroidEntryPoint
+class KizzyRpcService : Service() {
+    const val CHANNEL_ID = "kizzy_rpc_channel"
+    const val NOTIFICATION_ID = 1001
+    const val ACTION_DISCONNECT = "kizzy.action.DISCONNECT"
+    const val ACTION_TOGGLE = "kizzy.action.TOGGLE"
+}
+```
+
+### Features
+- **Foreground Service** with `connectedDevice` type (declared in `AndroidManifest.xml`)
+- **Notification channel** with `IMPORTANCE_LOW` (no sound/vibration spam)
+- **Dynamic Pause/Resume button** — label and icon swap based on `isPaused` state
+- **Disconnect button** — stops service, removes foreground, clears state
+- **Dynamic text updates** — `updateNotificationText(title, artist)` called on track change without service restart
+- **State sync** — updates `KizzyStateRepository` on toggle/disconnect so UI stays in sync
+
+### Manifest
+```xml
+<service
+    android:name=".services.KizzyRpcService"
+    android:exported="false"
+    android:foregroundServiceType="connectedDevice" />
+```
+
+---
+
+## 14. New Feature: KizzyServiceController
+
+**File:** `feature_rpc_base/.../utils/KizzyServiceController.kt` (NEW)
+
+```kotlin
+object KizzyServiceController {
+    fun sendAction(context: Context, action: String)
+}
+```
+
+- Sends `ACTION_TOGGLE` / `ACTION_DISCONNECT` intents to `KizzyRpcService` from UI
+- Uses `startForegroundService` on API 26+, `startService` below
+- Unified codepath: notification buttons and UI buttons trigger identical intent actions
+
+---
+
+## 15. New Feature: RpcStatusCard UI
+
+**File:** `feature_rpc_base/.../ui/RpcStatusCard.kt` (NEW)
+
+Material 3 reactive composable:
+- **Animated background color** — green (connected), amber (paused), gray (disconnected)
+- **Live status dot badge** — color-coded badge
+- **Track details** — title and artist from media parser
+- **Pause/Resume button** — `Icons.Default.Pause` / `Icons.Default.PlayArrow`
+- **Disconnect button** — `Icons.Default.PowerOff`
+- Requires `material-icons-extended` dependency
+
+---
+
+## 16. New Feature: RpcStatusCardLoadingSkeleton
+
+**File:** `feature_rpc_base/.../ui/RpcStatusCardLoadingSkeleton.kt` (NEW)
+
+- Pure Jetpack Compose shimmer effect using `rememberInfiniteTransition` + `Brush.linearGradient`
+- Mirrors `RpcStatusCard` layout dimensions
+- Displayed while `isLoading` is true (secure storage initialization)
+
+---
+
+## 17. New Feature: KizzyDashboardScreen
+
+**File:** `feature_rpc_base/.../ui/KizzyDashboardScreen.kt` (NEW)
+
+- Collects `isLoading`, `isConnected`, `isPaused` StateFlows via `LaunchedEffect`
+- Conditionally renders shimmer skeleton or live `RpcStatusCard`
+- Wires `KizzyServiceController.sendAction()` to Pause/Resume and Disconnect buttons
+
+---
+
+## 18. New Feature: PermissionUtils
+
+**File:** `feature_rpc_base/.../utils/PermissionUtils.kt`
+
+- `isNotificationListenerEnabled()` — checks notification listener access
+- `openNotificationListenerSettings()` — opens system settings
+- `startDiscordRpcService()` — starts foreground service
+- `checkNotificationListenerPermission()` — convenience wrapper
+
+---
+
+## 19. Hilt Dependency Injection Fix
+
+### Problem
+`KizzyRepository` is an interface — Hilt had no binding to its implementation.
+
+### Fixes Applied
+
+1. **`RepositoryModule.kt` (NEW)** — `@Binds` mapping `KizzyRepositoryImpl` → `KizzyRepository` in `SingletonComponent`
+2. **`AppModule.kt`** — Removed duplicate `providesKizzyRepository()` and unused imports
+3. **Metadata flag** — `-Xmetadata-version=2.2.0` to bypass Hilt's shaded `kotlin-metadata-jvm` incompatibility
+
+---
+
+## 20. Proguard / R8 Hardening
+
+**File:** `app/proguard-rules.pro`
+
+- Data class keep rules `{ <fields>; }` → `{ *; }` (preserves `copy()`, `componentN()`, serialization)
+- Ktor engine factory keep + `-dontwarn`
+- `-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod`
+
+---
+
+## 21. Bug Fix: Crash Handler Missing Dependencies
+
+**File:** `feature_crash_handler/build.gradle.kts`
+
+### Problem
+`CrashScreen.kt` in `:feature_crash_handler` imports:
+- `com.my.kizzy.data.utils.shareAsFile` — from `:data` module
+- `com.my.kizzy.resources.R` — from `:common:resources` module
+
+But `feature_crash_handler/build.gradle.kts` only declared `projects.theme`, causing unresolved reference compilation errors when the crash report screen was rendered.
+
+### Fix
+Added the missing implementation dependencies:
+
+```kotlin
+implementation (projects.data)
+implementation (projects.common.resources)
+```
+
+### Verification
+- Gradle sync: successful
+- `app:assembleDebug`: BUILD SUCCESSFUL
+
+---
+
+## 22. Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor
+
+**File:** `feature_home/build.gradle.kts`
+
+### Problem
+Crash report from user device (Samsung SM-X516B, Android 16):
+
+```
+java.lang.RuntimeException: Cannot create an instance of class com.my.kizzy.feature_home.HomeScreenViewModel
+Caused by: java.lang.NoSuchMethodException: com.my.kizzy.feature_home.HomeScreenViewModel.<init> []
+```
+
+`HomeScreenViewModel` is annotated with `@HiltViewModel` and uses `@Inject constructor`, but `:feature_home` was missing the Hilt KSP annotation processor. Without it, Hilt cannot generate the ViewModel factory, so the no-arg constructor doesn't exist at runtime.
+
+### Fix
+Added `ksp(libs.hilt.compiler)` to `feature_home/build.gradle.kts`:
+
+```kotlin
+dependencies {
+    // ... existing deps ...
+
+    // Hilt annotation processor required for @HiltViewModel
+    ksp(libs.hilt.compiler)
+}
+```
+
+### Verification
+- Gradle sync: successful
+- `app:assembleDebug`: BUILD SUCCESSFUL
+
+---
+
+## 23. Bug Fix: R8 Stripping Hilt ViewModel Factories
+
+**File:** `app/proguard-rules.pro`
+
+### Problem
+Crash report from user device (Samsung SM-X516B, Android 16):
+
+```
+java.lang.RuntimeException: Cannot create an instance of class com.my.kizzy.feature_profile.ui.user.UserViewModel
+Caused by: java.lang.NoSuchMethodException: com.my.kizzy.feature_profile.ui.user.UserViewModel.<init> []
+```
+
+Even though `:feature_profile` already has `ksp(libs.hilt.compiler)`, release builds with R8 minification were stripping Hilt's generated ViewModel factory classes (`UserViewModel_HiltFactory`). The existing ProGuard rule `-keep class **_Factory { *; }` did **not** match Hilt's naming convention (`*_HiltFactory`, not `*_Factory`).
+
+### Fix
+Added two rules to `app/proguard-rules.pro`:
+
+1. `-keep class **_HiltFactory { *; }` — preserves Hilt-generated ViewModel factories
+2. `-keepnames class * extends androidx.lifecycle.ViewModel { *; }` — preserves ViewModel class names
+
+### Verification
+- `app:assembleDebug`: BUILD SUCCESSFUL
+- `app:assembleRelease`: BUILD SUCCESSFUL (R8 minification enabled)
+
+---
+
+## 24. Bug Fix: Startup Crash on Android 14+ (SecurityException)
+
+**Files:** `GetCurrentlyPlayingMedia.kt`, `MediaRpcService.kt`, `GetCurrentPlayingMediaAll.kt`
+
+### Problem
+App crashes at startup on Android 14+ (API 34+) with:
+
+```
+java.lang.SecurityException: Missing permission to control media.
+    at android.media.session.MediaSessionManager.getActiveSessions(MediaSessionManager.java:194)
+    at com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia.invoke(GetCurrentPlayingMedia.kt:38)
+    at com.my.kizzy.services.MediaRpcService.onCreate(MediaRpcService.kt:61)
+```
+
+### Root Cause
+`MediaSessionManager.getActiveSessions()` requires the `android.permission.MEDIA_CONTENT_CONTROL` permission. On API 34+ this is a `signatureOrSystem` permission — regular third-party apps **cannot be granted it**. The permission is declared in `AndroidManifest.xml` but is silently unavailable on production devices, causing an unhandled `SecurityException` when any of the three `getActiveSessions()` call sites execute during app startup.
+
+### Fix Applied
+Wrapped all three `getActiveSessions()` call sites in `try/catch (SecurityException)` blocks that return an empty list when media session access is unavailable:
+
+- `data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentlyPlayingMedia.kt` — line ~58
+- `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt` — `onCreate()` line ~162
+- `data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentPlayingMediaAll.kt` — line ~53
+
+```kotlin
+val sessions: List<android.media.session.MediaController> = try {
+    mediaSessionManager.getActiveSessions(componentName)
+} catch (_: SecurityException) {
+    // MEDIA_CONTENT_CONTROL permission is signatureOrSystem on API 34+;
+    // regular third-party apps cannot hold it. Fail gracefully.
+    emptyList()
+}
+```
+
+Note: `ExperimentalRpc.kt`, `NotificationListener.kt`, and `KizzyNotificationListener.kt` already had `try/catch (SecurityException)` protection — only these three sites were unprotected.
+
+### Result
+App starts normally on all API levels. Media RPC features gracefully degrade (empty session list) instead of crashing when media control permission is unavailable.
+
+---
+
+## 33. Bug Fix: RpcSettings.kt Icon References (OpenInNew, Person)
+
+**Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/rpc_settings/RpcSettings.kt`
+
+### Problem
+`:feature_settings:compileDebugKotlin` failed with unresolved icon references:
+- `Unresolved reference 'OpenInNew'` — `Icons.Default` does not contain `OpenInNew`; it lives in `Icons.AutoMirrored.Filled`
+- `Unresolved reference 'Person' on receiver of type 'Icons.Filled'` — `Icons.Filled` does not contain `Person`; it lives in `Icons.Default`
+
+### Fix
+- Line 153: `icon = Icons.AutoMirrored.Filled.OpenInNew` (imported from `automirrored.filled`)
+- Line 165: `icon = Icons.Default.Person` (imported from `icons.filled`)
+- Added proper material icons imports for both
+
+---
+
+## 34. Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)
+
+**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
+
+### Problems
+1. `createNotificationChannel()` — unresolved reference; method did not exist
+2. `currentMediaController?.packageName.takeIf { ... }` — unnecessary safe call on non-null receiver after `?.` already applied
+3. `playingMedia.metadata` — `CommonRpc` data class has no `metadata` property; should read from `currentMediaController?.metadata`
+4. `state != PlaybackState.STATE_PLAYING` — `PlaybackState?` cannot be compared to `Int`; needs null-safe `state?.state`
+5. `return START_STICKY` — service restarted without Intent payload after system kill, losing RPC config
+
+### Fixes
+- Added `createNotificationChannel()` method creating an `IMPORTANCE_LOW` notification channel on API 26+
+- Changed `currentMediaController?.packageName.takeIf { ... }` to `currentMediaController?.packageName?.takeIf { ... }`
+- Changed `metadataResolver.getArtistUrl(playingMedia.metadata, ...)` to `currentMediaController?.metadata?.let { metadata -> ... }`
+- Changed `state != PlaybackState.STATE_PLAYING` to `state?.state != PlaybackState.STATE_PLAYING`
+- Changed `return START_STICKY` to `return START_REDELIVER_INTENT` so the service is restarted with the exact same Intent payload after system-initiated process death
+- Restructured `when(kizzyRPC.isRpcRunning())` to `if/else` for exhaustive branch coverage
+- Removed duplicate `createNotificationChannel` call pattern from `onCreate()`
+
+---
+
+## 35. Bug Fix: Emulator Startup Crash (Try-Catch Initialization)
+
+**File:** `app/src/main/java/com/my/kizzy/App.kt`
+
+### Problem
+App crashed at startup on emulators and OEM devices because `App.onCreate()` called several initialization methods without error handling:
+- `DynamicColors.applyToActivitiesIfAvailable()` — only available on API 31+
+- `CrashHandlerConfig.apply()` (CrashX) — may not initialize on emulator
+- `PreferenceConfig.apply()` (MMKV.initialize) — storage permission issues on emulators
+- `LoggerProvider.init()` — Hilt EntryPoint access can fail
+- `AppUtils.init()` — ActivityManager service may not be ready
+- `WorkManagerHelper.scheduleDailyCleanup()` — WorkManager not ready
+
+### Fix
+Wrapped every initialization call in individual `try/catch` blocks so a failure in one component does not prevent app startup:
+
+```kotlin
+override fun onCreate() {
+    super.onCreate()
+    
+    try { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 
+        DynamicColors.applyToActivitiesIfAvailable(this) } catch {}
+    try { CrashHandlerConfig.apply() } catch {}
+    try { PreferenceConfig.apply(this) } catch {}
+    try { LoggerProvider.init(this) } catch {}
+    try { AppUtils.init(this) } catch {}
+    try { WorkManagerHelper.scheduleDailyCleanup(this) } catch {}
+}
+```
+
+### Result
+App starts normally on emulators and all device configurations. Optional components fail gracefully without preventing startup.
+
+---
+
+## 36. New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)
+
+**Files:** `data/src/main/java/com/my/kizzy/data/work/HiltWorkers.kt`
+
+### Problem
+When OEM firmware (HiOS, MIUI, EMUI) hard-kills the app process or the user swipes the app from Recents, Rich Presence stops broadcasting and requires manual re-launch to restore.
+
+### Solution
+Added `RpcRecoveryHiltWorker` — a Hilt-injected `CoroutineWorker` that:
+- Checks if RPC features are enabled (`USE_RPC_BUTTONS`, `MEDIA_RPC_MEDIA_BUTTON`, `MEDIA_RPC_ARTIST_LINK`)
+- Retrieves the current media session via `GetCurrentPlayingMedia`
+- If media is playing, rebuilds Discord Rich Presence (name, details, state, timestamps, images, status)
+- Retries on failure via `Result.retry()`
+
+### Integration
+Triggered from `MediaRpcService.onTaskRemoved()` when RPC is enabled:
+```kotlin
+WorkManager.getInstance(this)
+    .enqueueUniqueWork(
+        "kizzy_rpc_recovery",
+        ExistingWorkPolicy.KEEP,
+        OneTimeWorkRequestBuilder<RpcRecoveryHiltWorker>().build()
+    )
+```
+
+---
+
+## 37. New Feature: System-Bound NotificationListener Auto-Restart
+
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/NotificationListener.kt`
+
+### Problem
+OEM firmware (HiOS on TECNO/Infinix, MIUI/HyperOS, EMUI) hard-kills app processes regardless of standard Android service flags. A raw `Service` is not automatically restarted by the OS framework.
+
+### Solution
+Enhanced `NotificationListener` (a system-bound `NotificationListenerService`) to act as a persistence anchor:
+- **`onListenerConnected()`**: When the OS framework re-binds the service after process death, automatically restarts `MediaRpcService` via `startForegroundService()`
+- **Framework-instantiated**: Uses `EntryPointAccessors.fromApplication()` to obtain Hilt `Logger` since `@Inject` field injection does not work on framework-created services
+- **Media tracking**: Parses `MediaMetadata` from active media sessions and broadcasts to `DiscordWebSocketImpl`
+
+### Why This Works
+`NotificationListenerService` is bound directly by the Android OS framework. When the system kills the process, the framework aggressively attempts to rebind and restart the service on notification events — offering much higher survival rates than a raw `Service` on OEM firmware.
+
+---
+
+## 34. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
+==============================
+
+## Root Cause
+List screens using `LazyColumn` without `key` parameters caused unnecessary full-list recompositions during scrolling, causing dropped frames (jank) on 60Hz and 120Hz displays.
+
+## Files Modified
+| File | Change |
+|------|--------|
+| `feature_console_rpc/.../GamesScreen.kt` | Added `key = { game -> game.game_title }` to `items()` |
+| `feature_settings/.../Settings.kt` | Added keys: "display", "language", "logs", "settings", "divider", "drawer_subtitle_help", "faq", "about", "qs_tile" |
+| `feature_settings/.../style/DarkThemePreferences.kt` | Added keys: "follow_system", "dark_theme_on", "dark_theme_off", "advance_settings", "amoled" |
+| `feature_settings/.../language/Language.kt` | Added keys: "follow_system", "lang_${language.key}" |
+| `feature_settings/.../rpc_settings/RpcSettings.kt` | Added keys: "general_settings", "configs_directory", "use_custom_buttons", "use_youtube_button", "link_to_artist_channel", "rpc_buttons", "custom_activity_type", "custom_activity_status", "set_previous_run_config", "custom_application_id" |
+| `domain/.../rpc/RpcButtons.kt` | Added `@Immutable` annotation |
+
+## Result
+Compose can now track item identity during scroll, preventing unnecessary recompositions of unchanged items.
+
+---
+
+35. Fix: MediaRpcService Startup & Resilience
+
+**File:** `app/src/main/AndroidManifest.xml`
+
+### Problem
+Android 14+ requires explicit `foregroundServiceType` declarations. `MediaRpcService` only declared `mediaPlayback`, which may cause `ForegroundServiceStartNotAllowedException` on modern Android versions when running data synchronization tasks.
+
+### Fix
+Added `dataSync` alongside `mediaPlayback`:
+
+```xml
+<service
+    android:name=".services.MediaRpcService"
+    android:exported="false"
+    android:foregroundServiceType="mediaPlayback|dataSync" />
+```
+
+---
+
+## 39. Fix: KSP Dependencies for Hilt Annotation Processing
+
+**Files:** `data/build.gradle.kts`, `feature_logs/build.gradle.kts`, `feature_rpc_base/build.gradle.kts`
+
+### Problem
+`feature_logs`, `data`, and `feature_rpc_base` modules used Hilt annotations (`@Binds`, `@InstallIn`, `@HiltWorker`) but were missing the KSP annotation processor dependency. Without `ksp(libs.hilt.compiler)`, Hilt cannot generate component factories, causing `NoSuchMethodException` at runtime when injecting `KizzyRepository`, `DiscordWebSocket`, `Logger`, and `CoroutineScope`.
+
 ### Fix
 Added `ksp(libs.hilt.compiler)` to each module's `dependencies {}` block. These modules were already declared with the `kizzy.android.hilt` plugin but lacked the KSP processor.
 
@@ -44,59 +713,7 @@ compileOnly(libs.compose.runtime)
 
 ---
 
-## 41. Bug Fix: DateTimePicker.kt TimePicker API Compatibility
-
-### Files Modified
-- `feature_custom_rpc/src/main/java/com/my/kizzy/feature_custom_rpc/components/DateTimePicker.kt`
-- `feature_custom_rpc/src/main/java/com/my/kizzy/feature_custom_rpc/CustomRpc.kt`
-- `feature_custom_rpc/src/main/java/com/my/kizzy/feature_custom_rpc/components/sheet/RequestStoragePermission.kt`
-- `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/ui/RpcStatusCard.kt`
-
-### Problem
-Multiple compilation failures:
-1. `Unresolved reference 'TimePickerSelectionMode'` — `DateTimePicker.kt` used `TimePickerSelectionMode.Hour` which was removed from Material3.
-2. `No value passed for parameter 'context'` — `CustomRpc.kt` called `RequestStoragePermissionDialog` without the required `context` parameter.
-3. `Unresolved reference 'icon'`/`'text'` on `AlertDialog` — Material3 `AlertDialog` does not support these parameters in this version.
-4. `This material API is experimental` — `Badge` in `RpcStatusCard.kt` requires `@OptIn(ExperimentalMaterial3Api::class)`.
-
-### Fix Applied
-1. **`DateTimePicker.kt`**: Replaced custom `TimePickerStateImpl` with Material3's `rememberTimePickerState()`. Removed the unsupported `is24Hour` toggle `IconButton`. Removed unused imports (`Icons`, `Icon`, `IconButton`, `TimePickerSelectionMode`).
-2. **`CustomRpc.kt`**: Added `context = LocalContext.current` to the `RequestStoragePermissionDialog(...)` call.
-3. **`RequestStoragePermission.kt`**: Removed unsupported `icon` parameter; merged `text` content into `title` using `Column` + `Spacer`. Added required foundation imports.
-4. **`RpcStatusCard.kt`**: Added `@OptIn(ExperimentalMaterial3Api::class)` annotation to the composable function.
-
-### Result
-`:feature_custom_rpc:compileDebugKotlin` now compiles successfully with zero errors.
-
----
-
-## 42. Bug Fix: Duplicate locale_uz String Resources
-
-### Files Modified
-- `common/resources/src/main/res/values-uz/strings.xml`
-- `common/resources/src/main/res/values-cy/strings.xml`
-
-### Problem
-`:common:resources:packageDebugResources` failed with:
-```
-Found item String/locale_uz more than one time
-Found item String/locale_cy more than one time
-```
-
-### Root Cause
-1. `values-uz/strings.xml` had `locale_uz` defined twice (once near top, once at bottom locale list).
-2. `values-cy/strings.xml` incorrectly used `locale_uz` instead of `locale_cy` at line 8, causing a duplicate with the bottom locale list entry.
-
-### Fix Applied
-1. Removed the duplicate `locale_uz` entry from the bottom of `values-uz/strings.xml`.
-2. Changed `locale_uz` → `locale_cy` at line 8 of `values-cy/strings.xml`.
-
-### Result
-`:common:resources:packageDebugResources` now compiles successfully with zero errors.
-
----
-
-## 43. Known Non-Breaking Warnings
+## 41. Known Non-Breaking Warnings
 
 | Warning | Location | Severity |
 |---------|----------|----------|
@@ -106,7 +723,7 @@ Found item String/locale_cy more than one time
 
 ---
 
-## 43. Build Verification
+## 41. Build Verification
 
 ```
 BUILD SUCCESSFUL in 2m 27s
@@ -165,13 +782,81 @@ BUILD SUCCESSFUL in 2m 27s
 | `gradle/libs.versions.toml` | Added missing `hilt` library entry (`com.google.dagger:hilt-android`) |
 | `gradle/libs.versions.toml` | Added missing `compose-ui-tooling-preview` library entry |
 | `gradle/libs.versions.toml` | Migrated `javax.inject:javax.inject` → `jakarta.inject:jakarta.inject-api` |
-| `domain/build.gradle.kts` | Removed Compose BOM/runtime compileOnly deps; added javax.inject dependency |
-| `feature_custom_rpc/components/DateTimePicker.kt` | Replaced custom TimePickerStateImpl with rememberTimePickerState() |
-| `feature_custom_rpc/CustomRpc.kt` | Added context = LocalContext.current to RequestStoragePermissionDialog |
-| `feature_custom_rpc/components/sheet/RequestStoragePermission.kt` | Removed unsupported icon/text params from AlertDialog |
-| `feature_rpc_base/ui/RpcStatusCard.kt` | Added @OptIn(ExperimentalMaterial3Api::class) |
-| `common/resources/values-uz/strings.xml` | Removed duplicate locale_uz entry |
-| `common/resources/values-cy/strings.xml` | Fixed locale_uz → locale_cy |
+
+---
+
+## 43. Bug Fix: `kizzy.android.hilt` Plugin `No value present` Error
+
+**File:** `build-logic/convention/src/main/kotlin/AndroidHiltPlugin.kt`
+
+### Problem
+Gradle sync failed with:
+
+```
+An exception occurred applying plugin request [id: 'kizzy.android.hilt']
+> Failed to apply plugin 'kizzy.android.hilt'.
+   > No value present
+
+Caused by: java.util.NoSuchElementException: No value present
+	at AndroidHiltPlugin.apply$lambda$0$1(AndroidHiltPlugin.kt:17)
+```
+
+The plugin called `libs.findLibrary("hilt").get()`, but no `[libraries]` entry named `hilt` existed in `gradle/libs.versions.toml` — only `hilt-compiler` was defined. Calling `.get()` on an empty `Optional` threw `NoSuchElementException`.
+
+### Fix
+Added the missing `hilt` library entry to `gradle/libs.versions.toml`:
+
+```toml
+hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+```
+
+### Verification
+- `kizzy.android.hilt` plugin now applies successfully
+- Gradle sync: successful
+
+---
+
+## 44. Bug Fix: Missing `compose-ui-tooling-preview` Version Catalog Entry
+
+**File:** `build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/AndroidCompose.kt`
+
+### Problem
+After fixing the Hilt plugin, Gradle sync failed again with the same `NoSuchElementException` pattern:
+
+```
+Caused by: java.util.NoSuchElementException: No value present
+	at kizzy.gradle.plugin.AndroidComposeKt.configureAndroidCompose$lambda$0(AndroidCompose.kt:25)
+```
+
+`AndroidCompose.kt` called `libs.findLibrary("compose-ui-tooling-preview").get()`, but `compose-ui-tooling-preview` was missing from the version catalog — only `compose-ui-tooling` existed.
+
+### Fix
+Added the missing entry to `gradle/libs.versions.toml`:
+
+```toml
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+```
+
+### Verification
+- Compose convention plugin now resolves all dependencies
+- Gradle sync: successful
+
+---
+
+## 45. Migration: `javax.inject` → `jakarta.inject`
+
+**File:** `gradle/libs.versions.toml`
+
+### Change
+`javax.inject:javax.inject` (version 1) was migrated to its Jakarta EE successor:
+
+| | Before | After |
+|---|---|---|
+| Version key | `javax = "1"` | `jakarta-inject = "2.0.1"` |
+| Library key | `javax` | `jakarta-inject` |
+| Module | `javax.inject:javax.inject` | `jakarta.inject:jakarta.inject-api` |
+
+No source files in the project reference `libs.javax` or `javax.inject` directly, so only the version catalog needed updating.
 
 ---
 
