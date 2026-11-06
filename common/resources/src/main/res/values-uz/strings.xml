@@ -2,9 +2,9 @@
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
     <string name="welcome">Oʻzbekcha</string>
-    <string name="settings">So'zlamalar</string>
+    <string name="settings">So&apos;zlamalar</string>
     <string name="language">Til</string>
-    <string name="follow_system">Sistem bilan bog'liq</string>
+    <string name="follow_system">Sistem bilan bog&apos;liq</string>
     <string name="locale_uz">Oʻzbekcha</string>
     <string name="enable_appsRpc">Enable App Detection</string>
     <string name="enable_mediaRpc">Enable Media RPC</string>
@@ -16,8 +16,8 @@
     <string name="activity_state">Activity State</string>
     <string name="activity_start_timestamps">Start Timestamps</string>
     <string name="activity_stop_timestamps">Stop Timestamps</string>
-    <string name="activity_status_online_idle_dnd">Activity status (\&quot;online\&quot;,
-        \&quot;idle\&quot;, \&quot;dnd\&quot;)</string>
+    <string name="activity_status_online_idle_dnd">Activity status (&quot;online&quot;,
+        &quot;idle&quot;, &quot;dnd&quot;)</string>
     <string name="activity_button1_text">Activity button1 text</string>
     <string name="activity_button2_text">Activity button2 text</string>
     <string name="activity_button1_url">Button 1 URL</string>
