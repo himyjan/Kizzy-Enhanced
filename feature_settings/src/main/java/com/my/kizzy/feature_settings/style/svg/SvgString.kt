@@ -25,11 +25,11 @@ fun String.parseDynamicColor(
         try {
             val (scheme, tone) = value.split("(?<=\\d)(?=\\D)|(?=\\d)(?<=\\D)".toRegex())
             val argb = when (scheme) {
-                "p" -> tonalPalettes.accent1 tone.autoToDarkTone(isDarkTheme)
-                "s" -> tonalPalettes.accent2 tone.autoToDarkTone(isDarkTheme)
-                "t" -> tonalPalettes.accent3 tone.autoToDarkTone(isDarkTheme)
-                "n" -> tonalPalettes.neutral1 tone.autoToDarkTone(isDarkTheme)
-                "nv" -> tonalPalettes.neutral2 tone.autoToDarkTone(isDarkTheme)
+                "p" -> tonalPalettes.accent1(tone.autoToDarkTone(isDarkTheme))
+                "s" -> tonalPalettes.accent2(tone.autoToDarkTone(isDarkTheme))
+                "t" -> tonalPalettes.accent3(tone.autoToDarkTone(isDarkTheme))
+                "n" -> tonalPalettes.neutral1(tone.autoToDarkTone(isDarkTheme))
+                "nv" -> tonalPalettes.neutral2(tone.autoToDarkTone(isDarkTheme))
                 else -> Color.Transparent
             }.toArgb()
             "fill=\"${String.format("#%06X", 0xFFFFFF and argb)}\""

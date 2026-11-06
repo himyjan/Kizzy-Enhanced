@@ -347,7 +347,7 @@ class KizzyRPC @Inject constructor(
             Timestamps(end = commonRpc.time.end, start = commonRpc.time.start).also { time = it }
         if (commonRpc.partyCurrentSize != null && commonRpc.partyMaxSize != null)
             Party(id = "kizzy", size = arrayOf(commonRpc.partyCurrentSize, commonRpc.partyMaxSize)).also { party = it }
-        final val effectiveStatus = status ?: this.status
+        val effectiveStatus = status ?: this.status
         discordWebSocket.sendActivity(
             Presence(
                 activities = listOf(

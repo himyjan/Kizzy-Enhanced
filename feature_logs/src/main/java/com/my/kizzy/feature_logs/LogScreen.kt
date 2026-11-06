@@ -109,14 +109,13 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
                         ctx.getString(R.string.copied_to_clipboard),
                         Toast.LENGTH_SHORT
                     ).show()
-                },
-                icon = {
-                    Icon(
-                        imageVector = ContentCopy,
-                        contentDescription = "Copy all logs to clipboard"
-                    )
                 }
-            )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ContentCopy,
+                    contentDescription = "Copy all logs to clipboard"
+                )
+            }
         }
     ) { paddingValues ->
         LaunchedEffect(visibleLogs.lastOrNull(), autoScroll) {
