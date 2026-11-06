@@ -211,7 +211,10 @@ fun GamesScreen(
                             }
                         }
                         LazyColumn {
-                            items(state.games) { game ->
+                            items(
+                                items = state.games,
+                                key = { game -> game.game_title }
+                            ) { game ->
                                 SingleChoiceGameItem(
                                     game = game,
                                     selected = game.game_title == selected

@@ -12,10 +12,12 @@
 
 package com.my.kizzy.domain.model.rpc
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Immutable
 data class RpcButtons(
     @SerialName("button1")
     val button1: String = "",

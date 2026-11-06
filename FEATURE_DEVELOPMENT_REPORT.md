@@ -33,8 +33,18 @@
 21. [Bug Fix: Crash Handler Missing Dependencies](#bug-fix-crash-handler-missing-dependencies)
 22. [Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor](#bug-fix-homescreenviewmodel-hilt-missing-ksp-processor)
 23. [Bug Fix: R8 Stripping Hilt ViewModel Factories](#bug-fix-r8-stripping-hilt-viewmodel-factories)
-24. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-25. [Build Verification](#build-verification)
+24. [Bug Fix: Startup Crash on Android 14+ (SecurityException)](#bug-fix-startup-crash-on-android-14-securityexception)
+25. [Bug Fix: Notification Click Not Opening App UI](#bug-fix-notification-click-not-opening-app-ui)
+26. [Bug Fix: Experimental RPC Always Idling](#bug-fix-experimental-rpc-always-idling)
+27. [Bug Fix: Experimental RPC Song Change After Pause](#bug-fix-experimental-rpc-song-change-after-pause)
+28. [Bug Fix: Experimental RPC Text Showing Template Keys](#bug-fix-experimental-rpc-text-showing-template-keys)
+29. [Bug Fix: Experimental RPC Idle Presence](#bug-fix-experimental-rpc-idle-presence)
+30. [Bug Fix: RPC Switches Mutually Exclusive](#bug-fix-rpc-switches-mutually-exclusive)
+31. [Bug Fix: Apps List Scroll Lag](#bug-fix-apps-list-scroll-lag)
+32. [Bug Fix: GamesScreen.kt Issues](#bug-fix-gamescreenkt-issues)
+33. [Fix: Remove Unused Kotlin Kapt Plugin](#fix-remove-unused-kotlin-kapt-plugin)
+34. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+35. [Build Verification](#build-verification)
 
 ---
 
@@ -441,7 +451,48 @@ Added two rules to `app/proguard-rules.pro`:
 
 ---
 
-## 24. Known Non-Breaking Warnings
+## 24. Bug Fix: Startup Crash on Android 14+ (SecurityException)
+
+**Files:** `GetCurrentlyPlayingMedia.kt`, `MediaRpcService.kt`, `GetCurrentPlayingMediaAll.kt`
+
+### Problem
+App crashes at startup on Android 14+ (API 34+) with:
+
+```
+java.lang.SecurityException: Missing permission to control media.
+    at android.media.session.MediaSessionManager.getActiveSessions(MediaSessionManager.java:194)
+    at com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia.invoke(GetCurrentPlayingMedia.kt:38)
+    at com.my.kizzy.services.MediaRpcService.onCreate(MediaRpcService.kt:61)
+```
+
+### Root Cause
+`MediaSessionManager.getActiveSessions()` requires the `android.permission.MEDIA_CONTENT_CONTROL` permission. On API 34+ this is a `signatureOrSystem` permission — regular third-party apps **cannot be granted it**. The permission is declared in `AndroidManifest.xml` but is silently unavailable on production devices, causing an unhandled `SecurityException` when any of the three `getActiveSessions()` call sites execute during app startup.
+
+### Fix Applied
+Wrapped all three `getActiveSessions()` call sites in `try/catch (SecurityException)` blocks that return an empty list when media session access is unavailable:
+
+- `data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentlyPlayingMedia.kt` — line ~58
+- `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt` — `onCreate()` line ~162
+- `data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentPlayingMediaAll.kt` — line ~53
+
+```kotlin
+val sessions: List<android.media.session.MediaController> = try {
+    mediaSessionManager.getActiveSessions(componentName)
+} catch (_: SecurityException) {
+    // MEDIA_CONTENT_CONTROL permission is signatureOrSystem on API 34+;
+    // regular third-party apps cannot hold it. Fail gracefully.
+    emptyList()
+}
+```
+
+Note: `ExperimentalRpc.kt`, `NotificationListener.kt`, and `KizzyNotificationListener.kt` already had `try/catch (SecurityException)` protection — only these three sites were unprotected.
+
+### Result
+App starts normally on all API levels. Media RPC features gracefully degrade (empty session list) instead of crashing when media control permission is unavailable.
+
+---
+
+## 25. Known Non-Breaking Warnings
 
 | Warning | Location | Severity |
 |---------|----------|----------|
@@ -451,7 +502,7 @@ Added two rules to `app/proguard-rules.pro`:
 
 ---
 
-## 23. Build Verification
+## 26. Build Verification
 
 ```
 BUILD SUCCESSFUL in 1m 18s

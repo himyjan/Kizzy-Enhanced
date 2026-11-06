@@ -95,7 +95,7 @@ fun SettingsDrawer(
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 modifier = Modifier.weight(8f)
             ) {
-                item {
+                item(key = "display") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.display),
                         icon = Icons.Outlined.Palette
@@ -103,7 +103,7 @@ fun SettingsDrawer(
                         navigateToStyleAndAppearance()
                     }
                 }
-                item {
+                item(key = "language") {
                     SettingsItemCard(
                         title = stringResource(R.string.language),
                         icon = Icons.Outlined.Language,
@@ -111,7 +111,7 @@ fun SettingsDrawer(
                         navigateToLanguages()
                     }
                 }
-                item {
+                item(key = "logs") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.logs),
                         icon = Icons.Outlined.BugReport
@@ -119,7 +119,7 @@ fun SettingsDrawer(
                         navigateToLogsScreen()
                     }
                 }
-                item {
+                item(key = "settings") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.settings),
                         icon = Icons.Outlined.Settings
@@ -127,16 +127,16 @@ fun SettingsDrawer(
                         navigateToRpcSettings()
                     }
                 }
-                item {
+                item(key = "divider") {
                     HorizontalDivider()
                 }
-                item {
+                item(key = "drawer_subtitle_help") {
                     Subtitle(
                         text = stringResource(id = R.string.drawer_subtitle_help),
                         modifier = Modifier
                     )
                 }
-                item {
+                item(key = "faq") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.drawer_faq),
                         icon = Icons.AutoMirrored.Rounded.HelpOutline
@@ -144,7 +144,7 @@ fun SettingsDrawer(
                         uriHandler.openUri("https://kizzy.vercel.app/#FAQ")
                     }
                 }
-                item {
+                item(key = "about") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.about),
                         icon = Icons.Outlined.Info
@@ -152,7 +152,7 @@ fun SettingsDrawer(
                         navigateToAbout()
                     }
                 }
-                item {
+                item(key = "qs_tile") {
                     RequestQsTile(
                         visible = showKizzyQuickieRequestItem,
                         onRequestAddTile = onRequestAddTile
