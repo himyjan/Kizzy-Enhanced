@@ -10,8 +10,8 @@
     <string name="activity_status_online_idle_dnd">Etkinlik durumu(online, idle, dnd)</string>
     <string name="activity_button1_text">Etkinlik 1.buton metni</string>
     <string name="activity_button2_text">Etkinlik 2.buton metni</string>
-    <string name="activity_button1_url">1.Buton URL\'si</string>
-    <string name="activity_button2_url">2.Buton URL\'si</string>
+    <string name="activity_button1_url">1.Buton URL&apos;si</string>
+    <string name="activity_button2_url">2.Buton URL&apos;si</string>
     <string name="activity_large_image">Etkinlik Büyük Resmi</string>
     <string name="activity_small_image">Etkinlik Küçük Resmi</string>
     <string name="activity_type">Etkinlik Türü</string>
@@ -41,7 +41,7 @@
     <string name="grant_permission">İzin Ver</string>
     <string name="use_low_res_icon">Düşük Çözünürlüklü Simge</string>
     <string name="use_low_res_icon_desc">RPC çöküyorsa düşük çözünürlüklü simge kullan. Bu ayar
-        Uygulama RPC\'sine de uygulanır.</string>
+        Uygulama RPC&apos;sine de uygulanır.</string>
     <string name="delete_saved_icon_urls">Simge Bağlantılarını Temizle</string>
     <string name="delete_saved_icon_urls_desc">Yerel dosyalarda kaydedilen simge bağlantılarını
         siler(Daha fazla veri harcar. Discord sunucularına yeniden tüm resimleri göndereceğinden bu
@@ -60,16 +60,16 @@
     <string name="enable_appsRpc">Uyg. Algılamayı Etkinleştir</string>
     <string name="usage_access">Kullanım Erişimi Gerekli</string>
     <string name="usage_access_desc">Mevcut uygulamayı algılamak için kullanım erişimi gereklidir.</string>
-    <string name="enable_mediaRpc">Medya RPC\'sini Etkinleştir</string>
+    <string name="enable_mediaRpc">Medya RPC&apos;sini Etkinleştir</string>
     <string name="permission_required">İzin Gerekli</string>
-    <string name="enable_customRpc">Özel RPC\'yi Etkinleştir</string>
+    <string name="enable_customRpc">Özel RPC&apos;yi Etkinleştir</string>
     <string name="dark_theme">Koyu Tema</string>
     <string name="privacy_policy">Gizlilik Politikası</string>
     <string name="privacy_policy_desc">Gizlilik Politikasını oku</string>
-    <string name="enable_console_rpc">Konsol RPC\'sini Etkinleştir</string>
+    <string name="enable_console_rpc">Konsol RPC&apos;sini Etkinleştir</string>
     <string name="rpc_settings_button_configs">Medya ve Uygulama RPC Buton Ayarları</string>
     <string name="use_custom_buttons">Özel Butonlar Kullan</string>
-    <string name="use_custom_buttons_desc">Medya ve Uygulama RPC\'sinde önceden tanımlanmış
+    <string name="use_custom_buttons_desc">Medya ve Uygulama RPC&apos;sinde önceden tanımlanmış
         butonları göster</string>
     <string name="follow_system">Sisteme Uy</string>
     <string name="advance_settings">Gelişmiş Ayarlar</string>
@@ -91,7 +91,7 @@
     <string name="activity_large_text">Etkinlik Büyük Metni</string>
     <string name="activity_small_text">Etkinlik Küçük Metni</string>
     <string name="contributors">Emeği Geçenler</string>
-    <string name="stream_url">Yayın URL\'si</string>
+    <string name="stream_url">Yayın URL&apos;si</string>
     <string name="stream_url_info">Yalnızca https://twitch.tv/ ve https://youtube.com/ bağlantıları
         desteklenir.</string>
     <string name="activity_button_max_character">En fazla 31 karakter kullanılabilir</string>
@@ -110,17 +110,17 @@
     <string name="search">Ara</string>
     <string name="clear">Temizle</string>
     <string name="search_placeholder">Ara…</string>
-    <string name="hide_on_pause">Duraklatınca RPC\'yi gizle</string>
+    <string name="hide_on_pause">Duraklatınca RPC&apos;yi gizle</string>
     <string name="idling_notification">Boşta…</string>
     <string name="main_appDetection">Uygulama Algılama</string>
     <string name="main_appDetection_details">Kizzy, hangi uygulamayı kullandığını algılar ve bunu
-        Discord\'da paylaşır.</string>
+        Discord&apos;da paylaşır.</string>
     <string name="main_mediaRpc">Medya RPC</string>
     <string name="main_mediaRpc_details">Kizzy, dinlediğin şarkı veya videoları algılar ve bunu
-        Discord\'da paylaşır.</string>
+        Discord&apos;da paylaşır.</string>
     <string name="main_customRpc">Özel RPC</string>
     <string name="main_consoleRpc">Konsol RPC</string>
-    <string name="main_consoleRpc_details">Discord\'da konsol oyunu (PS/Xbox vb.) oynuyormuş gibi
+    <string name="main_consoleRpc_details">Discord&apos;da konsol oyunu (PS/Xbox vb.) oynuyormuş gibi
         görünmeni sağlar.</string>
     <string name="main_experimentalRpc">Deneysel RPC</string>
     <string name="main_experimentalRpc_details">Uygulama ve Medya RPC arasında otomatik geçiş yapan
@@ -175,7 +175,7 @@
     <string name="upload_image">Görsel Yükle</string>
     <string name="save">Kaydet</string>
     <string name="set_timestamps">Zamanlayıcıyı Ayarla</string>
-    <string name="saved_config_toast">\"%1$s\" başarıyla kaydedildi </string>
+    <string name="saved_config_toast">&quot;%1$s&quot; başarıyla kaydedildi </string>
     <string name="error_saving_config_toast">Kaydedilirken bir hata oluştu</string>
     <string name="config_name">Yapılandırma Adı</string>
     <string name="delete">Sil</string>
@@ -202,9 +202,9 @@
     <string name="use_imgur">Imgur Görsel Proxy Kullan</string>
     <string name="use_imgur_desc">Görseller için alternatif olarak Imgur kullan</string>
     <string name="start_appDetection">Uygulama Algılamayı Başlat</string>
-    <string name="start_mediaRPC">Medya RPC\'sini başlat</string>
-    <string name="start_experimentalRPC">Deneysel RPC\'yi başlat</string>
-    <string name="stop_rpc">RPC\'yi durdur</string>
+    <string name="start_mediaRPC">Medya RPC&apos;sini başlat</string>
+    <string name="start_experimentalRPC">Deneysel RPC&apos;yi başlat</string>
+    <string name="stop_rpc">RPC&apos;yi durdur</string>
     <string name="stop">Durdur</string>
     <string name="start_appDetection_toast">Uygulama Algılama başlatıldı</string>
     <string name="start_mediaRPC_toast">Medya RPC başlatıldı</string>
@@ -212,14 +212,14 @@
     <string name="stop_rpc_toast">Tüm servisler durduruldu</string>
     <string name="show_playback_state">Oynatma durumunu göster</string>
     <string name="copied_to_clipboard">Panoya kopyalandı</string>
-    <string name="application_id">Uygulama ID\'si</string>
-    <string name="custom_application_id">Özel Uygulama ID\'si</string>
-    <string name="custom_application_id_desc">Varsayılan Discord Uygulama ID\'sini geçersiz kılar</string>
+    <string name="application_id">Uygulama ID&apos;si</string>
+    <string name="custom_application_id">Özel Uygulama ID&apos;si</string>
+    <string name="custom_application_id_desc">Varsayılan Discord Uygulama ID&apos;sini geçersiz kılar</string>
     <string name="use_a_vpn_desc">Discord girişi VPN/DPI servisi olmadan ülkende çalışmayabilir.
         Lütfen devam etmek için bir VPN/DPI servisi kullan.</string>
-    <string name="rpc_templates_note">"{{app_name}}, {{media_title}} gibi değişkenler
+    <string name="rpc_templates_note">"&apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; gibi değişkenler
         kullanabilirsin. Boş bırakılan alanlar varsayılan davranışı uygular veya gösterilmez."</string>
-    <string name="experimental_rpc_detect_apps">Deneysel RPC\'nin çalışan uygulamaları algılamasına
+    <string name="experimental_rpc_detect_apps">Deneysel RPC&apos;nin çalışan uygulamaları algılamasına
         izin ver</string>
     <string name="experimental_rpc_detect_media">Deneysel RPC\’nin medya oynatımını algılamasına
         izin ver</string>
@@ -230,11 +230,11 @@
     <string name="completion_app_name">Uygulama Adı</string>
     <string name="show_cover_art">Kapak Resmini Göster</string>
     <string name="show_cover_art_desc">Albüm kapağını büyük resim olarak göster</string>
-    <string name="enable_experimental_rpc">Deneysel RPC\'yi Etkinleştir</string>
+    <string name="enable_experimental_rpc">Deneysel RPC&apos;yi Etkinleştir</string>
     <string name="completion_media_author">Yazar</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Imgur Client ID ayarla</string>
-    <string name="set_imgur_client_id_desc">Görseller görünmüyorsa kendi Imgur Client ID\'ni girmeyi
+    <string name="set_imgur_client_id_desc">Görseller görünmüyorsa kendi Imgur Client ID&apos;ni girmeyi
         dene.</string>
     <string name="show_song_as_title">Şarkıyı başlık olarak göster</string>
 
@@ -259,7 +259,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

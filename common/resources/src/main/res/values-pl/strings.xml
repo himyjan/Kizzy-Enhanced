@@ -183,7 +183,7 @@
     <string name="upload_image">Prześlij Obraz</string>
     <string name="save">Zapisz</string>
     <string name="set_timestamps">Ustaw Znacznik Czasu</string>
-    <string name="saved_config_toast">Zapisano \"%1$s\" pomyślnie</string>
+    <string name="saved_config_toast">Zapisano &quot;%1$s&quot; pomyślnie</string>
     <string name="error_saving_config_toast">Błąd przy zapisywaniu konfiguracji</string>
     <string name="config_name">Nazwa konfiguracji</string>
     <string name="delete">Usuń</string>
@@ -218,15 +218,15 @@
     <string name="start_mediaRPC_toast">Uruchomiono RPC Multimediów</string>
     <string name="start_experimentalRPC_toast">Uruchomiono Eksperymentalne RPC</string>
     <string name="stop_rpc_toast">Zatrzymano wszystkie usługi</string>
-    <string name="show_playback_state">Pokaż stan Playback\'u</string>
+    <string name="show_playback_state">Pokaż stan Playback&apos;u</string>
     <string name="copied_to_clipboard">Skopiowano do schowka</string>
     <string name="application_id">ID Aplikacji</string>
     <string name="custom_application_id">ID aplikacji własnej aktywności</string>
-    <string name="custom_application_id_desc">Podmienia domyślne ID Aplikacji Discord\'a</string>
+    <string name="custom_application_id_desc">Podmienia domyślne ID Aplikacji Discord&apos;a</string>
     <string name="use_a_vpn_desc">Logowanie do Discorda w twoim kraju może nie działać bez użycia
         VPN/DPI. Proszę użyć VPN/DPI aby kontynuować.</string>
-    <string name="rpc_templates_note">"Użyj placeholderów takich jak {{app_name}}, {{media_title}},
-        {{media_artist}}, itd. Puste pola będą używać domyślnych wartości lub zostaną pominięte."</string>
+    <string name="rpc_templates_note">"Użyj placeholderów takich jak &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, itd. Puste pola będą używać domyślnych wartości lub zostaną pominięte."</string>
     <string name="experimental_rpc_detect_apps">Pozwól Eksperymentalnemu RPC do wykrywania
         uruchomionych aplikacji</string>
     <string name="experimental_rpc_detect_media">Pozwól Eksperymentalnemu RPC do wykrywania
@@ -268,7 +268,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

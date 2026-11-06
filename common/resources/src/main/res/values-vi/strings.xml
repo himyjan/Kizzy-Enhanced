@@ -7,8 +7,8 @@
     <string name="activity_state">Trạng thái hoạt động</string>
     <string name="activity_start_timestamps">Thời gian bắt đầu hoạt động</string>
     <string name="activity_stop_timestamps">Thời gian kết thúc hoạt động</string>
-    <string name="activity_status_online_idle_dnd">Trạng thái hoạt động (\"online\", \"idle\",
-        \"dnd\")</string>
+    <string name="activity_status_online_idle_dnd">Trạng thái hoạt động (&quot;online&quot;, &quot;idle&quot;,
+        &quot;dnd&quot;)</string>
     <string name="activity_button1_text">Văn bản nút hoạt động 1</string>
     <string name="activity_button2_text">Văn bản nút hoạt động 2</string>
     <string name="activity_button1_url">Liên kết nút 1</string>
@@ -182,7 +182,7 @@
     <string name="upload_image">Tải lên ảnh</string>
     <string name="save">Lưu</string>
     <string name="set_timestamps">Chọn thời gian</string>
-    <string name="saved_config_toast">Lưu \"%1$s\" thành công</string>
+    <string name="saved_config_toast">Lưu &quot;%1$s&quot; thành công</string>
     <string name="error_saving_config_toast">Lỗi khi lưu cấu hình</string>
     <string name="config_name">Tên cấu hình</string>
     <string name="delete">Xóa</string>
@@ -224,8 +224,8 @@
     <string name="custom_application_id_desc">Ghi đè ID Ứng dụng Discord</string>
     <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
         Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}},
-        {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -264,7 +264,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

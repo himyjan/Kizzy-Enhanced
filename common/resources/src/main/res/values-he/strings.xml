@@ -8,8 +8,8 @@
     <string name="activity_state">מצב פעילות</string>
     <string name="activity_start_timestamps">חותמות זמן של התחל</string>
     <string name="activity_stop_timestamps">עצור חותמות זמן</string>
-    <string name="activity_status_online_idle_dnd">מצב פעילות (\"באינטרנט\", \ " סרק\", \ " נא לא
-        להפריע\")</string>
+    <string name="activity_status_online_idle_dnd">מצב פעילות (&quot;באינטרנט&quot;, &quot;" סרק&quot;, &quot;" נא לא
+        להפריע&quot;)</string>
     <string name="activity_button1_text">לחצן הפעילות1 טקסט</string>
     <string name="activity_button2_text">לחצן פעילות2 טקסט</string>
     <string name="activity_button1_url">כתובת URL של כפתור 1</string>
@@ -222,8 +222,8 @@
     <string name="custom_application_id_desc">עוקף את מזהה יישום ברירת המחדל של דיסקורד</string>
     <string name="use_a_vpn_desc">ייתכן שכניסה לדיסקורד לא תעבוד במדינתך ללא VPN/DPI. אנא השתמש
         ב-VPN/DPI כדי להמשיך.</string>
-    <string name="rpc_templates_note">"השתמשו ב-placeholders כמו {{app_name}}, {{media_title}}
-        וכו\'. שדות ריקים ישתמשו בהתנהגות ברירת מחדל או יושמטו."</string>
+    <string name="rpc_templates_note">"השתמשו ב-placeholders כמו &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;
+        וכו&apos;. שדות ריקים ישתמשו בהתנהגות ברירת מחדל או יושמטו."</string>
     <string name="experimental_rpc_detect_apps">אפשר ל-RPC ניסיוני לזהות אפליקציות פועלות</string>
     <string name="experimental_rpc_detect_media">אפשר ל-RPC ניסיוני לזהות השמעת מדיה</string>
     <string name="app_preferences">העדפות אפליקציה</string>
@@ -237,7 +237,7 @@
     <string name="completion_media_author">מחבר ראשי</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
         setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
@@ -263,7 +263,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

@@ -8,7 +8,7 @@
     <string name="activity_state">活動狀態</string>
     <string name="activity_start_timestamps">開始時間戳</string>
     <string name="activity_stop_timestamps">停止時間戳</string>
-    <string name="activity_status_online_idle_dnd">線上狀態 (\"線上\", \"閒置\", \"請勿打擾\")</string>
+    <string name="activity_status_online_idle_dnd">線上狀態 (&quot;線上&quot;, &quot;閒置&quot;, &quot;請勿打擾&quot;)</string>
     <string name="activity_button1_text">活動按鈕1的內容</string>
     <string name="activity_button2_text">活動按鈕2的內容</string>
     <string name="activity_button1_url">按鈕1的連結</string>
@@ -163,7 +163,7 @@
     <string name="upload_image">上傳圖片</string>
     <string name="save">儲存</string>
     <string name="set_timestamps">設置時間戳</string>
-    <string name="saved_config_toast">已成功儲存 \"%1$s\"</string>
+    <string name="saved_config_toast">已成功儲存 &quot;%1$s&quot;</string>
     <string name="error_saving_config_toast">儲存設定檔時發生錯誤</string>
     <string name="config_name">設定檔名稱</string>
     <string name="delete">刪除</string>
@@ -204,8 +204,8 @@
     <string name="custom_application_id">自訂活動 Application ID</string>
     <string name="custom_application_id_desc">取代 Discord Application ID 預設值</string>
     <string name="use_a_vpn_desc">如果沒有 VPN/DPI，Discord 登入可能無法在您的國家/地區使用。請使用 VPN/DPI 繼續。</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}},
-        {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -219,7 +219,7 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
         setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
@@ -244,7 +244,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

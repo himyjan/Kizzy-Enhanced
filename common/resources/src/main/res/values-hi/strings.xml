@@ -8,8 +8,8 @@
     <string name="activity_state">काम की स्थिति</string>
     <string name="activity_start_timestamps">काम के शुरू होने का समय</string>
     <string name="activity_stop_timestamps">काम के रुकने का समय</string>
-    <string name="activity_status_online_idle_dnd">काम की स्थिति (\"ऑनलाइन\", \"आइडल\", \"डि एन
-        डि\")</string>
+    <string name="activity_status_online_idle_dnd">काम की स्थिति (&quot;ऑनलाइन&quot;, &quot;आइडल&quot;, &quot;डि एन
+        डि&quot;)</string>
     <string name="activity_button1_text">पहला बटन का नाम</string>
     <string name="activity_button2_text">दूसरा बटन का नाम</string>
     <string name="activity_button1_url">पहला बटन का लिंक</string>
@@ -177,7 +177,7 @@
     <string name="upload_image">फोटो अपलोड करे</string>
     <string name="save">सेव करे</string>
     <string name="set_timestamps">टाइम स्टांप सेट करें</string>
-    <string name="saved_config_toast">\"%1$s\" सफलता से सेव हुआ</string>
+    <string name="saved_config_toast">&quot;%1$s&quot; सफलता से सेव हुआ</string>
     <string name="error_saving_config_toast">config सेव करते वक्त एरर आ गया</string>
     <string name="config_name">Config का नाम</string>
     <string name="delete">हटाओ</string>
@@ -219,7 +219,7 @@
     <string name="custom_application_id_desc">डिफॉल्ट Discord एप्लीकेशन आईडी को बदल देता है</string>
     <string name="use_a_vpn_desc">हो सकता है Discord लॉगिन आपके देश में बिना VPN/DPI के काम ना करें।
         कृपया VPN/DPI का उपयोग करें।</string>
-    <string name="rpc_templates_note">"आप {{app_name}}, {{media_title}} जैसे प्लेसहोल्डर का उपयोग कर
+    <string name="rpc_templates_note">"आप &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; जैसे प्लेसहोल्डर का उपयोग कर
         सकते है। खाली छोड़ने पर डिफॉल्ट उपयोग होगा या छोड़ दिया जाएगा"</string>
     <string name="experimental_rpc_detect_apps">Experimental RPC को ऐप डिटेक्ट करने की इजाज़त दे</string>
     <string name="experimental_rpc_detect_media">Experimental RPC को मीडिया डिटेक्ट करने की इजाज़त
@@ -260,7 +260,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

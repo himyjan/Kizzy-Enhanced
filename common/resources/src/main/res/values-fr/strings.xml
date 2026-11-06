@@ -2,20 +2,20 @@
     <string name="app_name">Kizzy</string>
 
     <!-- Activities -->
-    <string name="activity_name">Nom de l\'activité</string>
-    <string name="activity_details">Détails de l\'activité</string>
-    <string name="activity_state">Etat de l\'activité</string>
+    <string name="activity_name">Nom de l&apos;activité</string>
+    <string name="activity_details">Détails de l&apos;activité</string>
+    <string name="activity_state">Etat de l&apos;activité</string>
     <string name="activity_start_timestamps">Start Timestamps</string>
     <string name="activity_stop_timestamps">Stop Timestamps</string>
-    <string name="activity_status_online_idle_dnd">Statut de l\'activité(en ligne,inactif,ne pas
+    <string name="activity_status_online_idle_dnd">Statut de l&apos;activité(en ligne,inactif,ne pas
         déranger)</string>
-    <string name="activity_button1_text">texte du bouton d\'activité 1</string>
-    <string name="activity_button2_text">texte du bouton d\'activité 2</string>
+    <string name="activity_button1_text">texte du bouton d&apos;activité 1</string>
+    <string name="activity_button2_text">texte du bouton d&apos;activité 2</string>
     <string name="activity_button1_url">Url du bouton 1</string>
     <string name="activity_button2_url">Url du bouton 2</string>
     <string name="activity_large_image">Activité Grande Image</string>
     <string name="activity_small_image">Activité Petite Image</string>
-    <string name="activity_type">Type de l\'activité</string>
+    <string name="activity_type">Type de l&apos;activité</string>
     <string name="activity_platform">Activity Platform</string>
     <string name="load_config">Charger à partir de fichiers</string>
     <string name="save_config">Sauvegarder la configuration</string>
@@ -32,27 +32,27 @@
     <string name="github_issue_desc">Reporter un bug ou proposer une fonctionnalité</string>
     <string name="credits">Crédits</string>
     <string name="credits_desc">Crédits aux bibliothèques utilisées et aux contributeurs</string>
-    <string name="enable_artist_name">Activer le nom de l\'artiste</string>
+    <string name="enable_artist_name">Activer le nom de l&apos;artiste</string>
     <string name="enable_album_name">Enable Album Name</string>
-    <string name="show_app_icon">Afficher l\'icône de l\'application</string>
+    <string name="show_app_icon">Afficher l&apos;icône de l&apos;application</string>
     <string name="enable_timestamps">Activer le Timestamps</string>
-    <string name="text_after_permission_denied">L\'accès au stockage est important pour cette
+    <string name="text_after_permission_denied">L&apos;accès au stockage est important pour cette
         application afin de stocker les configurations dans des répertoires publics. Veuillez
         accorder cette permission.</string>
-    <string name="request_for_storage_access">L\'autorisation de stockage est nécessaire pour que
+    <string name="request_for_storage_access">L&apos;autorisation de stockage est nécessaire pour que
         les fonctions de configuration fonctionnent. Veuillez accorder cette autorisation</string>
-    <string name="grant_permission">Accorder l\'autorisation</string>
+    <string name="grant_permission">Accorder l&apos;autorisation</string>
     <string name="use_low_res_icon">Utiliser des images de basse résolution</string>
-    <string name="use_low_res_icon_desc">Utilisez une icône d\'application de plus faible résolution
-        pour l\'affichage sur le RPC (activez cette option si le RPC se bloque). Ce paramètre sera
+    <string name="use_low_res_icon_desc">Utilisez une icône d&apos;application de plus faible résolution
+        pour l&apos;affichage sur le RPC (activez cette option si le RPC se bloque). Ce paramètre sera
         également appliqué aux applications Rpc.</string>
     <string name="delete_saved_icon_urls">Supprimer les liens des icônes sauvegardés</string>
-    <string name="delete_saved_icon_urls_desc">Supprimer les urls des icônes d\'applications
-        sauvegardées dans les fichiers locaux (à n\'utiliser que dans de rares cas, car cela enverra
+    <string name="delete_saved_icon_urls_desc">Supprimer les urls des icônes d&apos;applications
+        sauvegardées dans les fichiers locaux (à n&apos;utiliser que dans de rares cas, car cela enverra
         à nouveau toutes les images aux serveurs de discord, ce qui consommera plus de données).</string>
-    <string name="app_crashed">Crash de l\'application</string>
+    <string name="app_crashed">Crash de l&apos;application</string>
     <string name="share_crash_logs_desc">Veuillez envoyer les logs dans le canal Discord avec la
-        trace d\'appel suivante :</string>
+        trace d&apos;appel suivante :</string>
     <string name="share_crash_logs">PARTAGER LES LOGS</string>
     <string name="welcome">Bienvenue</string>
     <string name="features">Fonctionnalités</string>
@@ -63,9 +63,9 @@
     <string name="language">Langage</string>
     <string name="design_credits">Crédits de conception</string>
     <string name="enable_appsRpc">Activer la détection des applications</string>
-    <string name="usage_access">Accès requis pour l\'utilisation</string>
-    <string name="usage_access_desc">L\'accès d\'usage est nécessaire pour que Kizzy obtienne
-        l\'application en cours d\'exécution.</string>
+    <string name="usage_access">Accès requis pour l&apos;utilisation</string>
+    <string name="usage_access_desc">L&apos;accès d&apos;usage est nécessaire pour que Kizzy obtienne
+        l&apos;application en cours d&apos;exécution.</string>
     <string name="enable_mediaRpc">Activer le Média Rpc</string>
     <string name="permission_required">Permission Requise</string>
     <string name="enable_customRpc">Activer Le Rpc personnalisé</string>
@@ -82,7 +82,7 @@
     <string name="advance_settings">Paramètres avancés</string>
     <string name="amoled">Thème Amoled</string>
     <string name="dynamic_color">Couleurs dynamiques</string>
-    <string name="dynamic_color_desc">Appliquer les couleurs depuis le fond d\'écran</string>
+    <string name="dynamic_color_desc">Appliquer les couleurs depuis le fond d&apos;écran</string>
     <string name="cancel">Annuler</string>
     <string name="confirm">Confirmer</string>
     <string name="primary_color">Couleurs primaires</string>
@@ -91,8 +91,8 @@
     <string name="android_off">éteint</string>
     <string name="setup">Configuration</string>
     <string name="user_data_policy">Cette application ne collecte pas de données de ses utilisateurs</string>
-    <string name="setup_desc">Avant d\'aller plus loin, il est recommandé d\'effectuer les actions
-        nécessaires pour s\'assurer que toutes les fonctionnalités de l\'application fonctionnent.</string>
+    <string name="setup_desc">Avant d&apos;aller plus loin, il est recommandé d&apos;effectuer les actions
+        nécessaires pour s&apos;assurer que toutes les fonctionnalités de l&apos;application fonctionnent.</string>
     <string name="permission_granted">Accordé</string>
     <string name="permission_not_granted">Non accordé, cliquez pour autoriser</string>
     <string name="activity_large_text">Texte grande activité</string>
@@ -122,10 +122,10 @@
     <string name="idling_notification">Idling…</string>
     <string name="main_appDetection">App Detection</string>
     <string name="main_appDetection_details">Kizzy allows you to share your current activity on
-        Discord by detecting what app you\'re using on your device.</string>
+        Discord by detecting what app you&apos;re using on your device.</string>
     <string name="main_mediaRpc">Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
-        Discord, such as the song or video you\'re currently listening to or watching.</string>
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
     <string name="main_customRpc">Custom RPC</string>
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
@@ -184,7 +184,7 @@
     <string name="upload_image">Upload Image</string>
     <string name="save">Save</string>
     <string name="set_timestamps">Set Timestamps</string>
-    <string name="saved_config_toast">Saved \"%1$s\" successfully</string>
+    <string name="saved_config_toast">Saved &quot;%1$s&quot; successfully</string>
     <string name="error_saving_config_toast">Error saving config</string>
     <string name="config_name">Config name</string>
     <string name="delete">Delete</string>
@@ -226,8 +226,8 @@
     <string name="custom_application_id_desc">Overrides the default Discord Application ID</string>
     <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
         Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}},
-        {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -241,7 +241,7 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
         setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
@@ -266,7 +266,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

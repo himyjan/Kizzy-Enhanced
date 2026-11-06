@@ -53,10 +53,10 @@
     <string
         name="enable_timestamps">Abilita tempo trascorso</string>
     <string
-        name="text_after_permission_denied">L\'accesso ai file è importante per salvare le
+        name="text_after_permission_denied">L&apos;accesso ai file è importante per salvare le
     configurazioni nelle cartelle pubbliche. Concedi questa autorizzazione.</string>
     <string
-        name="request_for_storage_access">L\'accesso ai file è richiesto per le funzioni di
+        name="request_for_storage_access">L&apos;accesso ai file è richiesto per le funzioni di
     configurazione. Concedi questa autorizzazione.</string>
     <string name="grant_permission">Concedi
     autorizzazione</string>
@@ -91,7 +91,7 @@
     Rilevazione App</string>
     <string name="usage_access">Accesso ai dati di utilizzo richiesto</string>
     <string
-        name="usage_access_desc">L\'accesso ai dati di utilizzo è necessario per rilevare le app in
+        name="usage_access_desc">L&apos;accesso ai dati di utilizzo è necessario per rilevare le app in
     esecuzione</string>
     <string name="enable_mediaRpc">Abilita RPC media</string>
     <string
@@ -132,7 +132,7 @@
     <string name="user_data_policy">Questa
     app non raccoglie alcun dato utente</string>
     <string name="setup_desc">Prima di proseguire, si
-    consiglia di eseguire le azioni necessarie per garantire il funzionamento completo dell\'app.</string>
+    consiglia di eseguire le azioni necessarie per garantire il funzionamento completo dell&apos;app.</string>
     <string
         name="permission_granted">Autorizzato</string>
     <string name="permission_not_granted">Non
@@ -152,7 +152,7 @@
         name="set_previous_run_config_in_custom_rpc">Imposta configurazione RPC precedente come
     campi RPC personalizzati</string>
     <string name="set_previous_run_config_in_custom_rpc_desc">Imposta
-    automaticamente i campi RPC personalizzato come quelli dell\'ultimo RPC eseguito</string>
+    automaticamente i campi RPC personalizzato come quelli dell&apos;ultimo RPC eseguito</string>
     <string
         name="clear_all_fields">Cancella tutti i campi</string>
     <string name="share_config">Condividi
@@ -213,7 +213,7 @@
     <string name="version">Versione</string>
     <string
         name="try_again">Riprova</string>
-    <string name="request_for_notification_access">L\'accesso
+    <string name="request_for_notification_access">L&apos;accesso
     alle notifiche è necessario per ottenere informazioni su riproduzioni multimediali.</string>
     <string
         name="update_check_for_update">Controllo aggiornamenti…</string>
@@ -283,7 +283,7 @@
     too long and doesn't fit the UI, use "timestamp" instead of "marcatura temporale". You can also
     replace "marcatura" with "marca" if it should be enough-->
     <string
-        name="saved_config_toast">\"%1$s\" salvato con successo</string>
+        name="saved_config_toast">&quot;%1$s&quot; salvato con successo</string>
     <string
         name="error_saving_config_toast">Errore salvataggio configurazione</string>
     <string
@@ -351,12 +351,12 @@
     <string name="custom_application_id">ID
     applicazione Attività personalizzato</string>
     <string name="custom_application_id_desc">Ignora
-    l\'ID applicazione predefinito di Discord</string>
+    l&apos;ID applicazione predefinito di Discord</string>
     <string name="use_a_vpn_desc">Il login di
     Discord potrebbe non funzionare nel tuo Paese senza una VPN/DPI. Utilizza una VPN/DPI per
     continuare.</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}},
-    {{media_title}}, {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;app_name}}&apos;&apos;,
+    &apos;{{&apos;media_title}}&apos;&apos;, &apos;{{&apos;media_artist}}&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
     <string
         name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string
@@ -381,7 +381,7 @@
     Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
     <string
-        name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting
+        name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try setting
     your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
@@ -421,7 +421,7 @@
     <string name="title_source_song">Song Name</string>
     <string
         name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{
+    <string name="type_to_insert_variable">Type &apos;{{&apos;
     to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string

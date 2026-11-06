@@ -182,7 +182,7 @@
     <string name="upload_image">Enviar imagem</string>
     <string name="save">Salvar</string>
     <string name="set_timestamps">Definir horário</string>
-    <string name="saved_config_toast">\"%1$s\" salvo com sucesso</string>
+    <string name="saved_config_toast">&quot;%1$s&quot; salvo com sucesso</string>
     <string name="error_saving_config_toast">Erro ao salvar configuração</string>
     <string name="config_name">Nome da configuração</string>
     <string name="delete">Excluir</string>
@@ -224,8 +224,8 @@
     <string name="custom_application_id_desc">Substitui o ID de aplicação padrão do Discord</string>
     <string name="use_a_vpn_desc">O login do Discord pode não funcionar no seu país sem um VPN/DPI.
         Por favor, use um VPN/DPI para prosseguir.</string>
-    <string name="rpc_templates_note">"Use placeholders como {{app_name}}, {{media_title}},
-        {{media_artist}}, etc. Campos vazios usarão o comportamento padrão ou serão omitidos."</string>
+    <string name="rpc_templates_note">"Use placeholders como &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, etc. Campos vazios usarão o comportamento padrão ou serão omitidos."</string>
     <string name="experimental_rpc_detect_apps">Permita que RPC experimental detecte apps rodando</string>
     <string name="experimental_rpc_detect_media">Permita que RPC experimental detecte playback de
         mídia</string>
@@ -241,7 +241,7 @@
     <string name="completion_media_author">Autor principal</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
         setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
@@ -266,7 +266,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

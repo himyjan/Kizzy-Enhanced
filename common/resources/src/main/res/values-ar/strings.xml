@@ -7,7 +7,7 @@
     <string name="activity_state">حالة النشاط</string>
     <string name="activity_start_timestamps">وقت البدء</string>
     <string name="activity_stop_timestamps">وقت الإيقاف</string>
-    <string name="activity_status_online_idle_dnd">حالة النشاط (\"متصل\", \"خامل\", \"عدم الإزعاج\")</string>
+    <string name="activity_status_online_idle_dnd">حالة النشاط (&quot;متصل&quot;, &quot;خامل&quot;, &quot;عدم الإزعاج&quot;)</string>
     <string name="activity_button1_text">نص الزر الأول</string>
     <string name="activity_button2_text">نص الزر الثاني</string>
     <string name="activity_button1_url">رابط الزر الأول</string>
@@ -175,7 +175,7 @@
     <string name="upload_image">رفع صورة</string>
     <string name="save">حفظ</string>
     <string name="set_timestamps">تعيين الطوابع الزمنية</string>
-    <string name="saved_config_toast">تم حفظ \"%1$s\" بنجاح</string>
+    <string name="saved_config_toast">تم حفظ &quot;%1$s&quot; بنجاح</string>
     <string name="error_saving_config_toast">خطأ في حفظ الإعدادات</string>
     <string name="config_name">اسم الإعداد</string>
     <string name="delete">حذف</string>
@@ -217,8 +217,8 @@
     <string name="custom_application_id_desc">يتجاوز معرّف تطبيق Discord الافتراضي</string>
     <string name="use_a_vpn_desc">قد لا يعمل تسجيل الدخول إلى Discord في بلدك بدون VPN/DPI. يرجى
         استخدام VPN/DPI للمتابعة.</string>
-    <string name="rpc_templates_note">"Use placeholders like {{app_name}}, {{media_title}},
-        {{media_artist}}, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -232,7 +232,7 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
         setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
 
@@ -257,7 +257,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type \{\{ to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

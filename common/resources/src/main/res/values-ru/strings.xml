@@ -8,8 +8,8 @@
     <string name="activity_state">Состояние активности</string>
     <string name="activity_start_timestamps">Начало временной метки</string>
     <string name="activity_stop_timestamps">Конец временной метки</string>
-    <string name="activity_status_online_idle_dnd">Статус активности (\"online\" — \"В сети\",
-        \"idle\" — \"Неактивен\" или \"dnd\" — \"Не беспокоить\")</string>
+    <string name="activity_status_online_idle_dnd">Статус активности (&quot;online&quot; — &quot;В сети&quot;,
+        &quot;idle&quot; — &quot;Неактивен&quot; или &quot;dnd&quot; — &quot;Не беспокоить&quot;)</string>
     <string name="activity_button1_text">Текст на первой кнопке</string>
     <string name="activity_button2_text">Текст на второй кнопке</string>
     <string name="activity_button1_url">Ссылка первой кнопки</string>
@@ -181,7 +181,7 @@
     <string name="upload_image">Загрузить изображение</string>
     <string name="save">Сохранить</string>
     <string name="set_timestamps">Установить время</string>
-    <string name="saved_config_toast">\"%1$s\" успешно сохранён</string>
+    <string name="saved_config_toast">&quot;%1$s&quot; успешно сохранён</string>
     <string name="error_saving_config_toast">Ошибка при сохранении конфигурации</string>
     <string name="config_name">Название конфигурации</string>
     <string name="delete">Удалить</string>
@@ -222,8 +222,8 @@
     <string name="custom_application_id">Свой ID приложения активности</string>
     <string name="custom_application_id_desc">Меняет стандартный ID приложения Discord на ваш</string>
     <string name="use_a_vpn_desc">Discord заблокирован в России, поэтому вход может не работать.</string>
-    <string name="rpc_templates_note">"Используйте плейсхолдеры: {{app_name}}, {{media_title}},
-        {{media_artist}}, и т.д. Пустые поля будут работать по умолчанию или же останутся пусты."</string>
+    <string name="rpc_templates_note">"Используйте плейсхолдеры: &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, и т.д. Пустые поля будут работать по умолчанию или же останутся пусты."</string>
     <string name="experimental_rpc_detect_apps">Разрешить экспериментальному RPC видеть запущенные
         программы</string>
     <string name="experimental_rpc_detect_media">Разрешить экспериментальному RPC видеть
@@ -256,7 +256,7 @@
     <string name="completion_media_composer">Композитор</string>
     <string name="completion_battery">Уровень заряда</string>
     <string name="completion_playback">Состояние воспроизведения</string>
-    <string name="type_to_insert_variable">Введите \'{{\' для вставки переменной</string>
+    <string name="type_to_insert_variable">Введите &apos;{{&apos; для вставки переменной</string>
     <string name="app_selection">Выбор приложений</string>
     <string name="platform_none_desktop">Ничего (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
