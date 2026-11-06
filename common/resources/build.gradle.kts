@@ -10,49 +10,49 @@ android {
 
 tasks.register("normalizeStringResources") {
     group = "verification"
-    description = "Normalizes text formatting tokens and removes illegal escapes from strings.xml files."
+    description = "Safely normalizes values inside string resource tags without corrupting XML structural tags."
 
     val resDir = file("src/main/res")
 
     doLast {
-        if (!resDir.exists() || !resDir.isDirectory) {
-            logger.warn("Target res directory does not exist: ${resDir.absolutePath}")
-            return@doLast
-        }
+        if (!resDir.exists() || !resDir.isDirectory) return@doLast
 
         resDir.walkTopDown()
             .filter { it.isFile && it.name == "strings.xml" && it.parentFile.name.startsWith("values") }
             .forEach { stringFile ->
-                logger.lifecycle("Normalizing resource string format rules for: ${stringFile.parentFile.name}/${stringFile.name}")
-
                 var content = stringFile.readText(Charsets.UTF_8)
                 val originalContent = content
 
-                // Rule 4: \&quot; -> &quot;
-                content = content.replace(Regex("\\\\&quot;"), "&quot;")
+                // Match only content located between > and < XML tag blocks
+                val tagContentRegex = Regex(">([^<]+)<")
 
-                // Rule 5: \&apos; -> &apos;
-                content = content.replace(Regex("\\\\&apos;"), "&apos;")
+                content = tagContentRegex.replace(content) { matchResult ->
+                    val originalText = matchResult.groupValues[1]
+                    var updatedText = originalText
 
-                // Rule 1: \' -> &apos;
-                content = content.replace(Regex("\\\\'"), "&apos;")
+                    // Rule 4 & 5: Clear pre-existing bad backslash entities
+                    updatedText = updatedText.replace("\\&quot;", "&quot;")
+                    updatedText = updatedText.replace("\\&apos;", "&apos;")
 
-                // Rule 2: \" -> &quot;
-                content = content.replace(Regex("\\\\\""), "&quot;")
+                    // Rule 1 & 2: Fix raw escaped quotes safely inside text bodies
+                    updatedText = updatedText.replace("\\'", "&apos;")
+                    updatedText = updatedText.replace("\\\"", "&quot;")
 
-                // Rule 3: \{\{ -> &apos;{{&apos;
-                content = content.replace(Regex("\\\\\\{\\{"), "&apos;{{&apos;")
+                    // Rule 3 & 6: Handle template brackets
+                    updatedText = updatedText.replace("\\{{", "&apos;{{&apos;")
+                    updatedText = updatedText.replace("(?<!&apos;)\\{\\{".toRegex(), "&apos;{{&apos;")
 
-                // Rule 6: {{ -> &apos;{{&apos; (Only if not already wrapped by &apos; labels)
-                content = content.replace(Regex("(?<!&apos;)\\{\\{"), "&apos;{{&apos;")
+                    // Rule 7: Clean broken Unicode escape combinations
+                    updatedText = updatedText.replace("\\{", "{")
+                    updatedText = updatedText.replace("\\}", "}")
 
-                // Rule 7: \{ -> {  (Crucial: Safely clears the AAPT2 unicode escape crash)
-                content = content.replace(Regex("\\\\\\{"), "{")
-                content = content.replace(Regex("\\\\\\}"), "}") // Clean the trailing brace too
+                    // Reconstruct the valid XML tag boundary block
+                    ">" + updatedText + "<"
+                }
 
                 if (content != originalContent) {
                     stringFile.writeText(content, Charsets.UTF_8)
-                    logger.lifecycle("Successfully cleaned and updated formatting constraints.")
+                    logger.lifecycle("Safely normalized text assets for: ${stringFile.parentFile.name}/${stringFile.name}")
                 }
             }
     }
