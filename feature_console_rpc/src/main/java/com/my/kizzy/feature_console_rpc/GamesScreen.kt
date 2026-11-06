@@ -74,6 +74,7 @@ import com.my.kizzy.ui.components.shimmer.AnimatedShimmer
 import com.my.kizzy.ui.components.shimmer.ShimmerGamesScreen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import androidx.compose.material.icons.outlined.Search
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,7 +122,7 @@ fun GamesScreen(
                 actions = {
                     if (!isSearchBarVisible) {
                         IconButton(onClick = { onEvent(UiEvent.OpenSearchBar) }) {
-                            Icon(Icons.Default.Search, stringResource(id = R.string.search))
+                            Icon(Icons.Outlined.Search, stringResource(id = R.string.search))
                         }
                     }
                 },

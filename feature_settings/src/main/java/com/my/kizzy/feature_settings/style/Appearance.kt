@@ -58,6 +58,9 @@ import com.my.kizzy.ui.theme.LocalDynamicColorSwitch
 import com.my.kizzy.ui.theme.LocalPaletteStyleIndex
 import com.my.kizzy.ui.theme.LocalSeedColor
 import com.my.kizzy.ui.theme.autoDark
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Palette
 
 val colorList = listOf(
     Color(DEFAULT_SEED_COLOR), // Red (#BF1527) — default

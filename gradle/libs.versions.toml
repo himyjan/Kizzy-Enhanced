@@ -1,6 +1,6 @@
 [versions]
 # project level
-gradle = "9.6.0-alpha02"
+gradle = "9.6.0-alpha03"
 kotlin = "2.4.21"
 ksp = "2.3.13"
 version-name = "6.2-enhanced-0"

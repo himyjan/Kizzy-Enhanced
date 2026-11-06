@@ -75,6 +75,14 @@ import com.my.kizzy.ui.components.Subtitle
 import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import com.my.kizzy.ui.components.preference.PreferencesHint
+import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.Audiotrack
+import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.PlaylistAddCircle
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.Warning
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -142,7 +150,7 @@ fun MediaRPC(
                 PreferencesHint(
                     title = stringResource(id = R.string.permission_required),
                     description = stringResource(id = R.string.request_for_notification_access),
-                    icon = Icons.Default.Warning,
+                    icon = Icons.Outlined.Warning,
                 ) {
                     if (!hasNotificationAccess) {
                         context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
@@ -170,7 +178,7 @@ fun MediaRPC(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.enable_artist_name),
-                        icon = Icons.Default.Audiotrack,
+                        icon = Icons.Outlined.Audiotrack,
                         isChecked = isArtistEnabled,
                     ) {
                         isArtistEnabled = !isArtistEnabled
@@ -180,7 +188,7 @@ fun MediaRPC(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.enable_album_name),
-                        icon = Icons.Default.Album,
+                        icon = Icons.Outlined.Album,
                         isChecked = isAlbumEnabled
                     ) {
                         isAlbumEnabled = !isAlbumEnabled
@@ -190,7 +198,7 @@ fun MediaRPC(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.show_app_icon),
-                        icon = Icons.Default.Apps,
+                        icon = Icons.Outlined.Apps,
                         isChecked = isAppIconEnabled,
                     ) {
                         isAppIconEnabled = !isAppIconEnabled
@@ -204,7 +212,7 @@ fun MediaRPC(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.enable_timestamps),
-                        icon = Icons.Default.Timer,
+                        icon = Icons.Outlined.Timer,
                         isChecked = isTimestampsEnabled,
                     ) {
                         isTimestampsEnabled = !isTimestampsEnabled
@@ -214,7 +222,7 @@ fun MediaRPC(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.show_playback_state),
-                        icon = Icons.Default.PlayCircle,
+                        icon = Icons.Outlined.PlayCircle,
                         isChecked = isShowPlaybackState,
                     ) {
                         isShowPlaybackState = !isShowPlaybackState
@@ -228,7 +236,7 @@ fun MediaRPC(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.hide_on_pause),
-                        icon = Icons.Default.PauseCircle,
+                        icon = Icons.Outlined.PauseCircle,
                         isChecked = hideOnPause,
                     ) {
                         hideOnPause = !hideOnPause
@@ -238,7 +246,7 @@ fun MediaRPC(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.show_song_as_title),
-                        icon = Icons.Default.PlaylistAddCircle,
+                        icon = Icons.Outlined.PlaylistAddCircle,
                         isChecked = showSongAsTitle,
                     ) {
                         showSongAsTitle = !showSongAsTitle

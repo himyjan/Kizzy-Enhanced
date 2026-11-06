@@ -83,6 +83,8 @@ import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.theme.LogColors.color
 import java.text.DateFormat
 import java.util.Date
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Search
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -174,12 +176,12 @@ fun ToolBar(viewModel: LogsViewModel, onBackPressed: () -> Unit) {
         actions = {
             if (!viewModel.isSearchBarVisible.value) {
                 IconButton(onClick = { viewModel.isSearchBarVisible.value = true }) {
-                    Icon(Icons.Default.Search, stringResource(id = R.string.search))
+                    Icon(Icons.Outlined.Search, stringResource(id = R.string.search))
                 }
             }
             IconButton(onClick = { menuClicked = !menuClicked }) {
                 Icon(
-                    imageVector = Icons.Default.MoreVert, contentDescription = "menu"
+                    imageVector = Icons.Outlined.MoreVert, contentDescription = "menu"
                 )
                 DropdownMenu(
                     expanded = menuClicked,

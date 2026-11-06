@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.my.kizzy.resources.R
 import java.io.File
 import com.my.kizzy.ui.components.dialog.MultiChoiceItem
+import androidx.compose.material.icons.outlined.DeleteForever
 
 @Composable
 fun DeleteConfigDialog(
@@ -63,7 +64,7 @@ fun DeleteConfigDialog(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.DeleteForever,
+                    imageVector = Icons.Outlined.DeleteForever,
                     contentDescription = null,
                     modifier = Modifier.padding(end = 2.dp),
                     tint = MaterialTheme.colorScheme.error

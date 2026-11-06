@@ -79,6 +79,13 @@ import com.my.kizzy.ui.components.KSwitch
 import com.my.kizzy.ui.components.SearchBar
 import xyz.dead8309.feature_experimental_rpc.UiEvent
 import xyz.dead8309.feature_experimental_rpc.UiState
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Headphones
+import androidx.compose.material.icons.outlined.LiveTv
+import androidx.compose.material.icons.outlined.SportsEsports
+import androidx.compose.material.icons.outlined.SportsMma
+import androidx.compose.material.icons.outlined.Visibility
 
 @Composable
 private fun loadAppIcon(packageName: String): ImageBitmap? {
@@ -98,12 +105,12 @@ private fun loadAppIcon(packageName: String): ImageBitmap? {
 @Composable
 private fun getActivityTypeIcon(type: String): ImageVector {
     return when (type) {
-        "Playing" -> Icons.Default.SportsEsports
-        "Streaming" -> Icons.Default.LiveTv
-        "Listening" -> Icons.Default.Headphones
-        "Watching" -> Icons.Default.Visibility
-        "Competing" -> Icons.Default.SportsMma
-        else -> Icons.Default.Edit
+        "Playing" -> Icons.Outlined.SportsEsports
+        "Streaming" -> Icons.Outlined.LiveTv
+        "Listening" -> Icons.Outlined.Headphones
+        "Watching" -> Icons.Outlined.Visibility
+        "Competing" -> Icons.Outlined.SportsMma
+        else -> Icons.Outlined.Edit
     }
 }
 
@@ -311,7 +318,7 @@ fun ExperimentalRpcAppsScreen(
                                                 trailingIcon = {
                                                     if (selectedTypeId == type) {
                                                         Icon(
-                                                            imageVector = Icons.Default.Check,
+                                                            imageVector = Icons.Outlined.Check,
                                                             contentDescription = null,
                                                             tint = MaterialTheme.colorScheme.primary
                                                         )

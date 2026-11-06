@@ -83,6 +83,12 @@ import com.my.kizzy.ui.components.RpcField
 import com.my.kizzy.ui.components.SwitchBar
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import androidx.compose.material.icons.outlined.EditCalendar
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.MoreVert
 
 @Composable
 fun CustomRPC(
@@ -194,7 +200,7 @@ fun CustomRpcScreen(
                 actions = {
                     IconButton(onClick = { onEvent(UiEvent.TriggerBottomSheet) }) {
                         Icon(
-                            imageVector = Icons.Default.MoreVert,
+                            imageVector = Icons.Outlined.MoreVert,
                             contentDescription = "menu"
                         )
                     }
@@ -346,7 +352,7 @@ private fun RpcTextFieldsColumn(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     trailingIcon = {
                         Icon(
-                            imageVector = Icons.Default.EditCalendar,
+                            imageVector = Icons.Outlined.EditCalendar,
                             contentDescription = null,
                             modifier = Modifier.clickable {
                                 onEvent(UiEvent.TriggerStartTimeStampsDialog)
@@ -379,7 +385,7 @@ private fun RpcTextFieldsColumn(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     trailingIcon = {
                         Icon(
-                            imageVector = Icons.Default.EditCalendar,
+                            imageVector = Icons.Outlined.EditCalendar,
                             contentDescription = null,
                             modifier = Modifier.clickable {
                                 onEvent(UiEvent.TriggerStopTimeStampsDialog)
@@ -406,9 +412,9 @@ private fun RpcTextFieldsColumn(
             }
 
             val iconStatus = if (uiState.activityTypeIsExpanded)
-                Icons.Default.KeyboardArrowUp
+                Icons.Outlined.KeyboardArrowUp
             else
-                Icons.Default.KeyboardArrowDown
+                Icons.Outlined.KeyboardArrowDown
 
             item {
                 RpcField(
@@ -548,7 +554,7 @@ private fun RpcTextFieldsColumn(
                     label = R.string.activity_large_image,
                     trailingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Image,
+                            imageVector = Icons.Outlined.Image,
                             contentDescription = "openGallery",
                             modifier = Modifier.clickable {
                                 openPickerDialog = true
@@ -593,7 +599,7 @@ private fun RpcTextFieldsColumn(
                     label = R.string.activity_small_image,
                     trailingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Image,
+                            imageVector = Icons.Outlined.Image,
                             contentDescription = "openGallery",
                             modifier = Modifier.clickable {
                                 openPickerDialog = true
@@ -627,9 +633,9 @@ private fun RpcTextFieldsColumn(
                 }
             }
             val icon = if (uiState.activityTypeIsExpanded)
-                Icons.Default.KeyboardArrowUp
+                Icons.Outlined.KeyboardArrowUp
             else
-                Icons.Default.KeyboardArrowDown
+                Icons.Outlined.KeyboardArrowDown
 
             item {
                 RpcField(
@@ -673,7 +679,7 @@ private fun RpcTextFieldsColumn(
                         label = R.string.stream_url,
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Info,
+                                imageVector = Icons.Outlined.Info,
                                 contentDescription = null,
                                 modifier = Modifier.clickable {
                                     scope.launch {

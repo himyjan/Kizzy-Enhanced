@@ -8,56 +8,75 @@ android {
     namespace = "com.my.kizzy.resources"
 }
 
-tasks.register("normalizeStringResources") {
-    group = "verification"
-    description = "Safely normalizes values inside string resource tags without corrupting XML structural tags."
+abstract class NormalizeStringsTask : DefaultTask() {
+    @get:InputFiles
+    abstract val inputFiles: ConfigurableFileCollection
 
-    val resDir = file("src/main/res")
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
 
-    doLast {
-        if (!resDir.exists() || !resDir.isDirectory) return@doLast
+    @TaskAction
+    fun filterStrings() {
+        val targetDirectory = outputDir.get().asFile
+        targetDirectory.deleteRecursively()
 
-        resDir.walkTopDown()
-            .filter { it.isFile && it.name == "strings.xml" && it.parentFile.name.startsWith("values") }
-            .forEach { stringFile ->
-                var content = stringFile.readText(Charsets.UTF_8)
-                val originalContent = content
+        inputFiles.forEach { file ->
+            // Reconstruct the correct values subfolder path (values, values-hi, values-ps, etc.)
+            val valuesDirName = file.parentFile.name
+            val destinationFolder = File(targetDirectory, valuesDirName).apply { mkdirs() }
+            val destinationFile = File(destinationFolder, file.name)
 
-                // Match only content located between > and < XML tag blocks
-                val tagContentRegex = Regex(">([^<]+)<")
+            var content = file.readText(Charsets.UTF_8)
+            val tagContentRegex = Regex(">([^<]+)<")
 
-                content = tagContentRegex.replace(content) { matchResult ->
-                    val originalText = matchResult.groupValues[1]
-                    var updatedText = originalText
+            // Run safe normalization regex chain on tag content only
+            content = tagContentRegex.replace(content) { matchResult ->
+                val originalText = matchResult.groupValues[1]
+                var updatedText = originalText
 
-                    // Rule 4 & 5: Clear pre-existing bad backslash entities
-                    updatedText = updatedText.replace("\\&quot;", "&quot;")
-                    updatedText = updatedText.replace("\\&apos;", "&apos;")
+                // Rule 4 & 5: Clear pre-existing bad backslash entities
+                updatedText = updatedText.replace("\\&quot;", "&quot;")
+                updatedText = updatedText.replace("\\&apos;", "&apos;")
 
-                    // Rule 1 & 2: Fix raw escaped quotes safely inside text bodies
-                    updatedText = updatedText.replace("\\'", "&apos;")
-                    updatedText = updatedText.replace("\\\"", "&quot;")
+                // Rule 1 & 2: Fix raw escaped quotes safely inside text bodies
+                updatedText = updatedText.replace("\\'", "&apos;")
+                updatedText = updatedText.replace("\\\"", "&quot;")
 
-                    // Rule 3 & 6: Handle template brackets
-                    updatedText = updatedText.replace("\\{{", "&apos;{{&apos;")
-                    updatedText = updatedText.replace("(?<!&apos;)\\{\\{".toRegex(), "&apos;{{&apos;")
+                // Rule 7: Clean broken backslash-brace combinations
+                updatedText = updatedText.replace("\\{", "{")
+                updatedText = updatedText.replace("\\}", "}")
 
-                    // Rule 7: Clean broken Unicode escape combinations
-                    updatedText = updatedText.replace("\\{", "{")
-                    updatedText = updatedText.replace("\\}", "}")
+                // Rule 8: Escape any remaining bare braces that AAPT2 might misinterpret
+                // as unicode escape starts (\uXXXX). Use numeric entities which AAPT2 handles safely.
+                updatedText = updatedText.replace("{", "&#123;")
+                updatedText = updatedText.replace("}", "&#125;")
 
-                    // Reconstruct the valid XML tag boundary block
-                    ">" + updatedText + "<"
-                }
-
-                if (content != originalContent) {
-                    stringFile.writeText(content, Charsets.UTF_8)
-                    logger.lifecycle("Safely normalized text assets for: ${stringFile.parentFile.name}/${stringFile.name}")
-                }
+                ">" + updatedText + "<"
             }
+
+            destinationFile.writeText(content, Charsets.UTF_8)
+        }
     }
 }
 
-tasks.matching { it.name.startsWith("preBuild") }.configureEach {
-    dependsOn("normalizeStringResources")
+// Register the modern task: read-only inputs, outputs to build/generated/
+val normalizeStrings = tasks.register<NormalizeStringsTask>("normalizeStringResources") {
+    group = "verification"
+    description = "Normalizes string resource XML content into build output without mutating source files."
+
+    // Collect every strings.xml file as read-only input
+    inputFiles.from(fileTree("src/main/res") { include("**/strings.xml") })
+
+    // Write normalized output to generated directory (never touches source files)
+    outputDir.set(layout.buildDirectory.dir("generated/res/normalized"))
+}
+
+// Wire the generated normalized resources into the Android resource pipeline via Variant API
+androidComponents {
+    onVariants { variant ->
+        variant.sources.res?.addGeneratedSourceDirectory(
+            taskProvider = normalizeStrings,
+            wiredWith = NormalizeStringsTask::outputDir
+        )
+    }
 }

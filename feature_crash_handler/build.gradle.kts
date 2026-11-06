@@ -10,6 +10,7 @@ android {
 
 dependencies {
     implementation (libs.activity.compose)
+    
     implementation (projects.theme)
     implementation (projects.data)
     implementation (projects.common.resources)

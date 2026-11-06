@@ -3,16 +3,36 @@ package com.my.kizzy.data.work
 import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
-import androidx.work.impl.utils.futures.SettableFuture
-import androidx.concurrent.futures.CallbackToFutureAdapter
 import com.google.common.util.concurrent.ListenableFuture
 import com.my.kizzy.preference.Prefs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import androidx.work.ListenableWorker.Result
+
+/**
+ * Minimal ListenableFuture backed by JDK CompletableFuture — no AndroidX interop needed.
+ */
+private class CompletableListenableFuture<T> : ListenableFuture<T> {
+    private val delegate = CompletableFuture<T>()
+
+    override fun addListener(listener: Runnable, executor: Executor) {
+        delegate.whenCompleteAsync({ _, _ -> listener.run() }, executor)
+    }
+
+    override fun cancel(mayInterruptIfRunning: Boolean): Boolean = delegate.cancel(mayInterruptIfRunning)
+    override fun isCancelled(): Boolean = delegate.isCancelled
+    override fun isDone(): Boolean = delegate.isDone
+    override fun get(): T = delegate.get()
+    override fun get(timeout: Long, unit: TimeUnit): T = delegate.get(timeout, unit)
+
+    fun complete(result: T) { delegate.complete(result) }
+    fun completeExceptionally(e: Throwable) { delegate.completeExceptionally(e) }
+}
 
 /**
  * Base worker for running background tasks with coroutine support.
@@ -24,17 +44,16 @@ abstract class BaseWorker(
 ) : ListenableWorker(appContext, workerParams) {
 
     override fun startWork(): ListenableFuture<Result> {
-        return CallbackToFutureAdapter.getFuture { completer ->
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val result = doWork()
-                    completer.set(result)
-                } catch (e: Exception) {
-                    completer.setException(e)
-                }
+        val future = CompletableListenableFuture<Result>()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val result = doWork()
+                future.complete(result)
+            } catch (e: Exception) {
+                future.completeExceptionally(e)
             }
-            "BaseWorker"
         }
+        return future
     }
 
     /**

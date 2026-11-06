@@ -75,6 +75,13 @@ import com.my.kizzy.ui.components.Subtitle
 import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import com.my.kizzy.ui.components.preference.PreferencesHint
+import androidx.compose.material.icons.outlined.AppsOutage
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.Warning
 
 private val completions = listOf(
     TemplateKeys.MEDIA_TITLE to R.string.completion_media_title,
@@ -132,7 +139,7 @@ fun ExperimentalRpcScreen(
                 PreferencesHint(
                     title = stringResource(id = R.string.usage_access),
                     description = stringResource(id = R.string.usage_access_desc),
-                    icon = Icons.Default.AppsOutage,
+                    icon = Icons.Outlined.AppsOutage,
                 ) {
                     when (hasUsageAccess) {
                         false -> context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
@@ -146,7 +153,7 @@ fun ExperimentalRpcScreen(
                 PreferencesHint(
                     title = stringResource(id = R.string.permission_required),
                     description = stringResource(id = R.string.request_for_notification_access),
-                    icon = Icons.Default.Warning,
+                    icon = Icons.Outlined.Warning,
                 ) {
                     if (!hasNotificationAccess) {
                         context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
@@ -245,9 +252,9 @@ fun ExperimentalRpcScreen(
                             stringResource(R.string.title_source_artist) to "artist",
                         )
                         val titleIcon = if (state.titleSourceExpanded)
-                            Icons.Default.KeyboardArrowUp
+                            Icons.Outlined.KeyboardArrowUp
                         else
-                            Icons.Default.KeyboardArrowDown
+                            Icons.Outlined.KeyboardArrowDown
                         val titleLabel = titleSources.entries
                             .firstOrNull { it.value == state.titleSource }?.key ?: ""
                         RpcField(
@@ -309,7 +316,7 @@ fun ExperimentalRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleShowPlaybackState(!state.showPlaybackState))
                         },
-                        icon = Icons.Default.PlayCircle
+                        icon = Icons.Outlined.PlayCircle
                     )
                 }
                 item {
@@ -319,15 +326,15 @@ fun ExperimentalRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleEnableTimestamps(!state.enableTimestamps))
                         },
-                        icon = Icons.Default.Timer
+                        icon = Icons.Outlined.Timer
                     )
                 }
                 if (state.enableTimestamps) {
                     item {
                         val tsIcon = if (state.timestampModeExpanded)
-                            Icons.Default.KeyboardArrowUp
+                            Icons.Outlined.KeyboardArrowUp
                         else
-                            Icons.Default.KeyboardArrowDown
+                            Icons.Outlined.KeyboardArrowDown
 
                         val tsModes = linkedMapOf(
                             stringResource(R.string.timestamp_mode_default) to "default",
@@ -390,7 +397,7 @@ fun ExperimentalRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleHideOnPause(!state.hideOnPause))
                         },
-                        icon = Icons.Default.PauseCircle
+                        icon = Icons.Outlined.PauseCircle
                     )
                 }
                 item {
@@ -423,9 +430,9 @@ fun ExperimentalRpcScreen(
 
                 item {
                     val platformIcon = if (state.platformIsExpanded)
-                        Icons.Default.KeyboardArrowUp
+                        Icons.Outlined.KeyboardArrowUp
                     else
-                        Icons.Default.KeyboardArrowDown
+                        Icons.Outlined.KeyboardArrowDown
 
                     val platforms = linkedMapOf(
                         stringResource(R.string.platform_none_desktop) to "",

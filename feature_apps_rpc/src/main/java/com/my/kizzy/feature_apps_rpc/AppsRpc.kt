@@ -60,6 +60,7 @@ import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.preference.PreferencesHint
+import androidx.compose.material.icons.outlined.AppsOutage
 
 @SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -136,7 +137,7 @@ fun AppsRPC(
                             PreferencesHint(
                                 title = stringResource(id = R.string.usage_access),
                                 description = stringResource(id = R.string.usage_access_desc),
-                                icon = Icons.Default.AppsOutage,
+                                icon = Icons.Outlined.AppsOutage,
                             ) {
                                 when (hasUsageAccess) {
                                     false -> ctx.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))

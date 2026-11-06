@@ -38,3 +38,4 @@ local.properties
 .idea/jarRepositories.xml
 .idea/navEditor.xml
 /.idea/
+commonMain/
