@@ -110,7 +110,9 @@ fun Appearance(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     DynamicSVGImage(
-                        modifier = Modifier.padding(60.dp),
+                        modifier = Modifier
+                            .padding(60.dp)
+                            .size(200.dp),
                         contentDescription = "palette",
                         svgString = PALETTE
                     )

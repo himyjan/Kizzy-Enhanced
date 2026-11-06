@@ -197,7 +197,7 @@ class MediaRpcService : Service() {
                 if (!isPaused && kizzyRPC.isRpcRunning()) {
                     val playingMedia = getCurrentPlayingMedia()
                     if (playingMedia.name.isNotBlank()) {
-                        kizzyRPC.updateRPC(playingMedia, Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false])
+                        kizzyRPC.updateRPC(playingMedia, Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false], Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
                     }
                 }
             }
@@ -263,17 +263,18 @@ class MediaRpcService : Service() {
         }
 
         // Update state repository so UI reflects current track
+        val trackName = playingMedia.name.takeIf { it.isNotBlank() }
         stateRepository.setTrackInfo(
-            title = playingMedia.name.takeIf { it.isNotBlank() },
+            title = trackName,
             artist = playingMedia.state,
             album = null
         )
-        lastKnownTrackTitle = playingMedia.name.takeIf { it.isNotBlank() }
+        lastKnownTrackTitle = trackName
         lastKnownTrackArtist = playingMedia.state
 
         // Update notification text
         notificationBuilder
-            .setContentTitle(playingMedia.name.ifEmpty { getString(R.string.app_name_full) })
+            .setContentTitle(trackName.orEmpty().ifEmpty { getString(R.string.app_name_full) })
             .setContentText(
                 (playingMedia.state ?: "").ifEmpty { getString(R.string.idling_notification) }
             )
@@ -286,11 +287,16 @@ class MediaRpcService : Service() {
         val rpcButtons = Json.decodeFromString<RpcButtons>(rpcButtonsString)
         if (kizzyRPC.isRpcRunning()) {
             if (playingMedia.name.isBlank()) {
-                logger.d("MediaRPC", "Updating RPC with empty data, stopping RPC")
-                kizzyRPC.closeRPC()
-                stateRepository.setConnected(false)
-                stateRepository.clearTrackInfo()
-                stopTimelineUpdates()
+                // Media session exists but metadata hasn't loaded yet (e.g., app just started playing).
+                // Don't close RPC — wait for metadata to populate. The heartbeat/timeline will retry.
+                logger.d("MediaRPC", "Media session active but metadata not ready yet, keeping RPC alive")
+                // Still manage timeline updates based on playback state
+                if (!isPaused) {
+                    startTimelineUpdates()
+                } else {
+                    stopTimelineUpdates()
+                }
+                return
             } else {
                 stateRepository.setConnected(true)
                 stateRepository.setPaused(isPaused)
@@ -349,7 +355,7 @@ class MediaRpcService : Service() {
                 setState(playingMedia.state)
                 setStartTimestamps(if (enableTimestamps) playingMedia.time?.start else null)
                 setStopTimestamps(if (enableTimestamps) playingMedia.time?.end else null)
-                setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
+                setStatus(if (isPaused) "idle" else Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
                 setLargeImage(playingMedia.largeImage, playingMedia.largeText)
                 setSmallImage(playingMedia.smallImage, playingMedia.smallText)
                 if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {

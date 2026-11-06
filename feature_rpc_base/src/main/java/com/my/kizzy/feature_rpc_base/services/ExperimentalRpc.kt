@@ -417,7 +417,8 @@ class ExperimentalRpc : Service() {
             kizzyRPC.apply {
                 setName(finalName)
                 setType(appActivityTypes[effectivePackageName] ?: 0)
-                setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
+                val isMediaPaused = richMediaInfo?.playbackState == PlaybackState.STATE_PAUSED || richMediaInfo?.playbackState == PlaybackState.STATE_STOPPED
+                setStatus(if (isMediaPaused) "idle" else Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
                 setDetails(finalDetails)
                 setState(finalState)
                 setStartTimestamps(finalTimestamps?.start)

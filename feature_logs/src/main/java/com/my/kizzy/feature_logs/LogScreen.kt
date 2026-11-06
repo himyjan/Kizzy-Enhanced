@@ -37,6 +37,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
@@ -44,6 +45,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -96,7 +98,26 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
     val autoScroll = viewModel.autoScroll.value
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { ToolBar(viewModel, onBackPressed) }
+        topBar = { ToolBar(viewModel, onBackPressed) },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    val allLogs = visibleLogs.joinToString("\n") { it.text }
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("kizzy_logs", allLogs))
+                    Toast.makeText(
+                        ctx,
+                        ctx.getString(R.string.copied_to_clipboard),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                icon = {
+                    Icon(
+                        imageVector = ContentCopy,
+                        contentDescription = "Copy all logs to clipboard"
+                    )
+                }
+            )
+        }
     ) { paddingValues ->
         LaunchedEffect(visibleLogs.lastOrNull(), autoScroll) {
             if (visibleLogs.isNotEmpty() && autoScroll)

@@ -340,13 +340,14 @@ class KizzyRPC @Inject constructor(
         discordWebSocket.sendActivity(presence)
     }
 
-    suspend fun updateRPC(commonRpc: CommonRpc, enableTimestamps: Boolean? = true) {
+    suspend fun updateRPC(commonRpc: CommonRpc, enableTimestamps: Boolean? = true, status: String? = null) {
         if (!discordWebSocket.isActive) return
         var time = Timestamps(start = startTimestamps)
         if (commonRpc.time != null)
             Timestamps(end = commonRpc.time.end, start = commonRpc.time.start).also { time = it }
         if (commonRpc.partyCurrentSize != null && commonRpc.partyMaxSize != null)
             Party(id = "kizzy", size = arrayOf(commonRpc.partyCurrentSize, commonRpc.partyMaxSize)).also { party = it }
+        final val effectiveStatus = status ?: this.status
         discordWebSocket.sendActivity(
             Presence(
                 activities = listOf(
@@ -372,7 +373,7 @@ class KizzyRPC @Inject constructor(
                 ),
                 afk = true,
                 since = startTimestamps,
-                status = this.status
+                status = effectiveStatus
             )
         )
     }
