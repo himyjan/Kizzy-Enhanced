@@ -108,7 +108,6 @@ fun ExperimentalRpcScreen(
     onEvent: (UiEvent) -> Unit,
 ) {
     val context = LocalContext.current
-    var experimentalRpcRunning by remember { mutableStateOf(AppUtils.experimentalRpcRunning() && !AppUtils.mediaRpcRunning()) }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
         canScroll = { true }
@@ -163,11 +162,11 @@ fun ExperimentalRpcScreen(
 
             SwitchBar(
                 title = stringResource(id = R.string.enable_experimental_rpc),
-                isChecked = experimentalRpcRunning,
+                isChecked = AppUtils.experimentalRpcRunning() && !AppUtils.mediaRpcRunning(),
                 enabled = hasUsageAccess && hasNotificationAccess && !AppUtils.mediaRpcRunning(),
             ) {
-                experimentalRpcRunning = !experimentalRpcRunning
-                when (experimentalRpcRunning) {
+                val newValue = !AppUtils.experimentalRpcRunning()
+                when (newValue) {
                     true -> {
                         context.stopService(Intent(context, AppDetectionService::class.java))
                         context.stopService(Intent(context, CustomRpcService::class.java))
