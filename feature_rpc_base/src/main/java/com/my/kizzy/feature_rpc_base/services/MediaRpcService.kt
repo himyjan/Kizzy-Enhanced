@@ -429,10 +429,18 @@ class MediaRpcService : Service() {
     }
 
     private fun buildNotification(title: String, content: String): Notification {
+        // Open main app when notification is clicked
+        val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
+        val appPendingIntent = PendingIntent.getActivity(
+            this, 0, appIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
         return NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_media_rpc)
             .setContentTitle(title)
             .setContentText(content)
+            .setContentIntent(appPendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .addAction(

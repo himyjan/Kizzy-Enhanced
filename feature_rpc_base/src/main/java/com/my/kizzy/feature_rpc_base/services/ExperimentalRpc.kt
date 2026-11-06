@@ -120,9 +120,17 @@ class ExperimentalRpc : Service() {
                 this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
             )
 
+            // Open main app when notification is clicked
+            val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
+            val appPendingIntent = PendingIntent.getActivity(
+                this, 0, appIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
             val notification = notificationBuilder
                 .setSmallIcon(R.drawable.ic_dev_rpc)
                 .setContentTitle(getString(R.string.service_enabled))
+                .setContentIntent(appPendingIntent)
                 .addAction(
                     R.drawable.ic_dev_rpc,
                     getString(R.string.restart),

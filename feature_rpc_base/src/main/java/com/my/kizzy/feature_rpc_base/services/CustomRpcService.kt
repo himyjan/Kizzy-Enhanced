@@ -69,10 +69,18 @@ class CustomRpcService : Service() {
                 this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
             )
 
+            // Open main app when notification is clicked
+            val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
+            val appPendingIntent = PendingIntent.getActivity(
+                this, 0, appIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
             val notification = notificationBuilder
                 .setContentTitle(getString(R.string.custom_rpc_running))
                 .setContentText(rpcData?.name ?: "")
                 .setSmallIcon(R.drawable.ic_rpc_placeholder)
+                .setContentIntent(appPendingIntent)
                 .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.exit), pendingIntent)
                 .build()
 
