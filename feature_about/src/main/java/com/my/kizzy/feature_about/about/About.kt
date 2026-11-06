@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ContactSupport
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -96,7 +95,7 @@ fun About(
                 SettingItem(
                     title = stringResource(id = R.string.github_issue),
                     description = stringResource(id = R.string.github_issue_desc),
-                    icon = Icons.AutoMirrored.Outlined.ContactSupport
+                    icon = Icons.Outlined.ContactSupport
                 ) {
                     openUrl(github_Issues)
                 }
