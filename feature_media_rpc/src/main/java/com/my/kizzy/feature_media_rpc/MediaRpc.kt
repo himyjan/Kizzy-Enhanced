@@ -130,7 +130,8 @@ fun MediaRPC(
                                 text = searchText,
                                 onTextChanged = { searchText = it },
                                 onClose = { isSearchBarVisible = false },
-                                placeholder = stringResource(id = R.string.search_placeholder)
+                                placeholder = stringResource(id = R.string.search_placeholder),
+                                autoFocus = true
                             )
                         }
                     } else {
