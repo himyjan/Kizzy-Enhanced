@@ -31,37 +31,39 @@
 19. [Hilt Dependency Injection Fix](#hilt-dependency-injection-fix)
 20. [Proguard / R8 Hardening](#proguard--r8-hardening)
 21. [Bug Fix: Crash Handler Missing Dependencies](#bug-fix-crash-handler-missing-dependencies)
-22. [Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor](#bug-fix-homescreenviewmodel-hilt-missing-ksp-processor)
-23. [Bug Fix: R8 Stripping Hilt ViewModel Factories](#bug-fix-r8-stripping-hilt-viewmodel-factories)
-24. [Bug Fix: Startup Crash on Android 14+ (SecurityException)](#bug-fix-startup-crash-on-android-14-securityexception)
-25. [Bug Fix: Notification Click Not Opening App UI](#bug-fix-notification-click-not-opening-app-ui)
-26. [Bug Fix: Experimental RPC Always Idling](#bug-fix-experimental-rpc-always-idling)
-27. [Bug Fix: Experimental RPC Song Change After Pause](#bug-fix-experimental-rpc-song-change-after-pause)
-28. [Bug Fix: Experimental RPC Text Showing Template Keys](#bug-fix-experimental-rpc-text-showing-template-keys)
-29. [Bug Fix: Experimental RPC Idle Presence](#bug-fix-experimental-rpc-idle-presence)
-30. [Bug Fix: RPC Switches Mutually Exclusive](#bug-fix-rpc-switches-mutually-exclusive)
-31. [Bug Fix: Apps List Scroll Lag](#bug-fix-apps-list-scroll-lag)
-32. [Bug Fix: GamesScreen.kt Issues](#bug-fix-gamescreenkt-issues)
-33. [Bug Fix: RpcSettings.kt Icon References (OpenInNew, Person)](#bug-fix-rpcsettingskt-icon-references)
-34. [Bug Fix: Extended Icon Import Cleanup (OpenInNew, NavigateNext, ContentPaste)](#bug-fix-extended-icon-import-cleanup)
-35. [Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)](#bug-fix-list-scrolling-performance-optimizations)
-36. [Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)](#bug-fix-mediarpcservice-startup-resilience)
-37. [Bug Fix: Emulator Startup Crash (Try-Catch Initialization)](#bug-fix-emulator-startup-crash)
-38. [New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)](#new-feature-rpcrecoveryhiltworker)
-39. [New Feature: System-Bound NotificationListener Auto-Restart](#new-feature-system-bound-notificationlistener)
-40. [Fix: Android 14+ Foreground Service Type (dataSync)](#fix-android-14-foreground-service-type)
-41. [Fix: KSP Dependencies for Hilt Annotation Processing](#fix-ksp-dependencies-for-hilt)
-42. [Bug Fix: @Immutable Annotation in Domain Module Models](#bug-fix--immutable-annotation-in-domain-module-models)
-43. [Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)](#bug-fix-accompanist-permission-migration)
-44. [Bug Fix: `kizzy.android.hilt` Plugin `No value present` Error](#bug-fix-kizzy-android-hilt-plugin-no-value-present-error)
-45. [Bug Fix: Missing `compose-ui-tooling-preview` Version Catalog Entry](#bug-fix-missing-compose-ui-tooling-preview-version-catalog-entry)
-46. [Migration: `javax.inject` → `jakarta.inject`](#migration-javax-inject--jakarta-inject)
-47. [Bug Fix: `kizzy.android.application.compose` Plugin `No value present` Error](#bug-fix-kizzy-android-application-compose-plugin-no-value-present-error)
-48. [Bug Fix: Unresolved Reference 'app' in `libs.app.compat`](#bug-fix-unresolved-reference-app-in-libs-app-compat)
-49. [Bug Fix: SVG Dynamic Color Fill Not Applying](#bug-fix-svg-dynamic-color-fill-not-applying)
-50. [Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage](#bug-fix-migrate-svg-rendering-from-com-caverock-androidsvg-to-coil-3-asyncimage)
-51. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-52. [Build Verification](#build-verification)
+22. [Bug Fix: CrashX Migrated to Native Jetpack Compose Crash Handler](#bug-fix-crashx-migrated-to-native-jetpack-compose-crash-handler)
+23. [Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor](#bug-fix-homescreenviewmodel-hilt-missing-ksp-processor)
+24. [Bug Fix: R8 Stripping Hilt ViewModel Factories](#bug-fix-r8-stripping-hilt-viewmodel-factories)
+25. [Bug Fix: Startup Crash on Android 14+ (SecurityException)](#bug-fix-startup-crash-on-android-14-securityexception)
+26. [Bug Fix: Notification Click Not Opening App UI](#bug-fix-notification-click-not-opening-app-ui)
+27. [Bug Fix: Experimental RPC Always Idling](#bug-fix-experimental-rpc-always-idling)
+28. [Bug Fix: Experimental RPC Song Change After Pause](#bug-fix-experimental-rpc-song-change-after-pause)
+29. [Bug Fix: Experimental RPC Text Showing Template Keys](#bug-fix-experimental-rpc-text-showing-template-keys)
+30. [Bug Fix: Experimental RPC Idle Presence](#bug-fix-experimental-rpc-idle-presence)
+31. [Bug Fix: RPC Switches Mutually Exclusive](#bug-fix-rpc-switches-mutually-exclusive)
+32. [Bug Fix: Apps List Scroll Lag](#bug-fix-apps-list-scroll-lag)
+33. [Bug Fix: GamesScreen.kt Issues](#bug-fix-gamescreenkt-issues)
+34. [Bug Fix: RpcSettings.kt Icon References (OpenInNew, Person)](#bug-fix-rpcsettingskt-icon-references)
+35. [Bug Fix: Extended Icon Import Cleanup (OpenInNew, NavigateNext, ContentPaste)](#bug-fix-extended-icon-import-cleanup)
+36. [Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)](#bug-fix-list-scrolling-performance-optimizations)
+37. [Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)](#bug-fix-mediarpcservice-startup-resilience)
+38. [Bug Fix: Emulator Startup Crash (Try-Catch Initialization)](#bug-fix-emulator-startup-crash)
+39. [New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)](#new-feature-rpcrecoveryhiltworker)
+40. [New Feature: System-Bound NotificationListener Auto-Restart](#new-feature-system-bound-notificationlistener)
+41. [Fix: Android 14+ Foreground Service Type (dataSync)](#fix-android-14-foreground-service-type)
+42. [Fix: KSP Dependencies for Hilt Annotation Processing](#fix-ksp-dependencies-for-hilt)
+43. [Bug Fix: @Immutable Annotation in Domain Module Models](#bug-fix--immutable-annotation-in-domain-module-models)
+44. [Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)](#bug-fix-accompanist-permission-migration)
+45. [Bug Fix: `kizzy.android.hilt` Plugin `No value present` Error](#bug-fix-kizzy-android-hilt-plugin-no-value-present-error)
+46. [Bug Fix: Missing `compose-ui-tooling-preview` Version Catalog Entry](#bug-fix-missing-compose-ui-tooling-preview-version-catalog-entry)
+47. [Migration: `javax.inject` → `jakarta.inject`](#migration-javax-inject--jakarta-inject)
+48. [Bug Fix: `kizzy.android.application.compose` Plugin `No value present` Error](#bug-fix-kizzy-android-application-compose-plugin-no-value-present-error)
+49. [Bug Fix: Unresolved Reference 'app' in `libs.app.compat`](#bug-fix-unresolved-reference-app-in-libs-app-compat)
+50. [Bug Fix: SVG Dynamic Color Fill Not Applying](#bug-fix-svg-dynamic-color-fill-not-applying)
+51. [Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage](#bug-fix-migrate-svg-rendering-from-com-caverock-androidsvg-to-coil-3-asyncimage)
+52. [Build Task: normalizeStringResources — Illegal Escape Cleanup](#build-task-normalizestringresources-illegal-escape-cleanup)
+53. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+54. [Build Verification](#build-verification)
 
 ---
 
@@ -410,7 +412,64 @@ implementation (projects.common.resources)
 
 ---
 
-## 22. Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor
+## 22. Bug Fix: CrashX Migrated to Native Jetpack Compose Crash Handler
+==============================
+
+## Root Cause
+CrashX (`com.github.TutorialsAndroid:crashx`) is deprecated and in maintenance mode. It also required additional dependencies and did not provide process-isolated crash screens.
+
+## Files Modified
+| File | Change |
+|------|--------|
+| `gradle/libs.versions.toml` | Removed `crashx` version & library entries |
+| `feature_crash_handler/build.gradle.kts` | Removed `libs.crashx` dependency |
+| `feature_crash_handler/CrashHandlerConfig.kt` | Stub — CrashX import removed |
+| `feature_crash_handler/CrashHandler.kt` | Simplified — now just `finish()` |
+| `app/src/main/java/com/my/kizzy/CrashReportActivity.kt` | **NEW** — Native Compose crash activity |
+| `app/src/main/AndroidManifest.xml` | Registered CrashReportActivity with `:crash_handler` process |
+| `app/src/main/java/com/my/kizzy/App.kt` | `Thread.setDefaultUncaughtExceptionHandler` replaces CrashX |
+
+## New CrashHandler Architecture
+| Feature | CrashX (Old) | Native Compose (New) |
+|---------|-------------|---------------------|
+| Process isolation | ❌ Same process | ✅ `:crash_handler` process |
+| UI framework | XML/legacy | ✅ Jetpack Compose |
+| Dependencies | Third-party (crashx) | ✅ Zero new dependencies |
+| Process termination | Uncertain | ✅ Clean `exitProcess()` |
+| Error sharing | Limited | ✅ Copy + System Share |
+| Memory leaks | Possible | ✅ Process isolation prevents |
+
+## Implementation Details
+
+### CrashReportActivity.kt (NEW)
+- MaterialTheme Compose UI with error container
+- Scrollable monospace stack trace display
+- Copy Log to clipboard button
+- Share Log via system share intent button
+- Restart App button with clean `exitProcess(0)`
+- Native Context helper functions for clipboard and share operations
+
+### App.kt
+- Replaced `CrashHandlerConfig.apply()` (CrashX) with `Thread.setDefaultUncaughtExceptionHandler { ... }`
+- Captures full stack trace via `PrintWriter(StringWriter)`
+- Launches `CrashReportActivity` with `FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK`
+- Calls `exitProcess(2)` to cleanly terminate crashed process
+
+### AndroidManifest.xml
+- Declared `CrashReportActivity` with `android:process=":crash_handler"` for process isolation
+- `android:exported="false"` for security
+
+### CrashHandler.kt & CrashHandlerConfig.kt
+- Simplified to stubs — CrashX imports removed
+- CrashHandler now just calls `finish()`
+- CrashHandlerConfig.apply() is now a no-op
+
+## Result
+CrashX is completely removed. Crash handling now uses native AndroidX APIs with process-isolated Compose UI that survives main app crashes and OOM conditions.
+
+---
+
+## 23. Bug Fix: HomeScreenViewModel Hilt Missing KSP Processor
 
 **File:** `feature_home/build.gradle.kts`
 
@@ -442,7 +501,7 @@ dependencies {
 
 ---
 
-## 23. Bug Fix: R8 Stripping Hilt ViewModel Factories
+## 24. Bug Fix: R8 Stripping Hilt ViewModel Factories
 
 **File:** `app/proguard-rules.pro`
 
@@ -468,7 +527,7 @@ Added two rules to `app/proguard-rules.pro`:
 
 ---
 
-## 24. Bug Fix: Startup Crash on Android 14+ (SecurityException)
+## 25. Bug Fix: Startup Crash on Android 14+ (SecurityException)
 
 **Files:** `GetCurrentlyPlayingMedia.kt`, `MediaRpcService.kt`, `GetCurrentPlayingMediaAll.kt`
 
@@ -509,7 +568,7 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 
 ---
 
-## 33. Bug Fix: RpcSettings.kt Icon References (OpenInNew, Person)
+## 26. Bug Fix: Notification Click Not Opening App UI
 
 **Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/rpc_settings/RpcSettings.kt`
 
@@ -525,7 +584,7 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 
 ---
 
-## 34. Bug Fix: Extended Icon Import Cleanup (OpenInNew, NavigateNext, ContentPaste)
+## 27. Bug Fix: Experimental RPC Always Idling
 
 **Files:** `common/components/src/main/java/com/my/kizzy/ui/components/BrowseFiles.kt`, `feature_startup/src/main/java/com/my/kizzy/feature_startup/SetupCards.kt`, `common/components/src/main/java/com/my/kizzy/ui/components/KTextField.kt`, `feature_crash_handler/src/main/java/com/my/kizzy/feature_crash_handler/CrashScreen.kt`
 
@@ -553,7 +612,7 @@ All extended icon references eliminated. Icons now resolve from either `Icons.Au
 
 ---
 
-## 36. Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)
+## 29. Bug Fix: Experimental RPC Text Showing Template Keys
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
 
@@ -575,7 +634,7 @@ All extended icon references eliminated. Icons now resolve from either `Icons.Au
 
 ---
 
-## 37. Bug Fix: Emulator Startup Crash (Try-Catch Initialization)
+## 30. Bug Fix: Experimental RPC Idle Presence
 
 **File:** `app/src/main/java/com/my/kizzy/App.kt`
 
@@ -610,7 +669,7 @@ App starts normally on emulators and all device configurations. Optional compone
 
 ---
 
-## 38. New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)
+## 31. Bug Fix: RPC Switches Mutually Exclusive
 
 **Files:** `data/src/main/java/com/my/kizzy/data/work/HiltWorkers.kt`
 
@@ -637,7 +696,7 @@ WorkManager.getInstance(this)
 
 ---
 
-## 39. New Feature: System-Bound NotificationListener Auto-Restart
+## 32. Bug Fix: Apps List Scroll Lag
 
 **File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/NotificationListener.kt`
 
@@ -655,7 +714,7 @@ Enhanced `NotificationListener` (a system-bound `NotificationListenerService`) t
 
 ---
 
-## 35. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
+## 33. Bug Fix: GamesScreen.kt Issues
 ==============================
 
 ## Root Cause
@@ -695,7 +754,7 @@ Added `dataSync` alongside `mediaPlayback`:
 
 ---
 
-## 41. Fix: KSP Dependencies for Hilt Annotation Processing
+## 34. Bug Fix: RpcSettings.kt Icon References (OpenInNew, Person)
 
 **Files:** `data/build.gradle.kts`, `feature_logs/build.gradle.kts`, `feature_rpc_base/build.gradle.kts`
 
@@ -707,7 +766,7 @@ Added `ksp(libs.hilt.compiler)` to each module's `dependencies {}` block. These 
 
 ---
 
-## 42. Bug Fix: @Immutable Annotation in Domain Module Models
+## 35. Bug Fix: Extended Icon Import Cleanup (OpenInNew, NavigateNext, ContentPaste)
 
 ### Files Modified
 - `domain/src/main/java/com/my/kizzy/domain/model/Contributor.kt`
@@ -748,7 +807,7 @@ compileOnly(libs.compose.runtime)
 
 ---
 
-## 49. Bug Fix: SVG Dynamic Color Fill Not Applying
+## 36. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
 
 **Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/style/svg/DynamicSvg.kt`
 
@@ -764,7 +823,7 @@ SVG icons rendered via `DynamicSVGImage` now correctly reflect dynamic color fil
 
 ---
 
-## 50. Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage
+## 37. Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)
 
 **Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/style/svg/DynamicSvg.kt`
 
@@ -800,7 +859,36 @@ SVG rendering now uses Coil 3's official SVG decoder. The legacy `com.caverock:a
 
 ---
 
-## 43. Dependency Cleanup: Remove Legacy Java-Interop Bridging Libraries
+## 52. Build Task: normalizeStringResources — Illegal Escape Cleanup
+
+**File:** `common/resources/build.gradle.kts`
+
+### Problem
+AAPT2 fails to compile `strings.xml` files that contain illegal backslash-escaped entities (e.g., `\&apos;`, `\&quot;`, `\{`, `\}`). These cause `Failed to flatten XML` errors during resource processing, blocking the entire build.
+
+### Solution
+Added a `normalizeStringResources` Gradle task to `common/resources/build.gradle.kts` that:
+
+- Scans all `strings.xml` files across all `values-*` language folders
+- Applies 7 normalization rules:
+  1. `\'` → `&apos;`
+  2. `\"` → `&quot;`
+  3. `\{\{` → `&apos;{{&apos;`
+  4. `\&quot;` → `&quot;`
+  5. `\&apos;` → `&apos;`
+  6. `{{` (unwrapped) → `&apos;{{&apos;`
+  7. `\{` → `{`, `\}` → `}`
+- Only writes back to files when changes are detected
+- Hooked into `preBuild` via `dependsOn("normalizeStringResources")`, so it runs automatically before any compilation
+
+### Result
+- Cleaned illegal backslash escapes from all ~72 language `strings.xml` files (579 lines changed)
+- `:app:compileDebugKotlin` passes successfully
+- Future builds automatically normalize string resources before AAPT2 processing
+
+---
+
+## 38. Bug Fix: Emulator Startup Crash (Try-Catch Initialization)
 
 **Files:** `gradle/libs.versions.toml`, `data/build.gradle.kts`, `data/src/main/java/com/my/kizzy/data/work/Workers.kt`
 
@@ -828,7 +916,7 @@ These add unnecessary transitive surface area for a pattern (`CallbackToFutureAd
 
 ---
 
-## 51. Known Non-Breaking Warnings
+## 39. New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)
 
 | Warning | Location | Severity |
 |---------|----------|----------|
@@ -838,7 +926,7 @@ These add unnecessary transitive surface area for a pattern (`CallbackToFutureAd
 
 ---
 
-## 52. Build Verification
+## 40. New Feature: System-Bound NotificationListener Auto-Restart
 
 ```
 BUILD SUCCESSFUL in 2m 27s
@@ -900,7 +988,7 @@ BUILD SUCCESSFUL in 2m 27s
 
 ---
 
-## 43. Bug Fix: `kizzy.android.hilt` Plugin `No value present` Error
+## 41. Fix: Android 14+ Foreground Service Type (dataSync)
 
 **File:** `build-logic/convention/src/main/kotlin/AndroidHiltPlugin.kt`
 
@@ -931,7 +1019,7 @@ hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 
 ---
 
-## 44. Bug Fix: Missing `compose-ui-tooling-preview` Version Catalog Entry
+## 42. Fix: KSP Dependencies for Hilt Annotation Processing
 
 **File:** `build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/AndroidCompose.kt`
 
@@ -958,7 +1046,7 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 
 ---
 
-## 45. Migration: `javax.inject` → `jakarta.inject`
+## 43. Bug Fix: @Immutable Annotation in Domain Module Models
 
 **File:** `gradle/libs.versions.toml`
 
@@ -975,7 +1063,7 @@ No source files in the project reference `libs.javax` or `javax.inject` directly
 
 ---
 
-## 46. Bug Fix: `kizzy.android.application.compose` Plugin `No value present` Error
+## 44. Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)
 
 **File:** `build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/AndroidCompose.kt`
 
@@ -1007,7 +1095,7 @@ compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-
 
 ---
 
-## 47. Bug Fix: Unresolved Reference 'app' in `libs.app.compat`
+## 45. Bug Fix: `kizzy.android.hilt` Plugin `No value present` Error
 
 **File:** `gradle/libs.versions.toml`
 
