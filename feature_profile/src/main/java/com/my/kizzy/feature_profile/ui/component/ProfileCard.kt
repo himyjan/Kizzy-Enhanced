@@ -25,10 +25,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -110,21 +116,38 @@ fun ProfileCard(
                     contentDescription = "User Avatar"
                 )
 
-                AsyncImage(
-                    model = user.getAvatarImage(),
-                    placeholder = painterResource(id = R.drawable.error_avatar),
-                    error = painterResource(id = R.drawable.error_avatar),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(16.dp, 64.dp, 16.dp, 6.dp)
-                        .size(110.dp)
-                        .border(
-                            width = 8.dp,
-                            color = borderColors.first(),
-                            shape = CircleShape
-                        )
-                        .clip(CircleShape),
-                )
+                if (user.getAvatarImage() != null) {
+                    AsyncImage(
+                        model = user.getAvatarImage(),
+                        placeholder = painterResource(id = R.drawable.error_avatar),
+                        error = painterResource(id = R.drawable.error_avatar),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(16.dp, 64.dp, 16.dp, 6.dp)
+                            .size(110.dp)
+                            .border(
+                                width = 8.dp,
+                                color = borderColors.first(),
+                                shape = CircleShape
+                            )
+                            .clip(CircleShape),
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "User Avatar",
+                        modifier = Modifier
+                            .padding(16.dp, 64.dp, 16.dp, 6.dp)
+                            .size(110.dp)
+                            .border(
+                                width = 8.dp,
+                                color = borderColors.first(),
+                                shape = CircleShape
+                            )
+                            .clip(CircleShape),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
                 val allBadges = user.getAllBadges()
                 if (allBadges.isNotEmpty()) {

@@ -221,7 +221,7 @@ fun Home(
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         IconButton(onClick = { navigateToProfile() }) {
-                            if (user != null) {
+                            if (user != null && user.getAvatarImage() != null) {
                                 AsyncImage(
                                     model = user.getAvatarImage(),
                                     modifier = Modifier

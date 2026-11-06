@@ -48,14 +48,22 @@ data class User(
     @SerialName("global_name")
 val globalName: String? = null
 ) {
-    fun getAvatarImage(): String {
-        return if (avatar?.startsWith("a_") == true)
+    fun getAvatarImage(): String? {
+        return if (avatar.isNullOrEmpty() || id.isNullOrEmpty()) {
+            null
+        } else if (avatar.startsWith("a_")) {
             "${DISCORD_CDN}/avatars/${id}/${avatar}.gif?size=512"
-        else
+        } else {
             "${DISCORD_CDN}/avatars/${id}/${avatar}.png?size=512"
+        }
     }
-    fun getStaticAvatarImage(): String {
-        return "${DISCORD_CDN}/avatars/${id}/${avatar}.png?size=512"
+
+    fun getStaticAvatarImage(): String? {
+        return if (avatar.isNullOrEmpty() || id.isNullOrEmpty()) {
+            null
+        } else {
+            "${DISCORD_CDN}/avatars/${id}/${avatar}.png?size=512"
+        }
     }
     fun getBannerImage(): String? {
         if (banner.isNullOrEmpty()) return null
