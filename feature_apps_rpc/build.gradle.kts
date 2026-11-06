@@ -13,7 +13,8 @@ dependencies {
     implementation(projects.featureRpcBase)
     implementation(projects.data)
     implementation(projects.common.preference)
-    implementation (libs.material.icons.extended)
+    implementation(libs.material.icons.extended)
+    implementation(libs.activity.compose)
 
     // Hilt annotation processor required for @HiltViewModel
     ksp(libs.hilt.compiler)
