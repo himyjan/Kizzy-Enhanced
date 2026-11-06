@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +34,11 @@ fun AppsItem(
     isChecked: Boolean,
     onClick: () -> Unit = {},
 ) {
+    // Cache app icon loading to avoid synchronous package manager calls during scroll
+    val appIcon = remember(pkg) {
+        AppUtils.getAppIcon(pkg)
+    }
+
     Surface(
         modifier = Modifier.clickable {
             onClick()
@@ -45,11 +51,11 @@ fun AppsItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
-                model = AppUtils.getAppIcon(pkg),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(70.dp)
-                        .padding(10.dp),
+                model = appIcon,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(70.dp)
+                    .padding(10.dp),
             )
 
             Column(
