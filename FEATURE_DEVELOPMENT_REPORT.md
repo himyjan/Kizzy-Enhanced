@@ -69,18 +69,18 @@
 
 ## 1. Toolchain Upgrades
 
-| Component | Before | After | Status |
-|-----------|--------|-------|--------|
-| Gradle Wrapper | 8.13 | 9.8.2 | ✅ |
-| Android Gradle Plugin (AGP) | 8.13.2 | 9.6.0-alpha02 | ✅ |
-| Kotlin | 2.1.20 | 2.4.21 | ✅ |
-| KSP | 2.1.20-1.0.31 | 2.3.13 | ✅ |
-| Hilt | 2.56.2 | 2.60.1 | ✅ |
-| Ktor | 2.3.0 | 3.1.0 | ✅ |
-| Coil | 2.x (`io.coil-kt`) | 3.x (`io.coil-kt.coil3`) | ✅ |
-| Compose BOM | 2025.06.01 | 2026.09.00 | ✅ |
-| Java/Kotlin bytecode target | VERSION_11 | VERSION_26 | ✅ |
-| compileSdk | 36 | 37 | ✅ |
+| Component                   | Before             | After                    | Status |
+| --------------------------- | ------------------ | ------------------------ | ------ |
+| Gradle Wrapper              | 8.13               | 9.8.2                    | ✅     |
+| Android Gradle Plugin (AGP) | 8.13.2             | 9.6.0-alpha02            | ✅     |
+| Kotlin                      | 2.1.20             | 2.4.21                   | ✅     |
+| KSP                         | 2.1.20-1.0.31      | 2.3.13                   | ✅     |
+| Hilt                        | 2.56.2             | 2.60.1                   | ✅     |
+| Ktor                        | 2.3.0              | 3.1.0                    | ✅     |
+| Coil                        | 2.x (`io.coil-kt`) | 3.x (`io.coil-kt.coil3`) | ✅     |
+| Compose BOM                 | 2025.06.01         | 2026.09.00               | ✅     |
+| Java/Kotlin bytecode target | VERSION_26         | VERSION_26               | ✅     |
+| compileSdk                  | 36                 | 37                       | ✅     |
 
 ### Decision Rationale
 
@@ -93,18 +93,22 @@
 ## 2. AGP 9.x Migration
 
 ### File: `gradle/wrapper/gradle-wrapper.properties`
+
 **Change:** `gradle-8.13-bin.zip` → `gradle-9.8.2-bin.zip`
 
 ### File: `gradle/libs.versions.toml`
+
 **Change:** AGP `8.13.2` → `9.6.0-alpha02`
 
 ### Files: Convention Plugins (`build-logic/convention/`)
+
 - `com.android.build.gradle.LibraryExtension` → `com.android.build.api.dsl.LibraryExtension`
 - Removed `CommonExtension<*,*,*,*,*,*>` generic type parameters
 - `kotlinOptions.jvmTarget` → `compilerOptions { jvmTarget.set(JvmTarget.JVM_26) }`
 - Removed redundant `org.jetbrains.kotlin.android` plugin application
 
 ### File: `build.gradle.kts`
+
 - `kotlinOptions.jvmTarget = "26"` → `compilerOptions { jvmTarget.set(JvmTarget.JVM_26) }`
 - `freeCompilerArgs += listOf(...)` → `freeCompilerArgs.addAll(listOf(...))`
 - `project.buildDir` → `project.layout.buildDirectory`
@@ -114,13 +118,13 @@
 
 ## 3. Accompanist → Native Compose Migration
 
-| Accompanist Artifact | Removed | Native Replacement |
-|---------------------|---------|-------------------|
-| `navigation-animation` | `AnimatedNavHost`, `rememberAnimatedNavController` | `NavHost`, `rememberNavController`, `composable` |
-| `pager.layouts` / `pager.indicators` | `HorizontalPager`, `HorizontalPagerIndicator` | `androidx.compose.foundation.pager.HorizontalPager` + custom `Row`-based indicator |
-| `systemuicontroller` | `rememberSystemUiController` | `WindowCompat.getInsetsController` + `SideEffect` |
-| `flowLayout` | Flow layouts | Native Compose `ContextualFlowRow`/`ContextualFlowColumn` |
-| `permissions` | Permission APIs | Native Android permission APIs |
+| Accompanist Artifact                 | Removed                                            | Native Replacement                                                                 |
+| ------------------------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `navigation-animation`               | `AnimatedNavHost`, `rememberAnimatedNavController` | `NavHost`, `rememberNavController`, `composable`                                   |
+| `pager.layouts` / `pager.indicators` | `HorizontalPager`, `HorizontalPagerIndicator`      | `androidx.compose.foundation.pager.HorizontalPager` + custom `Row`-based indicator |
+| `systemuicontroller`                 | `rememberSystemUiController`                       | `WindowCompat.getInsetsController` + `SideEffect`                                  |
+| `flowLayout`                         | Flow layouts                                       | Native Compose `ContextualFlowRow`/`ContextualFlowColumn`                          |
+| `permissions`                        | Permission APIs                                    | Native Android permission APIs                                                     |
 
 ---
 
@@ -238,13 +242,13 @@ class SecureTokenStorage @Inject constructor(
 
 ### Security Architecture
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Encryption | Google Tink AES-256-GCM | Field-level token encryption |
-| Key Protection | Android Keystore (`android-keystore://kizzy_master_key`) | Hardware-backed master key |
-| Keyset Storage | `AndroidKeysetManager` + SharedPreferences | Encrypted keyset at rest |
-| Token Storage | SharedPreferences (`secure_discord_prefs`) | Base64-encoded ciphertext |
-| Error Handling | `catch` + `GeneralSecurityException` | Graceful fallback on keystore invalidation |
+| Layer          | Technology                                               | Purpose                                    |
+| -------------- | -------------------------------------------------------- | ------------------------------------------ |
+| Encryption     | Google Tink AES-256-GCM                                  | Field-level token encryption               |
+| Key Protection | Android Keystore (`android-keystore://kizzy_master_key`) | Hardware-backed master key                 |
+| Keyset Storage | `AndroidKeysetManager` + SharedPreferences               | Encrypted keyset at rest                   |
+| Token Storage  | SharedPreferences (`secure_discord_prefs`)               | Base64-encoded ciphertext                  |
+| Error Handling | `catch` + `GeneralSecurityException`                     | Graceful fallback on keystore invalidation |
 
 **Failure:** `GeneralSecurityException` on keystore invalidation (e.g., lock screen change) crashes app  
 **Fix:** `.catch` block wipes corrupted storage and emits empty state, routing user to re-login
@@ -286,6 +290,7 @@ class KizzyRpcService : Service() {
 ```
 
 ### Features
+
 - **Foreground Service** with `connectedDevice` type (declared in `AndroidManifest.xml`)
 - **Notification channel** with `IMPORTANCE_LOW` (no sound/vibration spam)
 - **Dynamic Pause/Resume button** — label and icon swap based on `isPaused` state
@@ -294,6 +299,7 @@ class KizzyRpcService : Service() {
 - **State sync** — updates `KizzyStateRepository` on toggle/disconnect so UI stays in sync
 
 ### Manifest
+
 ```xml
 <service
     android:name=".services.KizzyRpcService"
@@ -324,6 +330,7 @@ object KizzyServiceController {
 **File:** `feature_rpc_base/.../ui/RpcStatusCard.kt` (NEW)
 
 Material 3 reactive composable:
+
 - **Animated background color** — green (connected), amber (paused), gray (disconnected)
 - **Live status dot badge** — color-coded badge
 - **Track details** — title and artist from media parser
@@ -367,6 +374,7 @@ Material 3 reactive composable:
 ## 19. Hilt Dependency Injection Fix
 
 ### Problem
+
 `KizzyRepository` is an interface — Hilt had no binding to its implementation.
 
 ### Fixes Applied
@@ -392,13 +400,16 @@ Material 3 reactive composable:
 **File:** `feature_crash_handler/build.gradle.kts`
 
 ### Problem
+
 `CrashScreen.kt` in `:feature_crash_handler` imports:
+
 - `com.my.kizzy.data.utils.shareAsFile` — from `:data` module
 - `com.my.kizzy.resources.R` — from `:common:resources` module
 
 But `feature_crash_handler/build.gradle.kts` only declared `projects.theme`, causing unresolved reference compilation errors when the crash report screen was rendered.
 
 ### Fix
+
 Added the missing implementation dependencies:
 
 ```kotlin
@@ -407,41 +418,47 @@ implementation (projects.common.resources)
 ```
 
 ### Verification
+
 - Gradle sync: successful
 - `app:assembleDebug`: BUILD SUCCESSFUL
 
 ---
 
 ## 22. Bug Fix: CrashX Migrated to Native Jetpack Compose Crash Handler
+
 ==============================
 
 ## Root Cause
+
 CrashX (`com.github.TutorialsAndroid:crashx`) is deprecated and in maintenance mode. It also required additional dependencies and did not provide process-isolated crash screens.
 
 ## Files Modified
-| File | Change |
-|------|--------|
-| `gradle/libs.versions.toml` | Removed `crashx` version & library entries |
-| `feature_crash_handler/build.gradle.kts` | Removed `libs.crashx` dependency |
-| `feature_crash_handler/CrashHandlerConfig.kt` | Stub — CrashX import removed |
-| `feature_crash_handler/CrashHandler.kt` | Simplified — now just `finish()` |
-| `app/src/main/java/com/my/kizzy/CrashReportActivity.kt` | **NEW** — Native Compose crash activity |
-| `app/src/main/AndroidManifest.xml` | Registered CrashReportActivity with `:crash_handler` process |
-| `app/src/main/java/com/my/kizzy/App.kt` | `Thread.setDefaultUncaughtExceptionHandler` replaces CrashX |
+
+| File                                                    | Change                                                       |
+| ------------------------------------------------------- | ------------------------------------------------------------ |
+| `gradle/libs.versions.toml`                             | Removed `crashx` version & library entries                   |
+| `feature_crash_handler/build.gradle.kts`                | Removed `libs.crashx` dependency                             |
+| `feature_crash_handler/CrashHandlerConfig.kt`           | Stub — CrashX import removed                                 |
+| `feature_crash_handler/CrashHandler.kt`                 | Simplified — now just `finish()`                             |
+| `app/src/main/java/com/my/kizzy/CrashReportActivity.kt` | **NEW** — Native Compose crash activity                      |
+| `app/src/main/AndroidManifest.xml`                      | Registered CrashReportActivity with `:crash_handler` process |
+| `app/src/main/java/com/my/kizzy/App.kt`                 | `Thread.setDefaultUncaughtExceptionHandler` replaces CrashX  |
 
 ## New CrashHandler Architecture
-| Feature | CrashX (Old) | Native Compose (New) |
-|---------|-------------|---------------------|
-| Process isolation | ❌ Same process | ✅ `:crash_handler` process |
-| UI framework | XML/legacy | ✅ Jetpack Compose |
-| Dependencies | Third-party (crashx) | ✅ Zero new dependencies |
-| Process termination | Uncertain | ✅ Clean `exitProcess()` |
-| Error sharing | Limited | ✅ Copy + System Share |
-| Memory leaks | Possible | ✅ Process isolation prevents |
+
+| Feature             | CrashX (Old)         | Native Compose (New)          |
+| ------------------- | -------------------- | ----------------------------- |
+| Process isolation   | ❌ Same process      | ✅ `:crash_handler` process   |
+| UI framework        | XML/legacy           | ✅ Jetpack Compose            |
+| Dependencies        | Third-party (crashx) | ✅ Zero new dependencies      |
+| Process termination | Uncertain            | ✅ Clean `exitProcess()`      |
+| Error sharing       | Limited              | ✅ Copy + System Share        |
+| Memory leaks        | Possible             | ✅ Process isolation prevents |
 
 ## Implementation Details
 
 ### CrashReportActivity.kt (NEW)
+
 - MaterialTheme Compose UI with error container
 - Scrollable monospace stack trace display
 - Copy Log to clipboard button
@@ -450,21 +467,25 @@ CrashX (`com.github.TutorialsAndroid:crashx`) is deprecated and in maintenance m
 - Native Context helper functions for clipboard and share operations
 
 ### App.kt
+
 - Replaced `CrashHandlerConfig.apply()` (CrashX) with `Thread.setDefaultUncaughtExceptionHandler { ... }`
 - Captures full stack trace via `PrintWriter(StringWriter)`
 - Launches `CrashReportActivity` with `FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK`
 - Calls `exitProcess(2)` to cleanly terminate crashed process
 
 ### AndroidManifest.xml
+
 - Declared `CrashReportActivity` with `android:process=":crash_handler"` for process isolation
 - `android:exported="false"` for security
 
 ### CrashHandler.kt & CrashHandlerConfig.kt
+
 - Simplified to stubs — CrashX imports removed
 - CrashHandler now just calls `finish()`
 - CrashHandlerConfig.apply() is now a no-op
 
 ## Result
+
 CrashX is completely removed. Crash handling now uses native AndroidX APIs with process-isolated Compose UI that survives main app crashes and OOM conditions.
 
 ---
@@ -474,6 +495,7 @@ CrashX is completely removed. Crash handling now uses native AndroidX APIs with 
 **File:** `feature_home/build.gradle.kts`
 
 ### Problem
+
 Crash report from user device (Samsung SM-X516B, Android 16):
 
 ```
@@ -484,6 +506,7 @@ Caused by: java.lang.NoSuchMethodException: com.my.kizzy.feature_home.HomeScreen
 `HomeScreenViewModel` is annotated with `@HiltViewModel` and uses `@Inject constructor`, but `:feature_home` was missing the Hilt KSP annotation processor. Without it, Hilt cannot generate the ViewModel factory, so the no-arg constructor doesn't exist at runtime.
 
 ### Fix
+
 Added `ksp(libs.hilt.compiler)` to `feature_home/build.gradle.kts`:
 
 ```kotlin
@@ -496,6 +519,7 @@ dependencies {
 ```
 
 ### Verification
+
 - Gradle sync: successful
 - `app:assembleDebug`: BUILD SUCCESSFUL
 
@@ -506,6 +530,7 @@ dependencies {
 **File:** `app/proguard-rules.pro`
 
 ### Problem
+
 Crash report from user device (Samsung SM-X516B, Android 16):
 
 ```
@@ -516,12 +541,14 @@ Caused by: java.lang.NoSuchMethodException: com.my.kizzy.feature_profile.ui.user
 Even though `:feature_profile` already has `ksp(libs.hilt.compiler)`, release builds with R8 minification were stripping Hilt's generated ViewModel factory classes (`UserViewModel_HiltFactory`). The existing ProGuard rule `-keep class **_Factory { *; }` did **not** match Hilt's naming convention (`*_HiltFactory`, not `*_Factory`).
 
 ### Fix
+
 Added two rules to `app/proguard-rules.pro`:
 
 1. `-keep class **_HiltFactory { *; }` — preserves Hilt-generated ViewModel factories
 2. `-keepnames class * extends androidx.lifecycle.ViewModel { *; }` — preserves ViewModel class names
 
 ### Verification
+
 - `app:assembleDebug`: BUILD SUCCESSFUL
 - `app:assembleRelease`: BUILD SUCCESSFUL (R8 minification enabled)
 
@@ -532,6 +559,7 @@ Added two rules to `app/proguard-rules.pro`:
 **Files:** `GetCurrentlyPlayingMedia.kt`, `MediaRpcService.kt`, `GetCurrentPlayingMediaAll.kt`
 
 ### Problem
+
 App crashes at startup on Android 14+ (API 34+) with:
 
 ```
@@ -542,9 +570,11 @@ java.lang.SecurityException: Missing permission to control media.
 ```
 
 ### Root Cause
+
 `MediaSessionManager.getActiveSessions()` requires the `android.permission.MEDIA_CONTENT_CONTROL` permission. On API 34+ this is a `signatureOrSystem` permission — regular third-party apps **cannot be granted it**. The permission is declared in `AndroidManifest.xml` but is silently unavailable on production devices, causing an unhandled `SecurityException` when any of the three `getActiveSessions()` call sites execute during app startup.
 
 ### Fix Applied
+
 Wrapped all three `getActiveSessions()` call sites in `try/catch (SecurityException)` blocks that return an empty list when media session access is unavailable:
 
 - `data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentlyPlayingMedia.kt` — line ~58
@@ -564,6 +594,7 @@ val sessions: List<android.media.session.MediaController> = try {
 Note: `ExperimentalRpc.kt`, `NotificationListener.kt`, and `KizzyNotificationListener.kt` already had `try/catch (SecurityException)` protection — only these three sites were unprotected.
 
 ### Result
+
 App starts normally on all API levels. Media RPC features gracefully degrade (empty session list) instead of crashing when media control permission is unavailable.
 
 ---
@@ -573,11 +604,14 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 **Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/rpc_settings/RpcSettings.kt`
 
 ### Problem
+
 `:feature_settings:compileDebugKotlin` failed with unresolved icon references:
+
 - `Unresolved reference 'OpenInNew'` — `Icons.Default` does not contain `OpenInNew`; it lives in `Icons.AutoMirrored.Filled`
 - `Unresolved reference 'Person' on receiver of type 'Icons.Filled'` — `Icons.Filled` does not contain `Person`; it lives in `Icons.Default`
 
 ### Fix
+
 - Line 153: `icon = Icons.AutoMirrored.Filled.OpenInNew` (imported from `automirrored.filled`)
 - Line 165: `icon = Icons.Default.Person` (imported from `icons.filled`)
 - Added proper material icons imports for both
@@ -589,6 +623,7 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 **Files:** `common/components/src/main/java/com/my/kizzy/ui/components/BrowseFiles.kt`, `feature_startup/src/main/java/com/my/kizzy/feature_startup/SetupCards.kt`, `common/components/src/main/java/com/my/kizzy/ui/components/KTextField.kt`, `feature_crash_handler/src/main/java/com/my/kizzy/feature_crash_handler/CrashScreen.kt`
 
 ### Problem
+
 Several screen files were importing icons from the `material-icons-extended` library (`androidx.compose.material:material-icons-extended`), which is a heavy dependency not included in the project's version catalog. The following icons were being pulled from the extended track:
 
 - `Icons.Filled.OpenInNew` — not in core Material 3; available under `Icons.AutoMirrored.Filled`
@@ -597,17 +632,20 @@ Several screen files were importing icons from the `material-icons-extended` lib
 - `Icons.Outlined.Close` / `Icons.Outlined.Share` — module lacked extended icon dependency; replaced with local vector drawables
 
 ### Fix
+
 - **BrowseFiles.kt**: Changed import from `icons.filled.OpenInNew` to `icons.automirrored.filled.OpenInNew`; updated usage to `Icons.AutoMirrored.Filled.OpenInNew`
 - **SetupCards.kt**: Changed imports from `icons.filled.NavigateNext` and `icons.filled.OpenInNew` to `icons.automirrored.filled.NavigateNext` and `icons.automirrored.filled.OpenInNew`; updated usages accordingly
 - **KTextField.kt**: Removed `icons.rounded.ContentPaste` import; created `res/drawable/ic_content_paste.xml` vector drawable; replaced `imageVector` usage with `painterResource(id = R.drawable.ic_content_paste)`
 - **CrashScreen.kt**: Removed `icons.outlined.Close` and `icons.outlined.Share` imports; created local vector drawables `res/drawable/ic_close.xml` and `res/drawable/ic_share.xml`; replaced usages with `painterResource()`
 
 New vector drawables created:
+
 - `common/components/src/main/res/drawable/ic_content_paste.xml`
 - `feature_crash_handler/src/main/res/drawable/ic_close.xml`
 - `feature_crash_handler/src/main/res/drawable/ic_share.xml`
 
 ### Result
+
 All extended icon references eliminated. Icons now resolve from either `Icons.AutoMirrored.*` (built into Material 3) or local vector drawables. The `material-icons-extended` dependency is no longer required for any screen icon. `:app:compileDebugKotlin` passes successfully.
 
 ---
@@ -617,6 +655,7 @@ All extended icon references eliminated. Icons now resolve from either `Icons.Au
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
 
 ### Problems
+
 1. `createNotificationChannel()` — unresolved reference; method did not exist
 2. `currentMediaController?.packageName.takeIf { ... }` — unnecessary safe call on non-null receiver after `?.` already applied
 3. `playingMedia.metadata` — `CommonRpc` data class has no `metadata` property; should read from `currentMediaController?.metadata`
@@ -624,6 +663,7 @@ All extended icon references eliminated. Icons now resolve from either `Icons.Au
 5. `return START_STICKY` — service restarted without Intent payload after system kill, losing RPC config
 
 ### Fixes
+
 - Added `createNotificationChannel()` method creating an `IMPORTANCE_LOW` notification channel on API 26+
 - Changed `currentMediaController?.packageName.takeIf { ... }` to `currentMediaController?.packageName?.takeIf { ... }`
 - Changed `metadataResolver.getArtistUrl(playingMedia.metadata, ...)` to `currentMediaController?.metadata?.let { metadata -> ... }`
@@ -639,7 +679,9 @@ All extended icon references eliminated. Icons now resolve from either `Icons.Au
 **File:** `app/src/main/java/com/my/kizzy/App.kt`
 
 ### Problem
+
 App crashed at startup on emulators and OEM devices because `App.onCreate()` called several initialization methods without error handling:
+
 - `DynamicColors.applyToActivitiesIfAvailable()` — only available on API 31+
 - `CrashHandlerConfig.apply()` (CrashX) — may not initialize on emulator
 - `PreferenceConfig.apply()` (MMKV.initialize) — storage permission issues on emulators
@@ -648,13 +690,14 @@ App crashed at startup on emulators and OEM devices because `App.onCreate()` cal
 - `WorkManagerHelper.scheduleDailyCleanup()` — WorkManager not ready
 
 ### Fix
+
 Wrapped every initialization call in individual `try/catch` blocks so a failure in one component does not prevent app startup:
 
 ```kotlin
 override fun onCreate() {
     super.onCreate()
-    
-    try { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 
+
+    try { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
         DynamicColors.applyToActivitiesIfAvailable(this) } catch {}
     try { CrashHandlerConfig.apply() } catch {}
     try { PreferenceConfig.apply(this) } catch {}
@@ -665,6 +708,7 @@ override fun onCreate() {
 ```
 
 ### Result
+
 App starts normally on emulators and all device configurations. Optional components fail gracefully without preventing startup.
 
 ---
@@ -674,17 +718,22 @@ App starts normally on emulators and all device configurations. Optional compone
 **Files:** `data/src/main/java/com/my/kizzy/data/work/HiltWorkers.kt`
 
 ### Problem
+
 When OEM firmware (HiOS, MIUI, EMUI) hard-kills the app process or the user swipes the app from Recents, Rich Presence stops broadcasting and requires manual re-launch to restore.
 
 ### Solution
+
 Added `RpcRecoveryHiltWorker` — a Hilt-injected `CoroutineWorker` that:
+
 - Checks if RPC features are enabled (`USE_RPC_BUTTONS`, `MEDIA_RPC_MEDIA_BUTTON`, `MEDIA_RPC_ARTIST_LINK`)
 - Retrieves the current media session via `GetCurrentPlayingMedia`
 - If media is playing, rebuilds Discord Rich Presence (name, details, state, timestamps, images, status)
 - Retries on failure via `Result.retry()`
 
 ### Integration
+
 Triggered from `MediaRpcService.onTaskRemoved()` when RPC is enabled:
+
 ```kotlin
 WorkManager.getInstance(this)
     .enqueueUniqueWork(
@@ -701,36 +750,44 @@ WorkManager.getInstance(this)
 **File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/NotificationListener.kt`
 
 ### Problem
+
 OEM firmware (HiOS on TECNO/Infinix, MIUI/HyperOS, EMUI) hard-kills app processes regardless of standard Android service flags. A raw `Service` is not automatically restarted by the OS framework.
 
 ### Solution
+
 Enhanced `NotificationListener` (a system-bound `NotificationListenerService`) to act as a persistence anchor:
+
 - **`onListenerConnected()`**: When the OS framework re-binds the service after process death, automatically restarts `MediaRpcService` via `startForegroundService()`
 - **Framework-instantiated**: Uses `EntryPointAccessors.fromApplication()` to obtain Hilt `Logger` since `@Inject` field injection does not work on framework-created services
 - **Media tracking**: Parses `MediaMetadata` from active media sessions and broadcasts to `DiscordWebSocketImpl`
 
 ### Why This Works
+
 `NotificationListenerService` is bound directly by the Android OS framework. When the system kills the process, the framework aggressively attempts to rebind and restart the service on notification events — offering much higher survival rates than a raw `Service` on OEM firmware.
 
 ---
 
 ## 33. Bug Fix: GamesScreen.kt Issues
+
 ==============================
 
 ## Root Cause
+
 List screens using `LazyColumn` without `key` parameters caused unnecessary full-list recompositions during scrolling, causing dropped frames (jank) on 60Hz and 120Hz displays.
 
 ## Files Modified
-| File | Change |
-|------|--------|
-| `feature_console_rpc/.../GamesScreen.kt` | Added `key = { game -> game.game_title }` to `items()` |
-| `feature_settings/.../Settings.kt` | Added keys: "display", "language", "logs", "settings", "divider", "drawer_subtitle_help", "faq", "about", "qs_tile" |
-| `feature_settings/.../style/DarkThemePreferences.kt` | Added keys: "follow_system", "dark_theme_on", "dark_theme_off", "advance_settings", "amoled" |
-| `feature_settings/.../language/Language.kt` | Added keys: "follow_system", "lang_${language.key}" |
-| `feature_settings/.../rpc_settings/RpcSettings.kt` | Added keys: "general_settings", "configs_directory", "use_custom_buttons", "use_youtube_button", "link_to_artist_channel", "rpc_buttons", "custom_activity_type", "custom_activity_status", "set_previous_run_config", "custom_application_id" |
-| `domain/.../rpc/RpcButtons.kt` | Added `@Immutable` annotation |
+
+| File                                                 | Change                                                                                                                                                                                                                                         |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `feature_console_rpc/.../GamesScreen.kt`             | Added `key = { game -> game.game_title }` to `items()`                                                                                                                                                                                         |
+| `feature_settings/.../Settings.kt`                   | Added keys: "display", "language", "logs", "settings", "divider", "drawer_subtitle_help", "faq", "about", "qs_tile"                                                                                                                            |
+| `feature_settings/.../style/DarkThemePreferences.kt` | Added keys: "follow_system", "dark_theme_on", "dark_theme_off", "advance_settings", "amoled"                                                                                                                                                   |
+| `feature_settings/.../language/Language.kt`          | Added keys: "follow*system", "lang*${language.key}"                                                                                                                                                                                            |
+| `feature_settings/.../rpc_settings/RpcSettings.kt`   | Added keys: "general_settings", "configs_directory", "use_custom_buttons", "use_youtube_button", "link_to_artist_channel", "rpc_buttons", "custom_activity_type", "custom_activity_status", "set_previous_run_config", "custom_application_id" |
+| `domain/.../rpc/RpcButtons.kt`                       | Added `@Immutable` annotation                                                                                                                                                                                                                  |
 
 ## Result
+
 Compose can now track item identity during scroll, preventing unnecessary recompositions of unchanged items.
 
 ---
@@ -740,9 +797,11 @@ Compose can now track item identity during scroll, preventing unnecessary recomp
 **File:** `app/src/main/AndroidManifest.xml`
 
 ### Problem
+
 Android 14+ requires explicit `foregroundServiceType` declarations. `MediaRpcService` only declared `mediaPlayback`, which may cause `ForegroundServiceStartNotAllowedException` on modern Android versions when running data synchronization tasks.
 
 ### Fix
+
 Added `dataSync` alongside `mediaPlayback`:
 
 ```xml
@@ -759,9 +818,11 @@ Added `dataSync` alongside `mediaPlayback`:
 **Files:** `data/build.gradle.kts`, `feature_logs/build.gradle.kts`, `feature_rpc_base/build.gradle.kts`
 
 ### Problem
+
 `feature_logs`, `data`, and `feature_rpc_base` modules used Hilt annotations (`@Binds`, `@InstallIn`, `@HiltWorker`) but were missing the KSP annotation processor dependency. Without `ksp(libs.hilt.compiler)`, Hilt cannot generate component factories, causing `NoSuchMethodException` at runtime when injecting `KizzyRepository`, `DiscordWebSocket`, `Logger`, and `CoroutineScope`.
 
 ### Fix
+
 Added `ksp(libs.hilt.compiler)` to each module's `dependencies {}` block. These modules were already declared with the `kizzy.android.hilt` plugin but lacked the KSP processor.
 
 ---
@@ -769,6 +830,7 @@ Added `ksp(libs.hilt.compiler)` to each module's `dependencies {}` block. These 
 ## 35. Bug Fix: Extended Icon Import Cleanup (OpenInNew, NavigateNext, ContentPaste)
 
 ### Files Modified
+
 - `domain/src/main/java/com/my/kizzy/domain/model/Contributor.kt`
 - `domain/src/main/java/com/my/kizzy/domain/model/Game.kt`
 - `domain/src/main/java/com/my/kizzy/domain/model/logs/LogEvent.kt`
@@ -783,26 +845,32 @@ Added `ksp(libs.hilt.compiler)` to each module's `dependencies {}` block. These 
 - `domain/build.gradle.kts`
 
 ### Problem
+
 `:domain:compileKotlin` failed with:
+
 ```
 Unresolved reference 'Immutable'
 ```
 
 ### Root Cause
+
 The `:domain` module is a pure Kotlin/JVM module with no dependency on Jetpack Compose. However, 11 data model classes imported `androidx.compose.runtime.Immutable` and annotated themselves with `@Immutable`. Compose runtime annotations do not belong in a domain layer module and are unavailable as a transitive dependency.
 
 Additionally, `domain/build.gradle.kts` had these unnecessary Compose dependencies:
+
 ```kotlin
 compileOnly(platform(libs.compose.bom))
 compileOnly(libs.compose.runtime)
 ```
 
 ### Fix Applied
+
 1. Removed `import androidx.compose.runtime.Immutable` and `@Immutable` from all 11 model classes in `:domain`.
 2. Removed the two Compose BOM/runtime `compileOnly` dependencies from `domain/build.gradle.kts`.
 3. Added the missing `javax.inject:javax.inject:1` dependency to `domain/build.gradle.kts` since use cases in `:domain` use `javax.inject.Inject` for Hilt constructor injection.
 
 ### Result
+
 `:domain:compileKotlin` now compiles successfully with zero errors.
 
 ---
@@ -812,13 +880,16 @@ compileOnly(libs.compose.runtime)
 **Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/style/svg/DynamicSvg.kt`
 
 ### Problem
+
 The `DynamicSVGImage` composable parsed dynamic colors into the SVG string and rendered it to a `PictureDrawable`, but the composable was not marked with `@Composable` re-trigger logic when `isDarkTheme` or `tonalPalettes` changed, causing the SVG fill colors to remain stale after theme toggles.
 
 ### Fix Applied
+
 - Ensured `remember(size, isDarkTheme, tonalPalettes)` correctly invalidates the cached `PictureDrawable` when the theme or tonal palettes change.
 - The `parseDynamicColor` call now correctly receives the current `tonalPalettes` and `isDarkTheme` values on every recomposition, so dynamic SVG fills update immediately when switching between light/dark themes or Material You tonal palettes.
 
 ### Result
+
 SVG icons rendered via `DynamicSVGImage` now correctly reflect dynamic color fills and update on theme change without requiring app restart.
 
 ---
@@ -828,9 +899,11 @@ SVG icons rendered via `DynamicSVGImage` now correctly reflect dynamic color fil
 **Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/style/svg/DynamicSvg.kt`
 
 ### Problem
+
 `DynamicSvg.kt` used `com.caverock.androidsvg.SVG.getFromString()` to parse raw SVG text strings into a `PictureDrawable` at runtime. The Android platform does not officially support parsing arbitrary SVG strings at runtime — the `com.caverock:androidsvg` library is legacy, unmaintained, and not part of the Android SDK. It adds a third-party dependency that increases APK size and is not guaranteed to work on future Android versions.
 
 ### Fix Applied
+
 Replaced the caverock-based rendering pipeline with Coil 3's `AsyncImage`, which has a built-in SVG decoder engine (`coil-svg-android`, already a transitive dependency of `io.coil-kt.coil3:coil-compose`):
 
 ```kotlin
@@ -855,6 +928,7 @@ AsyncImage(
 - `caverock` is not explicitly declared in any `build.gradle.kts` or `libs.versions.toml` (it was purely transitive), so no version catalog changes were needed.
 
 ### Result
+
 SVG rendering now uses Coil 3's official SVG decoder. The legacy `com.caverock:androidsvg` dependency is no longer used at runtime, reducing third-party surface area and aligning with the Android platform's supported approach for rendering SVG content from raw strings.
 
 ---
@@ -864,9 +938,11 @@ SVG rendering now uses Coil 3's official SVG decoder. The legacy `com.caverock:a
 **File:** `common/resources/build.gradle.kts`
 
 ### Problem
+
 AAPT2 fails to compile `strings.xml` files that contain illegal backslash-escaped entities (e.g., `\&apos;`, `\&quot;`, `\{`, `\}`). These cause `Failed to flatten XML` errors during resource processing, blocking the entire build.
 
 ### Solution
+
 Added a `normalizeStringResources` Gradle task to `common/resources/build.gradle.kts` that:
 
 - Scans all `strings.xml` files across all `values-*` language folders
@@ -882,6 +958,7 @@ Added a `normalizeStringResources` Gradle task to `common/resources/build.gradle
 - Hooked into `preBuild` via `dependsOn("normalizeStringResources")`, so it runs automatically before any compilation
 
 ### Result
+
 - Cleaned illegal backslash escapes from all ~72 language `strings.xml` files (579 lines changed)
 - `:app:compileDebugKotlin` passes successfully
 - Future builds automatically normalize string resources before AAPT2 processing
@@ -893,13 +970,16 @@ Added a `normalizeStringResources` Gradle task to `common/resources/build.gradle
 **Files:** `gradle/libs.versions.toml`, `data/build.gradle.kts`, `data/src/main/java/com/my/kizzy/data/work/Workers.kt`
 
 ### Problem
+
 `data/build.gradle.kts` declared two legacy Java-interop bridging libraries:
+
 - `guava-listenablefuture` (`com.google.guava:listenablefuture`) — empty stub to avoid version conflicts
 - `concurrent-futures-ktx` (`androidx.concurrent:concurrent-futures-ktx`) — AndroidX `CallbackToFutureAdapter` for bridging `ListenableFuture` to coroutines
 
 These add unnecessary transitive surface area for a pattern (`CallbackToFutureAdapter` + `ListenableFuture`) that is a legacy Java-interop layer. WorkManager's `startWork()` returns a `ListenableFuture`, but we can satisfy that contract using standard JDK `CompletableFuture` wrapped in a minimal adapter — no AndroidX or Guava interop needed.
 
 ### Fix Applied
+
 1. **Removed** `guava-listenablefuture` and `concurrent-futures-ktx` from both `[versions]` and `[libraries]` in `gradle/libs.versions.toml`.
 2. **Removed** `implementation(libs.kotlinx.guava)` from `data/build.gradle.kts` (never actually needed).
 3. **Rewrote `Workers.kt`** — `BaseWorker.startWork()` now:
@@ -909,6 +989,7 @@ These add unnecessary transitive surface area for a pattern (`CallbackToFutureAd
    - Returns the `ListenableFuture<Result>` that WorkManager expects.
 
 ### Result
+
 - Zero new dependencies added.
 - `guava-listenablefuture` and `concurrent-futures-ktx` fully removed from the dependency graph.
 - `kotlinx-coroutines-guava` never introduced — no bridging library needed at all.
@@ -918,11 +999,11 @@ These add unnecessary transitive surface area for a pattern (`CallbackToFutureAd
 
 ## 39. New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)
 
-| Warning | Location | Severity |
-|---------|----------|----------|
-| Legacy `android { }` DSL block deprecated | All `build.gradle.kts` | Low |
-| `statusBarColor`/`navigationBarColor` deprecated | `Theme.kt` | Low |
-| `libmmkv.so` / `libdatastore_shared_counter.so` cannot be stripped | Release builds | Low |
+| Warning                                                            | Location               | Severity |
+| ------------------------------------------------------------------ | ---------------------- | -------- |
+| Legacy `android { }` DSL block deprecated                          | All `build.gradle.kts` | Low      |
+| `statusBarColor`/`navigationBarColor` deprecated                   | `Theme.kt`             | Low      |
+| `libmmkv.so` / `libdatastore_shared_counter.so` cannot be stripped | Release builds         | Low      |
 
 ---
 
@@ -935,56 +1016,57 @@ BUILD SUCCESSFUL in 2m 27s
 ```
 
 **APK Locations:**
+
 - `app/build/outputs/apk/debug/app-debug.apk`
 - `app/build/outputs/apk/release/app-release.apk`
 
 ### Complete List of New Files Created
 
-| File | Feature |
-|------|---------|
-| `data/src/main/java/com/my/kizzy/data/di/RepositoryModule.kt` | Hilt `@Binds` for `KizzyRepository` |
-| `feature_rpc_base/.../security/SecureTokenStorage.kt` | Tink-encrypted token storage + Flow |
-| `feature_rpc_base/.../security/KizzyStateRepository.kt` | Shared RPC state (isConnected, isPaused) |
-| `feature_rpc_base/.../network/NetworkMonitor.kt` | Network connectivity monitor |
-| `feature_rpc_base/.../ui/RpcViewModel.kt` | Hilt ViewModel with authToken StateFlow |
-| `feature_rpc_base/.../services/KizzyNotificationListener.kt` | Media metadata notification listener |
-| `feature_rpc_base/.../services/NotificationListener.kt` | System-bound notification listener with auto-restart |
-| `feature_rpc_base/.../services/KizzyRpcService.kt` | Foreground service with notification buttons |
-| `feature_rpc_base/.../utils/MediaMetadataParser.kt` | Media metadata parser from notifications |
-| `feature_rpc_base/.../utils/PermissionUtils.kt` | Notification listener permission utilities |
-| `feature_rpc_base/.../utils/KizzyServiceController.kt` | Intent-based service control |
-| `feature_rpc_base/.../ui/RpcStatusCard.kt` | Material 3 reactive status card |
-| `feature_rpc_base/.../ui/RpcStatusCardLoadingSkeleton.kt` | Shimmer loading placeholder |
-| `feature_rpc_base/.../ui/KizzyDashboardScreen.kt` | Reactive dashboard screen |
-| `data/src/main/java/com/my/kizzy/data/work/RpcRecoveryHiltWorker.kt` | WorkManager RPC state recovery |
-| `local.properties` | Android SDK path configuration |
+| File                                                                 | Feature                                              |
+| -------------------------------------------------------------------- | ---------------------------------------------------- |
+| `data/src/main/java/com/my/kizzy/data/di/RepositoryModule.kt`        | Hilt `@Binds` for `KizzyRepository`                  |
+| `feature_rpc_base/.../security/SecureTokenStorage.kt`                | Tink-encrypted token storage + Flow                  |
+| `feature_rpc_base/.../security/KizzyStateRepository.kt`              | Shared RPC state (isConnected, isPaused)             |
+| `feature_rpc_base/.../network/NetworkMonitor.kt`                     | Network connectivity monitor                         |
+| `feature_rpc_base/.../ui/RpcViewModel.kt`                            | Hilt ViewModel with authToken StateFlow              |
+| `feature_rpc_base/.../services/KizzyNotificationListener.kt`         | Media metadata notification listener                 |
+| `feature_rpc_base/.../services/NotificationListener.kt`              | System-bound notification listener with auto-restart |
+| `feature_rpc_base/.../services/KizzyRpcService.kt`                   | Foreground service with notification buttons         |
+| `feature_rpc_base/.../utils/MediaMetadataParser.kt`                  | Media metadata parser from notifications             |
+| `feature_rpc_base/.../utils/PermissionUtils.kt`                      | Notification listener permission utilities           |
+| `feature_rpc_base/.../utils/KizzyServiceController.kt`               | Intent-based service control                         |
+| `feature_rpc_base/.../ui/RpcStatusCard.kt`                           | Material 3 reactive status card                      |
+| `feature_rpc_base/.../ui/RpcStatusCardLoadingSkeleton.kt`            | Shimmer loading placeholder                          |
+| `feature_rpc_base/.../ui/KizzyDashboardScreen.kt`                    | Reactive dashboard screen                            |
+| `data/src/main/java/com/my/kizzy/data/work/RpcRecoveryHiltWorker.kt` | WorkManager RPC state recovery                       |
+| `local.properties`                                                   | Android SDK path configuration                       |
 
 ### Complete List of Modified Files (Key Changes)
 
-| File | Change |
-|------|--------|
-| `gradle/wrapper/gradle-wrapper.properties` | Gradle 8.13 → 9.8.2 |
-| `gradle/libs.versions.toml` | AGP 9.6.0-alpha02, Kotlin 2.4.21, KSP 2.3.13, Compose BOM 2026.09.00, Ktor 3.1.0, Coil 3.x, `secure-storage` bundle, `hilt-navigation-compose` |
-| `gradle.properties` | `android.newDsl=true`, `android.sync.suppressAgpWarnings` |
-| `build.gradle.kts` | `compilerOptions { jvmTarget.set(JvmTarget.JVM_26) }`, `-Xmetadata-version=2.2.0` |
-| `feature_rpc_base/build.gradle.kts` | Added material3, material-icons-extended, compose.runtime, hilt-navigation-compose, work-runtime-ktx, hilt-work, ksp(libs.hilt.compiler) |
-| `data/build.gradle.kts` | Added ksp(libs.hilt.compiler) |
-| `feature_logs/build.gradle.kts` | Added ksp(libs.hilt.compiler) |
-| `data/src/main/java/com/my/kizzy/data/di/AppModule.kt` | Removed duplicate `providesKizzyRepository`, unused imports |
-| `feature_rpc_base/.../services/MediaRpcService.kt` | Fixed button parsing, nullable calls, createNotificationChannel(), PlaybackState comparison, START_REDELIVER_INTENT, onTaskRemoved() |
-| `feature_rpc_base/.../services/NotificationListener.kt` | System-bound auto-restart on listener connect |
-| `feature_rpc_base/.../work/HiltWorkers.kt` | Added RpcRecoveryHiltWorker |
-| `gateway/.../DiscordWebSocketImpl.kt` | Added `clearPresence()`, `updateTokenAndReconnect()`, `disconnect()`, OpCode 6 resume |
-| `app/src/main/AndroidManifest.xml` | Declared `KizzyRpcService` with `connectedDevice` type, `mediaPlayback|dataSync` foreground service types, tools:ignore RemoveWorkManagerInitializer |
-| `app/src/main/java/com/my/kizzy/App.kt` | All initialization wrapped in try-catch for emulator startup |
-| `feature_settings/.../rpc_settings/RpcSettings.kt` | Fixed OpenInNew (AutoMirrored.Filled) and Person (Icons.Default) icon references |
-| `feature_home/Home.kt` | Added missing fillMaxWidth import |
-| `feature_console_rpc/.../GamesScreen.kt` | Added serviceEnabled parameter, selected state variable, AppUtils import |
-| `feature_logs/.../LogScreen.kt` | Added onBackPressed parameter, LargeTopAppBar, BackButton imports |
-| `app/proguard-rules.pro` | Data class keep rules, Ktor engine keep, Hilt/Dagger/AutoValue keep rules, explicit proguardFiles configuration |
-| `gradle/libs.versions.toml` | Added missing `hilt` library entry (`com.google.dagger:hilt-android`) |
-| `gradle/libs.versions.toml` | Added missing `compose-ui-tooling-preview` library entry |
-| `gradle/libs.versions.toml` | Migrated `javax.inject:javax.inject` → `jakarta.inject:jakarta.inject-api` |
+| File                                                    | Change                                                                                                                                         |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `gradle/wrapper/gradle-wrapper.properties`              | Gradle 8.13 → 9.8.2                                                                                                                            |
+| `gradle/libs.versions.toml`                             | AGP 9.6.0-alpha02, Kotlin 2.4.21, KSP 2.3.13, Compose BOM 2026.09.00, Ktor 3.1.0, Coil 3.x, `secure-storage` bundle, `hilt-navigation-compose` |
+| `gradle.properties`                                     | `android.newDsl=true`, `android.sync.suppressAgpWarnings`                                                                                      |
+| `build.gradle.kts`                                      | `compilerOptions { jvmTarget.set(JvmTarget.JVM_26) }`, `-Xmetadata-version=2.2.0`                                                              |
+| `feature_rpc_base/build.gradle.kts`                     | Added material3, material-icons-extended, compose.runtime, hilt-navigation-compose, work-runtime-ktx, hilt-work, ksp(libs.hilt.compiler)       |
+| `data/build.gradle.kts`                                 | Added ksp(libs.hilt.compiler)                                                                                                                  |
+| `feature_logs/build.gradle.kts`                         | Added ksp(libs.hilt.compiler)                                                                                                                  |
+| `data/src/main/java/com/my/kizzy/data/di/AppModule.kt`  | Removed duplicate `providesKizzyRepository`, unused imports                                                                                    |
+| `feature_rpc_base/.../services/MediaRpcService.kt`      | Fixed button parsing, nullable calls, createNotificationChannel(), PlaybackState comparison, START_REDELIVER_INTENT, onTaskRemoved()           |
+| `feature_rpc_base/.../services/NotificationListener.kt` | System-bound auto-restart on listener connect                                                                                                  |
+| `feature_rpc_base/.../work/HiltWorkers.kt`              | Added RpcRecoveryHiltWorker                                                                                                                    |
+| `gateway/.../DiscordWebSocketImpl.kt`                   | Added `clearPresence()`, `updateTokenAndReconnect()`, `disconnect()`, OpCode 6 resume                                                          |
+| `app/src/main/AndroidManifest.xml`                      | Declared `KizzyRpcService` with `connectedDevice` type, `mediaPlayback                                                                         | dataSync` foreground service types, tools:ignore RemoveWorkManagerInitializer |
+| `app/src/main/java/com/my/kizzy/App.kt`                 | All initialization wrapped in try-catch for emulator startup                                                                                   |
+| `feature_settings/.../rpc_settings/RpcSettings.kt`      | Fixed OpenInNew (AutoMirrored.Filled) and Person (Icons.Default) icon references                                                               |
+| `feature_home/Home.kt`                                  | Added missing fillMaxWidth import                                                                                                              |
+| `feature_console_rpc/.../GamesScreen.kt`                | Added serviceEnabled parameter, selected state variable, AppUtils import                                                                       |
+| `feature_logs/.../LogScreen.kt`                         | Added onBackPressed parameter, LargeTopAppBar, BackButton imports                                                                              |
+| `app/proguard-rules.pro`                                | Data class keep rules, Ktor engine keep, Hilt/Dagger/AutoValue keep rules, explicit proguardFiles configuration                                |
+| `gradle/libs.versions.toml`                             | Added missing `hilt` library entry (`com.google.dagger:hilt-android`)                                                                          |
+| `gradle/libs.versions.toml`                             | Added missing `compose-ui-tooling-preview` library entry                                                                                       |
+| `gradle/libs.versions.toml`                             | Migrated `javax.inject:javax.inject` → `jakarta.inject:jakarta.inject-api`                                                                     |
 
 ---
 
@@ -993,6 +1075,7 @@ BUILD SUCCESSFUL in 2m 27s
 **File:** `build-logic/convention/src/main/kotlin/AndroidHiltPlugin.kt`
 
 ### Problem
+
 Gradle sync failed with:
 
 ```
@@ -1007,6 +1090,7 @@ Caused by: java.util.NoSuchElementException: No value present
 The plugin called `libs.findLibrary("hilt").get()`, but no `[libraries]` entry named `hilt` existed in `gradle/libs.versions.toml` — only `hilt-compiler` was defined. Calling `.get()` on an empty `Optional` threw `NoSuchElementException`.
 
 ### Fix
+
 Added the missing `hilt` library entry to `gradle/libs.versions.toml`:
 
 ```toml
@@ -1014,6 +1098,7 @@ hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 ```
 
 ### Verification
+
 - `kizzy.android.hilt` plugin now applies successfully
 - Gradle sync: successful
 
@@ -1024,6 +1109,7 @@ hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 **File:** `build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/AndroidCompose.kt`
 
 ### Problem
+
 After fixing the Hilt plugin, Gradle sync failed again with the same `NoSuchElementException` pattern:
 
 ```
@@ -1034,6 +1120,7 @@ Caused by: java.util.NoSuchElementException: No value present
 `AndroidCompose.kt` called `libs.findLibrary("compose-ui-tooling-preview").get()`, but `compose-ui-tooling-preview` was missing from the version catalog — only `compose-ui-tooling` existed.
 
 ### Fix
+
 Added the missing entry to `gradle/libs.versions.toml`:
 
 ```toml
@@ -1041,6 +1128,7 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 ```
 
 ### Verification
+
 - Compose convention plugin now resolves all dependencies
 - Gradle sync: successful
 
@@ -1051,13 +1139,14 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 **File:** `gradle/libs.versions.toml`
 
 ### Change
+
 `javax.inject:javax.inject` (version 1) was migrated to its Jakarta EE successor:
 
-| | Before | After |
-|---|---|---|
-| Version key | `javax = "1"` | `jakarta-inject = "2.0.1"` |
-| Library key | `javax` | `jakarta-inject` |
-| Module | `javax.inject:javax.inject` | `jakarta.inject:jakarta.inject-api` |
+|             | Before                      | After                               |
+| ----------- | --------------------------- | ----------------------------------- |
+| Version key | `javax = "1"`               | `jakarta-inject = "2.0.1"`          |
+| Library key | `javax`                     | `jakarta-inject`                    |
+| Module      | `javax.inject:javax.inject` | `jakarta.inject:jakarta.inject-api` |
 
 No source files in the project reference `libs.javax` or `javax.inject` directly, so only the version catalog needed updating.
 
@@ -1068,6 +1157,7 @@ No source files in the project reference `libs.javax` or `javax.inject` directly
 **File:** `build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/AndroidCompose.kt`
 
 ### Problem
+
 Gradle sync failed with:
 
 ```
@@ -1082,6 +1172,7 @@ Caused by: java.util.NoSuchElementException: No value present
 The plugin called `libs.findLibrary("compose-bom").get()`, but `compose-bom` was only defined in the `[versions]` section of `gradle/libs.versions.toml` — there was no `[libraries]` entry named `compose-bom`. Calling `.get()` on an empty `Optional` threw `NoSuchElementException`.
 
 ### Fix
+
 Added the missing `compose-bom` library entry to `gradle/libs.versions.toml`:
 
 ```toml
@@ -1090,6 +1181,7 @@ compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-
 ```
 
 ### Verification
+
 - `kizzy.android.application.compose` plugin now applies successfully
 - Gradle sync: successful
 
@@ -1100,6 +1192,7 @@ compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-
 **File:** `gradle/libs.versions.toml`
 
 ### Problem
+
 Gradle sync failed with:
 
 ```
@@ -1109,6 +1202,7 @@ e: file:///Users/user/Downloads/Kizzy-Enhanced/app/build.gradle.kts:90:26: Unres
 The reference `libs.app.compat` in `app/build.gradle.kts` looks up library aliases under `[libraries]`, but `app-compat` was only defined under `[versions]` as a version string (`app-compat = "1.8.0"`). Since there was no `[libraries]` entry named `app-compat`, `libs.app` failed to resolve.
 
 ### Fix
+
 Added the missing `app-compat` library entry to `gradle/libs.versions.toml`:
 
 ```toml
@@ -1116,45 +1210,50 @@ app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compa
 ```
 
 ### Verification
+
 - `libs.app.compat` now resolves correctly in `app/build.gradle.kts`
 - The `Unresolved reference 'app'` error no longer appears in Gradle sync output
 
-44. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
-==============================
+44. # Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
 
 ## Root Cause
+
 List screens using `LazyColumn` without `key` parameters caused unnecessary full-list recompositions during scrolling, causing dropped frames (jank) on 60Hz and 120Hz displays.
 
 ## Files Modified
-| File | Change |
-|------|--------|
-| `feature_console_rpc/.../GamesScreen.kt` | Added `key = { game -> game.game_title }` to `items()` |
-| `feature_settings/.../Settings.kt` | Added keys: "display", "language", "logs", "settings", "divider", "drawer_subtitle_help", "faq", "about", "qs_tile" |
-| `feature_settings/.../style/DarkThemePreferences.kt` | Added keys: "follow_system", "dark_theme_on", "dark_theme_off", "advance_settings", "amoled" |
-| `feature_settings/.../language/Language.kt` | Added keys: "follow_system", "lang_${language.key}" |
-| `feature_settings/.../rpc_settings/RpcSettings.kt` | Added keys: "general_settings", "configs_directory", "use_custom_buttons", "use_youtube_button", "link_to_artist_channel", "rpc_buttons", "custom_activity_type", "custom_activity_status", "set_previous_run_config", "custom_application_id" |
-| `domain/.../rpc/RpcButtons.kt` | Added `@Immutable` annotation |
+
+| File                                                 | Change                                                                                                                                                                                                                                         |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `feature_console_rpc/.../GamesScreen.kt`             | Added `key = { game -> game.game_title }` to `items()`                                                                                                                                                                                         |
+| `feature_settings/.../Settings.kt`                   | Added keys: "display", "language", "logs", "settings", "divider", "drawer_subtitle_help", "faq", "about", "qs_tile"                                                                                                                            |
+| `feature_settings/.../style/DarkThemePreferences.kt` | Added keys: "follow_system", "dark_theme_on", "dark_theme_off", "advance_settings", "amoled"                                                                                                                                                   |
+| `feature_settings/.../language/Language.kt`          | Added keys: "follow*system", "lang*${language.key}"                                                                                                                                                                                            |
+| `feature_settings/.../rpc_settings/RpcSettings.kt`   | Added keys: "general_settings", "configs_directory", "use_custom_buttons", "use_youtube_button", "link_to_artist_channel", "rpc_buttons", "custom_activity_type", "custom_activity_status", "set_previous_run_config", "custom_application_id" |
+| `domain/.../rpc/RpcButtons.kt`                       | Added `@Immutable` annotation                                                                                                                                                                                                                  |
 
 ## Result
+
 Compose can now track item identity during scroll, preventing unnecessary recompositions of unchanged items.
 
 ---
 
-45. Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)
-===============================
+45. # Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)
 
 ## Root Cause
+
 The Accompanist library (`compose-accompanist-permissions`) is deprecated and in maintenance mode. Apps using it face future compatibility risks.
 
 ## Files Modified
-| File | Change |
-|------|--------|
-| `feature_startup/build.gradle.kts` | Removed `libs.accompanist.permission` |
-| `feature_custom_rpc/build.gradle.kts` | Removed `libs.accompanist.permission` |
-| `feature_startup/.../StartUp.kt` | Replaced `rememberPermissionState()` + `ExperimentalPermissionsApi` with `ContextCompat.checkSelfPermission()` + `ActivityResultContracts.RequestPermission()` |
-| `feature_custom_rpc/.../RequestStoragePermission.kt` | Same replacement, added `context: Context` parameter |
+
+| File                                                 | Change                                                                                                                                                         |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `feature_startup/build.gradle.kts`                   | Removed `libs.accompanist.permission`                                                                                                                          |
+| `feature_custom_rpc/build.gradle.kts`                | Removed `libs.accompanist.permission`                                                                                                                          |
+| `feature_startup/.../StartUp.kt`                     | Replaced `rememberPermissionState()` + `ExperimentalPermissionsApi` with `ContextCompat.checkSelfPermission()` + `ActivityResultContracts.RequestPermission()` |
+| `feature_custom_rpc/.../RequestStoragePermission.kt` | Same replacement, added `context: Context` parameter                                                                                                           |
 
 ## Before
+
 ```kotlin
 @OptIn(ExperimentalPermissionsApi::class)
 val storagePermissionState = rememberPermissionState(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -1168,6 +1267,7 @@ when (storagePermissionState.status) {
 ```
 
 ## After
+
 ```kotlin
 var storagePermissionGranted by remember {
     mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
@@ -1180,9 +1280,10 @@ if (!storagePermissionGranted) {
 ```
 
 ## Result
+
 Accompanist permissions dependency fully removed. Uses official AndroidX `ActivityResultContracts.RequestPermission()` API — the recommended replacement.
 
 ---
 
-*Generated on November 6, 2026*  
-*All features implemented and verified — build passes with zero compilation errors.*
+_Generated on November 6, 2026_  
+_All features implemented and verified — build passes with zero compilation errors._

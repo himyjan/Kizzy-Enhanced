@@ -46,10 +46,11 @@ abstract class NormalizeStringsTask : DefaultTask() {
                 updatedText = updatedText.replace("\\{", "{")
                 updatedText = updatedText.replace("\\}", "}")
 
-                // Rule 8: Escape any remaining bare braces that AAPT2 might misinterpret
-                // as unicode escape starts (\uXXXX). Use numeric entities which AAPT2 handles safely.
-                updatedText = updatedText.replace("{", "&#123;")
-                updatedText = updatedText.replace("}", "&#125;")
+                // Rule 8: Wrap ALL text content in CDATA to prevent AAPT2 from
+                // decoding XML entities (like &apos;) and re-escaping them as
+                // backslash escapes (\', \{) in its intermediate format, which
+                // it then rejects as "Invalid unicode escape sequence".
+                updatedText = "<![CDATA[$updatedText]]>"
 
                 ">" + updatedText + "<"
             }
@@ -60,8 +61,6 @@ abstract class NormalizeStringsTask : DefaultTask() {
 }
 
 // Register the modern task: read-only inputs, outputs to build/generated/
-// Task is standalone (verification only) — not wired into Variant API
-// to avoid duplicate resource processing by AAPT2
 val normalizeStrings = tasks.register<NormalizeStringsTask>("normalizeStringResources") {
     group = "verification"
     description = "Normalizes string resource XML content into build output without mutating source files."
@@ -71,4 +70,14 @@ val normalizeStrings = tasks.register<NormalizeStringsTask>("normalizeStringReso
 
     // Write normalized output to generated directory (never touches source files)
     outputDir.set(layout.buildDirectory.dir("generated/res/normalized"))
+}
+
+// Wire the generated normalized resources into the Android resource pipeline via Variant API
+androidComponents {
+    onVariants { variant ->
+        variant.sources.res?.addGeneratedSourceDirectory(
+            taskProvider = normalizeStrings,
+            wiredWith = NormalizeStringsTask::outputDir
+        )
+    }
 }

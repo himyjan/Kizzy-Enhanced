@@ -26,7 +26,7 @@
     <string name="login_with_discord">התחבר עם Discord</string>
     <string name="github_readme">קריאה</string>
     <string name="github_readme_desc">בדוק את מאגר Github</string>
-    <string name="github_latest_release">"הגרסה האחרונה "</string>
+    <string name="github_latest_release">&quot;הגרסה האחרונה &quot;</string>
     <string name="github_latest_release_desc">חפש גרסה חדשה ויומן שינויים</string>
     <string name="github_issue">בעיה ב-Github</string>
     <string name="github_issue_desc">שלח בעיה עבור דוח באגים או בקשת תכונה</string>
@@ -180,7 +180,7 @@
     <string name="upload_image">העלאת תמונה</string>
     <string name="save">לְהַצִיל</string>
     <string name="set_timestamps">הגדר חותמות זמן</string>
-    <string name="saved_config_toast">נשמרה בהצלחה של "%1$s"</string>
+    <string name="saved_config_toast">נשמרה בהצלחה של &quot;%1$s&quot;</string>
     <string name="error_saving_config_toast">שגיאה שמירת תצורה</string>
     <string name="config_name">שם התצורה</string>
     <string name="delete">לִמְחוֹק</string>
@@ -222,7 +222,7 @@
     <string name="custom_application_id_desc">עוקף את מזהה יישום ברירת המחדל של דיסקורד</string>
     <string name="use_a_vpn_desc">ייתכן שכניסה לדיסקורד לא תעבוד במדינתך ללא VPN/DPI. אנא השתמש
         ב-VPN/DPI כדי להמשיך.</string>
-    <string name="rpc_templates_note">"השתמשו ב-placeholders כמו &apos;&#123;&#123;&apos;app_name&#125;&#125;&apos;&apos;, &apos;&#123;&#123;&apos;media_title&#125;&#125;&apos;&apos;
+    <string name="rpc_templates_note">"השתמשו ב-placeholders כמו &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;
         וכו&apos;. שדות ריקים ישתמשו בהתנהגות ברירת מחדל או יושמטו."</string>
     <string name="experimental_rpc_detect_apps">אפשר ל-RPC ניסיוני לזהות אפליקציות פועלות</string>
     <string name="experimental_rpc_detect_media">אפשר ל-RPC ניסיוני לזהות השמעת מדיה</string>
@@ -263,7 +263,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type &apos;&#123;&#123;&apos; to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

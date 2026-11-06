@@ -26,7 +26,7 @@
     <string name="login_with_discord">डिस्कॉर्ड से लॉगिन करें</string>
     <string name="github_readme">README पढ़ें</string>
     <string name="github_readme_desc">गिटहब पर प्रोजेक्ट देखें</string>
-    <string name="github_latest_release">"नया वर्ज़न"</string>
+    <string name="github_latest_release">&quot;नया वर्ज़न&quot;</string>
     <string name="github_latest_release_desc">नया वर्ज़न और बदलाव देखें</string>
     <string name="github_issue">गिटहब इशू</string>
     <string name="github_issue_desc">बग या फीचर रिक्वेस्ट भेजें</string>
@@ -219,7 +219,7 @@
     <string name="custom_application_id_desc">डिफॉल्ट Discord एप्लीकेशन आईडी को बदल देता है</string>
     <string name="use_a_vpn_desc">हो सकता है Discord लॉगिन आपके देश में बिना VPN/DPI के काम ना करें।
         कृपया VPN/DPI का उपयोग करें।</string>
-    <string name="rpc_templates_note">"आप &apos;&#123;&#123;&apos;app_name&#125;&#125;&apos;&apos;, &apos;&#123;&#123;&apos;media_title&#125;&#125;&apos;&apos; जैसे प्लेसहोल्डर का उपयोग कर
+    <string name="rpc_templates_note">"आप &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; जैसे प्लेसहोल्डर का उपयोग कर
         सकते है। खाली छोड़ने पर डिफॉल्ट उपयोग होगा या छोड़ दिया जाएगा"</string>
     <string name="experimental_rpc_detect_apps">Experimental RPC को ऐप डिटेक्ट करने की इजाज़त दे</string>
     <string name="experimental_rpc_detect_media">Experimental RPC को मीडिया डिटेक्ट करने की इजाज़त
@@ -260,7 +260,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type &apos;&#123;&#123;&apos; to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
