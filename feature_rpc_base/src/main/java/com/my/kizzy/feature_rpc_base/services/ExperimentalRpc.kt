@@ -355,11 +355,17 @@ class ExperimentalRpc : Service() {
             finalSmallText = appInfo?.smallText
             finalTimestamps = resolveTimestamps(appInfo?.time)
         } else {
-            logger.d(TAG, "No active context (App or Media) or both disabled.")
-            if (kizzyRPC.isRpcRunning()) {
-                kizzyRPC.closeRPC()
-            }
-            return
+            logger.d(TAG, "No active context (App or Media) — using default template presence")
+            // Use default template values when no media/app is active
+            finalName = templateName
+            finalDetails = templateDetails
+            finalState = templateState
+            finalLargeImage = null
+            finalSmallImage = null
+            finalLargeText = null
+            finalSmallText = null
+            finalTimestamps = null
+            effectivePackageName = null
         }
 
         val rpcDataIsEmpty =
