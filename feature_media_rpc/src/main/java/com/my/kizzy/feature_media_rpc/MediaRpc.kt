@@ -85,7 +85,7 @@ fun MediaRPC(
     updateMediaAppEnabled: (String) -> Unit,
 ) {
     val context = LocalContext.current
-    var mediaRpcRunning by remember { mutableStateOf(AppUtils.mediaRpcRunning()) }
+    var mediaRpcRunning by remember { mutableStateOf(AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning()) }
     var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, false]) }
     var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, false]) }
     var isAppIconEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_APP_ICON, false]) }
@@ -152,7 +152,7 @@ fun MediaRPC(
             SwitchBar(
                 title = stringResource(id = R.string.enable_mediaRpc),
                 isChecked = mediaRpcRunning,
-                enabled = hasNotificationAccess
+                enabled = hasNotificationAccess && !AppUtils.experimentalRpcRunning(),
             ) {
                 mediaRpcRunning = !mediaRpcRunning
                 when (mediaRpcRunning) {
