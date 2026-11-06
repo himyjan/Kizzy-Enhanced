@@ -7,41 +7,38 @@ version-name = "6.2-enhanced-0"
 version-code = "14"
 
 # app level
-accompanist = "0.36.0"
-activity-compose = "1.10.0"
+accompanist = "0.37.3"
+activity-compose = "1.13.0"
 android-svg = "1.4"
-androidx-material = "1.12.0"
-app-compat = "1.7.0"
+androidx-material = "1.14.0"
+app-compat = "1.8.0"
 blankj-utilcodex = "1.31.1"
-coil = "3.0.4"
-compose-bom = "2026.09.00"
-compose-navigation = "2.8.5"
-core-ktx = "1.15.0"
+coil = "3.6.3"
+compose-bom = "2023.06.00"
+compose-navigation = "2.10.2"
+core-ktx = "1.19.1"
 crashx = "v6.0.19"
-datastore-preferences = "1.1.1"
+datastore-preferences = "1.3.0"
 hilt = "2.60.1"
 imgur-api-base-url = "https://api.imgur.com/3"
-hiltWork = "1.2.0"
-ktor = "3.1.0"
-kotlinx-coroutine = "1.10.1"
-lifecycle-ktx = "2.8.7"
-mmkv = "2.0.2"
+hiltWork = "1.4.0"
+ktor = "3.6.1"
+kotlinx-coroutine = "1.11.0"
+lifecycle-ktx = "2.11.0"
+mmkv = "2.4.3"
 junit = "4.13.2"
-androidx-test-ext-junit = "1.2.1"
-espresso-core = "3.6.1"
-javax = "1"
-kotlinx-serialization-json = "1.8.0"
-tink-android = "1.15.0"
-hilt-navigation-compose = "1.1.0"
-workmanager = "2.10.1"
+jakarta-inject = "2.0.1"
+kotlinx-serialization-json = "1.12.0"
+tink-android = "1.24.0"
+hilt-navigation-compose = "1.4.0"
+workmanager = "2.12.0"
 
 [libraries]
-# Javax
-javax = { module = "javax.inject:javax.inject", version.ref = "javax" }
+# Jakarta
+jakarta-inject = { module = "jakarta.inject:jakarta.inject-api", version.ref = "jakarta-inject" }
 
 # Androidx
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-ktx" }
 app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
 androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
@@ -61,7 +58,7 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
-compose-runtime = { module = "androidx.compose.runtime:runtime" }
+compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose-bom" }
 
 # Accompanist (Note: Migrate pager, flowlayout, and nav-animation to native Compose alternatives)
 accompanist-permission = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
@@ -70,7 +67,7 @@ accompanist-permission = { module = "com.google.accompanist:accompanist-permissi
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 
-# gradle plugins
+# Gradle plugins
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
@@ -91,8 +88,6 @@ coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
 android-svg = { module = "com.caverock:androidsvg-aar", version.ref = "android-svg" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 
 # KotlinX
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }

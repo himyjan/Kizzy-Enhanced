@@ -123,11 +123,11 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
         }, navigationIcon = { BackButton { onBackPressed() } })
     }) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            item {
+            item(key = "general_settings") {
                 Subtitle(text = stringResource(R.string.general_settings))
             }
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                item {
+                item(key = "configs_directory") {
                     SettingItem(
                         title = stringResource(id = R.string.configs_directory),
                         description = configsDir.ifEmpty { stringResource(id = R.string.custom_rpc_directory) },
@@ -137,7 +137,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     }
                 }
             }
-            item {
+            item(key = "use_custom_buttons") {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_custom_buttons),
                     description = stringResource(id = R.string.use_custom_buttons_desc),
@@ -148,7 +148,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     Prefs[Prefs.USE_RPC_BUTTONS] = useButtonConfigs
                 }
             }
-            item {
+            item(key = "use_youtube_button") {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_youtube_button),
                     description = stringResource(id = R.string.use_youtube_button_desc),
@@ -159,7 +159,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON] = useYoutubeButton
                 }
             }
-            item {
+            item(key = "link_to_artist_channel") {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.link_to_artist_channel),
                     description = stringResource(id = R.string.link_to_artist_channel_desc),
@@ -170,7 +170,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     Prefs[Prefs.MEDIA_RPC_ARTIST_LINK] = linkToArtistChannel
                 }
             }
-            item {
+            item(key = "rpc_buttons") {
                 AnimatedVisibility(visible = useButtonConfigs) {
                     SettingItem(
                         title = stringResource(R.string.rpc_buttons),
@@ -181,7 +181,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     }
                 }
             }
-            item {
+            item(key = "custom_activity_type") {
                 SettingItem(
                     title = stringResource(id = R.string.custom_activity_type),
                     description = stringResource(id = R.string.custom_activity_type_desc),
@@ -191,7 +191,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 }
 
             }
-            item {
+            item(key = "custom_activity_status") {
                 SettingItem(
                     title = stringResource(id = R.string.custom_activity_status),
                     description = stringResource(id = R.string.custom_activity_status_desc),
@@ -200,7 +200,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     showActivityStatusDialog = true
                 }
             }
-            item {
+            item(key = "set_previous_run_config") {
                 PreferenceSwitch(
                     title = stringResource(R.string.set_previous_run_config_in_custom_rpc),
                     description = stringResource(R.string.set_previous_run_config_in_custom_rpc_desc),
@@ -211,7 +211,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     Prefs[Prefs.APPLY_FIELDS_FROM_LAST_RUN_RPC] = setLastRunRpcConfigOption
                 }
             }
-            item {
+            item(key = "custom_application_id") {
                 SettingItem(
                     title = stringResource(id = R.string.custom_application_id),
                     description = stringResource(id = R.string.custom_application_id_desc),
@@ -219,7 +219,6 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 ) {
                     showApplicationIdDialog = true
                 }
-
             }
             item {
                 Subtitle(text = stringResource(id = R.string.advance_settings))

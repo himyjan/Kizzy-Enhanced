@@ -16,13 +16,13 @@ internal fun Project.configureAndroidCompose(applicationExtension: ApplicationEx
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
     dependencies {
-        val composeBom = libs.findLibrary("compose.bom").get()
+        val composeBom = libs.findLibrary("compose-bom").get()
         add("implementation", platform(composeBom))
         add("androidTestImplementation", platform(composeBom))
 
-        add("implementation", libs.findLibrary("compose.ui").get())
-        add("debugImplementation", libs.findLibrary("compose.ui.tooling").get())
-        add("implementation", libs.findLibrary("compose.ui.tooling.preview").get())
+        add("implementation", libs.findLibrary("compose-ui").get())
+        add("debugImplementation", libs.findLibrary("compose-ui-tooling").get())
+        add("implementation", libs.findLibrary("compose-ui-tooling-preview").get())
     }
 }
 
@@ -34,13 +34,13 @@ internal fun Project.configureAndroidCompose(libraryExtension: LibraryExtension)
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
     dependencies {
-        val composeBom = libs.findLibrary("compose.bom").get()
+        val composeBom = libs.findLibrary("compose-bom").get()
         add("implementation", platform(composeBom))
         add("androidTestImplementation", platform(composeBom))
 
-        add("implementation", libs.findLibrary("compose.ui").get())
-        add("debugImplementation", libs.findLibrary("compose.ui.tooling").get())
-        add("implementation", libs.findLibrary("compose.ui.tooling.preview").get())
+        add("implementation", libs.findLibrary("compose-ui").get())
+        add("debugImplementation", libs.findLibrary("compose-ui-tooling").get())
+        add("implementation", libs.findLibrary("compose-ui-tooling-preview").get())
     }
 }
 
@@ -52,12 +52,12 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension) {
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
     dependencies {
-        val composeBom = libs.findLibrary("compose.bom").get()
+        val composeBom = libs.findLibrary("compose-bom").get()
         add("implementation", platform(composeBom))
         add("androidTestImplementation", platform(composeBom))
 
-        add("implementation", libs.findLibrary("compose.ui").get())
-        add("debugImplementation", libs.findLibrary("compose.ui.tooling").get())
-        add("implementation", libs.findLibrary("compose.ui.tooling.preview").get())
+        add("implementation", libs.findLibrary("compose-ui").get())
+        add("debugImplementation", libs.findLibrary("compose-ui-tooling").get())
+        add("implementation", libs.findLibrary("compose-ui-tooling-preview").get())
     }
 }
