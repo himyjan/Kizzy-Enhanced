@@ -43,25 +43,25 @@
 31. [Bug Fix: Apps List Scroll Lag](#bug-fix-apps-list-scroll-lag)
 32. [Bug Fix: GamesScreen.kt Issues](#bug-fix-gamescreenkt-issues)
 33. [Bug Fix: RpcSettings.kt Icon References (OpenInNew, Person)](#bug-fix-rpcsettingskt-icon-references)
-34. [Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)](#bug-fix-list-scrolling-performance-optimizations)
-35. [Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)](#bug-fix-mediarpcservice-startup-resilience)
-36. [Bug Fix: Emulator Startup Crash (Try-Catch Initialization)](#bug-fix-emulator-startup-crash)
-37. [New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)](#new-feature-rpcrecoveryhiltworker)
-38. [New Feature: System-Bound NotificationListener Auto-Restart](#new-feature-system-bound-notificationlistener)
-39. [Fix: Android 14+ Foreground Service Type (dataSync)](#fix-android-14-foreground-service-type)
-40. [Fix: KSP Dependencies for Hilt Annotation Processing](#fix-ksp-dependencies-for-hilt)
-41. [Bug Fix: @Immutable Annotation in Domain Module Models](#bug-fix--immutable-annotation-in-domain-module-models)
-42. [Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)](#bug-fix-accompanist-permission-migration)
-43. [Bug Fix: `kizzy.android.hilt` Plugin `No value present` Error](#bug-fix-kizzy-android-hilt-plugin-no-value-present-error)
-44. [Bug Fix: Missing `compose-ui-tooling-preview` Version Catalog Entry](#bug-fix-missing-compose-ui-tooling-preview-version-catalog-entry)
-45. [Migration: `javax.inject` → `jakarta.inject`](#migration-javax-inject--jakarta-inject)
-46. [Bug Fix: `kizzy.android.application.compose` Plugin `No value present` Error](#bug-fix-kizzy-android-application-compose-plugin-no-value-present-error)
-47. [Bug Fix: Unresolved Reference 'app' in `libs.app.compat`](#bug-fix-unresolved-reference-app-in-libs-app-compat)
-48. [Bug Fix: SVG Dynamic Color Fill Not Applying](#bug-fix-svg-dynamic-color-fill-not-applying)
-49. [Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage](#bug-fix-migrate-svg-rendering-from-com-caverock-androidsvg-to-coil-3-asyncimage)
-50. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-51. [Build Verification](#build-verification)
-46. [Build Verification](#build-verification)
+34. [Bug Fix: Extended Icon Import Cleanup (OpenInNew, NavigateNext, ContentPaste)](#bug-fix-extended-icon-import-cleanup)
+35. [Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)](#bug-fix-list-scrolling-performance-optimizations)
+36. [Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)](#bug-fix-mediarpcservice-startup-resilience)
+37. [Bug Fix: Emulator Startup Crash (Try-Catch Initialization)](#bug-fix-emulator-startup-crash)
+38. [New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)](#new-feature-rpcrecoveryhiltworker)
+39. [New Feature: System-Bound NotificationListener Auto-Restart](#new-feature-system-bound-notificationlistener)
+40. [Fix: Android 14+ Foreground Service Type (dataSync)](#fix-android-14-foreground-service-type)
+41. [Fix: KSP Dependencies for Hilt Annotation Processing](#fix-ksp-dependencies-for-hilt)
+42. [Bug Fix: @Immutable Annotation in Domain Module Models](#bug-fix--immutable-annotation-in-domain-module-models)
+43. [Bug Fix: Accompanist Permission Migration (compose-accompanist-permissions → ActivityResultContracts)](#bug-fix-accompanist-permission-migration)
+44. [Bug Fix: `kizzy.android.hilt` Plugin `No value present` Error](#bug-fix-kizzy-android-hilt-plugin-no-value-present-error)
+45. [Bug Fix: Missing `compose-ui-tooling-preview` Version Catalog Entry](#bug-fix-missing-compose-ui-tooling-preview-version-catalog-entry)
+46. [Migration: `javax.inject` → `jakarta.inject`](#migration-javax-inject--jakarta-inject)
+47. [Bug Fix: `kizzy.android.application.compose` Plugin `No value present` Error](#bug-fix-kizzy-android-application-compose-plugin-no-value-present-error)
+48. [Bug Fix: Unresolved Reference 'app' in `libs.app.compat`](#bug-fix-unresolved-reference-app-in-libs-app-compat)
+49. [Bug Fix: SVG Dynamic Color Fill Not Applying](#bug-fix-svg-dynamic-color-fill-not-applying)
+50. [Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage](#bug-fix-migrate-svg-rendering-from-com-caverock-androidsvg-to-coil-3-asyncimage)
+51. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+52. [Build Verification](#build-verification)
 
 ---
 
@@ -525,7 +525,35 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 
 ---
 
-## 45. Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)
+## 34. Bug Fix: Extended Icon Import Cleanup (OpenInNew, NavigateNext, ContentPaste)
+
+**Files:** `common/components/src/main/java/com/my/kizzy/ui/components/BrowseFiles.kt`, `feature_startup/src/main/java/com/my/kizzy/feature_startup/SetupCards.kt`, `common/components/src/main/java/com/my/kizzy/ui/components/KTextField.kt`, `feature_crash_handler/src/main/java/com/my/kizzy/feature_crash_handler/CrashScreen.kt`
+
+### Problem
+Several screen files were importing icons from the `material-icons-extended` library (`androidx.compose.material:material-icons-extended`), which is a heavy dependency not included in the project's version catalog. The following icons were being pulled from the extended track:
+
+- `Icons.Filled.OpenInNew` — not in core Material 3; available under `Icons.AutoMirrored.Filled`
+- `Icons.Filled.NavigateNext` — not in core Material 3; available under `Icons.AutoMirrored.Filled`
+- `Icons.Rounded.ContentPaste` — not available in `AutoMirrored.Rounded`; replaced with a local vector drawable
+- `Icons.Outlined.Close` / `Icons.Outlined.Share` — module lacked extended icon dependency; replaced with local vector drawables
+
+### Fix
+- **BrowseFiles.kt**: Changed import from `icons.filled.OpenInNew` to `icons.automirrored.filled.OpenInNew`; updated usage to `Icons.AutoMirrored.Filled.OpenInNew`
+- **SetupCards.kt**: Changed imports from `icons.filled.NavigateNext` and `icons.filled.OpenInNew` to `icons.automirrored.filled.NavigateNext` and `icons.automirrored.filled.OpenInNew`; updated usages accordingly
+- **KTextField.kt**: Removed `icons.rounded.ContentPaste` import; created `res/drawable/ic_content_paste.xml` vector drawable; replaced `imageVector` usage with `painterResource(id = R.drawable.ic_content_paste)`
+- **CrashScreen.kt**: Removed `icons.outlined.Close` and `icons.outlined.Share` imports; created local vector drawables `res/drawable/ic_close.xml` and `res/drawable/ic_share.xml`; replaced usages with `painterResource()`
+
+New vector drawables created:
+- `common/components/src/main/res/drawable/ic_content_paste.xml`
+- `feature_crash_handler/src/main/res/drawable/ic_close.xml`
+- `feature_crash_handler/src/main/res/drawable/ic_share.xml`
+
+### Result
+All extended icon references eliminated. Icons now resolve from either `Icons.AutoMirrored.*` (built into Material 3) or local vector drawables. The `material-icons-extended` dependency is no longer required for any screen icon. `:app:compileDebugKotlin` passes successfully.
+
+---
+
+## 36. Bug Fix: MediaRpcService Startup & Resilience (START_REDELIVER_INTENT, onTaskRemoved)
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
 
@@ -547,7 +575,7 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 
 ---
 
-## 46. Bug Fix: Emulator Startup Crash (Try-Catch Initialization)
+## 37. Bug Fix: Emulator Startup Crash (Try-Catch Initialization)
 
 **File:** `app/src/main/java/com/my/kizzy/App.kt`
 
@@ -582,7 +610,7 @@ App starts normally on emulators and all device configurations. Optional compone
 
 ---
 
-## 47. New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)
+## 38. New Feature: RpcRecoveryHiltWorker (WorkManager State Recovery)
 
 **Files:** `data/src/main/java/com/my/kizzy/data/work/HiltWorkers.kt`
 
@@ -609,7 +637,7 @@ WorkManager.getInstance(this)
 
 ---
 
-## 48. New Feature: System-Bound NotificationListener Auto-Restart
+## 39. New Feature: System-Bound NotificationListener Auto-Restart
 
 **File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/NotificationListener.kt`
 
@@ -627,7 +655,7 @@ Enhanced `NotificationListener` (a system-bound `NotificationListenerService`) t
 
 ---
 
-## 44. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
+## 35. Bug Fix: List Scrolling Performance Optimizations (LazyColumn Keys)
 ==============================
 
 ## Root Cause
@@ -667,7 +695,7 @@ Added `dataSync` alongside `mediaPlayback`:
 
 ---
 
-## 46. Fix: KSP Dependencies for Hilt Annotation Processing
+## 41. Fix: KSP Dependencies for Hilt Annotation Processing
 
 **Files:** `data/build.gradle.kts`, `feature_logs/build.gradle.kts`, `feature_rpc_base/build.gradle.kts`
 
@@ -679,7 +707,7 @@ Added `ksp(libs.hilt.compiler)` to each module's `dependencies {}` block. These 
 
 ---
 
-## 47. Bug Fix: @Immutable Annotation in Domain Module Models
+## 42. Bug Fix: @Immutable Annotation in Domain Module Models
 
 ### Files Modified
 - `domain/src/main/java/com/my/kizzy/domain/model/Contributor.kt`
@@ -720,7 +748,7 @@ compileOnly(libs.compose.runtime)
 
 ---
 
-## 48. Bug Fix: SVG Dynamic Color Fill Not Applying
+## 49. Bug Fix: SVG Dynamic Color Fill Not Applying
 
 **Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/style/svg/DynamicSvg.kt`
 
@@ -736,7 +764,7 @@ SVG icons rendered via `DynamicSVGImage` now correctly reflect dynamic color fil
 
 ---
 
-## 51. Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage
+## 50. Bug Fix: Migrate SVG Rendering from com.caverock.androidsvg to Coil 3 AsyncImage
 
 **Files:** `feature_settings/src/main/java/com/my/kizzy/feature_settings/style/svg/DynamicSvg.kt`
 
@@ -800,7 +828,7 @@ These add unnecessary transitive surface area for a pattern (`CallbackToFutureAd
 
 ---
 
-## 49. Known Non-Breaking Warnings
+## 51. Known Non-Breaking Warnings
 
 | Warning | Location | Severity |
 |---------|----------|----------|
@@ -810,7 +838,7 @@ These add unnecessary transitive surface area for a pattern (`CallbackToFutureAd
 
 ---
 
-## 50. Build Verification
+## 52. Build Verification
 
 ```
 BUILD SUCCESSFUL in 2m 27s
