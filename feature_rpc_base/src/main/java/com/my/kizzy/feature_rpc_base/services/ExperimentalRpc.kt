@@ -43,9 +43,11 @@ import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -85,6 +87,24 @@ class ExperimentalRpc : Service() {
     private val mediaControllerCallback = MediaControllerCallback()
 
     private var isMediaSessionActive = false
+
+    // Heartbeat to prevent stuck idling when media session callbacks are missed
+    private val heartbeatJob = MutableStateFlow<Job?>(null)
+
+    private fun startHeartbeat() {
+        stopHeartbeat()
+        heartbeatJob.value = scope.launch {
+            while (isActive) {
+                delay(3000)
+                scope.launch { updatePresence() }
+            }
+        }
+    }
+
+    private fun stopHeartbeat() {
+        heartbeatJob.value?.cancel()
+        heartbeatJob.value = null
+    }
 
     private var useAppsRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, true]
     private var useMediaRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, true]
@@ -195,6 +215,9 @@ class ExperimentalRpc : Service() {
                 }
             }
         }
+        // Start heartbeat to prevent stuck idling
+        startHeartbeat()
+
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -595,6 +618,7 @@ class ExperimentalRpc : Service() {
             }
         }
         currentMediaController?.unregisterCallback(mediaControllerCallback)
+        stopHeartbeat()
         scope.cancel()
         kizzyRPC.closeRPC()
         super.onDestroy()
