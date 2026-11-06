@@ -232,8 +232,8 @@
     <string name="custom_application_id_desc">เขียนทับไอดีแอปพลิเคชั่นดั้งเดิมของ Discord</string>
     <string name="use_a_vpn_desc">การล็อกอินผ่าน Discord อาจจะใช้งานไม่ได้หากไม่ได้ใช้ร่วมกับ
         VPN/DPI โปรดใช้ VPN/DPI เพื่อใช้งานต่อ</string>
-    <string name="rpc_templates_note">"ใช้ข้อความตัวอย่าง เช่น &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
-        &apos;{{&apos;media_artist}}&apos;&apos; ฯลฯ หากเว้นว่างไว้ ระบบจะใช้เป็นค่าเริ่มต้นหรือข้ามไป"</string>
+    <string name="rpc_templates_note">"ใช้ข้อความตัวอย่าง เช่น &apos;&#123;&#123;&apos;app_name&#125;&#125;&apos;&apos;, &apos;&#123;&#123;&apos;media_title&#125;&#125;&apos;&apos;,
+        &apos;&#123;&#123;&apos;media_artist&#125;&#125;&apos;&apos; ฯลฯ หากเว้นว่างไว้ ระบบจะใช้เป็นค่าเริ่มต้นหรือข้ามไป"</string>
     <string name="experimental_rpc_detect_apps">อนุญาตให้ Experimental RPC
         ตรวจจับแอปที่กำลังทำงานอยู่</string>
     <string name="experimental_rpc_detect_media">อนุญาตให้ Experimental RPC
@@ -274,7 +274,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;&#123;&#123;&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

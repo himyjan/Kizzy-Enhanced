@@ -225,8 +225,8 @@
     <string name="custom_application_id_desc">Podmienia domyślne ID Aplikacji Discord&apos;a</string>
     <string name="use_a_vpn_desc">Logowanie do Discorda w twoim kraju może nie działać bez użycia
         VPN/DPI. Proszę użyć VPN/DPI aby kontynuować.</string>
-    <string name="rpc_templates_note">"Użyj placeholderów takich jak &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
-        &apos;{{&apos;media_artist}}&apos;&apos;, itd. Puste pola będą używać domyślnych wartości lub zostaną pominięte."</string>
+    <string name="rpc_templates_note">"Użyj placeholderów takich jak &apos;&#123;&#123;&apos;app_name&#125;&#125;&apos;&apos;, &apos;&#123;&#123;&apos;media_title&#125;&#125;&apos;&apos;,
+        &apos;&#123;&#123;&apos;media_artist&#125;&#125;&apos;&apos;, itd. Puste pola będą używać domyślnych wartości lub zostaną pominięte."</string>
     <string name="experimental_rpc_detect_apps">Pozwól Eksperymentalnemu RPC do wykrywania
         uruchomionych aplikacji</string>
     <string name="experimental_rpc_detect_media">Pozwól Eksperymentalnemu RPC do wykrywania
@@ -268,7 +268,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
+    <string name="type_to_insert_variable">Type &apos;&#123;&#123;&apos; to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

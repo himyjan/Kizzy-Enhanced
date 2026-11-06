@@ -355,8 +355,8 @@
     <string name="use_a_vpn_desc">Il login di
     Discord potrebbe non funzionare nel tuo Paese senza una VPN/DPI. Utilizza una VPN/DPI per
     continuare.</string>
-    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;app_name}}&apos;&apos;,
-    &apos;{{&apos;media_title}}&apos;&apos;, &apos;{{&apos;media_artist}}&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
+    <string name="rpc_templates_note">"Use placeholders like &apos;&#123;&#123;&apos;app_name&#125;&#125;&apos;&apos;,
+    &apos;&#123;&#123;&apos;media_title&#125;&#125;&apos;&apos;, &apos;&#123;&#123;&apos;media_artist&#125;&#125;&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
     <string
         name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string
@@ -421,7 +421,7 @@
     <string name="title_source_song">Song Name</string>
     <string
         name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type &apos;{{&apos;
+    <string name="type_to_insert_variable">Type &apos;&#123;&#123;&apos;
     to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string

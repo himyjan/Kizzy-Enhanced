@@ -60,6 +60,8 @@ abstract class NormalizeStringsTask : DefaultTask() {
 }
 
 // Register the modern task: read-only inputs, outputs to build/generated/
+// Task is standalone (verification only) — not wired into Variant API
+// to avoid duplicate resource processing by AAPT2
 val normalizeStrings = tasks.register<NormalizeStringsTask>("normalizeStringResources") {
     group = "verification"
     description = "Normalizes string resource XML content into build output without mutating source files."
@@ -69,14 +71,4 @@ val normalizeStrings = tasks.register<NormalizeStringsTask>("normalizeStringReso
 
     // Write normalized output to generated directory (never touches source files)
     outputDir.set(layout.buildDirectory.dir("generated/res/normalized"))
-}
-
-// Wire the generated normalized resources into the Android resource pipeline via Variant API
-androidComponents {
-    onVariants { variant ->
-        variant.sources.res?.addGeneratedSourceDirectory(
-            taskProvider = normalizeStrings,
-            wiredWith = NormalizeStringsTask::outputDir
-        )
-    }
 }

@@ -222,8 +222,8 @@
     <string name="custom_application_id">Свой ID приложения активности</string>
     <string name="custom_application_id_desc">Меняет стандартный ID приложения Discord на ваш</string>
     <string name="use_a_vpn_desc">Discord заблокирован в России, поэтому вход может не работать.</string>
-    <string name="rpc_templates_note">"Используйте плейсхолдеры: &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
-        &apos;{{&apos;media_artist}}&apos;&apos;, и т.д. Пустые поля будут работать по умолчанию или же останутся пусты."</string>
+    <string name="rpc_templates_note">"Используйте плейсхолдеры: &apos;&#123;&#123;&apos;app_name&#125;&#125;&apos;&apos;, &apos;&#123;&#123;&apos;media_title&#125;&#125;&apos;&apos;,
+        &apos;&#123;&#123;&apos;media_artist&#125;&#125;&apos;&apos;, и т.д. Пустые поля будут работать по умолчанию или же останутся пусты."</string>
     <string name="experimental_rpc_detect_apps">Разрешить экспериментальному RPC видеть запущенные
         программы</string>
     <string name="experimental_rpc_detect_media">Разрешить экспериментальному RPC видеть
@@ -256,7 +256,7 @@
     <string name="completion_media_composer">Композитор</string>
     <string name="completion_battery">Уровень заряда</string>
     <string name="completion_playback">Состояние воспроизведения</string>
-    <string name="type_to_insert_variable">Введите &apos;{{&apos; для вставки переменной</string>
+    <string name="type_to_insert_variable">Введите &apos;&#123;&#123;&apos; для вставки переменной</string>
     <string name="app_selection">Выбор приложений</string>
     <string name="platform_none_desktop">Ничего (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
