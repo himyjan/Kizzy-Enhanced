@@ -23,7 +23,9 @@ import com.my.kizzy.ui.theme.LocalDarkTheme
 import com.my.kizzy.ui.theme.LocalDynamicColorSwitch
 import com.my.kizzy.ui.theme.SettingsProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -41,11 +43,13 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(0, 0, 0, 0)
             insets
         }
-        runBlocking {
-            if (Build.VERSION.SDK_INT < 33)
+        // Apply locales off-main thread to avoid blocking UI
+        if (Build.VERSION.SDK_INT < 33) {
+            lifecycleScope.launch(Dispatchers.IO) {
                 AppCompatDelegate.setApplicationLocales(
                     LocaleListCompat.forLanguageTags(getLanguageConfig())
                 )
+            }
         }
         setContent {
             val windowSizeClass = calculateWindowSizeClass(this)
