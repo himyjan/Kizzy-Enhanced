@@ -476,7 +476,7 @@ class ExperimentalRpc : Service() {
             return
         }
         logger.d(TAG, "Active media sessions changed")
-        if (isEvent) runBlocking { delay(500) }
+        if (isEvent) runBlocking { delay(200) }
 
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         currentMediaController = null

@@ -480,7 +480,7 @@ class MediaRpcService : Service() {
         if (isEvent) {
             // Give the new session time to populate metadata
             scope.launch {
-                delay(1000)
+                delay(200)
                 applySessionChange(mediaSessions)
             }
         } else {
@@ -512,7 +512,7 @@ class MediaRpcService : Service() {
             logger.d("MediaRPC", "Tracking session: ${selectedSession?.packageName} (${selectedSession?.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "no title"})")
 
             scope.launch {
-                delay(500)
+                delay(300)
                 updatePresence()
             }
         } else {
