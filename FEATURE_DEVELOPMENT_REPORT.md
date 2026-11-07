@@ -1845,7 +1845,48 @@ Kizzy's `AdaptiveLayout.kt` already implements the adaptive patterns recommended
 
 ---
 
-## 69. Related Resource: Android DevBlog — Build for Every Screen: Jetpack Compose Updates
+## 68. Related Resource: Android DevBlog — Build for Every Screen: Jetpack Compose Updates
+
+**Source:** [Android Developers Blog — Build for every screen: Jetpack Compose updates](https://developer.android.com/blog/posts/build-for-every-screen-jetpack-compose-updates?hl=zh-tw)
+
+### Review Summary
+
+This article covers Jetpack Compose 1.13 stable release features and adaptive UI strategies for building apps across phones, foldables, tablets, wearables, in-car screens, XR, and ChromeOS/Googlebook.
+
+### Key Features
+
+| Feature | Description | Relevance to Kizzy |
+|---------|-------------|-------------------|
+| Grid & Flexbox (Compose 1.13) | Built-in adaptive Grid and Flexbox layout primitives | ⚠️ Kizzy uses Row/Column-based AdaptiveLayout; could migrate to Grid/Flexbox |
+| Progressive blur | New graphical feature for visual effects | ⚠️ Not currently needed |
+| Formatted text | Enhanced text formatting | ⚠️ Not currently needed |
+| BasicTextField rewrite | Buffer-oriented TextFieldState, eliminates IME race conditions | ⚠️ Kizzy uses Material3 TextField |
+| Jetpack AppState (Alpha) | Compose-first state layer across activities, services, widgets | ⚠️ Kizzy uses mutableStateOf + ViewModel |
+| Navigation 3 (1.2 Stable) | Developer-owned back stack, type-safe deep links, synthetic back stacks | ⚠️ Kizzy uses custom navigation |
+| Cross-device input | Touchpad, mouse, physical controls support | ⚠️ Could improve desktop/laptop support |
+
+### Connection to Kizzy Adaptive UI
+
+Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
+
+| Article Concept | Kizzy Implementation |
+|-----------------|---------------------|
+| Unified Compose toolkit | ✅ 100% Compose UI, no legacy View remnants |
+| Adaptive Grid/Flexbox | ✅ `ResponsiveGridItem`, `ResponsiveGrid` (via Row/Column-based approach) |
+| Cross-form-factor support | ✅ Compact/Medium/Expanded width classes |
+| State preservation across config changes | ✅ `mutableStateOf` in ViewModel |
+| Multi-form-factor support | ✅ Phones, tablets, foldables covered |
+
+### Recommended Next Steps
+
+1. Evaluate migrating from Row/Column-based layouts to Compose 1.13 Grid/Flexbox when stable
+2. Consider Jetpack AppState for cross-activity state sharing
+3. Evaluate Navigation 3 for type-safe deep links
+4. Add cross-device input support (mouse, keyboard, trackpad) for desktop/laptop use
+
+---
+
+## 69. Related Resource: Instagram Direct — AI-native UI with Jetpack Compose
 
 **Source:** [Android Developers Blog — Build for every screen: Jetpack Compose updates](https://developer.android.com/blog/posts/build-for-every-screen-jetpack-compose-updates?hl=zh-tw)
 
@@ -1886,7 +1927,56 @@ Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
 
 ---
 
-## 69. Related Resource: R8 Profile-Guided Optimization & App Sizer
+## 71. Related Resource: Instagram Direct — AI-native UI with Jetpack Compose
+
+**Source:** [Android Developers Blog — Jetpack Compose AI-native UI: Instagram Direct](https://developer.android.com/blog/posts/jetpack-compose-ai-native-ui-instagram-direct?hl=zh-tw)
+
+### Review Summary
+
+Instagram Direct adopted Jetpack Compose as the foundation of its **AI-native UI** architecture — not just applying AI tools to existing code, but redesigning the codebase so AI models can natively reason about and modify Compose UI. Key results:
+
+| Metric | Improvement |
+|--------|-------------|
+| Total UI code reduction | **50% less UI code** |
+| AI agent execution time | **35% faster** |
+| Engineer–agent interactions | **32% fewer interactions per landed character** |
+| Token cost per agent session | **33% lower** vs. Android View |
+| Risk-score resilience | View-based UI agent efficiency drops **30%** when risk doubles; Compose UI drops only **9%** |
+| Scroll performance | Pausable composition + `LazyLayoutCacheWindow` reduced Large Frame Drops/min by ~**13%**; cache window alone reduced latency by ~**8%** |
+| Startup | Optimized via Baseline Profiles — pre-compiles hot code paths at install time |
+
+### Key Architectural Patterns
+
+| Pattern | Description |
+|---------|-------------|
+| **ComposeItem pattern** | Composable receives only `uiState` via constructor + callbacks (e.g., `onPin: (Boolean) -> Unit`); no access to class members or external state |
+| **State hoisting** | UI state externalized (e.g., `ChatUiState`) rather than held as mutable fields on item objects — prevents bugs from view recycling/rebinding |
+| **Gradual migration with interop** | Compose items dropped into existing `RecyclerView` layouts; native `LazyColumn` path with feature flags for A/B testing |
+| **Visibility tracking** | `onVisibilityChanged` API (Compose 1.9.0) for consistent exposure logging |
+| **Pausable composition** | Compose 1.10+ with `LazyLayoutCacheWindow` for smooth scroll performance |
+
+### Connection to Kizzy
+
+Kizzy already implements several of these patterns:
+
+| Article Concept | Kizzy Implementation |
+|-----------------|---------------------|
+| 100% Compose UI | ✅ No legacy View remnants |
+| State hoisting | ✅ `mutableStateOf` + ViewModel, presence state externalized |
+| Mutable state avoidance | ✅ Compose state models passed via constructor |
+| Compose previews without emulator | ✅ Android CLI supports this |
+| Gradual migration with feature flags | ✅ Feature flags used for RPC service toggling |
+
+### Recommended Next Steps
+
+1. Evaluate Jetpack AppState for cross-activity state sharing
+2. Consider Navigation 3 for type-safe deep links
+3. Add cross-device input support (mouse, keyboard, trackpad) for desktop/laptop
+4. Explore A2UI / Agent-to-UI for AI-generated Compose UI components |
+
+---
+
+## 71. Related Resource: R8 Profile-Guided Optimization & App Sizer
 
 **Sources:**
 - [Android Developers Blog — Grab R8 PGO & ANR Startup Time](https://android-developers.googleblog.com/2026/02/grab-r8-profile-guided-optimization-anr-startup-time?hl=zh-tw)
