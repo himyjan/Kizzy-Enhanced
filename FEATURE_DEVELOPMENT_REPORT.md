@@ -1845,6 +1845,47 @@ Kizzy's `AdaptiveLayout.kt` already implements the adaptive patterns recommended
 
 ---
 
+## 68. Related Resource: Android DevBlog — Build for Every Screen: Jetpack Compose Updates
+
+**Source:** [Android Developers Blog — Build for every screen: Jetpack Compose updates](https://developer.android.com/blog/posts/build-for-every-screen-jetpack-compose-updates?hl=zh-tw)
+
+### Review Summary
+
+This article covers Jetpack Compose 1.13 stable release features and adaptive UI strategies for building apps across phones, foldables, tablets, wearables, in-car screens, XR, and ChromeOS/Googlebook.
+
+### Key Features
+
+| Feature | Description | Relevance to Kizzy |
+|---------|-------------|-------------------|
+| Grid & Flexbox (Compose 1.13) | Built-in adaptive Grid and Flexbox layout primitives | ⚠️ Kizzy uses Row/Column-based AdaptiveLayout; could migrate to Grid/Flexbox |
+| Progressive blur | New graphical feature for visual effects | ⚠️ Not currently needed |
+| Formatted text | Enhanced text formatting | ⚠️ Not currently needed |
+| BasicTextField rewrite | Buffer-oriented TextFieldState, eliminates IME race conditions | ⚠️ Kizzy uses Material3 TextField |
+| Jetpack AppState (Alpha) | Compose-first state layer across activities, services, widgets | ⚠️ Kizzy uses mutableStateOf + ViewModel |
+| Navigation 3 (1.2 Stable) | Developer-owned back stack, type-safe deep links, synthetic back stacks | ⚠️ Kizzy uses custom navigation |
+| Cross-device input | Touchpad, mouse, physical controls support | ⚠️ Could improve desktop/laptop support |
+
+### Connection to Kizzy Adaptive UI
+
+Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
+
+| Article Concept | Kizzy Implementation |
+|-----------------|---------------------|
+| Unified Compose toolkit | ✅ 100% Compose UI, no legacy Views |
+| Adaptive Grid/Flexbox | ✅ `ResponsiveGridItem`, `ResponsiveGrid` (via Row/Column-based approach) |
+| Cross-form-factor support | ✅ Compact/Medium/Expanded width classes |
+| State preservation across config changes | ✅ `mutableStateOf` in ViewModel |
+| Multi-form-factor support | ✅ Phones, tablets, foldables covered |
+
+### Recommended Next Steps
+
+1. Evaluate migrating from Row/Column-based layouts to Compose 1.13 Grid/Flexbox when stable
+2. Consider Jetpack AppState for cross-activity state sharing
+3. Evaluate Navigation 3 for type-safe deep links and synthetic back stacks
+4. Add cross-device input support (mouse, keyboard, trackpad) for desktop/laptop use
+
+---
+
 ## 68. Build Verification
 
 ```
