@@ -87,6 +87,7 @@ class ExperimentalRpc : Service() {
     private val mediaControllerCallback = MediaControllerCallback()
 
     private var isMediaSessionActive = false
+    private var lastSentCommonRpc: CommonRpc? = null
 
     // Heartbeat to prevent stuck idling when media session callbacks are missed
     private val heartbeatJob = MutableStateFlow<Job?>(null)
@@ -385,13 +386,12 @@ class ExperimentalRpc : Service() {
             finalTimestamps = null
             effectivePackageName = null
         }
-
         val rpcDataIsEmpty =
             finalName.isNullOrEmpty() && finalDetails.isNullOrEmpty() && finalState.isNullOrEmpty()
 
-        if (kizzyRPC.isRpcRunning()) {
-            if (rpcDataIsEmpty) {
-                logger.d(TAG, "Calculated RPC data is empty, stopping RPC.")
+        if (rpcDataIsEmpty) {
+            logger.d(TAG, "Calculated RPC data is empty, stopping RPC.")
+            if (kizzyRPC.isRpcRunning()) {
                 kizzyRPC.closeRPC()
                 notificationManager.notify(
                     Constants.NOTIFICATION_ID, notificationBuilder
@@ -399,66 +399,35 @@ class ExperimentalRpc : Service() {
                         .setContentText(getString(R.string.idling_notification))
                         .build()
                 )
-                return
             }
-
-            kizzyRPC.updateRPC(
-                commonRpc = CommonRpc(
-                    name = finalName ?: "",
-                    type = appActivityTypes[effectivePackageName] ?: 0,
-                    details = finalDetails,
-                    state = finalState,
-                    largeImage = finalLargeImage,
-                    smallImage = finalSmallImage,
-                    largeText = finalLargeText,
-                    smallText = finalSmallText,
-                    time = finalTimestamps,
-                    packageName = effectivePackageName ?: ""
-                ),
-                enableTimestamps = Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]
-            )
-
-        } else {
-            if (rpcDataIsEmpty) {
-                logger.d(TAG, "Calculated RPC data is empty, not starting RPC.")
-
-                notificationManager.notify(
-                    Constants.NOTIFICATION_ID, notificationBuilder
-                        .setContentTitle(getString(R.string.service_enabled))
-                        .setContentText(getString(R.string.idling_notification))
-                        .build()
-                )
-                return
-            }
-
-            kizzyRPC.apply {
-                setName(finalName)
-                setType(appActivityTypes[effectivePackageName] ?: 0)
-                val isMediaPaused = richMediaInfo?.playbackState == PlaybackState.STATE_PAUSED || richMediaInfo?.playbackState == PlaybackState.STATE_STOPPED
-                setStatus(if (isMediaPaused) "idle" else Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
-                setDetails(finalDetails)
-                setState(finalState)
-                setStartTimestamps(finalTimestamps?.start)
-                setStopTimestamps(finalTimestamps?.end)
-                setLargeImage(finalLargeImage, finalLargeText)
-                setSmallImage(finalSmallImage, finalSmallText)
-                clearButtons()
-                if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_BUTTONS, false]) {
-                    setButton1(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_TEXT, ""].takeIf { it.isNotEmpty() }, Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""].takeIf { it.isNotEmpty() })
-                    setButton1URL(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""].takeIf { it.isNotEmpty() })
-                    setButton2(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_TEXT, ""].takeIf { it.isNotEmpty() })
-                    setButton2URL(Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL, ""].takeIf { it.isNotEmpty() })
-                }
-                // Custom Application ID controls the icon/name Discord shows for the
-                // activity. When disabled, fall back to the default (Kizzy) id.
-                if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false]) {
-                    setApplicationId(Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID, ""])
-                } else {
-                    setApplicationId(null)
-                }
-                build()
-            }
+            return
         }
+
+        // Build the CommonRpc once - this is what we want to send to Discord
+        val commonRpc = CommonRpc(
+            name = finalName ?: "",
+            type = appActivityTypes[effectivePackageName] ?: 0,
+            details = finalDetails,
+            state = finalState,
+            largeImage = finalLargeImage,
+            smallImage = finalSmallImage,
+            largeText = finalLargeText,
+            smallText = finalSmallText,
+            time = finalTimestamps,
+            packageName = effectivePackageName ?: ""
+        )
+
+        // De-duplication: skip if nothing changed since last push
+        if (lastSentCommonRpc == commonRpc) {
+            logger.d(TAG, "Presence unchanged, skipping redundant update")
+            return
+        }
+        lastSentCommonRpc = commonRpc
+
+        kizzyRPC.updateRPC(
+            commonRpc = commonRpc,
+            enableTimestamps = Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]
+        )
 
         val notifTitle = finalName.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.app_name_full)
         val notifText = finalDetails ?: finalState
