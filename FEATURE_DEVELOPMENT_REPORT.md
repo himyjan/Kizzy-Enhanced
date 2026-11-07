@@ -1845,7 +1845,7 @@ Kizzy's `AdaptiveLayout.kt` already implements the adaptive patterns recommended
 
 ---
 
-## 68. Related Resource: Android DevBlog — Build for Every Screen: Jetpack Compose Updates
+## 69. Related Resource: Android DevBlog — Build for Every Screen: Jetpack Compose Updates
 
 **Source:** [Android Developers Blog — Build for every screen: Jetpack Compose updates](https://developer.android.com/blog/posts/build-for-every-screen-jetpack-compose-updates?hl=zh-tw)
 
@@ -1886,7 +1886,66 @@ Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
 
 ---
 
-## 68. Build Verification
+## 69. Related Resource: R8 Profile-Guided Optimization & App Sizer
+
+**Sources:**
+- [Android Developers Blog — Grab R8 PGO & ANR Startup Time](https://android-developers.googleblog.com/2026/02/grab-r8-profile-guided-optimization-anr-startup-time?hl=zh-tw)
+- [GitHub — grab/app-sizer](https://github.com/grab/app-sizer)
+
+### Review Summary
+
+Grab (Southeast Asian super app, 10M+ lines of code, 8 countries) combined R8 Profile-Guided Optimization with Baseline Profiles and Startup Profiles to achieve dramatic improvements:
+
+| Metric | Improvement |
+|--------|-------------|
+| User-perceived ANR rate | **~32.5% reduction** |
+| App download size | **~30.4% reduction** |
+| Cold startup time | **~35% reduction** |
+
+### Three-Phase Implementation
+
+| Phase | Action | ANR | Size | Cold Start |
+|-------|--------|-----|------|------------|
+| Phase 1 | R8 Compatibility Mode + Baseline/Startup Profiles | −25% | −16% | −27% |
+| Phase 2 | R8 Full Mode migration | −10% | −14% | −10% |
+| Phase 3 | Keep-rule fine-tuning | — | −3.6% | — |
+
+### R8 Optimization Scores (after fine-tuning)
+
+| Metric | Score |
+|--------|-------|
+| Optimization | 78.2% |
+| Shrinking | 79.1% |
+| Obfuscation | 81.7% |
+
+### Practical Steps for Kizzy
+
+1. **Replace legacy ProGuard** with `proguard-android-optimize.txt`
+2. **Add Baseline Profiles + Startup Profiles** for critical startup paths
+3. **Migrate R8 Compatibility Mode → Full Mode** for maximum shrinking
+4. **Handle reflection carefully** — precise keep rules for reflection-dependent classes
+5. **Integrate R8 Configuration Analyzer** into CI for keep-rule health monitoring
+6. **Set up CI/CD guardrails** — track R8 scores, require justification for new keep rules
+7. **Upload mapping.txt to Firebase Crashlytics** + configure Play Console deobfuscation
+8. **Use app-sizer** to measure APK size impact per line of code
+
+### app-sizer Tool
+
+| Feature | Description |
+|---------|-------------|
+| Gradle Plugin | Integrates with Android Gradle projects |
+| CLI Tool | For non-Gradle build systems |
+| Report Formats | HTML Dashboard, InfluxDB, Markdown Table, JSON |
+| Metrics | Total size, per-module, per-library, per-team, large files |
+| Repository | https://github.com/grab/app-sizer |
+
+### Decision
+
+**Recommended for evaluation** — Kizzy targets API 37 (compileSdk) and uses R8. Adding Baseline Profiles, Startup Profiles, and app-sizer integration could significantly improve startup time and reduce APK size, especially as the codebase grows.
+
+---
+
+## 70. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
