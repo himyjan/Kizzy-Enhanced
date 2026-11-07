@@ -16,8 +16,6 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.os.Build
 import android.os.IBinder
-import android.os.PowerManager
-import android.os.PowerManager.WakeLock
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.KizzyRPC
@@ -67,8 +65,6 @@ class MediaRpcService : Service() {
 
     @Inject
     lateinit var metadataResolver: MetadataResolver
-
-    private var wakeLock: WakeLock? = null
 
     // Playback state
     private var isPaused = false
@@ -167,7 +163,6 @@ class MediaRpcService : Service() {
         // Now safe to do remaining initialization
         val token = Prefs[TOKEN, ""]
         if (token.isEmpty()) stopSelf()
-        setupWakeLock()
 
         val intent = Intent(this, MediaRpcService::class.java)
         intent.action = Constants.ACTION_STOP_SERVICE
@@ -228,7 +223,7 @@ class MediaRpcService : Service() {
         stopTimelineUpdates()
         timelineJob.value = scope.launch {
             while (isActive) {
-                delay(1000)
+                delay(5000)
                 if (!isPaused && kizzyRPC.isRpcRunning()) {
                     val playingMedia = getCurrentPlayingMedia()
                     if (playingMedia.name.isNotBlank()) {
@@ -252,7 +247,7 @@ class MediaRpcService : Service() {
         stopHeartbeat()
         heartbeatJob.value = scope.launch {
             while (isActive) {
-                delay(1000)
+                delay(5000)
                 scope.launch { updatePresence(forceRefresh = true) }
             }
         }
@@ -570,13 +565,6 @@ class MediaRpcService : Service() {
         }
     }
 
-    @SuppressLint("WakelockTimeout")
-    private fun setupWakeLock() {
-        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kizzy:MediaRPC")
-        wakeLock?.acquire()
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             it.action?.let { ac ->
@@ -632,9 +620,6 @@ class MediaRpcService : Service() {
         stateRepository.setConnected(false)
         stateRepository.setPaused(false)
         stateRepository.clearTrackInfo()
-        wakeLock?.let {
-            if (it.isHeld) it.release()
-        }
         // Schedule RPC recovery via WorkManager so presence can be restored after
         // process termination by the system.
         val now = System.currentTimeMillis()

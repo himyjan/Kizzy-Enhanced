@@ -103,7 +103,7 @@ class ExperimentalRpc : Service() {
         stopHeartbeat()
         heartbeatJob.value = scope.launch {
             while (isActive) {
-                delay(1000)
+                delay(5000)
                 scope.launch { updatePresence() }
             }
         }
@@ -295,7 +295,7 @@ class ExperimentalRpc : Service() {
                 } catch (e: Exception) {
                     logger.e(TAG, "Detection cycle failed: ${e.message}")
                 }
-                delay(2000)
+                delay(5000)
             }
         }
     }
