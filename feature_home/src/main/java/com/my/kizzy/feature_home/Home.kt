@@ -349,15 +349,15 @@ fun HomeScreenPreview() {
 
 val fakeFeatures = listOf(
     HomeFeature(
-        title = "App Detection",
-        icon = R.drawable.ic_apps,
-        shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-        tooltipText = ToolTipContent.APP_DETECTION_DOCS
-    ), HomeFeature(
         title = "Media RPC",
         icon = R.drawable.ic_media_rpc,
         shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
         tooltipText = ToolTipContent.MEDIA_RPC_DOCS
+    ), HomeFeature(
+        title = "App Detection",
+        icon = R.drawable.ic_apps,
+        shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
+        tooltipText = ToolTipContent.APP_DETECTION_DOCS
     ), HomeFeature(
         title = "Custom RPC",
         icon = R.drawable.ic_rpc_placeholder,

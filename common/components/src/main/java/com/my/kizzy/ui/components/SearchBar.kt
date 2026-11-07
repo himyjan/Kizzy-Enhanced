@@ -67,11 +67,11 @@ fun SearchBar(
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         modifier = Modifier
-            .fillMaxWidth()
             .focusRequester(focusRequester)
             .clip(
                 RoundedCornerShape(200.dp)
-            ),
+            )
+            .fillMaxWidth(),
         decorationBox = { innerTextField ->
             val containerColor = MaterialTheme.colorScheme.surface
             TextFieldDefaults.DecorationBox(
