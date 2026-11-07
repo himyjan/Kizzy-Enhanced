@@ -21,10 +21,10 @@ import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.entities.presence.Activity
 import kizzy.gateway.entities.presence.ActivityButton
 import kizzy.gateway.entities.presence.Assets
-import kizzy.gateway.entities.presence.Metadata
 import kizzy.gateway.entities.presence.Party
 import kizzy.gateway.entities.presence.Presence
 import kizzy.gateway.entities.presence.Timestamps
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 class KizzyRPC @Inject constructor(
@@ -50,6 +50,33 @@ class KizzyRPC @Inject constructor(
     private var platform: String? = null
     private var buttons = ArrayList<ActivityButton>()
     private var url: String? = null
+
+    // Presence update deduplication + throttling to prevent flooding Discord gateway
+    // (rapid SESSIONS_REPLACE events used to cause connection closures / INVALID_SESSION)
+    companion object {
+        private const val PRESENCE_MIN_INTERVAL_MS = 1500L
+        private const val POST_CONNECT_DELAY_MS = 1000L
+    }
+    private var lastPresenceTimeMs: Long = 0L
+    private var lastPresenceHash: Int = -1
+    // Tracks when the WebSocket last connected/resumed; delays the first presence
+    // update to avoid Discord 4003 (Not authenticated) right after RESUME.
+    private var lastConnectedTimeMs: Long = 0L
+
+    /** Called by DiscordWebSocketImpl after a successful RESUME or READY. */
+    fun markConnected() {
+        lastConnectedTimeMs = System.currentTimeMillis()
+    }
+
+    private fun presenceHash(name: String?, details: String?, state: String?, timestamps: kizzy.gateway.entities.presence.Timestamps?): Int {
+        var result = 1
+        result = 31 * result + (name?.hashCode() ?: 0)
+        result = 31 * result + (details?.hashCode() ?: 0)
+        result = 31 * result + (state?.hashCode() ?: 0)
+        result = 31 * result + (timestamps?.start?.hashCode() ?: 0)
+        result = 31 * result + (timestamps?.end?.hashCode() ?: 0)
+        return result
+    }
 
     fun closeRPC() {
         discordWebSocket.close()
@@ -77,11 +104,11 @@ class KizzyRPC @Inject constructor(
     /**
      * Activity Name of Rpc
      *
-     * @param activity_name
+     * @param activityName Activity name
      * @return
      */
-    fun setName(activity_name: String?): KizzyRPC {
-        this.activityName = activity_name
+    fun setName(activityName: String?): KizzyRPC {
+        this.activityName = activityName
         return this
     }
 
@@ -130,46 +157,46 @@ class KizzyRPC @Inject constructor(
      * How to get Image ?
      * Upload image to any discord chat and copy its media link it should look like "https://media.discordapp.net/attachments/90202992002/xyz.png" now just use the image link from attachments part
      * so it would look like: .setLargeImage("attachments/90202992002/xyz.png")
-     * @param large_image
+     * @param largeImage
      * @return
      */
-    fun setLargeImage(large_image: RpcImage?, large_text: String? = null): KizzyRPC {
-        this.largeText = large_text.takeIf { !it.isNullOrEmpty() }
-        this.largeImage = large_image
+    fun setLargeImage(largeImage: RpcImage?, largeText: String? = null): KizzyRPC {
+        this.largeText = largeText.takeIf { !it.isNullOrEmpty() }
+        this.largeImage = largeImage
         return this
     }
 
     /**
      * Small image on Rpc
      *
-     * @param small_image
+     * @param smallImage
      * @return
      */
-    fun setSmallImage(small_image: RpcImage?, small_text: String? = null): KizzyRPC {
-        this.smallText = small_text.takeIf { !it.isNullOrEmpty() }
-        this.smallImage = small_image
+    fun setSmallImage(smallImage: RpcImage?, smallText: String? = null): KizzyRPC {
+        this.smallText = smallText.takeIf { !it.isNullOrEmpty() }
+        this.smallImage = smallImage
         return this
     }
 
     /**
-     * start timestamps
+     * Start timestamps
      *
-     * @param start_timestamps
+     * @param startTimestamps
      * @return
      */
-    fun setStartTimestamps(start_timestamps: Long?): KizzyRPC {
-        this.startTimestamps = start_timestamps
+    fun setStartTimestamps(startTimestamps: Long?): KizzyRPC {
+        this.startTimestamps = startTimestamps
         return this
     }
 
     /**
-     * stop timestamps
+     * Stop timestamps
      *
-     * @param stop_timestamps
+     * @param stopTimestamps
      * @return
      */
-    fun setStopTimestamps(stop_timestamps: Long?): KizzyRPC {
-        this.stopTimestamps = stop_timestamps
+    fun setStopTimestamps(stopTimestamps: Long?): KizzyRPC {
+        this.stopTimestamps = stopTimestamps
         return this
     }
 
@@ -238,12 +265,12 @@ class KizzyRPC @Inject constructor(
     /**
      * Button2 text and url
      *
-     * @param button2_text Button label text
+     * @param button2Text Button label text
      * @param url Button URL
      * @return
      */
-    fun setButton2(button2_text: String?, url: String? = null): KizzyRPC {
-        button2_text?.let { buttons.add(ActivityButton(label = it, url = url.orEmpty())) }
+    fun setButton2(button2Text: String?, url: String? = null): KizzyRPC {
+        button2Text?.let { buttons.add(ActivityButton(label = it, url = url.orEmpty())) }
         return this
     }
 
@@ -319,13 +346,12 @@ class KizzyRPC @Inject constructor(
                         smallText = smallText?.sanitize()
                     ).takeIf { largeImage != null || smallImage != null },
                     buttons = buttons.takeIf { buttons.isNotEmpty() },
-                    metadata = Metadata(buttonUrls = emptyList()).takeIf { false }, // buttons now embedded in Activity
                     applicationId = applicationIdNumber.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID,
                     url = url
                 )
             ),
             afk = true,
-            since = startTimestamps.takeIf { startTimestamps != null }?: System.currentTimeMillis(),
+            since = startTimestamps,
             status = status
         )
         connectToWebSocket()
@@ -337,17 +363,39 @@ class KizzyRPC @Inject constructor(
                 event = "Token Seems to be invalid, Please Login if you haven't"
             )
         discordWebSocket.connect()
+        markConnected()
         discordWebSocket.sendActivity(presence)
     }
 
     suspend fun updateRPC(commonRpc: CommonRpc, enableTimestamps: Boolean? = true, status: String? = null) {
         if (!discordWebSocket.isActive) return
-        var time = Timestamps(start = startTimestamps)
-        if (commonRpc.time != null)
-            Timestamps(end = commonRpc.time.end, start = commonRpc.time.start).also { time = it }
+        // Convert com.my.kizzy.data.rpc.Timestamps -> kizzy.gateway.entities.presence.Timestamps
+        val time = commonRpc.time?.let { t ->
+            kizzy.gateway.entities.presence.Timestamps(start = t.start, end = t.end)
+        }.takeIf { enableTimestamps == true }
         if (commonRpc.partyCurrentSize != null && commonRpc.partyMaxSize != null)
             Party(id = "kizzy", size = arrayOf(commonRpc.partyCurrentSize, commonRpc.partyMaxSize)).also { party = it }
         val effectiveStatus = status ?: this.status
+
+        // Delay first presence update after connect/resume to avoid Discord 4003 (Not authenticated)
+        // when presence is sent immediately after RESUME/READY.
+        val timeSinceConnect = System.currentTimeMillis() - lastConnectedTimeMs
+        if (timeSinceConnect > 0L && timeSinceConnect < POST_CONNECT_DELAY_MS) {
+            logger.d("KizzyRPC", "Delaying presence update ${POST_CONNECT_DELAY_MS - timeSinceConnect}ms after connect")
+            delay(POST_CONNECT_DELAY_MS - timeSinceConnect)
+        }
+
+        // Deduplication: skip if presence data unchanged and within minimum interval
+        val now = System.currentTimeMillis()
+        val hash = presenceHash(commonRpc.name, commonRpc.details, commonRpc.state, time)
+        val intervalElapsed = now - lastPresenceTimeMs >= PRESENCE_MIN_INTERVAL_MS
+        if (hash == lastPresenceHash && !intervalElapsed) {
+            logger.d("KizzyRPC", "Skipping duplicate presence update (within ${PRESENCE_MIN_INTERVAL_MS}ms)")
+            return
+        }
+        lastPresenceHash = hash
+        lastPresenceTimeMs = now
+
         discordWebSocket.sendActivity(
             Presence(
                 activities = listOf(
@@ -357,7 +405,7 @@ class KizzyRPC @Inject constructor(
                         state = commonRpc.state?.takeIf { it.isNotEmpty() }?.sanitize(),
                         type = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0],
                         platform = commonRpc.platform?.sanitize(),
-                        timestamps = time.takeIf { enableTimestamps == true },
+                        timestamps = time,
                         assets = Assets(
                                 largeImage = commonRpc.largeImage?.resolveImage(kizzyRepository),
                                 smallImage = commonRpc.smallImage?.resolveImage(kizzyRepository),
@@ -366,13 +414,12 @@ class KizzyRPC @Inject constructor(
                             ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
                         party = party.takeIf { party != null },
                         buttons = buttons.takeIf { buttons.isNotEmpty() },
-                        metadata = Metadata(buttonUrls = emptyList()).takeIf { false }, // buttons now embedded in Activity
                         applicationId = applicationIdNumber.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID
 
                     )
                 ),
                 afk = true,
-                since = startTimestamps,
+                since = time?.start,
                 status = effectiveStatus
             )
         )
