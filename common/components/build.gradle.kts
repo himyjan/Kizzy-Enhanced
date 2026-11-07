@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation (projects.theme)
     implementation (libs.material3)
+    implementation (libs.material3.windows.size)
     implementation (projects.color)
     implementation (libs.coil)
     implementation (projects.common.resources)

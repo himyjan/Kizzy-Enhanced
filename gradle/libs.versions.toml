@@ -51,6 +51,7 @@ compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = 
 # Material3 — version from BOM
 material3 = { module = "androidx.compose.material3:material3" }
 material3-windows-size = { module = "androidx.compose.material3:material3-window-size-class" }
+material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version = "1.4.0-alpha03" }
 
 # Compose — versions from BOM
 compose-ui = { module = "androidx.compose.ui:ui" }
