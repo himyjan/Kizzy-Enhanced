@@ -1658,7 +1658,7 @@ modifications from the UI thread while serialization happens on the IO dispatche
 
 ---
 
-## 61. Technical Review: Media3 1.11 (Not Adopted)
+## 62. Technical Review: Media3 1.11 (Not Adopted)
 
 **Source:** [Android Developers Blog — Media3 1.11 What's New](https://android-developers.googleblog.com/2026/07/five-years-of-jetpack-compose.html)
 
@@ -1690,7 +1690,7 @@ Media3 1.11 introduces significant new features for media playback apps, but **w
 
 ---
 
-## 62. Related Resource: Android DevBlog — Devices Extend Seamlessly to Desktop
+## 63. Related Resource: Android DevBlog — Devices Extend Seamlessly to Desktop
 
 **Source:** [Android Developers Blog — Android devices extend seamlessly to desktop](https://android-developers.googleblog.com/2026/03/android-devices-extend-seamlessly-to.html)
 
@@ -1765,7 +1765,87 @@ Kizzy's `AdaptiveLayout.kt` already implements the adaptive patterns recommended
 
 ---
 
-## 63. Build Verification
+## 65. Related Resource: Jetpack AndroidX Versions (All Channel)
+
+**Source:** [AndroidX Versions — All Channel](https://developer.android.com/jetpack/androidx/versions/all-channel)
+
+### Key Library Versions (as of Nov 2026)
+
+| Library | Latest Version | Channel |
+|---------|---------------|---------|
+| androidx.compose.ui | 1.13.0-rc01 | Release Candidate |
+| androidx.compose.foundation | 1.13.0-rc01 | Release Candidate |
+| androidx.compose.material3 | 1.5.0-rc01 | Release Candidate |
+| androidx.compose.runtime | 1.13.0-rc01 | Release Candidate |
+| androidx.compose.animation | 1.13.0-rc01 | Release Candidate |
+| androidx.compose.material3 | 1.12.1 | Stable (Sep 2026) |
+| androidx.navigation3 | 1.2.1 | Stable |
+| androidx.navigation | 2.10.2 | Stable |
+| androidx.window | 1.6.0-alpha05 | Alpha |
+
+### Notable Changes
+
+- **minSdk 24 change (July 2026):** Many AndroidX libraries updated to require minSdk 24
+- **Jetpack library signing:** Started June 2023
+- Kizzy uses Compose BOM `2026.09.00` which maps to Compose 1.12.x stable — consistent with the stable releases shown
+
+---
+
+## 66. Related Resource: Jetpack Compose Roadmap
+
+**Source:** [Jetpack Compose Roadmap](https://developer.android.com/jetpack/androidx/compose-roadmap)
+
+### Upcoming Features
+
+| Area | Features | Status |
+|------|----------|--------|
+| Material 3 | Scrollbars, Styles integration, Stabilize Material 3, Expressive Components, Bottom sheet improvements | In Development |
+| Foundation | Styles (Experimental), FlexBox (Experimental), Grid layout (Experimental), UIMediaQuery (Experimental) | Experimental |
+| Graphics | Mesh Gradients, GraphicsLayer Outsets, Performance improvements | In Development |
+| Text | Variable fonts via downloadable fonts, Multistyle text editing | In Development |
+| Animation | Layout animation visual debugging, Shared element transitions | In Development |
+| Testing | Screenshot testing improvements, Accessibility Checks | In Development |
+| Tools | GenAI & UI development experiments, Compose UI Check | In Development |
+
+### Already Released
+
+- Scroll performance on par with Views since **Compose 1.9.0**
+- Material 3 adaptive components (Grid, FlexBox, MediaQuery) — Experimental
+
+---
+
+## 67. Related Resource: Build It Your Way — Next Era of Android Development
+
+**Source:** [Android Developers Blog — Build it your way: A next era of Android development](https://developer.android.com/blog/posts/build-it-your-way-a-next-era-of-android-development?hl=zh-tw)
+
+### Key Announcements
+
+- **Android Studio Rabbit 2 (Stable):** Choose preferred programming agent (Claude, Codex, Antigravity, or 40+ ACP-compliant agents)
+- **Android CLI updates:** Device Streaming, Compose previews without emulator, Perfetto system tracing, App bundle quality signals
+- **30+ Android skills for agents:** Covering 20+ domains including Compose performance optimization
+- **AppFunctions API (Beta):** Unified tool-calling layer to expose functions to on-device agents
+- **A2UI / Agent-to-UI (Alpha):** Converts agent responses to native Compose UI components
+- **ML Kit Agentic API (Alpha) with Gemini Nano 4:** Autonomous agent execution with tool calling
+
+### Compose 1.13 (Stable, Upcoming)
+
+- Built-in adaptive layout support
+- **Grid and Flexbox move to stable**
+- New features: progressive blur, formatted text
+- **AppState (Alpha):** Compose-first architecture building blocks for state retention across device configurations
+- **Navigation 3 (1.2 Stable):** Deep link support, richer predictive back handling
+
+### Adaptive UI & Multi-Form-Factor
+
+- Apps fluidly adjust between phone and laptop without separate code
+- Compose adaptive skills help convert mobile apps to run on foldables, tablets, parked cars, XR
+- Adaptive UI auditing: keyboard shortcuts, custom pointer cursors, hover states, tooltips
+- Layout migration to Grid, FlexBox, MediaQuery
+- Google Play will monitor foldable app quality and provide showcase opportunities
+
+---
+
+## 68. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
