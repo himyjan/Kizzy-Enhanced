@@ -357,7 +357,7 @@ open class DiscordWebSocketImpl(
     private fun startHeartbeatJob(interval: Long) {
         heartbeatJob?.cancel()
         awaitingHeartbeatAck = false
-        heartbeatJob = launch(coroutineContext) {
+        heartbeatJob = launch((externalScope?.coroutineContext ?: supervisorJob) + Dispatchers.IO) {
             while (isActive) {
                 if (awaitingHeartbeatAck) {
                     logger.w("Gateway", "No heartbeat ACK — zombie connection, reconnecting")
