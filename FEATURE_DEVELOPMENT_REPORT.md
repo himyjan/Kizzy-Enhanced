@@ -1658,6 +1658,38 @@ modifications from the UI thread while serialization happens on the IO dispatche
 
 ---
 
+## 61. Technical Review: Media3 1.11 (Not Adopted)
+
+**Source:** [Android Developers Blog — Media3 1.11 What's New](https://android-developers.googleblog.com/2026/07/five-years-of-jetpack-compose.html)
+
+### Review Summary
+
+Media3 1.11 introduces significant new features for media playback apps, but **was not adopted** in Kizzy because the app does not handle media playback directly. Kizzy is a Discord Rich Presence application that uses the Discord WebSocket gateway API for presence updates, not a media player.
+
+### Media3 1.11 Key Features (for reference)
+
+| Feature | Description | Relevance to Kizzy |
+|---------|-------------|-------------------|
+| Player Compose slots | `topControls`, `centerControls`, `bottomControls`, `errorOverlay` | N/A — no media player UI |
+| PlayerPool | Automatic player recycling for sliding-window feeds | N/A |
+| MiniController | Composable showing title, artist, artwork, progress | N/A |
+| Reactive state holders | `rememberCurrentMediaItemState`, `rememberPlaylistState`, `rememberErrorState` | N/A |
+| Cast integration | `CastParams`, `MediaRouteButton` with SystemUI Output Switcher | N/A |
+| HAGC dynamic HDR (API 37+) | Progressive HDR metadata support | N/A |
+| Ktor HTTP client extension | `KtorDataSource` — coroutine-friendly networking | ⚠️ Potential future consideration |
+| OggMuxer / WavMuxer | Audio muxing utilities | N/A |
+| Chapter extraction | MP4/Matroska chapter metadata | N/A |
+
+### Behavioral Change
+
+- **Safer MediaSession defaults**: Session data no longer shared with untrusted controllers by default. Apps must implement `onConnect` or `onConnectAsync` in `MediaSession.Callback` to authorize connections.
+
+### Decision
+
+**Not adopted** — Kizzy does not play media. It sends Rich Presence updates to Discord via WebSocket. If media playback is ever added to the app, Media3 1.11 with `KtorDataSource` would be a strong candidate given the project already uses Ktor.
+
+---
+
 ## 60. Build Verification
 
 ```
