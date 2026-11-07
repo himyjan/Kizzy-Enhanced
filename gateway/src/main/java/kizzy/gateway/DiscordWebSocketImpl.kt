@@ -219,6 +219,7 @@ open class DiscordWebSocketImpl(
             connectionMutex.withLock {
                 reconnectScheduled = false
                 if (deliberateClose) return@launch
+                _connectionState.value = ConnectionState.Reconnecting(reconnectAttempts)
                 if (connectionJob?.isActive == true) {
                     logger.i("Gateway", "Reconnect skipped: a connection is already open or opening")
                     return@launch
