@@ -64,9 +64,13 @@
 52. [Build Task: normalizeStringResources — Illegal Escape Cleanup](#build-task-normalizestringresources-illegal-escape-cleanup)
 53. [Bug Fix: AAPT2 Unicode Escape Crash — CDATA String Normalization](#bug-fix-aapt2-unicode-escape-crash-cdata-string-normalization)
 54. [Bug Fix: Missing ActivityTranslucent Style Resource](#bug-fix-missing-activitytranslucent-style-resource)
-55. [CI/CD: GitHub Actions AAPT2 Override](#cicd-github-actions-aapt2-override)
-56. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-57. [Build Verification](#build-verification)
+55. [Bug Fix: Media RPC — Discord Gateway Stability, Timeline Pause, Cover Art, First Song](#bug-fix-media-rpc--discord-gateway-stability--timeline-pause--cover-art--first-song)
+56. [Bug Fix: Media RPC — SupervisorJob Upload Retry & WorkManager Background Recovery](#bug-fix-media-rpc--supervisorjob-upload-retry--workmanager-background-recovery)
+57. [Bug Fix: Media RPC Notification — Buttons Always Present & Click-to-Open App](#bug-fix-media-rpc-notification--buttons-always-present--click-to-open-app)
+58. [Bug Fix: Experimental RPC — Remove "Using Kizzy RPC" Default Presence Text](#bug-fix-experimental-rpc--remove-using-kizzy-rpc-default-presence-text)
+59. [CI/CD: GitHub Actions AAPT2 Override](#cicd-github-actions-aapt2-override)
+60. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+61. [Build Verification](#build-verification)
 
 ---
 
@@ -1382,7 +1386,191 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 ---
 
-## 56. Build Verification
+## 46. Bug Fix: Media RPC — Discord Gateway Stability, Timeline Pause, Cover Art, First Song
+
+**Files:** `KizzyRPC.kt`, `MediaRpcService.kt`, `ExperimentalRpc.kt`, `GetCurrentlyPlayingMedia.kt`, `GetCurrentPlayingMediaAll.kt`, `MetadataResolver.kt`, `RpcImage.kt`, `NotificationListener.kt`, `MediaRpc.kt`, `HiltWorkers.kt`, `LogScreen.kt`
+
+### Problems Fixed
+
+1. **Discord gateway unstable** — Frequent `Connection to gateway closed`, `INVALID_SESSION`, and `SESSIONS_REPLACE` storms caused by unbounded `PRESENCE_UPDATE` sends. Every media session event fired a presence update instantly, flooding Discord's gateway and triggering disconnects.
+
+2. **Timeline does not stop on pause** — `startTimestamps`/`stopTimestamps` were sent even when `isPaused == true`, so Discord's progress bar kept counting up after pause.
+
+3. **Next song not detected** — Experimental RPC's `activeSessionsListener()` called `getCurrentPlayingMediaAll()` immediately on session change, before YouTube/LX Music metadata populated, so the first song never appeared until switching tracks.
+
+4. **LX Music cover art swapped** — `largeImage` was set to `appIcon` and `smallImage` to `coverArt` (reversed). Large image should show album cover, small image should show app icon.
+
+5. **YouTube cover art missing** — `getCoverArt()` only checked `ALBUM_ART`/`ART`, missing `DISPLAY_ICON` which YouTube uses for thumbnails. `getArtworkUri()` did not exist.
+
+6. **Log copy-all copies filtered subset** — `LogScreen.kt` FloatingActionButton copied `visibleLogs` (search-filtered) instead of `viewModel.logs` (all logs).
+
+### Fixes Applied
+
+**`data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`**
+- Added presence update **deduplication + throttling** (1.5s minimum interval via `companion object const val PRESENCE_MIN_INTERVAL_MS`)
+- Added `presenceHash()` comparing `name`, `details`, `state`, `timestamps.start`, `timestamps.end`
+- Skips `sendActivity()` when presence data unchanged within the interval — prevents gateway flooding from `SESSIONS_REPLACE` bursts
+- Removed dead `Metadata(buttonUrls = emptyList()).takeIf { false }` code from `build()` and `updateRPC()`
+- Removed unused `Metadata` import
+- Renamed underscore parameters to camelCase: `activity_name` → `activityName`, `large_image` → `largeImage`, `large_text` → `largeText`, `small_image` → `smallImage`, `small_text` → `smallText`, `start_timestamps` → `startTimestamps`, `stop_timestamps` → `stopTimestamps`, `button2_text` → `button2Text`
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+- `setStartTimestamps()` / `setStopTimestamps()` now use `if (enableTimestamps && !isPaused)` — clears Discord timestamps when paused
+- `kizzyRPC.updateRPC(playingMedia, if (isPaused) null else enableTimestamps)` — passes `null` when paused for media-buttons path
+- Notification text now uses `playingMedia.details` (track title) instead of `playingMedia.state` (artist info)
+- Added album art via `setLargeIcon(coverBitmap)` from `RpcImage.BitmapImage`
+- Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+- Added `delay(500)` before `getCurrentPlayingMediaAll()` in `activeSessionsListener()` — gives media metadata time to populate on first song
+- `finalTimestamps` now returns `null` when `playbackState != STATE_PLAYING` — clears Discord timeline on pause/stop
+- `finalState` now uses `richMediaInfo?.state` (combined artist + channels) instead of `richMediaInfo?.artist`
+
+**`data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentlyPlayingMedia.kt`**
+- **Image swap fix:** `largeImage = coverArt`, `smallImage = appIcon` (was reversed)
+- `smallText` now shows `appName` when app icon is enabled, otherwise `null`
+- Added `if (title == null)` guard — skips sessions without title metadata
+- Fixed `RpcImage.ImageUrl()` → `artworkUri.toRpcImage()` (compile fix)
+- Fixed undefined `stateBuilder` → removed (compile fix)
+- Added artwork URI fallback: local `content://`/`file://` URIs decoded to bitmap; `http(s)` via `toRpcImage()`
+- State now combines formatted artists + audio channels via `getAudioChannels()` joined with `" · "`
+- Robust timestamp computation with `elapsedRealtime` extrapolation and playback speed handling; handles `duration == 0` (Shorts/live streams)
+
+**`data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentPlayingMediaAll.kt`**
+- Same image swap fix, title guard, artwork URI fallback, multi-artist/channel state, and robust timestamps as `GetCurrentlyPlayingMedia.kt`
+
+**`data/src/main/java/com/my/kizzy/data/get_current_data/media/MetadataResolver.kt`**
+- `getCoverArt()` now falls back to `METADATA_KEY_DISPLAY_ICON` (YouTube thumbnails)
+- Added `getArtworkUri()` — checks `ALBUM_ART_URI`, `ART_URI`, `DISPLAY_ICON_URI`
+
+**`data/src/main/java/com/my/kizzy/data/get_current_data/media/RichMediaMetadata.kt`**
+- Added `state: String?` field carrying combined artist + channel info
+
+**`data/src/main/java/com/my/kizzy/data/rpc/RpcImage.kt`**
+- Uploads run on `uploadScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)` — cancellation-immune; heartbeat cancellation no longer kills uploads mid-flight
+- Added `inFlightArtUploads` / `inFlightIconUploads` de-dup maps — identical resolve bursts share one upload (fixes 4× repeated 84KB POSTs)
+- Added 12h TTL cache (`freshId`/`anyId`/`stamp`/`prunedCache`) — failed uploads fall back to last good id instead of blanking art
+- Cache mutex (`artworkCacheMutex` / `appIconCacheMutex`) prevents concurrent read-check-write races
+- `BitmapImage` with null bitmap falls back to last cached id instead of returning null
+
+**`data/src/main/java/com/my/kizzy/data/work/HiltWorkers.kt`**
+- Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
+
+**`feature_media_rpc/src/main/java/com/my/kizzy/feature_media_rpc/MediaRpc.kt`**
+- Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/NotificationListener.kt`**
+- Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
+
+**`data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentPlayingMedia.kt`**
+- Deleted (duplicate class `GetCurrentPlayingMedia` — same name as `GetCurrentlyPlayingMedia.kt` in same package)
+
+**`feature_logs/src/main/java/com/my/kizzy/feature_logs/LogScreen.kt`**
+- FloatingActionButton "Copy all logs" now copies `viewModel.logs` (all logs) instead of `visibleLogs` (search-filtered subset)
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Discord gateway stability | `Connection closed` / `INVALID_SESSION` every few seconds | Stable connection; deduplicated presence updates |
+| Timeline on pause | Progress bar kept counting up | Progress bar clears on pause |
+| First song (Experimental RPC) | Never shown until switching tracks | Shows immediately (500ms metadata delay) |
+| LX Music cover art | App icon = large, cover art = small (swapped) | Cover art = large, app icon = small |
+| YouTube cover art | Missing (Kizzy default logo) | `DISPLAY_ICON` / `ART_URI` / notification fallback |
+| Log copy-all | Copied filtered subset | Copies all unfiltered logs |
+
+---
+
+## 56. Bug Fix: Media RPC — SupervisorJob Upload Retry & WorkManager Background Recovery
+
+**Files:** `RpcImage.kt`, `MediaRpcService.kt`
+
+### Problems Fixed
+
+1. **Cover art upload failures on network switching (Wi-Fi ↔ Cellular)** — When network switched mid-upload, the `~269KB` art POST would fail once and never recover, leaving cover art blank for the rest of the session. No retry mechanism existed.
+
+2. **App killed from Recents / background process termination** — When the user swiped the app from Recents or the system hard-killed the process (HiOS, MIUI, EMUI), Discord RPC stopped completely with no automatic recovery mechanism.
+
+### Fixes Applied
+
+**`data/src/main/java/com/my/kizzy/data/rpc/RpcImage.kt`**
+- Added `retryUpload<T>()` suspend function with **exponential backoff** (1s → 2s → 4s, max 3 attempts)
+- Applied retry to both `ApplicationIcon` and `BitmapImage` upload paths
+- **Structured concurrency safety:** `CancellationException` is re-thrown (not swallowed) so SupervisorJob cancellation propagates correctly when songs change rapidly
+- **Structured logging:** Uses `android.util.Log.w(TAG, message, exception)` with full stack trace preserved in Logcat
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+- `onTaskRemoved()` now schedules `RpcRecoveryHiltWorker` via WorkManager
+- Added `super.onTaskRemoved(intent)` for proper Android Service lifecycle cleanup
+- Changed work policy to `ExistingWorkPolicy.REPLACE` — ensures the latest swiped-away event's recovery command always takes effect, preventing rapid double-swipe edge cases where the first Worker might fail before the second executes
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Upload on network switch | Single POST attempt; blank art on failure | 3-attempt exponential backoff; self-healing uploads |
+| App swiped from Recents | RPC stopped permanently | WorkManager schedules background recovery |
+| Service lifecycle | Missing `super.onTaskRemoved()` call | Proper lifecycle cleanup |
+| Work policy | `KEEP` (risk of discarded retries) | `REPLACE` (latest event wins) |
+
+---
+
+## 57. Bug Fix: Media RPC Notification — Buttons Always Present & Click-to-Open App
+
+**Files:** `MediaRpcService.kt`
+
+### Problems Fixed
+
+1. **Notification buttons disappearing on track change** — The `notificationBuilder` (lazy) originally only set `setSmallIcon()`, `setOngoing()`, and `setPriority()`. When `updatePresence()` rebuilt the notification with new track title/art, the Restart and Exit action buttons were lost because they were only defined in `onCreate()`'s separate builder, not in the lazy builder used by `updatePresence()`.
+
+2. **Notification click not opening app** — The notification had no `setContentIntent()`, so tapping the notification did not launch the main app. Users had to open the app manually from the launcher.
+
+### Fixes Applied
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+- **`notificationBuilder` lazy builder** now includes:
+  - `setContentIntent(appPendingIntent)` — tapping the notification opens the main app via `PendingIntent.getActivity()` with `FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT`
+  - Restart action button — sends `ACTION_RESTART_SERVICE` to the service
+  - Exit action button — sends `ACTION_STOP_SERVICE` to the service
+- Because `notificationBuilder` is `lazy`, the builder is created once and the buttons/contentIntent persist across every `updatePresence()` call — they are never stripped when only title/text/icon are updated.
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Notification buttons | Disappeared on track change (only in `onCreate()` builder) | Always present in `notificationBuilder` (lazy, built once) |
+| Notification tap | No action (nothing happened) | Opens main app via `setContentIntent()` |
+
+---
+
+## 58. Bug Fix: Experimental RPC — Remove "Using Kizzy RPC" Default Presence Text
+
+**Files:** `ExperimentalRpc.kt`
+
+### Problems Fixed
+
+1. **Discord showing "Using Kizzy RPC" placeholder text** — When no media session or app was active, `ExperimentalRpc.kt` hardcoded `finalName = "Kizzy"`, `finalDetails = "Using Kizzy RPC"`, and `finalState = "Idle"` as fallback values. Discord would display this placeholder text even when nothing was playing, which was confusing and unprofessional.
+
+2. **Idle presence showing raw template keys** — When `templateName`/`templateDetails`/`templateState` contained template keys (e.g. `{{app_name}}`) but no media context existed to resolve them, Discord would show the raw keys instead of nothing.
+
+### Fixes Applied
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+- Changed `finalName` from `"Kizzy"` to `null`
+- Changed `finalDetails` from `"Using Kizzy RPC"` to `null`
+- Changed `finalState` from `"Idle"` to `null`
+- When no media/app context exists, all presence fields are now `null`, so Discord shows nothing instead of placeholder text
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Discord idle presence | Showed "Kizzy - Using Kizzy RPC - Idle" | Shows nothing (empty fields) |
+| No media context | Hardcoded placeholder text | All fields null, Discord displays empty activity |
+
+---
+
+## 59. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
