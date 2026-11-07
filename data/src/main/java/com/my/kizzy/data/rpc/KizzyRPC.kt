@@ -433,12 +433,6 @@ class KizzyRPC @Inject constructor(
             logger.d("KizzyRPC", "Skipping duplicate presence update (within ${PRESENCE_MIN_INTERVAL_MS}ms)")
             return
         }
-        lastPresenceHash = hash
-        lastPresenceTimeMs = now
-
-        // Create immutable copy of buttons to prevent ConcurrentModificationException
-        // when buttons list is modified on another thread while serializing on Dispatcher.IO
-        val buttonsSnapshot = buttons.toList().takeIf { it.isNotEmpty() }
 
         discordWebSocket.sendActivity(
             Presence(
@@ -467,7 +461,8 @@ class KizzyRPC @Inject constructor(
                 status = effectiveStatus
             )
         )
-        // Remember the presence so we can re-apply after reconnect
-                lastPresence = presence
-    }
+        // Only update cache AFTER successful upload - if sendActivity() timed out
+        // (socket not connected within 15s), we want to retry next time
+        lastPresenceHash = hash
+        lastPresenceTimeMs = now
 }
