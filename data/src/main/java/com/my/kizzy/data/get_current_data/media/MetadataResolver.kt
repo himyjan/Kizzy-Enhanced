@@ -23,10 +23,31 @@ class MetadataResolver @Inject constructor() {
     }
 
     fun getCoverArt(metadata: MediaMetadata): Bitmap? {
-        return if (metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) != null) metadata.getBitmap(
-            MediaMetadata.METADATA_KEY_ALBUM_ART
+        // Prefer real album art, then generic art, then the DISPLAY_ICON bitmap. YouTube commonly
+        // ships its thumbnail as the DISPLAY_ICON bitmap and sets neither ALBUM_ART nor ART, so
+        // without this last fallback the presence had no image and Discord showed the Kizzy logo.
+        return metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+            ?: metadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
+            ?: metadata.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
+    }
+
+    /**
+     * A URL to the artwork/thumbnail when no embedded bitmap is present. Apps like YouTube
+     * do not populate the ALBUM_ART/ART bitmap keys but do expose a thumbnail URL through
+     * the *_URI keys, so reading these lets the presence show a real image (the video
+     * thumbnail) instead of Discord's default app icon.
+     */
+    fun getArtworkUri(metadata: MediaMetadata): String? {
+        val keys = listOf(
+            MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
+            MediaMetadata.METADATA_KEY_ART_URI,
+            MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI,
         )
-        else metadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
+        for (key in keys) {
+            val value = metadata.getString(key)
+            if (!value.isNullOrEmpty()) return value
+        }
+        return null
     }
 
     fun getArtistOrAuthor(metadata: MediaMetadata): String? {
