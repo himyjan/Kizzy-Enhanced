@@ -357,11 +357,19 @@ class KizzyRPC @Inject constructor(
         connectToWebSocket()
     }
     private suspend fun connectToWebSocket() {
-        if (!isUserTokenValid())
+        if (!isUserTokenValid()) {
             logger.e(
                 tag = "KizzyRPC",
                 event = "Token Seems to be invalid, Please Login if you haven't"
             )
+            return
+        }
+        // Don't reconnect if already connected - prevents multiple concurrent WebSocket connections
+        // that cause Discord 4003 Not authenticated errors
+        if (discordWebSocket.isWebSocketConnected()) {
+            logger.d("KizzyRPC", "WebSocket already connected, skipping connect")
+            return
+        }
         discordWebSocket.connect()
         markConnected()
         discordWebSocket.sendActivity(presence)

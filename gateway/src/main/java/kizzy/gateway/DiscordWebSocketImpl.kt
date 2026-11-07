@@ -94,6 +94,14 @@ open class DiscordWebSocketImpl(
                 logger.i("Gateway", "Connect called")
                 instance = this@DiscordWebSocketImpl
                 _connectionState.value = ConnectionState.Connecting
+
+                // Close existing websocket before creating new one - prevents multiple
+                // concurrent connections that cause Discord 4003 Not authenticated
+                websocket?.close(
+                    CloseReason(1000, "Reconnecting")
+                )
+                websocket = null
+
                 val url = resumeGatewayUrl ?: gatewayUrl
                 websocket = client.webSocketSession(url)
                 reconnectAttempts = 0
