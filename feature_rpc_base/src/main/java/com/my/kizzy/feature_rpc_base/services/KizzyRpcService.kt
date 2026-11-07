@@ -13,7 +13,9 @@ import androidx.core.app.NotificationCompat
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.feature_rpc_base.security.SecureTokenStorage
+import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.resources.R
+import com.my.kizzy.data.work.WorkManagerHelper
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -35,6 +37,11 @@ class KizzyRpcService : Service() {
 
     @Inject
     lateinit var stateRepository: KizzyStateRepository
+
+    @Inject
+    lateinit var logger: Logger
+
+    private val TAG = "KizzyRpcService"
 
     private var isPaused = false
     private var lastKnownTitle: String? = null
@@ -206,10 +213,22 @@ class KizzyRpcService : Service() {
         }
     }
 
+    override fun onTaskRemoved(intent: Intent?) {
+        super.onTaskRemoved(intent)
+        val now = System.currentTimeMillis()
+        logger.d(TAG, "[$now] onTaskRemoved: user swiped app from Recents")
+        WorkManagerHelper.scheduleRpcRecovery(this)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         stateRepository.setConnected(false)
         stateRepository.setPaused(false)
+        // Schedule RPC recovery via WorkManager so presence can be restored after
+        // aggressive task removal or process termination by the system.
+        val now = System.currentTimeMillis()
+        logger.d(TAG, "[$now] onDestroy: scheduling RPC recovery via WorkManager")
+        WorkManagerHelper.scheduleRpcRecovery(this)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
