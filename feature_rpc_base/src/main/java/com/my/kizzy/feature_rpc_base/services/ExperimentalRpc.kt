@@ -265,6 +265,15 @@ class ExperimentalRpc : Service() {
         richMediaInfo: RichMediaMetadata? = null,
         rawMediaMetadata: MediaMetadata? = null,
     ) {
+        // If no media data at all, don't touch Discord at all - just return.
+        // Sending empty presence would clear Discord's display and close the RPC.
+        // When media loads later, MediaControllerCallback will trigger updatePresence
+        // with real data.
+        if (richMediaInfo == null && appInfo == null) {
+            logger.d(TAG, "No media data available - skipping presence update, waiting for media to load")
+            return
+        }
+
         val finalName: String?
         val finalDetails: String?
         val finalState: String?
