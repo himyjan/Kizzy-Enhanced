@@ -402,7 +402,9 @@ class KizzyRPC @Inject constructor(
     }
 
     suspend fun updateRPC(commonRpc: CommonRpc, enableTimestamps: Boolean? = true, status: String? = null) {
-        if (!discordWebSocket.isActive) return
+        // Don't check isRpcRunning() here - sendActivity() will wait for the socket to connect
+        // (up to CONNECT_WAIT_TIMEOUT_MS) before sending. This prevents media detection from
+        // being lost when the gateway hasn't finished connecting yet.
         // Convert com.my.kizzy.data.rpc.Timestamps -> kizzy.gateway.entities.presence.Timestamps
         val time = commonRpc.time?.let { t ->
             kizzy.gateway.entities.presence.Timestamps(start = t.start, end = t.end)
