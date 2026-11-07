@@ -21,6 +21,7 @@ import android.os.PowerManager.WakeLock
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.KizzyRPC
+import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.work.RpcRecoveryHiltWorker
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
@@ -87,12 +88,46 @@ class MediaRpcService : Service() {
     private var currentMediaController: MediaController? = null
 
     private val notificationBuilder: NotificationCompat.Builder by lazy {
+        // Open main app when notification is clicked
+        val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
+        val appPendingIntent = PendingIntent.getActivity(
+            this, 0, appIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val intent = Intent(this, MediaRpcService::class.java)
+        intent.action = Constants.ACTION_STOP_SERVICE
+        val stopPendingIntent = PendingIntent.getService(
+            this,
+            0, intent, PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val restartIntent = Intent(this, MediaRpcService::class.java)
+        restartIntent.action = Constants.ACTION_RESTART_SERVICE
+        val restartPendingIntent = PendingIntent.getService(
+            this,
+            0, restartIntent, PendingIntent.FLAG_IMMUTABLE
+        )
+
         NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_media_rpc)
-            .setContentTitle("Rich Presence Active")
-            .setContentText("Broadcasting media status")
+            .setContentIntent(appPendingIntent) // Click notification to open app
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_media_rpc,
+                    getString(R.string.restart),
+                    restartPendingIntent
+                ).build()
+            )
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_media_rpc,
+                    getString(R.string.exit),
+                    stopPendingIntent
+                ).build()
+            )
     }
 
     private fun createNotificationChannel() {
@@ -197,7 +232,7 @@ class MediaRpcService : Service() {
                 if (!isPaused && kizzyRPC.isRpcRunning()) {
                     val playingMedia = getCurrentPlayingMedia()
                     if (playingMedia.name.isNotBlank()) {
-                        kizzyRPC.updateRPC(playingMedia, Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false], Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
+                        kizzyRPC.updateRPC(playingMedia, Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true], Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
                     }
                 }
             }
@@ -233,7 +268,7 @@ class MediaRpcService : Service() {
      * @param forceRefresh if true, skips caching logic and always re-fetches media data
      */
     suspend private fun updatePresence(forceRefresh: Boolean = false) {
-        val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]
+        val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
         val playingMedia = getCurrentPlayingMedia()
 
         // Use packageName from fresh media data, not stale currentMediaController
@@ -272,12 +307,16 @@ class MediaRpcService : Service() {
         lastKnownTrackTitle = trackName
         lastKnownTrackArtist = playingMedia.state
 
-        // Update notification text
+        // Update notification
+        val coverBitmap = (playingMedia.smallImage as? RpcImage.BitmapImage)?.bitmap
         notificationBuilder
             .setContentTitle(trackName.orEmpty().ifEmpty { getString(R.string.app_name_full) })
             .setContentText(
-                (playingMedia.state ?: "").ifEmpty { getString(R.string.idling_notification) }
+                (playingMedia.details ?: "").ifEmpty { getString(R.string.idling_notification) }
             )
+        if (coverBitmap != null) {
+            notificationBuilder.setLargeIcon(coverBitmap)
+        }
         notificationManager.notify(
             Constants.NOTIFICATION_ID,
             notificationBuilder.build()
@@ -335,7 +374,7 @@ class MediaRpcService : Service() {
                             }
                         }
                     }
-                    kizzyRPC.updateRPC(playingMedia, enableTimestamps)
+                    kizzyRPC.updateRPC(playingMedia, if (isPaused) null else enableTimestamps)
                 }
             }
         } else {
@@ -353,8 +392,8 @@ class MediaRpcService : Service() {
                 setType(Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0])
                 setDetails(playingMedia.state)
                 setState(playingMedia.state)
-                setStartTimestamps(if (enableTimestamps) playingMedia.time?.start else null)
-                setStopTimestamps(if (enableTimestamps) playingMedia.time?.end else null)
+                setStartTimestamps(if (enableTimestamps && !isPaused) playingMedia.time?.start else null)
+                setStopTimestamps(if (enableTimestamps && !isPaused) playingMedia.time?.end else null)
                 setStatus(if (isPaused) "idle" else Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
                 setLargeImage(playingMedia.largeImage, playingMedia.largeText)
                 setSmallImage(playingMedia.smallImage, playingMedia.smallText)
@@ -571,7 +610,17 @@ class MediaRpcService : Service() {
      * aggressive task removal or process termination.
      */
     override fun onTaskRemoved(intent: Intent?) {
+        super.onTaskRemoved(intent)
         logger.d("MediaRPC", "onTaskRemoved: user swiped app from Recents")
+        // Schedule RPC recovery worker so presence can be restored after
+        // aggressive task removal or process termination by the system.
+        // Use REPLACE to ensure the latest swiped-away event's recovery command always takes effect.
+        WorkManager.getInstance(this)
+            .enqueueUniqueWork(
+                "kizzy_rpc_recovery",
+                ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequestBuilder<RpcRecoveryHiltWorker>().build()
+            )
         // Don't stop the service - keep RPC running in background
         // User can stop it from the notification if they want
         // Just update the notification to show it's running in background
