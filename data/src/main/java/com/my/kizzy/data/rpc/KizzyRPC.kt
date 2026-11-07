@@ -1,15 +1,3 @@
-/*
- *
- *  ******************************************************************
-4:  *  *  * Copyright (C) 2022
- *  *  *  * KizzyRPC.kt is part of Kizzy
- *  *  *  *  and can not be copied and/or distributed without the express
- *  *  *  * permission of yzziK(Vaibhav)
- *  *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.data.rpc
 
 import com.my.kizzy.domain.interfaces.Logger
@@ -26,6 +14,10 @@ import kizzy.gateway.entities.presence.Presence
 import kizzy.gateway.entities.presence.Timestamps
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 
 class KizzyRPC @Inject constructor(
     private val token: String,
@@ -62,10 +54,42 @@ class KizzyRPC @Inject constructor(
     // Tracks when the WebSocket last connected/resumed; delays the first presence
     // update to avoid Discord 4003 (Not authenticated) right after RESUME.
     private var lastConnectedTimeMs: Long = 0L
+    // Remember the last presence so we can re-apply after reconnect (fresh IDENTIFY
+    // creates a brand-new, empty session; the previously-set activity is gone).
+    private var lastPresence: Presence? = null
 
     /** Called by DiscordWebSocketImpl after a successful RESUME or READY. */
-    fun markConnected() {
+    suspend fun markConnected() {
         lastConnectedTimeMs = System.currentTimeMillis()
+        // Re-apply the last presence after reconnect so Discord doesn't show an empty card
+        launchReapplyPresence()
+    }
+
+    /**
+     * Re-apply the last presence after a reconnect. Runs on the gateway's own scope so the
+     * owning service cancelling its update coroutine cannot kill it.
+     */
+    private suspend fun launchReapplyPresence() {
+        val presence = lastPresence ?: return
+        withContext(Dispatchers.IO) {
+            var attempt = 0
+            val maxAttempts = 3
+            while (attempt < maxAttempts) {
+                attempt++
+                delay(if (attempt == 1) 500L else 2000L)
+                if (!discordWebSocket.isWebSocketConnected()) {
+                    continue
+                }
+                try {
+                    discordWebSocket.sendActivity(presence)
+                    logger.i("KizzyRPC", "Presence re-applied after reconnect (attempt $attempt)")
+                    return@withContext
+                } catch (e: Exception) {
+                    logger.e("KizzyRPC", "Presence re-apply attempt $attempt failed: ${e.message ?: ""}")
+                }
+            }
+            logger.e("KizzyRPC", "Presence re-apply gave up after $maxAttempts attempts")
+        }
     }
 
     private fun presenceHash(name: String?, details: String?, state: String?, timestamps: kizzy.gateway.entities.presence.Timestamps?): Int {
@@ -94,7 +118,7 @@ class KizzyRPC @Inject constructor(
      */
     private fun isUserTokenValid(): Boolean {
         /*val regex = Regex(
-            "[a-z\\d]{24}\\.[a-z\\d]{6}\\.([\\w-]{107}|[\\w-]{38}|[\\w-]{27})|mfa\\.[\\w-]{84}",
+            "[a-z\\d]{24}\\.[a-z\\d]{6}\\.([\\w-]{107}|[\\w-]{38}|[\\w-]{27})|mfa\\.[a-z\\d]{8,}",
             RegexOption.IGNORE_CASE
         )
         return regex.matches(token)*/
@@ -354,6 +378,8 @@ class KizzyRPC @Inject constructor(
             since = startTimestamps,
             status = status
         )
+        // Remember the presence so we can re-apply after reconnect
+        lastPresence = presence
         connectToWebSocket()
     }
     private suspend fun connectToWebSocket() {
@@ -431,5 +457,8 @@ class KizzyRPC @Inject constructor(
                 status = effectiveStatus
             )
         )
+        // Remember the presence so we can re-apply after reconnect
+                lastPresence = presence
+                discordWebSocket.sendActivity(presence)
     }
 }
