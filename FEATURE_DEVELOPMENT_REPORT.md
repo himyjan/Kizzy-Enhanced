@@ -1601,6 +1601,63 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 ---
 
+## 61. Bug Fix: ConcurrentModificationException in Discord Gateway Presence Serialization
+
+**File:** `data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`
+
+### Problem
+
+App crashed with:
+
+```
+kotlinx.serialization.json.JsonEncodingException: Serialization of 'kotlin.collections.ArrayList' failed
+  because of an exception in the encoder
+
+Caused by: java.util.NoSuchElementException
+  at java.util.ArrayList$Itr.next(ArrayList.java:1068)
+```
+
+### Root Cause
+
+The `buttons` field in `KizzyRPC` is a shared `ArrayList<ActivityButton>`:
+
+```kotlin
+private var buttons = ArrayList<ActivityButton>()
+```
+
+The list could be modified on one thread (via `setButton1()` / `setButton2()` from UI thread)
+while simultaneously being serialized by `kotlinx.serialization.json` on `Dispatchers.IO`
+in `DiscordWebSocketImpl.sendActivity()`. The serializer's internal iterator threw
+`NoSuchElementException` when the list was structurally modified during iteration.
+
+The crash stack trace showed the failure cascading through:
+1. `KizzyRPC.updateRPC()` → `sendActivity()`
+2. `DiscordWebSocketImpl.sendActivity()` → `Json.encodeToString()`
+3. `kotlinx.serialization.json.StreamingJsonEncoder.encodeSerializableValue()`
+4. `kotlinx.serialization.internal.CollectionLikeSerializer.serialize()`
+5. `java.util.ArrayList$Itr.next()` — `NoSuchElementException`
+
+### Fix
+
+Create an immutable snapshot copy of the buttons list before passing it to the serializer:
+
+```kotlin
+val buttonsSnapshot = buttons.toList().takeIf { it.isNotEmpty() }
+
+// ... then use buttonsSnapshot instead of buttons in the Presence data class
+```
+
+The `.toList()` creates an immutable copy that cannot be affected by concurrent
+modifications from the UI thread while serialization happens on the IO dispatcher.
+
+### Verification
+
+- `:data:compileDebugKotlin` — ✅ BUILD SUCCESSFUL
+- `:gateway:compileKotlin` — ✅ BUILD SUCCESSFUL
+- `:feature_rpc_base:compileDebugKotlin` — ✅ BUILD SUCCESSFUL
+
+---
+
 ## 60. Build Verification
 
 ```
