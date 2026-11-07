@@ -50,7 +50,10 @@ fun SearchBar(
     autoFocus: Boolean = false,
     onTextChanged: ((String) -> Unit),
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     val focusRequester = remember { FocusRequester() }
+    val interactionSource = remember { MutableInteractionSource() }
+
     if (autoFocus) {
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
@@ -60,27 +63,25 @@ fun SearchBar(
     BasicTextField(
         value = text,
         onValueChange = onTextChanged,
-        textStyle = MaterialTheme.typography.bodyLarge.copy(
-            color = MaterialTheme.colorScheme.onSurface
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            color = colorScheme.onSurface
         ),
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+        cursorBrush = SolidColor(colorScheme.primary),
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
-            .clip(
-                RoundedCornerShape(200.dp)
-            ),
+            .clip(RoundedCornerShape(20.dp)),
         decorationBox = { innerTextField ->
-            val containerColor = MaterialTheme.colorScheme.surface
+            val containerColor = colorScheme.surfaceVariant.copy(alpha = 0.5f)
             TextFieldDefaults.DecorationBox(
                 value = text,
                 innerTextField = innerTextField,
                 enabled = true,
                 singleLine = true,
                 visualTransformation = VisualTransformation.None,
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = interactionSource,
                 placeholder = { Text(placeholder) },
                 trailingIcon = {
                     IconButton(onClick = {
@@ -91,7 +92,8 @@ fun SearchBar(
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Close,
-                            contentDescription = "Close Icon"
+                            contentDescription = "Close Icon",
+                            tint = colorScheme.onSurfaceVariant
                         )
                     }
                 },
@@ -105,8 +107,8 @@ fun SearchBar(
                 contentPadding = PaddingValues(
                     start = 14.dp,
                     end = 12.dp,
-                    top = 6.dp,
-                    bottom = 6.dp
+                    top = 8.dp,
+                    bottom = 8.dp
                 ),
             )
         }

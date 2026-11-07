@@ -37,35 +37,36 @@ fun SwitchBar(
     onClick: () -> Unit
 ) {
     val colorScheme = getColorScheme(darkTheme = false)
+    val containerColor = if (enabled) colorScheme.primaryContainer else colorScheme.surfaceVariant.copy(alpha = 0.3f)
+    val textColor = if (enabled) colorScheme.onSurface else colorScheme.onSurfaceVariant
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp)
-            .clip(RoundedCornerShape(25.dp))
-            .background(colorScheme.primaryContainer)
-            .toggleable(enabled){
+            .clip(RoundedCornerShape(28.dp))
+            .background(containerColor)
+            .toggleable(enabled) {
                 onClick()
             }
             .padding(20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        with(MaterialTheme) {
-            Text(
-                modifier = Modifier.weight(4f),
-                text = title,
-                maxLines = 1,
-                style = typography.titleLarge.copy(fontSize = 20.sp),
-                color = colorScheme.onSurface,
-                overflow = TextOverflow.Ellipsis
-            )
-            KSwitch(
-                modifier = Modifier.weight(1f),
-                checked = isChecked,
-                enable = enabled
-            ){
-                if (enabled) onClick()
-            }
+        Text(
+            modifier = Modifier.weight(1f),
+            text = title,
+            maxLines = 1,
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 16.sp),
+            color = textColor,
+            overflow = TextOverflow.Ellipsis
+        )
+        KSwitch(
+            modifier = Modifier.weight(0.3f),
+            checked = isChecked,
+            enable = enabled
+        ) {
+            if (enabled) onClick()
         }
     }
 }
@@ -76,7 +77,8 @@ fun PreviewSwitchBar() {
     Box(
         Modifier
             .fillMaxSize()
-            .background(Color.Black), contentAlignment = Alignment.Center){
+            .background(Color.Black), contentAlignment = Alignment.Center
+    ) {
         var state by remember { mutableStateOf(false) }
         SwitchBar(title = "SwitchBar", isChecked = state) {
             state = !state
