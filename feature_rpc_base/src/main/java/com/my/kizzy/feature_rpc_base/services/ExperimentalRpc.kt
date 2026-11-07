@@ -90,6 +90,12 @@ class ExperimentalRpc : Service() {
     private var isMediaSessionActive = false
     private var lastSentCommonRpc: CommonRpc? = null
 
+    // Periodic refresh to catch position changes that happen between onPlaybackStateChanged
+    // callbacks (e.g., during drag scrubbing when the player may not fire callbacks for every
+    // position change).
+    private var mediaRefreshJob: Job? = null
+    private val mediaRefreshIntervalMs = 1000L
+
     // Heartbeat to prevent stuck idling when media session callbacks are missed
     private val heartbeatJob = MutableStateFlow<Job?>(null)
 
@@ -106,6 +112,30 @@ class ExperimentalRpc : Service() {
     private fun stopHeartbeat() {
         heartbeatJob.value?.cancel()
         heartbeatJob.value = null
+    }
+
+    // Periodic media refresh to catch position changes that happen between onPlaybackStateChanged
+    // callbacks (e.g., during drag scrubbing when the player may not fire callbacks for every
+    // position change).
+    private fun startMediaRefresh() {
+        mediaRefreshJob?.cancel()
+        mediaRefreshJob = scope.launch {
+            while (isActive) {
+                delay(mediaRefreshIntervalMs)
+                try {
+                    updatePresence()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logger.e(TAG, "Media refresh failed: ${e.message}")
+                }
+            }
+        }
+    }
+
+    private fun stopMediaRefresh() {
+        mediaRefreshJob?.cancel()
+        mediaRefreshJob = null
     }
 
     private var useAppsRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, true]
@@ -224,11 +254,11 @@ class ExperimentalRpc : Service() {
         }
         // Start heartbeat to prevent stuck idling
         startHeartbeat()
+        // Start periodic media refresh to catch position changes that happen between
+        // onPlaybackStateChanged callbacks (e.g., during drag scrubbing).
+        startMediaRefresh()
 
         return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onTaskRemoved(intent: Intent?) {
         super.onTaskRemoved(intent)
         logger.d(TAG, "onTaskRemoved: user swiped app from Recents")
         // Schedule RPC recovery via WorkManager so presence can be restored after
@@ -647,6 +677,7 @@ class ExperimentalRpc : Service() {
         }
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         stopHeartbeat()
+        stopMediaRefresh()
         scope.cancel()
         kizzyRPC.closeRPC()
         // Schedule RPC recovery via WorkManager so presence can be restored after
