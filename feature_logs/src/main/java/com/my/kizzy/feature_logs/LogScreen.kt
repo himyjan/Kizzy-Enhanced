@@ -102,7 +102,7 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val allLogs = visibleLogs.joinToString("\n") { it.text }
+                    val allLogs = viewModel.logs.joinToString("\n") { it.text }
                     clipboardManager.setPrimaryClip(ClipData.newPlainText("kizzy_logs", allLogs))
                     Toast.makeText(
                         ctx,
