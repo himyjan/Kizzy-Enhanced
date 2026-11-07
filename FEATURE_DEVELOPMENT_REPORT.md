@@ -68,9 +68,10 @@
 56. [Bug Fix: Media RPC — SupervisorJob Upload Retry & WorkManager Background Recovery](#bug-fix-media-rpc--supervisorjob-upload-retry--workmanager-background-recovery)
 57. [Bug Fix: Media RPC Notification — Buttons Always Present & Click-to-Open App](#bug-fix-media-rpc-notification--buttons-always-present--click-to-open-app)
 58. [Bug Fix: Experimental RPC — Remove "Using Kizzy RPC" Default Presence Text](#bug-fix-experimental-rpc--remove-using-kizzy-rpc-default-presence-text)
-59. [CI/CD: GitHub Actions AAPT2 Override](#cicd-github-actions-aapt2-override)
-60. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
-61. [Build Verification](#build-verification)
+59. [Bug Fix: Discord WebSocket — Multiple Concurrent Connections Causing 4003 Error](#bug-fix-discord-websocket--multiple-concurrent-connections-causing-4003-error)
+60. [CI/CD: GitHub Actions AAPT2 Override](#cicd-github-actions-aapt2-override)
+61. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
+62. [Build Verification](#build-verification)
 
 ---
 
@@ -1570,7 +1571,37 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 ---
 
-## 59. Build Verification
+## 59. Bug Fix: Discord WebSocket — Multiple Concurrent Connections Causing 4003 Error
+
+**Files:** `KizzyRPC.kt`, `DiscordWebSocketImpl.kt`
+
+### Problems Fixed
+
+1. **Discord gateway 4003 Not authenticated** — Every `build()` call created a new WebSocket connection via `discordWebSocket.connect()` without closing the old one. Multiple concurrent WebSocket connections to Discord's gateway caused the server to reject connections with `4003 Not authenticated`.
+
+2. **No connection state check** — `connectToWebSocket()` always called `discordWebSocket.connect()` even when already connected, leading to connection storms on rapid track changes.
+
+### Fixes Applied
+
+**`data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`**
+- `connectToWebSocket()` now checks `discordWebSocket.isWebSocketConnected()` before connecting — skips if already connected
+- Added early return when token is invalid (was missing `return` statement)
+
+**`gateway/src/main/java/kizzy/gateway/DiscordWebSocketImpl.kt`**
+- `connect()` now closes existing websocket before creating a new one — prevents orphaned connections
+- Uses `CloseReason(1000, "Reconnecting")` for clean connection shutdown
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Discord gateway connection | Multiple concurrent WebSocket connections, 4003 errors | Single connection, proper cleanup on reconnect |
+| Connection state | No check before connecting | Skips connect if already connected |
+| WebSocket cleanup | Old websocket left open | Explicitly closed before new connection |
+
+---
+
+## 60. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
