@@ -436,6 +436,10 @@ class KizzyRPC @Inject constructor(
         lastPresenceHash = hash
         lastPresenceTimeMs = now
 
+        // Create immutable copy of buttons to prevent ConcurrentModificationException
+        // when buttons list is modified on another thread while serializing on Dispatcher.IO
+        val buttonsSnapshot = buttons.toList().takeIf { it.isNotEmpty() }
+
         discordWebSocket.sendActivity(
             Presence(
                 activities = listOf(
@@ -453,7 +457,7 @@ class KizzyRPC @Inject constructor(
                                 smallText = commonRpc.smallText?.sanitize()
                             ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
                         party = party.takeIf { party != null },
-                        buttons = buttons.takeIf { buttons.isNotEmpty() },
+                        buttons = buttonsSnapshot,
                         applicationId = applicationIdNumber.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID
 
                     )
