@@ -8,6 +8,7 @@ data class RichMediaMetadata(
     val packageName: String? = null,
     val title: String? = null,
     val artist: String? = null,
+    val state: String? = null,
     val album: String? = null,
     val coverArt: RpcImage? = null,
     val appIcon: RpcImage? = null,
