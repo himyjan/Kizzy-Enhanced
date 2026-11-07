@@ -102,7 +102,7 @@ class NotificationListener : NotificationListenerService() {
 
         Log.d("NotificationListener", "App: $packageName | Track: $title by $artist ($album)")
 
-        val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]
+        val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
 
         DiscordWebSocketImpl.instance?.let { discord ->
             runBlocking {

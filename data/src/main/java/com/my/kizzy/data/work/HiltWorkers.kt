@@ -131,7 +131,7 @@ class RpcRecoveryHiltWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
             try {
-                val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]
+                val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
 
                 if (!Prefs[Prefs.USE_RPC_BUTTONS, false] &&
                     !Prefs[MEDIA_RPC_MEDIA_BUTTON, false] &&
