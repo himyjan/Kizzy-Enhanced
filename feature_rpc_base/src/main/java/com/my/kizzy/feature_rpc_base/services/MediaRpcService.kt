@@ -611,7 +611,8 @@ class MediaRpcService : Service() {
      */
     override fun onTaskRemoved(intent: Intent?) {
         super.onTaskRemoved(intent)
-        logger.d("MediaRPC", "onTaskRemoved: user swiped app from Recents")
+        val now = System.currentTimeMillis()
+        logger.d("MediaRPC", "[$now] onTaskRemoved: user swiped app from Recents")
         // Schedule RPC recovery via WorkManager so presence can be restored after
         // aggressive task removal or process termination by the system.
         WorkManagerHelper.scheduleRpcRecovery(this)
@@ -636,6 +637,8 @@ class MediaRpcService : Service() {
         }
         // Schedule RPC recovery via WorkManager so presence can be restored after
         // process termination by the system.
+        val now = System.currentTimeMillis()
+        logger.d("MediaRPC", "[$now] onDestroy: scheduling RPC recovery via WorkManager")
         WorkManagerHelper.scheduleRpcRecovery(this)
         super.onDestroy()
     }

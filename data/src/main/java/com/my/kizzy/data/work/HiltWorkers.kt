@@ -130,6 +130,9 @@ class RpcRecoveryHiltWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
+            val startTime = System.currentTimeMillis()
+            logger.d("MediaRPC", "[$startTime] Recovery worker started")
+
             try {
                 val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
 
@@ -161,10 +164,12 @@ class RpcRecoveryHiltWorker @AssistedInject constructor(
                     build()
                 }
 
-                logger.d("MediaRPC", "RPC presence recovered after process termination")
+                val endTime = System.currentTimeMillis()
+                logger.d("MediaRPC", "Recovery work completed in ${endTime - startTime}ms: RPC presence restored for ${playingMedia.name}")
                 Result.success()
             } catch (e: Exception) {
-                logger.e("MediaRPC", "RPC recovery failed: ${e.message}")
+                val endTime = System.currentTimeMillis()
+                logger.e("MediaRPC", "RPC recovery failed after ${endTime - startTime}ms: ${e.message}")
                 Result.retry()
             }
         }
