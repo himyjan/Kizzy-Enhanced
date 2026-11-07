@@ -217,7 +217,7 @@ class MediaRpcService : Service() {
         stopHeartbeat()
         heartbeatJob.value = scope.launch {
             while (isActive) {
-                delay(3000)
+                delay(1000)
                 scope.launch { updatePresence(forceRefresh = true) }
             }
         }
@@ -572,24 +572,10 @@ class MediaRpcService : Service() {
      */
     override fun onTaskRemoved(intent: Intent?) {
         logger.d("MediaRPC", "onTaskRemoved: user swiped app from Recents")
-
-        // Stop foreground service gracefully
-        stopForeground(Service.STOP_FOREGROUND_REMOVE)
-        stopSelf()
-
-        // If RPC is enabled, schedule recovery work to restore presence later
-        if (Prefs[Prefs.USE_RPC_BUTTONS, false] || Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
-            logger.d("MediaRPC", "Scheduling RPC recovery work after task removal")
-            WorkManager.getInstance(this)
-                .enqueueUniqueWork(
-                    "kizzy_rpc_recovery",
-                    ExistingWorkPolicy.KEEP,
-                    OneTimeWorkRequestBuilder<RpcRecoveryHiltWorker>()
-                        .build()
-                )
-        }
-
-        super.onTaskRemoved(intent)
+        // Don't stop the service - keep RPC running in background
+        // User can stop it from the notification if they want
+        // Just update the notification to show it's running in background
+        updateNotificationPauseButton()
     }
 
     override fun onDestroy() {

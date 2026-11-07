@@ -95,7 +95,7 @@ class ExperimentalRpc : Service() {
         stopHeartbeat()
         heartbeatJob.value = scope.launch {
             while (isActive) {
-                delay(3000)
+                delay(1000)
                 scope.launch { updatePresence() }
             }
         }
@@ -476,7 +476,7 @@ class ExperimentalRpc : Service() {
             return
         }
         logger.d(TAG, "Active media sessions changed")
-        if (isEvent) runBlocking { delay(1500) }
+        if (isEvent) runBlocking { delay(500) }
 
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         currentMediaController = null
