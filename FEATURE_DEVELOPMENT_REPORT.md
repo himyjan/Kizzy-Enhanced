@@ -2037,7 +2037,179 @@ Kizzy's migration from XML Views to Jetpack Compose is exactly the type of task 
 
 ---
 
-## 73. Build Verification
+## 72. Related Resource: Android 17 Memory Limits — Prepare Your App
+
+**Source:** [Android Developers Blog — Prepare your app for broader memory limits](https://developer.android.com/blog/posts/preparing-your-app-for-broader-memory-limits?hl=zh-tw)
+**Source:** [Android 17 Behavior Changes — App Memory Limits](https://developer.android.com/about/versions/17/behavior-changes-all?hl=zh-tw#app-memory-limits)
+
+### Review Summary
+
+Android 17 (API 37) introduces **application-specific memory limits** that are enforced on large-screen devices (smallest screen width `sw > 600dp`, such as tablets, foldables, and desktop displays). Devices with 4 GB to 16 GB+ RAM will progressively enforce these limits.
+
+### Key Memory Limits
+
+| Resource Type | Default Limit | Notes |
+|---------------|---------------|-------|
+| Foreground | 2 GB | Per-app limit on devices with 4 GB RAM |
+| User-perceived service | 1 GB | Per-app limit on devices with 4 GB RAM |
+| Background | 1 GB | Per-app limit on devices with 4 GB RAM |
+| Cached process | 400 MB | Per-app limit on devices with 4 GB RAM |
+| Bitmap memory | >200 MB (foreground/user-perceived service/background), >400 MB (cached) | Per-app bitmap memory limits |
+
+### Connection to Kizzy
+
+| Article Concept | Kizzy Implementation Status |
+|-----------------|---------------------|
+| Memory limits enforced on large screens | ⚠️ Not yet tested — needs verification on API 37+ devices |
+| Bitmap memory management | ⚠️ Uses Coil for image loading — should verify bitmap memory usage |
+| Excessive memory usage detection | ⚠️ Not yet implemented — consider adding memory tracking |
+
+### Recommended Next Steps
+
+1. **Test memory limits:** Use `am memory-limiter` ADB commands to test app behavior under memory constraints
+2. **Monitor memory usage:** Use Android Vitals in Play Console to track anonymous RSS + swap memory
+3. **Optimize bitmaps:** Decode/sample images to actual display size, use memory-aware libraries like Coil
+4. **Use ProfilingManager:** On API 35+, use `TRIGGER_TYPE_OOM` and `TRIGGER_TYPE_ANOMALY` triggers to collect heap snapshots before termination
+
+---
+
+## 74. Related Resource: Android 17 Behavior Changes
+
+**Source:** [Android 17 Behavior Changes — App Memory Limits](https://developer.android.com/about/versions/17/behavior-changes-all?hl=zh-tw#app-memory-limits)
+
+### Review Summary
+
+Android 17 (API 37) removes the developer opt-out for orientation and resizability restrictions on large screen devices and introduces stricter memory limit enforcement.
+
+### Key Behavior Changes for Large Screens (`sw > 600dp`)
+
+| Behavior Change | Description | Kizzy Status |
+|-----------------|-------------|--------------|
+| Screen orientation restrictions ignored | `screenOrientation` attribute ignored on large screens | ✅ Already adaptive |
+| Aspect ratio restrictions ignored | `minAspectRatio`/`maxAspectRatio` ignored | ✅ Already adaptive |
+| `resizeableActivity` ignored | All values ignored on large screens | ✅ Already adaptive |
+| Dynamic window resizing | Apps must handle configuration changes at any time | ✅ Already adaptive |
+
+### Connection to Kizzy Adaptive UI
+
+Kizzy's `AdaptiveLayout.kt` already handles dynamic window resizing and configuration changes correctly:
+- `WindowWidthSizeClass` queried dynamically, not cached
+- All sizes use `dp` units
+- Components work in free-form and maximized windows
+- ViewModel state preserved via `mutableStateOf`
+
+---
+
+## 75. Related Resource: Android 17 Features
+
+**Source:** [Android 17 Features](https://developer.android.com/about/versions/17/features?hl=zh-tw)
+
+### Review Summary
+
+Android 17 introduces new features and APIs that are relevant to app development:
+
+| Feature | Description | Relevance to Kizzy |
+|---------|-------------|--------------|
+| Memory Limits | Per-app memory limits enforced on large screens | ⚠️ Needs testing on API 37+ devices |
+| R8 Configuration Analyzer | Analyze R8 keep-rule health | ✅ Recommended for evaluation |
+| Encrypted Client Hello (ECH) | Platform support for encrypted TLS handshake | ⚠️ Not currently needed |
+| Android Contact Picker | Standardized UI for contact selection | ⚠️ Not currently needed |
+| Advanced Protection Mode | Optional user-enabled security mode | ⚠️ Not currently needed |
+| PQC APK Signing | Post-quantum cryptography signing | ⚠️ Not currently needed |
+| UWB Downlink-TDoA | Downlink time difference of arrival ranging | ⚠️ Not currently needed |
+| Semantic Color API | Notification semantic colors | ⚠️ Not currently needed |
+| Handoff API | Cross-device activity resumption | ⚠️ Could explore for multi-device support |
+
+### Connection to Kizzy
+
+Kizzy targets API 37 (compileSdk) and should test memory limit behavior on API 37+ devices. The app already uses adaptive UI patterns that work well with dynamic window resizing.
+
+---
+
+## 76. Related Resource: R8 Configuration Analyzer
+
+**Source:** [R8 Configuration Analyzer](https://developer.android.com/topic/performance/app-optimization/r8-configuration-analyzer?hl=zh-tw)
+
+### Review Summary
+
+The R8 Configuration Analyzer is a tool that provides detailed insights into an app's R8 configuration quality. It helps developers understand how effectively R8 can shrink, optimize, and obfuscate their code.
+
+### Key Features
+
+| Feature | Description |
+|---------|-------------|
+| Shrink Score | Percentage of classes, fields, methods that R8 can shrink |
+| Optimization Score | Percentage affected by R8 optimizations (inlining, merging) |
+| Obfuscation Score | Percentage that can be obfuscated (renamed) |
+| Keep Rule Analysis | Shows what percentage of code is blocked by each keep rule |
+| Subsuming Rules | Identifies broad rules that override narrower rules |
+| Unused Rules | Finds rules matching zero classes/methods/fields |
+| Library Rules | Shows impact of third-party library consumer rules |
+
+### Connection to Kizzy
+
+| Article Concept | Kizzy Implementation Status |
+|-----------------|---------------------|
+| R8 full mode migration | ⚠️ Not yet evaluated — currently in compatibility mode |
+| Baseline Profiles | ⚠️ Not yet implemented |
+| Keep rule analysis | ⚠️ Not yet integrated into CI |
+| app-sizer integration | ⚠️ Not yet integrated |
+
+### Recommended Next Steps
+
+1. **Add Baseline Profiles** for critical startup paths
+2. **Migrate R8 Compatibility Mode → Full Mode** for maximum shrinking
+3. **Integrate R8 Configuration Analyzer** into CI for keep-rule health monitoring
+4. **Use app-sizer** to measure APK size impact per line of code
+5. **Handle reflection carefully** — precise keep rules for reflection-dependent classes
+
+---
+
+## 77. Related Resource: Android Bench 2.0 — AI Coding Agent Evaluation
+
+**Source:** [Android Developers Blog — Android Bench 2.0](https://developer.android.com/blog/posts/android-bench-2-0-pushing-the-frontier-with-challenging-long-horizon-tasks?hl=zh-tw)
+**Source:** [Android Bench](https://developer.android.com/bench)
+
+### Review Summary
+
+Android Bench 2.0 is Google's benchmark suite for evaluating **AI coding agents** on real-world Android development tasks. It evaluates how well AI models can complete complex, multi-step engineering work — the same kind of work Kizzy has been doing (XML→Compose migration, dependency upgrades, feature additions).
+
+### Key Benchmark Tasks
+
+| Category | Tasks | Examples |
+|----------|-------|----------|
+| App creation | 10 | Build features for Food Vibes (food delivery app), new book-searching app |
+| App conversion | 2 | Convert Flutter to Android, Convert React Native to Android |
+| Migration | 13 | XML→Compose (Signal, Fossify File Manager), Hilt→Koin, Retrofit→Ktor, Java→Kotlin |
+| New feature | 5 | Accessibility support, Media3 video playback, Picture-in-Picture, CameraX profile picture, ViewModel layer |
+
+### Sample Apps Used
+
+Now in Android, Food Vibes, Bitwarden, Fossify File Manager, Pocket Casts, Signal, Droidcon, WordPress, Habo, BlueWallet.
+
+### Key Findings Relevant to Kizzy
+
+| Finding | Implication |
+|---------|-------------|
+| AI models excel at **new code** but struggle with **refactoring** | Kizzy's XML→Compose migration is exactly the hard case for AI |
+| Models handle deterministic translations well | Java→Kotlin, Retrofit→Ktor across 125+ files / 8K+ lines works well |
+| Models struggle with **breaking architectural changes** | Explains why some Compose migrations need manual intervention |
+| Models struggle with **cross-platform to Android** | 0% pass rate for Flutter/React Native→Android conversions |
+| **Scroll performance** on par with Views since Compose 1.9.0 | Confirms Kizzy's Compose migration decision was sound |
+
+### Connection to Kizzy
+
+Kizzy's migration from XML Views to Jetpack Compose is exactly the type of task Android Bench 2.0 evaluates. The project's approach — gradual migration with feature flags, `mutableStateOf` state hoisting, `AdaptiveLayout.kt` for responsive layouts — aligns with the patterns that AI models handle well.
+
+### Recommended Next Steps
+
+1. Consider using Android Bench 2.0 to evaluate AI agents for future Kizzy migration work
+2. Monitor the leaderboard for best-performing model-agent combinations
+3. Apply the patterns from Instagram Direct case study (ComposeItem pattern, state hoisting) which Kizzy already partially implements
+
+---
+
+## 78. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
