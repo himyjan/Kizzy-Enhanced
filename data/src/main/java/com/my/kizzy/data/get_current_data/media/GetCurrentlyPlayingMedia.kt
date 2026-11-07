@@ -3,12 +3,12 @@ package com.my.kizzy.data.get_current_data.media
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadata
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.net.Uri
+import android.os.SystemClock
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.Constants.APPLICATION_ID
 import com.my.kizzy.data.rpc.RpcImage
@@ -26,6 +26,7 @@ class GetCurrentPlayingMedia @Inject constructor(
     private val logger: Logger,
 ) {
     object Assets {
+        // These assets belong to the original Kizzy Discord application — do not change this ID
         private const val MEDIA_ASSETS_APP_ID = "962990036020756480"
         val PLAY = "app-assets/$MEDIA_ASSETS_APP_ID/1300361266212241430.png"
         val PAUSE = "app-assets/$MEDIA_ASSETS_APP_ID/1300361619490209802.png"
@@ -53,9 +54,13 @@ class GetCurrentPlayingMedia @Inject constructor(
         val sessions: List<android.media.session.MediaController> = try {
             mediaSessionManager.getActiveSessions(componentName)
         } catch (_: SecurityException) {
+            // MEDIA_CONTENT_CONTROL permission is signatureOrSystem on API 34+;
+            // regular third-party apps cannot hold it. Fail gracefully.
             emptyList()
         }
 
+        // Sort sessions so that playing/buffering sessions come first.
+        // This prevents a paused Spotify session from shadowing a playing YouTube session.
         val sorted = sessions.sortedByDescending { isPlaybackActive(it.playbackState?.state) }
 
         val skipped = mutableListOf<String>()
@@ -63,20 +68,43 @@ class GetCurrentPlayingMedia @Inject constructor(
         for (mediaController in sorted) {
             val metadata = mediaController.metadata
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()?.takeIf { it.isNotEmpty() }
+            // Skip sessions with no title (paused/backgrounded players that linger in
+            // getActiveSessions for hours). A null title would otherwise produce a blank presence.
+            if (title == null) {
+                skipped += "${mediaController.packageName} (session has no title metadata)"
+                continue
+            }
             val appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(mediaController.packageName, 0)).toString()
             val author = metadata?.let { metadataResolver.formatArtists(it) }
             val album = metadata?.let { metadataResolver.getAlbum(it) }
 
-            val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
-            val position = mediaController.playbackState?.position
+            // Build state with multi-artist and multi-channel info.
+            val stateParts = buildList {
+                author?.takeIf { it.isNotBlank() }?.let { add(it) }
+                metadata?.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
+            }
+            val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() } ?: null
+
             val playbackState = mediaController.playbackState?.state
 
             var timestamps: Timestamps? = null
-            duration?.let {
-                if (it != 0L && playbackState == PlaybackState.STATE_PLAYING) timestamps = Timestamps(
-                    end = System.currentTimeMillis() + duration - (position ?: 0L),
-                    start = System.currentTimeMillis() - (position ?: 0L)
-                )
+            // Discord progress bar timestamps. Players like YouTube freeze position at lastPositionUpdateTime,
+            // so extrapolate to "now" using elapsedRealtime delta and playback speed. Duration <= 0 (Shorts,
+            // live streams) still gets a start timestamp so Discord shows elapsed time instead of nothing.
+            if (playbackState == PlaybackState.STATE_PLAYING) {
+                val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L
+                var position = mediaController.playbackState?.position?.coerceAtLeast(0L) ?: 0L
+                val lastUpdate = mediaController.playbackState?.lastPositionUpdateTime ?: 0L
+                if (lastUpdate > 0L) {
+                    val sinceUpdate = SystemClock.elapsedRealtime() - lastUpdate
+                    val speed = mediaController.playbackState?.playbackSpeed?.takeIf { it > 0f } ?: 1f
+                    position = (position + (sinceUpdate * speed).toLong()).coerceAtLeast(0L)
+                }
+                if (duration > 0L) position = position.coerceAtMost(duration)
+                val now = System.currentTimeMillis()
+                val start = now - position
+                timestamps = if (duration > 0L) Timestamps(start = start, end = start + duration)
+                else Timestamps(start = start)
             }
 
             val appIcon = RpcImage.ApplicationIcon(
@@ -93,11 +121,11 @@ class GetCurrentPlayingMedia @Inject constructor(
                     title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
                 )
             } else {
-                val artworkUri = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
+                val artworkUri = metadata?.let { metadataResolver.getArtworkUri(it) }
                 if (artworkUri != null) {
                     val parsedUri = Uri.parse(artworkUri)
                     if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
-                        val bmp = runCatching<Bitmap?> {
+                        val bmp = runCatching {
                             context.contentResolver.openInputStream(parsedUri)?.use { BitmapFactory.decodeStream(it) }
                         }.getOrNull()
                         if (bmp != null) {
@@ -109,7 +137,7 @@ class GetCurrentPlayingMedia @Inject constructor(
                             )
                         }
                     } else {
-                        coverArt = RpcImage.ExternalImage(artworkUri)
+                        coverArt = artworkUri.toRpcImage()
                     }
                 }
             }
@@ -123,14 +151,15 @@ class GetCurrentPlayingMedia @Inject constructor(
             return CommonRpc(
                 name = if (Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, false]) title ?: appName else appName,
                 details = title,
-                state = album,
-                largeImage = appIcon,
-                smallImage = coverArt,
+                state = state,
+                // 大圖顯示專輯封面，小圖顯示應用圖標（若用戶開啟）
+                largeImage = coverArt,
+                smallImage = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appIcon else null,
                 largeText = album,
-                smallText = null,
+                smallText = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appName else null,
                 packageName = "$title::${mediaController.packageName}",
                 time = timestamps.takeIf { it != null },
-                mediaUrl = metadata?.let { metadataResolver.getMediaUrl(it, mediaController.packageName) }
+                mediaUrl = metadataResolver.getMediaUrl(metadata, mediaController.packageName)
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")
