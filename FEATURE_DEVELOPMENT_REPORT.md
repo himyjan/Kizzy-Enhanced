@@ -2165,6 +2165,203 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
+## 70. Bug Fix: KizzyRPC — Initialize presence field to prevent UninitializedPropertyAccessException
+
+**Files:** `data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`
+
+### Problems Fixed
+
+1. **`UninitializedPropertyAccessException` on `presence` field** — When `updateRPC()` was called before `build()` (e.g., media detected before initial presence built), `presence` (declared as `lateinit var Presence`) was not initialized, causing the app to crash.
+
+### Fixes Applied
+
+**`data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`**
+- Changed `lateinit var presence: Presence` to `private var presence: Presence = Presence(activities = emptyList(), afk = true, status = null)` — initialized with default empty presence at declaration
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| `updateRPC()` before `build()` | `UninitializedPropertyAccessException` crash | Presence resolved with default empty presence |
+
+---
+
+## 71. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
+
+**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
+
+### Problems Fixed
+
+1. **Discord timeline doesn't update during drag scrubbing** — When dragging the timeline in YouTube Music/LX Music, `playbackState.position` may not update in real-time via `onPlaybackStateChanged()` callbacks, so `updatePresence()` wasn't called with new position data.
+
+### Fixes Applied
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+- Added `startMediaRefresh()` — periodic refresh every 1 second that calls `updatePresence()` to catch position changes that happen between `onPlaybackStateChanged()` callbacks
+- Added `lastSentCommonRpc: CommonRpc?` field for de-duplication — skips redundant updates when presence data hasn't changed
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Discord timeline during drag | Stuck/not updating | Updates every 1 second via periodic refresh |
+| Media changes between callbacks | Missed position updates | Detected on next periodic refresh |
+
+---
+
+## 72. Bug Fix: MediaRpcService & KizzyRpcService — WorkManager Background Recovery
+
+**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`, `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/KizzyRpcService.kt`, `data/src/main/java/com/my/kizzy/data/work/WorkManagerHelper.kt`
+
+### Problems Fixed
+
+1. **RPC stops when app is swiped from Recents** — Presence stopped completely with no automatic recovery mechanism
+2. **KizzyRpcService stops when app is swiped from Recents** — Same issue for Kizzy RPC service
+
+### Fixes Applied
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+- `onTaskRemoved()` now schedules `RpcRecoveryHiltWorker` via `WorkManagerHelper.scheduleRpcRecovery(this)`
+- `onDestroy()` now schedules `RpcRecoveryHiltWorker` via `WorkManagerHelper.scheduleRpcRecovery(this)`
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/KizzyRpcService.kt`**
+- `onTaskRemoved()` now schedules `RpcRecoveryHiltWorker` via `WorkManagerHelper.scheduleRpcRecovery(this)`
+- `onDestroy()` now schedules `RpcRecoveryHiltWorker` via `WorkManagerHelper.scheduleRpcRecovery(this)`
+- Added `Logger` injection for logging
+
+**`data/src/main/java/com/my/kizzy/data/work/WorkManagerHelper.kt`**
+- Added `scheduleRpcRecovery(context: Context)` method with cancellation-immune upload scope, 12h TTL cache, `SupervisorJob`
+- `ExistingWorkPolicy.REPLACE` — last swiped-away event's recovery command always wins
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| App swiped from Recents | RPC stopped permanently | WorkManager schedules background recovery |
+| Process termination | RPC stopped permanently | WorkManager schedules background recovery |
+
+---
+
+## 73. Bug Fix: CrashReportActivity — Use KizzyTheme instead of bare MaterialTheme
+
+**Files:** `app/src/main/java/com/my/kizzy/CrashReportActivity.kt`
+
+### Problems Fixed
+
+1. **Crash screen didn't respect user theme settings** — `CrashReportActivity.kt` used bare `MaterialTheme { ... }` instead of `KizzyTheme { ... }`, so dark/light mode, dynamic color, and high contrast mode settings were ignored
+
+### Fixes Applied
+
+**`app/src/main/java/com/my/kizzy/CrashReportActivity.kt`**
+- Changed `MaterialTheme { ... }` to `KizzyTheme(darkTheme = LocalDarkTheme.current.isDarkTheme(), isHighContrastModeEnabled = LocalDarkTheme.current.isHighContrastModeEnabled, isDynamicColorEnabled = LocalDynamicColorSwitch.current) { ... }`
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Crash screen theme | Used default Material theme colors | Respects user's dark/light mode and dynamic color settings |
+
+---
+
+## 74. Bug Fix: RpcImage.kt — Cancellation-immune upload scope + de-dup + 12h TTL cache
+
+**Files:** `data/src/main/java/com/my/kizzy/data/rpc/RpcImage.kt`
+
+### Problems Fixed
+
+1. **4 repeated 84322-byte POSTs** — Uploads ran on caller's coroutine, heartbeat killed them mid-flight
+2. **JobCancellationException** — Uploads died with caller's coroutine
+3. **Blank art on failed upload** — No fallback to last good id
+
+### Fixes Applied
+
+- `uploadScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)` — cancellation-immune uploads
+- `inFlightArtUploads` / `inFlightIconUploads` — in-flight de-dup maps (identical resolves share one upload)
+- 12h TTL cache (`freshId`/`anyId`/`stamp`/`prunedCache`) — failed uploads fall back to last good id
+- `Mutex` — cache read-check-write serialization
+
+---
+
+## 75. Bug Fix: ExperimentalRpc — Remove "Using Kizzy RPC" Default Presence Text
+
+**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
+
+### Problems Fixed
+
+1. **Discord showing "Using Kizzy RPC" placeholder text** — When no media session or app was active, `ExperimentalRpc.kt` hardcoded `finalName = "Kizzy"`, `finalDetails = "Using Kizzy RPC"`, and `finalState = "Idle"` as fallback values. Discord would display this placeholder text even when nothing was playing, which was confusing and unprofessional.
+2. **Idle presence showing raw template keys** — When `templateName`/`templateDetails`/`templateState` contained template keys (e.g. `{{app_name}}`) but no media context existed to resolve them, Discord would show the raw keys instead of nothing.
+
+### Fixes Applied
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+- Changed `finalName` from `"Kizzy"` to `null`
+- Changed `finalDetails` from `"Using Kizzy RPC"` to `null`
+- Changed `finalState` from `"Idle"` to `null`
+- When no media/app context exists, all presence fields are now `null`, so Discord shows nothing instead of placeholder text
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Discord idle presence | Showed "Kizzy - Using Kizzy RPC - Idle" | Shows nothing (empty fields) |
+| No media context | Hardcoded placeholder text | All fields null, Discord displays empty activity |
+
+---
+
+## 76. Bug Fix: Discord WebSocket — Multiple Concurrent Connections Causing 4003 Error
+
+**Files:** `data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`, `gateway/src/main/java/kizzy/gateway/DiscordWebSocketImpl.kt`
+
+### Problems Fixed
+
+1. **Discord gateway 4003 Not authenticated** — Every `build()` call created a new WebSocket connection via `discordWebSocket.connect()` without closing the old one. Multiple concurrent WebSocket connections to Discord's gateway caused the server to reject connections with `4003 Not authenticated`.
+2. **No connection state check** — `connectToWebSocket()` always called `connect()` even when already connected, leading to connection storms on rapid track changes.
+
+### Fixes Applied
+
+**`data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`**
+- `connectToWebSocket()` now checks `discordWebSocket.isWebSocketConnected()` before connecting — skips if already connected
+- Added early return when token is invalid (was missing `return` statement)
+
+**`gateway/src/main/java/kizzy/gateway/DiscordWebSocketImpl.kt`**
+- `connect()` now closes existing websocket before creating a new one — prevents orphaned connections
+- Uses `CloseReason(1000, "Reconnecting")` for clean connection shutdown
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Discord gateway connection | Multiple concurrent WebSocket connections, 4003 errors | Single connection, proper cleanup on reconnect |
+| Connection state | No check before connecting | Skips connect if already connected |
+| WebSocket cleanup | Old websocket left open | Explicitly closed before new connection |
+
+---
+
+## 76. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
+
+**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
+
+### Problems Fixed
+
+1. **Discord timeline doesn't update during drag scrubbing** — When dragging the timeline in YouTube Music/LX Music, `playbackState.position` may not update in real-time via `onPlaybackStateChanged()` callbacks, so `updatePresence()` wasn't called with new position data.
+
+### Fixes Applied
+
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+- Added `startMediaRefresh()` — periodic refresh every 1 second that calls `updatePresence()` to catch position changes that happen between `onPlaybackStateChanged()` callbacks
+- Added `lastSentCommonRpc: CommonRpc?` field for de-duplication — skips redundant updates when presence data hasn't changed
+
+### Result
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Discord timeline during drag | Stuck/not updating | Updates every 1 second via periodic refresh |
+| Media changes between callbacks | Missed position updates | Detected on next periodic refresh |
+
+---
+
+## 82. Build Verification
+
 ## 76. Build Verification
 
 ```
