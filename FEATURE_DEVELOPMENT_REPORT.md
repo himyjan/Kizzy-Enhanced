@@ -2037,7 +2037,7 @@ Kizzy's migration from XML Views to Jetpack Compose is exactly the type of task 
 
 ---
 
-## 72. Build Verification
+## 73. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
