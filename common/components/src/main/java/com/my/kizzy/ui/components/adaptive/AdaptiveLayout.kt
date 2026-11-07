@@ -21,10 +21,22 @@ import kotlin.math.max
 
 /**
  * Breakpoint constants for responsive layouts.
+ * Based on Jetpack WindowManager 1.5.0 breakpoints:
+ * - Compact: < 600dp (phones)
+ * - Medium: 600dp - 839dp (large phones, small tablets)
+ * - Expanded: ≥ 840dp (tablets, foldables, desktop windows)
+ *
+ * Note: WindowWidthSizeClass from material3-window-size-class only has COMPACT, MEDIUM, EXPANDED.
+ * Jetpack WindowManager 1.5.0's BREAKPOINTS_V2 adds Large (1200dp) and Extra-large (≥1600dp)
+ * via androidx.window:window, which is a separate dependency.
+ *
+ * Reference: https://android-developers.googleblog.com/2026/03/android-devices-extend-seamlessly-to.html
  */
 object Breakpoints {
     const val COMPACT_WIDTH_DP = 600
     const val MEDIUM_WIDTH_DP = 840
+    const val LARGE_WIDTH_DP = 1200
+    const val EXTRA_LARGE_WIDTH_DP = 1600
     const val COMPACT_HEIGHT_DP = 480
     const val EXPANDED_HEIGHT_DP = 600
 }
@@ -37,10 +49,10 @@ fun isCompactWidth(widthSizeClass: WindowWidthSizeClass): Boolean {
 }
 
 /**
- * Returns true if we should show two-pane layout (expanded width).
+ * Returns true if we should show two-pane layout (medium+ width).
  */
 fun isTwoPane(widthSizeClass: WindowWidthSizeClass): Boolean {
-    return widthSizeClass == WindowWidthSizeClass.Expanded
+    return widthSizeClass != WindowWidthSizeClass.Compact
 }
 
 /**
@@ -57,6 +69,8 @@ fun responsivePadding(widthSizeClass: WindowWidthSizeClass): androidx.compose.ui
 
 /**
  * Adaptive row layout that switches between row and column based on width class.
+ * Compact (phone): Column stacked vertically
+ * Medium+ (tablet, desktop): Row side by side
  */
 @Composable
 fun AdaptiveRow(
@@ -84,7 +98,7 @@ fun AdaptiveRow(
 
 /**
  * Two-pane layout for foldables/tablets.
- * Shows left pane (navigation) and right pane (content) on expanded screens.
+ * Shows left pane (navigation) and right pane (content) on medium+ screens.
  */
 @Composable
 fun TwoPaneLayout(
@@ -150,5 +164,18 @@ fun ResponsiveGridItem(
         elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         content()
+    }
+}
+
+/**
+ * Returns the optimal column count for a grid based on window width class.
+ * Compact: 1 column, Medium: 2 columns, Expanded: 4 columns
+ */
+fun responsiveColumnCount(widthSizeClass: WindowWidthSizeClass): Int {
+    return when (widthSizeClass) {
+        WindowWidthSizeClass.Compact -> 1
+        WindowWidthSizeClass.Medium -> 2
+        WindowWidthSizeClass.Expanded -> 4
+        else -> 1
     }
 }
