@@ -1727,6 +1727,44 @@ The adaptive UI components in `common/components/src/main/java/com/my/kizzy/ui/c
 
 ---
 
+## 64. Related Resource: Android DevBlog — Prepare Your App for Resizability
+
+**Source:** [Android Developers Blog — Prepare your app for resizability and large screens](https://android-developers.googleblog.com/2026/02/prepare-your-app-for-resizability-and.html)
+
+### Review Summary
+
+Android 17 (API 37) removes the developer opt-out for orientation and resizability restrictions on **large screen devices** (smallest screen width `sw > 600dp`, such as tablets, foldables, and desktop displays). Apps targeting API 37 MUST be capable of adapting to various display sizes, orientations, and aspect ratios.
+
+### Key Requirements for Large Screens (`sw > 600dp`)
+
+| Requirement | Description | Kizzy Status |
+|-------------|-------------|--------------|
+| No portrait/landscape lock | `screenOrientation` restrictions ignored on large screens | ✅ Already adaptive |
+| No aspect ratio restrictions | `minAspectRatio`/`maxAspectRatio` ignored | ✅ Already adaptive |
+| `resizeableActivity` ignored | All values ignored on large screens | ✅ Already adaptive |
+| Multi-window support | Split-screen, foldable unfolding, desktop windowing | ✅ Already adaptive |
+| Dynamic window resizing | Rotating, folding/unfolding, resizing windows | ✅ Already adaptive |
+
+### Connection to Kizzy Adaptive UI
+
+Kizzy's `AdaptiveLayout.kt` already implements the adaptive patterns recommended:
+
+| Article Recommendation | Kizzy Implementation |
+|------------------------|---------------------|
+| Don't assume constant Display | `WindowWidthSizeClass` queried dynamically via `materialWindowSizeClass()` |
+| dp-based layouts | All sizes use `dp` units |
+| Multi-window support | Components work in free-form and maximized windows |
+| Preserve state across config changes | ViewModel state preserved via `mutableStateOf` |
+
+### Recommended Next Steps (from article)
+
+1. Test on Android 17 Beta 1 using Pixel Tablet and Pixel Fold emulators
+2. Audit UI with Compose UI Check
+3. Address camera preview adaptation (not applicable — no camera in Kizzy)
+4. Review **Building Adaptive Layouts** guide and **Large Screen Quality Guidelines**
+
+---
+
 ## 63. Build Verification
 
 ```
