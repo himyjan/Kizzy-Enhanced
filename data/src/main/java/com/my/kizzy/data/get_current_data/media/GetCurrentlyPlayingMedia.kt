@@ -1,26 +1,19 @@
-/*
-
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * GetCurrentlyPlayingMedia.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
-
-*/
-
 package com.my.kizzy.data.get_current_data.media
 
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.media.MediaMetadata
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.net.Uri
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.Constants.APPLICATION_ID
-import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.data.rpc.RpcImage
+import com.my.kizzy.data.rpc.Timestamps
+import com.my.kizzy.data.utils.toRpcImage
+import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -28,9 +21,11 @@ import javax.inject.Inject
 class GetCurrentPlayingMedia @Inject constructor(
     private val metadataResolver: MetadataResolver,
     private val componentName: ComponentName,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val logger: Logger,
 ) {
     object Assets {
+        // These assets belong to the original Kizzy Discord application — do not change this ID
         private const val MEDIA_ASSETS_APP_ID = "962990036020756480"
         val PLAY = "app-assets/$MEDIA_ASSETS_APP_ID/1300361266212241430.png"
         val PAUSE = "app-assets/$MEDIA_ASSETS_APP_ID/1300361619490209802.png"
@@ -46,11 +41,13 @@ class GetCurrentPlayingMedia @Inject constructor(
         }
     }
 
+    private fun isPlaybackActive(state: Int?): Boolean {
+        return state == PlaybackState.STATE_PLAYING ||
+                state == PlaybackState.STATE_BUFFERING ||
+                state == PlaybackState.STATE_CONNECTING
+    }
+
     operator fun invoke(): CommonRpc {
-        var largeIcon: RpcImage? = null
-        var smallIcon: RpcImage? = null
-        var smallText: String? = null
-        var timestamps: Timestamps? = null
         val mediaSessionManager =
             context.getSystemService(Service.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val sessions: List<android.media.session.MediaController> = try {
@@ -61,135 +58,74 @@ class GetCurrentPlayingMedia @Inject constructor(
             emptyList()
         }
 
-        // Collect all valid sessions to support multi-channel/multi-artist aggregation
-        val validSessions = mutableListOf<MediaControllerWithMetadata>()
-        for (mediaController in sessions) {
-            // If the app is not enabled for media rpc, skip it
-            if (!Prefs.isMediaAppEnabled(mediaController.packageName)) {
-                continue
-            }
+        // Sort sessions so that playing/buffering sessions come first.
+        // This prevents a paused Spotify session from shadowing a playing YouTube session.
+        val sorted = sessions.sortedByDescending { isPlaybackActive(it.playbackState?.state) }
 
-            if (
-                Prefs[Prefs.MEDIA_RPC_HIDE_ON_PAUSE, false] &&
-                (
-                    mediaController.playbackState?.state == PlaybackState.STATE_PAUSED ||
-                    mediaController.playbackState?.state == PlaybackState.STATE_STOPPED
-                )
-            ) {
-                continue
-            }
-
+        for (mediaController in sorted) {
             val metadata = mediaController.metadata
-            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
-            if (title == null || title.isBlank()) continue
+            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()?.takeIf { it.isNotEmpty() }
+            val appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(mediaController.packageName, 0)).toString()
+            val author = metadata?.let { metadataResolver.formatArtists(it) }
+            val album = metadata?.let { metadataResolver.getAlbum(it) }
 
-            validSessions.add(
-                MediaControllerWithMetadata(mediaController, metadata, title)
+            val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
+            val position = mediaController.playbackState?.position
+            val playbackState = mediaController.playbackState?.state
+
+            var timestamps: Timestamps? = null
+            duration?.let {
+                if (it != 0L && playbackState == PlaybackState.STATE_PLAYING) timestamps = Timestamps(
+                    end = System.currentTimeMillis() + duration - (position ?: 0L),
+                    start = System.currentTimeMillis() - (position ?: 0L)
+                )
+            }
+
+            // Even if title is null/empty, still show presence with just the app name.
+            // This prevents the presence from disappearing when media apps send
+            // empty title metadata (common during ad breaks or between tracks).
+            val appIcon = RpcImage.ApplicationIcon(
+                mediaController.packageName, context
             )
-        }
 
-        if (validSessions.isEmpty()) return CommonRpc()
-
-        // Use the primary (first) session for the main RPC data
-        val primary = validSessions.first()
-        val metadata = primary.metadata
-        val title = primary.title
-        val appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(primary.mediaController.packageName, 0)).toString()
-
-        // Multi-artist support: show all collaborating artists
-        val allArtists = metadataResolver.getAllArtists(metadata)
-        val author = if (Prefs[Prefs.MEDIA_RPC_ARTIST_NAME, false]) {
-            metadataResolver.formatArtists(metadata)
-        } else null
-
-        val album = if (Prefs[Prefs.MEDIA_RPC_ALBUM_NAME, false]) {
-            metadataResolver.getAlbum(metadata)
-        } else null
-        val bitmap = metadataResolver.getCoverArt(metadata)
-        val duration = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
-        val playbackState = primary.mediaController.playbackState?.state
-        val position = primary.mediaController.playbackState?.position
-
-        duration?.let {
-            if (it != 0L && playbackState == PlaybackState.STATE_PLAYING) timestamps = Timestamps(
-                end = System.currentTimeMillis() + duration - (position ?: 0L),
-                start = System.currentTimeMillis() - (position ?: 0L)
-            )
-        }
-
-        // Multi-channel audio info (e.g., "5.1 Surround", "Dolby Atmos")
-        val audioChannels = metadataResolver.getAudioChannels(metadata)
-
-        if (title != null) {
-            largeIcon =
-                if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) RpcImage.ApplicationIcon(
-                    primary.mediaController.packageName, context
-                ) else null
+            var coverArt: RpcImage? = null
+            val bitmap = metadata?.let { metadataResolver.getCoverArt(it) }
             if (bitmap != null) {
-                smallIcon = largeIcon
-                smallText = appName
-                largeIcon = RpcImage.BitmapImage(
+                coverArt = RpcImage.BitmapImage(
                     context = context,
                     bitmap = bitmap,
-                    packageName = primary.mediaController.packageName,
-                    // <Main artist>|<Album>|<Title>
-                    title = "${metadataResolver.getAlbumArtists(metadata)}|${metadataResolver.getAlbum(metadata) ?: "unknown"}|${title}"
+                    packageName = mediaController.packageName,
+                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
                 )
             }
 
-            if (Prefs[Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE, false]) {
-                smallIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
-                smallText = null
-            }
+            val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
             // Build state with multi-artist and multi-channel info
             var stateBuilder = StringBuilder()
             if (!author.isNullOrEmpty()) {
                 stateBuilder.append(author)
             }
+            val audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) }
             if (!audioChannels.isNullOrEmpty()) {
                 if (stateBuilder.isNotEmpty()) stateBuilder.append(" • ")
                 stateBuilder.append(audioChannels)
             }
             val finalState = stateBuilder.toString().takeIf { it.isNotEmpty() } ?: album
 
-            return if (Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, false]) {
-                CommonRpc(
-                    name = title,
-                    details = author,
-                    state = finalState,
-                    largeImage = largeIcon,
-                    smallImage = smallIcon,
-                    largeText = album,
-                    smallText = smallText,
-                    packageName = "$title::${primary.mediaController.packageName}",
-                    time = timestamps.takeIf { it != null },
-                    mediaUrl = metadataResolver.getMediaUrl(metadata, primary.mediaController.packageName)
-                )
-            } else {
-                CommonRpc(
-                    name = appName,
-                    details = title,
-                    state = finalState,
-                    largeImage = largeIcon,
-                    smallImage = smallIcon,
-                    largeText = album,
-                    smallText = smallText,
-                    packageName = "$title::${primary.mediaController.packageName}",
-                    time = timestamps.takeIf { it != null },
-                    mediaUrl = metadataResolver.getMediaUrl(metadata, primary.mediaController.packageName)
-                )
-            }
+            return CommonRpc(
+                name = if (Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, false]) title ?: appName else appName,
+                details = title,
+                state = finalState,
+                largeImage = appIcon,
+                smallImage = coverArt,
+                largeText = album,
+                smallText = null,
+                packageName = "$title::${mediaController.packageName}",
+                time = timestamps.takeIf { it != null },
+                mediaUrl = metadata?.let { metadataResolver.getMediaUrl(it, mediaController.packageName) }
+            )
         }
         return CommonRpc()
     }
 }
-
-/**
- * Holds a media controller along with its resolved metadata and title.
- */
-private class MediaControllerWithMetadata(
-    val mediaController: android.media.session.MediaController,
-    val metadata: android.media.MediaMetadata,
-    val title: String
-)
