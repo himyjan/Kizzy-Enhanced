@@ -2073,7 +2073,7 @@ Android 17 (API 37) introduces **application-specific memory limits** that are e
 
 ---
 
-## 74. Related Resource: Android 17 Behavior Changes
+## 73. Related Resource: Android 17 Behavior Changes
 
 **Source:** [Android 17 Behavior Changes — App Memory Limits](https://developer.android.com/about/versions/17/behavior-changes-all?hl=zh-tw#app-memory-limits)
 
@@ -2100,7 +2100,7 @@ Kizzy's `AdaptiveLayout.kt` already handles dynamic window resizing and configur
 
 ---
 
-## 75. Related Resource: Android 17 Features
+## 74. Related Resource: Android 17 Features
 
 **Source:** [Android 17 Features](https://developer.android.com/about/versions/17/features?hl=zh-tw)
 
@@ -2126,7 +2126,7 @@ Kizzy targets API 37 (compileSdk) and should test memory limit behavior on API 3
 
 ---
 
-## 76. Related Resource: R8 Configuration Analyzer
+## 75. Related Resource: R8 Configuration Analyzer
 
 **Source:** [R8 Configuration Analyzer](https://developer.android.com/topic/performance/app-optimization/r8-configuration-analyzer?hl=zh-tw)
 
@@ -2165,51 +2165,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 77. Related Resource: Android Bench 2.0 — AI Coding Agent Evaluation
-
-**Source:** [Android Developers Blog — Android Bench 2.0](https://developer.android.com/blog/posts/android-bench-2-0-pushing-the-frontier-with-challenging-long-horizon-tasks?hl=zh-tw)
-**Source:** [Android Bench](https://developer.android.com/bench)
-
-### Review Summary
-
-Android Bench 2.0 is Google's benchmark suite for evaluating **AI coding agents** on real-world Android development tasks. It evaluates how well AI models can complete complex, multi-step engineering work — the same kind of work Kizzy has been doing (XML→Compose migration, dependency upgrades, feature additions).
-
-### Key Benchmark Tasks
-
-| Category | Tasks | Examples |
-|----------|-------|----------|
-| App creation | 10 | Build features for Food Vibes (food delivery app), new book-searching app |
-| App conversion | 2 | Convert Flutter to Android, Convert React Native to Android |
-| Migration | 13 | XML→Compose (Signal, Fossify File Manager), Hilt→Koin, Retrofit→Ktor, Java→Kotlin |
-| New feature | 5 | Accessibility support, Media3 video playback, Picture-in-Picture, CameraX profile picture, ViewModel layer |
-
-### Sample Apps Used
-
-Now in Android, Food Vibes, Bitwarden, Fossify File Manager, Pocket Casts, Signal, Droidcon, WordPress, Habo, BlueWallet.
-
-### Key Findings Relevant to Kizzy
-
-| Finding | Implication |
-|---------|-------------|
-| AI models excel at **new code** but struggle with **refactoring** | Kizzy's XML→Compose migration is exactly the hard case for AI |
-| Models handle deterministic translations well | Java→Kotlin, Retrofit→Ktor across 125+ files / 8K+ lines works well |
-| Models struggle with **breaking architectural changes** | Explains why some Compose migrations need manual intervention |
-| Models struggle with **cross-platform to Android** | 0% pass rate for Flutter/React Native→Android conversions |
-| **Scroll performance** on par with Views since Compose 1.9.0 | Confirms Kizzy's Compose migration decision was sound |
-
-### Connection to Kizzy
-
-Kizzy's migration from XML Views to Jetpack Compose is exactly the type of task Android Bench 2.0 evaluates. The project's approach — gradual migration with feature flags, `mutableStateOf` state hoisting, `AdaptiveLayout.kt` for responsive layouts — aligns with the patterns that AI models handle well.
-
-### Recommended Next Steps
-
-1. Consider using Android Bench 2.0 to evaluate AI agents for future Kizzy migration work
-2. Monitor the leaderboard for best-performing model-agent combinations
-3. Apply the patterns from Instagram Direct case study (ComposeItem pattern, state hoisting) which Kizzy already partially implements
-
----
-
-## 78. Build Verification
+## 76. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
