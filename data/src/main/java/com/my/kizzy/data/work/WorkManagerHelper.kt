@@ -2,7 +2,6 @@ package com.my.kizzy.data.work
 
 import android.content.Context
 import android.os.Build
-import androidx.work.BackoffCriteria
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -14,7 +13,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.my.kizzy.domain.repository.KizzyRepository
-import java.util.concurrent.TimeUnit
 
 /**
  * Helper class for scheduling WorkManager tasks.
@@ -110,7 +108,7 @@ object WorkManagerHelper {
      * Optimised to be as close as possible to NotificationListenerService reliability:
      * - No constraints (no battery, no network, no device idle requirement)
      * - Android 12+: Expedited Work for priority execution
-     * - Android 11-: Exponential backoff retry
+     * - Android 11-: Standard OneTimeWorkRequest
      * - Executes immediately with no delay
      */
     fun scheduleRpcRecovery(context: Context) {
@@ -121,9 +119,8 @@ object WorkManagerHelper {
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
         } else {
-            // Android 11 and below: exponential backoff retry up to 3 times
+            // Android 11 and below: standard OneTimeWorkRequest (WorkManager handles retry)
             OneTimeWorkRequestBuilder<RpcRecoveryHiltWorker>()
-                .setBackoffCriteria(BackoffCriteria.EXPONENTIAL, 1, TimeUnit.MINUTES)
                 .build()
         }
 
