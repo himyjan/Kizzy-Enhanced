@@ -500,6 +500,7 @@ class ExperimentalRpc : Service() {
             // song never shows until the user switches tracks.
             delay(500)
             val richMediaData = getCurrentPlayingMediaAll()
+            logger.d(TAG, "getCurrentPlayingMediaAll: appName=${richMediaData.appName}, title=${richMediaData.title}, pkg=${richMediaData.packageName}")
             // Process media data even without a registered controller — controller is only
             // needed for playback callbacks, presence updates just need media data
             val hasMediaData = richMediaData.appName != null
