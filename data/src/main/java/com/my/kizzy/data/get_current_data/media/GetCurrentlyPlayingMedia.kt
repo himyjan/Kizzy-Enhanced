@@ -3,6 +3,7 @@ package com.my.kizzy.data.get_current_data.media
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadata
 import android.media.session.MediaSessionManager
@@ -25,7 +26,6 @@ class GetCurrentPlayingMedia @Inject constructor(
     private val logger: Logger,
 ) {
     object Assets {
-        // These assets belong to the original Kizzy Discord application — do not change this ID
         private const val MEDIA_ASSETS_APP_ID = "962990036020756480"
         val PLAY = "app-assets/$MEDIA_ASSETS_APP_ID/1300361266212241430.png"
         val PAUSE = "app-assets/$MEDIA_ASSETS_APP_ID/1300361619490209802.png"
@@ -53,14 +53,12 @@ class GetCurrentPlayingMedia @Inject constructor(
         val sessions: List<android.media.session.MediaController> = try {
             mediaSessionManager.getActiveSessions(componentName)
         } catch (_: SecurityException) {
-            // MEDIA_CONTENT_CONTROL permission is signatureOrSystem on API 34+;
-            // regular third-party apps cannot hold it. Fail gracefully.
             emptyList()
         }
 
-        // Sort sessions so that playing/buffering sessions come first.
-        // This prevents a paused Spotify session from shadowing a playing YouTube session.
         val sorted = sessions.sortedByDescending { isPlaybackActive(it.playbackState?.state) }
+
+        val skipped = mutableListOf<String>()
 
         for (mediaController in sorted) {
             val metadata = mediaController.metadata
@@ -81,9 +79,6 @@ class GetCurrentPlayingMedia @Inject constructor(
                 )
             }
 
-            // Even if title is null/empty, still show presence with just the app name.
-            // This prevents the presence from disappearing when media apps send
-            // empty title metadata (common during ad breaks or between tracks).
             val appIcon = RpcImage.ApplicationIcon(
                 mediaController.packageName, context
             )
@@ -97,26 +92,38 @@ class GetCurrentPlayingMedia @Inject constructor(
                     packageName = mediaController.packageName,
                     title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
                 )
+            } else {
+                val artworkUri = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
+                if (artworkUri != null) {
+                    val parsedUri = Uri.parse(artworkUri)
+                    if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
+                        val bmp = runCatching<Bitmap?> {
+                            context.contentResolver.openInputStream(parsedUri)?.use { BitmapFactory.decodeStream(it) }
+                        }.getOrNull()
+                        if (bmp != null) {
+                            coverArt = RpcImage.BitmapImage(
+                                context = context,
+                                bitmap = bmp,
+                                packageName = mediaController.packageName,
+                                title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                            )
+                        }
+                    } else {
+                        coverArt = RpcImage.ExternalImage(artworkUri)
+                    }
+                }
             }
 
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
-            // Build state with multi-artist and multi-channel info
-            var stateBuilder = StringBuilder()
-            if (!author.isNullOrEmpty()) {
-                stateBuilder.append(author)
+            if (mediaController.packageName.contains("youtube", ignoreCase = true)) {
+                logger.i("MediaImage", "YT '$title': coverBitmap=${bitmap != null}, chosenCover=${coverArt?.javaClass?.simpleName ?: "null"}")
             }
-            val audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) }
-            if (!audioChannels.isNullOrEmpty()) {
-                if (stateBuilder.isNotEmpty()) stateBuilder.append(" • ")
-                stateBuilder.append(audioChannels)
-            }
-            val finalState = stateBuilder.toString().takeIf { it.isNotEmpty() } ?: album
 
             return CommonRpc(
                 name = if (Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, false]) title ?: appName else appName,
                 details = title,
-                state = finalState,
+                state = album,
                 largeImage = appIcon,
                 smallImage = coverArt,
                 largeText = album,
@@ -126,6 +133,7 @@ class GetCurrentPlayingMedia @Inject constructor(
                 mediaUrl = metadata?.let { metadataResolver.getMediaUrl(it, mediaController.packageName) }
             )
         }
+        logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")
         return CommonRpc()
     }
 }

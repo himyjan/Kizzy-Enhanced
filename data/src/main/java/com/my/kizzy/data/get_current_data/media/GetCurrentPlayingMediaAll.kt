@@ -9,7 +9,6 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.net.Uri
 import com.my.kizzy.data.rpc.Constants.APPLICATION_ID
-import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.data.utils.toRpcImage
@@ -24,7 +23,6 @@ class GetCurrentPlayingMediaAll @Inject constructor(
     private val logger: Logger,
 ) {
     object Assets {
-        // These assets belong to the original Kizzy Discord application — do not change this ID
         private const val MEDIA_ASSETS_APP_ID = "962990036020756480"
         val PLAY = "app-assets/$MEDIA_ASSETS_APP_ID/1300361266212241430.png"
         val PAUSE = "app-assets/$MEDIA_ASSETS_APP_ID/1300361619490209802.png"
@@ -52,14 +50,12 @@ class GetCurrentPlayingMediaAll @Inject constructor(
         val sessions: List<android.media.session.MediaController> = try {
             mediaSessionManager.getActiveSessions(componentName)
         } catch (_: SecurityException) {
-            // MEDIA_CONTENT_CONTROL permission is signatureOrSystem on API 34+;
-            // regular third-party apps cannot hold it. Fail gracefully.
             emptyList()
         }
 
-        // Sort sessions so that playing/buffering sessions come first.
-        // This prevents a paused Spotify session from shadowing a playing YouTube session.
         val sorted = sessions.sortedByDescending { isPlaybackActive(it.playbackState?.state) }
+
+        val skipped = mutableListOf<String>()
 
         for (mediaController in sorted) {
             val metadata = mediaController.metadata
@@ -80,9 +76,6 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 )
             }
 
-            // Even if title is null/empty, still show presence with just the app name.
-            // This prevents the presence from disappearing when media apps send
-            // empty title metadata (common during ad breaks or between tracks).
             val appIcon = RpcImage.ApplicationIcon(
                 mediaController.packageName, context
             )
@@ -99,6 +92,10 @@ class GetCurrentPlayingMediaAll @Inject constructor(
             }
 
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
+
+            if (mediaController.packageName.contains("youtube", ignoreCase = true)) {
+                logger.i("MediaImage", "YT '$title': coverBitmap=${bitmap != null}, chosenCover=${coverArt?.javaClass?.simpleName ?: "null"}")
+            }
 
             return RichMediaMetadata(
                 appName = appName,
@@ -117,6 +114,7 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 allArtists = metadata?.let { metadataResolver.getAllArtists(it) } ?: emptyList(),
             )
         }
+        logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")
         return RichMediaMetadata()
     }
 }
