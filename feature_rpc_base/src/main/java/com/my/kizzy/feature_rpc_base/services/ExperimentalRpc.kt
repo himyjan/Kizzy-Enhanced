@@ -311,11 +311,11 @@ class ExperimentalRpc : Service() {
                 val titleSource = Prefs[Prefs.EXPERIMENTAL_RPC_TITLE_SOURCE, "title"]
                 finalName = if (titleSource == "artist") richMediaInfo?.artist else richMediaInfo?.title
                 finalDetails = resolveTemplateValue(processor.process(templateDetails), richMediaInfo?.appName)
-                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo?.artist.takeIf { titleSource != "artist" })
+                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo?.state.takeIf { titleSource != "artist" })
             } else {
                 finalName = resolveTemplateValue(processor.process(templateName), richMediaInfo?.appName)
                 finalDetails = resolveTemplateValue(processor.process(templateDetails), richMediaInfo?.title)
-                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo?.artist)
+                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo?.state)
             }
 
             finalLargeImage = when {
@@ -339,7 +339,11 @@ class ExperimentalRpc : Service() {
             finalSmallText =
                 if (finalSmallImage == richMediaInfo?.appIcon) richMediaInfo?.appName else null
 
-            finalTimestamps = resolveTimestamps(richMediaInfo?.timestamps)
+            finalTimestamps = if (richMediaInfo?.playbackState == PlaybackState.STATE_PLAYING) {
+                resolveTimestamps(richMediaInfo?.timestamps)
+            } else {
+                null // Clear Discord progress bar when paused or stopped
+            }
 
         } else if (currentContextIsApp) {
             effectivePackageName = appInfo?.packageName
@@ -355,12 +359,11 @@ class ExperimentalRpc : Service() {
             finalTimestamps = resolveTimestamps(appInfo?.time)
         } else {
             logger.d(TAG, "No active context (App or Media) — using default template presence")
-            // Use readable default text when no media/app is active
-            // templateName etc. contain template keys (e.g. {{app_name}}) that need
-            // media context to resolve; without context they show raw keys.
-            finalName = "Kizzy"
-            finalDetails = "Using Kizzy RPC"
-            finalState = "Idle"
+            // No media/app active: leave presence fields empty so Discord shows nothing
+            // instead of placeholder text like "Using Kizzy RPC".
+            finalName = null
+            finalDetails = null
+            finalState = null
             finalLargeImage = null
             finalSmallImage = null
             finalLargeText = null
@@ -491,6 +494,11 @@ class ExperimentalRpc : Service() {
 
         scope.coroutineContext.cancelChildren()
         scope.launch {
+            // Give media session metadata time to populate on initial load.
+            // Without this, getCurrentPlayingMediaAll() returns empty on first call
+            // (YouTube often loads title after the session appears), so the first
+            // song never shows until the user switches tracks.
+            delay(500)
             val richMediaData = getCurrentPlayingMediaAll()
             // Process media data even without a registered controller — controller is only
             // needed for playback callbacks, presence updates just need media data
