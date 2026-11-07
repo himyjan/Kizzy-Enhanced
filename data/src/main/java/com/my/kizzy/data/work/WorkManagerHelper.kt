@@ -1,10 +1,15 @@
 package com.my.kizzy.data.work
 
 import android.content.Context
+import android.os.Build
+import androidx.work.BackoffCriteria
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
@@ -20,6 +25,7 @@ object WorkManagerHelper {
     private const val WORK_RPC_SYNC = "kizzy_work_rpc_sync"
     private const val WORK_LOG_CLEANUP = "kizzy_work_log_cleanup"
     private const val WORK_APP_DETECTION = "kizzy_work_app_detection"
+    private const val WORK_RPC_RECOVERY = "kizzy_work_rpc_recovery"
 
     /**
      * Constraints for work that requires network connectivity.
@@ -96,6 +102,37 @@ object WorkManagerHelper {
 
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork(WORK_LOG_CLEANUP, ExistingPeriodicWorkPolicy.KEEP, request)
+    }
+
+    /**
+     * Schedules RPC recovery work after process termination or task removal.
+     *
+     * Optimised to be as close as possible to NotificationListenerService reliability:
+     * - No constraints (no battery, no network, no device idle requirement)
+     * - Android 12+: Expedited Work for priority execution
+     * - Android 11-: Exponential backoff retry
+     * - Executes immediately with no delay
+     */
+    fun scheduleRpcRecovery(context: Context) {
+        val request = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12+: Expedited Work runs with higher priority, less likely to be
+            // throttled or cancelled by the system after process death.
+            OneTimeWorkRequestBuilder<RpcRecoveryHiltWorker>()
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .build()
+        } else {
+            // Android 11 and below: exponential backoff retry up to 3 times
+            OneTimeWorkRequestBuilder<RpcRecoveryHiltWorker>()
+                .setBackoffCriteria(BackoffCriteria.EXPONENTIAL, 1, TimeUnit.MINUTES)
+                .build()
+        }
+
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork(
+                WORK_RPC_RECOVERY,
+                ExistingWorkPolicy.REPLACE,
+                request
+            )
     }
 
     /**

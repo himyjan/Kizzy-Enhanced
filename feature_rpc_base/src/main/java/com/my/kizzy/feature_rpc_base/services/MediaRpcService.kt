@@ -612,15 +612,9 @@ class MediaRpcService : Service() {
     override fun onTaskRemoved(intent: Intent?) {
         super.onTaskRemoved(intent)
         logger.d("MediaRPC", "onTaskRemoved: user swiped app from Recents")
-        // Schedule RPC recovery worker so presence can be restored after
+        // Schedule RPC recovery via WorkManager so presence can be restored after
         // aggressive task removal or process termination by the system.
-        // Use REPLACE to ensure the latest swiped-away event's recovery command always takes effect.
-        WorkManager.getInstance(this)
-            .enqueueUniqueWork(
-                "kizzy_rpc_recovery",
-                ExistingWorkPolicy.REPLACE,
-                OneTimeWorkRequestBuilder<RpcRecoveryHiltWorker>().build()
-            )
+        WorkManagerHelper.scheduleRpcRecovery(this)
         // Don't stop the service - keep RPC running in background
         // User can stop it from the notification if they want
         // Just update the notification to show it's running in background
@@ -640,6 +634,9 @@ class MediaRpcService : Service() {
         wakeLock?.let {
             if (it.isHeld) it.release()
         }
+        // Schedule RPC recovery via WorkManager so presence can be restored after
+        // process termination by the system.
+        WorkManagerHelper.scheduleRpcRecovery(this)
         super.onDestroy()
     }
 
