@@ -2165,7 +2165,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 70. Bug Fix: KizzyRPC — Initialize presence field to prevent UninitializedPropertyAccessException
+## 76. Bug Fix: KizzyRPC — Initialize presence field to prevent UninitializedPropertyAccessException
 
 **Files:** `data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`
 
@@ -2186,7 +2186,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 71. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
+## 77. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
 
@@ -2209,7 +2209,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 72. Bug Fix: MediaRpcService & KizzyRpcService — WorkManager Background Recovery
+## 78. Bug Fix: MediaRpcService & KizzyRpcService — WorkManager Background Recovery
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`, `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/KizzyRpcService.kt`, `data/src/main/java/com/my/kizzy/data/work/WorkManagerHelper.kt`
 
@@ -2242,7 +2242,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 73. Bug Fix: CrashReportActivity — Use KizzyTheme instead of bare MaterialTheme
+## 79. Bug Fix: CrashReportActivity — Use KizzyTheme instead of bare MaterialTheme
 
 **Files:** `app/src/main/java/com/my/kizzy/CrashReportActivity.kt`
 
@@ -2263,7 +2263,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 74. Bug Fix: RpcImage.kt — Cancellation-immune upload scope + de-dup + 12h TTL cache
+## 80. Bug Fix: RpcImage.kt — Cancellation-immune upload scope + de-dup + 12h TTL cache
 
 **Files:** `data/src/main/java/com/my/kizzy/data/rpc/RpcImage.kt`
 
@@ -2282,7 +2282,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 75. Bug Fix: ExperimentalRpc — Remove "Using Kizzy RPC" Default Presence Text
+## 81. Bug Fix: ExperimentalRpc — Remove "Using Kizzy RPC" Default Presence Text
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
 
@@ -2308,7 +2308,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 76. Bug Fix: Discord WebSocket — Multiple Concurrent Connections Causing 4003 Error
+## 82. Bug Fix: Discord WebSocket — Multiple Concurrent Connections Causing 4003 Error
 
 **Files:** `data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`, `gateway/src/main/java/kizzy/gateway/DiscordWebSocketImpl.kt`
 
@@ -2337,7 +2337,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 76. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
+## 83. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
 
@@ -2362,7 +2362,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ## 82. Build Verification
 
-## 76. Build Verification
+## 84. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
