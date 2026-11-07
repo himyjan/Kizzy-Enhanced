@@ -1,14 +1,14 @@
 /*
  *
  *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * CrashReportActivity.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
+4:  *  *  * Copyright (C) 2022
+5:  *  *  * CrashReportActivity.kt is part of Kizzy
+6:  *  *  *  and can not be copied and/or distributed without the express
+7:  *  *  * permission of yzziK(Vaibhav)
+8:  *  *  *****************************************************************
+9:  *
+10:  *
+11:  */
 
 package com.my.kizzy
 
@@ -32,6 +32,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.system.exitProcess
+import com.my.kizzy.ui.theme.KizzyTheme
+import com.my.kizzy.ui.theme.LocalDarkTheme
+import com.my.kizzy.ui.theme.LocalDynamicColorSwitch
 
 class CrashReportActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +43,11 @@ class CrashReportActivity : ComponentActivity() {
         val errorLog = intent.getStringExtra("KEY_ERROR_LOG") ?: "Unknown Exception Tracked"
 
         setContent {
-            MaterialTheme {
+            KizzyTheme(
+                darkTheme = LocalDarkTheme.current.isDarkTheme(),
+                isHighContrastModeEnabled = LocalDarkTheme.current.isHighContrastModeEnabled,
+                isDynamicColorEnabled = LocalDynamicColorSwitch.current,
+            ) {
                 val context = LocalContext.current
 
                 Column(
