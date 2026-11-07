@@ -109,6 +109,11 @@ class ExperimentalRpc : Service() {
     private var useAppsRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, true]
     private var useMediaRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, true]
 
+    // Media detection retry settings - YouTube Music/LX Music can take 1-3 seconds
+    // to populate title metadata after session appears.
+    private val mediaDetectionDelayMs = 500L
+    private val maxMediaDetectionAttempts = 4
+
     private var templateName =
         Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
     private var templateDetails =
@@ -495,12 +500,17 @@ class ExperimentalRpc : Service() {
         scope.coroutineContext.cancelChildren()
         scope.launch {
             // Give media session metadata time to populate on initial load.
-            // Without this, getCurrentPlayingMediaAll() returns empty on first call
-            // (YouTube often loads title after the session appears), so the first
-            // song never shows until the user switches tracks.
-            delay(500)
-            val richMediaData = getCurrentPlayingMediaAll()
-            logger.d(TAG, "getCurrentPlayingMediaAll: appName=${richMediaData.appName}, title=${richMediaData.title}, pkg=${richMediaData.packageName}")
+            // YouTube/LX Music often take 1-3 seconds to populate title metadata.
+            // Retry up to 3 times with increasing delay before giving up.
+            var richMediaData = getCurrentPlayingMediaAll()
+            var attempt = 1
+            while (richMediaData.appName == null && attempt < maxMediaDetectionAttempts) {
+                logger.d(TAG, "getCurrentPlayingMediaAll attempt $attempt: appName=${richMediaData.appName}, title=${richMediaData.title}, pkg=${richMediaData.packageName} - retrying...")
+                delay(mediaDetectionDelayMs * attempt)
+                richMediaData = getCurrentPlayingMediaAll()
+                attempt++
+            }
+            logger.d(TAG, "getCurrentPlayingMediaAll final: appName=${richMediaData.appName}, title=${richMediaData.title}, pkg=${richMediaData.packageName}")
             // Process media data even without a registered controller — controller is only
             // needed for playback callbacks, presence updates just need media data
             val hasMediaData = richMediaData.appName != null
@@ -513,7 +523,9 @@ class ExperimentalRpc : Service() {
             } else if (useAppsRpc) {
                 startAppDetectionCoroutine()
             } else {
-                updatePresence(appInfo = null, richMediaInfo = null, rawMediaMetadata = null)
+                // Don't send empty presence to Discord - just wait. When media loads later,
+                // MediaControllerCallback will trigger updatePresence with real data.
+                logger.d(TAG, "No media data available yet - skipping presence update, waiting for media to load")
             }
         }
     }
