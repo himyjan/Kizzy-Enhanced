@@ -103,6 +103,9 @@ dependencies {
 
     // Hilt annotation processor
     ksp(libs.hilt.compiler)
+
+    // Baseline Profiles for faster startup
+    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
 }
 
 configurations {
