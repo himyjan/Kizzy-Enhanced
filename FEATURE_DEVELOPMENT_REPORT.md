@@ -1884,50 +1884,8 @@ Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
 3. Evaluate Navigation 3 for type-safe deep links
 4. Add cross-device input support (mouse, keyboard, trackpad) for desktop/laptop use
 
----
 
 ## 69. Related Resource: Instagram Direct — AI-native UI with Jetpack Compose
-
-**Source:** [Android Developers Blog — Build for every screen: Jetpack Compose updates](https://developer.android.com/blog/posts/build-for-every-screen-jetpack-compose-updates?hl=zh-tw)
-
-### Review Summary
-
-This article covers Jetpack Compose 1.13 stable release features and adaptive UI strategies for building apps across phones, foldables, tablets, wearables, in-car screens, XR, and ChromeOS/Googlebook.
-
-### Key Features
-
-| Feature | Description | Relevance to Kizzy |
-|---------|-------------|-------------------|
-| Grid & Flexbox (Compose 1.13) | Built-in adaptive Grid and Flexbox layout primitives | ⚠️ Kizzy uses Row/Column-based AdaptiveLayout; could migrate to Grid/Flexbox |
-| Progressive blur | New graphical feature for visual effects | ⚠️ Not currently needed |
-| Formatted text | Enhanced text formatting | ⚠️ Not currently needed |
-| BasicTextField rewrite | Buffer-oriented TextFieldState, eliminates IME race conditions | ⚠️ Kizzy uses Material3 TextField |
-| Jetpack AppState (Alpha) | Compose-first state layer across activities, services, widgets | ⚠️ Kizzy uses mutableStateOf + ViewModel |
-| Navigation 3 (1.2 Stable) | Developer-owned back stack, type-safe deep links, synthetic back stacks | ⚠️ Kizzy uses custom navigation |
-| Cross-device input | Touchpad, mouse, physical controls support | ⚠️ Could improve desktop/laptop support |
-
-### Connection to Kizzy Adaptive UI
-
-Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
-
-| Article Concept | Kizzy Implementation |
-|-----------------|---------------------|
-| Unified Compose toolkit | ✅ 100% Compose UI, no legacy Views |
-| Adaptive Grid/Flexbox | ✅ `ResponsiveGridItem`, `ResponsiveGrid` (via Row/Column-based approach) |
-| Cross-form-factor support | ✅ Compact/Medium/Expanded width classes |
-| State preservation across config changes | ✅ `mutableStateOf` in ViewModel |
-| Multi-form-factor support | ✅ Phones, tablets, foldables covered |
-
-### Recommended Next Steps
-
-1. Evaluate migrating from Row/Column-based layouts to Compose 1.13 Grid/Flexbox when stable
-2. Consider Jetpack AppState for cross-activity state sharing
-3. Evaluate Navigation 3 for type-safe deep links and synthetic back stacks
-4. Add cross-device input support (mouse, keyboard, trackpad) for desktop/laptop use
-
----
-
-## 71. Related Resource: Instagram Direct — AI-native UI with Jetpack Compose
 
 **Source:** [Android Developers Blog — Jetpack Compose AI-native UI: Instagram Direct](https://developer.android.com/blog/posts/jetpack-compose-ai-native-ui-instagram-direct?hl=zh-tw)
 
@@ -1972,11 +1930,11 @@ Kizzy already implements several of these patterns:
 1. Evaluate Jetpack AppState for cross-activity state sharing
 2. Consider Navigation 3 for type-safe deep links
 3. Add cross-device input support (mouse, keyboard, trackpad) for desktop/laptop
-4. Explore A2UI / Agent-to-UI for AI-generated Compose UI components |
+4. Explore A2UI / Agent-to-UI for AI-generated Compose UI components
 
 ---
 
-## 71. Related Resource: R8 Profile-Guided Optimization & App Sizer
+## 70. Related Resource: R8 Profile-Guided Optimization & App Sizer
 
 **Sources:**
 - [Android Developers Blog — Grab R8 PGO & ANR Startup Time](https://android-developers.googleblog.com/2026/02/grab-r8-profile-guided-optimization-anr-startup-time?hl=zh-tw)
@@ -2035,7 +1993,51 @@ Grab (Southeast Asian super app, 10M+ lines of code, 8 countries) combined R8 Pr
 
 ---
 
-## 70. Build Verification
+## 71. Related Resource: Android Bench 2.0 — AI Coding Agent Evaluation
+
+**Source:** [Android Developers Blog — Android Bench 2.0](https://developer.android.com/blog/posts/android-bench-2-0-pushing-the-frontier-with-challenging-long-horizon-tasks?hl=zh-tw)
+**Source:** [Android Bench](https://developer.android.com/bench)
+
+### Review Summary
+
+Android Bench 2.0 is Google's benchmark suite for evaluating **AI coding agents** on real-world Android development tasks. It evaluates how well AI models can complete complex, multi-step engineering work — the same kind of work Kizzy has been doing (XML→Compose migration, dependency upgrades, feature additions).
+
+### Key Benchmark Tasks
+
+| Category | Tasks | Examples |
+|----------|-------|----------|
+| App creation | 10 | Build features for Food Vibes (food delivery app), new book-searching app |
+| App conversion | 2 | Convert Flutter to Android, Convert React Native to Android |
+| Migration | 13 | XML→Compose (Signal, Fossify File Manager), Hilt→Koin, Retrofit→Ktor, Java→Kotlin |
+| New feature | 5 | Accessibility support, Media3 video playback, Picture-in-Picture, CameraX profile picture, ViewModel layer |
+
+### Sample Apps Used
+
+Now in Android, Food Vibes, Bitwarden, Fossify File Manager, Pocket Casts, Signal, Droidcon, WordPress, Habo, BlueWallet.
+
+### Key Findings Relevant to Kizzy
+
+| Finding | Implication |
+|---------|-------------|
+| AI models excel at **new code** but struggle with **refactoring** | Kizzy's XML→Compose migration is exactly the hard case for AI |
+| Models handle deterministic translations well | Java→Kotlin, Retrofit→Ktor across 125+ files / 8K+ lines works well |
+| Models struggle with **breaking architectural changes** | Explains why some Compose migrations need manual intervention |
+| Models struggle with **cross-platform to Android** | 0% pass rate for Flutter/React Native→Android conversions |
+| **Scroll performance** on par with Views since Compose 1.9.0 | Confirms Kizzy's Compose migration decision was sound |
+
+### Connection to Kizzy
+
+Kizzy's migration from XML Views to Jetpack Compose is exactly the type of task Android Bench 2.0 evaluates. The project's approach — gradual migration with feature flags, `mutableStateOf` state hoisting, `AdaptiveLayout.kt` for responsive layouts — aligns with the patterns that AI models handle well.
+
+### Recommended Next Steps
+
+1. Consider using Android Bench 2.0 to evaluate AI agents for future Kizzy migration work
+2. Monitor the leaderboard for best-performing model-agent combinations
+3. Apply the patterns from Instagram Direct case study (ComposeItem pattern, state hoisting) which Kizzy already partially implements
+
+---
+
+## 72. Build Verification
 
 ```
 BUILD SUCCESSFUL in 44s
