@@ -25,7 +25,11 @@ class KizzyRPC @Inject constructor(
     private val discordWebSocket: DiscordWebSocket,
     private val logger: Logger
 ) {
-    private lateinit var presence: Presence
+    private var presence: Presence = Presence(
+        activities = emptyList(),
+        afk = true,
+        status = null
+    )
     private var activityName: String? = null
     private var applicationIdNumber = Prefs[Prefs.CUSTOM_ACTIVITY_APPLICATION_ID, Constants.APPLICATION_ID]
     private var details: String? = null
@@ -461,6 +465,5 @@ class KizzyRPC @Inject constructor(
         )
         // Remember the presence so we can re-apply after reconnect
                 lastPresence = presence
-                discordWebSocket.sendActivity(presence)
     }
 }
