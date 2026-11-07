@@ -40,6 +40,7 @@ import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
+import com.my.kizzy.data.work.WorkManagerHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -225,6 +226,14 @@ class ExperimentalRpc : Service() {
         startHeartbeat()
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onTaskRemoved(intent: Intent?) {
+        super.onTaskRemoved(intent)
+        logger.d(TAG, "onTaskRemoved: user swiped app from Recents")
+        // Schedule RPC recovery via WorkManager so presence can be restored after
+        // aggressive task removal or process termination by the system.
+        WorkManagerHelper.scheduleRpcRecovery(this)
     }
 
     private fun startAppDetectionCoroutine() {
@@ -640,6 +649,9 @@ class ExperimentalRpc : Service() {
         stopHeartbeat()
         scope.cancel()
         kizzyRPC.closeRPC()
+        // Schedule RPC recovery via WorkManager so presence can be restored after
+        // aggressive task removal or process termination by the system.
+        WorkManagerHelper.scheduleRpcRecovery(this)
         super.onDestroy()
     }
 
