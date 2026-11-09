@@ -13,11 +13,13 @@
 package com.my.kizzy.data.di
 
 import com.my.kizzy.data.BuildConfig
+import com.my.kizzy.data.repository.KizzyRepositoryImpl
 import com.my.kizzy.data.remote.ApiService
 import com.my.kizzy.data.remote.Base
 import com.my.kizzy.data.remote.Discord
 import com.my.kizzy.data.remote.Github
 import com.my.kizzy.data.remote.Imgur
+import com.my.kizzy.domain.repository.KizzyRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -61,6 +63,12 @@ object AppModule {
     fun provideJson(): Json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
+    }
+
+    @Provides
+    @Singleton
+    fun provideKizzyRepository(impl: KizzyRepositoryImpl): KizzyRepository {
+        return impl
     }
 
     @Provides
