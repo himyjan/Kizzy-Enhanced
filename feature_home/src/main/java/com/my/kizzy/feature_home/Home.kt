@@ -75,6 +75,7 @@ import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_home.feature.Features
 import com.my.kizzy.feature_home.feature.HomeFeature
 import com.my.kizzy.feature_home.feature.ToolTipContent
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.services.KizzyTileService
 import com.my.kizzy.feature_settings.SettingsDrawer
 import com.my.kizzy.resources.R
@@ -98,6 +99,10 @@ fun Home(
     navigateToLogsScreen: () -> Unit,
 ) {
     val ctx = LocalContext.current
+    val mediaRpcTitle = stringResource(R.string.main_mediaRpc)
+    val customRpcTitle = stringResource(R.string.main_customRpc)
+    val consoleRpcTitle = stringResource(R.string.main_consoleRpc)
+    val experimentalRpcTitle = stringResource(R.string.main_experimentalRpc)
     var homeItems by remember {
         mutableStateOf(features)
     }
@@ -120,7 +125,18 @@ fun Home(
 
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
-            homeItems = features
+            // Re-detect RPC service states so switches show correct on/off
+            // when returning to home after toggling from other screens.
+            AppUtils.init(ctx)
+            homeItems = features.map { item ->
+                when (item.title) {
+                    mediaRpcTitle -> item.copy(isChecked = AppUtils.mediaRpcRunning())
+                    customRpcTitle -> item.copy(isChecked = AppUtils.customRpcRunning())
+                    consoleRpcTitle -> item.copy(isChecked = AppUtils.customRpcRunning())
+                    experimentalRpcTitle -> item.copy(isChecked = AppUtils.experimentalRpcRunning())
+                    else -> item
+                }
+            }
         }
     }
 
