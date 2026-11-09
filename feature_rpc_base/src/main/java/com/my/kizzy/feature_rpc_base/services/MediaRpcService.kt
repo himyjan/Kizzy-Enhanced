@@ -114,14 +114,8 @@ class MediaRpcService : Service() {
     private var currentMediaDurationSec: Int = 0
     private var currentMediaPositionMs: Long = 0
 
-    private fun newNotificationBuilder(): NotificationCompat.Builder {
-        return NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_media_rpc)
-            .setContentTitle("Rich Presence Active")
-            .setContentText("Broadcasting media status")
-            .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-    }
+    private val timelineTickerJob = MutableStateFlow<Job?>(null)
+
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
@@ -215,8 +209,10 @@ class MediaRpcService : Service() {
                         val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
                         stateRepository.setImageUrls(largeImageUrl, smallImageUrl)
 
-                        kizzyRPC.updateRPC(playingMedia, Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true])
+                        updatePresence(forceRefresh = true)
                     }
+                    // Update notification progress bar every second while playing
+                    updateNotificationPauseButton()
                 }
             }
         }
@@ -456,13 +452,35 @@ class MediaRpcService : Service() {
 
     private fun updateNotificationPauseButton() {
         val title = currentMediaTitle ?: getString(R.string.rich_presence_active)
+        val progressText = if (currentMediaDurationSec > 0) {
+            val currentStr = formatDuration(currentMediaPositionMs)
+            val totalStr = formatDuration(currentMediaDurationSec.toLong() * 1000)
+            "$currentStr / $totalStr"
+        } else {
+            "No time info"
+        }
         val content = if (isPaused) "Tap Resume to continue syncing" else currentMediaArtist ?: "Broadcasting media status"
-        val notification = buildNotification(title, content, currentMediaCoverArt, currentMediaProgressSec, currentMediaDurationSec)
+        val notification = buildNotification(title, content, currentMediaCoverArt, currentMediaProgressSec, currentMediaDurationSec, currentStr = currentMediaProgressSec, totalSec = currentMediaDurationSec)
         notificationManager.notify(Constants.NOTIFICATION_ID, notification)
     }
 
+    /**
+     * Format milliseconds into MM:SS or HH:MM:SS string for notification display
+     */
+    private fun formatDuration(durationMs: Long): String {
+        val totalSeconds = (durationMs / 1000L).coerceAtLeast(0L)
+        val hours = totalSeconds / 3600L
+        val minutes = (totalSeconds % 3600L) / 60L
+        val seconds = totalSeconds % 60L
+        return if (hours > 0) {
+            String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            String.format("%02d:%02d", minutes, seconds)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.BAKLAVA)
-    private fun buildNotification(title: String, content: String, coverArt: Bitmap?, progressSec: Int, durationSec: Int): Notification {
+    private fun buildNotification(title: String, content: String, coverArt: Bitmap?, progressSec: Int, durationSec: Int, currentSec: Int = 0, totalSec: Int = 0): Notification {
         val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
         val appPendingIntent = PendingIntent.getActivity(
             this, 0, appIntent,
@@ -476,6 +494,10 @@ class MediaRpcService : Service() {
             .setContentIntent(appPendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            // Native chronometer for elapsed time display
+            .setWhen(currentMediaPositionMs)
+            .setUsesChronometer(true)
+            .setShowWhen(true)
             .addAction(
                 NotificationCompat.Action.Builder(
                     R.drawable.ic_media_rpc,
