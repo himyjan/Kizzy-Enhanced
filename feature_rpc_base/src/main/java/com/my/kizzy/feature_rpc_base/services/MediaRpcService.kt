@@ -305,6 +305,9 @@ class MediaRpcService : Service() {
         val currentDetails = playingMedia.details
         val currentState = playingMedia.state
 
+        // Update notification with current playback progress before skip check
+        updateNotificationPauseButton()
+
         stateRepository.setTimestamps(playingMedia.time?.start, playingMedia.time?.end)
         val largeImageUrl = playingMedia.largeImage?.resolveImage(kizzyRepository)
         val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
