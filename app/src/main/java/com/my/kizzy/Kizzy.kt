@@ -58,6 +58,8 @@ import com.my.kizzy.feature_settings.style.DarkThemePreferences
 import com.my.kizzy.feature_startup.StartUp
 import com.my.kizzy.navigation.Routes
 import com.my.kizzy.preference.Prefs
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import xyz.dead8309.feature_experimental_rpc.ExperimentalRpcScreen
 import xyz.dead8309.feature_experimental_rpc.ExperimentalRpcViewmodel
 import xyz.dead8309.feature_experimental_rpc.apps.ExperimentalRpcAppsScreen
@@ -198,7 +200,31 @@ internal fun ComponentActivity.Kizzy(
                             val userId = user?.id ?: ""
                             val avatarUrl = user?.getAvatarImage() ?: ""
                             val encodedAvatarUrl = java.net.URLEncoder.encode(avatarUrl, java.nio.charset.StandardCharsets.UTF_8.toString())
-                            navController.navigate("${Routes.RPC_PREVIEW}/$userId/$encodedAvatarUrl")
+                            val rpcConfig = when (currentState) {
+                                is UserState.LoadingCompleted -> currentState.rpcConfig
+                                is UserState.Error -> currentState.rpcConfig
+                                else -> null
+                            }
+                            val encodedRpcConfig = if (rpcConfig != null) {
+                                java.net.URLEncoder.encode(
+                                    buildString {
+                                        append("{")
+                                        append("\"name\":\"${rpcConfig.name.replace("\\", "\\\\").replace("\"", "\\\"")}\"")
+                                        append(",\"details\":\"${rpcConfig.details?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
+                                        append(",\"state\":\"${rpcConfig.state?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
+                                        append(",\"button1\":\"${rpcConfig.button1?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
+                                        append(",\"button1link\":\"${rpcConfig.button1link?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
+                                        append(",\"button2\":\"${rpcConfig.button2?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
+                                        append(",\"button2link\":\"${rpcConfig.button2link?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
+                                        append(",\"timestampsStart\":\"${rpcConfig.timestampsStart?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
+                                        append(",\"timestampsStop\":\"${rpcConfig.timestampsStop?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
+                                        append(",\"type\":\"${rpcConfig.type.replace("\\", "\\\\").replace("\"", "\\\"")}\"")
+                                        append("}")
+                                    },
+                                    java.nio.charset.StandardCharsets.UTF_8.toString()
+                                )
+                            } else ""
+                            navController.navigate("${Routes.RPC_PREVIEW}/$userId/$encodedAvatarUrl/$encodedRpcConfig")
                         }
                     )
                 } else {
@@ -264,17 +290,30 @@ internal fun ComponentActivity.Kizzy(
                 )
             }
             composable(
-                route = "${Routes.RPC_PREVIEW}/{userId}/{avatarUrl}",
+                route = "${Routes.RPC_PREVIEW}/{userId}/{avatarUrl}/{rpcConfig}",
                 arguments = listOf(
                     navArgument("userId") { type = NavType.StringType },
-                    navArgument("avatarUrl") { type = NavType.StringType }
+                    navArgument("avatarUrl") { type = NavType.StringType },
+                    navArgument("rpcConfig") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 val avatarUrl = backStackEntry.arguments?.getString("avatarUrl") ?: ""
+                val rpcConfigParam = backStackEntry.arguments?.getString("rpcConfig") ?: ""
+                val decodedRpcConfig = if (rpcConfigParam.isNotBlank()) {
+                    try {
+                        java.net.URLDecoder.decode(rpcConfigParam, java.nio.charset.StandardCharsets.UTF_8.toString())
+                            .let { kotlinx.serialization.json.Json.decodeFromString<com.my.kizzy.domain.model.rpc.RpcConfig>(it) }
+                    } catch (_: Exception) {
+                        null
+                    }
+                } else {
+                    null
+                }
                 RpcPreviewScreen(
                     userId = userId,
                     avatarUrl = avatarUrl,
+                    rpcConfig = decodedRpcConfig,
                     onBackPressed = { navController.popBackStack() }
                 )
             }
