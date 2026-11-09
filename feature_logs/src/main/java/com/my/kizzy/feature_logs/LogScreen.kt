@@ -101,7 +101,7 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { ToolBar(viewModel, onBackPressed, lazyListState, visibleLogs, autoScroll) },
+        topBar = { ToolBar(viewModel, ctx, onBackPressed, lazyListState, visibleLogs, autoScroll) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -284,6 +284,7 @@ fun LogsCard(
 @Composable
 fun ToolBar(
     viewModel: LogsViewModel,
+    ctx: Context,
     onBackPressed: () -> Unit,
     lazyListState: androidx.compose.foundation.lazy.LazyListState,
     visibleLogs: List<LogEvent>,
@@ -386,14 +387,11 @@ fun ToolBar(
                             }
                         })
                     DropdownMenuItem(
-                        onClick = {},
+                        onClick = { viewModel.setShowCompat(!showCompat) },
                         text = {
                             Row(
-                                Modifier
-                                    .fillMaxSize()
-                                    .clickable {
-                                        viewModel.setShowCompat(!showCompat)
-                                    }, horizontalArrangement = Arrangement.SpaceBetween
+                                Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
                                     text = stringResource(R.string.compact_mode),
@@ -401,9 +399,36 @@ fun ToolBar(
                                 )
                                 KSwitch(
                                     checked = showCompat,
+                                    onClick = { viewModel.setShowCompat(!showCompat) },
                                     modifier = Modifier.padding(start = 20.dp)
                                 )
                             }
+                        })
+                    DropdownMenuItem(
+                        onClick = {
+                            menuClicked = false
+                            scope.launch {
+                                val path = viewModel.saveLogsToFile(ctx)
+                                if (path != null) {
+                                    Toast.makeText(
+                                        ctx,
+                                        ctx.getString(R.string.logs_saved_toast, path),
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        ctx,
+                                        ctx.getString(R.string.logs_save_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.save_logs_to_file),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         })
                     DropdownMenuItem(
                         text = {

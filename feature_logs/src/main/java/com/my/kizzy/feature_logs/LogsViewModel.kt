@@ -12,6 +12,7 @@
 
 package com.my.kizzy.feature_logs
 
+import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.derivedStateOf
@@ -21,6 +22,12 @@ import androidx.lifecycle.ViewModel
 import com.my.kizzy.domain.model.logs.LogEvent
 import com.my.kizzy.feature_logs.LoggerProvider.logger
 import com.my.kizzy.preference.Prefs
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Stable
 class LogsViewModel: ViewModel() {
@@ -66,5 +73,21 @@ class LogsViewModel: ViewModel() {
 
     fun clearLogs() {
         logger.clear()
+    }
+
+    fun saveLogsToFile(context: Context): String? {
+        val dir = context.cacheDir
+        val fileName = "kizzy_logs_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.txt"
+        val file = File(dir, fileName)
+        return try {
+            val sdf = SimpleDateFormat("h:mm:ss a", Locale.getDefault())
+            val allLogs = visibleLogs.joinToString("\n") { log ->
+                "[${sdf.format(Date(log.createdAt))}] ${log.level.name} ${log.tag}: ${log.text}"
+            }
+            file.writeText(allLogs)
+            file.absolutePath
+        } catch (e: IOException) {
+            null
+        }
     }
 }
