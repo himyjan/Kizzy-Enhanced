@@ -460,7 +460,7 @@ class MediaRpcService : Service() {
             "No time info"
         }
         val content = if (isPaused) "Tap Resume to continue syncing" else currentMediaArtist ?: "Broadcasting media status"
-        val notification = buildNotification(title, content, currentMediaCoverArt, currentMediaProgressSec, currentMediaDurationSec, currentStr = currentMediaProgressSec, totalSec = currentMediaDurationSec)
+        val notification = buildNotification(title, content, currentMediaCoverArt, currentMediaProgressSec, currentMediaDurationSec, currentMediaProgressSec, currentMediaDurationSec)
         notificationManager.notify(Constants.NOTIFICATION_ID, notification)
     }
 
