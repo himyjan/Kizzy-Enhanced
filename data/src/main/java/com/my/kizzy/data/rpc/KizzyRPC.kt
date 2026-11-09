@@ -495,6 +495,9 @@ class KizzyRPC @Inject constructor(
                 )
                 delay(POST_CONNECT_DELAY_MS - timeSinceConnect)
             }
+            // Reset presence hash so presence is re-sent after WebSocket reconnect
+            lastPresenceHash = -1
+            lastPresenceTimeMs = 0
         }
 
         // Deduplication: skip if within minimum interval OR presence data unchanged.
@@ -504,7 +507,10 @@ class KizzyRPC @Inject constructor(
         val now = System.currentTimeMillis()
         val hash = presenceHash(commonRpc.name, commonRpc.details, commonRpc.state, time, commonRpc.playbackState)
         val intervalElapsed = now - lastPresenceTimeMs >= PRESENCE_MIN_INTERVAL_MS
-        if (!forceRefresh && (!intervalElapsed || hash == lastPresenceHash)) {
+        // Always send on first call (lastPresenceTimeMs == 0) so Discord receives
+        // the initial presence even if WebSocket was still connecting.
+        val isFirstRun = lastPresenceTimeMs == 0L
+        if (!forceRefresh && !isFirstRun && (!intervalElapsed || hash == lastPresenceHash)) {
             logger.d(
                 "KizzyRPC",
                 "Skipping presence update (intervalElapsed=$intervalElapsed, hashChanged=${hash != lastPresenceHash})"
