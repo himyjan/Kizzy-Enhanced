@@ -17,6 +17,8 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
+import android.graphics.Bitmap
+import androidx.annotation.RequiresApi
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.KizzyRPC
@@ -103,9 +105,12 @@ class MediaRpcService : Service() {
     private lateinit var mediaSessionManager: MediaSessionManager
 
     private var currentMediaController: MediaController? = null
-
     private var currentMediaTitle: String? = null
     private var currentMediaArtist: String? = null
+    private var currentMediaCoverArt: Bitmap? = null
+    private var currentMediaProgressSec: Int = 0
+    private var currentMediaDurationSec: Int = 0
+    private var currentMediaPositionMs: Long = 0
 
     private fun newNotificationBuilder(): NotificationCompat.Builder {
         return NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
@@ -241,6 +246,23 @@ class MediaRpcService : Service() {
 
         currentMediaTitle = playingMedia.name.takeIf { it.isNotBlank() }
         currentMediaArtist = playingMedia.state?.takeIf { it.isNotBlank() }
+        currentMediaCoverArt = playingMedia.largeImage?.let {
+            if (it is com.my.kizzy.data.rpc.RpcImage.BitmapImage) it.bitmap else null
+        }
+
+        // Track playback progress for notification progress bar
+        playingMedia.time?.let { time ->
+            val start = time.start ?: 0L
+            val end = time.end ?: 0L
+            currentMediaDurationSec = ((end - start) / 1000).toInt().coerceAtLeast(0)
+            // Get current position from media controller if available, otherwise estimate from timestamps
+            currentMediaPositionMs = currentMediaController?.playbackState?.position ?: (System.currentTimeMillis() - start)
+            currentMediaProgressSec = (currentMediaPositionMs / 1000).toInt().coerceIn(0, currentMediaDurationSec)
+        } ?: run {
+            currentMediaDurationSec = 0
+            currentMediaProgressSec = 0
+            currentMediaPositionMs = 0L
+        }
 
         val playingPkg = playingMedia.packageName.takeIf { it.isNotBlank() }
 
@@ -257,6 +279,9 @@ class MediaRpcService : Service() {
                 isPaused = false
                 lastKnownTrackTitle = null
                 lastKnownTrackArtist = null
+                currentMediaTitle = null
+                currentMediaArtist = null
+                currentMediaCoverArt = null
                 stateRepository.setConnected(false)
                 stateRepository.clearTrackInfo()
                 stopTimelineUpdates()
@@ -427,18 +452,19 @@ class MediaRpcService : Service() {
     private fun updateNotificationPauseButton() {
         val title = currentMediaTitle ?: getString(R.string.rich_presence_active)
         val content = if (isPaused) "Tap Resume to continue syncing" else currentMediaArtist ?: "Broadcasting media status"
-        val notification = buildNotification(title, content)
+        val notification = buildNotification(title, content, currentMediaCoverArt, currentMediaProgressSec, currentMediaDurationSec)
         notificationManager.notify(Constants.NOTIFICATION_ID, notification)
     }
 
-    private fun buildNotification(title: String, content: String): Notification {
+    @RequiresApi(Build.VERSION_CODES.BAKLAVA)
+    private fun buildNotification(title: String, content: String, coverArt: Bitmap?, progressSec: Int, durationSec: Int): Notification {
         val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
         val appPendingIntent = PendingIntent.getActivity(
             this, 0, appIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        return NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_media_rpc)
             .setContentTitle(title)
             .setContentText(content)
@@ -467,7 +493,16 @@ class MediaRpcService : Service() {
                     )
                 ).build()
             )
-            .build()
+
+        coverArt?.let { builder.setLargeIcon(it) }
+
+        // Progress bar support - API 26+ (Android 8+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentMediaDurationSec > 0) {
+            builder.setProgress(currentMediaDurationSec, currentMediaProgressSec, false)
+        }
+        // API < 26: No progress bar support
+
+        return builder.build()
     }
 
     private fun activeSessionsListener(mediaSessions: List<MediaController>?, isEvent: Boolean = true) {
