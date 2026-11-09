@@ -20,6 +20,12 @@ val DISCORD_LIGHT_DARK = Color(0xFF282b30)
 val DISCORD_GREY = Color(0xFF36393e)
 val DISCORD_BLURPLE = Color(0xFF5663f1)
 
+// Discord rich presence theme colors
+val DISCORD_BG = Color(0xFF313338)
+val DISCORD_CARD = Color(0xFF2B2D31)
+val DISCORD_TEXT = Color(0xFFDBDBDB)
+val DISCORD_SUBTEXT = Color(0xFFB5BAC1)
+
 object LogColors{
     private val error= android.graphics.Color.parseColor("#F44336")
     private val info= android.graphics.Color.parseColor("#4CAF50")

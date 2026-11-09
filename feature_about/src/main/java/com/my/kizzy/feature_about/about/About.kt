@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ContactSupport
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -29,10 +28,16 @@ import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.preference.PreferencesHint
 import com.my.kizzy.ui.components.SettingItem
 import com.my.kizzy.feature_about.BuildConfig
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.ContactSupport
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.PrivacyTip
 
 
 
-const val github_Repository = "https://github.com/milliarderr/Kizzy"
+const val github_Repository = "https://github.com/himyjan/Kizzy-Enhanced"
 const val github_Repository_original = "https://github.com/dead8309/Kizzy"
 const val github_Release = "$github_Repository/releases/latest"
 const val github_Issues = "$github_Repository/issues/new"
@@ -96,7 +101,7 @@ fun About(
                 SettingItem(
                     title = stringResource(id = R.string.github_issue),
                     description = stringResource(id = R.string.github_issue_desc),
-                    icon = Icons.AutoMirrored.Outlined.ContactSupport
+                    icon = Icons.Outlined.ContactSupport
                 ) {
                     openUrl(github_Issues)
                 }

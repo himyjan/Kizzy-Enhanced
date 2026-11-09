@@ -2,30 +2,93 @@
 <resources>
     <!-- Modify This according to locale_$folder-name
         eg: if you added translation in values/fil then use locale_fil
-    --> 
-    <string name="locale_en" translatable="false">English</string>|
-    <string name="locale_tr" translatable="false">Türkçe</string>
-    <string name="locale_nl" translatable="false">Nederlands</string>
-    <string name="locale_ru" translatable="false">Русский</string>
-    <string name="locale_pl" translatable="false">Polski</string>
-    <string name="locale_pt" translatable="false">Português Brasileiro</string>
-    <string name="locale_in" translatable="false">Bahasa Indonesia</string>
-    <string name="locale_zh_rtw" translatable="false">繁體中文</string>
-    <string name="locale_zh_rcn" translatable="false">简体中文</string>
-    <string name="locale_mm" translatable="false">ဗမာဘာသာ</string>
-    <string name="locale_vi" translatable="false">Tiếng Việt</string>
-    <string name="locale_it" translatable="false">Italiano</string>
-    <string name="locale_fil" translatable="false">Filipino</string>
-    <string name="locale_fr" translatable="false">French</string>
-    <string name="locale_hr" translatable="false">Hrvatski</string>
+    -->
+    <string name="locale_af" translatable="false">Afrikaans</string>
+    <string name="locale_am" translatable="false">አማርኛ</string>
+    <string name="locale_ar" translatable="false">العربية</string>
+    <string name="locale_az" translatable="false">Azərbaycanca</string>
+    <string name="locale_be" translatable="false">Беларуская</string>
+    <string name="locale_bg" translatable="false">Български</string>
+    <string name="locale_bn" translatable="false">বাংলা</string>
+    <string name="locale_bo" translatable="false">བོད་སྐད།</string>
+    <string name="locale_bs" translatable="false">Bosanski</string>
+    <string name="locale_ca" translatable="false">Català</string>
+    <string name="locale_cs" translatable="false">Čeština</string>
+    <string name="locale_cy" translatable="false">Cymraeg</string>
+    <string name="locale_da" translatable="false">Dansk</string>
     <string name="locale_de" translatable="false">Deutsch</string>
-    <string name="locale_th" translatable="false">ภาษาไทย</string>
-    <string name="locale_fa" translatable="false">فارسی</string>
+    <string name="locale_el" translatable="false">Ελληνικά</string>
+    <string name="locale_en" translatable="false">English</string>
+    <string name="locale_eo" translatable="false">Esperanto</string>
     <string name="locale_es" translatable="false">Español</string>
-    <string name="locale_ja" translatable="false">日本語</string>
-    <string name="locale_kr" translatable="false">한국어</string>
-    <string name="locale_ar" translatable="false">العربية</string>|
-    <string name="locale_he" translatable="false">עִברִית</string>|
+    <string name="locale_et" translatable="false">Eesti</string>
+    <string name="locale_eu" translatable="false">Euskara</string>
+    <string name="locale_fa" translatable="false">فارسی</string>
+    <string name="locale_fi" translatable="false">Suomi</string>
+    <string name="locale_fil" translatable="false">Filipino</string>
+    <string name="locale_fr" translatable="false">Français</string>
+    <string name="locale_gl" translatable="false">Galego</string>
+    <string name="locale_gu" translatable="false">ગુજરાતી</string>
+    <string name="locale_he" translatable="false">עברית</string>
     <string name="locale_hi" translatable="false">हिन्दी</string>
-    <!-- Until here -->
+    <string name="locale_hr" translatable="false">Hrvatski</string>
+    <string name="locale_hu" translatable="false">Magyar</string>
+    <string name="locale_hy" translatable="false">Հայերեն</string>
+    <string name="locale_in" translatable="false">Bahasa Indonesia</string>
+    <string name="locale_is" translatable="false">Íslenska</string>
+    <string name="locale_it" translatable="false">Italiano</string>
+    <string name="locale_ja" translatable="false">日本語</string>
+    <string name="locale_jv" translatable="false">Basa Jawa</string>
+    <string name="locale_ka" translatable="false">ქართული</string>
+    <string name="locale_kk" translatable="false">Қазақша</string>
+    <string name="locale_kn" translatable="false">ಕನ್ನಡ</string>
+    <string name="locale_km" translatable="false">ខ្មែរ</string>
+    <string name="locale_ko" translatable="false">한국어</string>
+    <string name="locale_kr" translatable="false">한국어</string>
+    <string name="locale_ku" translatable="false">Kurdî</string>
+    <string name="locale_ky" translatable="false">Кыргызча</string>
+    <string name="locale_lb" translatable="false">Lëtzebuergesch</string>
+    <string name="locale_lo" translatable="false">ພາສາລາວ</string>
+    <string name="locale_lt" translatable="false">Lietuvių</string>
+    <string name="locale_lv" translatable="false">Latviešu</string>
+    <string name="locale_mi" translatable="false">Māori</string>
+    <string name="locale_mk" translatable="false">Македонски</string>
+    <string name="locale_ml" translatable="false">മലയാളം</string>
+    <string name="locale_mm" translatable="false">မြန်မာဘာသာ</string>
+    <string name="locale_mn" translatable="false">Монгол</string>
+    <string name="locale_mr" translatable="false">मराठी</string>
+    <string name="locale_ms" translatable="false">Bahasa Melayu</string>
+    <string name="locale_nb" translatable="false">Norsk bokmål</string>
+    <string name="locale_ne" translatable="false">नेपाली</string>
+    <string name="locale_nl" translatable="false">Nederlands</string>
+    <string name="locale_or" translatable="false">ଓଡ଼ିଆ</string>
+    <string name="locale_pa" translatable="false">ਪੰਜਾਬੀ</string>
+    <string name="locale_pl" translatable="false">Polski</string>
+    <string name="locale_ps" translatable="false">پښتو</string>
+    <string name="locale_pt" translatable="false">Português</string>
+    <string name="locale_ro" translatable="false">Română</string>
+    <string name="locale_ru" translatable="false">Русский</string>
+    <string name="locale_sa" translatable="false">संस्कृतम्</string>
+    <string name="locale_si" translatable="false">සිංහල</string>
+    <string name="locale_sk" translatable="false">Slovenčina</string>
+    <string name="locale_sl" translatable="false">Slovenščina</string>
+    <string name="locale_so" translatable="false">Soomaali</string>
+    <string name="locale_sq" translatable="false">Shqip</string>
+    <string name="locale_sr" translatable="false">Српски</string>
+    <string name="locale_sv" translatable="false">Svenska</string>
+    <string name="locale_sw" translatable="false">Kiswahili</string>
+    <string name="locale_ta" translatable="false">தமிழ்</string>
+    <string name="locale_te" translatable="false">తెలుగు</string>
+    <string name="locale_tg" translatable="false">Тоҷикӣ</string>
+    <string name="locale_th" translatable="false">ภาษาไทย</string>
+    <string name="locale_tk" translatable="false">Türkmençe</string>
+    <string name="locale_tr" translatable="false">Türkçe</string>
+    <string name="locale_ug" translatable="false">ئۇيغۇرچە</string>
+    <string name="locale_uk" translatable="false">Українська</string>
+    <string name="locale_ur" translatable="false">اردو</string>
+    <string name="locale_uz" translatable="false">Oʻzbekcha</string>
+    <string name="locale_vi" translatable="false">Tiếng Việt</string>
+    <string name="locale_zh_hans" translatable="false">中文（简体）</string>
+    <string name="locale_zh_hant" translatable="false">中文（繁體）</string>
+    <string name="locale_zu" translatable="false">isiZulu</string>
 </resources>

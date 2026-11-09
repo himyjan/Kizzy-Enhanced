@@ -14,11 +14,9 @@ package com.my.kizzy.domain.model.release
 
 
 import kotlinx.serialization.SerialName
-import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Immutable
 data class Author(
     @SerialName("login")
     val login: String? = null,

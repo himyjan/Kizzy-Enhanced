@@ -11,5 +11,11 @@ android {
 
 dependencies {
     implementation (projects.theme)
+    implementation(projects.featureRpcBase)
+    implementation(projects.domain)
     implementation(libs.activity.compose)
+    implementation(libs.material.icons.extended)
+
+    // Hilt annotation processor
+    ksp(libs.hilt.compiler)
 }

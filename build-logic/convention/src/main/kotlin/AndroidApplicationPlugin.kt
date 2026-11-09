@@ -10,12 +10,12 @@ class AndroidApplicationPlugin: Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("com.android.application")
-                apply("org.jetbrains.kotlin.android")
+                // org.jetbrains.kotlin.android is applied natively by AGP 9.x
             }
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = 36
+                defaultConfig.targetSdk = 37
             }
         }
     }

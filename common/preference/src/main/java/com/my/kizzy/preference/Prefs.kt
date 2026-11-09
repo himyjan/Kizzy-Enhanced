@@ -22,7 +22,13 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.hours
 
 object Prefs {
-    val kv = MMKV.defaultMMKV()
+    private var _kv: MMKV? = null
+
+    val kv: MMKV
+        get() = _kv ?: error(
+            "Prefs not initialized. Call PreferenceConfig.apply(context) before accessing Prefs."
+        )
+
     operator fun set(key: String, value: Any?) =
         when (value) {
             is String? -> kv.encode(key, value)
@@ -47,6 +53,12 @@ object Prefs {
 
     fun remove(key: String) {
         kv.removeValueForKey(key)
+    }
+
+    internal fun initMMKV() {
+        if (_kv == null) {
+            _kv = MMKV.defaultMMKV()
+        }
     }
 
     fun isAppEnabled(packageName: String?): Boolean {
@@ -153,6 +165,8 @@ object Prefs {
     const val MEDIA_RPC_HIDE_ON_PAUSE = "hide_on_pause"
     const val MEDIA_RPC_SHOW_PLAYBACK_STATE = "show_playback_state"
     const val MEDIA_RPC_SHOW_SONG_AS_TITLE = "show_song_as_title"
+    const val MEDIA_RPC_MEDIA_BUTTON = "media_rpc_media_button"
+    const val MEDIA_RPC_ARTIST_LINK = "media_rpc_artist_link"
 
     //Rpc Setting Preferences
     const val USE_RPC_BUTTONS = "use_saved_rpc_buttons"

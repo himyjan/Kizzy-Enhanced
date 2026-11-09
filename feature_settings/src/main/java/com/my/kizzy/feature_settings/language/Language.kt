@@ -43,14 +43,14 @@ fun Language(
         }
     ) {
         LazyColumn(modifier = Modifier.padding(it)) {
-            item {
+            item(key = "follow_system") {
                 PreferenceSingleChoiceItem(
                     text = stringResource(R.string.follow_system),
                     selected = locale == SYSTEM_DEFAULT
                 ) { changeLanguage(SYSTEM_DEFAULT) }
             }
             for (language in languages) {
-                item {
+                item(key = "lang_${language.key}") {
                     PreferenceSingleChoiceItem(
                         text = getLanguageDesc(language.key),
                         selected = locale == language.key

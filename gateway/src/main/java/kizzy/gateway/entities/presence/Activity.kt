@@ -4,6 +4,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class ActivityButton(
+    @SerialName("label")
+    val label: String,
+    @SerialName("url")
+    val url: String
+)
+
+@Serializable
 data class Activity(
     @SerialName("name")
     val name: String?,
@@ -22,7 +30,7 @@ data class Activity(
     @SerialName("assets")
     val assets: Assets? = null,
     @SerialName("buttons")
-    val buttons: List<String?>? = null,
+    val buttons: List<ActivityButton>? = null,
     @SerialName("metadata")
     val metadata: Metadata? = null,
     @SerialName("application_id")

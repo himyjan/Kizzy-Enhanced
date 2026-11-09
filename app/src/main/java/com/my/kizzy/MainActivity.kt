@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -15,14 +17,15 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.os.LocaleListCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import com.my.kizzy.preference.getLanguageConfig
 import com.my.kizzy.ui.theme.KizzyTheme
 import com.my.kizzy.ui.theme.LocalDarkTheme
 import com.my.kizzy.ui.theme.LocalDynamicColorSwitch
 import com.my.kizzy.ui.theme.SettingsProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -31,19 +34,22 @@ class MainActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Enables edge-to-edge rendering automatically for API 35+ and gracefully for older versions
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         usageAccessStatus = mutableStateOf(this.hasUsageAccess())
         notificationListenerAccess = mutableStateOf(this.hasNotificationAccess())
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { v, insets ->
             v.setPadding(0, 0, 0, 0)
             insets
         }
-        runBlocking {
-            if (Build.VERSION.SDK_INT < 33)
+        // Apply locales off-main thread to avoid blocking UI
+        if (Build.VERSION.SDK_INT < 33) {
+            lifecycleScope.launch(Dispatchers.IO) {
                 AppCompatDelegate.setApplicationLocales(
                     LocaleListCompat.forLanguageTags(getLanguageConfig())
                 )
+            }
         }
         setContent {
             val windowSizeClass = calculateWindowSizeClass(this)

@@ -12,13 +12,11 @@
 
 package com.my.kizzy.domain.model.rpc
 
-import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // data class used for saving/loading/previewing rpc in the app
 @Serializable
-@Immutable
 data class RpcConfig(
     @SerialName("button1")
     val button1: String = "",

@@ -15,6 +15,7 @@ import com.my.kizzy.domain.model.Contributor
 import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.release.Release
 import com.my.kizzy.domain.model.user.User
+import com.my.kizzy.domain.repository.KizzyRepository
 import java.io.File
 
 interface KizzyRepository {

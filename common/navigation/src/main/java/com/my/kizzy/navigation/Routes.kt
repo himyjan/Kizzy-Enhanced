@@ -45,5 +45,8 @@ class Routes {
         /* About Screen */
         const val ABOUT = "about"
         const val CREDITS = "credits"
+
+        /* RPC Preview Screen */
+        const val RPC_PREVIEW = "rpc_preview/{userId}/{avatarUrl}"
     }
 }

@@ -20,10 +20,16 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import kotlin.OptIn
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -41,37 +47,41 @@ fun SearchBar(
     text: String = "",
     placeholder: String = "",
     onClose: () -> Unit = {},
+    autoFocus: Boolean = false,
     onTextChanged: ((String) -> Unit),
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    val interactionSource = remember { MutableInteractionSource() }
+
+    if (autoFocus) {
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
     }
 
     BasicTextField(
         value = text,
         onValueChange = onTextChanged,
-        textStyle = MaterialTheme.typography.bodyLarge.copy(
-            color = MaterialTheme.colorScheme.onSurface
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            color = colorScheme.onSurface
         ),
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+        cursorBrush = SolidColor(colorScheme.primary),
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
-            .clip(
-                RoundedCornerShape(200.dp)
-            ),
+            .clip(RoundedCornerShape(20.dp)),
         decorationBox = { innerTextField ->
-            val containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp)
+            val containerColor = colorScheme.surfaceVariant.copy(alpha = 0.5f)
             TextFieldDefaults.DecorationBox(
                 value = text,
                 innerTextField = innerTextField,
                 enabled = true,
                 singleLine = true,
                 visualTransformation = VisualTransformation.None,
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = interactionSource,
                 placeholder = { Text(placeholder) },
                 trailingIcon = {
                     IconButton(onClick = {
@@ -82,7 +92,8 @@ fun SearchBar(
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Close,
-                            contentDescription = "Close Icon"
+                            contentDescription = "Close Icon",
+                            tint = colorScheme.onSurfaceVariant
                         )
                     }
                 },
@@ -96,8 +107,8 @@ fun SearchBar(
                 contentPadding = PaddingValues(
                     start = 14.dp,
                     end = 12.dp,
-                    top = 10.dp,
-                    bottom = 10.dp
+                    top = 8.dp,
+                    bottom = 8.dp
                 ),
             )
         }
@@ -108,7 +119,7 @@ fun SearchBar(
 @Composable
 fun Search() {
     SearchBar(
-        text = "test"
-    ) {
-    }
+        text = "test",
+        onTextChanged = {}
+    )
 }

@@ -23,6 +23,8 @@ object PreferenceConfig {
     fun apply(context: Context) {
         applicationScope = CoroutineScope(SupervisorJob())
         MMKV.initialize(context)
+        Prefs.initMMKV()
+        initializeThemePrefs()
         Prefs.checkAndAutoDeleteSavedImages()
     }
 }

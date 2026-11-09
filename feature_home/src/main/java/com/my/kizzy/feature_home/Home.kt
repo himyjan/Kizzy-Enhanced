@@ -20,6 +20,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -49,6 +50,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +69,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.toVersion
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_home.feature.Features
@@ -108,6 +110,13 @@ fun Home(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState(),
             canScroll = { false })
+
+    // Keep homeItems in sync with features so that enabling a feature from its
+    // own screen (e.g. Media RPC screen) is immediately reflected in the home
+    // switch state when the user returns to the home screen.
+    LaunchedEffect(features) {
+        homeItems = features
+    }
 
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
@@ -155,6 +164,7 @@ fun Home(
                             style = MaterialTheme.typography.headlineMedium,
                             maxLines = 1,
                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     },
                     navigationIcon = {
@@ -211,7 +221,7 @@ fun Home(
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         IconButton(onClick = { navigateToProfile() }) {
-                            if (user != null) {
+                            if (user != null && user.getAvatarImage() != null) {
                                 AsyncImage(
                                     model = user.getAvatarImage(),
                                     modifier = Modifier
@@ -238,16 +248,17 @@ fun Home(
             }
         ) { paddingValues ->
             LazyColumn(
-                modifier = Modifier.padding(paddingValues),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
                 userScrollEnabled = false
             ) {
                 item {
-                    ChipSection()
                     Text(
                         text = stringResource(id = R.string.features),
                         style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(start = 15.dp)
+                        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 8.dp)
                     )
                 }
                 item {
@@ -338,15 +349,15 @@ fun HomeScreenPreview() {
 
 val fakeFeatures = listOf(
     HomeFeature(
-        title = "App Detection",
-        icon = R.drawable.ic_apps,
-        shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-        tooltipText = ToolTipContent.APP_DETECTION_DOCS
-    ), HomeFeature(
         title = "Media RPC",
         icon = R.drawable.ic_media_rpc,
         shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
         tooltipText = ToolTipContent.MEDIA_RPC_DOCS
+    ), HomeFeature(
+        title = "App Detection",
+        icon = R.drawable.ic_apps,
+        shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
+        tooltipText = ToolTipContent.APP_DETECTION_DOCS
     ), HomeFeature(
         title = "Custom RPC",
         icon = R.drawable.ic_rpc_placeholder,

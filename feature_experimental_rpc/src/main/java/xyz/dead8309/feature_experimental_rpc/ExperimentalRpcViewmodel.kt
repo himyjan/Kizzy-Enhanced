@@ -107,26 +107,31 @@ class ExperimentalRpcViewmodel @Inject constructor(
                 is UiEvent.ToggleAppsRpcPart -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC] = event.enabled
                     _uiState.value = _uiState.value.copy(isAppsRpcPartEnabled = event.enabled)
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleMediaRpcPart -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC] = event.enabled
                     _uiState.value = _uiState.value.copy(isMediaRpcPartEnabled = event.enabled)
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.SetTemplateName -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_NAME] = event.value
                     _uiState.update { it.copy(templateName = event.value) }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.SetTemplateDetails -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_DETAILS] = event.value
                     _uiState.update { it.copy(templateDetails = event.value) }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.SetTemplateState -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_STATE] = event.value
                     _uiState.update { it.copy(templateState = event.value) }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleAppEnabled -> {
@@ -139,6 +144,7 @@ class ExperimentalRpcViewmodel @Inject constructor(
                             }
                         )
                     }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.SetAppActivityType -> {
@@ -151,10 +157,12 @@ class ExperimentalRpcViewmodel @Inject constructor(
                             }
                         )
                     }
+                    restartServiceIfRunning()
                 }
                 is UiEvent.ToggleShowCoverArt -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_COVER_ART] = event.enabled
                     _uiState.update { it.copy(showCoverArt = event.enabled) }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowAppIcon -> {
@@ -166,6 +174,7 @@ class ExperimentalRpcViewmodel @Inject constructor(
                         Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_PLAYBACK_STATE] = false
                         _uiState.update { it.copy(showPlaybackState = false) }
                     }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowPlaybackState -> {
@@ -177,16 +186,19 @@ class ExperimentalRpcViewmodel @Inject constructor(
                         Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON] = false
                         _uiState.update { it.copy(showAppIcon = false) }
                     }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleEnableTimestamps -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS] = event.enabled
                     _uiState.update { it.copy(enableTimestamps = event.enabled) }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleHideOnPause -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_HIDE_ON_PAUSE] = event.enabled
                     _uiState.update { it.copy(hideOnPause = event.enabled) }
+                    restartServiceIfRunning()
                 }
 
                 is UiEvent.SetPlatform -> {

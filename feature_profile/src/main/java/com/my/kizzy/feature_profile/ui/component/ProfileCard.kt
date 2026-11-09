@@ -15,6 +15,7 @@ package com.my.kizzy.feature_profile.ui.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,10 +26,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,11 +55,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.resources.R
+import com.my.kizzy.ui.theme.DISCORD_CARD
 import com.my.kizzy.ui.theme.DISCORD_LIGHT_DARK
+import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
+import com.my.kizzy.ui.theme.DISCORD_TEXT
 import kotlinx.coroutines.delay
 
 const val NITRO_ICON = "https://cdn.discordapp.com/badge-icons/2ba85e8026a8614b640c2837bcdfe21b.png"
@@ -64,12 +71,13 @@ const val USER_BANNER = "https://discord.com/assets/97ac61a0b98fd6f01b4de370c9cc
 @Composable
 fun ProfileCard(
     user: User?,
-    borderColors: List<Color> = listOf(Color(0xFFa3a1ed), Color(0xFFA77798)),
-    backgroundColors: List<Color> = listOf(Color(0xFFC2C0FA), Color(0xFFFADAF0)),
+    borderColors: List<Color> = listOf(DISCORD_TEXT, DISCORD_SUBTEXT),
+    backgroundColors: List<Color> = listOf(DISCORD_CARD, DISCORD_CARD),
     padding: Dp = 30.dp,
     type: String = stringResource(id = R.string.user_profile_rpc_name),
     rpcConfig: RpcConfig? = null,
-    showTs: Boolean = true
+    showTs: Boolean = true,
+    onAvatarClick: () -> Unit = {}
 ) {
     var elapsed by remember {
         mutableStateOf(0)
@@ -110,21 +118,40 @@ fun ProfileCard(
                     contentDescription = "User Avatar"
                 )
 
-                AsyncImage(
-                    model = user.getAvatarImage(),
-                    placeholder = painterResource(id = R.drawable.error_avatar),
-                    error = painterResource(id = R.drawable.error_avatar),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(16.dp, 64.dp, 16.dp, 6.dp)
-                        .size(110.dp)
-                        .border(
-                            width = 8.dp,
-                            color = borderColors.first(),
-                            shape = CircleShape
-                        )
-                        .clip(CircleShape),
-                )
+                if (user.getAvatarImage() != null) {
+                    AsyncImage(
+                        model = user.getAvatarImage(),
+                        placeholder = painterResource(id = R.drawable.error_avatar),
+                        error = painterResource(id = R.drawable.error_avatar),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(16.dp, 64.dp, 16.dp, 6.dp)
+                            .size(110.dp)
+                            .border(
+                                width = 8.dp,
+                                color = borderColors.first(),
+                                shape = CircleShape
+                            )
+                            .clip(CircleShape)
+                            .clickable { onAvatarClick() },
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "User Avatar",
+                        modifier = Modifier
+                            .padding(16.dp, 64.dp, 16.dp, 6.dp)
+                            .size(110.dp)
+                            .border(
+                                width = 8.dp,
+                                color = borderColors.first(),
+                                shape = CircleShape
+                            )
+                            .clip(CircleShape)
+                            .clickable { onAvatarClick() },
+                        tint = DISCORD_SUBTEXT
+                    )
+                }
 
                 val allBadges = user.getAllBadges()
                 if (allBadges.isNotEmpty()) {
@@ -133,7 +160,7 @@ fun ProfileCard(
                             .align(Alignment.BottomEnd)
                             .padding(15.dp, 8.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White)
+                            .background(DISCORD_CARD)
                     ) {
                         allBadges.forEach { badge ->
                             AsyncImage(
@@ -152,7 +179,7 @@ fun ProfileCard(
                 Modifier
                     .padding(15.dp, 5.dp, 15.dp, 15.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White)
+                    .background(DISCORD_CARD)
             ) {
                 ProfileText(
                     text = user.globalName ?: user.username,
@@ -169,7 +196,7 @@ fun ProfileCard(
                         .fillMaxWidth()
                         .padding(19.dp, 0.dp, 19.dp, 5.dp)
                         .height(1.5.dp)
-                        .background(Color(0xFFC2C0FA))
+                        .background(DISCORD_SUBTEXT.copy(alpha = 0.3f))
                 )
                 if (!user.bio.isNullOrEmpty()) {
                     ProfileText(
@@ -216,7 +243,7 @@ fun ProfileText(
             style = if (!bold) style
             else style.copy(fontWeight = FontWeight.ExtraBold),
             modifier = modifier,
-            color = Color.Black.copy(alpha = 0.9f)
+            color = DISCORD_TEXT.copy(alpha = 0.95f)
         )
     }
 }

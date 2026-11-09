@@ -14,22 +14,15 @@ package com.my.kizzy.feature_profile.ui.component
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.AlertDialog
@@ -40,15 +33,14 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.resources.R
+import com.my.kizzy.ui.theme.DISCORD_CARD
+import com.my.kizzy.ui.theme.DISCORD_TEXT
+import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
 
 @Composable
 fun ProfileNetworkError(
@@ -90,7 +82,7 @@ fun ProfileNetworkError(
                             .padding(horizontal = 16.dp)
                             .verticalScroll(rememberScrollState())
                     ) {
-                        Text(text = error)
+                        Text(text = error, color = DISCORD_TEXT)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -116,6 +108,42 @@ fun ProfileNetworkError(
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         )
+    }
+}
+
+@Composable
+fun ProfileNetworkErrorDiscord(
+    modifier: Modifier = Modifier,
+    error: String
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .background(DISCORD_CARD)
+            .clip(RoundedCornerShape(12.dp))
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.error)
+            )
+            Text(
+                text = stringResource(R.string.user_profile_error),
+                color = DISCORD_TEXT,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+            )
+            Text(
+                text = error,
+                color = DISCORD_SUBTEXT,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
 

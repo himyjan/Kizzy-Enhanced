@@ -27,7 +27,15 @@ abstract class NormalizeStringsTask : DefaultTask() {
             val destinationFile = File(destinationFolder, file.name)
 
             var content = file.readText(Charsets.UTF_8)
-            val tagContentRegex = Regex(">([^<]+)<")
+            // Do not match the `?>` of the XML declaration, otherwise the
+            // newline between the declaration and <resources> gets wrapped in
+            // CDATA, producing invalid XML (markup before the root element).
+            // Only capture text nodes that contain real content (\\S); pure
+            // whitespace gaps between tags are structural and must be left
+            // untouched so the XML remains well-formed.
+            // [^<>]* keeps the match inside a single tag so it cannot bleed
+            // across element boundaries (\\S matches < and > too).
+            val tagContentRegex = Regex("(?<![?])>([^<>]*\\S[^<>]*)<")
 
             // Run safe normalization regex chain on tag content only
             content = tagContentRegex.replace(content) { matchResult ->
@@ -45,6 +53,12 @@ abstract class NormalizeStringsTask : DefaultTask() {
                 // Rule 7: Clean broken backslash-brace combinations
                 updatedText = updatedText.replace("\\{", "{")
                 updatedText = updatedText.replace("\\}", "}")
+
+                // Rule 3 & 6: Wrap {{ and }} in &apos; entities to match the
+                // default strings.xml placeholder format, but only when not
+                // already wrapped (avoid double-escaping &apos;{{&apos;;)
+                updatedText = updatedText.replace(Regex("(?<!!&apos;)\\{\\{(?!!&apos;)"), "&apos;{{&apos;;")
+                updatedText = updatedText.replace(Regex("(?<!!&apos;)\\}\\}(?!!&apos;)"), "&apos;}}&apos;")
 
                 // Rule 8: Wrap ALL text content in CDATA to prevent AAPT2 from
                 // decoding XML entities (like &apos;) and re-escaping them as

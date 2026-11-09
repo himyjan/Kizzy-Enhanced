@@ -12,12 +12,10 @@
 
 package com.my.kizzy.domain.model.user
 
-import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Immutable
 data class User(
     @SerialName("bio")
     val bio: String? = "",
@@ -50,14 +48,29 @@ data class User(
     @SerialName("global_name")
 val globalName: String? = null
 ) {
-    fun getAvatarImage(): String {
-        return if (avatar?.startsWith("a_") == true)
-            "${DISCORD_CDN}/avatars/${id}/${avatar}.gif?size=512"
-        else
-            "${DISCORD_CDN}/avatars/${id}/${avatar}.png?size=512"
-    }
-    fun getStaticAvatarImage(): String {
+    fun getAvatarImage(): String? {
+        // 沒有使用者 ID 時無法建構頭像 URL
+        if (id.isNullOrBlank()) {
+            return null
+        }
+        // 沒有自定義頭像時，使用 Discord 預設頭像（根據 discriminator 最後一個數字 0-4）
+        if (avatar.isNullOrBlank()) {
+            return "${DISCORD_CDN}/embed/avatars/${(discriminator?.toIntOrNull() ?: 0) % 5}.png"
+        }
+        // 動態頭像（GIF）
+        if (avatar.startsWith("a_")) {
+            return "${DISCORD_CDN}/avatars/${id}/${avatar}.gif?size=512"
+        }
+        // 靜態頭像（PNG）
         return "${DISCORD_CDN}/avatars/${id}/${avatar}.png?size=512"
+    }
+
+    fun getStaticAvatarImage(): String? {
+        return if (avatar.isNullOrEmpty() || id.isNullOrEmpty()) {
+            null
+        } else {
+            return "${DISCORD_CDN}/avatars/${id}/${avatar}.png?size=512"
+        }
     }
     fun getBannerImage(): String? {
         if (banner.isNullOrEmpty()) return null

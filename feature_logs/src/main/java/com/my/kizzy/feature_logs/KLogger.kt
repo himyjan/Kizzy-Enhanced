@@ -17,8 +17,11 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.logs.LogEvent
 import com.my.kizzy.domain.model.logs.LogLevel
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class KLogger: Logger {
+@Singleton
+class KLogger @Inject constructor() : Logger {
     private val logs = mutableStateListOf<LogEvent>()
     fun getLogs(): SnapshotStateList<LogEvent> {
         return logs

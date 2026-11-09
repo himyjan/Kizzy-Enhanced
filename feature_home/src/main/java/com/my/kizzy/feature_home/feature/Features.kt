@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -67,7 +68,9 @@ fun Features(
             val item = homeItems[i]
             if (item.tooltipText.isNotBlank()) {
                 TooltipBox(
-                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        positioning = TooltipAnchorPosition.Above
+                    ),
                     state = rememberTooltipState(),
                     tooltip = {
                         RichTooltip(
@@ -155,6 +158,7 @@ private fun FeatureCard(
             Spacer(modifier = Modifier.width(12.dp))
             KSwitch(
                 checked = feature.isChecked,
+                modifier = Modifier.padding(start = 12.dp),
                 onClick = onToggle
             )
         }

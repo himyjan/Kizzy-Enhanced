@@ -33,34 +33,42 @@ fun KSwitch(
     enable: Boolean = true,
     onClick: (() -> Unit)? = null,
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    // Smooth color and position animations with labels for Layout Inspector debugging
+    val backgroundColor by animateColorAsState(
+        targetValue = if (checked) colorScheme.primary else colorScheme.surfaceVariant,
+        label = "SwitchTrackColor"
+    )
+    val thumbColor by animateColorAsState(
+        targetValue = if (checked) colorScheme.onPrimary else colorScheme.outline,
+        label = "SwitchThumbColor"
+    )
+    val thumbX by animateDpAsState(
+        targetValue = if (checked) 32.dp else 4.dp,
+        label = "SwitchThumbOffset"
+    )
+
     Surface(
         modifier = modifier
             .requiredSize(56.dp, 28.dp)
             .alpha(if (enable) 1f else 0.5f),
         shape = CircleShape,
-        color = animateColorAsState(
-            with(MaterialTheme.colorScheme){
-                if (checked) primary
-                else surfaceVariant
-            }
-        ).value
+        color = backgroundColor
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
-                    then if (onClick != null) Modifier.clickable { onClick() } else Modifier
+                .clickable(enabled = enable && onClick != null) {
+                    onClick?.invoke()
+                }
         ) {
             Surface(
                 modifier = Modifier
                     .size(20.dp)
                     .align(Alignment.CenterStart)
-                    .offset(x = animateDpAsState(if (checked) 32.dp else 4.dp).value),
+                    .offset(x = thumbX),
                 shape = CircleShape,
-                color = animateColorAsState(
-                    with(MaterialTheme.colorScheme){
-                        if (checked) onPrimary
-                        else outline
-                    }
-                ).value
+                color = thumbColor
             ) {}
         }
     }
@@ -71,6 +79,6 @@ fun KSwitch(
 fun KSwitchPreview() {
     var switchState by remember { mutableStateOf(true) }
     KSwitch(checked = switchState, enable = switchState, onClick = {
-        switchState =!switchState
+        switchState = !switchState
     })
 }

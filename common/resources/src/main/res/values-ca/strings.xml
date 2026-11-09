@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Nom de lapos;activitat</string>
+    <string name="activity_details">Detalls de lapos;activitat</string>
+    <string name="activity_state">Estat de lapos;activitat</string>
+    <string name="load_config">Carrega des de fitxers</string>
+    <string name="save_config">Desa la configuració</string>
+    <string name="delete_configs">Elimina la configuració</string>
+    <string name="preview_rpc">Previsualitza RPC</string>
+    <string name="select_a_config">Selecciona una configuració</string>
+    <string name="login_with_discord">Inicia sessió amb Discord</string>
+    <string name="github_readme">LLEGEIX-ME (README)</string>
+    <string name="credits">Crèdits</string>
+    <string name="welcome">Benvingut</string>
+    <string name="features">Característiques</string>
+    <string name="account">Compte</string>
+    <string name="display">Pantalla</string>
+    <string name="about">Sobre</string>
+    <string name="settings">Configuració</string>
+    <string name="language">Llengua</string>
+    <string name="dark_theme">Tema fosc</string>
+    <string name="privacy_policy">Política de privadesa</string>
+    <string name="cancel">Cancel·la</string>
+    <string name="confirm">Confirma</string>
+    <string name="save">Desa</string>
+    <string name="delete">Elimina</string>
+    <string name="search">Cerca</string>
+    <string name="clear">Neteja</string>
+    <string name="exit">Surt</string>
+    <string name="logs">Registres (Logs)</string>
+    <string name="version">Versió</string>
+    <string name="try_again">Torna-ho a provar</string>
+    <string name="yes">Sí</string>
+    <string name="logout">Tanca la sessió</string>
+    <string name="skip">Omet</string>
+    <string name="stop">Atura</string>
+    <string name="restart">Reinicia</string>
+    <string name="no_internet_connection"> Sense connexió a Internet</string>
+    <string name="unknown_error">Sapos;ha produït un error inesperat</string>
+    <string name="copied_to_clipboard">Copiat al porta-retalls</string>
+</resources>

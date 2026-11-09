@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.blankj.utilcode.util.FileIOUtils
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BrowseFilesButton
@@ -62,7 +61,7 @@ fun LoadConfig(
                             selected = false
                         ) {
                             onDismiss()
-                            FileIOUtils.readFile2String(File(dir,file)).also {
+                            File(dir,file).readText().also {
                                 onConfigSelected(it.stringToData())
                             }
                         }

@@ -38,18 +38,31 @@ val palettesMap = mapOf(
     3 to PaletteStyle.Vibrant,
 )
 
-private val mutableAppSettingsStateFlow = MutableStateFlow(
-    AppSettings(
-        DarkThemePreference(
-            darkThemeValue = Prefs[Prefs.DARK_THEME, DarkThemePreference.FOLLOW_SYSTEM],
-            isHighContrastModeEnabled = Prefs[Prefs.HIGH_CONTRAST, false]
-        ),
-        isDynamicColorEnabled = Prefs[Prefs.DYNAMIC_COLOR, false],
-        seedColor = Prefs[Prefs.THEME_COLOR, DEFAULT_SEED_COLOR],
-        paletteStyleIndex = Prefs[Prefs.PALETTE_STYLE, 0]
+private var _mutableAppSettingsStateFlow: MutableStateFlow<AppSettings>? = null
+
+val mutableAppSettingsStateFlow: MutableStateFlow<AppSettings>
+    get() = _mutableAppSettingsStateFlow ?: error(
+        "ThemePrefs not initialized. Call PreferenceConfig.apply(context) before accessing ThemePrefs."
     )
-)
-val AppSettingsStateFlow = mutableAppSettingsStateFlow.asStateFlow()
+
+val AppSettingsStateFlow: kotlinx.coroutines.flow.StateFlow<AppSettings>
+    get() = mutableAppSettingsStateFlow.asStateFlow()
+
+fun initializeThemePrefs() {
+    if (_mutableAppSettingsStateFlow == null) {
+        _mutableAppSettingsStateFlow = MutableStateFlow(
+            AppSettings(
+                DarkThemePreference(
+                    darkThemeValue = Prefs[Prefs.DARK_THEME, DarkThemePreference.FOLLOW_SYSTEM],
+                    isHighContrastModeEnabled = Prefs[Prefs.HIGH_CONTRAST, false]
+                ),
+                isDynamicColorEnabled = Prefs[Prefs.DYNAMIC_COLOR, false],
+                seedColor = Prefs[Prefs.THEME_COLOR, DEFAULT_SEED_COLOR],
+                paletteStyleIndex = Prefs[Prefs.PALETTE_STYLE, 0]
+            )
+        )
+    }
+}
 fun modifyDarkThemePreference(
     darkThemeValue: Int = AppSettingsStateFlow.value.darkTheme.darkThemeValue,
     isHighContrastModeEnabled: Boolean = AppSettingsStateFlow.value.darkTheme.isHighContrastModeEnabled

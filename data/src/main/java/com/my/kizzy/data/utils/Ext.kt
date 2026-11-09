@@ -24,9 +24,6 @@ import android.util.DisplayMetrics
 import android.webkit.MimeTypeMap
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
-import com.blankj.utilcode.util.AppUtils
-import com.blankj.utilcode.util.FileIOUtils
-import com.blankj.utilcode.util.FileUtils
 import com.my.kizzy.data.remote.ApiResponse
 import com.my.kizzy.data.remote.ExternalAsset
 import com.my.kizzy.data.remote.ImgurResponse
@@ -95,7 +92,7 @@ fun Context.getAppInfo(packageName: String): ApplicationInfo {
 fun ApplicationInfo.toBitmap(context: Context): Bitmap? {
     val res = context.packageManager.getResourcesForApplication(this)
     val icon = if (Prefs[Prefs.RPC_USE_LOW_RES_ICON, false])
-        AppUtils.getAppIcon(this.packageName)
+        context.packageManager.getApplicationIcon(this.packageName)
     else res.getDrawableForDensity(
         this.icon,
         DisplayMetrics.DENSITY_XXXHIGH
@@ -148,10 +145,10 @@ fun Context.uriToFile(uri: Uri): File {
 
 fun Context.shareAsFile(content: String?, fileName: String) {
     val tempFile = File("$filesDir/$fileName")
-    if (FileUtils.isFileExists(tempFile)) {
-        FileUtils.delete(tempFile)
+    if (tempFile.exists()) {
+        tempFile.delete()
     }
-    FileIOUtils.writeFileFromString(tempFile, content)
+    tempFile.writeText(content ?: "")
     shareFile(tempFile)
 }
 

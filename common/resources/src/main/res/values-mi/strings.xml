@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Ingoa Mahi</string>
+    <string name="activity_details">Taipitopito Mahi</string>
+    <string name="activity_state">Tūnga Mahi</string>
+    <string name="load_config">Utaina Mai i Ngā Kōnae</string>
+    <string name="save_config">Tiaki Whirihoranga</string>
+    <string name="delete_configs">Muku Whirihoranga</string>
+    <string name="preview_rpc">Arokite RPC</string>
+    <string name="select_a_config">Tīpakohia he whirihoranga</string>
+    <string name="login_with_discord">Takiuru ki a Discord</string>
+    <string name="github_readme">PĀNUI (README)</string>
+    <string name="credits">Ngā Mihi</string>
+    <string name="welcome">Nau mai</string>
+    <string name="features">Ngā Āhuatanga</string>
+    <string name="account">Pūkete</string>
+    <string name="display">Whakaaturanga</string>
+    <string name="about">Mō</string>
+    <string name="settings">Tautuhinga</string>
+    <string name="language">Reo</string>
+    <string name="dark_theme">Kaupapa Pōuri</string>
+    <string name="privacy_policy">Kaupapa Tūmataiti</string>
+    <string name="cancel">Whakakore</string>
+    <string name="confirm">Whakaū</string>
+    <string name="save">Tiaki</string>
+    <string name="delete">Muku</string>
+    <string name="search">Rapu</string>
+    <string name="clear">Ūku</string>
+    <string name="exit">Whakaputa</string>
+    <string name="logs">Ngā Taki (Logs)</string>
+    <string name="version">Putanga</string>
+    <string name="try_again">Whakamātau anō</string>
+    <string name="yes">Āe</string>
+    <string name="logout">Takahi</string>
+    <string name="skip">Peke</string>
+    <string name="stop">Whakamutu</string>
+    <string name="restart">Tīmata anō</string>
+    <string name="no_internet_connection">Kāore he hononga ipurangi</string>
+    <string name="unknown_error">I puta he hapa kāore i tumanakohia</string>
+    <string name="copied_to_clipboard">Kua tāruatia ki te papatopenga</string>
+</resources>

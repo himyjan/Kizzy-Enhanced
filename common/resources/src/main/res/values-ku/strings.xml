@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Navê Çalakiyê</string>
+    <string name="activity_details">Hûrguliyên Çalakiyê</string>
+    <string name="activity_state">Rewşa Çalakiyê</string>
+    <string name="load_config">Ji Pelan Bar Bike</string>
+    <string name="save_config">Mîhengê Tomar Bike</string>
+    <string name="delete_configs">Mîhengê Jê Bibe</string>
+    <string name="preview_rpc">Pêşdîtina RPC</string>
+    <string name="select_a_config">Mîhengek Hilbijêre</string>
+    <string name="login_with_discord">Bi Discord re Têkeve</string>
+    <string name="github_readme">Bixwîne (README)</string>
+    <string name="credits">Spasname</string>
+    <string name="welcome">Bi xêr hatî</string>
+    <string name="features">Taybetmendî</string>
+    <string name="account">Hesab</string>
+    <string name="display">Nîşandan</string>
+    <string name="about">Derbarê</string>
+    <string name="settings">Mîheng</string>
+    <string name="language">Ziman</string>
+    <string name="dark_theme">Mijara Tarî</string>
+    <string name="privacy_policy">Polîtîkaya Taybetmendiyê</string>
+    <string name="cancel">Betal bike</string>
+    <string name="confirm">Pesend bike</string>
+    <string name="save">Tomar bike</string>
+    <string name="delete">Jê bibe</string>
+    <string name="search">Lêgerîn</string>
+    <string name="clear">Paqij bike</string>
+    <string name="exit">Derkeve</string>
+    <string name="logs">Tomar (Logs)</string>
+    <string name="version">Guherto</string>
+    <string name="try_again">Dîsa biceribîne</string>
+    <string name="yes">Erê</string>
+    <string name="logout">Derkeve</string>
+    <string name="skip">Derbas bike</string>
+    <string name="stop">Rawestîne</string>
+    <string name="restart">Ji nû ve bide destpêkirin</string>
+    <string name="no_internet_connection">Têkiliya înternetê tune ye</string>
+    <string name="unknown_error">Çewtiyeke nenas çêbû</string>
+    <string name="copied_to_clipboard">Hate kopîkirin bo clipboard</string>
+</resources>
