@@ -103,6 +103,8 @@ class ExperimentalRpc : Service() {
 
     private var isMediaSessionActive = false
     private var lastSentCommonRpc: CommonRpc? = null
+    private var currentMediaProgressSec: Int = 0
+    private var currentMediaDurationSec: Int = 0
 
     // Periodic refresh to catch position changes that happen between onPlaybackStateChanged
     // callbacks (e.g., during drag scrubbing when the player may not fire callbacks for every
@@ -436,6 +438,9 @@ class ExperimentalRpc : Service() {
         if (currentContextIsMedia) {
             effectivePackageName = richMediaInfo?.packageName
 
+            currentMediaProgressSec = (richMediaInfo.position / 1000).toInt().coerceIn(0, (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0))
+            currentMediaDurationSec = (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0)
+
             logger.d(TAG, "Processing Rich Media Context")
             if (Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE, false]) {
                 val titleSource = Prefs[Prefs.EXPERIMENTAL_RPC_TITLE_SOURCE, "title"]
@@ -583,6 +588,11 @@ class ExperimentalRpc : Service() {
                 .setLargeIcon(rpcImage = finalLargeImage, context = this@ExperimentalRpc)
                 .addAction(R.drawable.ic_dev_rpc, getString(R.string.restart), restartPendingIntent)
                 .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), stopPendingIntent)
+                .apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentMediaDurationSec > 0) {
+                        setProgress(currentMediaDurationSec, currentMediaProgressSec, false)
+                    }
+                }
                 .build()
         )
     }
