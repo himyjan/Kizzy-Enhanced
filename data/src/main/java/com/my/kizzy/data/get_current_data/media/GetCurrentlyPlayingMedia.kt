@@ -164,7 +164,8 @@ class GetCurrentPlayingMedia @Inject constructor(
                 smallText = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appName else null,
                 packageName = "$title::${mediaController.packageName}",
                 time = timestamps.takeIf { it != null },
-                mediaUrl = metadataResolver.getMediaUrl(metadata, mediaController.packageName)
+                mediaUrl = metadataResolver.getMediaUrl(metadata, mediaController.packageName),
+                playbackState = playbackState
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")

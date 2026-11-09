@@ -26,5 +26,6 @@ data class CommonRpc(
     val time: Timestamps? = null,
     val packageName: String = "",
     val platform: String? = null,
-    val mediaUrl: String? = null
+    val mediaUrl: String? = null,
+    val playbackState: Int? = null
 )

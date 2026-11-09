@@ -113,9 +113,9 @@ class KizzyRPC @Inject constructor(
         }
     }
 
-    private fun presenceHash(name: String?, details: String?, state: String?, timestamps: kizzy.gateway.entities.presence.Timestamps?): Int {
+    private fun presenceHash(name: String?, details: String?, state: String?, timestamps: kizzy.gateway.entities.presence.Timestamps?, playbackState: Int?): Int {
         var result = 1
-        // Only hash name/details/state — NOT timestamps.
+        // Only hash name/details/state/playbackState — NOT timestamps.
         // Timestamps change every millisecond during playback, which would change the hash
         // constantly and cause presence to be re-sent on every position update, flooding
         // Discord's gateway with duplicate PRESENCE_UPDATEs and causing the activity
@@ -123,6 +123,7 @@ class KizzyRPC @Inject constructor(
         result = 31 * result + (name?.hashCode() ?: 0)
         result = 31 * result + (details?.hashCode() ?: 0)
         result = 31 * result + (state?.hashCode() ?: 0)
+        result = 31 * result + (playbackState?.hashCode() ?: 0)
         return result
     }
 
@@ -501,7 +502,7 @@ class KizzyRPC @Inject constructor(
         // rapid PRESENCE_UPDATEs when SESSIONS_REPLACE events fire quickly (e.g.,
         // YouTube/Spotify media sessions changing position or state rapidly).
         val now = System.currentTimeMillis()
-        val hash = presenceHash(commonRpc.name, commonRpc.details, commonRpc.state, time)
+        val hash = presenceHash(commonRpc.name, commonRpc.details, commonRpc.state, time, commonRpc.playbackState)
         val intervalElapsed = now - lastPresenceTimeMs >= PRESENCE_MIN_INTERVAL_MS
         if (!forceRefresh && (!intervalElapsed || hash == lastPresenceHash)) {
             logger.d(
