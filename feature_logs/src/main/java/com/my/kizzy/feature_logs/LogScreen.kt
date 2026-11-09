@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -83,11 +84,14 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import java.text.SimpleDateFormat
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
     val ctx = LocalContext.current
-    val lazyListState = rememberLazyListState()
+    val cacheWindow = remember {
+        LazyLayoutCacheWindow(ahead = 300.dp, behind = 150.dp)
+    }
+    val lazyListState = rememberLazyListState(cacheWindow = cacheWindow)
     val clipboardManager: ClipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
     // Read observable state - Compose recomposes only when these change
@@ -141,7 +145,8 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
         ) {
             items(
                 items = visibleLogs,
-                key = { "${it.createdAt}/${it.tag.hashCode()}/${System.identityHashCode(it)}" }
+                key = { it.createdAt },
+                contentType = { if (showCompat) "compat" else "card" }
             ) { logEvent ->
                 if (showCompat) {
                     LogEntryCompat(logEvent, clipboardManager, ctx)
@@ -327,14 +332,11 @@ fun ToolBar(
                     expanded = menuClicked,
                     onDismissRequest = { menuClicked = !menuClicked }) {
                     DropdownMenuItem(
-                        onClick = {},
+                        onClick = { viewModel.setAutoScroll(!autoScroll) },
                         text = {
                             Row(
-                                Modifier
-                                    .fillMaxSize()
-                                    .clickable {
-                                        viewModel.setAutoScroll(!autoScroll)
-                                    }, horizontalArrangement = Arrangement.SpaceBetween
+                                Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.auto_scroll),
@@ -342,6 +344,7 @@ fun ToolBar(
                                 )
                                 KSwitch(
                                     checked = autoScroll,
+                                    onClick = { viewModel.setAutoScroll(!autoScroll) },
                                     modifier = Modifier.padding(start = 20.dp)
                                 )
                             }
