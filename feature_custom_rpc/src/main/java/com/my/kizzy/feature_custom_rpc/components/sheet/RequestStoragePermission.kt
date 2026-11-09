@@ -15,7 +15,10 @@ package com.my.kizzy.feature_custom_rpc.components.sheet
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -104,7 +107,11 @@ internal fun RequestStoragePermissionDialog(
                     Text(text = stringResource(id = R.string.request_for_storage_access))
                 },
                 confirmButton = {
-                    Button(onClick = { context.openAppSettings() }) {
+                    Button(onClick = {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.parse("package:${context.packageName}")
+                        context.startActivity(intent)
+                    }) {
                         Text(text = stringResource(id = android.R.string.ok))
                     }
                 },

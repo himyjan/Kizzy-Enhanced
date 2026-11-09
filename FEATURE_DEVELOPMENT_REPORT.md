@@ -957,10 +957,10 @@ Added a `normalizeStringResources` Gradle task to `common/resources/build.gradle
 - Applies 7 normalization rules:
   1. `\'` → `&apos;`
   2. `\"` → `&quot;`
-  3. `\{\{` → `&apos;{{&apos;`
+  3. `\{\{` → `&apos;{{&apos;;`
   4. `\&quot;` → `&quot;`
   5. `\&apos;` → `&apos;`
-  6. `{{` (unwrapped) → `&apos;{{&apos;`
+  6. `{{` (unwrapped) → `&apos;{{&apos;;`
   7. `\{` → `{`, `\}` → `}`
 - Only writes back to files when changes are detected
 - Hooked into `preBuild` via `dependsOn("normalizeStringResources")`, so it runs automatically before any compilation
