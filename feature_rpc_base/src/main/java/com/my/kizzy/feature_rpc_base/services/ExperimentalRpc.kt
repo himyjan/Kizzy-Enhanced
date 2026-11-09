@@ -545,7 +545,8 @@ class ExperimentalRpc : Service() {
             largeText = finalLargeText,
             smallText = finalSmallText,
             time = finalTimestamps,
-            packageName = effectivePackageName ?: ""
+            packageName = effectivePackageName ?: "",
+            playbackState = richMediaInfo?.playbackState
         )
 
         // De-duplication: skip if nothing changed since last push
