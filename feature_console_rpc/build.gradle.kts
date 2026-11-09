@@ -15,4 +15,7 @@ dependencies {
     implementation (libs.coil)
     implementation (libs.activity.compose)
     implementation (libs.kotlinx.serialization.json)
+
+    // Hilt annotation processor required for @HiltViewModel
+    ksp(libs.hilt.compiler)
 }

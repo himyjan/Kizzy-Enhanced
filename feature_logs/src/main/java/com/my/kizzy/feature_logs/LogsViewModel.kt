@@ -14,6 +14,9 @@ package com.my.kizzy.feature_logs
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.my.kizzy.domain.model.logs.LogEvent
 import com.my.kizzy.feature_logs.LoggerProvider.logger
@@ -21,28 +24,47 @@ import com.my.kizzy.preference.Prefs
 
 @Stable
 class LogsViewModel: ViewModel() {
+    // Expose MutableState directly - Compose tracks reads inside composables
     val filterStrings = mutableStateOf("")
-    var logs = logger.getLogs()
-    var showCompat = mutableStateOf(Prefs[Prefs.SHOW_LOGS_IN_COMPACT_MODE,false])
-    var autoScroll = mutableStateOf(Prefs[Prefs.LOGS_AUTO_SCROLL,false])
+    val showCompat = mutableStateOf(Prefs[Prefs.SHOW_LOGS_IN_COMPACT_MODE, false])
+    val autoScroll = mutableStateOf(Prefs[Prefs.LOGS_AUTO_SCROLL, false])
     val isSearchBarVisible = mutableStateOf(false)
 
+    // Underlying snapshot list from KLogger (observable by Compose)
+    val logsSnapshot: SnapshotStateList<LogEvent> = logger.getLogs()
 
-    fun filter(): List<LogEvent> {
-        return try {
-            val currentLogsSnapshot = logs.toList()
-            currentLogsSnapshot.matches(filterStrings.value)
-        } catch (_: ConcurrentModificationException){
-            logs.toList()
+    // Cached filtered results using derivedStateOf - only recomputes when logs or filter changes
+    private val _visibleLogs = derivedStateOf {
+        filterLogs(logsSnapshot.toList(), filterStrings.value)
+    }
+    val visibleLogs: List<LogEvent> by _visibleLogs
+
+    init {
+        // Initial filter pass is handled by derivedStateOf lazily
+    }
+
+    fun setFilterStrings(text: String) {
+        filterStrings.value = text
+    }
+
+    private fun filterLogs(logs: List<LogEvent>, filter: String): List<LogEvent> {
+        if (filter.isBlank()) return logs
+        return logs.filter { log ->
+            log.text.contains(filter, ignoreCase = true) || log.tag.contains(filter, ignoreCase = true)
         }
     }
 
-    private fun List<LogEvent>.matches(filter: String) = filter {
-        it.matches(filter)
+    fun setShowCompat(value: Boolean) {
+        showCompat.value = value
+        Prefs[Prefs.SHOW_LOGS_IN_COMPACT_MODE] = value
     }
 
-    private fun LogEvent.matches(filter: String): Boolean {
-        return this.text.contains(filter,ignoreCase = true) || this.tag.contains(filter,ignoreCase = true)
+    fun setAutoScroll(value: Boolean) {
+        autoScroll.value = value
+        Prefs[Prefs.LOGS_AUTO_SCROLL] = value
     }
-    fun clearLogs() = logger.clear()
+
+    fun clearLogs() {
+        logger.clear()
+    }
 }

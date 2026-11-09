@@ -101,7 +101,8 @@ fun PreferenceSwitch(
             KSwitch(
                 checked = isChecked,
                 modifier = Modifier.padding(start = 20.dp, end = 6.dp),
-                enable = enabled
+                enable = enabled,
+                onClick = onClick
             )
         }
     }

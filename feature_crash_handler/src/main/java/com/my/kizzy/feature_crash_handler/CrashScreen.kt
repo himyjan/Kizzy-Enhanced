@@ -17,11 +17,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -57,8 +54,8 @@ fun CrashScreen(trace: String?) {
                 exitProcess(0)
             }) {
                 Icon(
-                    imageVector = Icons.Outlined.Close,
-                    contentDescription = Icons.Default.Close.name
+                    painter = painterResource(id = com.my.kizzy.feature_crash_handler.R.drawable.ic_close),
+                    contentDescription = "Close"
                 )
             }
         })
@@ -67,7 +64,7 @@ fun CrashScreen(trace: String?) {
             ctx.shareAsFile(trace, "Kizzy_Log.txt")
         }) {
             Icon(
-                imageVector = Icons.Default.Share,
+                painter = painterResource(id = com.my.kizzy.feature_crash_handler.R.drawable.ic_share),
                 contentDescription = "Share Logs",
                 modifier = Modifier.padding(end = 5.dp)
             )

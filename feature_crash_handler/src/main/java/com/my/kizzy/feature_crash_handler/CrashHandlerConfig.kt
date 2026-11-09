@@ -12,12 +12,9 @@
 
 package com.my.kizzy.feature_crash_handler
 
-import com.developer.crashx.config.CrashConfig
-
 object CrashHandlerConfig {
     fun apply() {
-        CrashConfig.Builder.create()
-            .errorActivity(CrashHandler::class.java)
-            .apply()
+        // CrashX removed - crash handling now handled by CrashReportActivity in app module
+        // via Thread.setDefaultUncaughtExceptionHandler
     }
 }

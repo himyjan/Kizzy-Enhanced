@@ -29,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -69,10 +70,18 @@ class CustomRpcService : Service() {
                 this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
             )
 
-            val notification = notificationBuilder
+            // Open main app when notification is clicked
+            val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
+            val appPendingIntent = PendingIntent.getActivity(
+                this, 0, appIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
                 .setContentTitle(getString(R.string.custom_rpc_running))
                 .setContentText(rpcData?.name ?: "")
                 .setSmallIcon(R.drawable.ic_rpc_placeholder)
+                .setContentIntent(appPendingIntent)
                 .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.exit), pendingIntent)
                 .build()
 
@@ -88,7 +97,8 @@ class CustomRpcService : Service() {
             scope.launch {
                 notificationManager.notify(
                     Constants.NOTIFICATION_ID,
-                    notificationBuilder
+                    Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_rpc_placeholder)
                         .setLargeIcon(
                             rpcImage = rpcData?.largeImg?.toRpcImage(),
                             context = this@CustomRpcService
@@ -107,10 +117,8 @@ class CustomRpcService : Service() {
                         setPlatform(it.platform.ifEmpty { null })
                         setStartTimestamps(it.timestampsStart.toLongOrNull())
                         setStopTimestamps(it.timestampsStop.toLongOrNull())
-                        setButton1(it.button1.ifEmpty { null })
-                        setButton1URL(it.button1link.ifEmpty { null })
-                        setButton2(it.button2.ifEmpty { null })
-                        setButton2URL(it.button2link.ifEmpty { null })
+                        setButton1(it.button1.ifEmpty { null }, it.button1link.ifEmpty { null })
+                        setButton2(it.button2.ifEmpty { null }, it.button2link.ifEmpty { null })
                         setLargeImage(it.largeImg.toRpcImage(), it.largeText)
                         setSmallImage(it.smallImg.toRpcImage(), it.smallText)
                         setStreamUrl(it.url.ifEmpty { null })

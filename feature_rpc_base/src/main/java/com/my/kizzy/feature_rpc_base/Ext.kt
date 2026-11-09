@@ -7,20 +7,20 @@
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
  *
- *
  */
+
 
 package com.my.kizzy.feature_rpc_base
 
 import android.app.Notification
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.scale
+import android.graphics.BitmapFactory
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.utils.getAppInfo
 import com.my.kizzy.data.utils.toBitmap
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -40,44 +40,29 @@ internal suspend fun Notification.Builder.setLargeIcon(
         is RpcImage.ExternalImage -> rpcImage.image
     }
 
-    val imageLoader = coil.ImageLoader(context)
-    val request = coil.request.ImageRequest.Builder(context)
-        .data(data)
-        .target(
-            onSuccess = { drawable ->
-                val bitmap = when (drawable) {
-                    is BitmapDrawable -> drawable.bitmap
-                    else -> createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight).apply {
-                        val canvas = android.graphics.Canvas(this)
-                        drawable.setBounds(0, 0, canvas.width, canvas.height)
-                        drawable.draw(canvas)
-                    }
-                }
-
-                val maxSize = 256
-                val scaledBitmap = if (bitmap.width > maxSize || bitmap.height > maxSize) {
-                    val scale = maxSize.toFloat() / maxOf(bitmap.width, bitmap.height)
-                    bitmap.scale(
-                        width = (bitmap.width * scale).toInt(),
-                        height = (bitmap.height * scale).toInt()
-                    )
-                } else bitmap
-
-                val optimizedBitmap = if (scaledBitmap.config != Bitmap.Config.ARGB_8888) {
-                    scaledBitmap.copy(Bitmap.Config.ARGB_8888, false)
-                } else scaledBitmap
-
-                continuation.resume(this@setLargeIcon.setLargeIcon(optimizedBitmap))
-            },
-            onError = {
-                continuation.resume(this@setLargeIcon)
+    val bitmap = when (data) {
+        is Bitmap -> data
+        is String -> {
+            try {
+                val url = URL(data)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input = connection.inputStream
+                val decoded = BitmapFactory.decodeStream(input)
+                input.close()
+                connection.disconnect()
+                decoded
+            } catch (e: Exception) {
+                null
             }
-        )
-        .build()
+        }
+        else -> null
+    }
 
-    val disposable = imageLoader.enqueue(request)
-
-    continuation.invokeOnCancellation {
-        disposable.dispose()
+    if (bitmap != null) {
+        continuation.resume(this@setLargeIcon.setLargeIcon(bitmap))
+    } else {
+        continuation.resume(this@setLargeIcon)
     }
 }

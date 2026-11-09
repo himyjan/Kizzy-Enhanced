@@ -7,7 +7,8 @@
     <string name="activity_state">လုပ်ဆောင်မှု အခြေအနေ</string>
     <string name="activity_start_timestamps">လုပ်ဆောင်မှု စမည့် အချိန်</string>
     <string name="activity_stop_timestamps">လုပ်ဆောင်မှု ဆုံးမည့် အချိန်</string>
-    <string name="activity_status_online_idle_dnd">လုပ်ဆောင်မှု ပုံစံ(အွန်လိုင်း, ဘာမှမလုပ်, မနှောင့်ယှက်ပါနှင့်)</string>
+    <string name="activity_status_online_idle_dnd">လုပ်ဆောင်မှု ပုံစံ(အွန်လိုင်း, ဘာမှမလုပ်,
+        မနှောင့်ယှက်ပါနှင့်)</string>
     <string name="activity_button1_text">လုပ်ဆောင်မှု ခလုတ် ၁ ၏ စာ</string>
     <string name="activity_button2_text">လုပ်ဆောင်မှု ခလုတ် ၂ ၏ စာ</string>
     <string name="activity_button1_url">ခလုတ် ၁ ၏ လင့်ခ်</string>
@@ -24,7 +25,7 @@
     <string name="login_with_discord">Discord နှင့် လော့ဂ်အင် ဝင်ရန်</string>
     <string name="github_readme">ဖတ်ရှုရန်</string>
     <string name="github_readme_desc">Github repository အားကြည့်ရှုပါ</string>
-    <string name="github_latest_release">"နောက်ဆုံးပေါ် release "</string>
+    <string name="github_latest_release">&quot;နောက်ဆုံးပေါ် release &quot;</string>
     <string name="github_latest_release_desc">နောက်ဆုံးပေါ် version နှင့် changelog အားကြည့်ရှုပါ</string>
     <string name="github_issue">Github issue</string>
     <string name="github_issue_desc">Bug report (သို့) feature request အတွက် issue တင်ပါ</string>
@@ -34,15 +35,21 @@
     <string name="enable_album_name">Enable Album Name</string>
     <string name="show_app_icon">အက်ပ်အိုင်ကွန် ပြပါ</string>
     <string name="enable_timestamps">အချိန်ပြစာကို သုံးပါ</string>
-    <string name="text_after_permission_denied">Storage access is important for this app to store configs in public directories. Please grant the permission.</string>
-    <string name="request_for_storage_access">သိုလှောင်ခွင့်သည် ဤအက်ပ်အတွက်ု အချက်အလက်များသိမ်းဆည်းရန် လိုအပ်ပါသည်။ ကျေးဇူးပြု၍ ခွင့်ပြုချက်ပေးပါ</string>
+    <string name="text_after_permission_denied">Storage access is important for this app to store
+        configs in public directories. Please grant the permission.</string>
+    <string name="request_for_storage_access">သိုလှောင်ခွင့်သည် ဤအက်ပ်အတွက်ု
+        အချက်အလက်များသိမ်းဆည်းရန် လိုအပ်ပါသည်။ ကျေးဇူးပြု၍ ခွင့်ပြုချက်ပေးပါ</string>
     <string name="grant_permission">ခွင့်ပြုချက်ပေးသည်</string>
     <string name="use_low_res_icon">Low Resolution ပုံများကို သုံးပါ</string>
-    <string name="use_low_res_icon_desc">Rpc တွင်ပြသရန် Low Resolution ပုံများကို သုံးပါ (Rpc ပျက်နေပါက ဤခလုတ်ကိုဖွင့်ပါ)။ ဤဆက်တင်ကို Apps Rpc တွင်လည်း အသုံးပြုမည်ဖြစ်သည်။</string>
+    <string name="use_low_res_icon_desc">Rpc တွင်ပြသရန် Low Resolution ပုံများကို သုံးပါ (Rpc
+        ပျက်နေပါက ဤခလုတ်ကိုဖွင့်ပါ)။ ဤဆက်တင်ကို Apps Rpc တွင်လည်း အသုံးပြုမည်ဖြစ်သည်။</string>
     <string name="delete_saved_icon_urls">သိမ်းဆည်းထားသော icon လင့်ခ်များကို ဖျက်ပါ</string>
-    <string name="delete_saved_icon_urls_desc">Local ဖိုင်များတွင်သိမ်းဆည်းထားသည့် App icon url များကိုဖျက်ပါ (ဤခလုတ်ကို အသုံးလိုမည့် ကိစ္စများတွင်သာသုံးပါ အဘယ်ကြောင့်ဆိုသော် icon များကို Discord ဆာဗာများသို့ ပြန်ပို့မည်ဖြစ်၍ ဒေတာပိုကုန်မည်ဖြစ်သည်)</string>
+    <string name="delete_saved_icon_urls_desc">Local ဖိုင်များတွင်သိမ်းဆည်းထားသည့် App icon url
+        များကိုဖျက်ပါ (ဤခလုတ်ကို အသုံးလိုမည့် ကိစ္စများတွင်သာသုံးပါ အဘယ်ကြောင့်ဆိုသော် icon များကို
+        Discord ဆာဗာများသို့ ပြန်ပို့မည်ဖြစ်၍ ဒေတာပိုကုန်မည်ဖြစ်သည်)</string>
     <string name="app_crashed">App ပျက်သွားသည်</string>
-    <string name="share_crash_logs_desc">ကျေးဇူးပြု၍ အောက်ပါ Logs များကို Discord channel ထဲတွင် stacktrace နှင့်တကွ ပို့ပေးပါ</string>
+    <string name="share_crash_logs_desc">ကျေးဇူးပြု၍ အောက်ပါ Logs များကို Discord channel ထဲတွင်
+        stacktrace နှင့်တကွ ပို့ပေးပါ</string>
     <string name="share_crash_logs">LOGS များကို မျှဝေပါ</string>
     <string name="welcome">ကြိုဆိုပါသည်</string>
     <string name="features">လုပ်ဆောင်မှုများ</string>
@@ -64,7 +71,8 @@
     <string name="enable_console_rpc">Console Rpc ကိုသုံးပါ</string>
     <string name="rpc_settings_button_configs">Media နှင့် AppDetection Rpc အတွက် ခလုတ် ဆက်တင်များ</string>
     <string name="use_custom_buttons">စိတ်ကြိုက်ခလုတ်များကို အသုံးပြုမည်</string>
-    <string name="use_custom_buttons_desc">Media နှင့် AppDetection rpc တွင်ပြသရန် ကြိုတင် ပြင်ဆင်ထားသော ခလုတ်များကိုသုံးပါ။</string>
+    <string name="use_custom_buttons_desc">Media နှင့် AppDetection rpc တွင်ပြသရန် ကြိုတင်
+        ပြင်ဆင်ထားသော ခလုတ်များကိုသုံးပါ။</string>
     <string name="follow_system">System ကိုလိုက်နာပါ</string>
     <string name="advance_settings">အဆင့်မြင့် ဆက်တင်များ</string>
     <string name="amoled">Amoled အပြင်အဆင်</string>
@@ -78,7 +86,8 @@
     <string name="android_off">အပိတ်</string>
     <string name="setup">ပြင်ဆင်မည်</string>
     <string name="user_data_policy">ဤ app သည် မည်သည့်အသုံးပြုသူ ဒေတာကိုမျှ မစုဆောင်းပါ</string>
-    <string name="setup_desc">ရှေ့သို့မသွားမီ ဤapp၏ အင်္ဂါရပ်အားလုံး အလုပ်လုပ်ကြောင်း သေချာစေရန် လိုအပ်သည့်လုပ်ဆောင်ချက်များကို လုပ်ဆောင်ရန် အကြံပြုထားသည်။</string>
+    <string name="setup_desc">ရှေ့သို့မသွားမီ ဤapp၏ အင်္ဂါရပ်အားလုံး အလုပ်လုပ်ကြောင်း သေချာစေရန်
+        လိုအပ်သည့်လုပ်ဆောင်ချက်များကို လုပ်ဆောင်ရန် အကြံပြုထားသည်။</string>
     <string name="permission_granted">ခွင့်ပြုချက် အောင်မြင်စွာ ရရှိပါသည်။</string>
     <string name="permission_not_granted">ခွင့်ပြုချက်ပေးရန် ဤနေရာကိုနှိပ်ပါ။</string>
     <string name="activity_large_text">လုပ်ဆောင်မှု စာအသေး</string>
@@ -87,15 +96,18 @@
     <string name="stream_url">Stream Url</string>
     <string name="stream_url_info">Only https://twitch.tv/ and https://youtube.com/ urls will work.</string>
     <string name="activity_button_max_character">Max character limit is 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom Rpc Fields</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom rpc from the last run rpc</string>
+    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom Rpc
+        Fields</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom rpc
+        from the last run rpc</string>
     <string name="clear_all_fields">Clear All Fields</string>
     <string name="share_config">config ကိုမျှဝေမည်။</string>
     <string name="change_log">မှတ်တမ်းအပြောင်းအလဲများ</string>
     <string name="update">Update</string>
     <string name="configs_directory">Configs Directory</string>
     <string name="custom_activity_type">Custom Activity Type</string>
-    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media and experimental rpc only</string>
+    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
+        and experimental rpc only</string>
     <string name="custom_activity_status">Custom Activity Status</string>
     <string name="custom_activity_status_desc">Overrides the default activity status</string>
     <string name="search">Search</string>
@@ -104,15 +116,20 @@
     <string name="hide_on_pause">Hide RPC on Pause</string>
     <string name="idling_notification">Idling…</string>
     <string name="main_appDetection">App Detection</string>
-    <string name="main_appDetection_details">Kizzy allows you to share your current activity on Discord by detecting what app you\'re using on your device.</string>
+    <string name="main_appDetection_details">Kizzy allows you to share your current activity on
+        Discord by detecting what app you&apos;re using on your device.</string>
     <string name="main_mediaRpc">Media RPC</string>
-    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on Discord, such as the song or video you\'re currently listening to or watching.</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
     <string name="main_customRpc">Custom RPC</string>
     <string name="main_consoleRpc">Console RPC</string>
-    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set your presence on Discord.</string>
+    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
+        your presence on Discord.</string>
     <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that constantly switches between Apps RPC and Media RPC.</string>
-    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable rich presence for Discord.</string>
+    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
+        rich presence for Discord.</string>
     <string name="main_comingSoon">Coming Soon</string>
     <string name="exit">Exit</string>
     <string name="logs">Logs</string>
@@ -121,7 +138,8 @@
     <string name="go_to_profile">Go to Profile</string>
     <string name="version">Version</string>
     <string name="try_again">Retry</string>
-    <string name="request_for_notification_access">Notification Access is needed for app to extract media information.</string>
+    <string name="request_for_notification_access">Notification Access is needed for app to extract
+        media information.</string>
     <string name="update_check_for_update">Checking for update…</string>
     <string name="update_no_updates_available">No updates available</string>
     <string name="compact_mode">Compact Mode</string>
@@ -161,7 +179,7 @@
     <string name="upload_image">Upload Image</string>
     <string name="save">Save</string>
     <string name="set_timestamps">Set Timestamps</string>
-    <string name="saved_config_toast">Saved \"%1$s\" successfully</string>
+    <string name="saved_config_toast">Saved &quot;%1$s&quot; successfully</string>
     <string name="error_saving_config_toast">Error saving config</string>
     <string name="config_name">Config name</string>
     <string name="delete">Delete</string>
@@ -201,8 +219,10 @@
     <string name="application_id">Application ID</string>
     <string name="custom_application_id">Custom Activity Application ID</string>
     <string name="custom_application_id_desc">Overrides the default Discord Application ID</string>
-    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI. Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">Use placeholders like {{app_name}}, {{media_title}}, {{media_artist}}, etc. Empty fields will use default behavior or be omitted.</string>
+    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
+        Please use a VPN/DPI to proceed.</string>
+    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -216,6 +236,110 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting your own Client ID</string>
+    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
+        setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
+
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="timestamp_mode">Timestamp Mode</string>
+    <string name="start_timestamp_ms">Start Timestamp (in milliseconds)</string>
+    <string name="end_timestamp_ms">End Timestamp (in milliseconds)</string>
+    <string name="completion_media_album">Album Name</string>
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="completion_media_duration">Track Duration</string>
+    <string name="completion_media_writer">Writer</string>
+    <string name="completion_media_composer">Composer</string>
+    <string name="completion_battery">Battery Level</string>
+    <string name="completion_playback">Playback State</string>
+    <string name="use_youtube_button">Add Media Button</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="link_to_artist_channel">Link to Artist Channel</string>
+    <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
+    <string name="experimental_rpc_title_toggle">Title</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
+    <string name="title_source_song">Song Name</string>
+    <string name="title_source_artist">Artist</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
+    <string name="app_selection">App Selection</string>
+    <string name="platform_none_desktop">None (Desktop)</string>
+    <string name="platform_desktop">Desktop</string>
+    <string name="platform_web">Web</string>
+    <string name="platform_android">Android</string>
+    <string name="platform_ios">iOS</string>
+    <string name="platform_xbox">Xbox</string>
+    <string name="platform_playstation">Playstation</string>
+    <string name="platform_vr">VR</string>
+    <string name="timestamp_mode_default">Media / App (default)</string>
+    <string name="timestamp_mode_current">Same as current time of day</string>
+    <string name="timestamp_mode_custom">Custom</string>
+    <string name="update_installing">Installing…</string>
+    <string name="update_download_error">Download failed. Try again.</string>
+    <string name="locale_en">English</string>
+    <string name="locale_ru">Русский</string>
+    <string name="locale_ja">日本語</string>
+    <string name="locale_ko">한국어</string>
+    <string name="locale_zh">中文（简体）</string>
+    <string name="locale_zh_TW">中文（繁體）</string>
+    <string name="locale_es">Español</string>
+    <string name="locale_fr">Français</string>
+    <string name="locale_de">Deutsch</string>
+    <string name="locale_it">Italiano</string>
+    <string name="locale_pt">Português</string>
+    <string name="locale_tr">Türkçe</string>
+    <string name="locale_nl">Nederlands</string>
+    <string name="locale_pl">Polski</string>
+    <string name="locale_in">Bahasa Indonesia</string>
+    <string name="locale_ar">العربية</string>
+    <string name="locale_he">עברית</string>
+    <string name="locale_bg">Български</string>
+    <string name="locale_cs">Čeština</string>
+    <string name="locale_da">Dansk</string>
+    <string name="locale_el">Ελληνικά</string>
+    <string name="locale_et">Eesti</string>
+    <string name="locale_fi">Suomi</string>
+    <string name="locale_gl">Galego</string>
+    <string name="locale_hu">Magyar</string>
+    <string name="locale_is">Íslenska</string>
+    <string name="locale_lt">Lietuvių</string>
+    <string name="locale_lv">Latviešu</string>
+    <string name="locale_mk">Македонски</string>
+    <string name="locale_ms">Bahasa Melayu</string>
+    <string name="locale_nb">Norsk bokmål</string>
+    <string name="locale_pa">ਪੰਜਾਬੀ</string>
+    <string name="locale_ro">Română</string>
+    <string name="locale_sk">Slovenčina</string>
+    <string name="locale_sl">Slovenščina</string>
+    <string name="locale_sr">Српски</string>
+    <string name="locale_sv">Svenska</string>
+    <string name="locale_uk">Українська</string>
+    <string name="locale_bn">বাংলা</string>
+    <string name="locale_gu">ગુજરાતી</string>
+    <string name="locale_kn">ಕನ್ನಡ</string>
+    <string name="locale_ml">മലയാളം</string>
+    <string name="locale_mr">मराठी</string>
+    <string name="locale_ne">नेपाली</string>
+    <string name="locale_or">ଓଡ଼ିଆ</string>
+    <string name="locale_si">සිංහල</string>
+    <string name="locale_ta">தமிழ்</string>
+    <string name="locale_te">తెలుగు</string>
+    <string name="locale_ur">اردو</string>
+    <string name="locale_af">Afrikaans</string>
+    <string name="locale_sq">Shqip</string>
+    <string name="locale_hy">Հայերեն</string>
+    <string name="locale_az">Azərbaycanca</string>
+    <string name="locale_eu">Euskara</string>
+    <string name="locale_be">Беларуская</string>
+    <string name="locale_ka">ქართული</string>
+    <string name="locale_kk">Қазақша</string>
+    <string name="locale_km">ខ្មែរ</string>
+    <string name="locale_lo">ພາສາລາວ</string>
+    <string name="locale_mn">Монгол</string>
+    <string name="locale_ps">پښتو</string>
+    <string name="locale_sa">संस्कृतम्</string>
+    <string name="locale_bo">བོད་སྐད།</string>
+    <string name="locale_uz">Oʻzbekcha</string>
+    <string name="locale_cy">Cymraeg</string>
+    <string name="locale_zu">isiZulu</string>
 </resources>

@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_profile.ui.component.ActivityRow
 import com.my.kizzy.resources.R
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 
 private val DISCORD_BG = Color(0xFF313338)
 private val DISCORD_CARD = Color(0xFF2B2D31)
@@ -83,7 +85,7 @@ fun RpcLivePreview(
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                imageVector = if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
                 contentDescription = null,
                 tint = DISCORD_SUBTEXT
             )

@@ -8,7 +8,8 @@
     <string name="activity_state">Состояние активности</string>
     <string name="activity_start_timestamps">Начало временной метки</string>
     <string name="activity_stop_timestamps">Конец временной метки</string>
-    <string name="activity_status_online_idle_dnd">Статус активности (\"online\" — \"В сети\", \"idle\" — \"Неактивен\" или \"dnd\" — \"Не беспокоить\")</string>
+    <string name="activity_status_online_idle_dnd">Статус активности (&quot;online&quot; — &quot;В сети&quot;,
+        &quot;idle&quot; — &quot;Неактивен&quot; или &quot;dnd&quot; — &quot;Не беспокоить&quot;)</string>
     <string name="activity_button1_text">Текст на первой кнопке</string>
     <string name="activity_button2_text">Текст на второй кнопке</string>
     <string name="activity_button1_url">Ссылка первой кнопки</string>
@@ -35,15 +36,20 @@
     <string name="enable_album_name">Включить название альбома</string>
     <string name="show_app_icon">Показывать иконку приложения</string>
     <string name="enable_timestamps">Включить временные метки</string>
-    <string name="text_after_permission_denied">Доступ к хранилищу важен для этого приложения, чтобы хранить конфигурации в общедоступных каталогах. Пожалуйста, дайте разрешение.</string>
-    <string name="request_for_storage_access">Разрешение на хранение требуется для работы функций конфигурации. Пожалуйста, дайте разрешение.</string>
+    <string name="text_after_permission_denied">Доступ к хранилищу важен для этого приложения, чтобы
+        хранить конфигурации в общедоступных каталогах. Пожалуйста, дайте разрешение.</string>
+    <string name="request_for_storage_access">Разрешение на хранение требуется для работы функций
+        конфигурации. Пожалуйста, дайте разрешение.</string>
     <string name="grant_permission">Дать разрешение</string>
     <string name="use_low_res_icon">Использовать низкокачественные изображения</string>
-    <string name="use_low_res_icon_desc">Использовать значок приложения с более низким разрешением для отображения в активности. Этот параметр также будет применяться к Активности приложений.</string>
+    <string name="use_low_res_icon_desc">Использовать значок приложения с более низким разрешением
+        для отображения в активности. Этот параметр также будет применяться к Активности приложений.</string>
     <string name="delete_saved_icon_urls">Удалить сохр. ссылки иконок</string>
-    <string name="delete_saved_icon_urls_desc">Удалить URL-адреса иконок приложений, сохранённые в локальных файлах. Используйте это только в редких случаях.</string>
+    <string name="delete_saved_icon_urls_desc">Удалить URL-адреса иконок приложений, сохранённые в
+        локальных файлах. Используйте это только в редких случаях.</string>
     <string name="app_crashed">Приложение вылетело</string>
-    <string name="share_crash_logs_desc">Пожалуйста, отправьте журналы в канале Discord со следующей трассировкой стека:</string>
+    <string name="share_crash_logs_desc">Пожалуйста, отправьте журналы в канале Discord со следующей
+        трассировкой стека:</string>
     <string name="share_crash_logs">ПОДЕЛИТЬСЯ ЖУРНАЛАМИ</string>
     <string name="welcome">Привет</string>
     <string name="features">Возможности</string>
@@ -55,7 +61,8 @@
     <string name="design_credits">Дизайн</string>
     <string name="enable_appsRpc">Включить обнаружение приложений</string>
     <string name="usage_access">Требуется доступ к использованию</string>
-    <string name="usage_access_desc">Доступ к использованию необходим для приложения, чтобы получить текущее запущенное приложение.</string>
+    <string name="usage_access_desc">Доступ к использованию необходим для приложения, чтобы получить
+        текущее запущенное приложение.</string>
     <string name="enable_mediaRpc">Включить мультимедийную активность</string>
     <string name="permission_required">Требуется разрешение</string>
     <string name="enable_customRpc">Включить пользовательскую активность</string>
@@ -63,9 +70,11 @@
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="privacy_policy_desc">Ознакомиться с Политикой конфиденциальности</string>
     <string name="enable_console_rpc">Включить консольную активность</string>
-    <string name="rpc_settings_button_configs">Конфигурация кнопки для активности мультимедиа и приложений</string>
+    <string name="rpc_settings_button_configs">Конфигурация кнопки для активности мультимедиа и
+        приложений</string>
     <string name="use_custom_buttons">Использовать пользовательские кнопки</string>
-    <string name="use_custom_buttons_desc">Использовать предопределённые кнопки для показа в активности мультимедиа и приложений</string>
+    <string name="use_custom_buttons_desc">Использовать предопределённые кнопки для показа в
+        активности мультимедиа и приложений</string>
     <string name="follow_system">Согласно системе</string>
     <string name="advance_settings">Расширенные настройки</string>
     <string name="amoled">Amoled тема</string>
@@ -79,7 +88,8 @@
     <string name="android_off">Выключено</string>
     <string name="setup">Настройка</string>
     <string name="user_data_policy">Данное приложение не собирает никакие пользовательские данные</string>
-    <string name="setup_desc">Перед тем, как идти дальше, рекомендуется выполнить все необходимые действия, чтобы все функции приложения работали исправно.</string>
+    <string name="setup_desc">Перед тем, как идти дальше, рекомендуется выполнить все необходимые
+        действия, чтобы все функции приложения работали исправно.</string>
     <string name="permission_granted">Предоставлено</string>
     <string name="permission_not_granted">Не предоставлено, нажмите, чтобы разрешить</string>
     <string name="activity_large_text">Большой текст активности</string>
@@ -88,15 +98,18 @@
     <string name="stream_url">Ссылка на эфир</string>
     <string name="stream_url_info">Будут работать только ссылки на Twitch и YouTube.</string>
     <string name="activity_button_max_character">Максимальное кол-во символов — 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Установить конфигурацию предыдущего запуска в поля Custom RPC</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Автоматически установить поля в Custom RPC из последнего запуска RPC</string>
+    <string name="set_previous_run_config_in_custom_rpc">Установить конфигурацию предыдущего запуска
+        в поля Custom RPC</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Автоматически установить поля в Custom
+        RPC из последнего запуска RPC</string>
     <string name="clear_all_fields">Очистить все поля</string>
     <string name="share_config">Поделиться конфигурацией</string>
     <string name="change_log">Список изменений</string>
     <string name="update">Обновить</string>
     <string name="configs_directory">Директория конфигураций</string>
     <string name="custom_activity_type">Свой тип активности</string>
-    <string name="custom_activity_type_desc">Меняет стандартный тип активности на выбранный вами. Работает только для Media и Experimental RPC</string>
+    <string name="custom_activity_type_desc">Меняет стандартный тип активности на выбранный вами.
+        Работает только для Media и Experimental RPC</string>
     <string name="custom_activity_status">Свой статус активности</string>
     <string name="custom_activity_status_desc">Меняет стандартный статус активности на ваш.</string>
     <string name="search">Поиск</string>
@@ -105,15 +118,20 @@
     <string name="hide_on_pause">Скрыть RPC при паузе</string>
     <string name="idling_notification">Ожидание…</string>
     <string name="main_appDetection">Обнаружение приложений</string>
-    <string name="main_appDetection_details">Kizzy позволяет вам поделиться используемым в данный момент приложением в статус Discord.</string>
+    <string name="main_appDetection_details">Kizzy позволяет вам поделиться используемым в данный
+        момент приложением в статус Discord.</string>
     <string name="main_mediaRpc">RPC медиа-контента</string>
-    <string name="main_mediaRpc_details">Kizzy позволяет вам поделиться воспроизводимым на данный момент медиа-контентом, к примеру песня или видео.</string>
+    <string name="main_mediaRpc_details">Kizzy позволяет вам поделиться воспроизводимым на данный
+        момент медиа-контентом, к примеру песня или видео.</string>
     <string name="main_customRpc">Свой RPC</string>
     <string name="main_consoleRpc">RPC с консолей</string>
-    <string name="main_consoleRpc_details">Kizzy позволяет вам использовать предустановленные пресеты для статуса в Discord.</string>
+    <string name="main_consoleRpc_details">Kizzy позволяет вам использовать предустановленные
+        пресеты для статуса в Discord.</string>
     <string name="main_experimentalRpc">Экспериментальный RPC</string>
-    <string name="main_experimentalRpc_details">Экспериментальный RPC постоянно переключается между обнаружением приложений и RPC медиа-контента.</string>
-    <string name="main_customRpc_details">Kizzy позволяет создать полностью изменяемый статус Discord.</string>
+    <string name="main_experimentalRpc_details">Экспериментальный RPC постоянно переключается между
+        обнаружением приложений и RPC медиа-контента.</string>
+    <string name="main_customRpc_details">Kizzy позволяет создать полностью изменяемый статус
+        Discord.</string>
     <string name="main_comingSoon">В будущем…</string>
     <string name="exit">Выйти</string>
     <string name="logs">Логи</string>
@@ -122,7 +140,8 @@
     <string name="go_to_profile">Перейти в профиль</string>
     <string name="version">Версия</string>
     <string name="try_again">Повторить</string>
-    <string name="request_for_notification_access">Доступ к уведомлениям необходим для получения информации о медиа-контенте.</string>
+    <string name="request_for_notification_access">Доступ к уведомлениям необходим для получения
+        информации о медиа-контенте.</string>
     <string name="update_check_for_update">Проверяем, есть ли обновление…</string>
     <string name="update_no_updates_available">Вы на последней версии!</string>
     <string name="compact_mode">Компактный режим</string>
@@ -162,7 +181,7 @@
     <string name="upload_image">Загрузить изображение</string>
     <string name="save">Сохранить</string>
     <string name="set_timestamps">Установить время</string>
-    <string name="saved_config_toast">\"%1$s\" успешно сохранён</string>
+    <string name="saved_config_toast">&quot;%1$s&quot; успешно сохранён</string>
     <string name="error_saving_config_toast">Ошибка при сохранении конфигурации</string>
     <string name="config_name">Название конфигурации</string>
     <string name="delete">Удалить</string>
@@ -203,11 +222,15 @@
     <string name="custom_application_id">Свой ID приложения активности</string>
     <string name="custom_application_id_desc">Меняет стандартный ID приложения Discord на ваш</string>
     <string name="use_a_vpn_desc">Discord заблокирован в России, поэтому вход может не работать.</string>
-    <string name="rpc_templates_note">Используйте плейсхолдеры: {{app_name}}, {{media_title}}, {{media_artist}}, и т.д. Пустые поля будут работать по умолчанию или же останутся пусты.</string>
-    <string name="experimental_rpc_detect_apps">Разрешить экспериментальному RPC видеть запущенные программы</string>
-    <string name="experimental_rpc_detect_media">Разрешить экспериментальному RPC видеть медиа-данные</string>
+    <string name="rpc_templates_note">"Используйте плейсхолдеры: &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, и т.д. Пустые поля будут работать по умолчанию или же останутся пусты."</string>
+    <string name="experimental_rpc_detect_apps">Разрешить экспериментальному RPC видеть запущенные
+        программы</string>
+    <string name="experimental_rpc_detect_media">Разрешить экспериментальному RPC видеть
+        медиа-данные</string>
     <string name="app_preferences">Настройки программ</string>
-    <string name="app_preferences_desc">Выберите, какие программы сможет видеть экспериментальный RPC</string>
+    <string name="app_preferences_desc">Выберите, какие программы сможет видеть экспериментальный
+        RPC</string>
     <string name="completion_media_title">Название песни/видео</string>
     <string name="completion_media_artist">Основной артист</string>
     <string name="completion_app_name">Найденное название приложения</string>
@@ -217,10 +240,12 @@
     <string name="completion_media_author">Основной автор</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Установить Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">Если изображения с Imgur не показываются, вы можете попробовать установить свой Client ID</string>
+    <string name="set_imgur_client_id_desc">Если изображения с Imgur не показываются, вы можете
+        попробовать установить свой Client ID</string>
     <string name="show_song_as_title">Показать песню в заголовке</string>
     <string name="experimental_rpc_title_toggle">Заголовок</string>
-    <string name="experimental_rpc_title_toggle_desc">Показывать название песни или исполнителя в заголовке активности вместо имени приложения</string>
+    <string name="experimental_rpc_title_toggle_desc">Показывать название песни или исполнителя в
+        заголовке активности вместо имени приложения</string>
     <string name="title_source_song">Название песни</string>
     <string name="title_source_artist">Исполнитель</string>
     <string name="timestamp_mode">Режим временных меток</string>
@@ -231,7 +256,7 @@
     <string name="completion_media_composer">Композитор</string>
     <string name="completion_battery">Уровень заряда</string>
     <string name="completion_playback">Состояние воспроизведения</string>
-    <string name="type_to_insert_variable">Введите \'{{\'  для вставки переменной</string>
+    <string name="type_to_insert_variable">Введите &apos;{{&apos; для вставки переменной</string>
     <string name="app_selection">Выбор приложений</string>
     <string name="platform_none_desktop">Ничего (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
@@ -246,4 +271,78 @@
     <string name="timestamp_mode_custom">Своё</string>
     <string name="update_installing">Установка…</string>
     <string name="update_download_error">Ошибка загрузки. Попробуйте ещё раз.</string>
+
+    <string name="start_timestamp_ms">Start Timestamp (in milliseconds)</string>
+    <string name="end_timestamp_ms">End Timestamp (in milliseconds)</string>
+    <string name="use_youtube_button">Add Media Button</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="link_to_artist_channel">Link to Artist Channel</string>
+    <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
+    <string name="locale_en">English</string>
+    <string name="locale_ru">Русский</string>
+    <string name="locale_ja">日本語</string>
+    <string name="locale_ko">한국어</string>
+    <string name="locale_zh">中文（简体）</string>
+    <string name="locale_zh_TW">中文（繁體）</string>
+    <string name="locale_es">Español</string>
+    <string name="locale_fr">Français</string>
+    <string name="locale_de">Deutsch</string>
+    <string name="locale_it">Italiano</string>
+    <string name="locale_pt">Português</string>
+    <string name="locale_tr">Türkçe</string>
+    <string name="locale_nl">Nederlands</string>
+    <string name="locale_pl">Polski</string>
+    <string name="locale_in">Bahasa Indonesia</string>
+    <string name="locale_ar">العربية</string>
+    <string name="locale_he">עברית</string>
+    <string name="locale_bg">Български</string>
+    <string name="locale_cs">Čeština</string>
+    <string name="locale_da">Dansk</string>
+    <string name="locale_el">Ελληνικά</string>
+    <string name="locale_et">Eesti</string>
+    <string name="locale_fi">Suomi</string>
+    <string name="locale_gl">Galego</string>
+    <string name="locale_hu">Magyar</string>
+    <string name="locale_is">Íslenska</string>
+    <string name="locale_lt">Lietuvių</string>
+    <string name="locale_lv">Latviešu</string>
+    <string name="locale_mk">Македонски</string>
+    <string name="locale_ms">Bahasa Melayu</string>
+    <string name="locale_nb">Norsk bokmål</string>
+    <string name="locale_pa">ਪੰਜਾਬੀ</string>
+    <string name="locale_ro">Română</string>
+    <string name="locale_sk">Slovenčina</string>
+    <string name="locale_sl">Slovenščina</string>
+    <string name="locale_sr">Српски</string>
+    <string name="locale_sv">Svenska</string>
+    <string name="locale_uk">Українська</string>
+    <string name="locale_bn">বাংলা</string>
+    <string name="locale_gu">ગુજરાતી</string>
+    <string name="locale_kn">ಕನ್ನಡ</string>
+    <string name="locale_ml">മലയാളം</string>
+    <string name="locale_mr">मराठी</string>
+    <string name="locale_ne">नेपाली</string>
+    <string name="locale_or">ଓଡ଼ିଆ</string>
+    <string name="locale_si">සිංහල</string>
+    <string name="locale_ta">தமிழ்</string>
+    <string name="locale_te">తెలుగు</string>
+    <string name="locale_ur">اردو</string>
+    <string name="locale_af">Afrikaans</string>
+    <string name="locale_sq">Shqip</string>
+    <string name="locale_hy">Հայերեն</string>
+    <string name="locale_az">Azərbaycanca</string>
+    <string name="locale_eu">Euskara</string>
+    <string name="locale_be">Беларуская</string>
+    <string name="locale_ka">ქართული</string>
+    <string name="locale_kk">Қазақша</string>
+    <string name="locale_km">ខ្មែរ</string>
+    <string name="locale_lo">ພາສາລາວ</string>
+    <string name="locale_mn">Монгол</string>
+    <string name="locale_ps">پښتو</string>
+    <string name="locale_sa">संस्कृतम्</string>
+    <string name="locale_bo">བོད་སྐད།</string>
+    <string name="locale_uz">Oʻzbekcha</string>
+    <string name="locale_cy">Cymraeg</string>
+    <string name="locale_zu">isiZulu</string>
 </resources>

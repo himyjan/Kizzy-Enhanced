@@ -33,6 +33,8 @@ import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Pin
 import androidx.compose.material.icons.filled.SmartButton
 import androidx.compose.material.icons.filled.Storage
@@ -61,6 +63,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.RpcField
@@ -70,6 +74,19 @@ import com.my.kizzy.ui.components.dialog.SingleChoiceItem
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import androidx.compose.material.icons.outlined.Cached
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.DoNotDisturbOn
+import androidx.compose.material.icons.outlined.HighQuality
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.outlined.SmartButton
+import androidx.compose.material.icons.outlined.Storage
+import androidx.compose.material.icons.outlined.Tune
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,6 +97,8 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var configsDir by remember { mutableStateOf(Prefs[Prefs.CONFIGS_DIRECTORY, ""]) }
     var showDirConfigDialog by remember { mutableStateOf(false) }
     var useButtonConfigs by remember { mutableStateOf(Prefs[Prefs.USE_RPC_BUTTONS, false]) }
+    var useYoutubeButton by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON, false]) }
+    var linkToArtistChannel by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_ARTIST_LINK, false]) }
     var showButtonsConfigDialog by remember { mutableStateOf(false) }
     var rpcButtons by remember {
         mutableStateOf(Json.decodeFromString<RpcButtons>(Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]))
@@ -117,81 +136,102 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
         }, navigationIcon = { BackButton { onBackPressed() } })
     }) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            item {
+            item(key = "general_settings") {
                 Subtitle(text = stringResource(R.string.general_settings))
             }
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                item {
+                item(key = "configs_directory") {
                     SettingItem(
                         title = stringResource(id = R.string.configs_directory),
                         description = configsDir.ifEmpty { stringResource(id = R.string.custom_rpc_directory) },
-                        icon = Icons.Default.Storage,
+                        icon = Icons.Outlined.Storage,
                     ) {
                         showDirConfigDialog = true
                     }
                 }
             }
-            item {
+            item(key = "use_custom_buttons") {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_custom_buttons),
                     description = stringResource(id = R.string.use_custom_buttons_desc),
-                    icon = Icons.Default.Tune,
+                    icon = Icons.Outlined.Tune,
                     isChecked = useButtonConfigs,
                 ) {
                     useButtonConfigs = !useButtonConfigs
                     Prefs[Prefs.USE_RPC_BUTTONS] = useButtonConfigs
                 }
             }
-            item {
+            item(key = "use_youtube_button") {
+                PreferenceSwitch(
+                    title = stringResource(id = R.string.use_youtube_button),
+                    description = stringResource(id = R.string.use_youtube_button_desc),
+                    icon = Icons.AutoMirrored.Filled.OpenInNew,
+                    isChecked = useYoutubeButton,
+                ) {
+                    useYoutubeButton = !useYoutubeButton
+                    Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON] = useYoutubeButton
+                }
+            }
+            item(key = "link_to_artist_channel") {
+                PreferenceSwitch(
+                    title = stringResource(id = R.string.link_to_artist_channel),
+                    description = stringResource(id = R.string.link_to_artist_channel_desc),
+                    icon = Icons.Outlined.Person,
+                    isChecked = linkToArtistChannel,
+                ) {
+                    linkToArtistChannel = !linkToArtistChannel
+                    Prefs[Prefs.MEDIA_RPC_ARTIST_LINK] = linkToArtistChannel
+                }
+            }
+            item(key = "rpc_buttons") {
                 AnimatedVisibility(visible = useButtonConfigs) {
                     SettingItem(
                         title = stringResource(R.string.rpc_buttons),
                         description = stringResource(id = R.string.rpc_settings_button_configs),
-                        icon = Icons.Default.SmartButton
+                        icon = Icons.Outlined.SmartButton
                     ) {
                         showButtonsConfigDialog = true
                     }
                 }
             }
-            item {
+            item(key = "custom_activity_type") {
                 SettingItem(
                     title = stringResource(id = R.string.custom_activity_type),
                     description = stringResource(id = R.string.custom_activity_type_desc),
-                    icon = Icons.Default.Code
+                    icon = Icons.Outlined.Code
                 ) {
                     showActivityTypeDialog = true
                 }
 
             }
-            item {
+            item(key = "custom_activity_status") {
                 SettingItem(
                     title = stringResource(id = R.string.custom_activity_status),
                     description = stringResource(id = R.string.custom_activity_status_desc),
-                    icon = Icons.Default.DoNotDisturbOn
+                    icon = Icons.Outlined.DoNotDisturbOn
                 ) {
                     showActivityStatusDialog = true
                 }
             }
-            item {
+            item(key = "set_previous_run_config") {
                 PreferenceSwitch(
                     title = stringResource(R.string.set_previous_run_config_in_custom_rpc),
                     description = stringResource(R.string.set_previous_run_config_in_custom_rpc_desc),
-                    icon = Icons.Default.Cached,
+                    icon = Icons.Outlined.Cached,
                     isChecked = setLastRunRpcConfigOption
                 ) {
                     setLastRunRpcConfigOption = !setLastRunRpcConfigOption
                     Prefs[Prefs.APPLY_FIELDS_FROM_LAST_RUN_RPC] = setLastRunRpcConfigOption
                 }
             }
-            item {
+            item(key = "custom_application_id") {
                 SettingItem(
                     title = stringResource(id = R.string.custom_application_id),
                     description = stringResource(id = R.string.custom_application_id_desc),
-                    icon = Icons.Default.Pin
+                    icon = Icons.Outlined.Pin
                 ) {
                     showApplicationIdDialog = true
                 }
-
             }
             item {
                 Subtitle(text = stringResource(id = R.string.advance_settings))
@@ -200,7 +240,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_imgur),
                     description = stringResource(id = R.string.use_imgur_desc),
-                    icon = Icons.Default.Image,
+                    icon = Icons.Outlined.Image,
                     isChecked = useImgur
                 ) {
                     useImgur = !useImgur
@@ -212,7 +252,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     SettingItem(
                         title = stringResource(id = R.string.set_imgur_client_id),
                         description = stringResource(id = R.string.set_imgur_client_id_desc),
-                        icon = Icons.Default.Code
+                        icon = Icons.Outlined.Code
                     ) {
                         showImgurClientIdDialog = true
                     }
@@ -222,7 +262,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_low_res_icon),
                     description = stringResource(id = R.string.use_low_res_icon_desc),
-                    icon = Icons.Default.HighQuality,
+                    icon = Icons.Outlined.HighQuality,
                     isChecked = isLowResIconsEnabled,
                 ) {
                     isLowResIconsEnabled = !isLowResIconsEnabled
@@ -233,7 +273,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 SettingItem(
                     title = stringResource(id = R.string.delete_saved_icon_urls),
                     description = stringResource(id = R.string.delete_saved_icon_urls_desc),
-                    icon = Icons.Default.DeleteForever
+                    icon = Icons.Outlined.DeleteForever
                 ) {
                     Prefs.remove(Prefs.SAVED_IMAGES)
                     Prefs.remove(Prefs.SAVED_ARTWORK)
@@ -247,7 +287,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 confirmButton = {},
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Storage, contentDescription = null
+                        imageVector = Icons.Outlined.Storage, contentDescription = null
                     )
                 },
                 title = { Text(stringResource(R.string.select_directory)) },
@@ -288,7 +328,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 },
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Storage, contentDescription = null
+                        imageVector = Icons.Outlined.Storage, contentDescription = null
                     )
                 },
                 title = { Text(stringResource(R.string.enter_details)) },
@@ -341,9 +381,9 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     }
                     val icon =
                         if (activityTypeisExpanded) {
-                            Icons.Default.KeyboardArrowUp
+                            Icons.Outlined.KeyboardArrowUp
                         } else {
-                            Icons.Default.KeyboardArrowDown
+                            Icons.Outlined.KeyboardArrowDown
                         }
                     RpcField(
                         value = customActivityType,

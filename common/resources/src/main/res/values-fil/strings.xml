@@ -24,25 +24,34 @@
     <string name="login_with_discord">Mag-login gamit ang Discord</string>
     <string name="github_readme">Basahin mo Ako</string>
     <string name="github_readme_desc">Suriin ang GitHub repository</string>
-    <string name="github_latest_release">"Pinakabagong release "</string>
+    <string name="github_latest_release">&quot;Pinakabagong release &quot;</string>
     <string name="github_latest_release_desc">Maghanap ng bagong bersyon at changelog</string>
     <string name="github_issue">GitHub Issue</string>
-    <string name="github_issue_desc">Magsumite ng isyu para sa ulat ng bug o kahilingan sa tampok"</string>
+    <string name="github_issue_desc">Magsumite ng isyu para sa ulat ng bug o kahilingan sa tampok&quot;</string>
     <string name="credits">Mga kredito</string>
     <string name="credits_desc">Mga kredito sa mga ginamit na aklatan at mga nag-aambag</string>
     <string name="enable_artist_name">Paganahin ang Pangalan ng Artist</string>
     <string name="enable_album_name">Enable Album Name</string>
     <string name="show_app_icon">Ipakita ang Icon ng App</string>
     <string name="enable_timestamps">Paganahin ang mga Timestamp</string>
-    <string name="text_after_permission_denied">Mahalaga ang access sa storage para sa app na ito upang mag-imbak ng mga config sa mga pampublikong direktoryo. Mangyaring bigyan ang pahintulot.</string>
-    <string name="request_for_storage_access">Mahalaga ang access sa storage para sa app na ito upang mag-imbak ng mga config sa mga pampublikong direktoryo. Mangyaring bigyan ang pahintulot.</string>
+    <string name="text_after_permission_denied">Mahalaga ang access sa storage para sa app na ito
+        upang mag-imbak ng mga config sa mga pampublikong direktoryo. Mangyaring bigyan ang
+        pahintulot.</string>
+    <string name="request_for_storage_access">Mahalaga ang access sa storage para sa app na ito
+        upang mag-imbak ng mga config sa mga pampublikong direktoryo. Mangyaring bigyan ang
+        pahintulot.</string>
     <string name="grant_permission">Pinayagang pahintulot</string>
     <string name="use_low_res_icon">Gumamit ng Low Resolution Images</string>
-    <string name="use_low_res_icon_desc">Gumamit ng icon ng app na may mas mababang resolution para sa pagpapakita sa rpc (i-on ito kung nag-crash ang rpc). Ilalapat din ang setting na ito sa Apps Rpc.</string>
+    <string name="use_low_res_icon_desc">Gumamit ng icon ng app na may mas mababang resolution para
+        sa pagpapakita sa rpc (i-on ito kung nag-crash ang rpc). Ilalapat din ang setting na ito sa
+        Apps Rpc.</string>
     <string name="delete_saved_icon_urls">Tanggalin ang Naka-save na Mga Link ng Icon</string>
-    <string name="delete_saved_icon_urls_desc">Tanggalin ang mga url ng icon ng app na naka-save sa mga lokal na file (Gamitin lang ito sa mga bihirang kaso dahil ipapadala nitong muli ang lahat ng larawan sa mga discord server na kukuha ng mas maraming data)</string>
+    <string name="delete_saved_icon_urls_desc">Tanggalin ang mga url ng icon ng app na naka-save sa
+        mga lokal na file (Gamitin lang ito sa mga bihirang kaso dahil ipapadala nitong muli ang
+        lahat ng larawan sa mga discord server na kukuha ng mas maraming data)</string>
     <string name="app_crashed">Nag-crash ang App</string>
-    <string name="share_crash_logs_desc">Mangyaring ipadala ang Logs in Discord channel na may sumusunod na stacktrace :</string>
+    <string name="share_crash_logs_desc">Mangyaring ipadala ang Logs in Discord channel na may
+        sumusunod na stacktrace :</string>
     <string name="share_crash_logs">IBAHAGI ANG MGA LOG</string>
     <string name="welcome">Maligayang pagdating</string>
     <string name="features">Mga tampok</string>
@@ -54,7 +63,8 @@
     <string name="design_credits">Mga Kredito sa Disenyo</string>
     <string name="enable_appsRpc">I-enable ang App Detection</string>
     <string name="usage_access">Kinakailangan ang Access sa Paggamit</string>
-    <string name="usage_access_desc">Kailangan ang Access sa Paggamit para makuha ng app ang kasalukuyang tumatakbong app</string>
+    <string name="usage_access_desc">Kailangan ang Access sa Paggamit para makuha ng app ang
+        kasalukuyang tumatakbong app</string>
     <string name="enable_mediaRpc">Paganahin ang Media Rpc</string>
     <string name="permission_required">Kinakailangan ang Pahintulot</string>
     <string name="enable_customRpc">Paganahin ang Custom na Rpc</string>
@@ -62,9 +72,11 @@
     <string name="privacy_policy">Patakaran sa Privacy</string>
     <string name="privacy_policy_desc">Suriin ang Patakaran sa Privacy</string>
     <string name="enable_console_rpc">Paganahin ang Console Rpc</string>
-    <string name="rpc_settings_button_configs">Configuration ng button para sa Media at AppDetection Rpc</string>
+    <string name="rpc_settings_button_configs">Configuration ng button para sa Media at AppDetection
+        Rpc</string>
     <string name="use_custom_buttons">Gumamit ng Mga Custom na Pindutan</string>
-    <string name="use_custom_buttons_desc">Gumamit ng mga Predefined na button para ipakita sa Media at AppDetection rpc</string>
+    <string name="use_custom_buttons_desc">Gumamit ng mga Predefined na button para ipakita sa Media
+        at AppDetection rpc</string>
     <string name="follow_system">Sundin ang System</string>
     <string name="advance_settings">Mga Advanced na Setting</string>
     <string name="amoled">Amoled na Tema</string>
@@ -78,24 +90,29 @@
     <string name="android_off">Off</string>
     <string name="setup">Setup</string>
     <string name="user_data_policy">Ang app na ito ay hindi nangongolekta ng anumang data ng user</string>
-    <string name="setup_desc">Bago magpatuloy, inirerekomendang gawin ang mga kinakailangang pagkilos upang matiyak na gumagana ang lahat ng feature ng app.</string>
+    <string name="setup_desc">Bago magpatuloy, inirerekomendang gawin ang mga kinakailangang
+        pagkilos upang matiyak na gumagana ang lahat ng feature ng app.</string>
     <string name="permission_granted">ipinagkaloob</string>
     <string name="permission_not_granted">Hindi ipinagkaloob, I-click upang Payagan</string>
     <string name="activity_large_text">Aktibidad Malaking Teksto</string>
     <string name="activity_small_text">Aktibidad Maliit Teksto</string>
     <string name="contributors">Mga kontribyutor</string>
     <string name="stream_url">Stream Url</string>
-    <string name="stream_url_info">Tanging https://twitch.tv/ at https://youtube.com/ url ang gagana.</string>
+    <string name="stream_url_info">Tanging https://twitch.tv/ at https://youtube.com/ url ang
+        gagana.</string>
     <string name="activity_button_max_character">Ang maximum na limitasyon ng character ay 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom Rpc Fields</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom rpc from the last run rpc</string>
+    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom Rpc
+        Fields</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom rpc
+        from the last run rpc</string>
     <string name="clear_all_fields">Clear All Fields</string>
     <string name="share_config">Share Config</string>
     <string name="change_log">Change Log</string>
     <string name="update">Update</string>
     <string name="configs_directory">Configs Directory</string>
     <string name="custom_activity_type">Custom Activity Type</string>
-    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media and experimental rpc only</string>
+    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
+        and experimental rpc only</string>
     <string name="custom_activity_status">Custom Activity Status</string>
     <string name="custom_activity_status_desc">Overrides the default activity status</string>
     <string name="search">Search</string>
@@ -104,15 +121,20 @@
     <string name="hide_on_pause">Hide RPC on Pause</string>
     <string name="idling_notification">Idling…</string>
     <string name="main_appDetection">App Detection</string>
-    <string name="main_appDetection_details">Kizzy allows you to share your current activity on Discord by detecting what app you\'re using on your device.</string>
+    <string name="main_appDetection_details">Kizzy allows you to share your current activity on
+        Discord by detecting what app you&apos;re using on your device.</string>
     <string name="main_mediaRpc">Media RPC</string>
-    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on Discord, such as the song or video you\'re currently listening to or watching.</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
     <string name="main_customRpc">Custom RPC</string>
     <string name="main_consoleRpc">Console RPC</string>
-    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set your presence on Discord.</string>
+    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
+        your presence on Discord.</string>
     <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that constantly switches between Apps RPC and Media RPC.</string>
-    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable rich presence for Discord.</string>
+    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
+        rich presence for Discord.</string>
     <string name="main_comingSoon">Coming Soon</string>
     <string name="exit">Exit</string>
     <string name="logs">Logs</string>
@@ -121,7 +143,8 @@
     <string name="go_to_profile">Go to Profile</string>
     <string name="version">Version</string>
     <string name="try_again">Retry</string>
-    <string name="request_for_notification_access">Notification Access is needed for app to extract media information.</string>
+    <string name="request_for_notification_access">Notification Access is needed for app to extract
+        media information.</string>
     <string name="update_check_for_update">Checking for update…</string>
     <string name="update_no_updates_available">No updates available</string>
     <string name="compact_mode">Compact Mode</string>
@@ -161,7 +184,7 @@
     <string name="upload_image">Upload Image</string>
     <string name="save">Save</string>
     <string name="set_timestamps">Set Timestamps</string>
-    <string name="saved_config_toast">Saved \"%1$s\" successfully</string>
+    <string name="saved_config_toast">Saved &quot;%1$s&quot; successfully</string>
     <string name="error_saving_config_toast">Error saving config</string>
     <string name="config_name">Config name</string>
     <string name="delete">Delete</string>
@@ -201,8 +224,10 @@
     <string name="application_id">Application ID</string>
     <string name="custom_application_id">Custom Activity Application ID</string>
     <string name="custom_application_id_desc">Overrides the default Discord Application ID</string>
-    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI. Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">Use placeholders like {{app_name}}, {{media_title}}, {{media_artist}}, etc. Empty fields will use default behavior or be omitted.</string>
+    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
+        Please use a VPN/DPI to proceed.</string>
+    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;,
+        &apos;{{&apos;media_artist}}&apos;&apos;, etc. Empty fields will use default behavior or be omitted."</string>
     <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
@@ -216,6 +241,110 @@
     <string name="completion_media_author">Main Author</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try setting your own Client ID</string>
+    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
+        setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
+
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="timestamp_mode">Timestamp Mode</string>
+    <string name="start_timestamp_ms">Start Timestamp (in milliseconds)</string>
+    <string name="end_timestamp_ms">End Timestamp (in milliseconds)</string>
+    <string name="completion_media_album">Album Name</string>
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="completion_media_duration">Track Duration</string>
+    <string name="completion_media_writer">Writer</string>
+    <string name="completion_media_composer">Composer</string>
+    <string name="completion_battery">Battery Level</string>
+    <string name="completion_playback">Playback State</string>
+    <string name="use_youtube_button">Add Media Button</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="link_to_artist_channel">Link to Artist Channel</string>
+    <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
+    <string name="experimental_rpc_title_toggle">Title</string>
+    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
+    <string name="title_source_song">Song Name</string>
+    <string name="title_source_artist">Artist</string>
+    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
+    <string name="app_selection">App Selection</string>
+    <string name="platform_none_desktop">None (Desktop)</string>
+    <string name="platform_desktop">Desktop</string>
+    <string name="platform_web">Web</string>
+    <string name="platform_android">Android</string>
+    <string name="platform_ios">iOS</string>
+    <string name="platform_xbox">Xbox</string>
+    <string name="platform_playstation">Playstation</string>
+    <string name="platform_vr">VR</string>
+    <string name="timestamp_mode_default">Media / App (default)</string>
+    <string name="timestamp_mode_current">Same as current time of day</string>
+    <string name="timestamp_mode_custom">Custom</string>
+    <string name="update_installing">Installing…</string>
+    <string name="update_download_error">Download failed. Try again.</string>
+    <string name="locale_en">English</string>
+    <string name="locale_ru">Русский</string>
+    <string name="locale_ja">日本語</string>
+    <string name="locale_ko">한국어</string>
+    <string name="locale_zh">中文（简体）</string>
+    <string name="locale_zh_TW">中文（繁體）</string>
+    <string name="locale_es">Español</string>
+    <string name="locale_fr">Français</string>
+    <string name="locale_de">Deutsch</string>
+    <string name="locale_it">Italiano</string>
+    <string name="locale_pt">Português</string>
+    <string name="locale_tr">Türkçe</string>
+    <string name="locale_nl">Nederlands</string>
+    <string name="locale_pl">Polski</string>
+    <string name="locale_in">Bahasa Indonesia</string>
+    <string name="locale_ar">العربية</string>
+    <string name="locale_he">עברית</string>
+    <string name="locale_bg">Български</string>
+    <string name="locale_cs">Čeština</string>
+    <string name="locale_da">Dansk</string>
+    <string name="locale_el">Ελληνικά</string>
+    <string name="locale_et">Eesti</string>
+    <string name="locale_fi">Suomi</string>
+    <string name="locale_gl">Galego</string>
+    <string name="locale_hu">Magyar</string>
+    <string name="locale_is">Íslenska</string>
+    <string name="locale_lt">Lietuvių</string>
+    <string name="locale_lv">Latviešu</string>
+    <string name="locale_mk">Македонски</string>
+    <string name="locale_ms">Bahasa Melayu</string>
+    <string name="locale_nb">Norsk bokmål</string>
+    <string name="locale_pa">ਪੰਜਾਬੀ</string>
+    <string name="locale_ro">Română</string>
+    <string name="locale_sk">Slovenčina</string>
+    <string name="locale_sl">Slovenščina</string>
+    <string name="locale_sr">Српски</string>
+    <string name="locale_sv">Svenska</string>
+    <string name="locale_uk">Українська</string>
+    <string name="locale_bn">বাংলা</string>
+    <string name="locale_gu">ગુજરાતી</string>
+    <string name="locale_kn">ಕನ್ನಡ</string>
+    <string name="locale_ml">മലയാളം</string>
+    <string name="locale_mr">मराठी</string>
+    <string name="locale_ne">नेपाली</string>
+    <string name="locale_or">ଓଡ଼ିଆ</string>
+    <string name="locale_si">සිංහල</string>
+    <string name="locale_ta">தமிழ்</string>
+    <string name="locale_te">తెలుగు</string>
+    <string name="locale_ur">اردو</string>
+    <string name="locale_af">Afrikaans</string>
+    <string name="locale_sq">Shqip</string>
+    <string name="locale_hy">Հայերեն</string>
+    <string name="locale_az">Azərbaycanca</string>
+    <string name="locale_eu">Euskara</string>
+    <string name="locale_be">Беларуская</string>
+    <string name="locale_ka">ქართული</string>
+    <string name="locale_kk">Қазақша</string>
+    <string name="locale_km">ខ្មែរ</string>
+    <string name="locale_lo">ພາສາລາວ</string>
+    <string name="locale_mn">Монгол</string>
+    <string name="locale_ps">پښتو</string>
+    <string name="locale_sa">संस्कृतम्</string>
+    <string name="locale_bo">བོད་སྐད།</string>
+    <string name="locale_uz">Oʻzbekcha</string>
+    <string name="locale_cy">Cymraeg</string>
+    <string name="locale_zu">isiZulu</string>
 </resources>

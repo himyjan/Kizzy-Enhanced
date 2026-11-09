@@ -26,8 +26,6 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +51,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.Subtitle
@@ -81,20 +79,15 @@ fun SettingsDrawer(
         Column(
             modifier = Modifier.padding(15.dp)
         ) {
-            BadgedBox(
-                badge = {
-                    Badge(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.offset(8.dp, (-8).dp)
-                    ) {
-                        Text(text = "Enhanced")
-                    }
-                },
+            Row(
                 modifier = Modifier.padding(top = 8.dp, bottom = 10.dp)
             ) {
                 Text(
                     text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Text(
+                    text = "Enhanced",
                     style = MaterialTheme.typography.titleSmall
                 )
             }
@@ -102,7 +95,7 @@ fun SettingsDrawer(
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 modifier = Modifier.weight(8f)
             ) {
-                item {
+                item(key = "display") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.display),
                         icon = Icons.Outlined.Palette
@@ -110,7 +103,7 @@ fun SettingsDrawer(
                         navigateToStyleAndAppearance()
                     }
                 }
-                item {
+                item(key = "language") {
                     SettingsItemCard(
                         title = stringResource(R.string.language),
                         icon = Icons.Outlined.Language,
@@ -118,7 +111,7 @@ fun SettingsDrawer(
                         navigateToLanguages()
                     }
                 }
-                item {
+                item(key = "logs") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.logs),
                         icon = Icons.Outlined.BugReport
@@ -126,7 +119,7 @@ fun SettingsDrawer(
                         navigateToLogsScreen()
                     }
                 }
-                item {
+                item(key = "settings") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.settings),
                         icon = Icons.Outlined.Settings
@@ -134,16 +127,16 @@ fun SettingsDrawer(
                         navigateToRpcSettings()
                     }
                 }
-                item {
+                item(key = "divider") {
                     HorizontalDivider()
                 }
-                item {
+                item(key = "drawer_subtitle_help") {
                     Subtitle(
                         text = stringResource(id = R.string.drawer_subtitle_help),
                         modifier = Modifier
                     )
                 }
-                item {
+                item(key = "faq") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.drawer_faq),
                         icon = Icons.AutoMirrored.Rounded.HelpOutline
@@ -151,7 +144,7 @@ fun SettingsDrawer(
                         uriHandler.openUri("https://kizzy.vercel.app/#FAQ")
                     }
                 }
-                item {
+                item(key = "about") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.about),
                         icon = Icons.Outlined.Info
@@ -159,7 +152,7 @@ fun SettingsDrawer(
                         navigateToAbout()
                     }
                 }
-                item {
+                item(key = "qs_tile") {
                     RequestQsTile(
                         visible = showKizzyQuickieRequestItem,
                         onRequestAddTile = onRequestAddTile

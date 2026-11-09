@@ -36,7 +36,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun UserScreen(
     state: UserState,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onLogout: () -> Unit,
+    onNavigateToRpcPreview: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -66,7 +68,13 @@ fun UserScreen(
                             .align(Alignment.TopCenter),
                         error = (state.error)
                     )
-                    ProfileCard(state.user, rpcConfig = state.rpcConfig)
+                    ProfileCard(
+                        state.user,
+                        rpcConfig = state.rpcConfig,
+                        onAvatarClick = {
+                            onNavigateToRpcPreview()
+                        }
+                    )
                 }
 
                 UserState.Loading -> {
@@ -76,7 +84,13 @@ fun UserScreen(
                 }
 
                 is UserState.LoadingCompleted -> {
-                    ProfileCard(state.user, rpcConfig = state.rpcConfig)
+                    ProfileCard(
+                        state.user,
+                        rpcConfig = state.rpcConfig,
+                        onAvatarClick = {
+                            onNavigateToRpcPreview()
+                        }
+                    )
                     Logout(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -91,13 +105,8 @@ fun UserScreen(
                                 withDismissAction = true
                             ).run {
                                 when (this) {
-                                    SnackbarResult.ActionPerformed -> try {
-                                        val runtime = Runtime.getRuntime()
-                                        // running shell command to clear data
-                                        // TODO replace with deleting directories and restarting the app to have multiple user accounts
-                                        runtime.exec("pm clear com.my.kizzy")
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
+                                    SnackbarResult.ActionPerformed -> {
+                                        onLogout()
                                     }
 
                                     SnackbarResult.Dismissed -> Unit
@@ -135,6 +144,7 @@ fun UserScreenPreview() {
     UserScreen(
         state = UserState.Loading,
         onBackPressed = {},
+        onLogout = {}
     )
 }
 @Preview
@@ -144,9 +154,23 @@ fun UserScreenPreview2() {
         state = UserState.Error(
             error = "No Internet Connection",
             user = fakeUser,
-            rpcConfig = RpcConfig(name = "Kizzy", details = "Using Kizzy")
+            rpcConfig = RpcConfig(
+                name = "Lo-fi Beats",
+                details = "Chillhop Music",
+                state = "Jazzhop & Chillhop - September 2024",
+                largeImg = "attachments/123456789/album_art.png",
+                smallImg = "attachments/123456789/artist_icon.png",
+                timestampsStart = "${System.currentTimeMillis() - 30000}",
+                timestampsStop = "${System.currentTimeMillis() + 180000}",
+                type = "2",
+                button1 = "Listen on Spotify",
+                button1link = "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
+                button2 = "View Artist",
+                button2link = "https://open.spotify.com/artist/7dGJo4pcD2V6oG8kP0tJRR"
+            )
         ),
-        onBackPressed = {}
+        onBackPressed = {},
+        onLogout = {}
     )
 }
 @Preview
@@ -157,6 +181,7 @@ fun UserScreenPreview3() {
             user = fakeUser,
             rpcConfig = RpcConfig(name = "Kizzy", details = "Using Kizzy")
         ),
-        onBackPressed = {}
+        onBackPressed = {},
+        onLogout = {}
     )
 }
