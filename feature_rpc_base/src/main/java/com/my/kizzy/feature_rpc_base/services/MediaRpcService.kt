@@ -335,6 +335,7 @@ class MediaRpcService : Service() {
                 end = playingMedia.time?.end
             ) else null,
             packageName = playingMedia.packageName,
+            playbackState = playingMedia.playbackState
         )
 
         if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
