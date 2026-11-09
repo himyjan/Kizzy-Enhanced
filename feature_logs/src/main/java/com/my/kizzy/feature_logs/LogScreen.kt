@@ -145,7 +145,6 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
         ) {
             items(
                 items = visibleLogs,
-                key = { it.createdAt },
                 contentType = { if (showCompat) "compat" else "card" }
             ) { logEvent ->
                 if (showCompat) {
