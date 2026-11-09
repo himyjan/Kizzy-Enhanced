@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Numm vun der Aktivitéit</string>
+    <string name="activity_details">Detailer vun der Aktivitéit</string>
+    <string name="activity_state">Zoustand vun der Aktivitéit</string>
+    <string name="load_config">Aus Fichieren lueden</string>
+    <string name="save_config">Konfiguratioun späicheren</string>
+    <string name="delete_configs">Konfiguratioun läschen</string>
+    <string name="preview_rpc">RPC Virschau</string>
+    <string name="select_a_config">Konfiguratioun auswielen</string>
+    <string name="login_with_discord">Mat Discord umellen</string>
+    <string name="github_readme">LIESMICH (README)</string>
+    <string name="credits">Credits</string>
+    <string name="welcome">Wëllkomm</string>
+    <string name="features">Funktiounen</string>
+    <string name="account">Konto</string>
+    <string name="display">Affichage</string>
+    <string name="about">Iwwer</string>
+    <string name="settings">Astellungen</string>
+    <string name="language">Sprooch</string>
+    <string name="dark_theme">Däischter Thema</string>
+    <string name="privacy_policy">Dateschutz</string>
+    <string name="cancel">Ofbriechen</string>
+    <string name="confirm">Bestätegen</string>
+    <string name="save">Späicheren</string>
+    <string name="delete">Läschen</string>
+    <string name="search">Sichen</string>
+    <string name="clear">Läschen</string>
+    <string name="exit">Verloossen</string>
+    <string name="logs">Logbicher (Logs)</string>
+    <string name="version">Versioun</string>
+    <string name="try_again">Nach eng Kéier probéieren</string>
+    <string name="yes">Jo</string>
+    <string name="logout">Ofmellen</string>
+    <string name="skip">Iwwersprangen</string>
+    <string name="stop">Stoppen</string>
+    <string name="restart">Neistart</string>
+    <string name="no_internet_connection">Keng Internetverbindung</string>
+    <string name="unknown_error">En onerwaarte Fehler ass opgetrueden</string>
+    <string name="copied_to_clipboard">An de Tëschenträger kopiert</string>
+</resources>

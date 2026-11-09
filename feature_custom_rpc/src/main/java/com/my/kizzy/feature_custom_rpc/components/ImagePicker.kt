@@ -39,9 +39,10 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.my.kizzy.ui.components.BrowseFilesButton
 import com.my.kizzy.resources.R
+import androidx.compose.material.icons.outlined.BrokenImage
 
 @Composable
 fun ImagePicker(
@@ -115,14 +116,12 @@ fun UploadDialog(
                     onBrowse()
                 }
                 if (image.value != null)
-                    runCatching{
-                        AsyncImage(
-                            model = image.value,
-                            contentDescription = "",
-                            modifier = Modifier.size(200.dp),
-                            error = rememberVectorPainter(Icons.Default.BrokenImage)
-                        )
-                    }
+                    AsyncImage(
+                        model = image.value,
+                        contentDescription = "",
+                        modifier = Modifier.size(200.dp),
+                        error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                    )
             }
         }
     )

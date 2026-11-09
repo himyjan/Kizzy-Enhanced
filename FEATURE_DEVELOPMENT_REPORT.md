@@ -965,6 +965,9 @@ Added a `normalizeStringResources` Gradle task to `common/resources/build.gradle
 - Only writes back to files when changes are detected
 - Hooked into `preBuild` via `dependsOn("normalizeStringResources")`, so it runs automatically before any compilation
 
+- `'{{'   ->  &apos;{{&apos;`
+- `'{{'app_name}}'', '{{'media_title}}''  ->  &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos;`
+
 ### Result
 
 - Cleaned illegal backslash escapes from all ~72 language `strings.xml` files (579 lines changed)
@@ -1065,7 +1068,6 @@ Added a "Locate stable AAPT2 binary" step to all three workflows that:
 - Works across `ubuntu-latest` runner images
 
 ---
-
 
 ## 38. Bug Fix: Emulator Startup Crash (Try-Catch Initialization)
 
@@ -1408,6 +1410,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 ### Fixes Applied
 
 **`data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`**
+
 - Added presence update **deduplication + throttling** (1.5s minimum interval via `companion object const val PRESENCE_MIN_INTERVAL_MS`)
 - Added `presenceHash()` comparing `name`, `details`, `state`, `timestamps.start`, `timestamps.end`
 - Skips `sendActivity()` when presence data unchanged within the interval — prevents gateway flooding from `SESSIONS_REPLACE` bursts
@@ -1416,6 +1419,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 - Renamed underscore parameters to camelCase: `activity_name` → `activityName`, `large_image` → `largeImage`, `large_text` → `largeText`, `small_image` → `smallImage`, `small_text` → `smallText`, `start_timestamps` → `startTimestamps`, `stop_timestamps` → `stopTimestamps`, `button2_text` → `button2Text`
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+
 - `setStartTimestamps()` / `setStopTimestamps()` now use `if (enableTimestamps && !isPaused)` — clears Discord timestamps when paused
 - `kizzyRPC.updateRPC(playingMedia, if (isPaused) null else enableTimestamps)` — passes `null` when paused for media-buttons path
 - Notification text now uses `playingMedia.details` (track title) instead of `playingMedia.state` (artist info)
@@ -1423,11 +1427,13 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 - Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+
 - Added `delay(500)` before `getCurrentPlayingMediaAll()` in `activeSessionsListener()` — gives media metadata time to populate on first song
 - `finalTimestamps` now returns `null` when `playbackState != STATE_PLAYING` — clears Discord timeline on pause/stop
 - `finalState` now uses `richMediaInfo?.state` (combined artist + channels) instead of `richMediaInfo?.artist`
 
 **`data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentlyPlayingMedia.kt`**
+
 - **Image swap fix:** `largeImage = coverArt`, `smallImage = appIcon` (was reversed)
 - `smallText` now shows `appName` when app icon is enabled, otherwise `null`
 - Added `if (title == null)` guard — skips sessions without title metadata
@@ -1438,16 +1444,20 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 - Robust timestamp computation with `elapsedRealtime` extrapolation and playback speed handling; handles `duration == 0` (Shorts/live streams)
 
 **`data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentPlayingMediaAll.kt`**
+
 - Same image swap fix, title guard, artwork URI fallback, multi-artist/channel state, and robust timestamps as `GetCurrentlyPlayingMedia.kt`
 
 **`data/src/main/java/com/my/kizzy/data/get_current_data/media/MetadataResolver.kt`**
+
 - `getCoverArt()` now falls back to `METADATA_KEY_DISPLAY_ICON` (YouTube thumbnails)
 - Added `getArtworkUri()` — checks `ALBUM_ART_URI`, `ART_URI`, `DISPLAY_ICON_URI`
 
 **`data/src/main/java/com/my/kizzy/data/get_current_data/media/RichMediaMetadata.kt`**
+
 - Added `state: String?` field carrying combined artist + channel info
 
 **`data/src/main/java/com/my/kizzy/data/rpc/RpcImage.kt`**
+
 - Uploads run on `uploadScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)` — cancellation-immune; heartbeat cancellation no longer kills uploads mid-flight
 - Added `inFlightArtUploads` / `inFlightIconUploads` de-dup maps — identical resolve bursts share one upload (fixes 4× repeated 84KB POSTs)
 - Added 12h TTL cache (`freshId`/`anyId`/`stamp`/`prunedCache`) — failed uploads fall back to last good id instead of blanking art
@@ -1455,30 +1465,35 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 - `BitmapImage` with null bitmap falls back to last cached id instead of returning null
 
 **`data/src/main/java/com/my/kizzy/data/work/HiltWorkers.kt`**
+
 - Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
 
 **`feature_media_rpc/src/main/java/com/my/kizzy/feature_media_rpc/MediaRpc.kt`**
+
 - Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/NotificationListener.kt`**
+
 - Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
 
 **`data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentPlayingMedia.kt`**
+
 - Deleted (duplicate class `GetCurrentPlayingMedia` — same name as `GetCurrentlyPlayingMedia.kt` in same package)
 
 **`feature_logs/src/main/java/com/my/kizzy/feature_logs/LogScreen.kt`**
+
 - FloatingActionButton "Copy all logs" now copies `viewModel.logs` (all logs) instead of `visibleLogs` (search-filtered subset)
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Discord gateway stability | `Connection closed` / `INVALID_SESSION` every few seconds | Stable connection; deduplicated presence updates |
-| Timeline on pause | Progress bar kept counting up | Progress bar clears on pause |
-| First song (Experimental RPC) | Never shown until switching tracks | Shows immediately (500ms metadata delay) |
-| LX Music cover art | App icon = large, cover art = small (swapped) | Cover art = large, app icon = small |
-| YouTube cover art | Missing (Kizzy default logo) | `DISPLAY_ICON` / `ART_URI` / notification fallback |
-| Log copy-all | Copied filtered subset | Copies all unfiltered logs |
+| Issue                         | Before                                                    | After                                              |
+| ----------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| Discord gateway stability     | `Connection closed` / `INVALID_SESSION` every few seconds | Stable connection; deduplicated presence updates   |
+| Timeline on pause             | Progress bar kept counting up                             | Progress bar clears on pause                       |
+| First song (Experimental RPC) | Never shown until switching tracks                        | Shows immediately (500ms metadata delay)           |
+| LX Music cover art            | App icon = large, cover art = small (swapped)             | Cover art = large, app icon = small                |
+| YouTube cover art             | Missing (Kizzy default logo)                              | `DISPLAY_ICON` / `ART_URI` / notification fallback |
+| Log copy-all                  | Copied filtered subset                                    | Copies all unfiltered logs                         |
 
 ---
 
@@ -1495,24 +1510,26 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 ### Fixes Applied
 
 **`data/src/main/java/com/my/kizzy/data/rpc/RpcImage.kt`**
+
 - Added `retryUpload<T>()` suspend function with **exponential backoff** (1s → 2s → 4s, max 3 attempts)
 - Applied retry to both `ApplicationIcon` and `BitmapImage` upload paths
 - **Structured concurrency safety:** `CancellationException` is re-thrown (not swallowed) so SupervisorJob cancellation propagates correctly when songs change rapidly
 - **Structured logging:** Uses `android.util.Log.w(TAG, message, exception)` with full stack trace preserved in Logcat
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+
 - `onTaskRemoved()` now schedules `RpcRecoveryHiltWorker` via WorkManager
 - Added `super.onTaskRemoved(intent)` for proper Android Service lifecycle cleanup
 - Changed work policy to `ExistingWorkPolicy.REPLACE` — ensures the latest swiped-away event's recovery command always takes effect, preventing rapid double-swipe edge cases where the first Worker might fail before the second executes
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
+| Issue                    | Before                                    | After                                               |
+| ------------------------ | ----------------------------------------- | --------------------------------------------------- |
 | Upload on network switch | Single POST attempt; blank art on failure | 3-attempt exponential backoff; self-healing uploads |
-| App swiped from Recents | RPC stopped permanently | WorkManager schedules background recovery |
-| Service lifecycle | Missing `super.onTaskRemoved()` call | Proper lifecycle cleanup |
-| Work policy | `KEEP` (risk of discarded retries) | `REPLACE` (latest event wins) |
+| App swiped from Recents  | RPC stopped permanently                   | WorkManager schedules background recovery           |
+| Service lifecycle        | Missing `super.onTaskRemoved()` call      | Proper lifecycle cleanup                            |
+| Work policy              | `KEEP` (risk of discarded retries)        | `REPLACE` (latest event wins)                       |
 
 ---
 
@@ -1529,6 +1546,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 ### Fixes Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+
 - **`notificationBuilder` lazy builder** now includes:
   - `setContentIntent(appPendingIntent)` — tapping the notification opens the main app via `PendingIntent.getActivity()` with `FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT`
   - Restart action button — sends `ACTION_RESTART_SERVICE` to the service
@@ -1537,10 +1555,10 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
+| Issue                | Before                                                     | After                                                      |
+| -------------------- | ---------------------------------------------------------- | ---------------------------------------------------------- |
 | Notification buttons | Disappeared on track change (only in `onCreate()` builder) | Always present in `notificationBuilder` (lazy, built once) |
-| Notification tap | No action (nothing happened) | Opens main app via `setContentIntent()` |
+| Notification tap     | No action (nothing happened)                               | Opens main app via `setContentIntent()`                    |
 
 ---
 
@@ -1557,6 +1575,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 ### Fixes Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+
 - Changed `finalName` from `"Kizzy"` to `null`
 - Changed `finalDetails` from `"Using Kizzy RPC"` to `null`
 - Changed `finalState` from `"Idle"` to `null`
@@ -1564,10 +1583,10 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Discord idle presence | Showed "Kizzy - Using Kizzy RPC - Idle" | Shows nothing (empty fields) |
-| No media context | Hardcoded placeholder text | All fields null, Discord displays empty activity |
+| Issue                 | Before                                  | After                                            |
+| --------------------- | --------------------------------------- | ------------------------------------------------ |
+| Discord idle presence | Showed "Kizzy - Using Kizzy RPC - Idle" | Shows nothing (empty fields)                     |
+| No media context      | Hardcoded placeholder text              | All fields null, Discord displays empty activity |
 
 ---
 
@@ -1584,20 +1603,22 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 ### Fixes Applied
 
 **`data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`**
+
 - `connectToWebSocket()` now checks `discordWebSocket.isWebSocketConnected()` before connecting — skips if already connected
 - Added early return when token is invalid (was missing `return` statement)
 
 **`gateway/src/main/java/kizzy/gateway/DiscordWebSocketImpl.kt`**
+
 - `connect()` now closes existing websocket before creating a new one — prevents orphaned connections
 - Uses `CloseReason(1000, "Reconnecting")` for clean connection shutdown
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
+| Issue                      | Before                                                 | After                                          |
+| -------------------------- | ------------------------------------------------------ | ---------------------------------------------- |
 | Discord gateway connection | Multiple concurrent WebSocket connections, 4003 errors | Single connection, proper cleanup on reconnect |
-| Connection state | No check before connecting | Skips connect if already connected |
-| WebSocket cleanup | Old websocket left open | Explicitly closed before new connection |
+| Connection state           | No check before connecting                             | Skips connect if already connected             |
+| WebSocket cleanup          | Old websocket left open                                | Explicitly closed before new connection        |
 
 ---
 
@@ -1631,6 +1652,7 @@ in `DiscordWebSocketImpl.sendActivity()`. The serializer's internal iterator thr
 `NoSuchElementException` when the list was structurally modified during iteration.
 
 The crash stack trace showed the failure cascading through:
+
 1. `KizzyRPC.updateRPC()` → `sendActivity()`
 2. `DiscordWebSocketImpl.sendActivity()` → `Json.encodeToString()`
 3. `kotlinx.serialization.json.StreamingJsonEncoder.encodeSerializableValue()`
@@ -1668,17 +1690,17 @@ Media3 1.11 introduces significant new features for media playback apps, but **w
 
 ### Media3 1.11 Key Features (for reference)
 
-| Feature | Description | Relevance to Kizzy |
-|---------|-------------|-------------------|
-| Player Compose slots | `topControls`, `centerControls`, `bottomControls`, `errorOverlay` | N/A — no media player UI |
-| PlayerPool | Automatic player recycling for sliding-window feeds | N/A |
-| MiniController | Composable showing title, artist, artwork, progress | N/A |
-| Reactive state holders | `rememberCurrentMediaItemState`, `rememberPlaylistState`, `rememberErrorState` | N/A |
-| Cast integration | `CastParams`, `MediaRouteButton` with SystemUI Output Switcher | N/A |
-| HAGC dynamic HDR (API 37+) | Progressive HDR metadata support | N/A |
-| Ktor HTTP client extension | `KtorDataSource` — coroutine-friendly networking | ⚠️ Potential future consideration |
-| OggMuxer / WavMuxer | Audio muxing utilities | N/A |
-| Chapter extraction | MP4/Matroska chapter metadata | N/A |
+| Feature                    | Description                                                                    | Relevance to Kizzy                |
+| -------------------------- | ------------------------------------------------------------------------------ | --------------------------------- |
+| Player Compose slots       | `topControls`, `centerControls`, `bottomControls`, `errorOverlay`              | N/A — no media player UI          |
+| PlayerPool                 | Automatic player recycling for sliding-window feeds                            | N/A                               |
+| MiniController             | Composable showing title, artist, artwork, progress                            | N/A                               |
+| Reactive state holders     | `rememberCurrentMediaItemState`, `rememberPlaylistState`, `rememberErrorState` | N/A                               |
+| Cast integration           | `CastParams`, `MediaRouteButton` with SystemUI Output Switcher                 | N/A                               |
+| HAGC dynamic HDR (API 37+) | Progressive HDR metadata support                                               | N/A                               |
+| Ktor HTTP client extension | `KtorDataSource` — coroutine-friendly networking                               | ⚠️ Potential future consideration |
+| OggMuxer / WavMuxer        | Audio muxing utilities                                                         | N/A                               |
+| Chapter extraction         | MP4/Matroska chapter metadata                                                  | N/A                               |
 
 ### Behavioral Change
 
@@ -1700,24 +1722,24 @@ This article covers Android 16 QPR3 connected display support, where phones and 
 
 ### Key Features & APIs
 
-| Feature | Description | Relevance to Kizzy |
-|---------|-------------|-------------------|
+| Feature                             | Description                                                         | Relevance to Kizzy                             |
+| ----------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------- |
 | Connected Display Support (API 37+) | Phones/foldables connect to external monitors for desktop windowing | ⚠️ Kizzy should adapt to desktop-sized windows |
-| Jetpack WindowManager 1.5.0 | V2 breakpoints: Large (1200dp), Extra-large (≥1600dp) | ✅ Already implemented in AdaptiveLayout.kt |
-| Jetpack Navigation 3 Scenes | Multi-pane layouts via Scenes + SceneStrategies | ⚠️ Could replace manual TwoPaneLayout |
-| Compose Material 3 Adaptive 1.2+ | Large/Extra-large width size class support | ✅ Already implemented |
-| Desktop input compatibility | Mouse, keyboard, trackpad support | ⚠️ Should test desktop interactions |
+| Jetpack WindowManager 1.5.0         | V2 breakpoints: Large (1200dp), Extra-large (≥1600dp)               | ✅ Already implemented in AdaptiveLayout.kt    |
+| Jetpack Navigation 3 Scenes         | Multi-pane layouts via Scenes + SceneStrategies                     | ⚠️ Could replace manual TwoPaneLayout          |
+| Compose Material 3 Adaptive 1.2+    | Large/Extra-large width size class support                          | ✅ Already implemented                         |
+| Desktop input compatibility         | Mouse, keyboard, trackpad support                                   | ⚠️ Should test desktop interactions            |
 
 ### Connection to Kizzy Adaptive UI
 
 The adaptive UI components in `common/components/src/main/java/com/my/kizzy/ui/components/adaptive/AdaptiveLayout.kt` already support the breakpoints discussed:
 
-| Article Concept | Kizzy Implementation |
-|-----------------|---------------------|
+| Article Concept                                       | Kizzy Implementation                                                           |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------ |
 | Large (≥1200dp) and Extra-large (≥1600dp) breakpoints | `Breakpoints.LARGE_WIDTH_DP = 1200`, `Breakpoints.EXTRA_LARGE_WIDTH_DP = 1600` |
-| WindowWidthSizeClass COMPACT/MEDIUM/EXPANDED | Used throughout AdaptiveLayout.kt |
-| Multi-pane layouts for large screens | `TwoPaneLayout`, `AdaptiveRow` |
-| Breakpoint-based padding | `responsivePadding()` returns 16dp/24dp/32dp based on size class |
+| WindowWidthSizeClass COMPACT/MEDIUM/EXPANDED          | Used throughout AdaptiveLayout.kt                                              |
+| Multi-pane layouts for large screens                  | `TwoPaneLayout`, `AdaptiveRow`                                                 |
+| Breakpoint-based padding                              | `responsivePadding()` returns 16dp/24dp/32dp based on size class               |
 
 ### Best Practices Applied
 
@@ -1737,24 +1759,24 @@ Android 17 (API 37) removes the developer opt-out for orientation and resizabili
 
 ### Key Requirements for Large Screens (`sw > 600dp`)
 
-| Requirement | Description | Kizzy Status |
-|-------------|-------------|--------------|
-| No portrait/landscape lock | `screenOrientation` restrictions ignored on large screens | ✅ Already adaptive |
-| No aspect ratio restrictions | `minAspectRatio`/`maxAspectRatio` ignored | ✅ Already adaptive |
-| `resizeableActivity` ignored | All values ignored on large screens | ✅ Already adaptive |
-| Multi-window support | Split-screen, foldable unfolding, desktop windowing | ✅ Already adaptive |
-| Dynamic window resizing | Rotating, folding/unfolding, resizing windows | ✅ Already adaptive |
+| Requirement                  | Description                                               | Kizzy Status        |
+| ---------------------------- | --------------------------------------------------------- | ------------------- |
+| No portrait/landscape lock   | `screenOrientation` restrictions ignored on large screens | ✅ Already adaptive |
+| No aspect ratio restrictions | `minAspectRatio`/`maxAspectRatio` ignored                 | ✅ Already adaptive |
+| `resizeableActivity` ignored | All values ignored on large screens                       | ✅ Already adaptive |
+| Multi-window support         | Split-screen, foldable unfolding, desktop windowing       | ✅ Already adaptive |
+| Dynamic window resizing      | Rotating, folding/unfolding, resizing windows             | ✅ Already adaptive |
 
 ### Connection to Kizzy Adaptive UI
 
 Kizzy's `AdaptiveLayout.kt` already implements the adaptive patterns recommended:
 
-| Article Recommendation | Kizzy Implementation |
-|------------------------|---------------------|
-| Don't assume constant Display | `WindowWidthSizeClass` queried dynamically via `materialWindowSizeClass()` |
-| dp-based layouts | All sizes use `dp` units |
-| Multi-window support | Components work in free-form and maximized windows |
-| Preserve state across config changes | ViewModel state preserved via `mutableStateOf` |
+| Article Recommendation               | Kizzy Implementation                                                       |
+| ------------------------------------ | -------------------------------------------------------------------------- |
+| Don't assume constant Display        | `WindowWidthSizeClass` queried dynamically via `materialWindowSizeClass()` |
+| dp-based layouts                     | All sizes use `dp` units                                                   |
+| Multi-window support                 | Components work in free-form and maximized windows                         |
+| Preserve state across config changes | ViewModel state preserved via `mutableStateOf`                             |
 
 ### Recommended Next Steps (from article)
 
@@ -1771,17 +1793,17 @@ Kizzy's `AdaptiveLayout.kt` already implements the adaptive patterns recommended
 
 ### Key Library Versions (as of Nov 2026)
 
-| Library | Latest Version | Channel |
-|---------|---------------|---------|
-| androidx.compose.ui | 1.13.0-rc01 | Release Candidate |
-| androidx.compose.foundation | 1.13.0-rc01 | Release Candidate |
-| androidx.compose.material3 | 1.5.0-rc01 | Release Candidate |
-| androidx.compose.runtime | 1.13.0-rc01 | Release Candidate |
-| androidx.compose.animation | 1.13.0-rc01 | Release Candidate |
-| androidx.compose.material3 | 1.12.1 | Stable (Sep 2026) |
-| androidx.navigation3 | 1.2.1 | Stable |
-| androidx.navigation | 2.10.2 | Stable |
-| androidx.window | 1.6.0-alpha05 | Alpha |
+| Library                     | Latest Version | Channel           |
+| --------------------------- | -------------- | ----------------- |
+| androidx.compose.ui         | 1.13.0-rc01    | Release Candidate |
+| androidx.compose.foundation | 1.13.0-rc01    | Release Candidate |
+| androidx.compose.material3  | 1.5.0-rc01     | Release Candidate |
+| androidx.compose.runtime    | 1.13.0-rc01    | Release Candidate |
+| androidx.compose.animation  | 1.13.0-rc01    | Release Candidate |
+| androidx.compose.material3  | 1.12.1         | Stable (Sep 2026) |
+| androidx.navigation3        | 1.2.1          | Stable            |
+| androidx.navigation         | 2.10.2         | Stable            |
+| androidx.window             | 1.6.0-alpha05  | Alpha             |
 
 ### Notable Changes
 
@@ -1797,15 +1819,15 @@ Kizzy's `AdaptiveLayout.kt` already implements the adaptive patterns recommended
 
 ### Upcoming Features
 
-| Area | Features | Status |
-|------|----------|--------|
+| Area       | Features                                                                                               | Status         |
+| ---------- | ------------------------------------------------------------------------------------------------------ | -------------- |
 | Material 3 | Scrollbars, Styles integration, Stabilize Material 3, Expressive Components, Bottom sheet improvements | In Development |
-| Foundation | Styles (Experimental), FlexBox (Experimental), Grid layout (Experimental), UIMediaQuery (Experimental) | Experimental |
-| Graphics | Mesh Gradients, GraphicsLayer Outsets, Performance improvements | In Development |
-| Text | Variable fonts via downloadable fonts, Multistyle text editing | In Development |
-| Animation | Layout animation visual debugging, Shared element transitions | In Development |
-| Testing | Screenshot testing improvements, Accessibility Checks | In Development |
-| Tools | GenAI & UI development experiments, Compose UI Check | In Development |
+| Foundation | Styles (Experimental), FlexBox (Experimental), Grid layout (Experimental), UIMediaQuery (Experimental) | Experimental   |
+| Graphics   | Mesh Gradients, GraphicsLayer Outsets, Performance improvements                                        | In Development |
+| Text       | Variable fonts via downloadable fonts, Multistyle text editing                                         | In Development |
+| Animation  | Layout animation visual debugging, Shared element transitions                                          | In Development |
+| Testing    | Screenshot testing improvements, Accessibility Checks                                                  | In Development |
+| Tools      | GenAI & UI development experiments, Compose UI Check                                                   | In Development |
 
 ### Already Released
 
@@ -1855,27 +1877,27 @@ This article covers Jetpack Compose 1.13 stable release features and adaptive UI
 
 ### Key Features
 
-| Feature | Description | Relevance to Kizzy |
-|---------|-------------|-------------------|
-| Grid & Flexbox (Compose 1.13) | Built-in adaptive Grid and Flexbox layout primitives | ⚠️ Kizzy uses Row/Column-based AdaptiveLayout; could migrate to Grid/Flexbox |
-| Progressive blur | New graphical feature for visual effects | ⚠️ Not currently needed |
-| Formatted text | Enhanced text formatting | ⚠️ Not currently needed |
-| BasicTextField rewrite | Buffer-oriented TextFieldState, eliminates IME race conditions | ⚠️ Kizzy uses Material3 TextField |
-| Jetpack AppState (Alpha) | Compose-first state layer across activities, services, widgets | ⚠️ Kizzy uses mutableStateOf + ViewModel |
-| Navigation 3 (1.2 Stable) | Developer-owned back stack, type-safe deep links, synthetic back stacks | ⚠️ Kizzy uses custom navigation |
-| Cross-device input | Touchpad, mouse, physical controls support | ⚠️ Could improve desktop/laptop support |
+| Feature                       | Description                                                             | Relevance to Kizzy                                                           |
+| ----------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Grid & Flexbox (Compose 1.13) | Built-in adaptive Grid and Flexbox layout primitives                    | ⚠️ Kizzy uses Row/Column-based AdaptiveLayout; could migrate to Grid/Flexbox |
+| Progressive blur              | New graphical feature for visual effects                                | ⚠️ Not currently needed                                                      |
+| Formatted text                | Enhanced text formatting                                                | ⚠️ Not currently needed                                                      |
+| BasicTextField rewrite        | Buffer-oriented TextFieldState, eliminates IME race conditions          | ⚠️ Kizzy uses Material3 TextField                                            |
+| Jetpack AppState (Alpha)      | Compose-first state layer across activities, services, widgets          | ⚠️ Kizzy uses mutableStateOf + ViewModel                                     |
+| Navigation 3 (1.2 Stable)     | Developer-owned back stack, type-safe deep links, synthetic back stacks | ⚠️ Kizzy uses custom navigation                                              |
+| Cross-device input            | Touchpad, mouse, physical controls support                              | ⚠️ Could improve desktop/laptop support                                      |
 
 ### Connection to Kizzy Adaptive UI
 
 Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
 
-| Article Concept | Kizzy Implementation |
-|-----------------|---------------------|
-| Unified Compose toolkit | ✅ 100% Compose UI, no legacy View remnants |
-| Adaptive Grid/Flexbox | ✅ `ResponsiveGridItem`, `ResponsiveGrid` (via Row/Column-based approach) |
-| Cross-form-factor support | ✅ Compact/Medium/Expanded width classes |
-| State preservation across config changes | ✅ `mutableStateOf` in ViewModel |
-| Multi-form-factor support | ✅ Phones, tablets, foldables covered |
+| Article Concept                          | Kizzy Implementation                                                      |
+| ---------------------------------------- | ------------------------------------------------------------------------- |
+| Unified Compose toolkit                  | ✅ 100% Compose UI, no legacy View remnants                               |
+| Adaptive Grid/Flexbox                    | ✅ `ResponsiveGridItem`, `ResponsiveGrid` (via Row/Column-based approach) |
+| Cross-form-factor support                | ✅ Compact/Medium/Expanded width classes                                  |
+| State preservation across config changes | ✅ `mutableStateOf` in ViewModel                                          |
+| Multi-form-factor support                | ✅ Phones, tablets, foldables covered                                     |
 
 ### Recommended Next Steps
 
@@ -1883,7 +1905,6 @@ Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
 2. Consider Jetpack AppState for cross-activity state sharing
 3. Evaluate Navigation 3 for type-safe deep links
 4. Add cross-device input support (mouse, keyboard, trackpad) for desktop/laptop use
-
 
 ## 69. Related Resource: Instagram Direct — AI-native UI with Jetpack Compose
 
@@ -1893,37 +1914,37 @@ Kizzy's `AdaptiveLayout.kt` already implements many of the patterns discussed:
 
 Instagram Direct adopted Jetpack Compose as the foundation of its **AI-native UI** architecture — not just applying AI tools to existing code, but redesigning the codebase so AI models can natively reason about and modify Compose UI. Key results:
 
-| Metric | Improvement |
-|--------|-------------|
-| Total UI code reduction | **50% less UI code** |
-| AI agent execution time | **35% faster** |
-| Engineer–agent interactions | **32% fewer interactions per landed character** |
-| Token cost per agent session | **33% lower** vs. Android View |
-| Risk-score resilience | View-based UI agent efficiency drops **30%** when risk doubles; Compose UI drops only **9%** |
-| Scroll performance | Pausable composition + `LazyLayoutCacheWindow` reduced Large Frame Drops/min by ~**13%**; cache window alone reduced latency by ~**8%** |
-| Startup | Optimized via Baseline Profiles — pre-compiles hot code paths at install time |
+| Metric                       | Improvement                                                                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Total UI code reduction      | **50% less UI code**                                                                                                                    |
+| AI agent execution time      | **35% faster**                                                                                                                          |
+| Engineer–agent interactions  | **32% fewer interactions per landed character**                                                                                         |
+| Token cost per agent session | **33% lower** vs. Android View                                                                                                          |
+| Risk-score resilience        | View-based UI agent efficiency drops **30%** when risk doubles; Compose UI drops only **9%**                                            |
+| Scroll performance           | Pausable composition + `LazyLayoutCacheWindow` reduced Large Frame Drops/min by ~**13%**; cache window alone reduced latency by ~**8%** |
+| Startup                      | Optimized via Baseline Profiles — pre-compiles hot code paths at install time                                                           |
 
 ### Key Architectural Patterns
 
-| Pattern | Description |
-|---------|-------------|
-| **ComposeItem pattern** | Composable receives only `uiState` via constructor + callbacks (e.g., `onPin: (Boolean) -> Unit`); no access to class members or external state |
-| **State hoisting** | UI state externalized (e.g., `ChatUiState`) rather than held as mutable fields on item objects — prevents bugs from view recycling/rebinding |
-| **Gradual migration with interop** | Compose items dropped into existing `RecyclerView` layouts; native `LazyColumn` path with feature flags for A/B testing |
-| **Visibility tracking** | `onVisibilityChanged` API (Compose 1.9.0) for consistent exposure logging |
-| **Pausable composition** | Compose 1.10+ with `LazyLayoutCacheWindow` for smooth scroll performance |
+| Pattern                            | Description                                                                                                                                     |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ComposeItem pattern**            | Composable receives only `uiState` via constructor + callbacks (e.g., `onPin: (Boolean) -> Unit`); no access to class members or external state |
+| **State hoisting**                 | UI state externalized (e.g., `ChatUiState`) rather than held as mutable fields on item objects — prevents bugs from view recycling/rebinding    |
+| **Gradual migration with interop** | Compose items dropped into existing `RecyclerView` layouts; native `LazyColumn` path with feature flags for A/B testing                         |
+| **Visibility tracking**            | `onVisibilityChanged` API (Compose 1.9.0) for consistent exposure logging                                                                       |
+| **Pausable composition**           | Compose 1.10+ with `LazyLayoutCacheWindow` for smooth scroll performance                                                                        |
 
 ### Connection to Kizzy
 
 Kizzy already implements several of these patterns:
 
-| Article Concept | Kizzy Implementation |
-|-----------------|---------------------|
-| 100% Compose UI | ✅ No legacy View remnants |
-| State hoisting | ✅ `mutableStateOf` + ViewModel, presence state externalized |
-| Mutable state avoidance | ✅ Compose state models passed via constructor |
-| Compose previews without emulator | ✅ Android CLI supports this |
-| Gradual migration with feature flags | ✅ Feature flags used for RPC service toggling |
+| Article Concept                      | Kizzy Implementation                                         |
+| ------------------------------------ | ------------------------------------------------------------ |
+| 100% Compose UI                      | ✅ No legacy View remnants                                   |
+| State hoisting                       | ✅ `mutableStateOf` + ViewModel, presence state externalized |
+| Mutable state avoidance              | ✅ Compose state models passed via constructor               |
+| Compose previews without emulator    | ✅ Android CLI supports this                                 |
+| Gradual migration with feature flags | ✅ Feature flags used for RPC service toggling               |
 
 ### Recommended Next Steps
 
@@ -1937,6 +1958,7 @@ Kizzy already implements several of these patterns:
 ## 70. Related Resource: R8 Profile-Guided Optimization & App Sizer
 
 **Sources:**
+
 - [Android Developers Blog — Grab R8 PGO & ANR Startup Time](https://android-developers.googleblog.com/2026/02/grab-r8-profile-guided-optimization-anr-startup-time?hl=zh-tw)
 - [GitHub — grab/app-sizer](https://github.com/grab/app-sizer)
 
@@ -1944,27 +1966,27 @@ Kizzy already implements several of these patterns:
 
 Grab (Southeast Asian super app, 10M+ lines of code, 8 countries) combined R8 Profile-Guided Optimization with Baseline Profiles and Startup Profiles to achieve dramatic improvements:
 
-| Metric | Improvement |
-|--------|-------------|
+| Metric                  | Improvement          |
+| ----------------------- | -------------------- |
 | User-perceived ANR rate | **~32.5% reduction** |
-| App download size | **~30.4% reduction** |
-| Cold startup time | **~35% reduction** |
+| App download size       | **~30.4% reduction** |
+| Cold startup time       | **~35% reduction**   |
 
 ### Three-Phase Implementation
 
-| Phase | Action | ANR | Size | Cold Start |
-|-------|--------|-----|------|------------|
-| Phase 1 | R8 Compatibility Mode + Baseline/Startup Profiles | −25% | −16% | −27% |
-| Phase 2 | R8 Full Mode migration | −10% | −14% | −10% |
-| Phase 3 | Keep-rule fine-tuning | — | −3.6% | — |
+| Phase   | Action                                            | ANR  | Size  | Cold Start |
+| ------- | ------------------------------------------------- | ---- | ----- | ---------- |
+| Phase 1 | R8 Compatibility Mode + Baseline/Startup Profiles | −25% | −16%  | −27%       |
+| Phase 2 | R8 Full Mode migration                            | −10% | −14%  | −10%       |
+| Phase 3 | Keep-rule fine-tuning                             | —    | −3.6% | —          |
 
 ### R8 Optimization Scores (after fine-tuning)
 
-| Metric | Score |
-|--------|-------|
+| Metric       | Score |
+| ------------ | ----- |
 | Optimization | 78.2% |
-| Shrinking | 79.1% |
-| Obfuscation | 81.7% |
+| Shrinking    | 79.1% |
+| Obfuscation  | 81.7% |
 
 ### Practical Steps for Kizzy
 
@@ -1979,13 +2001,13 @@ Grab (Southeast Asian super app, 10M+ lines of code, 8 countries) combined R8 Pr
 
 ### app-sizer Tool
 
-| Feature | Description |
-|---------|-------------|
-| Gradle Plugin | Integrates with Android Gradle projects |
-| CLI Tool | For non-Gradle build systems |
-| Report Formats | HTML Dashboard, InfluxDB, Markdown Table, JSON |
-| Metrics | Total size, per-module, per-library, per-team, large files |
-| Repository | https://github.com/grab/app-sizer |
+| Feature        | Description                                                |
+| -------------- | ---------------------------------------------------------- |
+| Gradle Plugin  | Integrates with Android Gradle projects                    |
+| CLI Tool       | For non-Gradle build systems                               |
+| Report Formats | HTML Dashboard, InfluxDB, Markdown Table, JSON             |
+| Metrics        | Total size, per-module, per-library, per-team, large files |
+| Repository     | https://github.com/grab/app-sizer                          |
 
 ### Decision
 
@@ -2004,12 +2026,12 @@ Android Bench 2.0 is Google's benchmark suite for evaluating **AI coding agents*
 
 ### Key Benchmark Tasks
 
-| Category | Tasks | Examples |
-|----------|-------|----------|
-| App creation | 10 | Build features for Food Vibes (food delivery app), new book-searching app |
-| App conversion | 2 | Convert Flutter to Android, Convert React Native to Android |
-| Migration | 13 | XML→Compose (Signal, Fossify File Manager), Hilt→Koin, Retrofit→Ktor, Java→Kotlin |
-| New feature | 5 | Accessibility support, Media3 video playback, Picture-in-Picture, CameraX profile picture, ViewModel layer |
+| Category       | Tasks | Examples                                                                                                   |
+| -------------- | ----- | ---------------------------------------------------------------------------------------------------------- |
+| App creation   | 10    | Build features for Food Vibes (food delivery app), new book-searching app                                  |
+| App conversion | 2     | Convert Flutter to Android, Convert React Native to Android                                                |
+| Migration      | 13    | XML→Compose (Signal, Fossify File Manager), Hilt→Koin, Retrofit→Ktor, Java→Kotlin                          |
+| New feature    | 5     | Accessibility support, Media3 video playback, Picture-in-Picture, CameraX profile picture, ViewModel layer |
 
 ### Sample Apps Used
 
@@ -2017,13 +2039,13 @@ Now in Android, Food Vibes, Bitwarden, Fossify File Manager, Pocket Casts, Signa
 
 ### Key Findings Relevant to Kizzy
 
-| Finding | Implication |
-|---------|-------------|
-| AI models excel at **new code** but struggle with **refactoring** | Kizzy's XML→Compose migration is exactly the hard case for AI |
-| Models handle deterministic translations well | Java→Kotlin, Retrofit→Ktor across 125+ files / 8K+ lines works well |
-| Models struggle with **breaking architectural changes** | Explains why some Compose migrations need manual intervention |
-| Models struggle with **cross-platform to Android** | 0% pass rate for Flutter/React Native→Android conversions |
-| **Scroll performance** on par with Views since Compose 1.9.0 | Confirms Kizzy's Compose migration decision was sound |
+| Finding                                                           | Implication                                                         |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------- |
+| AI models excel at **new code** but struggle with **refactoring** | Kizzy's XML→Compose migration is exactly the hard case for AI       |
+| Models handle deterministic translations well                     | Java→Kotlin, Retrofit→Ktor across 125+ files / 8K+ lines works well |
+| Models struggle with **breaking architectural changes**           | Explains why some Compose migrations need manual intervention       |
+| Models struggle with **cross-platform to Android**                | 0% pass rate for Flutter/React Native→Android conversions           |
+| **Scroll performance** on par with Views since Compose 1.9.0      | Confirms Kizzy's Compose migration decision was sound               |
 
 ### Connection to Kizzy
 
@@ -2048,21 +2070,21 @@ Android 17 (API 37) introduces **application-specific memory limits** that are e
 
 ### Key Memory Limits
 
-| Resource Type | Default Limit | Notes |
-|---------------|---------------|-------|
-| Foreground | 2 GB | Per-app limit on devices with 4 GB RAM |
-| User-perceived service | 1 GB | Per-app limit on devices with 4 GB RAM |
-| Background | 1 GB | Per-app limit on devices with 4 GB RAM |
-| Cached process | 400 MB | Per-app limit on devices with 4 GB RAM |
-| Bitmap memory | >200 MB (foreground/user-perceived service/background), >400 MB (cached) | Per-app bitmap memory limits |
+| Resource Type          | Default Limit                                                            | Notes                                  |
+| ---------------------- | ------------------------------------------------------------------------ | -------------------------------------- |
+| Foreground             | 2 GB                                                                     | Per-app limit on devices with 4 GB RAM |
+| User-perceived service | 1 GB                                                                     | Per-app limit on devices with 4 GB RAM |
+| Background             | 1 GB                                                                     | Per-app limit on devices with 4 GB RAM |
+| Cached process         | 400 MB                                                                   | Per-app limit on devices with 4 GB RAM |
+| Bitmap memory          | >200 MB (foreground/user-perceived service/background), >400 MB (cached) | Per-app bitmap memory limits           |
 
 ### Connection to Kizzy
 
-| Article Concept | Kizzy Implementation Status |
-|-----------------|---------------------|
-| Memory limits enforced on large screens | ⚠️ Not yet tested — needs verification on API 37+ devices |
-| Bitmap memory management | ⚠️ Uses Coil for image loading — should verify bitmap memory usage |
-| Excessive memory usage detection | ⚠️ Not yet implemented — consider adding memory tracking |
+| Article Concept                         | Kizzy Implementation Status                                        |
+| --------------------------------------- | ------------------------------------------------------------------ |
+| Memory limits enforced on large screens | ⚠️ Not yet tested — needs verification on API 37+ devices          |
+| Bitmap memory management                | ⚠️ Uses Coil for image loading — should verify bitmap memory usage |
+| Excessive memory usage detection        | ⚠️ Not yet implemented — consider adding memory tracking           |
 
 ### Recommended Next Steps
 
@@ -2083,16 +2105,17 @@ Android 17 (API 37) removes the developer opt-out for orientation and resizabili
 
 ### Key Behavior Changes for Large Screens (`sw > 600dp`)
 
-| Behavior Change | Description | Kizzy Status |
-|-----------------|-------------|--------------|
+| Behavior Change                         | Description                                            | Kizzy Status        |
+| --------------------------------------- | ------------------------------------------------------ | ------------------- |
 | Screen orientation restrictions ignored | `screenOrientation` attribute ignored on large screens | ✅ Already adaptive |
-| Aspect ratio restrictions ignored | `minAspectRatio`/`maxAspectRatio` ignored | ✅ Already adaptive |
-| `resizeableActivity` ignored | All values ignored on large screens | ✅ Already adaptive |
-| Dynamic window resizing | Apps must handle configuration changes at any time | ✅ Already adaptive |
+| Aspect ratio restrictions ignored       | `minAspectRatio`/`maxAspectRatio` ignored              | ✅ Already adaptive |
+| `resizeableActivity` ignored            | All values ignored on large screens                    | ✅ Already adaptive |
+| Dynamic window resizing                 | Apps must handle configuration changes at any time     | ✅ Already adaptive |
 
 ### Connection to Kizzy Adaptive UI
 
 Kizzy's `AdaptiveLayout.kt` already handles dynamic window resizing and configuration changes correctly:
+
 - `WindowWidthSizeClass` queried dynamically, not cached
 - All sizes use `dp` units
 - Components work in free-form and maximized windows
@@ -2108,17 +2131,17 @@ Kizzy's `AdaptiveLayout.kt` already handles dynamic window resizing and configur
 
 Android 17 introduces new features and APIs that are relevant to app development:
 
-| Feature | Description | Relevance to Kizzy |
-|---------|-------------|--------------|
-| Memory Limits | Per-app memory limits enforced on large screens | ⚠️ Needs testing on API 37+ devices |
-| R8 Configuration Analyzer | Analyze R8 keep-rule health | ✅ Recommended for evaluation |
-| Encrypted Client Hello (ECH) | Platform support for encrypted TLS handshake | ⚠️ Not currently needed |
-| Android Contact Picker | Standardized UI for contact selection | ⚠️ Not currently needed |
-| Advanced Protection Mode | Optional user-enabled security mode | ⚠️ Not currently needed |
-| PQC APK Signing | Post-quantum cryptography signing | ⚠️ Not currently needed |
-| UWB Downlink-TDoA | Downlink time difference of arrival ranging | ⚠️ Not currently needed |
-| Semantic Color API | Notification semantic colors | ⚠️ Not currently needed |
-| Handoff API | Cross-device activity resumption | ⚠️ Could explore for multi-device support |
+| Feature                      | Description                                     | Relevance to Kizzy                        |
+| ---------------------------- | ----------------------------------------------- | ----------------------------------------- |
+| Memory Limits                | Per-app memory limits enforced on large screens | ⚠️ Needs testing on API 37+ devices       |
+| R8 Configuration Analyzer    | Analyze R8 keep-rule health                     | ✅ Recommended for evaluation             |
+| Encrypted Client Hello (ECH) | Platform support for encrypted TLS handshake    | ⚠️ Not currently needed                   |
+| Android Contact Picker       | Standardized UI for contact selection           | ⚠️ Not currently needed                   |
+| Advanced Protection Mode     | Optional user-enabled security mode             | ⚠️ Not currently needed                   |
+| PQC APK Signing              | Post-quantum cryptography signing               | ⚠️ Not currently needed                   |
+| UWB Downlink-TDoA            | Downlink time difference of arrival ranging     | ⚠️ Not currently needed                   |
+| Semantic Color API           | Notification semantic colors                    | ⚠️ Not currently needed                   |
+| Handoff API                  | Cross-device activity resumption                | ⚠️ Could explore for multi-device support |
 
 ### Connection to Kizzy
 
@@ -2136,24 +2159,24 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ### Key Features
 
-| Feature | Description |
-|---------|-------------|
-| Shrink Score | Percentage of classes, fields, methods that R8 can shrink |
+| Feature            | Description                                                 |
+| ------------------ | ----------------------------------------------------------- |
+| Shrink Score       | Percentage of classes, fields, methods that R8 can shrink   |
 | Optimization Score | Percentage affected by R8 optimizations (inlining, merging) |
-| Obfuscation Score | Percentage that can be obfuscated (renamed) |
-| Keep Rule Analysis | Shows what percentage of code is blocked by each keep rule |
-| Subsuming Rules | Identifies broad rules that override narrower rules |
-| Unused Rules | Finds rules matching zero classes/methods/fields |
-| Library Rules | Shows impact of third-party library consumer rules |
+| Obfuscation Score  | Percentage that can be obfuscated (renamed)                 |
+| Keep Rule Analysis | Shows what percentage of code is blocked by each keep rule  |
+| Subsuming Rules    | Identifies broad rules that override narrower rules         |
+| Unused Rules       | Finds rules matching zero classes/methods/fields            |
+| Library Rules      | Shows impact of third-party library consumer rules          |
 
 ### Connection to Kizzy
 
-| Article Concept | Kizzy Implementation Status |
-|-----------------|---------------------|
+| Article Concept        | Kizzy Implementation Status                            |
+| ---------------------- | ------------------------------------------------------ |
 | R8 full mode migration | ⚠️ Not yet evaluated — currently in compatibility mode |
-| Baseline Profiles | ⚠️ Not yet implemented |
-| Keep rule analysis | ⚠️ Not yet integrated into CI |
-| app-sizer integration | ⚠️ Not yet integrated |
+| Baseline Profiles      | ⚠️ Not yet implemented                                 |
+| Keep rule analysis     | ⚠️ Not yet integrated into CI                          |
+| app-sizer integration  | ⚠️ Not yet integrated                                  |
 
 ### Recommended Next Steps
 
@@ -2176,12 +2199,13 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 ### Fixes Applied
 
 **`data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`**
+
 - Changed `lateinit var presence: Presence` to `private var presence: Presence = Presence(activities = emptyList(), afk = true, status = null)` — initialized with default empty presence at declaration
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
+| Issue                          | Before                                       | After                                         |
+| ------------------------------ | -------------------------------------------- | --------------------------------------------- |
 | `updateRPC()` before `build()` | `UninitializedPropertyAccessException` crash | Presence resolved with default empty presence |
 
 ---
@@ -2197,15 +2221,16 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 ### Fixes Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+
 - Added `startMediaRefresh()` — periodic refresh every 1 second that calls `updatePresence()` to catch position changes that happen between `onPlaybackStateChanged()` callbacks
 - Added `lastSentCommonRpc: CommonRpc?` field for de-duplication — skips redundant updates when presence data hasn't changed
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Discord timeline during drag | Stuck/not updating | Updates every 1 second via periodic refresh |
-| Media changes between callbacks | Missed position updates | Detected on next periodic refresh |
+| Issue                           | Before                  | After                                       |
+| ------------------------------- | ----------------------- | ------------------------------------------- |
+| Discord timeline during drag    | Stuck/not updating      | Updates every 1 second via periodic refresh |
+| Media changes between callbacks | Missed position updates | Detected on next periodic refresh           |
 
 ---
 
@@ -2221,24 +2246,27 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 ### Fixes Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+
 - `onTaskRemoved()` now schedules `RpcRecoveryHiltWorker` via `WorkManagerHelper.scheduleRpcRecovery(this)`
 - `onDestroy()` now schedules `RpcRecoveryHiltWorker` via `WorkManagerHelper.scheduleRpcRecovery(this)`
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/KizzyRpcService.kt`**
+
 - `onTaskRemoved()` now schedules `RpcRecoveryHiltWorker` via `WorkManagerHelper.scheduleRpcRecovery(this)`
 - `onDestroy()` now schedules `RpcRecoveryHiltWorker` via `WorkManagerHelper.scheduleRpcRecovery(this)`
 - Added `Logger` injection for logging
 
 **`data/src/main/java/com/my/kizzy/data/work/WorkManagerHelper.kt`**
+
 - Added `scheduleRpcRecovery(context: Context)` method with cancellation-immune upload scope, 12h TTL cache, `SupervisorJob`
 - `ExistingWorkPolicy.REPLACE` — last swiped-away event's recovery command always wins
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
+| Issue                   | Before                  | After                                     |
+| ----------------------- | ----------------------- | ----------------------------------------- |
 | App swiped from Recents | RPC stopped permanently | WorkManager schedules background recovery |
-| Process termination | RPC stopped permanently | WorkManager schedules background recovery |
+| Process termination     | RPC stopped permanently | WorkManager schedules background recovery |
 
 ---
 
@@ -2253,12 +2281,13 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 ### Fixes Applied
 
 **`app/src/main/java/com/my/kizzy/CrashReportActivity.kt`**
+
 - Changed `MaterialTheme { ... }` to `KizzyTheme(darkTheme = LocalDarkTheme.current.isDarkTheme(), isHighContrastModeEnabled = LocalDarkTheme.current.isHighContrastModeEnabled, isDynamicColorEnabled = LocalDynamicColorSwitch.current) { ... }`
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
+| Issue              | Before                             | After                                                      |
+| ------------------ | ---------------------------------- | ---------------------------------------------------------- |
 | Crash screen theme | Used default Material theme colors | Respects user's dark/light mode and dynamic color settings |
 
 ---
@@ -2294,6 +2323,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 ### Fixes Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+
 - Changed `finalName` from `"Kizzy"` to `null`
 - Changed `finalDetails` from `"Using Kizzy RPC"` to `null`
 - Changed `finalState` from `"Idle"` to `null`
@@ -2301,10 +2331,10 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Discord idle presence | Showed "Kizzy - Using Kizzy RPC - Idle" | Shows nothing (empty fields) |
-| No media context | Hardcoded placeholder text | All fields null, Discord displays empty activity |
+| Issue                 | Before                                  | After                                            |
+| --------------------- | --------------------------------------- | ------------------------------------------------ |
+| Discord idle presence | Showed "Kizzy - Using Kizzy RPC - Idle" | Shows nothing (empty fields)                     |
+| No media context      | Hardcoded placeholder text              | All fields null, Discord displays empty activity |
 
 ---
 
@@ -2320,20 +2350,22 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 ### Fixes Applied
 
 **`data/src/main/java/com/my/kizzy/data/rpc/KizzyRPC.kt`**
+
 - `connectToWebSocket()` now checks `discordWebSocket.isWebSocketConnected()` before connecting — skips if already connected
 - Added early return when token is invalid (was missing `return` statement)
 
 **`gateway/src/main/java/kizzy/gateway/DiscordWebSocketImpl.kt`**
+
 - `connect()` now closes existing websocket before creating a new one — prevents orphaned connections
 - Uses `CloseReason(1000, "Reconnecting")` for clean connection shutdown
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
+| Issue                      | Before                                                 | After                                          |
+| -------------------------- | ------------------------------------------------------ | ---------------------------------------------- |
 | Discord gateway connection | Multiple concurrent WebSocket connections, 4003 errors | Single connection, proper cleanup on reconnect |
-| Connection state | No check before connecting | Skips connect if already connected |
-| WebSocket cleanup | Old websocket left open | Explicitly closed before new connection |
+| Connection state           | No check before connecting                             | Skips connect if already connected             |
+| WebSocket cleanup          | Old websocket left open                                | Explicitly closed before new connection        |
 
 ---
 
@@ -2348,15 +2380,16 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 ### Fixes Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+
 - Added `startMediaRefresh()` — periodic refresh every 1 second that calls `updatePresence()` to catch position changes that happen between `onPlaybackStateChanged()` callbacks
 - Added `lastSentCommonRpc: CommonRpc?` field for de-duplication — skips redundant updates when presence data hasn't changed
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Discord timeline during drag | Stuck/not updating | Updates every 1 second via periodic refresh |
-| Media changes between callbacks | Missed position updates | Detected on next periodic refresh |
+| Issue                           | Before                  | After                                       |
+| ------------------------------- | ----------------------- | ------------------------------------------- |
+| Discord timeline during drag    | Stuck/not updating      | Updates every 1 second via periodic refresh |
+| Media changes between callbacks | Missed position updates | Detected on next periodic refresh           |
 
 ---
 
@@ -2373,15 +2406,15 @@ BUILD SUCCESSFUL in 4m 28s
 
 ### Build Status Summary
 
-| Build Task | Status |
-|------------|--------|
-| `:app:compileDebugKotlin` | ✅ BUILD SUCCESSFUL |
-| `:app:compileBenchmarkKotlin` | ✅ BUILD SUCCESSFUL |
-| `:feature_rpc_base:compileDebugKotlin` | ✅ BUILD SUCCESSFUL |
-| `:macrobenchmark:compileDebugKotlin` | ✅ BUILD SUCCESSFUL |
-| `:app:mergeDebugResources` | ✅ BUILD SUCCESSFUL (AAPT2 CDATA normalization active) |
-| `:app:processDebugResources` | ✅ BUILD SUCCESSFUL (ActivityTranslucent style resolved) |
-| `:app:assembleDebug` | ✅ BUILD SUCCESSFUL |
+| Build Task                             | Status                                                   |
+| -------------------------------------- | -------------------------------------------------------- |
+| `:app:compileDebugKotlin`              | ✅ BUILD SUCCESSFUL                                      |
+| `:app:compileBenchmarkKotlin`          | ✅ BUILD SUCCESSFUL                                      |
+| `:feature_rpc_base:compileDebugKotlin` | ✅ BUILD SUCCESSFUL                                      |
+| `:macrobenchmark:compileDebugKotlin`   | ✅ BUILD SUCCESSFUL                                      |
+| `:app:mergeDebugResources`             | ✅ BUILD SUCCESSFUL (AAPT2 CDATA normalization active)   |
+| `:app:processDebugResources`           | ✅ BUILD SUCCESSFUL (ActivityTranslucent style resolved) |
+| `:app:assembleDebug`                   | ✅ BUILD SUCCESSFUL                                      |
 
 **Gradle:** 9.9.0 (wrapper), AGP 9.6.0-alpha03  
 **Kotlin:** 2.4.21  
@@ -2406,11 +2439,11 @@ _All features implemented and verified — debug build passes with zero compilat
 
 ### Changes
 
-| Component | Before | After | Status |
-|-----------|--------|-------|--------|
-| Gradle Wrapper | 9.9.0-rc-1 | 9.9.0 (stable) | ✅ |
-| AGP | 9.6.0-alpha03 | 9.6.0-alpha03 (unchanged — AGP 9.9.0 not published) | ✅ |
-| Decoupled AGP version | `gradle` ref used for AGP | New `agp = "9.6.0-alpha03"` ref for AGP plugins | ✅ |
+| Component             | Before                    | After                                               | Status |
+| --------------------- | ------------------------- | --------------------------------------------------- | ------ |
+| Gradle Wrapper        | 9.9.0-rc-1                | 9.9.0 (stable)                                      | ✅     |
+| AGP                   | 9.6.0-alpha03             | 9.6.0-alpha03 (unchanged — AGP 9.9.0 not published) | ✅     |
+| Decoupled AGP version | `gradle` ref used for AGP | New `agp = "9.6.0-alpha03"` ref for AGP plugins     | ✅     |
 
 ### Reason
 
@@ -2448,10 +2481,10 @@ if (shouldShow && packageName != runningPackage) {
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| App disabled in prefs | Presence stayed on Discord forever | Presence clears immediately |
-| Timeline reset on switch | Stale timestamps carried over | New `start` timestamp set per app |
+| Issue                    | Before                             | After                             |
+| ------------------------ | ---------------------------------- | --------------------------------- |
+| App disabled in prefs    | Presence stayed on Discord forever | Presence clears immediately       |
+| Timeline reset on switch | Stale timestamps carried over      | New `start` timestamp set per app |
 
 ---
 
@@ -2462,22 +2495,24 @@ if (shouldShow && packageName != runningPackage) {
 ### Features
 
 **AI Detection** — No hardcoded package lists:
+
 - Semantic keyword matching on app labels (`ai`, `gpt`, `chat`, `bot`, `gemini`, `claude`, `llm`, `copilot`, `perplexity`, `deepseek`, `llama`, `ollama`, `assistant`, `intelligence`, `openai`, `x.ai`, `bard`)
 - Android `RoleManager.ROLE_ASSISTANT` query catches power-button / "Hey Google" floating overlay launches
 - `Settings.Secure` "assistant" fallback for API < 30
 
 **Game Detection** — Works across all manufacturers:
+
 - `ApplicationInfo.FLAG_IS_GAME` flag check
 - `ApplicationInfo.CATEGORY_GAME` category check
 - Catches Samsung Game Hub, Xiaomi Game Turbo, Google Play Games, OnePlus Games, etc.
 
 **Presence output per detected type:**
 
-| Detected Type | Discord `details` | Discord `state` | Image |
-|---------------|-------------------|-----------------|-------|
-| AI app | "Chatting with AI" | "Thinking..." | Dynamic favicon URL via `RpcImage.ExternalImage` |
-| Game | "Playing game" | "In-game" | Dynamic favicon URL via `RpcImage.ExternalImage` |
-| Regular app | null | null | App icon via `RpcImage.ApplicationIcon` |
+| Detected Type | Discord `details`  | Discord `state` | Image                                            |
+| ------------- | ------------------ | --------------- | ------------------------------------------------ |
+| AI app        | "Chatting with AI" | "Thinking..."   | Dynamic favicon URL via `RpcImage.ExternalImage` |
+| Game          | "Playing game"     | "In-game"       | Dynamic favicon URL via `RpcImage.ExternalImage` |
+| Regular app   | null               | null            | App icon via `RpcImage.ApplicationIcon`          |
 
 ### ProGuard Rules Added
 
@@ -2518,17 +2553,17 @@ Results are merged into `app/src/main/baseline-prof.txt` automatically via `merg
 
 ### Verified Against Actual Usage
 
-| Ktor Component | Usage Site | ProGuard Coverage |
-|----------------|------------|-------------------|
-| `HttpClient(CIO)` | `AppModule.kt:71` | `io.ktor.client.engine.cio.**` ✅ |
-| `ContentNegotiation` plugin | `AppModule.kt:72` | `io.ktor.client.plugins.**` ✅ |
-| `HttpTimeout` plugin | `AppModule.kt:75` | `io.ktor.client.plugins.**` ✅ |
-| `Logging` plugin | `AppModule.kt:80` | `io.ktor.client.plugins.**` ✅ |
-| `WebSockets` plugin | `DiscordWebSocketImpl.kt:78` | `io.ktor.client.plugins.**` ✅ |
-| `io.ktor.http.HttpHeaders` | `DiscordWebSocketImpl.kt:8` | `io.ktor.http.**` ✅ |
-| `kotlinx.serialization.json.Json` | `AppModule.kt:61`, `DiscordWebSocketImpl.kt:80` | `kotlinx.serialization.json.**` ✅ |
-| `io.ktor.client.call.body`, `HttpResponse` | `Ext.kt:32-33` | `io.ktor.client.**` ✅ |
-| `kotlinx.coroutines.*` (Mutex, withLock, Job, StateFlow) | `DiscordWebSocketImpl.kt` | `kotlinx.coroutines.**` ✅ |
+| Ktor Component                                           | Usage Site                                      | ProGuard Coverage                  |
+| -------------------------------------------------------- | ----------------------------------------------- | ---------------------------------- |
+| `HttpClient(CIO)`                                        | `AppModule.kt:71`                               | `io.ktor.client.engine.cio.**` ✅  |
+| `ContentNegotiation` plugin                              | `AppModule.kt:72`                               | `io.ktor.client.plugins.**` ✅     |
+| `HttpTimeout` plugin                                     | `AppModule.kt:75`                               | `io.ktor.client.plugins.**` ✅     |
+| `Logging` plugin                                         | `AppModule.kt:80`                               | `io.ktor.client.plugins.**` ✅     |
+| `WebSockets` plugin                                      | `DiscordWebSocketImpl.kt:78`                    | `io.ktor.client.plugins.**` ✅     |
+| `io.ktor.http.HttpHeaders`                               | `DiscordWebSocketImpl.kt:8`                     | `io.ktor.http.**` ✅               |
+| `kotlinx.serialization.json.Json`                        | `AppModule.kt:61`, `DiscordWebSocketImpl.kt:80` | `kotlinx.serialization.json.**` ✅ |
+| `io.ktor.client.call.body`, `HttpResponse`               | `Ext.kt:32-33`                                  | `io.ktor.client.**` ✅             |
+| `kotlinx.coroutines.*` (Mutex, withLock, Job, StateFlow) | `DiscordWebSocketImpl.kt`                       | `kotlinx.coroutines.**` ✅         |
 
 ### Rules Applied (lines 10-47)
 
@@ -2584,25 +2619,25 @@ _All features implemented and verified — debug build passes with zero compilat
 
 ### Complete List of New Files (Latest Changes)
 
-| File | Feature |
-|------|---------|
-| `macrobenchmark/build.gradle.kts` | Macrobenchmark module configuration |
-| `macrobenchmark/src/main/java/com/my/kizzy/macrobenchmark/BaselineProfileGenerator.kt` | Cold-launch baseline profile generator |
-| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/DynamicActivityDetectionEngine.kt` | Unified AI + Game dynamic detection |
+| File                                                                                                      | Feature                                |
+| --------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `macrobenchmark/build.gradle.kts`                                                                         | Macrobenchmark module configuration    |
+| `macrobenchmark/src/main/java/com/my/kizzy/macrobenchmark/BaselineProfileGenerator.kt`                    | Cold-launch baseline profile generator |
+| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/DynamicActivityDetectionEngine.kt` | Unified AI + Game dynamic detection    |
 
 ### Complete List of Modified Files (Latest Changes)
 
-| File | Change |
-|------|--------|
-| `gradle/wrapper/gradle-wrapper.properties` | Gradle 9.9.0-rc-1 → 9.9.0 (stable) |
-| `gradle/libs.versions.toml` | `gradle = "9.9.0"`, added `agp = "9.6.0-alpha03"`, `profileinstaller = "1.4.1"`, `androidxMacroBenchmark = "1.3.3"`, macrobenchmark + test libraries |
-| `app/build.gradle.kts` | Removed `com.android.tools:r8` runtime dependency, `profileinstaller` via version catalog, `benchmark` build type |
-| `app/proguard-rules.pro` | Ktor client/CIO/plugins/WebSockets/HTTP/serialization/coroutines keep rules; DynamicActivityDetectionEngine keep rules |
-| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/AppDetectionService.kt` | Integrated DynamicActivityDetectionEngine, game detection, AI detection; shouldShow independent of runningPackage |
-| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/DynamicActivityDetectionEngine.kt` | Unified AI (semantic keywords + RoleManager) + Game (FLAG_IS_GAME/CATEGORY_GAME) detection |
-| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt` | Direct `getCurrentPlayingMediaAll()` call before app-polling fallback; `onTaskRemoved` WorkManager recovery; `kizzyRPC.build()` gateway connection |
-| `settings.gradle.kts` | Added `:macrobenchmark` module |
-| `.gitignore` | Added `**/build/` and `**/.kotlin/` exclusions |
+| File                                                                                                      | Change                                                                                                                                               |
+| --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gradle/wrapper/gradle-wrapper.properties`                                                                | Gradle 9.9.0-rc-1 → 9.9.0 (stable)                                                                                                                   |
+| `gradle/libs.versions.toml`                                                                               | `gradle = "9.9.0"`, added `agp = "9.6.0-alpha03"`, `profileinstaller = "1.4.1"`, `androidxMacroBenchmark = "1.3.3"`, macrobenchmark + test libraries |
+| `app/build.gradle.kts`                                                                                    | Removed `com.android.tools:r8` runtime dependency, `profileinstaller` via version catalog, `benchmark` build type                                    |
+| `app/proguard-rules.pro`                                                                                  | Ktor client/CIO/plugins/WebSockets/HTTP/serialization/coroutines keep rules; DynamicActivityDetectionEngine keep rules                               |
+| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/AppDetectionService.kt`            | Integrated DynamicActivityDetectionEngine, game detection, AI detection; shouldShow independent of runningPackage                                    |
+| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/DynamicActivityDetectionEngine.kt` | Unified AI (semantic keywords + RoleManager) + Game (FLAG_IS_GAME/CATEGORY_GAME) detection                                                           |
+| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`                | Direct `getCurrentPlayingMediaAll()` call before app-polling fallback; `onTaskRemoved` WorkManager recovery; `kizzyRPC.build()` gateway connection   |
+| `settings.gradle.kts`                                                                                     | Added `:macrobenchmark` module                                                                                                                       |
+| `.gitignore`                                                                                              | Added `**/build/` and `**/.kotlin/` exclusions                                                                                                       |
 
 ---
 
@@ -2635,12 +2670,12 @@ This was triggered during rapid media changes where `MediaRpcService` called `up
 
 Added a `ReentrantLock` (`buttonsLock`) to protect all access to `buttons`. Since `ReentrantLock` has no Kotlin `withLock` extension, all four access sites use explicit `lock()` / `try` / `finally` / `unlock()`:
 
-| Access Site | Protection |
-|-------------|------------|
+| Access Site                                                                | Protection                                                        |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | `updateRPC()` — `buttons.toList()` snapshot (suspend, on `Dispatchers.IO`) | `buttonsLock.lock()` / `try` / `finally` / `buttonsLock.unlock()` |
-| `setButton1()` — `buttons.add()` | Same lock/unlock pattern |
-| `setButton2()` — `buttons.add()` | Same lock/unlock pattern |
-| `clearButtons()` — `buttons.clear()` | Same lock/unlock pattern |
+| `setButton1()` — `buttons.add()`                                           | Same lock/unlock pattern                                          |
+| `setButton2()` — `buttons.add()`                                           | Same lock/unlock pattern                                          |
+| `clearButtons()` — `buttons.clear()`                                       | Same lock/unlock pattern                                          |
 
 ### Imports Changed
 
@@ -2648,10 +2683,10 @@ Removed `kotlinx.coroutines.sync.Mutex` / `withLock` (suspend-only, unusable fro
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Concurrent button list access | `IndexOutOfBoundsException` crash on rapid media changes | Thread-safe snapshots; no crash |
-| `Mutex.withLock` | Could not be called from non-suspend `setButton*`/`clearButtons` | `ReentrantLock` works in both suspend and non-suspend contexts |
+| Issue                         | Before                                                           | After                                                          |
+| ----------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------- |
+| Concurrent button list access | `IndexOutOfBoundsException` crash on rapid media changes         | Thread-safe snapshots; no crash                                |
+| `Mutex.withLock`              | Could not be called from non-suspend `setButton*`/`clearButtons` | `ReentrantLock` works in both suspend and non-suspend contexts |
 
 Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 / AGP 9.6.0-alpha03.
 
@@ -2687,10 +2722,10 @@ if (shouldShow && packageName != runningPackage) {
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| App disabled in prefs | Presence stayed on Discord forever | Presence clears immediately |
-| Timeline reset on switch | Stale timestamps carried over | New `start` timestamp set per app |
+| Issue                    | Before                             | After                             |
+| ------------------------ | ---------------------------------- | --------------------------------- |
+| App disabled in prefs    | Presence stayed on Discord forever | Presence clears immediately       |
+| Timeline reset on switch | Stale timestamps carried over      | New `start` timestamp set per app |
 
 ---
 
@@ -2701,22 +2736,24 @@ if (shouldShow && packageName != runningPackage) {
 ### Features
 
 **AI Detection** — No hardcoded package lists:
+
 - Semantic keyword matching on app labels (`ai`, `gpt`, `chat`, `bot`, `gemini`, `claude`, `llm`, `copilot`, `perplexity`, `deepseek`, `llama`, `ollama`, `assistant`, `intelligence`, `openai`, `x.ai`, `bard`)
 - Android `RoleManager.ROLE_ASSISTANT` query catches power-button / "Hey Google" floating overlay launches
 - `Settings.Secure` "assistant" fallback for API < 30
 
 **Game Detection** — Works across all manufacturers:
+
 - `ApplicationInfo.FLAG_IS_GAME` flag check
 - `ApplicationInfo.CATEGORY_GAME` category check
 - Catches Samsung Game Hub, Xiaomi Game Turbo, Google Play Games, OnePlus Games, etc.
 
 **Presence output per detected type:**
 
-| Detected Type | Discord `details` | Discord `state` | Image |
-|---------------|-------------------|-----------------|-------|
-| AI app | "Chatting with AI" | "Thinking..." | Dynamic cover art URL via `RpcImage.ApplicationIcon` |
-| Game | "Playing game" | "In-game" | Dynamic cover art URL via `RpcImage.ApplicationIcon` |
-| Regular app | null | null | App icon via `RpcImage.ApplicationIcon` |
+| Detected Type | Discord `details`  | Discord `state` | Image                                                |
+| ------------- | ------------------ | --------------- | ---------------------------------------------------- |
+| AI app        | "Chatting with AI" | "Thinking..."   | Dynamic cover art URL via `RpcImage.ApplicationIcon` |
+| Game          | "Playing game"     | "In-game"       | Dynamic cover art URL via `RpcImage.ApplicationIcon` |
+| Regular app   | null               | null            | App icon via `RpcImage.ApplicationIcon`              |
 
 ### ProGuard Rules Added
 
@@ -2757,17 +2794,17 @@ Results are merged into `app/src/main/baseline-prof.txt` automatically via `merg
 
 ### Verified Against Actual Usage
 
-| Ktor Component | Usage Site | ProGuard Coverage |
-|----------------|------------|-------------------|
-| `HttpClient(CIO)` | `AppModule.kt:71` | `io.ktor.client.engine.cio.**` ✅ |
-| `ContentNegotiation` plugin | `AppModule.kt:72` | `io.ktor.client.plugins.**` ✅ |
-| `HttpTimeout` plugin | `AppModule.kt:75` | `io.ktor.client.plugins.**` ✅ |
-| `Logging` plugin | `AppModule.kt:80` | `io.ktor.client.plugins.**` ✅ |
-| `WebSockets` plugin | `DiscordWebSocketImpl.kt:78` | `io.ktor.client.plugins.**` ✅ |
-| `io.ktor.http.HttpHeaders` | `DiscordWebSocketImpl.kt:8` | `io.ktor.http.**` ✅ |
-| `kotlinx.serialization.json.Json` | `AppModule.kt:61`, `DiscordWebSocketImpl.kt:80` | `kotlinx.serialization.json.**` ✅ |
-| `io.ktor.client.call.body`, `HttpResponse` | `Ext.kt:32-33` | `io.ktor.client.**` ✅ |
-| `kotlinx.coroutines.*` (Mutex, withLock, Job, StateFlow) | `DiscordWebSocketImpl.kt` | `kotlinx.coroutines.**` ✅ |
+| Ktor Component                                           | Usage Site                                      | ProGuard Coverage                  |
+| -------------------------------------------------------- | ----------------------------------------------- | ---------------------------------- |
+| `HttpClient(CIO)`                                        | `AppModule.kt:71`                               | `io.ktor.client.engine.cio.**` ✅  |
+| `ContentNegotiation` plugin                              | `AppModule.kt:72`                               | `io.ktor.client.plugins.**` ✅     |
+| `HttpTimeout` plugin                                     | `AppModule.kt:75`                               | `io.ktor.client.plugins.**` ✅     |
+| `Logging` plugin                                         | `AppModule.kt:80`                               | `io.ktor.client.plugins.**` ✅     |
+| `WebSockets` plugin                                      | `DiscordWebSocketImpl.kt:78`                    | `io.ktor.client.plugins.**` ✅     |
+| `io.ktor.http.HttpHeaders`                               | `DiscordWebSocketImpl.kt:8`                     | `io.ktor.http.**` ✅               |
+| `kotlinx.serialization.json.Json`                        | `AppModule.kt:61`, `DiscordWebSocketImpl.kt:80` | `kotlinx.serialization.json.**` ✅ |
+| `io.ktor.client.call.body`, `HttpResponse`               | `Ext.kt:32-33`                                  | `io.ktor.client.**` ✅             |
+| `kotlinx.coroutines.*` (Mutex, withLock, Job, StateFlow) | `DiscordWebSocketImpl.kt`                       | `kotlinx.coroutines.**` ✅         |
 
 ### Rules Applied (lines 10-47)
 
@@ -2847,12 +2884,12 @@ This was triggered during rapid media changes where `MediaRpcService` called `up
 
 Added a `ReentrantLock` (`buttonsLock`) to protect all access to `buttons`. Since `ReentrantLock` has no Kotlin `withLock` extension, all four access sites use explicit `lock()` / `try` / `finally` / `unlock()`:
 
-| Access Site | Protection |
-|-------------|------------|
+| Access Site                                                                | Protection                                                        |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | `updateRPC()` — `buttons.toList()` snapshot (suspend, on `Dispatchers.IO`) | `buttonsLock.lock()` / `try` / `finally` / `buttonsLock.unlock()` |
-| `setButton1()` — `buttons.add()` | Same lock/unlock pattern |
-| `setButton2()` — `buttons.add()` | Same lock/unlock pattern |
-| `clearButtons()` — `buttons.clear()` | Same lock/unlock pattern |
+| `setButton1()` — `buttons.add()`                                           | Same lock/unlock pattern                                          |
+| `setButton2()` — `buttons.add()`                                           | Same lock/unlock pattern                                          |
+| `clearButtons()` — `buttons.clear()`                                       | Same lock/unlock pattern                                          |
 
 ### Imports Changed
 
@@ -2860,15 +2897,14 @@ Removed `kotlinx.coroutines.sync.Mutex` / `withLock` (suspend-only, unusable fro
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Concurrent button list access | `IndexOutOfBoundsException` crash on rapid media changes | Thread-safe snapshots; no crash |
-| `Mutex.withLock` | Could not be called from non-suspend `setButton*`/`clearButtons` | `ReentrantLock` works in both suspend and non-suspend contexts |
+| Issue                         | Before                                                           | After                                                          |
+| ----------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------- |
+| Concurrent button list access | `IndexOutOfBoundsException` crash on rapid media changes         | Thread-safe snapshots; no crash                                |
+| `Mutex.withLock`              | Could not be called from non-suspend `setButton*`/`clearButtons` | `ReentrantLock` works in both suspend and non-suspend contexts |
 
 Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 / AGP 9.6.0-alpha03.
 
 ---
-
 
 ## 98. Bug Fix: ExperimentalRpc — First Song Direct Media Detection
 
@@ -2882,15 +2918,16 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 ### Fix Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+
 - Added `getCurrentPlayingMediaAll()` method with retry logic (up to `maxMediaDetectionAttempts` = 4 attempts, with `mediaDetectionDelayMs * attempt` delay between retries) — same logic used in `activeSessionsListener()`
 - Called this method **before** falling back to the slow app-detection polling cycle, so the first song appears immediately on service start
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
+| Issue                    | Before                                                  | After                                |
+| ------------------------ | ------------------------------------------------------- | ------------------------------------ |
 | First song on cold start | Never appeared until switching tracks or 5s app polling | Appears immediately on service start |
-| Media detection | Only via session-change events | Direct detection on service start |
+| Media detection          | Only via session-change events                          | Direct detection on service start    |
 
 ---
 
@@ -2906,16 +2943,17 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 ### Fix Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+
 - Added `scope.launch { kizzyRPC.build() }` in `onStartCommand()` to establish the Discord WebSocket gateway connection
 - `build()` calls `connectToWebSocket()` which calls `discordWebSocket.connect()` and `markConnected()`
 - `connectToWebSocket()` now checks `isWebSocketConnected()` before connecting to avoid concurrent connections
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Discord gateway connection | Never established; all presence updates timed out | WebSocket connection established on service start |
-| Presence updates | All timed out ("Socket not connected within timeout") | Sent successfully once socket is connected |
+| Issue                      | Before                                                | After                                             |
+| -------------------------- | ----------------------------------------------------- | ------------------------------------------------- |
+| Discord gateway connection | Never established; all presence updates timed out     | WebSocket connection established on service start |
+| Presence updates           | All timed out ("Socket not connected within timeout") | Sent successfully once socket is connected        |
 
 ---
 
@@ -2931,6 +2969,7 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 ### Fixes Applied
 
 **`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`**
+
 - Added `presenceUpdateMutex` (`Mutex`) to protect all access to last-sent presence data
 - Added `lastSentName`, `lastSentDetails`, `lastSentState`, `lastSentStartTimestamps`, `lastSentStopTimestamps`, `lastSentLargeImageUrl` fields to track last sent presence data
 - Presence update is only sent when presence data **actually changed** (name, details, state, timestamps, or cover art URL changed)
@@ -2938,11 +2977,11 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 
 ### Result
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Duplicate presence updates | Sent on every callback (playback state, metadata change, session change) | Only sent when presence data actually changed |
-| Concurrent access | Race conditions on `lastSent*` fields | Mutex-protected read-modify-write |
-| Discord gateway flooding | Flooded with duplicate `PRESENCE_UPDATE`s | Only sends when presence data actually changed |
+| Issue                      | Before                                                                   | After                                          |
+| -------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------- |
+| Duplicate presence updates | Sent on every callback (playback state, metadata change, session change) | Only sent when presence data actually changed  |
+| Concurrent access          | Race conditions on `lastSent*` fields                                    | Mutex-protected read-modify-write              |
+| Discord gateway flooding   | Flooded with duplicate `PRESENCE_UPDATE`s                                | Only sends when presence data actually changed |
 
 ---
 
@@ -2953,9 +2992,11 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 **File:** `data/src/main/java/com/my/kizzy/data/get_current_data/media/GetCurrentPlayingMedia.kt`
 
 ### Problem
+
 When `Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, false]` was false, the `Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, false]` condition returned `appName` instead of `title` as the RPC name. This caused Discord to show the app name (e.g., "Spotify") instead of the actual song title (e.g., "Bohemian Rhapsody").
 
 ### Fix
+
 Changed `getCurrentPlayingMedia()` to always return `title ?: appName` as the name, regardless of the `MEDIA_RPC_SHOW_SONG_AS_TITLE` setting:
 
 ```kotlin
@@ -2967,6 +3008,7 @@ name = title ?: appName,
 ```
 
 ### Result
+
 Discord RPC always shows the actual song title instead of the app/channel name, regardless of the `MEDIA_RPC_SHOW_SONG_AS_TITLE` preference.
 
 ---
@@ -2976,6 +3018,7 @@ Discord RPC always shows the actual song title instead of the app/channel name, 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
 
 ### Problem
+
 When switching between music apps (e.g., Spotify → SoundCloud), Discord RPC continued showing the old song instead of updating to the new app. The `updatePresence()` method had a 1500ms minimum interval (`PRESENCE_UPDATE_MIN_INTERVAL_MS`) that blocked updates when switching apps quickly, and when metadata hadn't loaded yet (`playingMedia.name.isBlank()`), the code returned early without sending any RPC update.
 
 ### Fixes Applied
@@ -2985,14 +3028,16 @@ When switching between music apps (e.g., Spotify → SoundCloud), Discord RPC co
 2. **Metadata-not-ready handling** — When `playingMedia.name.isBlank()` but a new package is detected, RPC is updated immediately with the package name as the title instead of returning early without updating Discord.
 
 ### Files Modified
+
 - `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
 
 ### Result
-| Scenario | Before | After |
-|----------|--------|-------|
-| Switch Spotify → SoundCloud | Discord shows "Spotify" indefinitely until metadata loads | Discord immediately shows "SoundCloud" |
-| Metadata not loaded yet | RPC not updated until metadata arrives | RPC updated immediately with package name as title |
-| Rapid app switching | Discord gateway flooded with duplicate updates | Mutex-protected, only sends on actual change |
+
+| Scenario                    | Before                                                    | After                                              |
+| --------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| Switch Spotify → SoundCloud | Discord shows "Spotify" indefinitely until metadata loads | Discord immediately shows "SoundCloud"             |
+| Metadata not loaded yet     | RPC not updated until metadata arrives                    | RPC updated immediately with package name as title |
+| Rapid app switching         | Discord gateway flooded with duplicate updates            | Mutex-protected, only sends on actual change       |
 
 ---
 
@@ -3001,9 +3046,11 @@ When switching between music apps (e.g., Spotify → SoundCloud), Discord RPC co
 **File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
 
 ### Problem
+
 When dragging the progress bar in a music app (e.g., scrubbing forward/backward in Spotify), Discord's timeline didn't update to reflect the new position. The `onPlaybackStateChanged` callback fired immediately but `GetCurrentlyPlayingMedia.invoke()` read stale `playbackState.position` data before the media session updated it.
 
 ### Fix
+
 Added a 200ms delay in `onPlaybackStateChanged` before calling `updatePresence()`, giving the media session time to update its position data:
 
 ```kotlin
@@ -3020,18 +3067,19 @@ scope.launch {
 ```
 
 ### Result
+
 Discord's timeline now correctly reflects the dragged position when the user scrubs through a track.
 
 ---
 
 ## Known Non-Breaking Warnings
 
-| Warning | Location | Severity |
-|---------|----------|----------|
-| Legacy `android { }` DSL block deprecated | All `build.gradle.kts` | Low |
-| `statusBarColor`/`navigationBarColor` deprecated | `Theme.kt` | Low |
-| `libmmkv.so` / `libdatastore_shared_counter.so` cannot be stripped | Release builds | Low |
-| `Version reference 'crashx' is not used` | `gradle/libs.versions.toml` | Low (intentional, kept for reference) |
+| Warning                                                            | Location                    | Severity                              |
+| ------------------------------------------------------------------ | --------------------------- | ------------------------------------- |
+| Legacy `android { }` DSL block deprecated                          | All `build.gradle.kts`      | Low                                   |
+| `statusBarColor`/`navigationBarColor` deprecated                   | `Theme.kt`                  | Low                                   |
+| `libmmkv.so` / `libdatastore_shared_counter.so` cannot be stripped | Release builds              | Low                                   |
+| `Version reference 'crashx' is not used`                           | `gradle/libs.versions.toml` | Low (intentional, kept for reference) |
 
 ---
 
@@ -3044,59 +3092,60 @@ BUILD SUCCESSFUL in 2m 27s
 ```
 
 **APK Locations:**
+
 - `app/build/outputs/apk/debug/app-debug.apk`
 - `app/build/outputs/apk/release/app-release.apk`
 
 ### Complete List of New Files Created
 
-| File | Feature |
-|------|---------|
-| `data/src/main/java/com/my/kizzy/data/di/RepositoryModule.kt` | Hilt `@Binds` for `KizzyRepository` |
-| `feature_rpc_base/.../security/SecureTokenStorage.kt` | Tink-encrypted token storage + Flow |
-| `feature_rpc_base/.../security/KizzyStateRepository.kt` | Shared RPC state (isConnected, isPaused) |
-| `feature_rpc_base/.../network/NetworkMonitor.kt` | Network connectivity monitor |
-| `feature_rpc_base/.../ui/RpcViewModel.kt` | Hilt ViewModel with authToken StateFlow |
-| `feature_rpc_base/.../services/KizzyNotificationListener.kt` | Media metadata notification listener |
-| `feature_rpc_base/.../services/NotificationListener.kt` | System-bound notification listener with auto-restart |
-| `feature_rpc_base/.../services/KizzyRpcService.kt` | Foreground service with notification buttons |
-| `feature_rpc_base/.../utils/MediaMetadataParser.kt` | Media metadata parser from notifications |
-| `feature_rpc_base/.../utils/PermissionUtils.kt` | Notification listener permission utilities |
-| `feature_rpc_base/.../utils/KizzyServiceController.kt` | Intent-based service control |
-| `feature_rpc_base/.../ui/RpcStatusCard.kt` | Material 3 reactive status card |
-| `feature_rpc_base/.../ui/RpcStatusCardLoadingSkeleton.kt` | Shimmer loading placeholder |
-| `feature_rpc_base/.../ui/KizzyDashboardScreen.kt` | Reactive dashboard screen |
-| `data/src/main/java/com/my/kizzy/data/work/RpcRecoveryHiltWorker.kt` | WorkManager RPC state recovery |
-| `app/src/main/java/com/my/kizzy/CrashReportActivity.kt` | Native Compose crash activity (replaced CrashX) |
-| `local.properties` | Android SDK path configuration |
+| File                                                                 | Feature                                              |
+| -------------------------------------------------------------------- | ---------------------------------------------------- |
+| `data/src/main/java/com/my/kizzy/data/di/RepositoryModule.kt`        | Hilt `@Binds` for `KizzyRepository`                  |
+| `feature_rpc_base/.../security/SecureTokenStorage.kt`                | Tink-encrypted token storage + Flow                  |
+| `feature_rpc_base/.../security/KizzyStateRepository.kt`              | Shared RPC state (isConnected, isPaused)             |
+| `feature_rpc_base/.../network/NetworkMonitor.kt`                     | Network connectivity monitor                         |
+| `feature_rpc_base/.../ui/RpcViewModel.kt`                            | Hilt ViewModel with authToken StateFlow              |
+| `feature_rpc_base/.../services/KizzyNotificationListener.kt`         | Media metadata notification listener                 |
+| `feature_rpc_base/.../services/NotificationListener.kt`              | System-bound notification listener with auto-restart |
+| `feature_rpc_base/.../services/KizzyRpcService.kt`                   | Foreground service with notification buttons         |
+| `feature_rpc_base/.../utils/MediaMetadataParser.kt`                  | Media metadata parser from notifications             |
+| `feature_rpc_base/.../utils/PermissionUtils.kt`                      | Notification listener permission utilities           |
+| `feature_rpc_base/.../utils/KizzyServiceController.kt`               | Intent-based service control                         |
+| `feature_rpc_base/.../ui/RpcStatusCard.kt`                           | Material 3 reactive status card                      |
+| `feature_rpc_base/.../ui/RpcStatusCardLoadingSkeleton.kt`            | Shimmer loading placeholder                          |
+| `feature_rpc_base/.../ui/KizzyDashboardScreen.kt`                    | Reactive dashboard screen                            |
+| `data/src/main/java/com/my/kizzy/data/work/RpcRecoveryHiltWorker.kt` | WorkManager RPC state recovery                       |
+| `app/src/main/java/com/my/kizzy/CrashReportActivity.kt`              | Native Compose crash activity (replaced CrashX)      |
+| `local.properties`                                                   | Android SDK path configuration                       |
 
 ### Complete List of Modified Files (Key Changes)
 
-| File | Change |
-|------|--------|
-| `gradle/wrapper/gradle-wrapper.properties` | Gradle 8.13 → 9.8.2 |
-| `gradle/libs.versions.toml` | AGP 9.6.0-alpha02, Kotlin 2.4.21, KSP 2.3.13, Compose BOM 2026.09.00, Ktor 3.1.0, Coil 3.x, `secure-storage` bundle, `hilt-navigation-compose`, removed `crashx` |
-| `gradle.properties` | `android.newDsl=true`, `android.sync.suppressAgpWarnings` |
-| `build.gradle.kts` | `compilerOptions { jvmTarget.set(JvmTarget.JVM_26) }`, `-Xmetadata-version=2.2.0` |
-| `feature_rpc_base/build.gradle.kts` | Added material3, material-icons-extended, compose.runtime, hilt-navigation-compose, work-runtime-ktx, hilt-work, ksp(libs.hilt.compiler); removed `libs.crashx` |
-| `data/build.gradle.kts` | Added `ksp(libs.hilt.compiler)` |
-| `feature_logs/build.gradle.kts` | Added `ksp(libs.hilt.compiler)` |
-| `data/src/main/java/com/my/kizzy/data/di/AppModule.kt` | Removed duplicate `providesKizzyRepository`, unused imports |
-| `feature_rpc_base/.../services/MediaRpcService.kt` | Fixed package-change detection, MM timestamp handling, notification always updated, pref init, KSP/Hilt integration |
-| `feature_rpc_base/.../services/NotificationListener.kt` | System-bound auto-restart on listener connect |
-| `feature_rpc_base/.../work/HiltWorkers.kt` | Added `RpcRecoveryHiltWorker` |
-| `gateway/.../DiscordWebSocketImpl.kt` | Added `clearPresence()`, `updateTokenAndReconnect()`, `disconnect()`, OpCode 6 resume |
-| `app/src/main/AndroidManifest.xml` | Declared `KizzyRpcService` with `connectedDevice` type, `mediaPlayback|dataSync` foreground service types, `tools:ignore RemoveWorkManagerInitializer` |
-| `app/src/main/java/com/my/kizzy/App.kt` | All initialization wrapped in try-catch for emulator startup; replaced CrashX with `Thread.setDefaultUncaughtExceptionHandler` + `CrashReportActivity` |
-| `feature_settings/.../rpc_settings/RpcSettings.kt` | Fixed `OpenInNew` (AutoMirrored.Filled) and `Person` (Icons.Default) icon references |
-| `feature_home/Home.kt` | Added missing `fillMaxWidth` import |
-| `feature_console_rpc/.../GamesScreen.kt` | Added `serviceEnabled` parameter, `selected` state variable, `AppUtils` import |
-| `feature_logs/.../LogScreen.kt` | Added `onBackPressed` parameter, `LargeTopAppBar`, `BackButton` imports |
-| `app/proguard-rules.pro` | Data class keep rules, Ktor engine keep, Hilt/Dagger/AutoValue keep rules, explicit `proguardFiles` configuration |
-| `gradle/libs.versions.toml` | Added missing `hilt` library entry (`com.google.dagger:hilt-android`) |
-| `gradle/libs.versions.toml` | Added missing `compose-ui-tooling-preview` library entry |
-| `gradle/libs.versions.toml` | Migrated `javax.inject:javax.inject` → `jakarta.inject:jakarta.inject-api` |
+| File                                                    | Change                                                                                                                                                           |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `gradle/wrapper/gradle-wrapper.properties`              | Gradle 8.13 → 9.8.2                                                                                                                                              |
+| `gradle/libs.versions.toml`                             | AGP 9.6.0-alpha02, Kotlin 2.4.21, KSP 2.3.13, Compose BOM 2026.09.00, Ktor 3.1.0, Coil 3.x, `secure-storage` bundle, `hilt-navigation-compose`, removed `crashx` |
+| `gradle.properties`                                     | `android.newDsl=true`, `android.sync.suppressAgpWarnings`                                                                                                        |
+| `build.gradle.kts`                                      | `compilerOptions { jvmTarget.set(JvmTarget.JVM_26) }`, `-Xmetadata-version=2.2.0`                                                                                |
+| `feature_rpc_base/build.gradle.kts`                     | Added material3, material-icons-extended, compose.runtime, hilt-navigation-compose, work-runtime-ktx, hilt-work, ksp(libs.hilt.compiler); removed `libs.crashx`  |
+| `data/build.gradle.kts`                                 | Added `ksp(libs.hilt.compiler)`                                                                                                                                  |
+| `feature_logs/build.gradle.kts`                         | Added `ksp(libs.hilt.compiler)`                                                                                                                                  |
+| `data/src/main/java/com/my/kizzy/data/di/AppModule.kt`  | Removed duplicate `providesKizzyRepository`, unused imports                                                                                                      |
+| `feature_rpc_base/.../services/MediaRpcService.kt`      | Fixed package-change detection, MM timestamp handling, notification always updated, pref init, KSP/Hilt integration                                              |
+| `feature_rpc_base/.../services/NotificationListener.kt` | System-bound auto-restart on listener connect                                                                                                                    |
+| `feature_rpc_base/.../work/HiltWorkers.kt`              | Added `RpcRecoveryHiltWorker`                                                                                                                                    |
+| `gateway/.../DiscordWebSocketImpl.kt`                   | Added `clearPresence()`, `updateTokenAndReconnect()`, `disconnect()`, OpCode 6 resume                                                                            |
+| `app/src/main/AndroidManifest.xml`                      | Declared `KizzyRpcService` with `connectedDevice` type, `mediaPlayback                                                                                           | dataSync`foreground service types,`tools:ignore RemoveWorkManagerInitializer` |
+| `app/src/main/java/com/my/kizzy/App.kt`                 | All initialization wrapped in try-catch for emulator startup; replaced CrashX with `Thread.setDefaultUncaughtExceptionHandler` + `CrashReportActivity`           |
+| `feature_settings/.../rpc_settings/RpcSettings.kt`      | Fixed `OpenInNew` (AutoMirrored.Filled) and `Person` (Icons.Default) icon references                                                                             |
+| `feature_home/Home.kt`                                  | Added missing `fillMaxWidth` import                                                                                                                              |
+| `feature_console_rpc/.../GamesScreen.kt`                | Added `serviceEnabled` parameter, `selected` state variable, `AppUtils` import                                                                                   |
+| `feature_logs/.../LogScreen.kt`                         | Added `onBackPressed` parameter, `LargeTopAppBar`, `BackButton` imports                                                                                          |
+| `app/proguard-rules.pro`                                | Data class keep rules, Ktor engine keep, Hilt/Dagger/AutoValue keep rules, explicit `proguardFiles` configuration                                                |
+| `gradle/libs.versions.toml`                             | Added missing `hilt` library entry (`com.google.dagger:hilt-android`)                                                                                            |
+| `gradle/libs.versions.toml`                             | Added missing `compose-ui-tooling-preview` library entry                                                                                                         |
+| `gradle/libs.versions.toml`                             | Migrated `javax.inject:javax.inject` → `jakarta.inject:jakarta.inject-api`                                                                                       |
 
 ---
 
-*Generated on November 7, 2026*  
-*All features implemented and verified — build passes with zero compilation errors.*
+_Generated on November 7, 2026_  
+_All features implemented and verified — build passes with zero compilation errors._

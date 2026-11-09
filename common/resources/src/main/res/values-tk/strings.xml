@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Işjeňlik ady</string>
+    <string name="activity_details">Işjeňlik jikme-jiklikleri</string>
+    <string name="activity_state">Işjeňlik ýagdaýy</string>
+    <string name="load_config">Faýllardan ýüklemek</string>
+    <string name="save_config">Sazlamany saklamak</string>
+    <string name="delete_configs">Sazlamany pozmak</string>
+    <string name="preview_rpc">RPC öňünden görmek</string>
+    <string name="select_a_config">Sazlama saýlamak</string>
+    <string name="login_with_discord">Discord arkaly girmek</string>
+    <string name="github_readme">OKA (README)</string>
+    <string name="credits">Spaslar</string>
+    <string name="welcome">Hoş geldiňiz</string>
+    <string name="features">Aýratynlyklar</string>
+    <string name="account">Hasap</string>
+    <string name="display">Ekran</string>
+    <string name="about">Hakynda</string>
+    <string name="settings">Sazlamalar</string>
+    <string name="language">Dil</string>
+    <string name="dark_theme">Garaňky tema</string>
+    <string name="privacy_policy">Gizlinlik syýasaty</string>
+    <string name="cancel">Bes etmek</string>
+    <string name="confirm">Tassyklamak</string>
+    <string name="save">Ýatda saklamak</string>
+    <string name="delete">Pozmak</string>
+    <string name="search">Gözleg</string>
+    <string name="clear">Arassalamak</string>
+    <string name="exit">Çykmak</string>
+    <string name="logs">Žurnallar (Logs)</string>
+    <string name="version">Wersiýa</string>
+    <string name="try_again">Täzeden synanyşmak</string>
+    <string name="yes">Hawa</string>
+    <string name="logout">Hasapdan çykmak</string>
+    <string name="skip">Geçmek</string>
+    <string name="stop">Bes etmek</string>
+    <string name="restart">Täzeden başlamak</string>
+    <string name="no_internet_connection">Internet birikmesi ýok</string>
+    <string name="unknown_error">Garaşylmadyk ýalňyşlyk ýüze çykdy</string>
+    <string name="copied_to_clipboard">Wagtlaýyn ýatda saklanyldy</string>
+</resources>

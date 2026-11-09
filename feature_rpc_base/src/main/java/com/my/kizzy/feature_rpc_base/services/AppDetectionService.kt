@@ -25,12 +25,14 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import com.blankj.utilcode.util.AppUtils
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.domain.model.rpc.RpcButtons
+import com.my.kizzy.feature_rpc_base.services.DetectedAiApp
+import com.my.kizzy.feature_rpc_base.services.DetectedGameApp
+import com.my.kizzy.feature_rpc_base.services.DynamicActivityDetectionEngine
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
@@ -42,6 +44,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.util.SortedMap
 import java.util.TreeMap
@@ -61,6 +64,9 @@ class AppDetectionService : Service() {
 
     @Inject
     lateinit var notificationManager: NotificationManager
+
+    @Inject
+    lateinit var dynamicActivityDetectionEngine: DynamicActivityDetectionEngine
 
     private lateinit var pendingIntent: PendingIntent
 
@@ -97,9 +103,7 @@ class AppDetectionService : Service() {
             this,
             0, restartIntent, PendingIntent.FLAG_IMMUTABLE
         )
-        // Adding action to notification builder here to avoid having multiple Exit buttons
-        // https://github.com/dead8309/Kizzy/issues/197
-        notificationBuilder
+        Notification.Builder(this, Constants.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_apps)
             .addAction(R.drawable.ic_apps, getString(R.string.restart), restartPendingIntent)
             .addAction(R.drawable.ic_apps, getString(R.string.exit), pendingIntent)
@@ -122,6 +126,17 @@ class AppDetectionService : Service() {
                         val packageName = getLatestPackageName(queryUsageStats)
                         if (packageName != null && packageName !in EXCLUDED_APPS) {
                             handleValidPackage(packageName, enabledPackages, rpcButtons)
+                        }
+                    }
+
+                    // Also check the active assistant (power-button / "Hey Google" triggers)
+                    // that may appear as a floating overlay rather than a foreground activity.
+                    if (dynamicActivityDetectionEngine.isAiAssistantActive()) {
+                        val assistantPkg = dynamicActivityDetectionEngine.getActiveAssistantPackage()
+                        if (assistantPkg != null && assistantPkg !in EXCLUDED_APPS) {
+                            val aiApp = dynamicActivityDetectionEngine.identifyAiApp(assistantPkg)
+                            handleEnabledPackage(assistantPkg, rpcButtons, aiApp = aiApp)
+                            runningPackage = assistantPkg
                         }
                     }
                 } catch (e: CancellationException) {
@@ -167,21 +182,50 @@ class AppDetectionService : Service() {
         enabledPackages: List<String>,
         rpcButtons: RpcButtons,
     ) {
-        if (packageName in enabledPackages && packageName != runningPackage) {
-            handleEnabledPackage(packageName, rpcButtons)
+        // Check if this is an AI app via dynamic detection (no hardcoded list needed).
+        val aiApp = dynamicActivityDetectionEngine.identifyAiApp(packageName)
+        val isAiApp = aiApp != null
+
+        // Check if this is a game via Android system game flags (no hardcoded list needed).
+        val gameApp = dynamicActivityDetectionEngine.identifyGame(packageName)
+        val isGameApp = gameApp != null
+
+        // Determine if this package should be shown on Discord.
+        // This is evaluated independently of runningPackage so that disabling
+        // an app in Preferences immediately removes its presence even if the
+        // app is still playing in the foreground.
+        val shouldShow = packageName in enabledPackages || isAiApp || isGameApp
+
+        if (shouldShow && packageName != runningPackage) {
+            // New app came to foreground — show it and set the timeline start.
+            handleEnabledPackage(packageName, rpcButtons, aiApp = aiApp, gameApp = gameApp)
             runningPackage = packageName
-        } else if (packageName != runningPackage) {
+        } else if (!shouldShow && runningPackage != "") {
+            // App was disabled in prefs or is no longer relevant — clear presence.
             handleDisabledPackage()
             runningPackage = ""
         }
     }
 
-    private suspend fun handleEnabledPackage(packageName: String, rpcButtons: RpcButtons) {
+    private suspend fun handleEnabledPackage(
+        packageName: String,
+        rpcButtons: RpcButtons,
+        aiApp: DetectedAiApp? = null,
+        gameApp: DetectedGameApp? = null
+    ) {
+        val isAiApp = aiApp != null
+        val isGameApp = gameApp != null
+        val displayName = if (isAiApp) aiApp!!.displayName else if (isGameApp) gameApp!!.displayName else null
+        val iconUrl = if (isAiApp) aiApp!!.iconUrl else if (isGameApp) gameApp!!.iconUrl else null
         if (kizzyRPC.isRpcRunning()) {
             kizzyRPC.updateRPC(
                 CommonRpc(
-                    name = AppUtils.getAppName(packageName),
-                    largeImage = RpcImage.ApplicationIcon(packageName, this@AppDetectionService),
+                    name = displayName
+                        ?: this.packageManager.getApplicationLabel(this.packageManager.getApplicationInfo(packageName, 0)).toString(),
+                    details = if (isAiApp) "Chatting with AI" else if (isGameApp) "Playing game" else null,
+                    state = if (isAiApp) "Thinking..." else if (isGameApp) "In-game" else null,
+                    largeImage = iconUrl?.let { RpcImage.ExternalImage(it) }
+                        ?: RpcImage.ApplicationIcon(packageName, this@AppDetectionService),
                     time = Timestamps(start = System.currentTimeMillis()),
                     packageName = packageName
                 ),
@@ -189,16 +233,22 @@ class AppDetectionService : Service() {
             )
         } else {
             kizzyRPC.apply {
-                setName(AppUtils.getAppName(packageName))
+                setName(displayName
+                    ?: this@AppDetectionService.packageManager.getApplicationLabel(
+                        this@AppDetectionService.packageManager.getApplicationInfo(packageName, 0)
+                    ).toString())
+                setDetails(if (isAiApp) "Chatting with AI" else if (isGameApp) "Playing game" else null)
+                setState(if (isAiApp) "Thinking..." else if (isGameApp) "In-game" else null)
                 setStartTimestamps(System.currentTimeMillis())
                 setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
-                setLargeImage(RpcImage.ApplicationIcon(packageName, this@AppDetectionService))
+                setLargeImage(
+                    iconUrl?.let { RpcImage.ExternalImage(it) }
+                        ?: RpcImage.ApplicationIcon(packageName, this@AppDetectionService)
+                )
                 if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
                     with(rpcButtons) {
-                        setButton1(button1.takeIf { it.isNotEmpty() })
-                        setButton1URL(button1Url.takeIf { it.isNotEmpty() })
-                        setButton2(button2.takeIf { it.isNotEmpty() })
-                        setButton2URL(button2Url.takeIf { it.isNotEmpty() })
+                        setButton1(button1.takeIf { it.isNotEmpty() }, button1Url.takeIf { it.isNotEmpty() })
+                        setButton2(button2.takeIf { it.isNotEmpty() }, button2Url.takeIf { it.isNotEmpty() })
                     }
                 }
                 build()
@@ -206,9 +256,10 @@ class AppDetectionService : Service() {
         }
         notificationManager.notify(
             Constants.NOTIFICATION_ID, notificationBuilder
-                .setContentText(packageName)
+                .setContentText(displayName ?: packageName)
                 .setLargeIcon(
-                    rpcImage = RpcImage.ApplicationIcon(packageName, this@AppDetectionService),
+                    rpcImage = iconUrl?.let { RpcImage.ExternalImage(it) }
+                        ?: RpcImage.ApplicationIcon(packageName, this@AppDetectionService),
                     context = this@AppDetectionService
                 )
                 .build()

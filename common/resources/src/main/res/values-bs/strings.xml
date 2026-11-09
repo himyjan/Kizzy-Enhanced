@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Naziv aktivnosti</string>
+    <string name="activity_details">Detalji aktivnosti</string>
+    <string name="activity_state">Stanje aktivnosti</string>
+    <string name="load_config">Učitaj iz datoteka</string>
+    <string name="save_config">Spremi konfiguraciju</string>
+    <string name="delete_configs">Obriši konfiguraciju</string>
+    <string name="preview_rpc">Pregled RPC-a</string>
+    <string name="select_a_config">Odaberi konfiguraciju</string>
+    <string name="login_with_discord">Prijavi se putem Discorda</string>
+    <string name="github_readme">PROČITAJME (README)</string>
+    <string name="credits">Zasluge</string>
+    <string name="welcome">Dobrodošli</string>
+    <string name="features">Značajke</string>
+    <string name="account">Račun</string>
+    <string name="display">Prikaz</string>
+    <string name="about">O aplikaciji</string>
+    <string name="settings">Postavke</string>
+    <string name="language">Jezik</string>
+    <string name="dark_theme">Tamna tema</string>
+    <string name="privacy_policy">Politika privatnosti</string>
+    <string name="cancel">Otkaži</string>
+    <string name="confirm">Potvrdi</string>
+    <string name="save">Spremi</string>
+    <string name="delete">Obriši</string>
+    <string name="search">Pretraži</string>
+    <string name="clear">Očisti</string>
+    <string name="exit">Izađi</string>
+    <string name="logs">Zapisnici (Logs)</string>
+    <string name="version">Verzija</string>
+    <string name="try_again">Pokušaj ponovo</string>
+    <string name="yes">Da</string>
+    <string name="logout">Odjavi se</string>
+    <string name="skip">Preskoči</string>
+    <string name="stop">Zaustavi</string>
+    <string name="restart">Ponovo pokreni</string>
+    <string name="no_internet_connection">Nema internetske veze</string>
+    <string name="unknown_error">Došlo je do neočekivane greške</string>
+    <string name="copied_to_clipboard">Kopirano u međuspremnik</string>
+</resources>

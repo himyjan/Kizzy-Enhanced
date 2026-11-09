@@ -1,15 +1,3 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * ActivityRow.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.feature_profile.ui.component
 
 import androidx.compose.foundation.background
@@ -18,18 +6,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,12 +29,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.theme.DISCORD_BLURPLE
+import com.my.kizzy.ui.theme.DISCORD_CARD
+import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
+import com.my.kizzy.ui.theme.DISCORD_TEXT
 import kotlinx.coroutines.delay
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -56,232 +50,217 @@ fun ActivityRow(
     showTs: Boolean,
     special: String?,
 ) {
-    val elapsed by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    var elapsedState by remember { mutableStateOf(formatTime(elapsed)) }
     val isPlaying =
         rpcConfig?.type.isNullOrEmpty() || rpcConfig?.type?.toIntOrNull()?.equals(0) == true
     val isPlayingMedia =
         rpcConfig?.type?.toIntOrNull()?.equals(2) == true || rpcConfig?.type?.toIntOrNull()
             ?.equals(3) == true
 
-    // Media
-    var elapsedText by remember { mutableStateOf("00:00") }
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
-    LaunchedEffect(elapsedState) {
+    // Media timeline - calculate real elapsed time from timestamps
+    var elapsedText by remember(rpcConfig) { mutableStateOf("00:00") }
+    var sliderPosition by remember(rpcConfig) { mutableFloatStateOf(0f) }
+    LaunchedEffect(rpcConfig) {
         while (true) {
             delay(1000)
-            elapsedState = formatTime(elapsed)
+            val now = System.currentTimeMillis()
             if (isPlayingMedia && rpcConfig?.timestampsStart?.toLongOrNull() != null && rpcConfig?.timestampsStop?.toLongOrNull() != null) {
                 val startTime = rpcConfig.timestampsStart.toLong()
                 val endTime = rpcConfig.timestampsStop.toLong()
                 val difference = endTime - startTime
-                val elapsed1 = System.currentTimeMillis() - startTime
+                val elapsed1 = now - startTime
                 sliderPosition = (elapsed1.toFloat() / difference.toFloat())
                 elapsedText = if (elapsed1 < difference) {
                     getFormatFromMs(elapsed1)
                 } else {
                     getFormatFromMs(difference)
                 }
+            } else {
+                sliderPosition = 0f
+                elapsedText = "00:00"
             }
         }
     }
 
+    val activityPrefix = when (rpcConfig?.type?.toIntOrNull()) {
+        2 -> stringResource(R.string.activity_listening_title, rpcConfig?.name.orEmpty().ifEmpty { "music" })
+        3 -> stringResource(R.string.activity_watching_title, rpcConfig?.name.orEmpty().ifEmpty { "video" })
+        5 -> stringResource(R.string.activity_competiting_title, rpcConfig?.name.orEmpty())
+        else -> rpcConfig?.name?.takeIf { it.isNotEmpty() }
+            ?: stringResource(R.string.activity_playing_title)
+    }
 
-    Column(
-        Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(1.dp)
+    val renderedDetails = if (isPlaying) {
+        rpcConfig?.details?.takeIf { it.isNotEmpty() }
+            ?: stringResource(id = R.string.user_profile)
+    } else {
+        rpcConfig?.details
+    }
+    val renderedState = rpcConfig?.state?.takeIf { it.isNotEmpty() }
+
+    Surface(
+        color = DISCORD_CARD,
+        shape = RoundedCornerShape(8.dp),
+        shadowElevation = 6.dp,
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(20.dp, 4.dp)
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Text(
+                text = activityPrefix,
+                color = DISCORD_TEXT,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.ExtraBold,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Start,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-            Box(
-                modifier = Modifier
-                    .size(70.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(DISCORD_BLURPLE),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = if (isAsset(rpcConfig?.largeImg)) "https://media.discordapp.net/${rpcConfig?.largeImg}" else
-                        rpcConfig?.largeImg,
-                    error = painterResource(id = R.drawable.editing_rpc_pencil),
-                    placeholder = painterResource(R.drawable.editing_rpc_pencil),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillHeight,
-                    modifier = if (!rpcConfig?.largeImg.isNullOrEmpty())
-                        Modifier
-                            .size(70.dp)
-                            .clip(RoundedCornerShape(6.dp))
-                    else
-                        Modifier
-                            .size(48.dp)
-                            .background(DISCORD_BLURPLE, RoundedCornerShape(6.dp))
-                )
-                if (!rpcConfig?.smallImg.isNullOrEmpty()) {
+            Spacer(Modifier.height(16.dp))
+
+            Row(verticalAlignment = Alignment.Top) {
+                Box(Modifier.size(108.dp)) {
                     AsyncImage(
-                        model =
-                        if (isAsset(rpcConfig?.smallImg))
-                            "https://media.discordapp.net/${rpcConfig?.smallImg}"
-                        else
-                            rpcConfig?.smallImg,
-                        error = painterResource(id = R.drawable.ic_rpc_placeholder),
-                        placeholder = painterResource(R.drawable.ic_rpc_placeholder),
+                        model = if (isAsset(rpcConfig?.largeImg)) "https://media.discordapp.net/${rpcConfig?.largeImg}" else
+                            rpcConfig?.largeImg,
+                        error = painterResource(id = R.drawable.editing_rpc_pencil),
+                        placeholder = painterResource(R.drawable.editing_rpc_pencil),
                         contentDescription = null,
                         contentScale = ContentScale.FillHeight,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .align(Alignment.BottomEnd)
+                        modifier = if (!rpcConfig?.largeImg.isNullOrEmpty())
+                            Modifier
+                                .size(96.dp)
+                                .clip(RoundedCornerShape(3.dp))
+                                .align(Alignment.TopStart)
+                        else
+                            Modifier
+                                .size(48.dp)
+                                .background(DISCORD_BLURPLE, RoundedCornerShape(3.dp))
+                        ,
                     )
-                }
-            }
-            Column {
-                ProfileText(
-                    text = if (isPlaying) {
-                        rpcConfig?.name.takeIf { !it.isNullOrEmpty() }
-                            ?: stringResource(id = R.string.user_profile)
-                    } else {
-                        rpcConfig?.details
-                    },
-                    style = MaterialTheme.typography.titleSmall
-                        .copy(
-                            fontSize = 16.sp,
-                        ),
-                    modifier = Modifier.padding(10.dp, 0.dp, 0.dp, 2.dp)
-                )
-                ProfileText(
-                    text = if (isPlaying) {
-                        rpcConfig?.details
-                    } else {
-                        rpcConfig?.state
-                    },
-                    style = MaterialTheme.typography.titleSmall
-                        .copy(
-                            fontSize = 12.sp
-                        ),
-                    modifier = Modifier.padding(10.dp, 0.dp, 0.dp, 2.dp),
-                    bold = false
-                )
-                ProfileText(
-                    text = (if (isPlaying) {
-                        rpcConfig?.state
-                    } else {
-                        rpcConfig?.largeText
-                    } +
-                            if (
-                                rpcConfig?.partyCurrentSize?.toIntOrNull() != null &&
-                                rpcConfig.partyMaxSize.toIntOrNull() != null &&
-                                rpcConfig.partyCurrentSize.toIntOrNull()!! > 0 &&
-                                rpcConfig.partyMaxSize.toIntOrNull()!! > 0 &&
-                                rpcConfig.partyCurrentSize.toIntOrNull()!! <= rpcConfig.partyMaxSize.toIntOrNull()!!
-                            ) {
-                                " " + stringResource(
-                                    R.string.user_profile_party,
-                                    rpcConfig.partyCurrentSize.toInt(),
-                                    rpcConfig.partyMaxSize.toInt()
-                                )
-                            } else {
-                                ""
-                            }).takeIf { rpcConfig?.state?.isNotEmpty() == true },
-                    style = MaterialTheme.typography.titleSmall
-                        .copy(
-                            fontSize = 12.sp
-                        ),
-                    modifier = Modifier.padding(10.dp, 0.dp, 0.dp, 2.dp),
-                    bold = false
-                )
-                if (
-                    showTs &&
-                    (isPlaying ||
-                            (isPlayingMedia &&
-                                    (rpcConfig?.timestampsStart?.toLongOrNull() == null || rpcConfig?.timestampsStop?.toLongOrNull() == null)))
-                ) {
-                    ProfileText(
-                        text = stringResource(
-                            id = rpcConfig?.timestampsStop?.toLongOrNull()?.let {
-                                if (it > 0) R.string.time_left else R.string.time_elapsed
-                            } ?: R.string.time_elapsed,
-                            formatTime(
-                                rpcConfig?.timestampsStart?.toLongOrNull(),
-                                rpcConfig?.timestampsStop?.toLongOrNull()
+                    if (!rpcConfig?.smallImg.isNullOrEmpty()) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .border(
+                                        2.dp,
+                                        DISCORD_CARD,
+                                        CircleShape,
+                                    ).padding(2.dp)
+                                    .align(Alignment.BottomEnd),
+                        ) {
+                            AsyncImage(
+                                model =
+                                if (isAsset(rpcConfig?.smallImg))
+                                    "https://media.discordapp.net/${rpcConfig?.smallImg}"
+                                else
+                                    rpcConfig?.smallImg,
+                                error = painterResource(id = R.drawable.ic_rpc_placeholder),
+                                placeholder = painterResource(R.drawable.ic_rpc_placeholder),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillHeight,
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape),
                             )
-                                .takeIf { it.isNotEmpty() } ?: elapsedState
-                        ),
-                        style = MaterialTheme.typography.labelSmall
-                            .copy(
-                                fontSize = 12.sp
-                            ),
-                        bold = false,
-                        modifier = Modifier.padding(10.dp, 0.dp, 0.dp, 0.dp)
+                        }
+                    }
+                }
+
+                Column(
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .padding(horizontal = 6.dp),
+                ) {
+                    Text(
+                        text = renderedDetails.orEmpty(),
+                        color = DISCORD_TEXT,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
+
+                    Text(
+                        text = renderedState.orEmpty(),
+                        color = DISCORD_SUBTEXT,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    if (
+                        showTs &&
+                        (isPlaying ||
+                                (isPlayingMedia &&
+                                        (rpcConfig?.timestampsStart?.toLongOrNull() == null || rpcConfig?.timestampsStop?.toLongOrNull() == null)))
+                    ) {
+                        Text(
+                            text = stringResource(
+                                id = rpcConfig?.timestampsStop?.toLongOrNull()?.let {
+                                    if (it > 0) R.string.time_left else R.string.time_elapsed
+                                } ?: R.string.time_elapsed,
+                                formatTime(
+                                    rpcConfig?.timestampsStart?.toLongOrNull(),
+                                    rpcConfig?.timestampsStop?.toLongOrNull()
+                                )
+                                    .takeIf { it.isNotEmpty() } ?: elapsedText
+                            ),
+                            color = DISCORD_SUBTEXT,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
                 }
             }
-        }
-        if (showTs && isPlayingMedia && rpcConfig?.timestampsStart?.toLongOrNull() != null && rpcConfig?.timestampsStop?.toLongOrNull() != null) {
-            // Seekbar for media
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp, 6.dp, 20.dp, 0.dp)
-                    .height(4.dp)
-                    .background(Color.LightGray.copy(alpha = 0.5f))
-                    .clip(RoundedCornerShape(4.dp)),
-                contentAlignment = Alignment.CenterStart
-            ) {
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (showTs && isPlayingMedia && rpcConfig?.timestampsStart?.toLongOrNull() != null && rpcConfig?.timestampsStop?.toLongOrNull() != null) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .fillMaxWidth(sliderPosition)
-                        .height(4.dp)
-                        .background(DISCORD_BLURPLE)
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp, 4.dp, 20.dp, 6.dp)
-            ) {
-                ProfileText(
-                    // Time elapsed must be less than the total time
-                    text = elapsedText,
-                    style = MaterialTheme.typography.labelSmall
-                        .copy(
-                            fontSize = 12.sp
-                        ),
-                    bold = false,
+                        .fillMaxWidth()
+                        .padding(0.dp, 0.dp, 0.dp, 0.dp)
+                        .height(6.dp)
+                        .background(Color.LightGray.copy(alpha = 0.3f))
+                        .clip(RoundedCornerShape(4.dp)),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .fillMaxWidth(sliderPosition)
+                            .height(6.dp)
+                            .background(DISCORD_BLURPLE)
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                )
-                ProfileText(
-                    text = getFormatFromMs(rpcConfig.timestampsStop.toLong() - rpcConfig.timestampsStart.toLong()),
-                    style = MaterialTheme.typography.labelSmall
-                        .copy(
-                            fontSize = 12.sp
-                        ),
-                    bold = false,
-                    modifier = Modifier
-                )
+                        .fillMaxWidth()
+                        .padding(0.dp, 8.dp, 0.dp, 0.dp)
+                ) {
+                    Text(
+                        text = elapsedText,
+                        color = DISCORD_SUBTEXT,
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                    )
+                    Text(
+                        text = getFormatFromMs(rpcConfig.timestampsStop.toLong() - rpcConfig.timestampsStart.toLong()),
+                        color = DISCORD_SUBTEXT,
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                    )
+                }
+            }
+
+            if (rpcConfig != null) {
+                ProfileButton(label = rpcConfig.button1, link = rpcConfig.button1link)
+                ProfileButton(label = rpcConfig.button2, link = rpcConfig.button2link)
             }
         }
-        if (showTs && rpcConfig == null) {
-            ProfileButton(
-                label = stringResource(id = R.string.user_profile_special_button),
-                link = special
-            )
-        }
-        if (rpcConfig != null) {
-            ProfileButton(label = rpcConfig.button1, link = rpcConfig.button1link)
-            ProfileButton(label = rpcConfig.button2, link = rpcConfig.button2link)
-        }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(19.dp, 0.dp, 19.dp, 5.dp)
-                .height(1.5.dp)
-        )
     }
 }
 

@@ -16,7 +16,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import com.blankj.utilcode.util.FileIOUtils
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.data.utils.getFileName
 import com.my.kizzy.domain.model.rpc.RpcConfig
@@ -58,7 +57,7 @@ internal fun Context.handleUriResult(uri: Uri?, onSuccess: (json: String) -> Uni
             input.copyTo(out)
         }
     }
-    FileIOUtils.readFile2String(file).also { json ->
+    file.readText().also { json ->
         onSuccess(json)
     }
 }

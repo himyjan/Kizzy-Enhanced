@@ -60,6 +60,7 @@ import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.preference.PreferencesHint
+import androidx.compose.material.icons.outlined.AppsOutage
 
 @SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -136,7 +137,7 @@ fun AppsRPC(
                             PreferencesHint(
                                 title = stringResource(id = R.string.usage_access),
                                 description = stringResource(id = R.string.usage_access_desc),
-                                icon = Icons.Default.AppsOutage,
+                                icon = Icons.Outlined.AppsOutage,
                             ) {
                                 when (hasUsageAccess) {
                                     false -> ctx.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
@@ -169,24 +170,29 @@ fun AppsRPC(
                             }
                         }
                     }
-                    items(
-                        state.apps.size,
-                        key = { idx -> state.apps[idx].pkg }
-                    ) { i ->
-                        if (searchText.isEmpty() || state.apps[i].name.contains(
-                                searchText,
-                                ignoreCase = true
-                            ) || state.apps[i].pkg.contains(searchText, ignoreCase = true)
-                        ) {
-                            AppsItem(
-                                name = state.apps[i].name,
-                                pkg = state.apps[i].pkg,
-                                isChecked = state.enabledApps[state.apps[i].pkg] ?: false,
-                                onClick = { updateAppEnabled(state.apps[i].pkg) }
-                            )
-                        } else {
-                            Spacer(modifier = Modifier.height(0.dp))
+                    // Pre-filter apps list before composition to avoid running
+                    // contains() checks for every item on each recomposition.
+                    // Only matching apps are composed, eliminating search lag.
+                    val filteredApps = if (searchText.isBlank()) {
+                        state.apps
+                    } else {
+                        state.apps.filter { app ->
+                            app.name.contains(searchText, ignoreCase = true)
+                                || app.pkg.contains(searchText, ignoreCase = true)
                         }
+                    }
+
+                    items(
+                        count = filteredApps.size,
+                        key = { index -> filteredApps[index].pkg }
+                    ) { index ->
+                        val app = filteredApps[index]
+                        AppsItem(
+                            name = app.name,
+                            pkg = app.pkg,
+                            isChecked = state.enabledApps[app.pkg] ?: false,
+                            onClick = { updateAppEnabled(app.pkg) }
+                        )
                     }
                 }
             }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Nomo de agado</string>
+    <string name="activity_details">Detaloj de agado</string>
+    <string name="activity_state">Stato de agado</string>
+    <string name="load_config">Ŝargi el dosieroj</string>
+    <string name="save_config">Konservi agordon</string>
+    <string name="delete_configs">Forigi agordon</string>
+    <string name="preview_rpc">Antaŭrigardi RPC</string>
+    <string name="select_a_config">Elekti agordon</string>
+    <string name="login_with_discord">Ensaluti per Discord</string>
+    <string name="github_readme">LEGINMIN (README)</string>
+    <string name="credits">Kreditoj</string>
+    <string name="welcome">Bonvenon</string>
+    <string name="features">Trajtoj</string>
+    <string name="account">Konto</string>
+    <string name="display">Montrilo</string>
+    <string name="about">Pri</string>
+    <string name="settings">Agordoj</string>
+    <string name="language">Lingvo</string>
+    <string name="dark_theme">Malhela etoso</string>
+    <string name="privacy_policy">Privateca politiko</string>
+    <string name="cancel">Nuligi</string>
+    <string name="confirm">Konfirmi</string>
+    <string name="save">Konservi</string>
+    <string name="delete">Forigi</string>
+    <string name="search">Serĉi</string>
+    <string name="clear">Vakigi</string>
+    <string name="exit">Eliri</string>
+    <string name="logs">Protokoloj (Logs)</string>
+    <string name="version">Versio</string>
+    <string name="try_again">Reprovi</string>
+    <string name="yes">Jes</string>
+    <string name="logout">Elsaluti</string>
+    <string name="skip">Preterlasi</string>
+    <string name="stop">Halti</string>
+    <string name="restart">Rekomenci</string>
+    <string name="no_internet_connection">Neniu interreta konekto</string>
+    <string name="unknown_error">Okazis neatendita eraro</string>
+    <string name="copied_to_clipboard">Kopiita al tondejo</string>
+</resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">پائالىيەت ئىسمى</string>
+    <string name="activity_details">پائالىيەت تەپسىلاتلىرى</string>
+    <string name="activity_state">پائالىيەت ھالىتى</string>
+    <string name="activity_start_timestamps">باشلاش ۋاقىت بەلگىسى</string>
+    <string name="activity_stop_timestamps">توختاش ۋاقىت بەلگىسى</string>
+    <string name="activity_status_online_idle_dnd">پائالىيەت ھالىتى ("online", "idle", "dnd")</string>
+    <string name="activity_button1_text">پائالىيەت كۇنۇپكىسى 1 تېكىستى</string>
+    <string name="activity_button2_text">پائالىيەت كۇنۇپكىسى 2 تېكىستى</string>
+    <string name="activity_button1_url">كۇنۇپكا 1 URL</string>
+    <string name="activity_button2_url">كۇنۇپكا 2 URL</string>
+    <string name="activity_large_image">پائالىيەت چوڭ رەسىمى</string>
+    <string name="activity_small_image">پائالىيەت كىچىك رەسىمى</string>
+    <string name="activity_type">پائالىيەت تۈرى</string>
+    <string name="activity_platform">پائالىيەت سۇپىسى</string>
+    <string name="load_config">ھۆججەتلەردىن يۈكلەش</string>
+    <string name="save_config">سەپلىمىنى ساقلاش</string>
+    <string name="delete_configs">سەپلىمىنى ئۆچۈرۈش</string>
+    <string name="preview_rpc">RPC ئالدىن كۆرۈش</string>
+    <string name="select_a_config">سەپلىمە تاللاش</string>
+    <string name="login_with_discord">Discord بىلەن كىرىش</string>
+    <string name="github_readme">ئوقۇش (README)</string>
+    <string name="credits">يازغۇچىلار ۋە تۆھپىكارلار</string>
+    <string name="welcome">خۇش كەپسىز</string>
+    <string name="features">ئىقتىدارلىرى</string>
+    <string name="account">ھېسابات</string>
+    <string name="display">ئېكران</string>
+    <string name="about">ھەققىدە</string>
+    <string name="settings">تەڭشەكلەر</string>
+    <string name="language">تىل</string>
+    <string name="dark_theme">قاراڭغۇ كۆرۈنۈش</string>
+    <string name="privacy_policy">شەخسىيەت سىياسىتى</string>
+    <string name="cancel">ۋاز كېچىش</string>
+    <string name="confirm">جەزملەش</string>
+    <string name="save">ساقلاش</string>
+    <string name="delete">ئۆچۈرۈش</string>
+    <string name="search">ئىزدەش</string>
+    <string name="clear">تازىلاش</string>
+    <string name="exit">چىقىش</string>
+    <string name="logs">خاتىرىلەر (Logs)</string>
+    <string name="version">نەشرى</string>
+    <string name="try_again">قايتا سىناڭ</string>
+    <string name="yes">ھەئە</string>
+    <string name="logout">چىقىش</string>
+    <string name="skip">اتلاپ өtüsh</string>
+    <string name="stop">توхтатиш</string>
+    <string name="restart">قايتا باشلاش</string>
+    <string name="no_internet_connection">ئىنتېرنېت ئۇلىنىشى يوق</string>
+    <string name="unknown_error">نامەلۇم خاتالىق كۆرۈلدى</string>
+    <string name="copied_to_clipboard">קלيبوردقا كۆچۈرۈلدى</string>
+</resources>

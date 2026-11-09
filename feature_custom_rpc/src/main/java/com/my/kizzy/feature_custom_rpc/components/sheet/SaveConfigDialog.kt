@@ -22,8 +22,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import java.io.File
 import androidx.compose.ui.res.stringResource
-import com.blankj.utilcode.util.FileIOUtils
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.resources.R
 
@@ -53,16 +53,8 @@ fun SaveConfigDialog(
                         return@OutlinedButton
                     }
                     onDismiss()
-                    FileIOUtils
-                        .writeFileFromString(
-                            "$dir/$configName.json",
-                            rpc.dataToString()
-                        ).also {
-                            when (it) {
-                                true -> onSaved(ctx.getString(R.string.saved_config_toast, configName))
-                                false -> onSaved(ctx.getString(R.string.error_saving_config_toast))
-                            }
-                        }
+                    File("$dir/$configName.json").writeText(rpc.dataToString())
+                    onSaved(ctx.getString(R.string.saved_config_toast, configName))
                 }) {
                 Text(text = stringResource(R.string.save))
             }

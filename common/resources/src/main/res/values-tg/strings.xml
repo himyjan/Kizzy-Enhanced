@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Номи фаъолият</string>
+    <string name="activity_details">Тафсилоти фаъолият</string>
+    <string name="activity_state">Ҳолати фаъолият</string>
+    <string name="load_config">Боргузорӣ аз файлҳо</string>
+    <string name="save_config">Захираи танзимот</string>
+    <string name="delete_configs">Нест кардани танзимот</string>
+    <string name="preview_rpc">Пешнамоиши RPC</string>
+    <string name="select_a_config">Интихоби танзимот</string>
+    <string name="login_with_discord">Воридшавӣ тавассути Discord</string>
+    <string name="github_readme">ХУНDЕД (README)</string>
+    <string name="credits">Сипосномаҳо</string>
+    <string name="welcome">Хуш омадед</string>
+    <string name="features">Хусусиятҳо</string>
+    <string name="account">Ҳисоб</string>
+    <string name="display">Намоиш</string>
+    <string name="about">Дар бораи</string>
+    <string name="settings">Танзимот</string>
+    <string name="language">Забон</string>
+    <string name="dark_theme">Мавзӯи торик</string>
+    <string name="privacy_policy">Сиёсати махфият</string>
+    <string name="cancel">Бекор кардан</string>
+    <string name="confirm">Тасдиқ кардан</string>
+    <string name="save">Захира кардан</string>
+    <string name="delete">Нест кардан</string>
+    <string name="search">Ҷустуҷӯ</string>
+    <string name="clear">Тоза кардан</string>
+    <string name="exit">Баромадан</string>
+    <string name="logs">Қайдҳо (Logs)</string>
+    <string name="version">Версия</string>
+    <string name="try_again">Боз кӯшиш кунед</string>
+    <string name="yes">Ҳа</string>
+    <string name="logout">Баромадан</string>
+    <string name="skip">Гузандан</string>
+    <string name="stop">Қатъ кардан</string>
+    <string name="restart">Аз нав оғоз кардан</string>
+    <string name="no_internet_connection">Пайвасти интернет мавҷуд нест</string>
+    <string name="unknown_error">Хатогии ғайричашмдошт рух дод</string>
+    <string name="copied_to_clipboard">Ба буфери хотира нусхабардорӣ шуд</string>
+</resources>

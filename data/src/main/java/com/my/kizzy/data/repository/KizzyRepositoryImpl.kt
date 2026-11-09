@@ -73,8 +73,9 @@ class KizzyRepositoryImpl @Inject constructor(
 
 suspend fun HttpResponse.releaseBody(): Release {
     return if (this.status.value == 200) {
-        Prefs.saveLatestRelease(this.body())
-        this.body()
+        val release = this.body<Release>()
+        Prefs.saveLatestRelease(release)
+        release
     } else {
         Prefs.getSavedLatestRelease() ?: Release()
     }

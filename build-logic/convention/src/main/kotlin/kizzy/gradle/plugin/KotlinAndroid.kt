@@ -1,67 +1,64 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * KotlinAndroid.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package kizzy.gradle.plugin
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
-) {
-    commonExtension.apply {
-        compileSdk = 36
+/**
+ * Shared core compilation settings applied across all Android modules.
+ */
+private fun Project.configureCommonAndroidBody(commonExtension: CommonExtension) {
+    commonExtension.compileSdk = 37
 
-        defaultConfig {
-            minSdk = 26
-        }
+    commonExtension.defaultConfig.minSdk = 26
 
-        buildFeatures {
-            buildConfig = true
-        }
+    commonExtension.buildFeatures.buildConfig = true
 
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
-        }
+    commonExtension.compileOptions.sourceCompatibility = JavaVersion.VERSION_26
+    commonExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_26
 
-        buildTypes {
-            getByName("release") {
-                /*
-                Starting with agp 8.4.0 setting isMinifyEnabled for libraries will minify the lib much sooner in the build process,
-                as opposed to doing it at the end of the build process. This will cause the app module to use a minified
-                version of the library which will throw missing classes error during compiling for release build.
-
-                https://stackoverflow.com/a/79148742/25688500
-
-                isMinifyEnabled = true
-                 */
-
-                /*
-                cannot be used by libraries
-                isShrinkResources = true
-                */
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "${rootProject.rootDir.absolutePath}/app/proguard-rules.pro"
-                )
-            }
+    // Configures all Kotlin tasks inside this module to target Java 26 bytecode
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_26)
         }
     }
-    tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
-    }
+}
 
+// Overload entry point for Application modules — only the app container
+// should run R8 minification/shrinking since it sees the full dependency graph.
+fun Project.configureKotlinAndroid(commonExtension: ApplicationExtension) {
+    configureCommonAndroidBody(commonExtension)
+    commonExtension.buildTypes.named("release").configure {
+        isMinifyEnabled = true
+        isShrinkResources = true
+
+        proguardFiles(
+            commonExtension.getDefaultProguardFile("proguard-android-optimize.txt"),
+            "${rootProject.rootDir.absolutePath}/app/proguard-rules.pro"
+        )
+        optimization {
+            enable = true // Enables code and resource optimizations.
+        }
+    }
+}
+
+// Overload entry point for Library modules — libraries must NOT minify
+// themselves; R8 runs once at the :app level where all 17 modules are visible.
+fun Project.configureKotlinAndroid(commonExtension: LibraryExtension) {
+    configureCommonAndroidBody(commonExtension)
+    commonExtension.buildTypes.named("release").configure {
+        isMinifyEnabled = false
+        isShrinkResources = false
+    }
+}
+
+// Overload entry point for CommonExtension (generic fallback)
+fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
+    configureCommonAndroidBody(commonExtension)
 }

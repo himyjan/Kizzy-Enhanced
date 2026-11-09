@@ -19,23 +19,23 @@ import com.kyant.monet.TonalPalettes
 fun String.parseDynamicColor(
     tonalPalettes: TonalPalettes,
     isDarkTheme: Boolean): String =
-    replace("fill=\"(.+?)\"".toRegex()) {
-        val value = it.groupValues[1]
-        if (value.startsWith("#")) return@replace it.value
+    replace("fill=\"([^\"]+)\"".toRegex()) { matchResult ->
+        val value = matchResult.groupValues[1]
+        if (value.startsWith("#")) return@replace matchResult.value
         try {
             val (scheme, tone) = value.split("(?<=\\d)(?=\\D)|(?=\\d)(?<=\\D)".toRegex())
             val argb = when (scheme) {
-                "p" -> tonalPalettes accent1 tone.autoToDarkTone(isDarkTheme)
-                "s" -> tonalPalettes accent2 tone.autoToDarkTone(isDarkTheme)
-                "t" -> tonalPalettes accent3 tone.autoToDarkTone(isDarkTheme)
-                "n" -> tonalPalettes neutral1 tone.autoToDarkTone(isDarkTheme)
-                "nv" -> tonalPalettes neutral2 tone.autoToDarkTone(isDarkTheme)
+                "p" -> tonalPalettes.accent1(tone.autoToDarkTone(isDarkTheme))
+                "s" -> tonalPalettes.accent2(tone.autoToDarkTone(isDarkTheme))
+                "t" -> tonalPalettes.accent3(tone.autoToDarkTone(isDarkTheme))
+                "n" -> tonalPalettes.neutral1(tone.autoToDarkTone(isDarkTheme))
+                "nv" -> tonalPalettes.neutral2(tone.autoToDarkTone(isDarkTheme))
                 else -> Color.Transparent
             }.toArgb()
-        "fill=\"${String.format("#%06X", 0xFFFFFF and argb)}\""
+            "fill=\"${String.format("#%06X", 0xFFFFFF and argb)}\""
         } catch (e: Exception) {
             e.printStackTrace()
-            it.value
+            matchResult.value
         }
     }
 

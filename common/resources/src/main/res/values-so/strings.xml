@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+
+    <string name="activity_name">Magaca Dhaqdhaqaaqa</string>
+    <string name="activity_details">Faahfaahinta Dhaqdhaqaaqa</string>
+    <string name="activity_state">Xaaladda Dhaqdhaqaaqa</string>
+    <string name="load_config">Ka soo rar faylasha</string>
+    <string name="save_config">Keydi Qaabeynta</string>
+    <string name="delete_configs">Tirtir Qaabeynta</string>
+    <string name="preview_rpc">Horudhac RPC</string>
+    <string name="select_a_config">Dooro qaabeyn</string>
+    <string name="login_with_discord">Kaga gal Discord</string>
+    <string name="github_readme">AKHRISO (README)</string>
+    <string name="credits">Abaalmarinada</string>
+    <string name="welcome">Soo dhowow</string>
+    <string name="features">Tilmaamaha</string>
+    <string name="account">Akoonka</string>
+    <string name="display">Bandhigga</string>
+    <string name="about">Ku saabsan</string>
+    <string name="settings">Dejinta</string>
+    <string name="language">Luqadda</string>
+    <string name="dark_theme">Mawduuca Madow</string>
+    <string name="privacy_policy">Siyaasadda Gaarka ah</string>
+    <string name="cancel">Jooji</string>
+    <string name="confirm">Xaqiiji</string>
+    <string name="save">Keydi</string>
+    <string name="delete">Tirtir</string>
+    <string name="search">Raadi</string>
+    <string name="clear">Nadiifi</string>
+    <string name="exit">Ka bax</string>
+    <string name="logs">Diiwaannada</string>
+    <string name="version">Nooca</string>
+    <string name="try_again">Isku day mar kale</string>
+    <string name="yes">Haa</string>
+    <string name="logout">Ka bax</string>
+    <string name="skip">Ka bood</string>
+    <string name="stop">Jooji</string>
+    <string name="restart">Dib u bilow</string>
+    <string name="no_internet_connection">Ma jiro xiriir internet</string>
+    <string name="unknown_error">Cillad aan la filayn ayaa dhacday</string>
+    <string name="copied_to_clipboard">Lagu guulaystay in la koobiyo</string>
+</resources>

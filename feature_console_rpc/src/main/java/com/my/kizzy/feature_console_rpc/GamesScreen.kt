@@ -57,9 +57,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.rpc.RpcConfig
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
@@ -73,6 +74,7 @@ import com.my.kizzy.ui.components.shimmer.AnimatedShimmer
 import com.my.kizzy.ui.components.shimmer.ShimmerGamesScreen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import androidx.compose.material.icons.outlined.Search
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,17 +82,16 @@ fun GamesScreen(
     onBackPressed: () -> Unit,
     onEvent: (UiEvent) -> Unit,
     state: GamesState,
-    serviceEnabled: Boolean,
     isSearchBarVisible: Boolean,
+    serviceEnabled: Boolean = false,
+    consoleRpcRunning: Boolean = AppUtils.customRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning(),
+    otherRpcServicesRunning: Boolean = AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning() || AppUtils.appDetectionRunning(),
 ) {
-    var selected by remember {
-        mutableStateOf("")
-    }
-
     val context = LocalContext.current
     var isConsoleRpcRunning by remember {
-        mutableStateOf(serviceEnabled)
+        mutableStateOf(consoleRpcRunning)
     }
+    var selected by remember { mutableStateOf("") }
     var searchText by remember { mutableStateOf("") }
 
     val intent = Intent(context, CustomRpcService::class.java)
@@ -121,7 +122,7 @@ fun GamesScreen(
                 actions = {
                     if (!isSearchBarVisible) {
                         IconButton(onClick = { onEvent(UiEvent.OpenSearchBar) }) {
-                            Icon(Icons.Default.Search, stringResource(id = R.string.search))
+                            Icon(Icons.Outlined.Search, stringResource(id = R.string.search))
                         }
                     }
                 },
@@ -171,7 +172,8 @@ fun GamesScreen(
                     ) {
                         SwitchBar(
                             title = stringResource(id = R.string.enable_console_rpc),
-                            isChecked = isConsoleRpcRunning
+                            isChecked = isConsoleRpcRunning,
+                            enabled = !otherRpcServicesRunning
                         ) {
                             isConsoleRpcRunning = !isConsoleRpcRunning
                             when (isConsoleRpcRunning) {
@@ -210,7 +212,10 @@ fun GamesScreen(
                             }
                         }
                         LazyColumn {
-                            items(state.games) { game ->
+                            items(
+                                items = state.games,
+                                key = { game -> game.game_title }
+                            ) { game ->
                                 SingleChoiceGameItem(
                                     game = game,
                                     selected = game.game_title == selected
@@ -339,7 +344,9 @@ fun GamesScreenPreview() {
         onBackPressed = {},
         state = GamesState.Loading,
         isSearchBarVisible = false,
-        serviceEnabled = false
+        serviceEnabled = false,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -350,7 +357,9 @@ fun GamesScreenPreview2() {
         onBackPressed = {},
         state = GamesState.Error(stringResource(id = R.string.no_internet_connection)),
         isSearchBarVisible = false,
-        serviceEnabled = false
+        serviceEnabled = false,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -363,7 +372,9 @@ fun GamesScreenPreview3() {
             games = fakeGames
         ),
         isSearchBarVisible = false,
-        serviceEnabled = false
+        serviceEnabled = false,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -374,7 +385,9 @@ fun GamesScreenPreview4() {
         onBackPressed = {},
         state = GamesState.Loading,
         isSearchBarVisible = true,
-        serviceEnabled = true
+        serviceEnabled = true,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -385,7 +398,9 @@ fun GamesScreenPreview5() {
         onBackPressed = {},
         state = GamesState.Error(stringResource(id = R.string.no_internet_connection)),
         isSearchBarVisible = true,
-        serviceEnabled = true
+        serviceEnabled = true,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }
 @Preview
@@ -396,6 +411,8 @@ fun GamesScreenPreview6() {
         onBackPressed = {},
         state = GamesState.Success(games = fakeGames),
         isSearchBarVisible = true,
-        serviceEnabled = true
+        serviceEnabled = true,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
     )
 }

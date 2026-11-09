@@ -19,6 +19,7 @@ import android.content.ComponentName
 import android.content.Context
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.services.NotificationListener
+import com.my.kizzy.resources.R
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,5 +57,6 @@ object RpcBaseModule {
         }
         notificationManager.createNotificationChannel(channel)
         return Notification.Builder(context, Constants.CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_apps)
     }
 }

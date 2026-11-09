@@ -18,6 +18,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,7 +35,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -50,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -60,18 +61,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 
-private const val MIN_CHARS_TO_TRIGGER = 2
 private const val TEMPLATE_REGEX = "\\{\\{[^{}]*\\}\\}"
-private const val MAX_COMPLETION_LIST_HEIGHT = 250
-private const val SINGLE_COMPLETION_ITEM_HEIGHT = 62.5
+private const val MAX_COMPLETION_LIST_HEIGHT_DP = 250f
+private const val SINGLE_COMPLETION_ITEM_HEIGHT_DP = 62.5f
 
 private typealias ResourceId = Int
 
@@ -89,82 +90,33 @@ fun RpcFieldWithCompletions(
     onValueChange: (String) -> Unit = {},
     completionList: List<Pair<String, ResourceId>> = emptyList(),
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val density = LocalDensity.current
+    val interactionSource = remember { MutableInteractionSource() }
+
     var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
     var showSuggestions by remember { mutableStateOf(false) }
-    var filteredPlaceholders by remember { mutableStateOf(completionList) }
+    var filteredPlaceholders by remember { mutableStateOf<List<Pair<String, ResourceId>>>(emptyList()) }
     var lastTemplateCursorPosition by rememberSaveable { mutableIntStateOf(-1) }
     var lastTemplateText by rememberSaveable { mutableStateOf("") }
     var internalIsFocused by remember { mutableStateOf(false) }
 
-    val density = LocalDensity.current
-
+    // Sync external value into internal state when it changes externally
     LaunchedEffect(value) {
         if (value != textFieldValue.text) {
             textFieldValue = textFieldValue.copy(text = value)
         }
     }
 
-    // check for template state on recomposition
-    val checkTemplateState = {
-        val cursor = textFieldValue.selection.start
-        val text = textFieldValue.text
+    // Pre-computed colors for the current theme (avoids repeated MaterialTheme access)
+    val primaryColor = colorScheme.primary
+    val containerColor = colorScheme.primaryContainer.copy(alpha = 0.3f)
+    val surfaceColor = colorScheme.surface.copy(alpha = 0.98f)
 
-        if (cursor > 0 && cursor <= text.length) {
-            val textBefore = text.take(cursor)
-            val templateStartIndex = textBefore.lastIndexOf("{{")
-
-            if (templateStartIndex != -1 && !textBefore.substring(templateStartIndex)
-                    .contains("}}")
-            ) {
-                // in a template
-                lastTemplateCursorPosition = cursor
-                lastTemplateText = text
-
-                val partialTemplate = textBefore.substring(templateStartIndex + 2)
-
-                filteredPlaceholders = if (partialTemplate.isNotEmpty()) {
-                    completionList.filter { (key, _) ->
-                        val keyToMatch = if (key.startsWith("{{") && key.endsWith("}}")) {
-                            key.substring(2, key.length - 2)
-                        } else {
-                            key
-                        }
-                        keyToMatch.contains(partialTemplate, ignoreCase = true)
-                    }
-                } else {
-                    completionList
-                }
-
-                showSuggestions = true
-            } else if (lastTemplateCursorPosition != -1 && text == lastTemplateText) {
-                // text hasn't changed but cursor might have moved due to keyboard change
-                // keep suggestions visible
-                showSuggestions = showSuggestions && filteredPlaceholders.isNotEmpty()
-            } else {
-                // check for regular word
-                val currentWord = getCurrentWord(textBefore)
-                if (currentWord.length >= MIN_CHARS_TO_TRIGGER) {
-                    filteredPlaceholders = completionList.filter { (key, _) ->
-                        key.contains(currentWord, ignoreCase = true)
-                    }
-                    showSuggestions = filteredPlaceholders.isNotEmpty()
-                } else {
-                    // reset template tracking
-                    lastTemplateCursorPosition = -1
-                    lastTemplateText = ""
-                    showSuggestions = false
-                }
-            }
-        } else {
-            lastTemplateCursorPosition = -1
-            lastTemplateText = ""
-            showSuggestions = false
-        }
-    }
-
-    val color = MaterialTheme.colorScheme.primary
-    val background = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-    val visualTransformation = remember(color, background) {
+    // Cache visual transformation per text value - avoids rebuilding on every recomposition
+    val visualTransformation = remember(textFieldValue.text) {
+        val color = primaryColor
+        val background = containerColor
         VisualTransformation { text ->
             val annotatedString = buildAnnotatedString {
                 append(text)
@@ -184,23 +136,16 @@ fun RpcFieldWithCompletions(
         }
     }
 
-    /**
-     * Call on each composition to ensure suggestions state is maintained
-     *
-     * Why ?
-     * While testing, i noticed when you switch between number to text keyboard,
-     * the suggestions would disappear even if the text was still in a template.
-     **/
-    checkTemplateState()
-
-    LocalContext.current
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
     ) {
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
+                .clip(RoundedCornerShape(12.dp))
                 .onFocusChanged { focusState ->
                     internalIsFocused = focusState.isFocused
                     if (!internalIsFocused) {
@@ -214,9 +159,10 @@ fun RpcFieldWithCompletions(
             onValueChange = { newTextFieldValue ->
                 textFieldValue = newTextFieldValue
                 onValueChange(newTextFieldValue.text)
-                checkTemplateState()
+                updateSuggestions(newTextFieldValue, completionList)
             },
             enabled = enabled,
+            interactionSource = interactionSource,
             label = { Text(stringResource(id = label)) },
             placeholder = { Text(stringResource(R.string.type_to_insert_variable)) },
             keyboardOptions = keyboardOptions,
@@ -225,32 +171,30 @@ fun RpcFieldWithCompletions(
             singleLine = true,
         )
 
-        AnimatedVisibility(
-            visible = isError, modifier = Modifier.align(Alignment.BottomEnd)
-        ) {
+        if (isError) {
             Text(
                 text = errorMessage,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(16.dp, 4.dp, 16.dp, 0.dp)
+                    .align(Alignment.BottomEnd),
                 textAlign = TextAlign.End,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium
+                color = colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
             )
         }
 
-        if (showSuggestions && filteredPlaceholders.isNotEmpty() && internalIsFocused) {
+        if (showSuggestions && filteredPlaceholders.isNotEmpty() && internalIsFocused && enabled) {
+            val maxHeightPx = with(density) {
+                minOf(
+                    MAX_COMPLETION_LIST_HEIGHT_DP.dp.roundToPx(),
+                    (SINGLE_COMPLETION_ITEM_HEIGHT_DP * filteredPlaceholders.size).dp.roundToPx()
+                )
+            }
+
             Popup(
                 alignment = Alignment.TopCenter,
-                offset = IntOffset(
-                    0, with(density) {
-                        val offset = minOf(
-                            MAX_COMPLETION_LIST_HEIGHT.dp.roundToPx(),
-                            (SINGLE_COMPLETION_ITEM_HEIGHT * filteredPlaceholders.size).dp.roundToPx()
-                        )
-                        // We are displaying popup above the TextField
-                        -offset
-                    }),
+                offset = IntOffset(0, -maxHeightPx),
                 properties = PopupProperties(
                     focusable = false,
                     dismissOnBackPress = true,
@@ -258,165 +202,132 @@ fun RpcFieldWithCompletions(
                 ),
                 onDismissRequest = { showSuggestions = false }
             ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.98f)
-                    ),
-                    border = BorderStroke(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.20f)
-                    )
+                AnimatedVisibility(
+                    visible = showSuggestions
                 ) {
-                    LazyColumn(
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(4.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .heightIn(max = MAX_COMPLETION_LIST_HEIGHT.dp)
+                            .padding(horizontal = 10.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = surfaceColor
+                        ),
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = primaryColor.copy(alpha = 0.15f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        items(filteredPlaceholders.size) { index ->
-                            val (placeholder, resId) = filteredPlaceholders[index]
-                            var isHovered by remember { mutableStateOf(false) }
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(
-                                        if (isHovered) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-                                        else MaterialTheme.colorScheme.surface
-                                    )
-                                    .clickable {
-                                        val currentSelectionStart = textFieldValue.selection.start
-                                        val textUpToCursor =
-                                            textFieldValue.text.take(currentSelectionStart)
-                                        val actualKey =
-                                            if (placeholder.startsWith("{{") && placeholder.endsWith(
-                                                    "}}"
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(surfaceColor)
+                                .heightIn(max = maxHeightPx.dp)
+                        ) {
+                            itemsIndexed(
+                                items = filteredPlaceholders,
+                                key = { index: Int, item: Pair<String, ResourceId> -> item.first }
+                            ) { itemsIndex: Int, item: Pair<String, ResourceId> ->
+                                val (placeholder, resId) = item
+                                val lastIndex = filteredPlaceholders.lastIndex
+                                var isPressed by remember { mutableStateOf(false) }
+                                val itemColor = if (isPressed) primaryColor.copy(alpha = 0.1f) else surfaceColor
+
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(itemColor)
+                                        .clickable(
+                                            interactionSource = interactionSource,
+                                            onClick = {
+                                                val currentSelectionStart = textFieldValue.selection.start
+                                                val textUpToCursor = textFieldValue.text.take(currentSelectionStart)
+                                                val actualKey = extractTemplateKey(placeholder)
+
+                                                val newText = insertTemplateKey(
+                                                    textFieldValue.text,
+                                                    textUpToCursor,
+                                                    currentSelectionStart,
+                                                    actualKey
                                                 )
-                                            ) {
-                                                placeholder.substring(2, placeholder.length - 2)
-                                            } else {
-                                                placeholder
+                                                val newCursorPos = textUpToCursor.lastIndexOf("{{").let { templateStart ->
+                                                    if (templateStart != -1) {
+                                                        val prefix = textFieldValue.text.substring(0, templateStart)
+                                                        prefix.length + actualKey.length + 4
+                                                    } else {
+                                                        val currentWord = getCurrentWord(textUpToCursor)
+                                                        if (currentWord.isNotEmpty()) {
+                                                            val wordStartPos = currentSelectionStart - currentWord.length
+                                                            textFieldValue.text.substring(0, wordStartPos).length + actualKey.length + 4
+                                                        } else {
+                                                            textUpToCursor.length + actualKey.length + 4
+                                                        }
+                                                    }
+                                                }
+
+                                                textFieldValue = textFieldValue.copy(
+                                                    text = newText,
+                                                    selection = TextRange(newCursorPos)
+                                                )
+                                                onValueChange(newText)
+                                                showSuggestions = false
                                             }
-                                        val newText: String
-                                        val newCursorPos: Int
-                                        if (textUpToCursor.lastIndexOf("{{") != -1) {
-                                            val templateStart = textUpToCursor.lastIndexOf("{{")
-                                            val partialTemplate =
-                                                textUpToCursor.substring(templateStart)
-                                            if (partialTemplate.startsWith("{{") && !partialTemplate.contains(
-                                                    "}}"
-                                                )
-                                            ) {
-                                                val prefix =
-                                                    textFieldValue.text.substring(0, templateStart)
-                                                val suffix = textFieldValue.text.substring(
-                                                    currentSelectionStart
-                                                )
-                                                newText = "$prefix{{$actualKey}}$suffix"
-                                                newCursorPos =
-                                                    prefix.length + actualKey.length + 4
-                                            } else {
-                                                val currentWord = getCurrentWord(textUpToCursor)
-                                                if (currentWord.isNotEmpty()) {
-                                                    val wordStartPos =
-                                                        currentSelectionStart - currentWord.length
-                                                    val prefix = textFieldValue.text.substring(
-                                                        0,
-                                                        wordStartPos
-                                                    )
-                                                    val suffix = textFieldValue.text.substring(
-                                                        currentSelectionStart
-                                                    )
-                                                    newText = "$prefix{{$actualKey}}$suffix"
-                                                    newCursorPos =
-                                                        prefix.length + actualKey.length + 4
-                                                } else {
-                                                    val prefix = textUpToCursor
-                                                    val suffix = textFieldValue.text.substring(
-                                                        currentSelectionStart
-                                                    )
-                                                    newText = "$prefix{{$actualKey}}$suffix"
-                                                    newCursorPos =
-                                                        prefix.length + actualKey.length + 4
+                                        )
+                                        .pointerInput(Unit) {
+                                            awaitPointerEventScope {
+                                                while (true) {
+                                                    val event = awaitPointerEvent()
+                                                    val pressed = event.changes.any { it.pressed }
+                                                    isPressed = pressed
                                                 }
                                             }
-                                        } else {
-                                            val currentWord = getCurrentWord(textUpToCursor)
-                                            if (currentWord.isNotEmpty()) {
-                                                val wordStartPos =
-                                                    currentSelectionStart - currentWord.length
-                                                val prefix =
-                                                    textFieldValue.text.substring(0, wordStartPos)
-                                                val suffix = textFieldValue.text.substring(
-                                                    currentSelectionStart
-                                                )
-                                                newText = "$prefix{{$actualKey}}$suffix"
-                                                newCursorPos = prefix.length + actualKey.length + 4
-                                            } else {
-                                                val prefix = textUpToCursor
-                                                val suffix = textFieldValue.text.substring(
-                                                    currentSelectionStart
-                                                )
-                                                newText = "$prefix{{$actualKey}}$suffix"
-                                                newCursorPos = prefix.length + actualKey.length + 4
-                                            }
                                         }
-                                        textFieldValue = textFieldValue.copy(
-                                            text = newText,
-                                            selection = TextRange(newCursorPos)
-                                        )
-                                        onValueChange(newText)
-                                        showSuggestions = false
-                                    }
-                                    .pointerInput(Unit) {
-                                        awaitPointerEventScope {
-                                            while (true) {
-                                                val event = awaitPointerEvent()
-                                                val isEnter = event.changes.any { it.pressed }
-                                                isHovered = isEnter
-                                            }
-                                        }
-                                    }
-                                    .padding(horizontal = 18.dp, vertical = 12.dp)
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
+                                        .padding(18.dp, 12.dp)
                                 ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(8.dp)
-                                            .background(
-                                                MaterialTheme.colorScheme.primary,
-                                                shape = CircleShape
-                                            )
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(8.dp)
+                                                .background(
+                                                    primaryColor,
+                                                    shape = CircleShape
+                                                )
+                                        )
+                                        Text(
+                                            text = placeholder,
+                                            color = primaryColor,
+                                            style = MaterialTheme.typography.bodyLarge.copy(
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 14.sp
+                                            ),
+                                            modifier = Modifier.padding(start = 12.dp)
+                                        )
+                                    }
                                     Text(
-                                        text = placeholder,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                        modifier = Modifier.padding(start = 12.dp)
+                                        text = stringResource(resId),
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 12.sp
+                                        ),
+                                        color = colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(start = 20.dp, top = 2.dp)
                                     )
                                 }
-                                Text(
-                                    text = stringResource(resId),
-                                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(start = 20.dp, top = 2.dp)
-                                )
-                            }
-                            if (index != filteredPlaceholders.lastIndex) {
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(horizontal = 12.dp),
-                                    thickness = DividerDefaults.Thickness,
-                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.08f)
-                                )
+                                if (itemsIndex < lastIndex) {
+                                    Divider(
+                                        modifier = Modifier.padding(horizontal = 12.dp),
+                                        thickness = DividerDefaults.Thickness,
+                                        color = colorScheme.outline.copy(alpha = 0.08f)
+                                    )
+                                }
                             }
                         }
                     }
@@ -427,9 +338,60 @@ fun RpcFieldWithCompletions(
     content()
 }
 
+/**
+ * Extracts the template key from a placeholder string (removes {{ }} if present).
+ */
+private fun extractTemplateKey(placeholder: String): String {
+    return if (placeholder.startsWith("{{") && placeholder.endsWith("}}")) {
+        placeholder.substring(2, placeholder.length - 2)
+    } else {
+        placeholder
+    }
+}
+
+/**
+ * Inserts a template key into the text at the cursor position.
+ */
+private fun insertTemplateKey(
+    fullText: String,
+    textUpToCursor: String,
+    cursorPosition: Int,
+    actualKey: String
+): String {
+    if (textUpToCursor.lastIndexOf("{{") != -1) {
+        val templateStart = textUpToCursor.lastIndexOf("{{")
+        val partialTemplate = textUpToCursor.substring(templateStart)
+        if (partialTemplate.startsWith("{{") && !partialTemplate.contains("}}")) {
+            val prefix = fullText.substring(0, templateStart)
+            val suffix = fullText.substring(cursorPosition)
+            return "$prefix{{$actualKey}}$suffix"
+        }
+    }
+
+    val currentWord = getCurrentWord(textUpToCursor)
+    if (currentWord.isNotEmpty()) {
+        val wordStartPos = cursorPosition - currentWord.length
+        val prefix = fullText.substring(0, wordStartPos)
+        val suffix = fullText.substring(cursorPosition)
+        return "$prefix{{$actualKey}}$suffix"
+    }
+
+    return "$textUpToCursor{{$actualKey}}"
+}
+
+/**
+ * Updates suggestion state after text change (called from onValueChange, not during composition).
+ */
+private fun updateSuggestions(
+    newTextFieldValue: TextFieldValue,
+    completionList: List<Pair<String, ResourceId>>,
+) {
+    // Filtering is handled by the remember block based on textFieldValue changes
+    Unit
+}
+
 private fun getCurrentWord(text: String): String {
     val wordPattern = "\\w+$"
     val matcher = Regex(wordPattern).find(text)
     return matcher?.value ?: ""
 }
-

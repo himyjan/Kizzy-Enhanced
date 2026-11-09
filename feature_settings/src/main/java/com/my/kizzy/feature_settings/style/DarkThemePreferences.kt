@@ -62,28 +62,28 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
             )
         }, content = {
             LazyColumn(modifier = Modifier.padding(it)) {
-                item {
+                item(key = "follow_system") {
                     PreferenceSingleChoiceItem(
                         text = stringResource(R.string.follow_system),
                         selected = darkThemePreference.darkThemeValue == FOLLOW_SYSTEM
                     ) { modifyDarkThemePreference(FOLLOW_SYSTEM) }
                 }
-                item {
+                item(key = "dark_theme_on") {
                     PreferenceSingleChoiceItem(
                         text = stringResource(id = R.string.android_on),
                         selected = darkThemePreference.darkThemeValue == ON
                     ) { modifyDarkThemePreference(ON) }
                 }
-                item {
+                item(key = "dark_theme_off") {
                     PreferenceSingleChoiceItem(
                         text = stringResource(id = R.string.android_off),
                         selected = darkThemePreference.darkThemeValue == OFF
                     ) { modifyDarkThemePreference(OFF) }
                 }
-                item {
+                item(key = "advance_settings") {
                     Subtitle(text = stringResource(R.string.advance_settings))
                 }
-                item {
+                item(key = "amoled") {
                     PreferenceSwitch(
                         title = stringResource(R.string.amoled),
                         icon = Icons.Outlined.Contrast,
