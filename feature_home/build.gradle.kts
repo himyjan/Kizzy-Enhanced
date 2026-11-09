@@ -2,6 +2,7 @@ plugins {
     id ("kizzy.android.library")
     id ("kizzy.android.library.compose")
     id ("kizzy.android.feature")
+    id ("kizzy.android.hilt")
 }
 
 android {
@@ -12,11 +13,13 @@ android {
 }
 
 dependencies {
-    implementation (libs.accompanist.flowLayout)
     implementation (libs.material.icons.extended)
     implementation (projects.featureRpcBase)
     implementation (projects.featureSettings)
     implementation (projects.common.navigation)
     implementation (libs.coil)
     implementation (libs.activity.compose)
+
+    // Hilt annotation processor required for @HiltViewModel
+    ksp(libs.hilt.compiler)
 }

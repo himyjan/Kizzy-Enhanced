@@ -12,6 +12,10 @@ local.properties
 /app/debug/
 /buildSrc/build/
 
+# Build directories for all modules (macrobenchmark, app, libraries, etc.)
+**/build/
+**/.kotlin/
+
 # User-specific configurations
 .idea/caches/
 .idea/libraries/
@@ -38,3 +42,8 @@ local.properties
 .idea/jarRepositories.xml
 .idea/navEditor.xml
 /.idea/
+commonMain/
+
+# Build artifacts & temporary scripts (do not commit)
+*.bak
+fix_r8.py

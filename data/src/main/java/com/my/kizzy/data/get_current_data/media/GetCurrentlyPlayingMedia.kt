@@ -86,7 +86,7 @@ class GetCurrentPlayingMedia @Inject constructor(
             val bitmap = metadata?.let { metadataResolver.getCoverArt(it) }
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
             duration?.let {
-                if (it != 0L && mediaController.playbackState?.state == PlaybackState.STATE_PLAYING) timestamps = Timestamps(
+                if (it != 0L) timestamps = Timestamps(
                     end = System.currentTimeMillis() + duration - (mediaController.playbackState?.position ?: 0L),
                     start = System.currentTimeMillis() - (mediaController.playbackState?.position ?: 0L)
                 )

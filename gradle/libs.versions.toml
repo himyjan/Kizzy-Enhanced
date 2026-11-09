@@ -1,44 +1,50 @@
 [versions]
 # project level
-gradle = "8.13.2"
-kotlin = "2.1.20"
-ksp = "2.1.20-1.0.31"
+gradle = "9.9.0"
+agp = "9.6.0-alpha03"
+kotlin = "2.4.21"
+ksp = "2.3.13"
 version-name = "6.2-enhanced-0"
-version-code ="14"
+version-code = "14"
 
 # app level
-accompanist = "0.31.0-alpha"
-activity-compose = "1.9.3"
-android-svg = "1.4"
-androidx-material = "1.12.0"
-app-compat = "1.7.0"
-blankj-utilcodex = "1.31.0"
-coil = "2.1.0"
-compose-bom = "2025.06.01"
-compose-navigation = "2.8.3"
-core-ktx = "1.13.1"
-crashx = "v6.0.19"
-hilt = "2.56.2"
-ktor = "2.3.0"
-kotlinx-coroutine = "1.7.3"
-lifecycle-ktx = "2.8.6"
-mmkv = "1.3.16"
+activity-compose = "1.13.0"
+androidx-material = "1.14.0"
+androidxMacroBenchmark = "1.3.3"
+app-compat = "1.8.0"
+coil = "3.6.3"
+compose-bom = "2026.09.00"
+compose-navigation = "2.10.2"
+core-ktx = "1.19.1"
+datastore-preferences = "1.3.0"
+hilt = "2.60.1"
+imgur-api-base-url = "https://api.imgur.com/3"
+hiltWork = "1.4.0"
+ktor = "3.6.1"
+kotlinx-coroutine = "1.11.0"
+lifecycle-ktx = "2.11.0"
+mmkv = "2.4.3"
 junit = "4.13.2"
-androidx-test-ext-junit = "1.2.1"
-espresso-core = "3.6.1"
+guava-listenablefuture = "9999.0-empty-to-avoid-conflict-with-guava"
+jakarta-inject = "2.0.1"
 javax = "1"
-kotlinx-serialization-json = "1.6.3"
+kotlinx-serialization-json = "1.12.0"
+tink-android = "1.24.0"
+profileinstaller = "1.4.1"
+baselineprofile = "1.3.1"
+hilt-navigation-compose = "1.4.0"
+workmanager = "2.12.0"
 
 [libraries]
-
-# Javax
+# Jakarta
+jakarta-inject = { module = "jakarta.inject:jakarta.inject-api", version.ref = "jakarta-inject" }
 javax = { module = "javax.inject:javax.inject", version.ref = "javax" }
 
 # Androidx
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-ktx" }
 app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
 androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 kotlinx-coroutine = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
@@ -49,6 +55,8 @@ compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = 
 # Material3 — version from BOM
 material3 = { module = "androidx.compose.material3:material3" }
 material3-windows-size = { module = "androidx.compose.material3:material3-window-size-class" }
+material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version = "1.4.0-alpha03" }
+profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 
 # Compose — versions from BOM
 compose-ui = { module = "androidx.compose.ui:ui" }
@@ -57,24 +65,16 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
 
-# Accompanist
-accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
-accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
-accompanist-permission = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
-accompanist-flowLayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
-accompanist-pager-layouts = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanist" }
-accompanist-pager-indicators = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanist" }
-
 # Hilt
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 
-# gradle plugins
-android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+# Gradle plugins
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 
-# Ktor
+# Ktor (v3.x)
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
@@ -83,28 +83,34 @@ ktor-kotlinx-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json
 ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
 # Third-party libraries
-blankj-utilcodex = { module = "com.blankj:utilcodex", version.ref = "blankj-utilcodex" }
-crashx = { module = "com.github.TutorialsAndroid:crashx", version.ref = "crashx" }
 mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
-coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
-coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
-android-svg = { module = "com.caverock:androidsvg-aar", version.ref = "android-svg" }
+coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 
 # KotlinX
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 
+# Guava ListenableFuture interface (required by WorkManager ListenableWorker.startWork())
+guava-listenablefuture = { module = "com.google.guava:listenablefuture", version.ref = "guava-listenablefuture" }
+tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tink-android" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workmanager" }
+hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
+androidx-macro-benchmark = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidxMacroBenchmark" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version = "1.2.1" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.3.0" }
+
 [plugins]
-android-application = { id = "com.android.application", version.ref = "gradle" }
-android-library = { id = "com.android.library", version.ref = "gradle" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 
 [bundles]
 network-ktor = ["ktor-core", "ktor-client-cio", "ktor-kotlinx-serialization"]
+secure-storage = ["datastore-preferences", "tink-android"]

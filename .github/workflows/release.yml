@@ -4,34 +4,30 @@ on:
   workflow_dispatch:
     inputs:
       notes_en:
-        description: "What's new (English)"
+        description: "What's new"
         required: false
-        default: ''
-      notes_ru:
-        description: 'Что нового (Русский)'
-        required: false
-        default: ''
+        default: ""
 
 permissions:
   contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     name: Build Signed Release Apk
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.5.0
-        with:
-          access_token: ${{ github.token }}
+      - name: Checkout Code
+        uses: actions/checkout@v7
 
-      - uses: actions/checkout@v3
-
-      - name: Setup jdk-17
-        uses: actions/setup-java@main
+      - name: Setup JDK 26
+        uses: actions/setup-java@v6
         with:
-          java-version: 17
-          distribution: 'adopt'
+          java-version: "26"
+          distribution: "temurin"
           cache: gradle
 
       - name: Generate signing keystore
@@ -82,26 +78,30 @@ jobs:
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew assembleRelease
+        run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease
+
+      - name: Rename APK
+        run: |
+          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}.apk
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: apk-release
-          path: app/build/outputs/apk/release/**.apk
+          path: app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}.apk
 
       - name: Find APK
         id: apk
-        run: echo "path=$(find app/build/outputs/apk/release -name '*.apk' | head -1)" >> "$GITHUB_OUTPUT"
+        run: echo "path=$(find app/build/outputs/apk/release -name 'KizzyEnhanced-*.apk' | head -1)" >> "$GITHUB_OUTPUT"
 
       - name: Generate git changelog
         id: changelog
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           if [ -n "$LAST_TAG" ]; then
-            COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"- %s" --no-merges | head -30)
+            COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"- %s" --no-merges | grep -ivE '^- (chore|ci|style|refactor):' | head -30)
           else
-            COMMITS=$(git log --pretty=format:"- %s" --no-merges | head -30)
+            COMMITS=$(git log --pretty=format:"- %s" --no-merges | grep -ivE '^- (chore|ci|style|refactor):' | head -30)
           fi
           echo "commits<<EOF" >> "$GITHUB_OUTPUT"
           printf '%s\n' "$COMMITS" >> "$GITHUB_OUTPUT"
@@ -113,23 +113,21 @@ jobs:
           tag_name: enhanced-${{ github.run_number }}
           name: Kizzy Enhanced build ${{ github.run_number }}
           body: |
-            ## What's new / Что нового
+            ## What's new
 
             ${{ github.event.inputs.notes_en != '' && github.event.inputs.notes_en || '_No release notes provided._' }}
 
-            ${{ github.event.inputs.notes_ru != '' && github.event.inputs.notes_ru || '_Заметки к релизу не указаны._' }}
-
             ---
 
-            ## Commits in this build / Коммиты в этой сборке
+            ## Commits in this build
 
             ${{ steps.changelog.outputs.commits }}
 
             ---
 
-            **Package / Пакет:** `com.my.kizzy.enhanced`
-            **Version / Версия:** `6.2-enhanced-${{ github.run_number }}`
-            **Base / База:** [Kizzy by dead8309](https://github.com/dead8309/Kizzy)
+            **Package:** `com.my.kizzy.enhanced`
+            **Version:** `6.2-enhanced-${{ github.run_number }}`
+            **Base:** [Kizzy by dead8309](https://github.com/dead8309/Kizzy)
             See the [README](../../blob/master/README.md) for the full list of fork features.
           files: ${{ steps.apk.outputs.path }}
         env:
