@@ -4,14 +4,11 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_26
+    targetCompatibility = JavaVersion.VERSION_26
 }
 dependencies{
-    implementation(libs.javax)
     implementation(libs.kotlinx.coroutine)
     implementation(libs.kotlinx.serialization.json)
-    // BOM needed here since :domain is a JVM module without the compose convention plugin
-    compileOnly(platform(libs.compose.bom))
-    compileOnly(libs.compose.runtime)
+    implementation(libs.javax)
 }

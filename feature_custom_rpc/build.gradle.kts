@@ -11,11 +11,12 @@ android {
 
 dependencies {
     implementation (libs.material.icons.extended)
-    implementation(libs.accompanist.permission)
     implementation(libs.activity.compose)
-    implementation(libs.blankj.utilcodex)
     implementation(libs.coil)
     implementation(libs.kotlinx.serialization.json)
     implementation(projects.featureRpcBase)
     implementation(projects.featureProfile)
+
+    // Hilt annotation processor required for @HiltViewModel
+    ksp(libs.hilt.compiler)
 }

@@ -27,6 +27,15 @@ android {
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("KEY_ALIAS")
                 keyPassword = System.getenv("KEY_PASSWORD")
+            } ?: run {
+                // Fallback to debug keystore for local release builds
+                val debugKeystore = file(System.getProperty("user.home") + "/.android/debug.keystore")
+                if (debugKeystore.exists()) {
+                    storeFile = debugKeystore
+                    storePassword = "android"
+                    keyAlias = "androiddebugkey"
+                    keyPassword = "android"
+                }
             }
         }
     }
@@ -35,10 +44,26 @@ android {
             isShrinkResources = true
             isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                file("proguard-rules.pro")
+            )
+            optimization {
+                enable = true // Enables code and resource optimizations.
+            }
+        }
+        create("benchmark") {
+            initWith(getByName("release"))
+            matchingFallbacks.add("release")
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
+            isProfileable = true
         }
     }
 
-    packagingOptions.resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+    packaging.resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+    packaging.resources.excludes.add("/META-INF/gradle/incremental.annotation.processors")
+    packaging.resources.excludes.add("/META-INF/services/javax.annotation.processing.Processor")
 
     // Disables dependency metadata when building APKs.
     dependenciesInfo {
@@ -52,6 +77,7 @@ android {
 }
 dependencies {
     implementation (projects.domain)
+    implementation (projects.data)
     implementation (projects.theme)
     implementation (projects.featureStartup)
     implementation (projects.featureCrashHandler)
@@ -68,10 +94,12 @@ dependencies {
     implementation (projects.featureHome)
     implementation (projects.common.preference)
     implementation (projects.common.navigation)
+    implementation (projects.common.components)
+    implementation (projects.common.resources)
 
     // Extras
     implementation (libs.app.compat)
-    implementation (libs.accompanist.navigation.animation)
+    implementation (libs.compose.navigation)
     implementation (libs.kotlinx.serialization.json)
 
 
@@ -79,4 +107,27 @@ dependencies {
     implementation (libs.material3)
     implementation (libs.androidx.material)
     implementation (libs.material3.windows.size)
+
+    // WorkManager + Hilt Work
+    implementation (libs.work.runtime.ktx)
+    implementation (libs.hilt.work)
+
+    // Hilt Navigation Compose for shared ViewModels across routes
+    implementation (libs.hilt.navigation.compose)
+
+    // Hilt annotation processor
+    ksp(libs.hilt.compiler)
+
+    // Baseline Profiles for faster startup
+    implementation(libs.profileinstaller)
+}
+
+configurations {
+    // Code generation libraries should not be in the runtime APK
+    implementation {
+        exclude(group = "com.google.dagger", module = "dagger-compiler")
+        exclude(group = "com.squareup", module = "javapoet")
+        exclude(group = "com.squareup", module = "kotlinpoet")
+        exclude(group = "androidx.room", module = "room-compiler")
+    }
 }

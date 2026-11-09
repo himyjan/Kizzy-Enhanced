@@ -8,6 +8,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -40,7 +43,8 @@ include(
     ":feature_custom_rpc",
     ":feature_home",
     ":common:navigation",
-    ":feature_experimental_rpc"
+    ":feature_experimental_rpc",
+    ":macrobenchmark"
 
 )
 rootProject.name = "Kizzy"
