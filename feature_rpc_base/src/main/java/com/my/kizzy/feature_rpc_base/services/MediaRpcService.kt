@@ -104,6 +104,9 @@ class MediaRpcService : Service() {
 
     private var currentMediaController: MediaController? = null
 
+    private var currentMediaTitle: String? = null
+    private var currentMediaArtist: String? = null
+
     private fun newNotificationBuilder(): NotificationCompat.Builder {
         return NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_media_rpc)
@@ -235,6 +238,9 @@ class MediaRpcService : Service() {
     suspend private fun updatePresence(forceRefresh: Boolean = false) {
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
         val playingMedia = getCurrentPlayingMedia()
+
+        currentMediaTitle = playingMedia.name.takeIf { it.isNotBlank() }
+        currentMediaArtist = playingMedia.state?.takeIf { it.isNotBlank() }
 
         val playingPkg = playingMedia.packageName.takeIf { it.isNotBlank() }
 
@@ -375,6 +381,7 @@ class MediaRpcService : Service() {
         }
 
         kizzyRPC.updateRPC(commonRpc, enableTimestamps)
+        updateNotificationPauseButton()
     }
 
     private val mediaControllerCallback = object : MediaController.Callback() {
@@ -398,9 +405,13 @@ class MediaRpcService : Service() {
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
 
+            currentMediaTitle = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
+            currentMediaArtist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+
             scope.launch {
                 delay(1000)
                 updatePresence(forceRefresh = true)
+                updateNotificationPauseButton()
             }
         }
 
@@ -414,10 +425,9 @@ class MediaRpcService : Service() {
     }
 
     private fun updateNotificationPauseButton() {
-        val notification = buildNotification(
-            if (isPaused) "RPC Paused" else "Rich Presence Active",
-            if (isPaused) "Tap Resume to continue syncing" else "Broadcasting media status"
-        )
+        val title = currentMediaTitle ?: getString(R.string.rich_presence_active)
+        val content = if (isPaused) "Tap Resume to continue syncing" else currentMediaArtist ?: "Broadcasting media status"
+        val notification = buildNotification(title, content)
         notificationManager.notify(Constants.NOTIFICATION_ID, notification)
     }
 

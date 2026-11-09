@@ -24,6 +24,7 @@
     <string name="preview_rpc">Preview RPC</string>
     <string name="select_a_config">Select a config</string>
     <string name="login_with_discord">Login With Discord</string>
+    <string name="rich_presence_active">Rich Presence Active</string>
     <string name="github_readme">README</string>
     <string name="github_readme_desc">Check the Github repository</string>
     <string name="github_latest_release">&quot;Latest release &quot;</string>
