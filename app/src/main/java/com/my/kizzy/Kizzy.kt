@@ -14,7 +14,6 @@ package com.my.kizzy
 
 import android.annotation.SuppressLint
 import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.navArgument
 import com.my.kizzy.domain.model.toVersion
 import com.my.kizzy.feature_about.about.About
@@ -95,12 +95,12 @@ internal fun ComponentActivity.Kizzy(
                         navController.navigate(Routes.PROFILE)
                     })
             }
-            composable(Routes.HOME) {
+            composable(Routes.HOME) { navBackStackEntry ->
                 val release = remember(Prefs.getSavedLatestRelease()) {
                     Prefs.getSavedLatestRelease()
                 }
                 val user = Prefs.getUser()
-                val viewModel by viewModels<HomeScreenViewModel>()
+                val viewModel = hiltViewModel<HomeScreenViewModel>(navBackStackEntry)
                 val state = viewModel.aboutScreenState.collectAsState().value
                 val showBadge = release
                     ?.toVersion()
@@ -143,8 +143,8 @@ internal fun ComponentActivity.Kizzy(
                     }
                 )
             }
-            composable(Routes.APPS_DETECTION) {
-                val viewModel by viewModels<AppsScreenViewModel>()
+            composable(Routes.APPS_DETECTION) { navBackStackEntry ->
+                val viewModel = hiltViewModel<AppsScreenViewModel>(navBackStackEntry)
                 AppsRPC(
                     onBackPressed = { navController.popBackStack() },
                     hasUsageAccess = usageAccessStatus.value,
@@ -152,16 +152,16 @@ internal fun ComponentActivity.Kizzy(
                     updateAppEnabled = viewModel::updateAppEnabled,
                 )
             }
-            composable(Routes.CUSTOM_RPC) {
-                val viewModel by viewModels<CustomScreenViewModel>()
+            composable(Routes.CUSTOM_RPC) { navBackStackEntry ->
+                val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)
                 CustomRPC(
                     onBackPressed = { navController.popBackStack() },
                     state = viewModel.uiState.collectAsState().value,
                     onEvent = viewModel::onEvent
                 )
             }
-            composable(Routes.MEDIA_RPC) {
-                val viewModel by viewModels<MediaScreenViewModel>()
+            composable(Routes.MEDIA_RPC) { navBackStackEntry ->
+                val viewModel = hiltViewModel<MediaScreenViewModel>(navBackStackEntry)
                 MediaRPC(
                     onBackPressed = { navController.popBackStack() },
                     state = viewModel.state.collectAsState().value,
@@ -169,12 +169,12 @@ internal fun ComponentActivity.Kizzy(
                     updateMediaAppEnabled = viewModel::updateMediaAppEnabled
                 )
             }
-            composable(Routes.PROFILE) {
+            composable(Routes.PROFILE) { navBackStackEntry ->
                 var loggedIn by remember {
                     mutableStateOf(Prefs[Prefs.TOKEN, ""].isNotEmpty())
                 }
                 if (loggedIn) {
-                    val viewModel by viewModels<UserViewModel>()
+                    val viewModel = hiltViewModel<UserViewModel>(navBackStackEntry)
                     val state by viewModel.state.collectAsState()
                     UserScreen(
                         state = state,
@@ -210,8 +210,8 @@ internal fun ComponentActivity.Kizzy(
                     )
                 }
             }
-            composable(Routes.CONSOLE_RPC) {
-                val viewModel by viewModels<GamesViewModel>()
+            composable(Routes.CONSOLE_RPC) { navBackStackEntry ->
+                val viewModel = hiltViewModel<GamesViewModel>(navBackStackEntry)
                 GamesScreen(
                     onBackPressed = { navController.popBackStack() },
                     onEvent = { viewModel.onUiEvent(it) },
@@ -240,8 +240,8 @@ internal fun ComponentActivity.Kizzy(
             composable(Routes.RPC_SETTINGS) {
                 RpcSettings { navController.popBackStack() }
             }
-            composable(Routes.LOGS_SCREEN) {
-                val viewModel by viewModels<LogsViewModel>()
+            composable(Routes.LOGS_SCREEN) { navBackStackEntry ->
+                val viewModel = hiltViewModel<LogsViewModel>(navBackStackEntry)
                 LogScreen(viewModel, onBackPressed = { navController.popBackStack() })
             }
             composable(Routes.ABOUT) {
@@ -254,8 +254,8 @@ internal fun ComponentActivity.Kizzy(
                     }
                 )
             }
-            composable(Routes.CREDITS) {
-                val viewModel by viewModels<CreditsScreenViewModel>()
+            composable(Routes.CREDITS) { navBackStackEntry ->
+                val viewModel = hiltViewModel<CreditsScreenViewModel>(navBackStackEntry)
                 Credits(
                     state = viewModel.creditScreenState.collectAsState().value,
                     onBackPressed = {
@@ -278,13 +278,11 @@ internal fun ComponentActivity.Kizzy(
                     onBackPressed = { navController.popBackStack() }
                 )
             }
-            val experimentalRpcViewModel by lazy {
-                viewModels<ExperimentalRpcViewmodel>()
-            }
-            composable(Routes.EXPERIMENTAL_RPC) {
+            composable(Routes.EXPERIMENTAL_RPC) { navBackStackEntry ->
+                val experimentalRpcViewModel = hiltViewModel<ExperimentalRpcViewmodel>(navBackStackEntry)
                 ExperimentalRpcScreen(
-                    state = experimentalRpcViewModel.value.uiState.collectAsState().value,
-                    onEvent = experimentalRpcViewModel.value::onEvent,
+                    state = experimentalRpcViewModel.uiState.collectAsState().value,
+                    onEvent = experimentalRpcViewModel::onEvent,
                     onBackPressed = { navController.popBackStack() },
                     hasUsageAccess = usageAccessStatus.value,
                     hasNotificationAccess = notificationListenerAccess.value,
@@ -293,11 +291,12 @@ internal fun ComponentActivity.Kizzy(
                     },
                 )
             }
-            composable(Routes.EXPERIMENTAL_RPC_APPS) {
+            composable(Routes.EXPERIMENTAL_RPC_APPS) { navBackStackEntry ->
+                val experimentalRpcViewModel = hiltViewModel<ExperimentalRpcViewmodel>(navBackStackEntry)
                 ExperimentalRpcAppsScreen(
                     onBackPressed = { navController.popBackStack() },
-                    state = experimentalRpcViewModel.value.uiState.collectAsState().value,
-                    onEvent = experimentalRpcViewModel.value::onEvent,
+                    state = experimentalRpcViewModel.uiState.collectAsState().value,
+                    onEvent = experimentalRpcViewModel::onEvent,
                 )
             }
         }
