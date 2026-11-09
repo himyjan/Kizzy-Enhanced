@@ -567,7 +567,13 @@ class ExperimentalRpc : Service() {
         )
 
         val notifTitle = finalName.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.app_name_full)
-        val notifText = finalDetails ?: finalState
+        val notifText = if (currentMediaDurationSec > 0) {
+            val currentStr = formatDuration(currentMediaProgressSec * 1000L)
+            val totalStr = formatDuration(currentMediaDurationSec * 1000L)
+            "$finalDetails ($currentStr / $totalStr)"
+        } else {
+            finalDetails ?: finalState
+        }
 
         val stopIntent = Intent(this, ExperimentalRpc::class.java)
         stopIntent.action = Constants.ACTION_STOP_SERVICE
@@ -796,5 +802,20 @@ class ExperimentalRpc : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    /**
+     * Format milliseconds into MM:SS or HH:MM:SS string for notification display
+     */
+    private fun formatDuration(durationMs: Long): String {
+        val totalSeconds = (durationMs / 1000L).coerceAtLeast(0L)
+        val hours = totalSeconds / 3600L
+        val minutes = (totalSeconds % 3600L) / 60L
+        val seconds = totalSeconds % 60L
+        return if (hours > 0) {
+            String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            String.format("%02d:%02d", minutes, seconds)
+        }
     }
 }
