@@ -276,5 +276,8 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+    <string name="save_logs_to_file">Save Logs to File</string>
+    <string name="logs_saved_toast">Logs saved to %1$s</string>
+    <string name="logs_save_error">Failed to save logs</string>
 
 </resources>
