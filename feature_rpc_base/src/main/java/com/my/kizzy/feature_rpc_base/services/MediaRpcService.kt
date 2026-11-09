@@ -94,7 +94,7 @@ class MediaRpcService : Service() {
     private var lastSentLargeImageUrl: String? = null
     private var lastSentPackageName: String? = null
     private var lastPresenceUpdateTime: Long = 0L
-    private val PRESENCE_UPDATE_MIN_INTERVAL_MS = 500L
+    private val PRESENCE_UPDATE_MIN_INTERVAL_MS = 5000L
 
     private val presenceUpdateMutex = Mutex()
 
@@ -209,7 +209,8 @@ class MediaRpcService : Service() {
                         val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
                         stateRepository.setImageUrls(largeImageUrl, smallImageUrl)
 
-                        updatePresence(forceRefresh = true)
+                        // Update presence - respects interval limits (no forceRefresh)
+                        updatePresence()
                     }
                     // Update notification progress bar every second while playing
                     updateNotificationPauseButton()
