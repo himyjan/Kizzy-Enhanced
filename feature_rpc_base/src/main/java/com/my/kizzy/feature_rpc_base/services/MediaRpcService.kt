@@ -94,7 +94,7 @@ class MediaRpcService : Service() {
     private var lastSentLargeImageUrl: String? = null
     private var lastSentPackageName: String? = null
     private var lastPresenceUpdateTime: Long = 0L
-    private val PRESENCE_UPDATE_MIN_INTERVAL_MS = 5000L
+    private val PRESENCE_UPDATE_MIN_INTERVAL_MS = 1500L
 
     private val presenceUpdateMutex = Mutex()
 
