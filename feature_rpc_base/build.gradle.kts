@@ -22,6 +22,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.material)
+    implementation(libs.core.ktx)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil)
     implementation(libs.compose.ui)

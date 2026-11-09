@@ -18,6 +18,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import android.graphics.Bitmap
+import androidx.core.graphics.drawable.IconCompat
 import androidx.annotation.RequiresApi
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
@@ -29,6 +30,7 @@ import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
+import com.my.kizzy.feature_rpc_base.R as FeatureRpcR
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
@@ -496,11 +498,27 @@ class MediaRpcService : Service() {
 
         coverArt?.let { builder.setLargeIcon(it) }
 
-        // Progress bar support - API 26+ (Android 8+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentMediaDurationSec > 0) {
-            builder.setProgress(currentMediaDurationSec, currentMediaProgressSec, false)
-        }
+        // Progress bar support
+        // Android 16+ (API 36+): Use Notification.ProgressStyle for efficient live updates
+        // Android 8-15 (API 26-35): Use setProgress()
         // API < 26: No progress bar support
+        if (currentMediaDurationSec > 0) {
+            val progressStyle = NotificationCompat.ProgressStyle()
+                // 1. Defines the total timeline length (replaces setProgressMax)
+                .setProgressSegments(
+                    listOf(NotificationCompat.ProgressStyle.Segment(currentMediaDurationSec))
+                )
+                // 2. Moves the tracker along the timeline in seconds
+                .setProgress(currentMediaProgressSec.coerceIn(0, currentMediaDurationSec))
+                // 3. Draws a moving dot/icon on the timeline bar
+                .setProgressTrackerIcon(
+                    IconCompat.createWithResource(this, FeatureRpcR.drawable.ic_rpc_tracker_dot)
+                )
+                // 4. Colors the elapsed portion of the timeline differently from the remaining portion
+                .setStyledByProgress(true)
+
+            builder.setStyle(progressStyle)
+        }
 
         return builder.build()
     }
