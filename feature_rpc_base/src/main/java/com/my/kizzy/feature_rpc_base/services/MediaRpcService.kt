@@ -113,6 +113,7 @@ class MediaRpcService : Service() {
     private var currentMediaProgressSec: Int = 0
     private var currentMediaDurationSec: Int = 0
     private var currentMediaPositionMs: Long = 0
+    private var lastSentProgressSec: Int = -1
 
     private val timelineTickerJob = MutableStateFlow<Job?>(null)
 
@@ -321,7 +322,8 @@ class MediaRpcService : Service() {
                 (currentName == lastSentName &&
                 currentDetails == lastSentDetails &&
                 currentState == lastSentState &&
-                currentLargeImageUrl == lastSentLargeImageUrl) ||
+                currentLargeImageUrl == lastSentLargeImageUrl &&
+                currentMediaProgressSec == lastSentProgressSec) ||
                 !intervalElapsed
 
             if (shouldSkip) {
@@ -336,6 +338,7 @@ class MediaRpcService : Service() {
             lastSentStopTimestamps = playingMedia.time?.end
             lastSentLargeImageUrl = currentLargeImageUrl
             lastSentPackageName = playingPkg
+            lastSentProgressSec = currentMediaProgressSec
             lastPresenceUpdateTime = now
         }
 
