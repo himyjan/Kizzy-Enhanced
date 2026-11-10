@@ -323,7 +323,7 @@ class MediaRpcService : Service() {
                 currentDetails == lastSentDetails &&
                 currentState == lastSentState &&
                 currentLargeImageUrl == lastSentLargeImageUrl &&
-                currentMediaProgressSec == lastSentProgressSec) ||
+                currentMediaProgressSec == lastSentProgressSec) &&
                 !intervalElapsed
 
             if (shouldSkip) {
