@@ -102,7 +102,7 @@ class ExperimentalRpc : Service() {
     }
 
     private var isMediaSessionActive = false
-    private var lastSentCommonRpc: CommonRpc? = null
+    private var lastSentPresenceKey: List<String?>? = null
     private var currentMediaProgressSec: Int = 0
     private var currentMediaDurationSec: Int = 0
 
@@ -576,12 +576,28 @@ class ExperimentalRpc : Service() {
             playbackState = richMediaInfo?.playbackState
         )
 
-        // De-duplication: skip if nothing changed since last push
-        if (lastSentCommonRpc == commonRpc) {
+        // De-duplication: skip if nothing changed since the last push.
+        //
+        // CommonRpc cannot be compared directly because RpcImage has no equals()
+        // implementation, so two logically identical presences would never match and the
+        // update would be pushed on every single cycle. Compare the meaningful fields
+        // instead.
+        val presenceKey = listOf(
+            finalName,
+            finalDetails,
+            finalState,
+            finalLargeText,
+            finalSmallText,
+            finalTimestamps?.start?.toString(),
+            finalTimestamps?.end?.toString(),
+            effectivePackageName,
+            richMediaInfo?.playbackState?.toString(),
+        )
+        if (presenceKey == lastSentPresenceKey) {
             logger.d(TAG, "Presence unchanged, skipping redundant update")
             return
         }
-        lastSentCommonRpc = commonRpc
+        lastSentPresenceKey = presenceKey
 
         // Apply the buttons and the custom application id that the user configured in the
         // Experimental RPC screen. They were stored in the preferences but never actually
