@@ -238,11 +238,17 @@ class AppDetectionService : Service() {
         // app is still playing in the foreground.
         val shouldShow = packageName in enabledPackages || isAiApp || isGameApp
 
-        if (shouldShow && packageName != runningPackage) {
-            // New app came to foreground — show it and set the timeline start.
-            handleEnabledPackage(packageName, rpcButtons, aiApp = aiApp, gameApp = gameApp)
-            runningPackage = packageName
-        } else if (!shouldShow && runningPackage != "") {
+        if (shouldShow) {
+            // Show the app. When it is a DIFFERENT app than the one currently shown, the
+            // presence has to be replaced. When it is the SAME app, the presence is
+            // already correct and re-sending it would only spam the gateway - but the
+            // check is skipped entirely when the app was never shown before (the user
+            // just enabled it), so that enabling an app takes effect immediately.
+            if (packageName != runningPackage || runningPackage == "") {
+                handleEnabledPackage(packageName, rpcButtons, aiApp = aiApp, gameApp = gameApp)
+                runningPackage = packageName
+            }
+        } else if (runningPackage != "") {
             // App was disabled in prefs or is no longer relevant — clear presence.
             handleDisabledPackage()
             runningPackage = ""
