@@ -115,6 +115,9 @@ class ExperimentalRpc : Service() {
     // Heartbeat to prevent stuck idling when media session callbacks are missed
     private val heartbeatJob = MutableStateFlow<Job?>(null)
 
+    // The single app-detection polling loop. Tracked so it is never started twice.
+    private var appDetectionJob: Job? = null
+
     private fun startHeartbeat() {
         stopHeartbeat()
         heartbeatJob.value = scope.launch {
@@ -189,7 +192,10 @@ class ExperimentalRpc : Service() {
         Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
 
     private var appActivityTypes: Map<String, Int> = Prefs.getAppActivityTypes()
-    private var enabledExperimentalApps: List<String> = try {
+    private var enabledExperimentalApps: List<String> = readEnabledExperimentalApps()
+
+    /** Reads the list of apps enabled for the Experimental RPC from the preferences. */
+    private fun readEnabledExperimentalApps(): List<String> = try {
         Json.decodeFromString(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
     } catch (_: Exception) {
         emptyList()
@@ -331,14 +337,26 @@ class ExperimentalRpc : Service() {
     }
 
     private fun startAppDetectionCoroutine() {
+        // Only ever run ONE detection loop. This method is called from several places
+        // (session changes, playback callbacks, hide-on-pause), and each call used to
+        // start another loop, so multiple loops competed and pushed conflicting
+        // presences - which made the shown app jump around.
+        if (appDetectionJob?.isActive == true) {
+            logger.d(TAG, "App detection coroutine already running")
+            return
+        }
         logger.d(TAG, "Starting app detection coroutine")
 
-        var currentPackageName = ""
         val startTimestamps = Timestamps(start = System.currentTimeMillis())
 
-        scope.launch {
+        appDetectionJob = scope.launch {
+            var currentPackageName = ""
             while (isActive) {
                 try {
+                    // Re-read the enabled apps on every cycle so that toggling an app in
+                    // the app list takes effect immediately, without a service restart.
+                    enabledExperimentalApps = readEnabledExperimentalApps()
+
                     val currentApp = getCurrentlyRunningApp()
 
                     if (
@@ -397,7 +415,9 @@ class ExperimentalRpc : Service() {
             if (useAppsRpc) {
                 startAppDetectionCoroutine()
             } else if (kizzyRPC.isRpcRunning()) {
-                kizzyRPC.closeRPC()
+                // Clear the activity but keep the gateway connection alive, so playback can
+                // resume instantly instead of having to reconnect from scratch.
+                kizzyRPC.clearPresence()
                 val stopIntent = Intent(this, ExperimentalRpc::class.java)
                 stopIntent.action = Constants.ACTION_STOP_SERVICE
                 val stopPendingIntent = PendingIntent.getService(
@@ -512,9 +532,11 @@ class ExperimentalRpc : Service() {
             finalName.isNullOrEmpty() && finalDetails.isNullOrEmpty() && finalState.isNullOrEmpty()
 
         if (rpcDataIsEmpty) {
-            logger.d(TAG, "Calculated RPC data is empty, stopping RPC.")
+            logger.d(TAG, "Calculated RPC data is empty, clearing presence.")
             if (kizzyRPC.isRpcRunning()) {
-                kizzyRPC.closeRPC()
+                // Clear the activity but keep the connection, so the next track shows up
+                // immediately.
+                kizzyRPC.clearPresence()
                 val stopIntent = Intent(this, ExperimentalRpc::class.java)
                 stopIntent.action = Constants.ACTION_STOP_SERVICE
                 val stopPendingIntent = PendingIntent.getService(
@@ -561,6 +583,27 @@ class ExperimentalRpc : Service() {
         }
         lastSentCommonRpc = commonRpc
 
+        // Apply the buttons and the custom application id that the user configured in the
+        // Experimental RPC screen. They were stored in the preferences but never actually
+        // applied to the presence.
+        kizzyRPC.clearButtons()
+        if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_BUTTONS, false]) {
+            val button1Text = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_TEXT, ""]
+            val button1Url = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""]
+            val button2Text = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_TEXT, ""]
+            val button2Url = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL, ""]
+            if (button1Text.isNotEmpty() && button1Url.isNotEmpty()) {
+                kizzyRPC.setButton1(button1Text, button1Url)
+            }
+            if (button2Text.isNotEmpty() && button2Url.isNotEmpty()) {
+                kizzyRPC.setButton2(button2Text, button2Url)
+            }
+        }
+        if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false]) {
+            kizzyRPC.setApplicationId(Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID, ""])
+        }
+        kizzyRPC.setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
+
         kizzyRPC.updateRPC(
             commonRpc = commonRpc,
             enableTimestamps = Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]
@@ -570,9 +613,11 @@ class ExperimentalRpc : Service() {
         val notifText = if (currentMediaDurationSec > 0) {
             val currentStr = formatDuration(currentMediaProgressSec * 1000L)
             val totalStr = formatDuration(currentMediaDurationSec * 1000L)
-            "$finalDetails ($currentStr / $totalStr)"
+            val label = listOfNotNull(finalDetails, finalState).joinToString(" · ")
+            if (label.isEmpty()) "$currentStr / $totalStr" else "$label ($currentStr / $totalStr)"
         } else {
-            finalDetails ?: finalState
+            listOfNotNull(finalDetails, finalState).joinToString(" · ")
+                .ifEmpty { getString(R.string.idling_notification) }
         }
 
         val stopIntent = Intent(this, ExperimentalRpc::class.java)

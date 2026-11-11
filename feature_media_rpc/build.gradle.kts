@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.featureRpcBase)
     implementation(projects.data)
     implementation(projects.common.preference)
+    implementation(projects.theme)
     implementation(libs.material.icons.extended)
     implementation(libs.activity.compose)
 

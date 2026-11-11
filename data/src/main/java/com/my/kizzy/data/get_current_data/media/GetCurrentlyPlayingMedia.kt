@@ -65,6 +65,15 @@ class GetCurrentPlayingMedia @Inject constructor(
         val skipped = mutableListOf<String>()
 
         for (mediaController in sorted) {
+            // Only report media from apps the user enabled in the Media RPC app list.
+            // Without this check the app selection had no effect at all - every app that
+            // published a media session was broadcast to Discord.
+            if (!Prefs.isMediaAppEnabled(mediaController.packageName)) {
+                logger.d("MediaRPC", "Skipping session ${mediaController.packageName}: app not enabled in Media RPC")
+                skipped += "${mediaController.packageName} (app not enabled in Media RPC)"
+                continue
+            }
+
             val metadata = mediaController.metadata
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()?.takeIf { it.isNotEmpty() }
 

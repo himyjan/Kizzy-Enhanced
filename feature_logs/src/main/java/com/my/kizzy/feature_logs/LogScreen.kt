@@ -77,6 +77,9 @@ import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.KSwitch
 import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.theme.LogColors.color
+import androidx.compose.ui.tooling.preview.Preview
+import com.my.kizzy.domain.model.logs.LogLevel
+import com.my.kizzy.ui.theme.KizzyTheme
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.foundation.background
@@ -84,9 +87,22 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import java.text.SimpleDateFormat
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
+fun LogScreenContent(
+    visibleLogs: List<LogEvent>,
+    autoScroll: Boolean,
+    showCompat: Boolean,
+    onBackPressed: () -> Unit = {},
+    onToggleAutoScroll: () -> Unit = {},
+    onToggleShowCompat: () -> Unit = {},
+    onSaveLogs: () -> Unit = {},
+    onClearLogs: () -> Unit = {},
+    onSearchToggle: () -> Unit = {},
+    onFilterChange: (String) -> Unit = {},
+    isSearchBarVisible: Boolean = false,
+    filterText: String = "",
+) {
     val ctx = LocalContext.current
     val cacheWindow = remember {
         LazyLayoutCacheWindow(ahead = 300.dp, behind = 150.dp)
@@ -94,14 +110,26 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
     val lazyListState = rememberLazyListState(cacheWindow = cacheWindow)
     val clipboardManager: ClipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-    // Read observable state - Compose recomposes only when these change
-    val visibleLogs = viewModel.visibleLogs
-    val autoScroll = viewModel.autoScroll.value
-    val showCompat = viewModel.showCompat.value
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { ToolBar(viewModel, ctx, onBackPressed, lazyListState, visibleLogs, autoScroll) },
+        topBar = { ToolBarContent(
+            isSearchBarVisible = isSearchBarVisible,
+            filterText = filterText,
+            autoScroll = autoScroll,
+            showCompat = showCompat,
+            visibleLogs = visibleLogs,
+            onBackPressed = onBackPressed,
+            onSearchToggle = onSearchToggle,
+            onFilterChange = onFilterChange,
+            onToggleAutoScroll = onToggleAutoScroll,
+            onScrollToTop = { lazyListState.animateScrollToItem(0) },
+            onScrollToBottom = { lazyListState.animateScrollToItem(visibleLogs.lastIndex) },
+            onToggleShowCompat = onToggleShowCompat,
+            onSaveLogs = onSaveLogs,
+            onClearLogs = onClearLogs,
+            ctx = ctx,
+            lazyListState = lazyListState,
+        ) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -155,6 +183,46 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
             }
         }
     }
+}
+
+@Composable
+fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
+    val ctx = LocalContext.current
+    LogScreenContent(
+        visibleLogs = viewModel.visibleLogs,
+        autoScroll = viewModel.autoScroll.value,
+        showCompat = viewModel.showCompat.value,
+        onBackPressed = onBackPressed,
+        onToggleAutoScroll = { viewModel.setAutoScroll(!viewModel.autoScroll.value) },
+        onToggleShowCompat = { viewModel.setShowCompat(!viewModel.showCompat.value) },
+        onSaveLogs = {
+            val path = viewModel.saveLogsToFile(ctx)
+            if (path != null) {
+                Toast.makeText(
+                    ctx,
+                    ctx.getString(R.string.logs_saved_toast, path),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    ctx,
+                    ctx.getString(R.string.logs_save_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        },
+        onClearLogs = { viewModel.clearLogs() },
+        onSearchToggle = {
+            val visible = !viewModel.isSearchBarVisible.value
+            viewModel.isSearchBarVisible.value = visible
+            // Closing the search also drops the filter, otherwise the list would
+            // stay filtered while there is no search field to show it.
+            if (!visible) viewModel.setFilterStrings("")
+        },
+        onFilterChange = { viewModel.setFilterStrings(it) },
+        isSearchBarVisible = viewModel.isSearchBarVisible.value,
+        filterText = viewModel.filterStrings.value,
+    )
 }
 
 @Composable
@@ -281,50 +349,51 @@ fun LogsCard(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ToolBar(
-    viewModel: LogsViewModel,
-    ctx: Context,
-    onBackPressed: () -> Unit,
-    lazyListState: androidx.compose.foundation.lazy.LazyListState,
+fun ToolBarContent(
+    isSearchBarVisible: Boolean,
+    filterText: String,
+    autoScroll: Boolean,
+    showCompat: Boolean,
     visibleLogs: List<LogEvent>,
-    autoScroll: Boolean
+    onBackPressed: () -> Unit,
+    onSearchToggle: () -> Unit,
+    onFilterChange: (String) -> Unit,
+    onToggleAutoScroll: () -> Unit,
+    onScrollToTop: suspend () -> Unit,
+    onScrollToBottom: suspend () -> Unit,
+    onToggleShowCompat: () -> Unit,
+    onSaveLogs: () -> Unit,
+    onClearLogs: () -> Unit,
+    ctx: Context,
+    lazyListState: androidx.compose.foundation.lazy.LazyListState,
 ) {
     var menuClicked by remember {
         mutableStateOf(false)
     }
     val scope = rememberCoroutineScope()
-    val showCompat = viewModel.showCompat.value
-    val filterText = viewModel.filterStrings.value
     val colorScheme = MaterialTheme.colorScheme
 
-    LargeTopAppBar(
-        title = {
-            if (viewModel.isSearchBarVisible.value) {
-                SearchBar(
-                    text = filterText,
-                    placeholder = stringResource(id = R.string.search_placeholder),
-                    onClose = { viewModel.isSearchBarVisible.value = true }
-                ) {
-                    viewModel.isSearchBarVisible.value = true
-                }
-            } else
+    // The search field lives in its own row below the app bar. Placing it inside
+    // the `title` slot of a `LargeTopAppBar` renders it twice (collapsed and
+    // expanded row) and the hidden copy still swallows touches.
+    Column {
+        LargeTopAppBar(
+            title = {
                 Text(
                     text = stringResource(id = R.string.logs),
                     style = MaterialTheme.typography.headlineMedium
                 )
-        },
-        navigationIcon = {
-            BackButton {
-                onBackPressed()
-            }
-        },
-        actions = {
-            if (!viewModel.isSearchBarVisible.value) {
-                IconButton(onClick = { viewModel.isSearchBarVisible.value = true }) {
+            },
+            navigationIcon = {
+                BackButton {
+                    onBackPressed()
+                }
+            },
+            actions = {
+                IconButton(onClick = onSearchToggle) {
                     Icon(Icons.Outlined.Search, stringResource(id = R.string.search))
                 }
-            }
-            IconButton(onClick = { menuClicked = !menuClicked }) {
+                IconButton(onClick = { menuClicked = !menuClicked }) {
                 Icon(
                     imageVector = Icons.Outlined.MoreVert, contentDescription = "menu"
                 )
@@ -332,7 +401,7 @@ fun ToolBar(
                     expanded = menuClicked,
                     onDismissRequest = { menuClicked = !menuClicked }) {
                     DropdownMenuItem(
-                        onClick = { viewModel.setAutoScroll(!autoScroll) },
+                        onClick = onToggleAutoScroll,
                         text = {
                             Row(
                                 Modifier.fillMaxSize(),
@@ -344,7 +413,7 @@ fun ToolBar(
                                 )
                                 KSwitch(
                                     checked = autoScroll,
-                                    onClick = { viewModel.setAutoScroll(!autoScroll) },
+                                    onClick = onToggleAutoScroll,
                                     modifier = Modifier.padding(start = 20.dp)
                                 )
                             }
@@ -357,7 +426,7 @@ fun ToolBar(
                                     .fillMaxSize()
                                     .clickable {
                                         scope.launch {
-                                            lazyListState.animateScrollToItem(0)
+                                            onScrollToTop()
                                         }
                                     }, horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -375,7 +444,7 @@ fun ToolBar(
                                     .fillMaxSize()
                                     .clickable {
                                         scope.launch {
-                                            lazyListState.animateScrollToItem(visibleLogs.lastIndex)
+                                            onScrollToBottom()
                                         }
                                     }, horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -386,7 +455,7 @@ fun ToolBar(
                             }
                         })
                     DropdownMenuItem(
-                        onClick = { viewModel.setShowCompat(!showCompat) },
+                        onClick = onToggleShowCompat,
                         text = {
                             Row(
                                 Modifier.fillMaxSize(),
@@ -398,7 +467,7 @@ fun ToolBar(
                                 )
                                 KSwitch(
                                     checked = showCompat,
-                                    onClick = { viewModel.setShowCompat(!showCompat) },
+                                    onClick = onToggleShowCompat,
                                     modifier = Modifier.padding(start = 20.dp)
                                 )
                             }
@@ -407,20 +476,7 @@ fun ToolBar(
                         onClick = {
                             menuClicked = false
                             scope.launch {
-                                val path = viewModel.saveLogsToFile(ctx)
-                                if (path != null) {
-                                    Toast.makeText(
-                                        ctx,
-                                        ctx.getString(R.string.logs_saved_toast, path),
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        ctx,
-                                        ctx.getString(R.string.logs_save_error),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                onSaveLogs()
                             }
                         },
                         text = {
@@ -437,13 +493,75 @@ fun ToolBar(
                             )
                         },
                         onClick = {
-                            viewModel.clearLogs()
+                            onClearLogs()
                             menuClicked = false
                         }
                     )
                 }
             }
         })
+        AnimatedVisibility(visible = isSearchBarVisible) {
+            SearchBar(
+                text = filterText,
+                placeholder = stringResource(id = R.string.search_placeholder),
+                onClose = {
+                    onSearchToggle()
+                    onFilterChange("")
+                },
+                onTextChanged = onFilterChange,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+fun ToolBar(
+    viewModel: LogsViewModel,
+    ctx: Context,
+    onBackPressed: () -> Unit,
+    lazyListState: androidx.compose.foundation.lazy.LazyListState,
+    visibleLogs: List<LogEvent>,
+    autoScroll: Boolean
+) {
+    ToolBarContent(
+        isSearchBarVisible = viewModel.isSearchBarVisible.value,
+        filterText = viewModel.filterStrings.value,
+        autoScroll = autoScroll,
+        showCompat = viewModel.showCompat.value,
+        visibleLogs = visibleLogs,
+        onBackPressed = onBackPressed,
+        onSearchToggle = {
+            val visible = !viewModel.isSearchBarVisible.value
+            viewModel.isSearchBarVisible.value = visible
+            if (!visible) viewModel.setFilterStrings("")
+        },
+        onFilterChange = { viewModel.setFilterStrings(it) },
+        onToggleAutoScroll = { viewModel.setAutoScroll(!autoScroll) },
+        onScrollToTop = { lazyListState.animateScrollToItem(0) },
+        onScrollToBottom = { lazyListState.animateScrollToItem(visibleLogs.lastIndex) },
+        onToggleShowCompat = { viewModel.setShowCompat(!viewModel.showCompat.value) },
+        onSaveLogs = {
+            val path = viewModel.saveLogsToFile(ctx)
+            if (path != null) {
+                Toast.makeText(
+                    ctx,
+                    ctx.getString(R.string.logs_saved_toast, path),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    ctx,
+                    ctx.getString(R.string.logs_save_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        },
+        onClearLogs = { viewModel.clearLogs() },
+        ctx = ctx,
+        lazyListState = lazyListState,
+    )
 }
 @SuppressLint("SimpleDateFormat")
 @Composable
@@ -466,4 +584,50 @@ fun LogEvent.annotated() = buildAnnotatedString {
         append(SimpleDateFormat("h:mm:ss a").format(createdAt))
     }
     append(" $tag: $text")
+}
+
+@Preview(showBackground = true, name = "Log Screen (Light)")
+@Composable
+fun LogScreenPreviewLight() {
+    val sampleLogs = listOf(
+        LogEvent(LogLevel.INFO, "MainActivity", "Application started", System.currentTimeMillis()),
+        LogEvent(LogLevel.DEBUG, "Network", "GET /api/users request sent", System.currentTimeMillis() - 15000),
+        LogEvent(LogLevel.WARN, "Database", "Slow query detected: 2.5s", System.currentTimeMillis() - 30000),
+        LogEvent(LogLevel.ERROR, "Auth", "Login failed: invalid credentials", System.currentTimeMillis() - 45000),
+    )
+    KizzyTheme(
+        darkTheme = false,
+        isHighContrastModeEnabled = false,
+        isDynamicColorEnabled = false,
+    ) {
+        LogScreenContent(
+            visibleLogs = sampleLogs,
+            autoScroll = false,
+            showCompat = false,
+            onBackPressed = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Log Screen (Dark)")
+@Composable
+fun LogScreenPreviewDark() {
+    val sampleLogs = listOf(
+        LogEvent(LogLevel.INFO, "MainActivity", "Application started", System.currentTimeMillis()),
+        LogEvent(LogLevel.DEBUG, "Network", "GET /api/users request sent", System.currentTimeMillis() - 15000),
+        LogEvent(LogLevel.WARN, "Database", "Slow query detected: 2.5s", System.currentTimeMillis() - 30000),
+        LogEvent(LogLevel.ERROR, "Auth", "Login failed: invalid credentials", System.currentTimeMillis() - 45000),
+    )
+    KizzyTheme(
+        darkTheme = true,
+        isHighContrastModeEnabled = false,
+        isDynamicColorEnabled = false,
+    ) {
+        LogScreenContent(
+            visibleLogs = sampleLogs,
+            autoScroll = true,
+            showCompat = true,
+            onBackPressed = {},
+        )
+    }
 }

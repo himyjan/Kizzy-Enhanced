@@ -330,7 +330,7 @@ private val fakeGames = buildList {
                 platform = "nintendo",
                 small_image = "",
                 large_image = "",
-                game_title = "Assassin's creed:"
+                game_title = "Assassin's creed: $it"
             )
         )
     }

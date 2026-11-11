@@ -56,13 +56,19 @@ class MediaScreenViewModel @Inject constructor(
 
     fun updateMediaAppEnabled(pkg: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            Prefs.saveMediaAppToPrefs(pkg)
+            // Toggle the app, then persist the COMPLETE enabled list. Persisting a single
+            // entry would otherwise reset the list to the default package set, which
+            // silently disabled every app the user had actually chosen.
+            val currentlyEnabled = _state.value.enabledApps[pkg] ?: false
+            val newEnabled = !currentlyEnabled
+
+            val updated = _state.value.enabledApps.toMutableMap().apply {
+                this[pkg] = newEnabled
+            }
+            Prefs.setMediaAppsEnabled(updated.filterValues { it }.keys)
+
             _state.update { currentState ->
-                currentState.copy(
-                    enabledApps = currentState.enabledApps.toMutableMap().apply {
-                        this[pkg] = !this[pkg]!!
-                    }
-                )
+                currentState.copy(enabledApps = updated)
             }
         }
     }

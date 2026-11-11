@@ -12,6 +12,7 @@ import android.os.SystemClock
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.data.utils.toRpcImage
+import com.my.kizzy.preference.Prefs
 import com.my.kizzy.domain.interfaces.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -58,6 +59,17 @@ class GetCurrentPlayingMediaAll @Inject constructor(
         val skipped = mutableListOf<String>()
 
         for (mediaController in sorted) {
+            // Respect the app selections. The Experimental RPC list is the explicit
+            // user selection; the Media RPC list allows every app until the user edits it.
+            // An app is broadcast when it is enabled in EITHER list.
+            val isEnabled = Prefs.isExperimentalAppEnabled(mediaController.packageName) ||
+                Prefs.isMediaAppEnabled(mediaController.packageName)
+            if (!isEnabled) {
+                logger.d("MediaRPC", "Skipping session ${mediaController.packageName}: app not enabled for media RPC")
+                skipped += "${mediaController.packageName} (app not enabled for media RPC)"
+                continue
+            }
+
             val metadata = mediaController.metadata
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()?.takeIf { it.isNotEmpty() }
 

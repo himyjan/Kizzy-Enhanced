@@ -82,9 +82,16 @@ object Prefs {
      * Checks if the given app is enabled in the preferences for media rpc. This is used to filter
      * the media RPC based on the enabled media apps.
      *
+     * Until the user actually edits the app list, EVERY app is allowed. The default list only
+     * contains a handful of well-known media apps, so applying it as a strict allow-list would
+     * silently break media RPC for every other player (custom YouTube clients, local music
+     * players, ...). Once the user touches the list, it becomes authoritative.
+     *
      * @param packageName The package name of the app to check
      */
     fun isMediaAppEnabled(packageName: String?): Boolean {
+        if (packageName == null) return false
+        if (!kv.containsKey(ENABLED_MEDIA_APPS)) return true
         val apps = get(ENABLED_MEDIA_APPS, Json.encodeToString(predefinedMediaApps))
         val enabledPackages: ArrayList<String> = Json.decodeFromString(apps)
         return enabledPackages.contains(packageName)
@@ -108,6 +115,16 @@ object Prefs {
             enabledPackages.add(pkg)
 
         set(ENABLED_MEDIA_APPS, Json.encodeToString(enabledPackages))
+    }
+
+    /**
+     * Stores the complete list of apps enabled for the media RPC.
+     *
+     * The stored list is authoritative once it has been written, so the app list screen
+     * and the media detection always agree on which apps are allowed.
+     */
+    fun setMediaAppsEnabled(enabledPackages: Collection<String>) {
+        set(ENABLED_MEDIA_APPS, Json.encodeToString(ArrayList(enabledPackages)))
     }
 
     fun getUser(): User? {

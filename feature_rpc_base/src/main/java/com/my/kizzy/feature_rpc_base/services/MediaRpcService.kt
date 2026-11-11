@@ -96,6 +96,13 @@ class MediaRpcService : Service() {
     private var lastPresenceUpdateTime: Long = 0L
     private val PRESENCE_UPDATE_MIN_INTERVAL_MS = 1500L
 
+    /**
+     * How far the start timestamp has to move before it is treated as a seek. Players
+     * report their position with coarse granularity, so a smaller value would report a
+     * jump on every update.
+     */
+    private val TIMELINE_JUMP_TOLERANCE_MS = 3000L
+
     private val presenceUpdateMutex = Mutex()
 
     private val timelineJob = MutableStateFlow<Job?>(null)
@@ -255,8 +262,12 @@ class MediaRpcService : Service() {
             val start = time.start ?: 0L
             val end = time.end ?: 0L
             currentMediaDurationSec = ((end - start) / 1000).toInt().coerceAtLeast(0)
-            // Get current position from media controller if available, otherwise estimate from timestamps
-            currentMediaPositionMs = currentMediaController?.playbackState?.position ?: (System.currentTimeMillis() - start)
+            // Derive the position from the timestamps instead of the raw playback position.
+            // The raw position only changes when the player publishes an update, so using it
+            // made the notification's progress bar freeze between updates. The timestamps are
+            // already extrapolated by GetCurrentlyPlayingMedia, so "now - start" is accurate.
+            val elapsedMs = System.currentTimeMillis() - start
+            currentMediaPositionMs = elapsedMs.coerceIn(0L, currentMediaDurationSec * 1000L)
             currentMediaProgressSec = (currentMediaPositionMs / 1000).toInt().coerceIn(0, currentMediaDurationSec)
         } ?: run {
             currentMediaDurationSec = 0
@@ -299,48 +310,64 @@ class MediaRpcService : Service() {
         lastKnownTrackTitle = trackName
         lastKnownTrackArtist = playingMedia.state
 
+        // Keep the 1-second timeline ticker running while media is playing. It is what
+        // refreshes the Discord progress bar and the notification. It was previously
+        // defined but never started, so the timeline never advanced.
+        if (trackName != null && !isPaused) {
+            if (timelineJob.value?.isActive != true) {
+                startTimelineUpdates()
+            }
+        } else {
+            stopTimelineUpdates()
+        }
+
         val currentName = playingMedia.name.takeIf { it.isNotBlank() }
         val currentDetails = playingMedia.details
         val currentState = playingMedia.state
+        val currentLargeImageUrl = playingMedia.largeImage?.let {
+            (it as? com.my.kizzy.data.rpc.RpcImage.BitmapImage)?.title ?: it.toString()
+        }
 
         // Update notification with current playback progress before skip check
         updateNotificationPauseButton()
 
         stateRepository.setTimestamps(playingMedia.time?.start, playingMedia.time?.end)
-        val largeImageUrl = playingMedia.largeImage?.resolveImage(kizzyRepository)
-        val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
-        stateRepository.setImageUrls(largeImageUrl, smallImageUrl)
 
         presenceUpdateMutex.withLock {
-            val currentLargeImageUrl = playingMedia.largeImage?.toString()
             val now = System.currentTimeMillis()
-            val intervalElapsed = now - lastPresenceUpdateTime >= PRESENCE_UPDATE_MIN_INTERVAL_MS
-
             val packageChanged = playingPkg != null && playingPkg != lastSentPackageName
 
-            val shouldSkip = !forceRefresh && !packageChanged &&
-                (currentName == lastSentName &&
-                currentDetails == lastSentDetails &&
-                currentState == lastSentState &&
-                currentLargeImageUrl == lastSentLargeImageUrl &&
-                currentMediaProgressSec == lastSentProgressSec) &&
-                !intervalElapsed
+            // The start timestamp is "now - position", so it stays constant while the track
+            // plays and only moves when the user SEEKS. A move larger than the tolerance
+            // is therefore a seek and must be pushed to Discord right away.
+            val currentStart = playingMedia.time?.start
+            val timelineJumped = currentStart != null && lastSentStartTimestamps != null &&
+                kotlin.math.abs(currentStart - lastSentStartTimestamps!!) > TIMELINE_JUMP_TOLERANCE_MS
 
-            if (shouldSkip) {
-                logger.d("MediaRPC", "Presence unchanged or interval not elapsed, skipping redundant update")
+            val contentChanged = currentName != lastSentName ||
+                currentDetails != lastSentDetails ||
+                currentState != lastSentState
+
+            // Nothing worth sending: skip early to avoid the (costly) image resolution below.
+            if (!forceRefresh && !packageChanged && !contentChanged && !timelineJumped) {
+                logger.d("MediaRPC", "Presence unchanged, skipping redundant update")
                 return
             }
 
             lastSentName = currentName
             lastSentDetails = currentDetails
             lastSentState = currentState
-            lastSentStartTimestamps = playingMedia.time?.start
+            lastSentStartTimestamps = currentStart
             lastSentStopTimestamps = playingMedia.time?.end
             lastSentLargeImageUrl = currentLargeImageUrl
             lastSentPackageName = playingPkg
             lastSentProgressSec = currentMediaProgressSec
             lastPresenceUpdateTime = now
         }
+
+        val largeImageUrl = playingMedia.largeImage?.resolveImage(kizzyRepository)
+        val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
+        stateRepository.setImageUrls(largeImageUrl, smallImageUrl)
 
         sendPresenceUpdate(playingMedia, enableTimestamps)
     }
@@ -456,15 +483,30 @@ class MediaRpcService : Service() {
 
     private fun updateNotificationPauseButton() {
         val title = currentMediaTitle ?: getString(R.string.rich_presence_active)
-        val progressText = if (currentMediaDurationSec > 0) {
-            val currentStr = formatDuration(currentMediaPositionMs)
-            val totalStr = formatDuration(currentMediaDurationSec.toLong() * 1000)
-            "$currentStr / $totalStr"
-        } else {
-            "No time info"
+
+        // Build "artist · channels" plus the elapsed/total time, e.g.
+        // "Artist · Stereo · 01:24 / 03:45".
+        val parts = buildList {
+            currentMediaArtist?.takeIf { it.isNotBlank() }?.let { add(it) }
+            if (currentMediaDurationSec > 0) {
+                val currentStr = formatDuration(currentMediaPositionMs)
+                val totalStr = formatDuration(currentMediaDurationSec.toLong() * 1000)
+                add("$currentStr / $totalStr")
+            }
         }
-        val content = if (isPaused) "Tap Resume to continue syncing" else currentMediaArtist ?: "Broadcasting media status"
-        val notification = buildNotification(title, content, currentMediaCoverArt, currentMediaProgressSec, currentMediaDurationSec, currentMediaProgressSec, currentMediaDurationSec)
+        val content = when {
+            parts.isNotEmpty() -> parts.joinToString(" · ")
+            isPaused -> getString(R.string.rich_presence_active)
+            else -> getString(R.string.rich_presence_active)
+        }
+
+        val notification = buildNotification(
+            title = title,
+            content = content,
+            coverArt = currentMediaCoverArt,
+            progressSec = currentMediaProgressSec,
+            durationSec = currentMediaDurationSec
+        )
         notificationManager.notify(Constants.NOTIFICATION_ID, notification)
     }
 
@@ -483,8 +525,13 @@ class MediaRpcService : Service() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.BAKLAVA)
-    private fun buildNotification(title: String, content: String, coverArt: Bitmap?, progressSec: Int, durationSec: Int, currentSec: Int = 0, totalSec: Int = 0): Notification {
+    private fun buildNotification(
+        title: String,
+        content: String,
+        coverArt: Bitmap?,
+        progressSec: Int,
+        durationSec: Int,
+    ): Notification {
         val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
         val appPendingIntent = PendingIntent.getActivity(
             this, 0, appIntent,
@@ -498,10 +545,11 @@ class MediaRpcService : Service() {
             .setContentIntent(appPendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            // Native chronometer for elapsed time display
-            .setWhen(currentMediaPositionMs)
+            // Chronometer counts UP from the given time, so it has to be a wall-clock
+            // timestamp of "now - position" for the elapsed time to be correct.
+            .setWhen(System.currentTimeMillis() - currentMediaPositionMs)
             .setUsesChronometer(true)
-            .setShowWhen(true)
+            .setShowWhen(false)
             .addAction(
                 NotificationCompat.Action.Builder(
                     R.drawable.ic_media_rpc,
@@ -528,25 +576,32 @@ class MediaRpcService : Service() {
         coverArt?.let { builder.setLargeIcon(it) }
 
         // Progress bar support
-        // Android 16+ (API 36+): Use Notification.ProgressStyle for efficient live updates
-        // Android 8-15 (API 26-35): Use setProgress()
-        // API < 26: No progress bar support
-        if (currentMediaDurationSec > 0) {
-            val progressStyle = NotificationCompat.ProgressStyle()
-                // 1. Defines the total timeline length (replaces setProgressMax)
-                .setProgressSegments(
-                    listOf(NotificationCompat.ProgressStyle.Segment(currentMediaDurationSec))
-                )
-                // 2. Moves the tracker along the timeline in seconds
-                .setProgress(currentMediaProgressSec.coerceIn(0, currentMediaDurationSec))
-                // 3. Draws a moving dot/icon on the timeline bar
-                .setProgressTrackerIcon(
-                    IconCompat.createWithResource(this, FeatureRpcR.drawable.ic_rpc_tracker_dot)
-                )
-                // 4. Colors the elapsed portion of the timeline differently from the remaining portion
-                .setStyledByProgress(true)
+        // Android 16+ (API 36+): NotificationCompat.ProgressStyle renders a rich timeline.
+        // Android 8-15 (API 26-35): androidx's ProgressStyle degrades to a plain
+        // setProgress() call, which is what shows the bar on those devices.
+        if (durationSec > 0) {
+            val progress = progressSec.coerceIn(0, durationSec)
 
-            builder.setStyle(progressStyle)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                val progressStyle = NotificationCompat.ProgressStyle()
+                    // 1. Defines the total timeline length (replaces setProgressMax)
+                    .setProgressSegments(
+                        listOf(NotificationCompat.ProgressStyle.Segment(durationSec))
+                    )
+                    // 2. Moves the tracker along the timeline in seconds
+                    .setProgress(progress)
+                    // 3. Draws a moving dot/icon on the timeline bar
+                    .setProgressTrackerIcon(
+                        IconCompat.createWithResource(this, FeatureRpcR.drawable.ic_rpc_tracker_dot)
+                    )
+                    // 4. Colors the elapsed portion of the timeline differently from the remaining portion
+                    .setStyledByProgress(true)
+
+                builder.setStyle(progressStyle)
+            }
+
+            // Always set the plain progress too, so API 26-35 devices show the bar.
+            builder.setProgress(durationSec, progress, false)
         }
 
         return builder.build()
@@ -601,7 +656,6 @@ class MediaRpcService : Service() {
             }
         }
     }
-
     @SuppressLint("WakelockTimeout")
     private fun setupWakeLock() {
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
