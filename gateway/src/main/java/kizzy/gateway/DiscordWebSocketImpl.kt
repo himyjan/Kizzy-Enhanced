@@ -108,6 +108,8 @@ open class DiscordWebSocketImpl(
             try {
                 logger.i("Gateway", "Connect called")
                 instance = this@DiscordWebSocketImpl
+                // A previous close() must not prevent this explicit connect from working.
+                deliberateClose = false
                 _connectionState.value = ConnectionState.Connecting
 
                 var shouldConnect = false
@@ -406,15 +408,21 @@ open class DiscordWebSocketImpl(
         deliberateClose = true
         heartbeatJob?.cancel()
         heartbeatJob = null
-        this.cancel()
+        // Tear down the CURRENT connection, but keep the coroutine scope alive.
+        //
+        // Cancelling the scope (this.cancel()) used to permanently kill the gateway: every
+        // later connect() launched on an already-cancelled job and therefore never ran, so
+        // the RPC could never come back once it had been closed. That is what made switching
+        // to another app in the apps list leave Discord showing the previous app forever.
+        connectionJob?.cancel()
+        connectionJob = null
+        runCatching { websocket?.cancel() }
+        websocket = null
         resumeGatewayUrl = null
         sessionId = null
         connected = false
         _connectionState.value = ConnectionState.Disconnected
-        runBlocking {
-            websocket?.close()
-            logger.e("Gateway", "Connection to gateway closed")
-        }
+        logger.e("Gateway", "Connection to gateway closed")
     }
 
     override suspend fun sendActivity(presence: Presence) {

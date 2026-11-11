@@ -18,6 +18,7 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.usage.UsageEvents
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Intent
@@ -93,8 +94,6 @@ class AppDetectionService : Service() {
     }
 
     private fun handleAppDetection() {
-        val enabledPackages = getEnabledPackages()
-
         val stopIntent = createStopIntent()
         pendingIntent = createPendingIntent(stopIntent)
 
@@ -115,18 +114,29 @@ class AppDetectionService : Service() {
             startForeground(Constants.NOTIFICATION_ID, createDefaultNotification(), FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
         }
 
-        val rpcButtons = getRpcButtons()
-
         scope.launch {
             while (isActive) {
                 try {
+                    // Re-read the enabled apps and buttons on every cycle instead of caching
+                    // them once at service start. Caching them meant that toggling an app in
+                    // the apps list had no effect until the service was restarted, which is
+                    // exactly the "app list does not switch the shown app" symptom.
+                    val enabledPackages = getEnabledPackages()
+                    val rpcButtons = getRpcButtons()
+
                     val queryUsageStats = getUsageStats()
 
-                    if (queryUsageStats != null && queryUsageStats.size > 1) {
-                        val packageName = getLatestPackageName(queryUsageStats)
-                        if (packageName != null && packageName !in EXCLUDED_APPS) {
-                            handleValidPackage(packageName, enabledPackages, rpcButtons)
-                        }
+                    // Prefer the raw foreground event stream; fall back to the coarse usage
+                    // stats when the event stream is unavailable.
+                    val packageName = getForegroundPackage()
+                        ?: (if (queryUsageStats != null && queryUsageStats.size > 1) {
+                            getLatestPackageName(queryUsageStats)
+                        } else {
+                            null
+                        })
+
+                    if (packageName != null && packageName !in EXCLUDED_APPS) {
+                        handleValidPackage(packageName, enabledPackages, rpcButtons)
                     }
 
                     // Also check the active assistant (power-button / "Hey Google" triggers)
@@ -167,6 +177,38 @@ class AppDetectionService : Service() {
             currentTimeMillis - 10000,
             currentTimeMillis
         )
+    }
+
+    /**
+     * Resolves the package that is actually in the foreground right now.
+     *
+     * `queryUsageStats` with `INTERVAL_DAILY` only returns coarse daily buckets, so the
+     * "last used" entry is frequently a background app and the foreground app never gets
+     * picked up. Querying the raw usage EVENT stream and looking for the most recent
+     * foreground transition is the reliable way to know which app the user is looking at
+     * right now — this is what makes the apps list actually switch between apps.
+     */
+    private fun getForegroundPackage(): String? {
+        val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
+        val currentTimeMillis = System.currentTimeMillis()
+        val events = usageStatsManager.queryEvents(
+            currentTimeMillis - EVENT_LOOKBACK_MS,
+            currentTimeMillis
+        )
+        val event = UsageEvents.Event()
+        var latestPackage: String? = null
+        var latestTimestamp = 0L
+        while (events.hasNextEvent()) {
+            events.getNextEvent(event)
+            val isForegroundEvent = event.eventType == UsageEvents.Event.ACTIVITY_RESUMED ||
+                event.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND
+            if (!isForegroundEvent) continue
+            if (event.timeStamp >= latestTimestamp) {
+                latestTimestamp = event.timeStamp
+                latestPackage = event.packageName
+            }
+        }
+        return latestPackage
     }
 
     private fun getLatestPackageName(usageStats: List<UsageStats>): String? {
@@ -217,58 +259,69 @@ class AppDetectionService : Service() {
         val isGameApp = gameApp != null
         val displayName = if (isAiApp) aiApp!!.displayName else if (isGameApp) gameApp!!.displayName else null
         val iconUrl = if (isAiApp) aiApp!!.iconUrl else if (isGameApp) gameApp!!.iconUrl else null
+        val appLabel = displayName
+            ?: this.packageManager.getApplicationLabel(
+                this.packageManager.getApplicationInfo(packageName, 0)
+            ).toString()
+        val details = if (isAiApp) "Chatting with AI" else if (isGameApp) "Playing game" else null
+        val state = if (isAiApp) "Thinking..." else if (isGameApp) "In-game" else null
+        val largeImage = iconUrl?.let { RpcImage.ExternalImage(it) }
+            ?: RpcImage.ApplicationIcon(packageName, this@AppDetectionService)
+
+        // Configure the RPC the same way for both the "already connected" and the
+        // "not connected yet" path. Previously the update path silently dropped the
+        // buttons and the status, so the presence changed depending on whether the
+        // gateway happened to be connected already.
+        kizzyRPC.apply {
+            setName(appLabel)
+            setDetails(details)
+            setState(state)
+            setStartTimestamps(System.currentTimeMillis())
+            setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
+            setLargeImage(largeImage)
+            // Buttons are additive, so clear them first or they pile up on every app switch.
+            clearButtons()
+            if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
+                with(rpcButtons) {
+                    setButton1(button1.takeIf { it.isNotEmpty() }, button1Url.takeIf { it.isNotEmpty() })
+                    setButton2(button2.takeIf { it.isNotEmpty() }, button2Url.takeIf { it.isNotEmpty() })
+                }
+            }
+        }
+
         if (kizzyRPC.isRpcRunning()) {
             kizzyRPC.updateRPC(
                 CommonRpc(
-                    name = displayName
-                        ?: this.packageManager.getApplicationLabel(this.packageManager.getApplicationInfo(packageName, 0)).toString(),
-                    details = if (isAiApp) "Chatting with AI" else if (isGameApp) "Playing game" else null,
-                    state = if (isAiApp) "Thinking..." else if (isGameApp) "In-game" else null,
-                    largeImage = iconUrl?.let { RpcImage.ExternalImage(it) }
-                        ?: RpcImage.ApplicationIcon(packageName, this@AppDetectionService),
+                    name = appLabel,
+                    details = details,
+                    state = state,
+                    largeImage = largeImage,
                     time = Timestamps(start = System.currentTimeMillis()),
                     packageName = packageName
                 ),
                 enableTimestamps = true
             )
         } else {
-            kizzyRPC.apply {
-                setName(displayName
-                    ?: this@AppDetectionService.packageManager.getApplicationLabel(
-                        this@AppDetectionService.packageManager.getApplicationInfo(packageName, 0)
-                    ).toString())
-                setDetails(if (isAiApp) "Chatting with AI" else if (isGameApp) "Playing game" else null)
-                setState(if (isAiApp) "Thinking..." else if (isGameApp) "In-game" else null)
-                setStartTimestamps(System.currentTimeMillis())
-                setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
-                setLargeImage(
-                    iconUrl?.let { RpcImage.ExternalImage(it) }
-                        ?: RpcImage.ApplicationIcon(packageName, this@AppDetectionService)
-                )
-                if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
-                    with(rpcButtons) {
-                        setButton1(button1.takeIf { it.isNotEmpty() }, button1Url.takeIf { it.isNotEmpty() })
-                        setButton2(button2.takeIf { it.isNotEmpty() }, button2Url.takeIf { it.isNotEmpty() })
-                    }
-                }
-                build()
-            }
+            kizzyRPC.build()
         }
+
         notificationManager.notify(
             Constants.NOTIFICATION_ID, notificationBuilder
                 .setContentText(displayName ?: packageName)
                 .setLargeIcon(
-                    rpcImage = iconUrl?.let { RpcImage.ExternalImage(it) }
-                        ?: RpcImage.ApplicationIcon(packageName, this@AppDetectionService),
+                    rpcImage = largeImage,
                     context = this@AppDetectionService
                 )
                 .build()
         )
     }
 
-    private fun handleDisabledPackage() {
+    private suspend fun handleDisabledPackage() {
         if (kizzyRPC.isRpcRunning()) {
-            kizzyRPC.closeRPC()
+            // Clear the activity instead of tearing down the gateway connection. Closing it
+            // meant the next app switch had to reconnect from scratch, and the reconnect
+            // could fail, leaving Discord stuck showing the previous app.
+            kizzyRPC.clearPresence()
         }
         notificationManager.notify(Constants.NOTIFICATION_ID, createDefaultNotification())
     }
@@ -299,6 +352,13 @@ class AppDetectionService : Service() {
     }
 
     companion object {
-        val EXCLUDED_APPS = listOf("com.my.kizzy", "com.discord")
+        /**
+         * How far back the usage event stream is searched for a foreground transition.
+         * Long enough to survive a short trip to another app, short enough that switching
+         * apps is picked up quickly.
+         */
+        private const val EVENT_LOOKBACK_MS = 5000L
+
+        val EXCLUDED_APPS = listOf("com.my.kizzy", "com.my.kizzy.enhanced", "com.discord")
     }
 }

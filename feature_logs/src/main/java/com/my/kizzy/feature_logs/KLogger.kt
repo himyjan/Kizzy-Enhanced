@@ -55,6 +55,17 @@ class KLogger @Inject constructor() : Logger {
             val log = LogEvent(level, tag, event, System.currentTimeMillis())
             logs.add(log)
         }
+        // Mirror to logcat so the RPC can be debugged from adb without opening the app.
+        android.util.Log.println(
+            when (level) {
+                LogLevel.ERROR -> android.util.Log.ERROR
+                LogLevel.WARN -> android.util.Log.WARN
+                LogLevel.INFO -> android.util.Log.INFO
+                else -> android.util.Log.DEBUG
+            },
+            tag,
+            event
+        )
     }
 
     companion object {

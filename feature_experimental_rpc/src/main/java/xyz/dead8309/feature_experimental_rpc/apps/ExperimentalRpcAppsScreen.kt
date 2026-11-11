@@ -12,6 +12,7 @@
 
 package xyz.dead8309.feature_experimental_rpc.apps
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -329,28 +330,35 @@ fun ExperimentalRpcAppsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.app_selection)) },
-                navigationIcon = { BackButton(onClick = onBackPressed) },
-                actions = {
-                    if (isSearchBarVisible) {
-                        Column(
-                            modifier = Modifier.padding(10.dp)
-                        ) {
-                            SearchBar(
-                                text = searchText,
-                                onTextChanged = { searchText = it },
-                                onClose = { isSearchBarVisible = false },
-                                placeholder = stringResource(R.string.search_placeholder)
+            // The search field lives in its own row below the app bar. Putting a
+            // full width field inside the `actions` slot squeezes the title down to
+            // zero width, which makes the title wrap and inflates the whole app bar.
+            Column {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.app_selection)) },
+                    navigationIcon = { BackButton(onClick = onBackPressed) },
+                    actions = {
+                        IconButton(onClick = { isSearchBarVisible = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = stringResource(R.string.search)
                             )
                         }
-                    } else {
-                        IconButton(onClick = { isSearchBarVisible = true }) {
-                            Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")
-                        }
                     }
+                )
+                AnimatedVisibility(visible = isSearchBarVisible) {
+                    SearchBar(
+                        text = searchText,
+                        onTextChanged = { searchText = it },
+                        onClose = {
+                            isSearchBarVisible = false
+                            searchText = ""
+                        },
+                        placeholder = stringResource(R.string.search_placeholder),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
                 }
-            )
+            }
         }
     ) { paddingValues ->
         Column(

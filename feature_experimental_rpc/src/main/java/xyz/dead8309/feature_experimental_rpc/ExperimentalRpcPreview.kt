@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -118,4 +119,17 @@ fun ExperimentalRpcPreview(
 
         Spacer(modifier = Modifier.height(4.dp))
     }
+}
+
+@Preview(name = "ExperimentalRpcPreview")
+@Composable
+fun ExperimentalRpcPreviewPreview() {
+    ExperimentalRpcPreview(
+        state = UiState(
+            templateName = "Discord",
+            templateDetails = "Listening to Spotify",
+            templateState = "Lo-fi Beats",
+        ),
+        modifier = Modifier.fillMaxWidth(),
+    )
 }

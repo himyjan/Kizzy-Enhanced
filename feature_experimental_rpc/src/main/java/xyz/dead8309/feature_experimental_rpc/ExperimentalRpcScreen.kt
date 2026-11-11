@@ -46,6 +46,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,6 +69,7 @@ import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
+import com.my.kizzy.ui.theme.KizzyTheme
 import com.my.kizzy.ui.components.RpcField
 import com.my.kizzy.ui.components.RpcFieldWithCompletions
 import com.my.kizzy.ui.components.SettingItem
@@ -569,4 +571,95 @@ fun ExperimentalRpcScreen(
     }
 }
 
+@Preview(name = "ExperimentalRpcScreen (Light)")
+@Composable
+fun ExperimentalRpcScreenLightPreview() {
+    val uiState = UiState(
+        isLoading = false,
+        error = null,
+        isAppsRpcPartEnabled = true,
+        isMediaRpcPartEnabled = true,
+        templateName = "Media Playback",
+        templateDetails = "Playing Spotify",
+        templateState = "Artist - Song Title",
+        showCoverArt = true,
+        showAppIcon = true,
+        showPlaybackState = true,
+        enableTimestamps = true,
+        hideOnPause = false,
+        platform = "desktop",
+        platformIsExpanded = false,
+        buttonsEnabled = true,
+        button1Text = "Play / Pause",
+        button1Url = "https://spotify.com",
+        button2Text = "Next Track",
+        button2Url = "https://spotify.com",
+        useCustomAppId = false,
+        applicationId = "",
+        timestampMode = "default",
+        timestampModeExpanded = false,
+        customTimestampStart = "",
+        customTimestampEnd = "",
+        showSongAsTitle = false,
+        titleSource = "title",
+        titleSourceExpanded = false,
+    )
+    ExperimentalRpcScreen(
+        onBackPressed = {},
+        state = uiState,
+        hasUsageAccess = true,
+        hasNotificationAccess = true,
+        navigateToAppSelection = {},
+        onEvent = {},
+    )
+}
+
+@Preview(name = "ExperimentalRpcScreen (Dark)")
+@Composable
+fun ExperimentalRpcScreenDarkPreview() {
+    val uiState = UiState(
+        isLoading = false,
+        error = null,
+        isAppsRpcPartEnabled = true,
+        isMediaRpcPartEnabled = true,
+        templateName = "Media Playback",
+        templateDetails = "Playing Spotify",
+        templateState = "Artist - Song Title",
+        showCoverArt = true,
+        showAppIcon = true,
+        showPlaybackState = true,
+        enableTimestamps = true,
+        hideOnPause = false,
+        platform = "desktop",
+        platformIsExpanded = false,
+        buttonsEnabled = true,
+        button1Text = "Play / Pause",
+        button1Url = "https://spotify.com",
+        button2Text = "Next Track",
+        button2Url = "https://spotify.com",
+        useCustomAppId = false,
+        applicationId = "",
+        timestampMode = "default",
+        timestampModeExpanded = false,
+        customTimestampStart = "",
+        customTimestampEnd = "",
+        showSongAsTitle = false,
+        titleSource = "title",
+        titleSourceExpanded = false,
+    )
+    KizzyTheme(
+        darkTheme = true,
+        isHighContrastModeEnabled = false,
+        isDynamicColorEnabled = false,
+    ) {
+        ExperimentalRpcScreen(
+            onBackPressed = {},
+            state = uiState,
+            hasUsageAccess = true,
+            hasNotificationAccess = true,
+            navigateToAppSelection = {},
+            onEvent = {},
+        )
+    }
+}
 

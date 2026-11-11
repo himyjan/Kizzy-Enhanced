@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.math.abs
 
 class KizzyRPC @Inject constructor(
     private val token: String,
@@ -69,9 +70,28 @@ class KizzyRPC @Inject constructor(
     companion object {
         private const val PRESENCE_MIN_INTERVAL_MS = 1500L
         private const val POST_CONNECT_DELAY_MS = 1000L
+
+        /**
+         * How far the start/end timestamps have to move before it counts as a seek.
+         * Players report their position with coarse granularity (often whole seconds), so a
+         * smaller tolerance would report a jump on every single update.
+         */
+        private const val TIMELINE_JUMP_TOLERANCE_MS = 3000L
+
+        /**
+         * Minimum time between two presence re-applies. Discord answers every
+         * PRESENCE_UPDATE with SESSIONS_REPLACE, so re-applying on every one of those
+         * events would loop forever and flood the gateway.
+         */
+        private const val REAPPLY_COOLDOWN_MS = 10000L
     }
     private var lastPresenceTimeMs: Long = 0L
     private var lastPresenceHash: Int = -1
+    // Timestamp of the last presence re-apply, used to break the SESSIONS_REPLACE loop.
+    private var lastReapplyTimeMs: Long = 0L
+    // Start/end timestamps of the last presence that was actually sent. Used to detect seeks.
+    private var lastPresenceStart: Long? = null
+    private var lastPresenceEnd: Long? = null
     // Tracks when the WebSocket last connected/resumed; delays the first presence
     // update to avoid Discord 4003 (Not authenticated) right after RESUME.
     private var lastConnectedTimeMs: Long = 0L
@@ -89,10 +109,24 @@ class KizzyRPC @Inject constructor(
     /**
      * Re-apply the last presence after a reconnect. Runs on the gateway's own scope so the
      * owning service cancelling its update coroutine cannot kill it.
+     *
+     * Discord answers every PRESENCE_UPDATE with a SESSIONS_REPLACE event, so re-applying
+     * the presence on every such event creates a feedback loop (re-apply -> SESSIONS_REPLACE
+     * -> re-apply -> ...) that floods the gateway. A cooldown breaks that loop while still
+     * restoring the activity after a genuine session replacement.
      */
     private suspend fun launchReapplyPresence() {
         val presence = lastPresence ?: return
         withContext(Dispatchers.IO) {
+            val now = System.currentTimeMillis()
+            if (now - lastReapplyTimeMs < REAPPLY_COOLDOWN_MS) {
+                logger.d(
+                    "KizzyRPC",
+                    "Skipping presence re-apply (within ${REAPPLY_COOLDOWN_MS}ms cooldown)"
+                )
+                return@withContext
+            }
+            lastReapplyTimeMs = now
             var attempt = 0
             val maxAttempts = 3
             while (attempt < maxAttempts) {
@@ -113,18 +147,37 @@ class KizzyRPC @Inject constructor(
         }
     }
 
-    private fun presenceHash(name: String?, details: String?, state: String?, timestamps: kizzy.gateway.entities.presence.Timestamps?, playbackState: Int?): Int {
+    private fun presenceHash(name: String?, details: String?, state: String?, playbackState: Int?): Int {
         var result = 1
-        // Only hash name/details/state/playbackState — NOT timestamps.
-        // Timestamps change every millisecond during playback, which would change the hash
-        // constantly and cause presence to be re-sent on every position update, flooding
-        // Discord's gateway with duplicate PRESENCE_UPDATEs and causing the activity
-        // to flash on/off rapidly.
         result = 31 * result + (name?.hashCode() ?: 0)
         result = 31 * result + (details?.hashCode() ?: 0)
         result = 31 * result + (state?.hashCode() ?: 0)
         result = 31 * result + (playbackState?.hashCode() ?: 0)
         return result
+    }
+
+    /**
+     * Detects a "timeline jump" — the user seeking to a different position in the track.
+     *
+     * The start/end timestamps are computed as "now - position", so while a track plays
+     * normally both the clock and the position advance at the same rate and the start
+     * timestamp stays (almost) constant. Seeking shifts it by the seek distance, which is
+     * what has to be pushed to Discord for the progress bar to jump.
+     *
+     * Comparing the raw values is not enough because players report their position with
+     * coarse granularity, so a tolerance is applied to ignore that jitter.
+     */
+    private fun isTimelineJump(timestamps: Timestamps?): Boolean {
+        if (timestamps == null) return false
+        val newStart = timestamps.start
+        val newEnd = timestamps.end
+        if (newStart != null && lastPresenceStart != null &&
+            abs(newStart - lastPresenceStart!!) > TIMELINE_JUMP_TOLERANCE_MS
+        ) return true
+        if (newEnd != null && lastPresenceEnd != null &&
+            abs(newEnd - lastPresenceEnd!!) > TIMELINE_JUMP_TOLERANCE_MS
+        ) return true
+        return false
     }
 
     /** Closes the WebSocket connection without blocking. Safe to call from any thread. */
@@ -136,15 +189,21 @@ class KizzyRPC @Inject constructor(
      * The WebSocket connection is kept alive so presence can resume when media starts again.
      * Must be called from a coroutine context. */
     suspend fun clearPresence() {
-        // Send empty presence to clear Discord's activity card
+        // Send empty presence to clear Discord's activity card.
+        // The status must be a valid value ("invisible" hides the activity entirely).
         discordWebSocket.sendActivity(
             Presence(
                 activities = emptyList(),
                 afk = true,
                 since = null,
-                status = null
+                status = "invisible"
             )
         )
+        // Forget the cached presence so the next update is not treated as unchanged.
+        lastPresence = null
+        lastPresenceHash = -1
+        lastPresenceStart = null
+        lastPresenceEnd = null
     }
 
     fun isRpcRunning(): Boolean {
@@ -409,6 +468,14 @@ class KizzyRPC @Inject constructor(
         }
     }
 
+    /**
+     * Discord's gateway expects `status` to be one of online/idle/dnd/offline/invisible.
+     * Sending an explicit `null` makes Discord ignore the whole PRESENCE_UPDATE, so the
+     * activity never shows up on the profile even though the payload looked correct.
+     */
+    private fun effectiveStatus(explicit: String?): String =
+        explicit?.takeIf { it.isNotBlank() } ?: status?.takeIf { it.isNotBlank() } ?: "online"
+
     suspend fun build() {
         presence = Presence(
             activities = listOf(
@@ -434,9 +501,11 @@ class KizzyRPC @Inject constructor(
                     url = url
                 )
             ),
-            afk = true,
-            since = startTimestamps,
-            status = status
+            // The user is actively playing something, so they are not AFK. `afk = true`
+            // together with a `since` timestamp made Discord render the profile as idle.
+            afk = false,
+            since = null,
+            status = effectiveStatus(null)
         )
         // Remember the presence so we can re-apply after reconnect
         lastPresence = presence
@@ -474,7 +543,6 @@ class KizzyRPC @Inject constructor(
                 id = "kizzy",
                 size = arrayOf(commonRpc.partyCurrentSize, commonRpc.partyMaxSize)
             ).also { party = it }
-        val effectiveStatus = status ?: this.status
 
         // Ensure the Discord WebSocket is connected before sending presence.
         // updateRPC() is called from media detection without going through build()
@@ -498,24 +566,43 @@ class KizzyRPC @Inject constructor(
             // Reset presence hash so presence is re-sent after WebSocket reconnect
             lastPresenceHash = -1
             lastPresenceTimeMs = 0
+            lastPresenceStart = null
+            lastPresenceEnd = null
         }
 
-        // Deduplication: skip if within minimum interval OR presence data unchanged.
-        // Always enforce minimum interval to prevent flooding Discord's gateway with
-        // rapid PRESENCE_UPDATEs when SESSIONS_REPLACE events fire quickly (e.g.,
-        // YouTube/Spotify media sessions changing position or state rapidly).
+        // Deduplication.
+        //
+        // A presence is only re-sent when something actually changed: a different
+        // track/app, a different play state, or the user seeking (timeline jump).
+        // Re-sending an identical presence every few seconds is pure gateway traffic.
+        //
+        // IMPORTANT: a changed presence must never be DROPPED. The old code skipped
+        // whenever the minimum interval had not elapsed, which silently swallowed the
+        // update - the RPC then kept showing the previous app until the next pause/play.
+        // Instead we wait out the remainder of the interval and then send, so the new
+        // state always reaches Discord (just not faster than the rate limit allows).
         val now = System.currentTimeMillis()
-        val hash = presenceHash(commonRpc.name, commonRpc.details, commonRpc.state, time, commonRpc.playbackState)
-        val intervalElapsed = now - lastPresenceTimeMs >= PRESENCE_MIN_INTERVAL_MS
+        val hash = presenceHash(commonRpc.name, commonRpc.details, commonRpc.state, commonRpc.playbackState)
+        val contentChanged = hash != lastPresenceHash
+        val timelineJumped = isTimelineJump(time)
         // Always send on first call (lastPresenceTimeMs == 0) so Discord receives
         // the initial presence even if WebSocket was still connecting.
         val isFirstRun = lastPresenceTimeMs == 0L
-        if (!forceRefresh && !isFirstRun && (!intervalElapsed || hash == lastPresenceHash)) {
-            logger.d(
-                "KizzyRPC",
-                "Skipping presence update (intervalElapsed=$intervalElapsed, hashChanged=${hash != lastPresenceHash})"
-            )
+
+        if (!forceRefresh && !isFirstRun && !contentChanged && !timelineJumped) {
+            logger.d("KizzyRPC", "Skipping presence update (content unchanged)")
             return
+        }
+
+        if (!forceRefresh && !isFirstRun) {
+            val elapsed = now - lastPresenceTimeMs
+            if (elapsed < PRESENCE_MIN_INTERVAL_MS) {
+                logger.d(
+                    "KizzyRPC",
+                    "Presence changed - delaying ${PRESENCE_MIN_INTERVAL_MS - elapsed}ms to respect the rate limit"
+                )
+                delay(PRESENCE_MIN_INTERVAL_MS - elapsed)
+            }
         }
 
         buttonsLock.lock()
@@ -547,9 +634,11 @@ class KizzyRPC @Inject constructor(
 
                 )
             ),
-            afk = true,
-            since = time?.start,
-            status = effectiveStatus
+            // The user is actively doing something, so they are not AFK. Sending
+            // `afk = true` made Discord render the profile as idle.
+            afk = false,
+            since = null,
+            status = effectiveStatus(status)
         )
         discordWebSocket.sendActivity(presence)
         // Remember the presence so we can re-apply after SESSIONS_REPLACE reconnect
@@ -558,5 +647,9 @@ class KizzyRPC @Inject constructor(
         // (socket not connected within 15s), we want to retry next time
         lastPresenceHash = hash
         lastPresenceTimeMs = now
+        // Track the timeline that was sent so the next update can tell whether the user
+        // seeked (timeline jump) or the track simply kept playing.
+        lastPresenceStart = time?.start
+        lastPresenceEnd = time?.end
     }
 }

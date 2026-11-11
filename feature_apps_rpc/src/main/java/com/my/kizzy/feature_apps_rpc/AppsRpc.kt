@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
+import com.my.kizzy.data.utils.AppsInfo
 import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.resources.R
@@ -84,36 +86,43 @@ fun AppsRPC(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.main_appDetection),
-                            style = MaterialTheme.typography.headlineMedium,
-                        )
-                    }
-                },
-                navigationIcon = { BackButton { onBackPressed() } },
-                actions = {
-                    if (isSearchBarVisible) {
-                        Column(
-                            modifier = Modifier.padding(10.dp)
-                        ) {
-                            SearchBar(
-                                text = searchText,
-                                onTextChanged = { searchText = it },
-                                onClose = { isSearchBarVisible = false },
-                                placeholder = stringResource(id = R.string.search_placeholder)
+            // The search field lives in its own row below the app bar. Putting a
+            // full width field inside the `actions` slot squeezes the title down to
+            // zero width, which makes the title wrap and inflates the whole app bar.
+            Column {
+                LargeTopAppBar(
+                    title = {
+                        Column {
+                            Text(
+                                text = stringResource(id = R.string.main_appDetection),
+                                style = MaterialTheme.typography.headlineMedium,
                             )
                         }
-                    } else {
-                        IconButton(onClick = { isSearchBarVisible = !isSearchBarVisible }) {
-                            Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")
+                    },
+                    navigationIcon = { BackButton { onBackPressed() } },
+                    actions = {
+                        IconButton(onClick = { isSearchBarVisible = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = stringResource(id = R.string.search)
+                            )
                         }
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
+                    },
+                    scrollBehavior = scrollBehavior
+                )
+                AnimatedVisibility(visible = isSearchBarVisible) {
+                    SearchBar(
+                        text = searchText,
+                        onTextChanged = { searchText = it },
+                        onClose = {
+                            isSearchBarVisible = false
+                            searchText = ""
+                        },
+                        placeholder = stringResource(id = R.string.search_placeholder),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
+                }
+            }
         }
     ) {
         Column(

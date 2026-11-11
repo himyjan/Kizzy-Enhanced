@@ -43,7 +43,12 @@ object AppUtils {
     fun experimentalRpcRunning(): Boolean {
         return checkForRunningService<ExperimentalRpc>()
     }
+    private fun isActivityManagerInitialized(): Boolean = ::activityManager.isInitialized
+
     private inline fun <reified T : Any> checkForRunningService(): Boolean {
+        if (!isActivityManagerInitialized()) {
+            return false
+        }
         for (runningServiceInfo in activityManager.getRunningServices(
             Int.MAX_VALUE
         )) {
