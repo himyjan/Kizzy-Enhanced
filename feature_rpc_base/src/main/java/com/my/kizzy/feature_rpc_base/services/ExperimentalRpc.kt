@@ -46,7 +46,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
@@ -117,6 +116,23 @@ class ExperimentalRpc : Service() {
 
     // The single app-detection polling loop. Tracked so it is never started twice.
     private var appDetectionJob: Job? = null
+
+    // The pending presence update. Cancelling this one job cancels a superseded update
+    // without touching the heartbeat / media refresh / app detection jobs.
+    private var presenceUpdateJob: Job? = null
+
+    /**
+     * Starts (or restarts) the pending presence update.
+     *
+     * The previous implementation called `scope.coroutineContext.cancelChildren()`, which
+     * cancelled EVERY child of the service scope - including the heartbeat and the media
+     * refresh loop. After the first session event the periodic updates were dead, so the
+     * presence stopped updating until the app was restarted.
+     */
+    private fun launchPresenceUpdate(block: suspend () -> Unit) {
+        presenceUpdateJob?.cancel()
+        presenceUpdateJob = scope.launch { block() }
+    }
 
     private fun startHeartbeat() {
         stopHeartbeat()
@@ -670,10 +686,9 @@ class ExperimentalRpc : Service() {
         if (!useMediaRpc) {
             logger.i(TAG, "Media part of Experimental RPC is disabled.")
             if (useAppsRpc && !isMediaSessionActive) {
-                scope.coroutineContext.cancelChildren()
                 startAppDetectionCoroutine()
             } else if (!useAppsRpc) {
-                scope.launch {
+                launchPresenceUpdate {
                     updatePresence(
                         appInfo = null,
                         richMediaInfo = null,
@@ -699,8 +714,7 @@ class ExperimentalRpc : Service() {
             currentMediaController?.registerCallback(mediaControllerCallback)
         }
 
-        scope.coroutineContext.cancelChildren()
-        scope.launch {
+        launchPresenceUpdate {
             // Give media session metadata time to populate on initial load.
             // YouTube/LX Music often take 1-3 seconds to populate title metadata.
             // Retry up to 3 times with increasing delay before giving up.
@@ -728,8 +742,7 @@ class ExperimentalRpc : Service() {
         private fun handleMediaUpdate() {
             if (!useMediaRpc) return
 
-            scope.coroutineContext.cancelChildren()
-            scope.launch {
+            launchPresenceUpdate {
                 delay(200)
                 val richMediaData = this@ExperimentalRpc.getCurrentPlayingMediaAll.invoke()
                 val hasMediaData = richMediaData.appName != null
@@ -781,8 +794,7 @@ class ExperimentalRpc : Service() {
             currentMediaController = null
             isMediaSessionActive = false
 
-            scope.coroutineContext.cancelChildren()
-            scope.launch {
+            launchPresenceUpdate {
                 if (useAppsRpc) {
                     startAppDetectionCoroutine()
                 } else {
