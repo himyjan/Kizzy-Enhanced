@@ -262,11 +262,7 @@ class ExperimentalRpc : Service() {
             useAppsRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, true]
             useMediaRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, true]
             appActivityTypes = Prefs.getAppActivityTypes()
-            enabledExperimentalApps = try {
-                Json.decodeFromString(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
-            } catch (_: Exception) {
-                emptyList()
-            }
+            enabledExperimentalApps = readEnabledExperimentalApps()
 
             val initialMediaSessions = try {
                 mediaSessionManager.getActiveSessions(
@@ -278,8 +274,11 @@ class ExperimentalRpc : Service() {
             }
             var mediaActiveInitially = false
             if (useMediaRpc && initialMediaSessions.isNotEmpty()) {
+                // Use the same rule as the media detection itself, so the controller that
+                // is tracked always matches the session that is broadcast.
                 val firstActiveMediaController = initialMediaSessions.firstOrNull {
-                    enabledExperimentalApps.contains(it.packageName)
+                    enabledExperimentalApps.contains(it.packageName) ||
+                        Prefs.isMediaAppEnabled(it.packageName)
                 }
                 if (firstActiveMediaController != null) {
                     mediaActiveInitially = true
@@ -690,9 +689,12 @@ class ExperimentalRpc : Service() {
         currentMediaController = null
 
         if (mediaSessions?.isNotEmpty() == true) {
-            // Try to register callback on a matching session for playback state updates
+            // Try to register callback on a matching session for playback state updates.
+            // Use the same rule as the media detection so the tracked controller always
+            // matches the session that is broadcast.
             currentMediaController = mediaSessions.firstOrNull {
-                enabledExperimentalApps.contains(it.packageName)
+                enabledExperimentalApps.contains(it.packageName) ||
+                    Prefs.isMediaAppEnabled(it.packageName)
             }
             currentMediaController?.registerCallback(mediaControllerCallback)
         }
