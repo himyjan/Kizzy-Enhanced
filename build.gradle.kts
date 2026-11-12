@@ -41,6 +41,18 @@ subprojects {
             }
         }
     }
+    // The runtime bundle of a library (the jar/dir the app actually dexes) did not
+    // see the classes that KSP generated: the task stayed up to date with an
+    // outdated snapshot. The APK was then built without the Hilt modules, so the
+    // screen crashed with "Cannot create an instance of class ...ViewModel" as soon
+    // as it was opened. The bundle is cheap to create, so it is always rebuilt.
+    tasks.matching {
+        it.name.startsWith("bundleLibRuntimeToJar") ||
+            it.name.startsWith("bundleLibRuntimeToDir")
+    }.configureEach {
+        outputs.upToDateWhen { false }
+    }
+
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlinx" && requested.name == "kotlinx-metadata-jvm") {
