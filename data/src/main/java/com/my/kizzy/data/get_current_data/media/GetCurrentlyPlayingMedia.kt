@@ -9,6 +9,7 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.net.Uri
 import android.os.SystemClock
+import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.Constants.APPLICATION_ID
 import com.my.kizzy.data.rpc.RpcImage
@@ -48,7 +49,13 @@ class GetCurrentPlayingMedia @Inject constructor(
                 state == PlaybackState.STATE_CONNECTING
     }
 
-    operator fun invoke(): CommonRpc {
+    /**
+     * The media that is playing right now.
+     *
+     * It is a suspending function because the link of the track is resolved,
+     * which may need a network call.
+     */
+    suspend operator fun invoke(): CommonRpc {
         val mediaSessionManager =
             context.getSystemService(Service.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val sessions: List<android.media.session.MediaController> = try {
@@ -84,6 +91,9 @@ class GetCurrentPlayingMedia @Inject constructor(
             }
 
             val appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(mediaController.packageName, 0)).toString()
+                .takeIf { it.isNotBlank() }
+                ?: ActivityTypeResolver.knownAppName(mediaController.packageName)
+                ?: mediaController.packageName
             val author = metadata?.let { metadataResolver.formatArtists(it) }
             val album = metadata?.let { metadataResolver.getAlbum(it) }
 
@@ -175,6 +185,12 @@ class GetCurrentPlayingMedia @Inject constructor(
 
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
+            // The direct url of the track. The session of YouTube Music does not
+            // publish it, so it is looked up by the id or the title of the
+            // track. Without it the button linked to a search page.
+            val mediaUrl = metadataResolver.getDirectMediaUrl(metadata, mediaController.packageName)
+                ?: metadataResolver.getMediaUrl(metadata, mediaController.packageName)
+
             return CommonRpc(
                 name = rpcName,
                 details = rpcDetails,
@@ -185,7 +201,7 @@ class GetCurrentPlayingMedia @Inject constructor(
                 smallText = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appName else null,
                 packageName = "$title::${mediaController.packageName}",
                 time = timestamps.takeIf { it != null },
-                mediaUrl = metadataResolver.getMediaUrl(metadata, mediaController.packageName),
+                mediaUrl = mediaUrl,
                 playbackState = playbackState,
                 appPackage = mediaController.packageName,
                 appName = appName,
