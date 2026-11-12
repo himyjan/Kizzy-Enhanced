@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.WorkerParameters
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
+import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
@@ -153,7 +154,16 @@ class RpcRecoveryHiltWorker @AssistedInject constructor(
                 // Restore presence state
                 kizzyRPC.apply {
                     setName(playingMedia.name)
-                    setType(Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0])
+                    // The activity type is resolved per app, exactly like the Media
+                    // RPC does it, so the restored presence shows the same card.
+                    setType(
+                        ActivityTypeResolver.resolve(
+                            packageName = playingMedia.appPackage,
+                            isMusicMetadata = playingMedia.isMusicMetadata,
+                            fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                            useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+                        )
+                    )
                     setDetails(playingMedia.state)
                     setState(playingMedia.state)
                     setStartTimestamps(if (enableTimestamps) playingMedia.time?.start else null)

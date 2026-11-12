@@ -167,6 +167,7 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 playbackState = playbackState,
                 duration = duration,
                 position = position,
+                isMusicMetadata = album != null || !author.isNullOrBlank(),
                 timestamps = timestamps,
                 audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) },
                 allArtists = metadata?.let { metadataResolver.getAllArtists(it) } ?: emptyList(),

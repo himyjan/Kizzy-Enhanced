@@ -21,6 +21,11 @@ data class UiState(
     val error: String? = null,
     val isAppsRpcPartEnabled: Boolean = true,
     val isMediaRpcPartEnabled: Boolean = true,
+    /**
+     * Whether the activity type of an app is detected automatically. The switch
+     * is shared with the Media RPC.
+     */
+    val isAutoActivityTypeEnabled: Boolean = true,
     val templateName: String = "",
     val templateDetails: String = "",
     val templateState: String = "",

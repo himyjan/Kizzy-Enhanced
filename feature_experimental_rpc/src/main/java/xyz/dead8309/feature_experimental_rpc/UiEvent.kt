@@ -15,11 +15,14 @@ package xyz.dead8309.feature_experimental_rpc
 sealed interface UiEvent {
     data class ToggleAppsRpcPart(val enabled: Boolean) : UiEvent
     data class ToggleMediaRpcPart(val enabled: Boolean) : UiEvent
+    /** The automatic detection of the activity type, shared with the Media RPC. */
+    data class ToggleAutoActivityType(val enabled: Boolean) : UiEvent
     data class SetTemplateName(val value: String) : UiEvent
     data class SetTemplateDetails(val value: String) : UiEvent
     data class SetTemplateState(val value: String) : UiEvent
     data class ToggleAppEnabled(val packageName: String) : UiEvent
-    data class SetAppActivityType(val packageName: String, val activityType: Int) : UiEvent
+    /** A null activity type removes the choice, so the detection takes over again. */
+    data class SetAppActivityType(val packageName: String, val activityType: Int?) : UiEvent
     data class ToggleShowCoverArt(val enabled: Boolean) : UiEvent
     data class ToggleShowAppIcon(val enabled: Boolean) : UiEvent
     data class ToggleShowPlaybackState(val enabled: Boolean) : UiEvent

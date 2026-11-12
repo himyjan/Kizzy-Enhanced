@@ -5,6 +5,7 @@ import android.media.MediaMetadata
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
+import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.domain.interfaces.Logger
 
 class MetadataResolver @Inject constructor(
@@ -182,68 +183,15 @@ class MetadataResolver @Inject constructor(
             }
         }
 
-        // Build URL from package name if we know the app's URL pattern
-        packageName?.let { pkg ->
-            return when {
-                pkg.contains("youtube") || pkg.contains("youtubemusic") -> {
-                    // First, try to extract any YouTube URL from metadata keys
-                    val youtubeUrl = extractYouTubeUrl(metadata)
-                    if (!youtubeUrl.isNullOrEmpty()) {
-                        return youtubeUrl
-                    }
-                    // Fall back to search URL using video title
-                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (!title.isNullOrEmpty()) {
-                        "https://www.youtube.com/results?search_query=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
-                    } else null
-                }
-                pkg == "com.spotify.music" -> {
-                    // Spotify: try to find track ID in metadata
-                    val albumUri = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
-                    if (!albumUri.isNullOrEmpty() && albumUri.contains("spotify")) {
-                        "https://open.spotify.com/search/${URLEncoder.encode(albumUri, StandardCharsets.UTF_8.toString())}"
-                    } else {
-                        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                        if (!title.isNullOrEmpty()) {
-                            "https://open.spotify.com/search/${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
-                        } else null
-                    }
-                }
-                pkg.contains("apple") || pkg.contains("itunes") -> {
-                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (!title.isNullOrEmpty()) {
-                        "https://music.apple.com/search?term=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
-                    } else null
-                }
-                pkg.contains("deezer") -> {
-                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (!title.isNullOrEmpty()) {
-                        "https://www.deezer.com/search/${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
-                    } else null
-                }
-                pkg.contains("soundcloud") -> {
-                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (!title.isNullOrEmpty()) {
-                        "https://soundcloud.com/search/${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
-                    } else null
-                }
-                pkg.contains("streetvoice") -> {
-                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (!title.isNullOrEmpty()) {
-                        "https://streetvoice.com/search?q=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
-                    } else null
-                }
-                pkg.contains("ymusicapp") -> {
-                    val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    if (!title.isNullOrEmpty()) {
-                        "https://ymusicapp.com/watch?v=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
-                    } else null
-                }
-                else -> null
-            }
+        // YouTube apps publish the real watch url, so it is preferred over a
+        // search page.
+        if (MediaServiceResolver.isYouTube(packageName)) {
+            extractYouTubeUrl(metadata)?.let { return it }
         }
 
-        return null
+        // Fall back to the page of the service that lists the track.
+        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+        return MediaServiceResolver.mediaSearchUrl(packageName, title)
     }
 
     /**
@@ -318,32 +266,7 @@ class MetadataResolver @Inject constructor(
     fun getArtistUrl(metadata: MediaMetadata, packageName: String?): String? {
         val artist = metadataResolverArtistName(metadata)
         if (artist.isNullOrEmpty()) return null
-
-        return when {
-            packageName?.contains("youtube") == true || packageName?.contains("youtubemusic") == true -> {
-                // YouTube artist channel: @ArtistName or search
-                "https://www.youtube.com/@${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
-            }
-            packageName == "com.spotify.music" -> {
-                "https://open.spotify.com/search/${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
-            }
-            packageName?.contains("apple") == true || packageName?.contains("itunes") == true -> {
-                "https://music.apple.com/search?term=${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
-            }
-            packageName?.contains("deezer") == true -> {
-                "https://www.deezer.com/search/${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
-            }
-            packageName?.contains("soundcloud") == true -> {
-                "https://soundcloud.com/search/${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
-            }
-            packageName?.contains("streetvoice") == true -> {
-                "https://streetvoice.com/search?q=${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
-            }
-            packageName?.contains("ymusicapp") == true -> {
-                "https://ymusicapp.com/watch?v=${URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())}"
-            }
-            else -> null
-        }
+        return MediaServiceResolver.artistUrl(packageName, artist)
     }
 
     private fun metadataResolverArtistName(metadata: MediaMetadata): String? {

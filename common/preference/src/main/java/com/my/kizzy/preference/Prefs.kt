@@ -268,6 +268,25 @@ object Prefs {
     const val EXPERIMENTAL_RPC_TEMPLATE_DETAILS = "experimental_rpc_template_details"
     const val EXPERIMENTAL_RPC_TEMPLATE_STATE = "experimental_rpc_template_state"
     const val EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES = "experimental_rpc_app_activity_types"
+
+    /**
+     * The per-app activity types the user picked. Shared by every RPC feature.
+     */
+    const val APP_ACTIVITY_TYPES = "app_activity_types"
+
+    /**
+     * The activity type the Media RPC falls back to. It is used for the apps
+     * that are not recognized and when the automatic detection is switched off.
+     */
+    const val MEDIA_RPC_ACTIVITY_TYPE = "media_rpc_activity_type"
+    const val ACTIVITY_TYPE_AUTO = -1
+
+    /**
+     * Whether the activity type of an app is detected automatically. The switch
+     * is shared by the Media RPC and the Experimental RPC, so the detection
+     * behaves the same in both of them. A per-app choice always wins over it.
+     */
+    const val AUTO_ACTIVITY_TYPE = "auto_activity_type"
     const val EXPERIMENTAL_RPC_SHOW_COVER_ART = "experimental_rpc_show_cover_art"
     const val EXPERIMENTAL_RPC_SHOW_APP_ICON = "experimental_rpc_show_app_icon"
     const val EXPERIMENTAL_RPC_SHOW_PLAYBACK_STATE = "experimental_rpc_show_playback_state"
@@ -287,24 +306,45 @@ object Prefs {
     const val EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END = "experimental_rpc_timestamp_custom_end"
     const val EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE = "experimental_rpc_show_song_as_title"
     const val EXPERIMENTAL_RPC_TITLE_SOURCE = "experimental_rpc_title_source" // "title" or "artist"
+    /**
+     * Stores the activity type the user picked for a single app. The map is shared by
+     * every RPC feature, so a type chosen for an app applies everywhere.
+     */
     fun saveAppActivityType(packageName: String, activityType: Int) {
-        val json = get(EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES, "{}")
-        val map: MutableMap<String, Int> = try {
-            Json.decodeFromString(json)
-        } catch (_: Exception) {
-            mutableMapOf()
-        }
+        val map = getAppActivityTypes().toMutableMap()
         map[packageName] = activityType
-        set(EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES, Json.encodeToString(map))
+        set(APP_ACTIVITY_TYPES, Json.encodeToString(map))
     }
 
-    fun getAppActivityTypes(): Map<String, Int> {
-        val json = get(EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES, "{}")
-        return try {
-            Json.decodeFromString(json)
-        } catch (_: Exception) {
-            emptyMap()
+    /**
+     * Removes the override of an app so the automatic detection takes over again.
+     */
+    fun clearAppActivityType(packageName: String) {
+        val map = getAppActivityTypes().toMutableMap()
+        if (map.remove(packageName) != null) {
+            set(APP_ACTIVITY_TYPES, Json.encodeToString(map))
         }
+    }
+
+    /**
+     * The per-app activity types the user picked. The map used to live under an
+     * experimental-only key, so the old value is migrated to the shared key.
+     */
+    fun getAppActivityTypes(): Map<String, Int> {
+        val json = get(APP_ACTIVITY_TYPES, "")
+        if (json.isNotBlank()) return decodeAppActivityTypes(json)
+
+        val legacy = decodeAppActivityTypes(get(EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES, "{}"))
+        if (legacy.isNotEmpty()) {
+            set(APP_ACTIVITY_TYPES, Json.encodeToString(legacy))
+        }
+        return legacy
+    }
+
+    private fun decodeAppActivityTypes(json: String): Map<String, Int> = try {
+        Json.decodeFromString<Map<String, Int>>(json)
+    } catch (_: Exception) {
+        emptyMap()
     }
 
     fun isExperimentalAppEnabled(packageName: String?): Boolean {

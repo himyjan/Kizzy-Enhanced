@@ -29,6 +29,8 @@ import android.os.IBinder
 import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMediaAll
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
+import com.my.kizzy.data.rpc.ActivityTypeResolver
+import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.data.rpc.RpcImage
@@ -207,7 +209,6 @@ class ExperimentalRpc : Service() {
     private var templateState =
         Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
 
-    private var appActivityTypes: Map<String, Int> = Prefs.getAppActivityTypes()
     private var enabledExperimentalApps: List<String> = readEnabledExperimentalApps()
 
     /** Reads the list of apps enabled for the Experimental RPC from the preferences. */
@@ -277,7 +278,6 @@ class ExperimentalRpc : Service() {
             templateState = Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
             useAppsRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, true]
             useMediaRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, true]
-            appActivityTypes = Prefs.getAppActivityTypes()
             enabledExperimentalApps = readEnabledExperimentalApps()
 
             val initialMediaSessions = try {
@@ -579,7 +579,12 @@ class ExperimentalRpc : Service() {
         // Build the CommonRpc once - this is what we want to send to Discord
         val commonRpc = CommonRpc(
             name = finalName ?: "",
-            type = appActivityTypes[effectivePackageName] ?: 0,
+            type = ActivityTypeResolver.resolve(
+                packageName = effectivePackageName,
+                isMusicMetadata = richMediaInfo?.isMusicMetadata == true,
+                fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+            ),
             details = finalDetails,
             state = finalState,
             largeImage = finalLargeImage,

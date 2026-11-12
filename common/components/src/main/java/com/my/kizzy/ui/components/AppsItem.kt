@@ -33,6 +33,8 @@ fun AppsItem(
     pkg: String,
     isChecked: Boolean,
     onClick: () -> Unit = {},
+    /** An optional slot for extra controls shown before the switch. */
+    trailing: @Composable (() -> Unit)? = null,
 ) {
     // Cache app icon loading to avoid synchronous package manager calls during scroll
     val ctx = LocalContext.current
@@ -77,6 +79,7 @@ fun AppsItem(
                         style = MaterialTheme.typography.bodyMedium,
                     )
             }
+            trailing?.invoke()
             KSwitch(
                 checked = isChecked,
                 modifier = Modifier.padding(start = 20.dp, end = 6.dp),

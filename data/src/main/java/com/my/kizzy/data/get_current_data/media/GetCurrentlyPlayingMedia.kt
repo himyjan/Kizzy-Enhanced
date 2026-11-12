@@ -87,12 +87,24 @@ class GetCurrentPlayingMedia @Inject constructor(
             val author = metadata?.let { metadataResolver.formatArtists(it) }
             val album = metadata?.let { metadataResolver.getAlbum(it) }
 
+            // The artist / album / song-as-title switches were written by the
+            // Media RPC screen but never read, so they had no effect at all.
+            val artistEnabled = Prefs[Prefs.MEDIA_RPC_ARTIST_NAME, true]
+            val albumEnabled = Prefs[Prefs.MEDIA_RPC_ALBUM_NAME, true]
+            val showSongAsTitle = Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true]
+
             // Build state with multi-artist and multi-channel info.
             val stateParts = buildList {
-                author?.takeIf { it.isNotBlank() }?.let { add(it) }
+                if (artistEnabled) author?.takeIf { it.isNotBlank() }?.let { add(it) }
                 metadata?.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
             }
             val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() } ?: null
+
+            // "name" and "details" used to both carry the track title, so Discord
+            // showed the title twice and the app name was lost. The app name now
+            // fills whichever line the title does not use.
+            val rpcName = if (showSongAsTitle) title else appName
+            val rpcDetails = if (showSongAsTitle) appName else title
 
             val playbackState = mediaController.playbackState?.state
 
@@ -164,17 +176,20 @@ class GetCurrentPlayingMedia @Inject constructor(
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
             return CommonRpc(
-                name = title ?: appName,
-                details = title,
+                name = rpcName,
+                details = rpcDetails,
                 state = state,
                 largeImage = coverArt,
                 smallImage = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appIcon else null,
-                largeText = album,
+                largeText = album.takeIf { albumEnabled },
                 smallText = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appName else null,
                 packageName = "$title::${mediaController.packageName}",
                 time = timestamps.takeIf { it != null },
                 mediaUrl = metadataResolver.getMediaUrl(metadata, mediaController.packageName),
-                playbackState = playbackState
+                playbackState = playbackState,
+                appPackage = mediaController.packageName,
+                appName = appName,
+                isMusicMetadata = album != null || !author.isNullOrBlank(),
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")

@@ -30,5 +30,10 @@ data class RichMediaMetadata(
     val position: Long = 0L,
     val timestamps: Timestamps? = null,
     val audioChannels: String? = null,
-    val allArtists: List<String> = emptyList()
+    val allArtists: List<String> = emptyList(),
+    /**
+     * Whether the media session carries artist or album metadata, which means
+     * it is a music track rather than a video.
+     */
+    val isMusicMetadata: Boolean = false
 )
