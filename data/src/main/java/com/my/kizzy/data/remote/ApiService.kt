@@ -41,7 +41,12 @@ class ApiService @Inject constructor(
             url("$baseUrl/upload")
             setBody(MultiPartFormDataContent(
                 formData {
-                    append("\"temp\"", file.readBytes(), Headers.build {
+                    // The field name must be exactly "temp". It used to be sent as
+                    // "\"temp\"" (with the quotes as part of the name), which the
+                    // worker rejected with "No image file uploaded" - so EVERY
+                    // cover art / app icon upload failed and Discord never got an
+                    // image for the presence.
+                    append("temp", file.readBytes(), Headers.build {
                         append(HttpHeaders.ContentType, "image/*")
                         append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
                     })
