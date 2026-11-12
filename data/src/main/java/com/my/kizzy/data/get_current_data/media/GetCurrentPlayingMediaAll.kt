@@ -9,6 +9,7 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.net.Uri
 import android.os.SystemClock
+import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.data.utils.toRpcImage
@@ -45,7 +46,13 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 state == PlaybackState.STATE_CONNECTING
     }
 
-    operator fun invoke(): RichMediaMetadata {
+    /**
+     * The media that is playing right now.
+     *
+     * It is a suspending function because the link of the track and of the
+     * artist are resolved, which may need a network call.
+     */
+    suspend operator fun invoke(): RichMediaMetadata {
         val mediaSessionManager =
             context.getSystemService(Service.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val sessions: List<android.media.session.MediaController> = try {
@@ -79,6 +86,9 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 continue
             }
             val appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(mediaController.packageName, 0)).toString()
+                .takeIf { it.isNotBlank() }
+                ?: ActivityTypeResolver.knownAppName(mediaController.packageName)
+                ?: mediaController.packageName
             val author = metadata?.let { metadataResolver.formatArtists(it) }
             val album = metadata?.let { metadataResolver.getAlbum(it) }
 
@@ -171,6 +181,13 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 timestamps = timestamps,
                 audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) },
                 allArtists = metadata?.let { metadataResolver.getAllArtists(it) } ?: emptyList(),
+                mediaUrl = metadata?.let {
+                    metadataResolver.getDirectMediaUrl(it, mediaController.packageName)
+                        ?: metadataResolver.getMediaUrl(it, mediaController.packageName)
+                },
+                artistUrl = metadata?.let {
+                    metadataResolver.getArtistUrl(it, mediaController.packageName)
+                },
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")

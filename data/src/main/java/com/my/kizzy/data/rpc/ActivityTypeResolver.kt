@@ -169,6 +169,25 @@ object ActivityTypeResolver {
         "nicobox",
     )
 
+    /**
+     * Friendly display names for known apps. Used when the package manager's
+     * label is missing, in a different language, or not the desired display
+     * name. The package manager label takes precedence; this map is a fallback.
+     *
+     * Example: NicoBox (jp.nicovideo.nicobox) displays as "ボカコレ" on Discord.
+     */
+    private val knownAppNames: Map<String, String> = buildMap {
+        "jp.nicovideo.nicobox" to "ボカコレ"
+    }
+
+    /**
+     * The friendly display name for a known app, or null when not known.
+     */
+    fun knownAppName(packageName: String?): String? {
+        if (packageName.isNullOrBlank()) return null
+        return knownAppNames[packageName]
+    }
+
     private val VIDEO_SIGNATURES = listOf(
         "youtube",
         "netflix",
