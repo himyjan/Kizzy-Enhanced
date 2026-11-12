@@ -336,11 +336,33 @@ class MetadataResolver @Inject constructor(
         if (artist.isNullOrEmpty()) return null
 
         // The real channel of the uploader, when the service publishes one.
+        // For YouTube, extract the video id from the media id (e.g. "yt:video:VIDEO_ID")
+        // and look it up in the oEmbed endpoint, which returns the real channel URL
+        // (https://www.youtube.com/@handle or https://www.youtube.com/channel/UCxxxx).
+        // Guessing "@artistName" does not work because the artist name is not the channel handle.
         if (MediaServiceResolver.isYouTube(packageName)) {
-            val mediaUrl = getMediaUrl(metadata, packageName)
-            val video = mediaUrl?.let { YouTubeResolver.lookup(it) }
-            if (video != null && video.channelUrl.isNotBlank()) {
-                return video.channelUrl
+            val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
+            var videoId: String? = null
+            if (!mediaId.isNullOrEmpty()) {
+                if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/")) {
+                    videoId = YouTubeResolver.extractVideoId(mediaId)
+                } else {
+                    val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
+                    if (id.isNotBlank() && id.length >= 11) {
+                        videoId = id.take(11)
+                    }
+                }
+            }
+            if (videoId.isNullOrBlank()) {
+                // Fall back to extracting from the resolved media URL.
+                val mediaUrl = getMediaUrl(metadata, packageName)
+                videoId = mediaUrl?.let { YouTubeResolver.extractVideoId(it) }
+            }
+            videoId?.let { id ->
+                val video = YouTubeResolver.lookupById(id)
+                if (video != null && video.channelUrl.isNotBlank()) {
+                    return video.channelUrl
+                }
             }
         }
 
