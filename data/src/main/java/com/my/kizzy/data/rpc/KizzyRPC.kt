@@ -11,6 +11,7 @@ import kizzy.gateway.DiscordWebSocketImpl
 import kizzy.gateway.entities.presence.Activity
 import kizzy.gateway.entities.presence.ActivityButton
 import kizzy.gateway.entities.presence.Assets
+import kizzy.gateway.entities.presence.Metadata
 import kizzy.gateway.entities.presence.Party
 import kizzy.gateway.entities.presence.Presence
 import kizzy.gateway.entities.presence.Timestamps
@@ -85,6 +86,56 @@ class KizzyRPC @Inject constructor(
          * events would loop forever and flood the gateway.
          */
         private const val REAPPLY_COOLDOWN_MS = 10000L
+
+        /**
+         * Sanitizes a button url so it can never break the whole presence.
+         *
+         * Discord Gateway OP 3 rejects the ENTIRE activity when a button url is
+         * empty, has no http(s) scheme, contains leading/trailing whitespace, or
+         * exceeds 512 characters. Returning null makes the caller omit the button.
+         */
+        private fun sanitizeButtonUrl(raw: String?): String? {
+            val trimmed = raw?.trim() ?: return null
+            if (trimmed.isEmpty()) return null
+            if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) return null
+            if (trimmed.length > 512) return null
+            return trimmed
+        }
+
+        /** Button labels must be 1..32 characters. */
+        private fun sanitizeButtonLabel(raw: String?): String? {
+            val trimmed = raw?.trim() ?: return null
+            if (trimmed.isEmpty()) return null
+            return trimmed.take(32)
+        }
+
+        /**
+         * The top-level activity `url` is ONLY valid for type == 1 (Streaming) and
+         * must be a Twitch or YouTube url. Any other type with a non-null url causes
+         * Discord to silently drop the whole activity.
+         */
+        private fun sanitizeStreamUrl(raw: String?, type: Int?): String? {
+            if (type != 1) return null
+            val trimmed = raw?.trim() ?: return null
+            if (trimmed.isEmpty()) return null
+            if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) return null
+            val lower = trimmed.lowercase()
+            val valid = lower.contains("twitch.tv") || lower.contains("youtube.com") || lower.contains("youtu.be")
+            if (!valid) return null
+            if (trimmed.length > 512) return null
+            return trimmed
+        }
+
+        /** Discord allows at most 2 buttons. Invalid entries are dropped. */
+        private fun sanitizeButtons(buttons: List<ActivityButton>?): List<ActivityButton>? {
+            if (buttons.isNullOrEmpty()) return null
+            val clean = buttons.mapNotNull { b ->
+                val label = sanitizeButtonLabel(b.label) ?: return@mapNotNull null
+                val url = sanitizeButtonUrl(b.url) ?: return@mapNotNull null
+                ActivityButton(label = label, url = url)
+            }.take(2)
+            return clean.takeIf { it.isNotEmpty() }
+        }
     }
     private var lastPresenceTimeMs: Long = 0L
     private var lastPresenceHash: Int = -1
@@ -430,15 +481,14 @@ class KizzyRPC @Inject constructor(
      * @return
      */
     fun setButton1(label: String?, url: String?): KizzyRPC {
-        val validUrl = url?.takeIf { it.isNotEmpty() && (it.startsWith("http://") || it.startsWith("https://")) }
-        label?.let { lbl ->
-            validUrl?.let { u ->
-                buttonsLock.lock()
-                try {
-                    buttons.add(ActivityButton(label = lbl, url = u))
-                } finally {
-                    buttonsLock.unlock()
-                }
+        val cleanLabel = sanitizeButtonLabel(label)
+        val cleanUrl = sanitizeButtonUrl(url)
+        if (cleanLabel != null && cleanUrl != null) {
+            buttonsLock.lock()
+            try {
+                buttons.add(ActivityButton(label = cleanLabel, url = cleanUrl))
+            } finally {
+                buttonsLock.unlock()
             }
         }
         return this
@@ -452,15 +502,14 @@ class KizzyRPC @Inject constructor(
      * @return
      */
     fun setButton2(button2Text: String?, url: String? = null): KizzyRPC {
-        val validUrl = url?.takeIf { it.isNotEmpty() && (it.startsWith("http://") || it.startsWith("https://")) }
-        button2Text?.let { txt ->
-            validUrl?.let { u ->
-                buttonsLock.lock()
-                try {
-                    buttons.add(ActivityButton(label = txt, url = u))
-                } finally {
-                    buttonsLock.unlock()
-                }
+        val cleanLabel = sanitizeButtonLabel(button2Text)
+        val cleanUrl = sanitizeButtonUrl(url)
+        if (cleanLabel != null && cleanUrl != null) {
+            buttonsLock.lock()
+            try {
+                buttons.add(ActivityButton(label = cleanLabel, url = cleanUrl))
+            } finally {
+                buttonsLock.unlock()
             }
         }
         return this
@@ -526,6 +575,10 @@ class KizzyRPC @Inject constructor(
         explicit?.takeIf { it.isNotBlank() } ?: status?.takeIf { it.isNotBlank() } ?: "online"
 
     suspend fun build() {
+        val cleanButtons = sanitizeButtons(buttons.takeIf { buttons.isNotEmpty() })
+        val buttonMetadata = cleanButtons?.let { list ->
+            Metadata(buttonUrls = list.map { it.url })
+        }
         presence = Presence(
             activities = listOf(
                 Activity(
@@ -545,9 +598,11 @@ class KizzyRPC @Inject constructor(
                         largeText = largeText?.sanitize(),
                         smallText = smallText?.sanitize()
                     ).takeIf { largeImage != null || smallImage != null },
-                    buttons = buttons.takeIf { buttons.isNotEmpty() },
+                    buttons = cleanButtons,
+                    metadata = buttonMetadata,
                     applicationId = applicationIdNumber.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID,
-                    url = url
+                    // Top-level url is only valid for Streaming (type 1).
+                    url = sanitizeStreamUrl(url, type)
                 )
             ),
             // The user is actively playing something, so they are not AFK. `afk = true`
@@ -680,16 +735,28 @@ class KizzyRPC @Inject constructor(
         val resolvedLargeImage = commonRpc.largeImage?.resolveImage(kizzyRepository)
         val resolvedSmallImage = commonRpc.smallImage?.resolveImage(kizzyRepository)
 
+        // Discord only accepts a top-level activity `url` for type 1 (Streaming).
+        // Media RPC uses type 2/3 (Listening/Watching), so its mediaUrl must NOT
+        // be placed here - a non-null url with a non-streaming type makes Discord
+        // silently drop the whole activity. The mediaUrl goes into the buttons.
+        val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0]
+        val cleanButtons = sanitizeButtons(buttonsSnapshot)
+        // Newer Discord builds match the button urls through metadata.button_urls.
+        // Without it, Gateway OP 3 can drop the whole activity when buttons are present.
+        val buttonMetadata = cleanButtons?.let { list ->
+            Metadata(buttonUrls = list.map { it.url })
+        }
+
         val presence = Presence(
             activities = listOf(
                 Activity(
                     name = commonRpc.name,
                     details = commonRpc.details?.takeIf { it.isNotEmpty() }?.sanitize(),
                     state = commonRpc.state?.takeIf { it.isNotEmpty() }?.sanitize(),
-                    type = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0],
+                    type = activityType,
                     platform = commonRpc.platform?.sanitize(),
                     timestamps = time,
-                    url = commonRpc.mediaUrl?.takeIf { it.isNotEmpty() },
+                    url = sanitizeStreamUrl(commonRpc.mediaUrl, activityType),
                     assets = Assets(
                         largeImage = resolvedLargeImage,
                         smallImage = resolvedSmallImage,
@@ -697,7 +764,8 @@ class KizzyRPC @Inject constructor(
                         smallText = commonRpc.smallText?.sanitize()
                     ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
                     party = party.takeIf { party != null },
-                    buttons = buttonsSnapshot,
+                    buttons = cleanButtons,
+                    metadata = buttonMetadata,
 
                     applicationId = applicationIdNumber.takeIf { it.isNotEmpty() }
                         ?: Constants.APPLICATION_ID
