@@ -5,7 +5,7 @@
  *  *  * MediaServiceResolver.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  *  permission of yzziK(Vaibhav)
- *  *  ******************************************************************
+ *  *  *****************************************************************
  *
  *
  */
@@ -22,6 +22,14 @@ import java.nio.charset.StandardCharsets
  * playing media. The services are matched by their package name, because the
  * same service uses different packages on different devices (YouTube Music for
  * example is both "com.google..." and "app.morphe...").
+ *
+ * A *direct* url is always preferred over a search page: the user wants to land
+ * on the track, not on a list of results. When the service publishes the real
+ * url of the track in the media session, that url is used (see
+ * [MetadataResolver.getMediaUrl]). When it does not, the service specific
+ * search page is the fallback - and for YouTube the real watch url is resolved
+ * through the oEmbed endpoint, so even a player that does not publish the url
+ * ends up on the correct video.
  */
 object MediaServiceResolver {
 
@@ -41,7 +49,7 @@ object MediaServiceResolver {
     )
 
     private const val YOUTUBE_SEARCH = "https://www.youtube.com/results?search_query=%s"
-    private const val YOUTUBE_ARTIST = "https://www.youtube.com/@%s"
+    private const val YOUTUBE_ARTIST_SEARCH = "https://www.youtube.com/results?search_query=%s"
     private const val SPOTIFY_SEARCH = "https://open.spotify.com/search/%s"
     private const val APPLE_MUSIC_SEARCH = "https://music.apple.com/search?term=%s"
     private const val DEEZER_SEARCH = "https://www.deezer.com/search/%s"
@@ -69,15 +77,21 @@ object MediaServiceResolver {
     private val entries = listOf(
         Entry(
             listOf("youtube.music"),
-            Service("YouTube Music", Kind.MUSIC, YOUTUBE_SEARCH, YOUTUBE_ARTIST)
+            Service("YouTube Music", Kind.MUSIC, YOUTUBE_SEARCH, YOUTUBE_ARTIST_SEARCH)
         ),
         Entry(
             listOf("kapp.youtube", "ymusicapp"),
             Service("YMusic", Kind.MUSIC, YMUSIC_SEARCH, YMUSIC_SEARCH)
         ),
         Entry(
+            // YouTube Music wrapper / alternative clients. They all play YouTube Music
+            // content, so they link to the same YouTube search pages.
+            listOf("mist", "metrolist", "meld", "bitchord", "archivetune", "simpmusic", "ymusic"),
+            Service("YouTube Music", Kind.MUSIC, YOUTUBE_SEARCH, YOUTUBE_ARTIST_SEARCH)
+        ),
+        Entry(
             listOf("youtube"),
-            Service("YouTube", Kind.VIDEO, YOUTUBE_SEARCH, YOUTUBE_ARTIST)
+            Service("YouTube", Kind.VIDEO, YOUTUBE_SEARCH, YOUTUBE_ARTIST_SEARCH)
         ),
         Entry(
             listOf("spotify"),
@@ -163,6 +177,8 @@ object MediaServiceResolver {
 
     /**
      * The page of the service that lists the given track.
+     *
+     * This is only the fallback - the direct url of the track is preferred.
      */
     fun mediaSearchUrl(packageName: String?, title: String?): String? {
         val service = service(packageName) ?: return null
@@ -173,6 +189,8 @@ object MediaServiceResolver {
 
     /**
      * The page of the service that belongs to the given artist.
+     *
+     * This is only the fallback - the real channel of the artist is preferred.
      */
     fun artistUrl(packageName: String?, artist: String?): String? {
         val service = service(packageName) ?: return null
