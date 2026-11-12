@@ -56,10 +56,16 @@ fun ActivityRow(
         rpcConfig?.type?.toIntOrNull()?.equals(2) == true || rpcConfig?.type?.toIntOrNull()
             ?.equals(3) == true
 
-    // Media timeline - calculate real elapsed time from timestamps
-    var elapsedText by remember(rpcConfig) { mutableStateOf("00:00") }
-    var sliderPosition by remember(rpcConfig) { mutableFloatStateOf(0f) }
-    LaunchedEffect(rpcConfig) {
+    // Media timeline - calculate real elapsed time from timestamps.
+    //
+    // The ticker is keyed on the timestamps and not on the whole config: the
+    // config is a new object on every update, so the ticker restarted every
+    // second and the elapsed time stayed at 00:00.
+    val timelineStart = rpcConfig?.timestampsStart
+    val timelineStop = rpcConfig?.timestampsStop
+    var elapsedText by remember(timelineStart, timelineStop) { mutableStateOf("00:00") }
+    var sliderPosition by remember(timelineStart, timelineStop) { mutableFloatStateOf(0f) }
+    LaunchedEffect(timelineStart, timelineStop) {
         while (true) {
             delay(1000)
             val now = System.currentTimeMillis()
@@ -120,8 +126,9 @@ fun ActivityRow(
 
             Row(verticalAlignment = Alignment.Top) {
                 Box(Modifier.size(108.dp)) {
+                    val largeImg = rpcConfig?.largeImg?.removePrefix("mp:")
                     AsyncImage(
-                        model = if (isAsset(rpcConfig?.largeImg)) "https://media.discordapp.net/${rpcConfig?.largeImg}" else
+                        model = if (isAsset(largeImg)) "https://media.discordapp.net/$largeImg" else
                             rpcConfig?.largeImg,
                         error = painterResource(id = R.drawable.editing_rpc_pencil),
                         placeholder = painterResource(R.drawable.editing_rpc_pencil),
@@ -139,6 +146,7 @@ fun ActivityRow(
                         ,
                     )
                     if (!rpcConfig?.smallImg.isNullOrEmpty()) {
+                        val smallImg = rpcConfig?.smallImg?.removePrefix("mp:")
                         Box(
                             modifier =
                                 Modifier
@@ -151,8 +159,8 @@ fun ActivityRow(
                         ) {
                             AsyncImage(
                                 model =
-                                if (isAsset(rpcConfig?.smallImg))
-                                    "https://media.discordapp.net/${rpcConfig?.smallImg}"
+                                if (isAsset(smallImg))
+                                    "https://media.discordapp.net/$smallImg"
                                 else
                                     rpcConfig?.smallImg,
                                 error = painterResource(id = R.drawable.ic_rpc_placeholder),
@@ -265,7 +273,7 @@ fun ActivityRow(
 }
 
 private fun isAsset(url: String?): Boolean {
-    return url?.startsWith("attachments") == true || url?.startsWith("external") == true
+    return url?.startsWith("attachments") == true || url?.startsWith("external") == true || url?.startsWith("mp:") == true
 }
 
 private fun getFormatFromMs(ms: Long): String {
