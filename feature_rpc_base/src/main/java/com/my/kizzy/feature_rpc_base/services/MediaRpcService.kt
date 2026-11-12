@@ -629,7 +629,7 @@ class MediaRpcService : Service() {
                     PendingIntent.getService(
                         this, 0,
                         Intent(this, MediaRpcService::class.java).apply { action = Constants.ACTION_RESTART_SERVICE },
-                        PendingIntent.FLAG_IMMUTABLE
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 ).build()
             )
@@ -640,7 +640,7 @@ class MediaRpcService : Service() {
                     PendingIntent.getService(
                         this, 0,
                         Intent(this, MediaRpcService::class.java).apply { action = Constants.ACTION_STOP_SERVICE },
-                        PendingIntent.FLAG_IMMUTABLE
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 ).build()
             )
