@@ -46,19 +46,32 @@ abstract class NormalizeStringsTask : DefaultTask() {
                 updatedText = updatedText.replace("\\&quot;", "&quot;")
                 updatedText = updatedText.replace("\\&apos;", "&apos;")
 
-                // Rule 1 & 2: Fix raw escaped quotes safely inside text bodies
-                updatedText = updatedText.replace("\\'", "&apos;")
-                updatedText = updatedText.replace("\\\"", "&quot;")
-
                 // Rule 7: Clean broken backslash-brace combinations
                 updatedText = updatedText.replace("\\{", "{")
                 updatedText = updatedText.replace("\\}", "}")
 
-                // Rule 3 & 6: Wrap {{ and }} in &apos; entities to match the
-                // default strings.xml placeholder format, but only when not
-                // already wrapped (avoid double-escaping &apos;{{&apos;;)
-                updatedText = updatedText.replace(Regex("(?<!!&apos;)\\{\\{(?!!&apos;)"), "&apos;{{&apos;;")
-                updatedText = updatedText.replace(Regex("(?<!!&apos;)\\}\\}(?!!&apos;)"), "&apos;}}&apos;")
+                // Rule 3 & 6: Restore the {{ }} placeholders that the translation
+                // pass encoded as &apos;{{&apos; / &apos;}}&apos;. Inside a CDATA
+                // section AAPT2 takes the content literally, so the entities
+                // would end up as visible text instead of plain braces.
+                updatedText = updatedText
+                    .replace("&apos;{{&apos;;", "{{")
+                    .replace("&apos;{{&apos;", "{{")
+                    .replace("&apos;}}&apos;;", "}}")
+                    .replace("&apos;}}&apos;", "}}")
+                    .replace("&apos;&apos;", "")
+
+                // Rule 9: Turn the XML entities back into the backslash escapes
+                // AAPT2 understands. Inside a CDATA section the entities are NOT
+                // decoded, so they would end up as the literal text "&quot;" /
+                // "&apos;" in the UI instead of a real quote / apostrophe.
+                // &amp; is decoded last so that "&amp;quot;" stays "&quot;".
+                updatedText = updatedText
+                    .replace("&quot;", "\\\"")
+                    .replace("&apos;", "\\'")
+                    .replace("&lt;", "<")
+                    .replace("&gt;", ">")
+                    .replace("&amp;", "&")
 
                 // Rule 8: Wrap ALL text content in CDATA to prevent AAPT2 from
                 // decoding XML entities (like &apos;) and re-escaping them as
