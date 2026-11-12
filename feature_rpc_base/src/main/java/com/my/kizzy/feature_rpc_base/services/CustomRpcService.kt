@@ -53,89 +53,122 @@ class CustomRpcService : Service() {
     @SuppressLint("WakelockTimeout")
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action.equals(Constants.ACTION_STOP_SERVICE)) stopSelf()
-        else {
-            val string = intent?.getStringExtra("RPC")
-            string?.takeIf { it.isNotBlank() }?.let {
-                rpcData = try {
-                    Json.decodeFromString(it)
-                } catch (e: Exception) {
-                    null
-                }
+        intent?.action?.let { ac ->
+            if (ac == Constants.ACTION_STOP_SERVICE) {
+                stopSelf()
+                return super.onStartCommand(intent, flags, startId)
             }
-
-            val stopIntent = Intent(this, CustomRpcService::class.java)
-            stopIntent.action = Constants.ACTION_STOP_SERVICE
-            val pendingIntent: PendingIntent = PendingIntent.getService(
-                this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
-            )
-
-            // Open main app when notification is clicked. The intent reuses the
-            // existing task, otherwise the app is started a second time and the
-            // user sees two layers of the UI on top of each other.
-            val appIntent = packageManager.getLaunchIntentForPackage(packageName)
-                ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
-            appIntent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-            )
-            val appPendingIntent = PendingIntent.getActivity(
-                this, 0, appIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-
-            val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
-                .setContentTitle(getString(R.string.custom_rpc_running))
-                .setContentText(rpcData?.name ?: "")
-                .setSmallIcon(R.drawable.ic_rpc_placeholder)
-                .setContentIntent(appPendingIntent)
-                .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.exit), pendingIntent)
-                .build()
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                startForeground(Constants.NOTIFICATION_ID, notification)
-            } else {
-                startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
-            }
-
-            val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK)
-            wakeLock?.acquire()
-            scope.launch {
-                notificationManager.notify(
-                    Constants.NOTIFICATION_ID,
-                    Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_rpc_placeholder)
-                        .setLargeIcon(
-                            rpcImage = rpcData?.largeImg?.toRpcImage(),
-                            context = this@CustomRpcService
-                        )
-                        .build()
-                )
-
-                kizzyRPC.apply {
-                    rpcData?.let {
-                        setName(it.name.ifEmpty { "" })
-                        setDetails(it.details.ifEmpty { null })
-                        setState(it.state.ifEmpty { null })
-                        setPartySize(it.partyCurrentSize.toIntOrNull(), it.partyMaxSize.toIntOrNull())
-                        setStatus(it.status.ifEmpty { "online" })
-                        setType(it.type.toIntOrNull() ?: 0)
-                        setPlatform(it.platform.ifEmpty { null })
-                        setStartTimestamps(it.timestampsStart.toLongOrNull())
-                        setStopTimestamps(it.timestampsStop.toLongOrNull())
-                        setButton1(it.button1.ifEmpty { null }, it.button1link.ifEmpty { null })
-                        setButton2(it.button2.ifEmpty { null }, it.button2link.ifEmpty { null })
-                        setLargeImage(it.largeImg.toRpcImage(), it.largeText)
-                        setSmallImage(it.smallImg.toRpcImage(), it.smallText)
-                        setStreamUrl(it.url.ifEmpty { null })
-                        build()
+            if (ac == Constants.ACTION_RESTART_SERVICE) {
+                // Restart in place: re-read the RPC config and resend presence.
+                val string = intent?.getStringExtra("RPC")
+                string?.takeIf { it.isNotBlank() }?.let {
+                    rpcData = try {
+                        Json.decodeFromString(it)
+                    } catch (e: Exception) {
+                        null
                     }
+                }
+                sendPresenceAndNotification()
+                return super.onStartCommand(intent, flags, startId)
+            }
+        }
+
+        val string = intent?.getStringExtra("RPC")
+        string?.takeIf { it.isNotBlank() }?.let {
+            rpcData = try {
+                Json.decodeFromString(it)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        sendPresenceAndNotification()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    /**
+     * Builds the notification and sends the presence to Discord.
+     * Extracted so both the initial start and the restart action can reuse it.
+     */
+    private fun sendPresenceAndNotification() {
+        val stopIntent = Intent(this, CustomRpcService::class.java)
+        stopIntent.action = Constants.ACTION_STOP_SERVICE
+        val pendingIntent: PendingIntent = PendingIntent.getService(
+            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val restartIntent = Intent(this, CustomRpcService::class.java)
+        restartIntent.action = Constants.ACTION_RESTART_SERVICE
+        restartIntent.putExtra("RPC", Json.encodeToString(rpcData))
+        val restartPendingIntent: PendingIntent = PendingIntent.getService(
+            this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        // Open main app when notification is clicked. The intent reuses the
+        // existing task, otherwise the app is started a second time and the
+        // user sees two layers of the UI on top of each other.
+        val appIntent = packageManager.getLaunchIntentForPackage(packageName)
+            ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
+        appIntent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_SINGLE_TOP
+        )
+        val appPendingIntent = PendingIntent.getActivity(
+            this, 0, appIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
+            .setContentTitle(getString(R.string.custom_rpc_running))
+            .setContentText(rpcData?.name ?: "")
+            .setSmallIcon(R.drawable.ic_rpc_placeholder)
+            .setContentIntent(appPendingIntent)
+            .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.restart), restartPendingIntent)
+            .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.exit), pendingIntent)
+            .build()
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            startForeground(Constants.NOTIFICATION_ID, notification)
+        } else {
+            startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+        }
+
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK)
+        wakeLock?.acquire()
+        scope.launch {
+            notificationManager.notify(
+                Constants.NOTIFICATION_ID,
+                Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_rpc_placeholder)
+                    .setLargeIcon(
+                        rpcImage = rpcData?.largeImg?.toRpcImage(),
+                        context = this@CustomRpcService
+                    )
+                    .build()
+            )
+
+            kizzyRPC.apply {
+                rpcData?.let {
+                    setName(it.name.ifEmpty { "" })
+                    setDetails(it.details.ifEmpty { null })
+                    setState(it.state.ifEmpty { null })
+                    setPartySize(it.partyCurrentSize.toIntOrNull(), it.partyMaxSize.toIntOrNull())
+                    setStatus(it.status.ifEmpty { "online" })
+                    setType(it.type.toIntOrNull() ?: 0)
+                    setPlatform(it.platform.ifEmpty { null })
+                    setStartTimestamps(it.timestampsStart.toLongOrNull())
+                    setStopTimestamps(it.timestampsStop.toLongOrNull())
+                    setButton1(it.button1.ifEmpty { null }, it.button1link.ifEmpty { null })
+                    setButton2(it.button2.ifEmpty { null }, it.button2link.ifEmpty { null })
+                    setLargeImage(it.largeImg.toRpcImage(), it.largeText)
+                    setSmallImage(it.smallImg.toRpcImage(), it.smallText)
+                    setStreamUrl(it.url.ifEmpty { null })
+                    build()
                 }
             }
         }
-        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {

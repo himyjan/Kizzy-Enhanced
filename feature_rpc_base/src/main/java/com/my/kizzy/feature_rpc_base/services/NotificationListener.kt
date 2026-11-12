@@ -7,8 +7,11 @@ import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.service.notification.NotificationListenerService
 import android.util.Log
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.utils.MediaMetadataParser
 import com.my.kizzy.preference.Prefs
@@ -20,6 +23,19 @@ class NotificationListener : NotificationListenerService() {
 
     private lateinit var mediaSessionManager: MediaSessionManager
     private var activeController: MediaController? = null
+
+    /**
+     * The watchdog that restarts the Media RPC when it died.
+     */
+    private var watchdogHandler: Handler? = null
+    private var watchdogRunnable: Runnable? = null
+
+    companion object {
+        /**
+         * How often the watchdog checks whether the Media RPC is still alive.
+         */
+        private const val WATCHDOG_INTERVAL_MS = 30_000L
+    }
 
     private val activeSessionChangedListener = MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
         updateActiveController(controllers)
@@ -47,18 +63,59 @@ class NotificationListener : NotificationListenerService() {
      */
     override fun onListenerConnected() {
         super.onListenerConnected()
-        Log.d("NotificationListener", "Listener connected - restarting MediaRpcService")
-        restartMediaRpcService()
+        Log.d("NotificationListener", "Listener connected")
+        startWatchdog()
     }
 
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
         Log.d("NotificationListener", "Listener disconnected")
+        stopWatchdog()
     }
 
-    private fun restartMediaRpcService() {
+    /**
+     * Starts the watchdog.
+     *
+     * The media session events only fire when something *changes*, so a
+     * service that was killed while the music kept playing was never noticed.
+     * The watchdog asks the system whether the service is still running and
+     * starts it again when the user wants the Media RPC but it is gone.
+     */
+    private fun startWatchdog() {
+        stopWatchdog()
+        val handler = Handler(Looper.getMainLooper())
+        watchdogHandler = handler
+        val runnable = object : Runnable {
+            override fun run() {
+                try {
+                    checkMediaRpcService()
+                } catch (_: Exception) {
+                    // The watchdog must never crash the listener.
+                }
+                handler.postDelayed(this, WATCHDOG_INTERVAL_MS)
+            }
+        }
+        watchdogRunnable = runnable
+        handler.postDelayed(runnable, WATCHDOG_INTERVAL_MS)
+    }
+
+    private fun stopWatchdog() {
+        watchdogRunnable?.let { watchdogHandler?.removeCallbacks(it) }
+        watchdogRunnable = null
+        watchdogHandler = null
+    }
+
+    /**
+     * Starts the Media RPC when it should run but does not.
+     */
+    private fun checkMediaRpcService() {
+        // The user wants the Media RPC.
+        if (!Prefs[Prefs.MEDIA_RPC_ENABLED, false]) return
+        // But it is running already.
+        if (AppUtils.mediaRpcRunning()) return
+
+        Log.d("NotificationListener", "Media RPC is enabled but not running - starting it")
         val intent = Intent(this, MediaRpcService::class.java)
-        intent.action = Constants.ACTION_RESTART_SERVICE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent)
         } else {
@@ -98,25 +155,13 @@ class NotificationListener : NotificationListenerService() {
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "Unknown Track"
         val artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: "Unknown Artist"
         val album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: "Unknown Album"
-        val duration = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
 
         Log.d("NotificationListener", "App: $packageName | Track: $title by $artist ($album)")
 
-        val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
-
-        DiscordWebSocketImpl.instance?.let { discord ->
-            runBlocking {
-                discord.updatePresence(
-                    name = title,
-                    details = artist,
-                    state = album,
-                    largeImageKey = null,
-                    largeText = "$artist - $album",
-                    status = "online",
-                    afk = false
-                )
-            }
-        }
+        // The notification listener used to send a presence of its own, in
+        // parallel to the Media RPC. Two features wrote the same presence, so
+        // they overwrote each other and the cover art of the real presence was
+        // lost. The Media RPC owns the presence, the listener only watches.
     }
 
     override fun onDestroy() {
