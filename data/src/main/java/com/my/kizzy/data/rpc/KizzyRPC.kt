@@ -595,6 +595,12 @@ class KizzyRPC @Inject constructor(
         // updateRPC() is called from media detection without going through build()
         // which used to call connectToWebSocket(). Without this, sendActivity()
         // waits 15s for a socket that never connects and presence is silently dropped.
+        //
+        // Refresh the token and identify properties from prefs before connecting,
+        // so a login that happened after DI takes effect even when build() was
+        // never called (e.g. Media RPC running without Experimental RPC).
+        refreshFromPrefs()
+
         val wasConnected = discordWebSocket.isWebSocketConnected()
         discordWebSocket.connect()
 
