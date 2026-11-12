@@ -229,12 +229,12 @@ class ExperimentalRpc : Service() {
             val stopIntent = Intent(this, ExperimentalRpc::class.java)
             stopIntent.action = Constants.ACTION_STOP_SERVICE
             val pendingIntent: PendingIntent = PendingIntent.getService(
-                this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
+                this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             val restartIntent = Intent(this, ExperimentalRpc::class.java)
             restartIntent.action = Constants.ACTION_RESTART_SERVICE
             val restartPendingIntent: PendingIntent = PendingIntent.getService(
-                this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
+                this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
             // Open main app when notification is clicked. The intent reuses the
