@@ -99,7 +99,7 @@ class CustomRpcService : Service() {
 
         val restartIntent = Intent(this, CustomRpcService::class.java)
         restartIntent.action = Constants.ACTION_RESTART_SERVICE
-        restartIntent.putExtra("RPC", Json.encodeToString(rpcData))
+        restartIntent.putExtra("RPC", if (rpcData != null) Json.encodeToString(rpcData) else "")
         val restartPendingIntent: PendingIntent = PendingIntent.getService(
             this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
