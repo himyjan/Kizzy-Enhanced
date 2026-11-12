@@ -47,11 +47,11 @@ sealed interface ConnectionState {
 }
 
 open class DiscordWebSocketImpl(
-    private val token: String,
+    private var token: String,
     private val logger: Logger = NoOpLogger,
-    private val identifyBrowser: String = "Discord Client",
-    private val identifyOs: String = "Windows",
-    private val identifyDevice: String = "ktor",
+    private var identifyBrowser: String = "Discord Client",
+    private var identifyOs: String = "Windows",
+    private var identifyDevice: String = "ktor",
     private val externalScope: CoroutineScope? = null,
     private val isOnlineState: StateFlow<Boolean>? = null
 ) : DiscordWebSocket {
@@ -526,7 +526,28 @@ open class DiscordWebSocketImpl(
     }
 
     private suspend fun connectWithToken(token: String) {
+        refreshIdentifyProperties(token, identifyBrowser, identifyOs, identifyDevice)
         connect()
+    }
+
+    /**
+     * Refreshes the token and platform-indicator properties before (re)connecting.
+     *
+     * These are stored as constructor parameters and were immutable, so a token or
+     * platform change after DI never took effect. If the Media RPC service auto-starts
+     * before the user logs in, the token is empty and Discord rejects the IDENTIFY,
+     * so the presence is never sent.
+     */
+    public fun refreshIdentifyProperties(
+        token: String,
+        browser: String,
+        os: String,
+        device: String,
+    ) {
+        this.token = token
+        this.identifyBrowser = browser
+        this.identifyOs = os
+        this.identifyDevice = device
     }
 
     fun disconnect() {
