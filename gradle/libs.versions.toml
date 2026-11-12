@@ -85,6 +85,10 @@ ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 # Third-party libraries
 mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+# Coil 3 splits the HTTP fetcher out of "coil-compose". Without this artifact the
+# ImageLoader has no way to load an image from a URL, so every remote image
+# (the Discord avatar, the banner, the RPC cover art) silently failed to load.
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 # KotlinX

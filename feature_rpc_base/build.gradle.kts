@@ -25,6 +25,8 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil)
+    implementation(libs.coil.network)
+
     implementation(libs.compose.ui)
     implementation(libs.compose.runtime)
     implementation(libs.material3)

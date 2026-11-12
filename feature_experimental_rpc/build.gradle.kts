@@ -13,6 +13,8 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.activity.compose)
     implementation(libs.coil)
+    implementation(libs.coil.network)
+
     implementation(projects.featureRpcBase)
     implementation(projects.featureProfile)
     implementation(projects.theme)

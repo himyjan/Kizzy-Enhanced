@@ -17,6 +17,8 @@ dependencies {
     implementation (projects.featureLogs)
     implementation (projects.data)
     implementation (libs.coil)
+    implementation(libs.coil.network)
+
     implementation (libs.activity.compose)
     implementation (libs.compose.navigation)
     implementation (libs.kotlinx.serialization.json)

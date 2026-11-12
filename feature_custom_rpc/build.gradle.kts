@@ -13,6 +13,8 @@ dependencies {
     implementation (libs.material.icons.extended)
     implementation(libs.activity.compose)
     implementation(libs.coil)
+    implementation(libs.coil.network)
+
     implementation(libs.kotlinx.serialization.json)
     implementation(projects.featureRpcBase)
     implementation(projects.featureProfile)
