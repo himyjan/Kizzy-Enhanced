@@ -6,6 +6,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 import com.my.kizzy.data.rpc.MediaServiceResolver
+import com.my.kizzy.data.rpc.YouTubeResolver
 import com.my.kizzy.domain.interfaces.Logger
 
 class MetadataResolver @Inject constructor(
@@ -161,7 +162,7 @@ class MetadataResolver @Inject constructor(
         // Try standard source URL key first
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
-            return sourceUrl
+            return normalizeMediaUrl(sourceUrl, packageName)
         }
 
         // Try common custom keys used by various players
@@ -179,19 +180,68 @@ class MetadataResolver @Inject constructor(
         for (key in customKeys) {
             val value = metadata.getString(key)
             if (value != null && value.isValidMediaUrl()) {
-                return value
+                return normalizeMediaUrl(value, packageName)
             }
         }
+
+        // Some players publish the url under a key nobody knows. The whole
+        // metadata is scanned for a url, so the real link of the track is found
+        // even when the player uses its own key.
+        scanAllMetadataForUrl(metadata)?.let { return normalizeMediaUrl(it, packageName) }
 
         // YouTube apps publish the real watch url, so it is preferred over a
         // search page.
         if (MediaServiceResolver.isYouTube(packageName)) {
-            extractYouTubeUrl(metadata)?.let { return it }
+            extractYouTubeUrl(metadata)?.let { return normalizeMediaUrl(it, packageName) }
         }
 
         // Fall back to the page of the service that lists the track.
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
         return MediaServiceResolver.mediaSearchUrl(packageName, title)
+    }
+
+    /**
+     * Looks through every entry of the metadata for something that looks like
+     * a url of a media service.
+     *
+     * The metadata of a media session is a bundle, but the bundle cannot be
+     * read from the outside, so the well known keys are checked one by one.
+     */
+    private fun scanAllMetadataForUrl(metadata: MediaMetadata): String? {
+        val keys = listOf(
+            MediaMetadata.METADATA_KEY_TITLE,
+            MediaMetadata.METADATA_KEY_ARTIST,
+            MediaMetadata.METADATA_KEY_ALBUM,
+            MediaMetadata.METADATA_KEY_ALBUM_ARTIST,
+            MediaMetadata.METADATA_KEY_AUTHOR,
+            MediaMetadata.METADATA_KEY_GENRE,
+            MediaMetadata.METADATA_KEY_MEDIA_ID,
+        )
+        for (key in keys) {
+            val value = metadata.getString(key)
+            if (!value.isNullOrEmpty() && value.isValidMediaUrl()) {
+                logger.d("MetadataResolver", "Found media url in metadata key '$key'")
+                return value
+            }
+        }
+        return null
+    }
+
+    /**
+     * Brings a url into the form the user expects.
+     *
+     * Every YouTube url becomes the short "youtu.be/<video id>" form, so the
+     * button links to the video itself instead of a long query url.
+     */
+    private fun normalizeMediaUrl(url: String, packageName: String?): String {
+        val trimmed = url.trim()
+        if (!MediaServiceResolver.isYouTube(packageName) &&
+            !trimmed.contains("youtube.com") && !trimmed.contains("youtu.be")
+        ) {
+            return trimmed
+        }
+        val videoId = YouTubeResolver.extractVideoId(trimmed) ?: return trimmed
+        return "https://youtu.be/$videoId"
     }
 
     /**
@@ -231,10 +281,23 @@ class MetadataResolver @Inject constructor(
             }
         }
 
-        // Try to extract video ID from METADATA_KEY_MEDIA_ID or similar
+        // Try to extract video ID from METADATA_KEY_MEDIA_ID or similar.
+        // YouTube Music ships media ids like "yt:video:VIDEO_ID" or "t:VIDEO_ID".
         val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
-        if (!mediaId.isNullOrEmpty() && mediaId.contains("youtube.com/watch?v=")) {
-            return mediaId
+        if (!mediaId.isNullOrEmpty()) {
+            // Full watch url
+            if (mediaId.contains("youtube.com/watch?v=")) {
+                return mediaId
+            }
+            // youtu.be/VIDEO_ID
+            if (mediaId.contains("youtu.be/")) {
+                return mediaId
+            }
+            // yt:video:VIDEO_ID or t:VIDEO_ID
+            val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
+            if (id.isNotBlank() && id.length >= 11) {
+                return "https://youtu.be/$id"
+            }
         }
 
         // If we have a title but no URL, build a search URL (fallback)
@@ -260,12 +323,28 @@ class MetadataResolver @Inject constructor(
 
     /**
      * Extracts an artist channel URL from media metadata.
-     * Builds an artist-specific URL based on the artist name and app package.
-     * Returns null if no artist name is available.
+     *
+     * For YouTube the real channel of the uploader is used, which is read from
+     * the oEmbed document of the video. Guessing the handle from the name of
+     * the artist ("youtube.com/@Rick Astley") produced a url that does not
+     * exist, so the artist button led nowhere.
+     *
+     * Returns null if no artist is known.
      */
-    fun getArtistUrl(metadata: MediaMetadata, packageName: String?): String? {
+    suspend fun getArtistUrl(metadata: MediaMetadata, packageName: String?): String? {
         val artist = metadataResolverArtistName(metadata)
         if (artist.isNullOrEmpty()) return null
+
+        // The real channel of the uploader, when the service publishes one.
+        if (MediaServiceResolver.isYouTube(packageName)) {
+            val mediaUrl = getMediaUrl(metadata, packageName)
+            val video = mediaUrl?.let { YouTubeResolver.lookup(it) }
+            if (video != null && video.channelUrl.isNotBlank()) {
+                return video.channelUrl
+            }
+        }
+
+        // The page of the service that belongs to the artist.
         return MediaServiceResolver.artistUrl(packageName, artist)
     }
 
