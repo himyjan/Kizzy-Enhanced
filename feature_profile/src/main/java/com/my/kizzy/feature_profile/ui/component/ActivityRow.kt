@@ -58,27 +58,40 @@ fun ActivityRow(
 
     // Media timeline - calculate real elapsed time from timestamps.
     //
-    // The ticker is keyed on the timestamps and not on the whole config: the
-    // config is a new object on every update, so the ticker restarted every
-    // second and the elapsed time stayed at 00:00.
-    val timelineStart = rpcConfig?.timestampsStart
-    val timelineStop = rpcConfig?.timestampsStop
-    var elapsedText by remember(timelineStart, timelineStop) { mutableStateOf("00:00") }
-    var sliderPosition by remember(timelineStart, timelineStop) { mutableFloatStateOf(0f) }
-    LaunchedEffect(timelineStart, timelineStop) {
+    // The previous version keyed remember/LaunchedEffect on
+    // timestampsStart/timestampsStop, which change every second (now - position).
+    // This reset state to "00:00" and restarted the ticker with a 1-second delay
+    // on every tick, making the timeline jump back to 00:00 repeatedly.
+    //
+    // Now we keep a mutable ref to the latest rpcConfig (updated via
+    // LaunchedEffect(rpcConfig)) and run a stable ticker (LaunchedEffect(Unit))
+    // that reads fresh values without ever resetting state or restarting.
+    var latestRpcConfig by remember { mutableStateOf(rpcConfig) }
+    LaunchedEffect(rpcConfig) {
+        latestRpcConfig = rpcConfig
+    }
+
+    var elapsedText by remember { mutableStateOf("00:00") }
+    var sliderPosition by remember { mutableFloatStateOf(0f) }
+
+    LaunchedEffect(Unit) {
         while (true) {
             delay(1000)
             val now = System.currentTimeMillis()
-            if (isPlayingMedia && rpcConfig?.timestampsStart?.toLongOrNull() != null && rpcConfig?.timestampsStop?.toLongOrNull() != null) {
-                val startTime = rpcConfig.timestampsStart.toLong()
-                val endTime = rpcConfig.timestampsStop.toLong()
-                val difference = endTime - startTime
-                val elapsed1 = now - startTime
+            val cfg = latestRpcConfig
+            val type = cfg?.type?.toIntOrNull()
+            val isPlayingMedia = type?.equals(2) == true || type?.equals(3) == true
+            val start = cfg?.timestampsStart?.toLongOrNull()
+            val stop = cfg?.timestampsStop?.toLongOrNull()
+
+            if (isPlayingMedia && start != null && stop != null) {
+                val difference = stop - start
+                val elapsed1 = now - start
                 sliderPosition = (elapsed1.toFloat() / difference.toFloat())
-                elapsedText = if (elapsed1 < difference) {
+                elapsedText = if (elapsed1 >= 0L && elapsed1 < difference) {
                     getFormatFromMs(elapsed1)
                 } else {
-                    getFormatFromMs(difference)
+                    getFormatFromMs(difference.coerceAtLeast(0))
                 }
             } else {
                 sliderPosition = 0f
