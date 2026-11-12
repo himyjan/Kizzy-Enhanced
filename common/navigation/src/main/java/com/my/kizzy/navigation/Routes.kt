@@ -47,6 +47,15 @@ class Routes {
         const val CREDITS = "credits"
 
         /* RPC Preview Screen */
-        const val RPC_PREVIEW = "rpc_preview/{userId}/{avatarUrl}"
+        /**
+         * The route of the RPC preview.
+         *
+         * It must NOT contain the path parameters: the screen registers the
+         * route as "${RPC_PREVIEW}/{userId}/{avatarUrl}/{rpcConfig}". When the
+         * constant already carried the parameters, the route was registered
+         * twice and the arguments never arrived, so the preview showed no
+         * data at all.
+         */
+        const val RPC_PREVIEW = "rpc_preview"
     }
 }
