@@ -70,8 +70,16 @@ class CustomRpcService : Service() {
                 this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
             )
 
-            // Open main app when notification is clicked
-            val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
+            // Open main app when notification is clicked. The intent reuses the
+            // existing task, otherwise the app is started a second time and the
+            // user sees two layers of the UI on top of each other.
+            val appIntent = packageManager.getLaunchIntentForPackage(packageName)
+                ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
+            appIntent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+            )
             val appPendingIntent = PendingIntent.getActivity(
                 this, 0, appIntent,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
