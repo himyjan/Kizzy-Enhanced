@@ -3,6 +3,8 @@ package com.my.kizzy
 import android.app.Application
 import android.content.Intent
 import android.os.Build
+import androidx.compose.runtime.Composer
+import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import com.google.android.material.color.DynamicColors
 import com.my.kizzy.feature_logs.LoggerProvider
 import com.my.kizzy.preference.PreferenceConfig
@@ -36,6 +38,24 @@ class App : Application(), Configuration.Provider {
 
         // Initialize components with error handling to prevent startup crashes
         // on emulators and OEM devices with restricted background access
+
+        // 0. Compose stack traces.
+        //
+        // Without them a crash inside a composable only shows "somewhere in the
+        // composition", which makes the crash reports useless. The debug build
+        // shows the source information of the composables, the release build
+        // keeps only the group keys so the source information is not leaked.
+        try {
+            Composer.setDiagnosticStackTraceMode(
+                if (BuildConfig.DEBUG) {
+                    ComposeStackTraceMode.SourceInformation
+                } else {
+                    ComposeStackTraceMode.GroupKeys
+                }
+            )
+        } catch (e: Exception) {
+            // The compose runtime is not available - non-critical
+        }
 
         // 1. Dynamic Colors (API 31+ only - safe on older devices)
         try {
