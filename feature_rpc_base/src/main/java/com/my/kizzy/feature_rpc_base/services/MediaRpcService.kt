@@ -167,13 +167,13 @@ class MediaRpcService : Service() {
         val stopIntent = Intent(this, MediaRpcService::class.java)
         stopIntent.action = Constants.ACTION_STOP_SERVICE
         val stopPendingIntent = PendingIntent.getService(
-            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
+            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val restartIntent = Intent(this, MediaRpcService::class.java)
         restartIntent.action = Constants.ACTION_RESTART_SERVICE
         val restartPendingIntent = PendingIntent.getService(
-            this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
+            this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val notification = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
