@@ -55,6 +55,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.utils.AppsInfo
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
@@ -71,6 +72,9 @@ import com.my.kizzy.preference.Prefs.MEDIA_RPC_HIDE_ON_PAUSE
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE
 import com.my.kizzy.resources.R
+import com.my.kizzy.ui.components.ActivityType
+import com.my.kizzy.ui.components.ActivityTypeChip
+import com.my.kizzy.ui.components.ActivityTypePreference
 import com.my.kizzy.ui.components.AppsItem
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.SearchBar
@@ -79,6 +83,7 @@ import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import com.my.kizzy.ui.components.preference.PreferencesHint
 import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Audiotrack
 import androidx.compose.material.icons.outlined.PauseCircle
@@ -94,19 +99,28 @@ fun MediaRPC(
     state: MediaAppsState,
     hasNotificationAccess: Boolean,
     updateMediaAppEnabled: (String) -> Unit,
+    updateAppActivityType: (String, Int?) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
     var mediaRpcRunning by remember {
         mutableStateOf(AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning())
     }
-    var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, false]) }
-    var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, false]) }
+    var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, true]) }
+    var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, true]) }
     var isAppIconEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_APP_ICON, false]) }
     var isTimestampsEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]) }
     var hideOnPause by remember { mutableStateOf(Prefs[MEDIA_RPC_HIDE_ON_PAUSE, false]) }
     var isShowPlaybackState by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE, false]) }
     var showSongAsTitle by remember {
-        mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, false])
+        mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true])
+    }
+    // The activity type of an app is detected automatically, so a music app such
+    // as YouTube Music is no longer reported as a game.
+    var isAutoActivityTypeEnabled by remember {
+        mutableStateOf(Prefs[Prefs.AUTO_ACTIVITY_TYPE, true])
+    }
+    var activityType by remember {
+        mutableStateOf(Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, ActivityTypeResolver.DEFAULT_TYPE])
     }
 
     MediaRPCContent(
@@ -158,6 +172,17 @@ fun MediaRPC(
         onHideOnPauseChanged = { hideOnPause = !hideOnPause; Prefs[MEDIA_RPC_HIDE_ON_PAUSE] = hideOnPause },
         showSongAsTitle = showSongAsTitle,
         onShowSongAsTitleChanged = { showSongAsTitle = !showSongAsTitle; Prefs[MEDIA_RPC_SHOW_SONG_AS_TITLE] = showSongAsTitle },
+        isAutoActivityTypeEnabled = isAutoActivityTypeEnabled,
+        onAutoActivityTypeEnabledChanged = {
+            isAutoActivityTypeEnabled = !isAutoActivityTypeEnabled
+            Prefs[Prefs.AUTO_ACTIVITY_TYPE] = isAutoActivityTypeEnabled
+        },
+        activityType = activityType,
+        onActivityTypeChanged = {
+            activityType = it
+            Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE] = it
+        },
+        onAppActivityTypeChanged = updateAppActivityType,
     )
 }
 
@@ -184,6 +209,11 @@ fun MediaRPCContent(
     onHideOnPauseChanged: () -> Unit,
     showSongAsTitle: Boolean,
     onShowSongAsTitleChanged: () -> Unit,
+    isAutoActivityTypeEnabled: Boolean,
+    onAutoActivityTypeEnabledChanged: () -> Unit,
+    activityType: Int,
+    onActivityTypeChanged: (Int) -> Unit,
+    onAppActivityTypeChanged: (String, Int?) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -193,6 +223,19 @@ fun MediaRPCContent(
     )
     var searchText by remember { mutableStateOf("") }
     var isSearchBarVisible by remember { mutableStateOf(false) }
+
+    // Filtering on every recomposition is wasted work, the list only changes when
+    // the apps or the search text change.
+    val filteredApps = remember(state.apps, searchText) {
+        if (searchText.isEmpty()) {
+            state.apps
+        } else {
+            state.apps.filter {
+                it.name.contains(searchText, ignoreCase = true) ||
+                    it.pkg.contains(searchText, ignoreCase = true)
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -306,6 +349,21 @@ fun MediaRPCContent(
                     ) { onShowSongAsTitleChanged() }
                 }
                 item {
+                    PreferenceSwitch(
+                        title = stringResource(id = R.string.auto_detect_activity_type),
+                        icon = Icons.Outlined.AutoAwesome,
+                        isChecked = isAutoActivityTypeEnabled,
+                    ) { onAutoActivityTypeEnabledChanged() }
+                }
+                item {
+                    ActivityTypePreference(
+                        title = stringResource(id = R.string.activity_type),
+                        description = stringResource(id = R.string.activity_type_fallback_desc),
+                        selectedTypeId = activityType,
+                        onSelect = { onActivityTypeChanged(it) },
+                    )
+                }
+                item {
                     Subtitle(
                         text = "Apps",
                         modifier = Modifier
@@ -323,20 +381,26 @@ fun MediaRPCContent(
                         }
                     }
                 } else {
-                    items(state.apps.size, key = { idx -> state.apps[idx].pkg }) { i ->
-                        if (searchText.isEmpty() || state.apps[i].name.contains(
-                                searchText,
-                                ignoreCase = true
-                            ) || state.apps[i].pkg.contains(searchText, ignoreCase = true)
+                    // The list is filtered before it is handed to the LazyColumn.
+                    // Rendering a spacer for every app that does not match kept
+                    // hundreds of rows alive while searching.
+                    items(
+                        count = filteredApps.size,
+                        key = { index -> filteredApps[index].pkg }
+                    ) { index ->
+                        val app = filteredApps[index]
+                        AppsItem(
+                            name = app.name,
+                            pkg = app.pkg,
+                            isChecked = state.enabledApps[app.pkg] ?: false,
+                            onClick = { updateMediaAppEnabled(app.pkg) }
                         ) {
-                            AppsItem(
-                                name = state.apps[i].name,
-                                pkg = state.apps[i].pkg,
-                                isChecked = state.enabledApps[state.apps[i].pkg] ?: false,
-                                onClick = { updateMediaAppEnabled(state.apps[i].pkg) }
+                            ActivityTypeChip(
+                                selectedTypeId = state.activityTypes[app.pkg],
+                                detectedTypeId = ActivityTypeResolver.knownType(app.pkg)
+                                    ?: activityType,
+                                onSelect = { onAppActivityTypeChanged(app.pkg, it) },
                             )
-                        } else {
-                            Spacer(modifier = Modifier.height(0.dp))
                         }
                     }
                 }
@@ -398,6 +462,11 @@ fun MediaRPCLightPreview() {
                 onHideOnPauseChanged = {},
                 showSongAsTitle = false,
                 onShowSongAsTitleChanged = {},
+                isAutoActivityTypeEnabled = true,
+                onAutoActivityTypeEnabledChanged = {},
+                activityType = 3,
+                onActivityTypeChanged = {},
+                onAppActivityTypeChanged = { _, _ -> },
             )
         }
     )
@@ -456,6 +525,11 @@ fun MediaRPCDarkPreview() {
                 onHideOnPauseChanged = {},
                 showSongAsTitle = false,
                 onShowSongAsTitleChanged = {},
+                isAutoActivityTypeEnabled = true,
+                onAutoActivityTypeEnabledChanged = {},
+                activityType = 3,
+                onActivityTypeChanged = {},
+                onAppActivityTypeChanged = { _, _ -> },
             )
         }
     )

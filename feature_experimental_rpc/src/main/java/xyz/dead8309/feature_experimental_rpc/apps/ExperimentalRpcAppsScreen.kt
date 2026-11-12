@@ -76,11 +76,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
-import com.my.kizzy.data.rpc.Constants
+import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.KSwitch
+import com.my.kizzy.ui.components.ActivityTypeChip
 import com.my.kizzy.ui.components.SearchBar
+import com.my.kizzy.ui.components.rememberAppIconBitmap
 import xyz.dead8309.feature_experimental_rpc.UiEvent
 import xyz.dead8309.feature_experimental_rpc.UiState
 import androidx.compose.material.icons.outlined.Check
@@ -94,58 +96,13 @@ import androidx.compose.material.icons.outlined.Visibility
 typealias AppItem = com.my.kizzy.data.utils.AppsInfo
 
 /**
- * Loads and caches app icon bitmap. The [remember] key ensures the bitmap
- * is only loaded once per package name instead of on every recomposition.
+ * The icon is read from the package manager, which is a blocking call. It is
+ * loaded in the background and cached, so scrolling the list does not stall the
+ * UI thread.
  */
 @Composable
-private fun loadAppIconCached(packageName: String): ImageBitmap? {
-    val context = LocalContext.current
-    return remember(packageName) {
-        try {
-            val pm = context.packageManager
-            val drawable = pm.getApplicationIcon(packageName)
-            val bitmap = drawable.toBitmap(72, 72)
-            bitmap.asImageBitmap()
-        } catch (_: Exception) {
-            null
-        }
-    }
-}
-
-/**
- * Cached activity type icon lookup - avoids recreating ImageVector references on every recomposition.
- */
-@Composable
-private fun getActivityTypeIconCached(type: String): ImageVector {
-    return remember(type) {
-        when (type) {
-            "Playing" -> Icons.Outlined.SportsEsports
-            "Streaming" -> Icons.Outlined.LiveTv
-            "Listening" -> Icons.Outlined.Headphones
-            "Watching" -> Icons.Outlined.Visibility
-            "Competing" -> Icons.Outlined.SportsMma
-            else -> Icons.Outlined.Edit
-        }
-    }
-}
-
-/**
- * Cached activity type color lookup.
- */
-@Composable
-private fun getActivityTypeColorCached(type: String): Color {
-    val colorScheme = MaterialTheme.colorScheme
-    return remember(type, colorScheme) {
-        when (type) {
-            "Playing" -> Color(0xFF1976D2)
-            "Streaming" -> Color(0xFF9C27B0)
-            "Listening" -> Color(0xFF43A047)
-            "Watching" -> Color(0xFFFF9800)
-            "Competing" -> Color(0xFFF44336)
-            else -> colorScheme.primary
-        }
-    }
-}
+private fun loadAppIconCached(packageName: String): ImageBitmap? =
+    rememberAppIconBitmap(packageName, sizePx = 144)
 
 /**
  * Individual app list item with stable key. Extracting to a separate composable with
@@ -155,15 +112,14 @@ private fun getActivityTypeColorCached(type: String): Color {
 private fun AppListItem(
     app: AppItem,
     isChecked: Boolean,
-    selectedTypeId: Int,
-    selectedType: String,
+    /** The type the user picked, null when it is detected automatically. */
+    selectedTypeId: Int?,
+    /** The type the automatic detection came up with. */
+    detectedTypeId: Int,
     onToggleEnabled: (String) -> Unit,
-    onSetActivityType: (String, Int) -> Unit,
+    onSetActivityType: (String, Int?) -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val iconBitmap = loadAppIconCached(app.pkg)
-    val typeIcon = getActivityTypeIconCached(selectedType)
-    val typeColor = getActivityTypeColorCached(selectedType)
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -240,63 +196,11 @@ private fun AppListItem(
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             Box(modifier = Modifier.weight(1f)) {
-                SuggestionChip(
-                    onClick = { expanded = true },
-                    label = { Text(selectedType) },
-                    icon = {
-                        Icon(
-                            imageVector = typeIcon,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = typeColor
-                        )
-                    },
-                    colors = SuggestionChipDefaults.suggestionChipColors(
-                        containerColor = typeColor.copy(alpha = 0.2f),
-                        labelColor = typeColor
-                    ),
-                    border = null,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                ActivityTypeChip(
+                    selectedTypeId = selectedTypeId,
+                    detectedTypeId = detectedTypeId,
+                    onSelect = { type -> onSetActivityType(app.pkg, type) },
                 )
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier
-                        .width(200.dp)
-                        .background(MaterialTheme.colorScheme.surface)
-                ) {
-                    Constants.ACTIVITY_TYPE.forEach { (label, type) ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = label,
-                                    color = typeColor
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = getActivityTypeIconCached(label),
-                                    contentDescription = null,
-                                    tint = typeColor
-                                )
-                            },
-                            trailingIcon = {
-                                if (selectedTypeId == type) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Check,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            },
-                            onClick = {
-                                onSetActivityType(app.pkg, type)
-                                expanded = false
-                            }
-                        )
-                    }
-                }
             }
         }
     }
@@ -384,15 +288,15 @@ fun ExperimentalRpcAppsScreen(
                         key = { it.pkg }
                     ) { app ->
                         val isChecked = state.enabledApps[app.pkg] ?: false
-                        val selectedTypeId = state.appActivityTypes[app.pkg] ?: 0
-                        val selectedType = Constants.ACTIVITY_TYPE.entries
-                            .find { it.value == selectedTypeId }?.key ?: "Playing"
+                        val selectedTypeId = state.appActivityTypes[app.pkg]
+                        val detectedTypeId = ActivityTypeResolver.knownType(app.pkg)
+                            ?: ActivityTypeResolver.DEFAULT_TYPE
 
                         AppListItem(
                             app = app,
                             isChecked = isChecked,
                             selectedTypeId = selectedTypeId,
-                            selectedType = selectedType,
+                            detectedTypeId = detectedTypeId,
                             onToggleEnabled = { pkg ->
                                 onEvent(UiEvent.ToggleAppEnabled(pkg))
                             },

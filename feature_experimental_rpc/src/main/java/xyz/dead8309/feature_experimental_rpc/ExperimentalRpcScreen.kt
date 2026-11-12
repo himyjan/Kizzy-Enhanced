@@ -223,6 +223,25 @@ fun ExperimentalRpcScreen(
                     )
                 }
                 item {
+                    PreferenceSwitch(
+                        title = stringResource(R.string.auto_detect_activity_type),
+                        description = stringResource(R.string.auto_detect_activity_type_desc),
+                        isChecked = state.isAutoActivityTypeEnabled,
+                        onClick = {
+                            onEvent(UiEvent.ToggleAutoActivityType(!state.isAutoActivityTypeEnabled))
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_apps),
+                                modifier = Modifier
+                                    .padding(start = 8.dp, end = 16.dp)
+                                    .size(24.dp),
+                                contentDescription = null
+                            )
+                        },
+                    )
+                }
+                item {
                     SettingItem(
                         title = stringResource(R.string.app_preferences),
                         description = stringResource(R.string.app_preferences_desc),

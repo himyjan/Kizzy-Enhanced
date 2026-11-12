@@ -15,6 +15,7 @@ package com.my.kizzy.feature_media_rpc
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.utils.getInstalledApps
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,7 +48,8 @@ class MediaScreenViewModel @Inject constructor(
                 MediaAppsState(
                     apps = appList,
                     isLoading = false,
-                    enabledApps = enabledApps
+                    enabledApps = enabledApps,
+                    activityTypes = Prefs.getAppActivityTypes()
                 )
             }
         }
@@ -69,6 +71,32 @@ class MediaScreenViewModel @Inject constructor(
 
             _state.update { currentState ->
                 currentState.copy(enabledApps = updated)
+            }
+        }
+    }
+
+    /**
+     * Stores the activity type of a single app. A null type removes the choice, so
+     * the automatic detection takes over again.
+     */
+    fun updateAppActivityType(pkg: String, activityType: Int?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (activityType == null) {
+                Prefs.clearAppActivityType(pkg)
+            } else {
+                Prefs.saveAppActivityType(pkg, activityType)
+            }
+            // The resolver caches the overrides for a short while.
+            ActivityTypeResolver.invalidateCache()
+
+            _state.update { currentState ->
+                val updated = currentState.activityTypes.toMutableMap()
+                if (activityType == null) {
+                    updated.remove(pkg)
+                } else {
+                    updated[pkg] = activityType
+                }
+                currentState.copy(activityTypes = updated)
             }
         }
     }

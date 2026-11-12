@@ -16,6 +16,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.utils.getInstalledApps
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
@@ -75,14 +76,19 @@ class ExperimentalRpcViewmodel @Inject constructor(
                 isEnabled = Prefs::isExperimentalAppEnabled
             )
             val enabledApps = appList.associate { it.pkg to it.isChecked }
+            // Only the types the user actually picked are kept. Everything else is
+            // detected automatically.
             val savedActivityTypes = Prefs.getAppActivityTypes()
-            val appActivityTypes = appList.associate { it.pkg to (savedActivityTypes[it.pkg] ?: 0) }
+            val appActivityTypes = appList
+                .mapNotNull { app -> savedActivityTypes[app.pkg]?.let { app.pkg to it } }
+                .toMap()
             _uiState.update {
                 it.copy(
                     installedApps = appList,
                     enabledApps = enabledApps,
                     appActivityTypes = appActivityTypes,
-                    isAppsLoading = false
+                    isAppsLoading = false,
+                    isAutoActivityTypeEnabled = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true]
                 )
             }
         }
@@ -107,6 +113,14 @@ class ExperimentalRpcViewmodel @Inject constructor(
                 is UiEvent.ToggleAppsRpcPart -> {
                     Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC] = event.enabled
                     _uiState.value = _uiState.value.copy(isAppsRpcPartEnabled = event.enabled)
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.ToggleAutoActivityType -> {
+                    // The switch is shared with the Media RPC, so both features
+                    // detect the activity type in the same way.
+                    Prefs[Prefs.AUTO_ACTIVITY_TYPE] = event.enabled
+                    _uiState.update { it.copy(isAutoActivityTypeEnabled = event.enabled) }
                     restartServiceIfRunning()
                 }
 
@@ -149,11 +163,20 @@ class ExperimentalRpcViewmodel @Inject constructor(
 
                 is UiEvent.SetAppActivityType -> {
                     val typeInt = event.activityType
-                    Prefs.saveAppActivityType(event.packageName, typeInt)
+                    if (typeInt == null) {
+                        Prefs.clearAppActivityType(event.packageName)
+                    } else {
+                        Prefs.saveAppActivityType(event.packageName, typeInt)
+                    }
+                    ActivityTypeResolver.invalidateCache()
                     _uiState.update { state ->
                         state.copy(
                             appActivityTypes = state.appActivityTypes.toMutableMap().apply {
-                                this[event.packageName] = typeInt
+                                if (typeInt == null) {
+                                    remove(event.packageName)
+                                } else {
+                                    this[event.packageName] = typeInt
+                                }
                             }
                         )
                     }

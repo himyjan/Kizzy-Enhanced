@@ -22,6 +22,8 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.annotation.RequiresApi
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
+import com.my.kizzy.data.rpc.ActivityTypeResolver
+import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.Timestamps
@@ -275,7 +277,7 @@ class MediaRpcService : Service() {
             currentMediaPositionMs = 0L
         }
 
-        val playingPkg = playingMedia.packageName.takeIf { it.isNotBlank() }
+        val playingPkg = playingMedia.appPackage.takeIf { it.isNotBlank() }
 
         if (playingPkg != null && playingPkg != currentPackageName) {
             logger.d("MediaRPC", "Session switched: $currentPackageName -> $playingPkg")
@@ -372,6 +374,29 @@ class MediaRpcService : Service() {
         sendPresenceUpdate(playingMedia, enableTimestamps)
     }
 
+    /**
+     * The Discord activity type of the app.
+     *
+     * It used to be a single global preference, so every app - YouTube Music
+     * included - was reported as "Playing", which Discord draws as a game. The
+     * type is now resolved per app: the choice of the user wins, then the
+     * built-in detection and finally the global fallback of the Media RPC.
+     */
+    private fun resolveActivityType(playingMedia: CommonRpc): Int {
+        val configured = Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, ActivityTypeResolver.DEFAULT_TYPE]
+        val fallback = if (configured == Prefs.ACTIVITY_TYPE_AUTO) {
+            ActivityTypeResolver.DEFAULT_TYPE
+        } else {
+            configured
+        }
+        return ActivityTypeResolver.resolve(
+            packageName = playingMedia.appPackage,
+            isMusicMetadata = playingMedia.isMusicMetadata,
+            fallback = fallback,
+            useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+        )
+    }
+
     private suspend fun sendPresenceUpdate(playingMedia: CommonRpc, enableTimestamps: Boolean) {
         if (playingMedia.name.isBlank()) {
             stateRepository.setConnected(false)
@@ -386,7 +411,7 @@ class MediaRpcService : Service() {
 
         val commonRpc = CommonRpc(
             name = playingMedia.name,
-            type = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0],
+            type = resolveActivityType(playingMedia),
             details = playingMedia.details,
             state = playingMedia.state,
             largeImage = playingMedia.largeImage,
@@ -397,42 +422,34 @@ class MediaRpcService : Service() {
                 start = playingMedia.time?.start,
                 end = playingMedia.time?.end
             ) else null,
-            packageName = playingMedia.packageName,
+            packageName = playingMedia.appPackage,
             playbackState = playingMedia.playbackState
         )
 
-        if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
-            kizzyRPC.clearButtons()
-            if (Prefs[MEDIA_RPC_MEDIA_BUTTON, false]) {
-                playingMedia.mediaUrl?.let { url ->
-                    val label = when {
-                        playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Watch on YouTube"
-                        playingMedia.packageName == "com.spotify.music" -> "Listen on Spotify"
-                        playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Open in Apple Music"
-                        playingMedia.packageName.contains("deezer") -> "Listen on Deezer"
-                        playingMedia.packageName.contains("soundcloud") -> "Open in SoundCloud"
-                        playingMedia.packageName.contains("streetvoice") -> "Listen on StreetVoice"
-                        playingMedia.packageName.contains("ymusicapp") -> "Play on YMusic"
-                        else -> "Open Media Link"
-                    }
-                    kizzyRPC.setButton1(label, url)
-                }
+        val mediaButtonEnabled = Prefs[MEDIA_RPC_MEDIA_BUTTON, false]
+        val artistLinkEnabled = Prefs[MEDIA_RPC_ARTIST_LINK, false]
+        // The buttons are cleared on every update. Without that the buttons of a
+        // previous track (or of a setting that has been switched off) would stay
+        // on the profile.
+        kizzyRPC.clearButtons()
+        if (mediaButtonEnabled) {
+            playingMedia.mediaUrl?.let { url ->
+                kizzyRPC.setButton1(
+                    MediaServiceResolver.mediaButtonLabel(
+                        playingMedia.appPackage,
+                        commonRpc.type ?: ActivityTypeResolver.DEFAULT_TYPE,
+                    ),
+                    url,
+                )
             }
-            if (Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
-                currentMediaController?.metadata?.let { metadata ->
-                    metadataResolver.getArtistUrl(metadata, playingMedia.packageName)?.let { url ->
-                        val label = when {
-                            playingMedia.packageName.contains("youtube") || playingMedia.packageName.contains("youtubemusic") -> "Artist on YouTube"
-                            playingMedia.packageName == "com.spotify.music" -> "Artist on Spotify"
-                            playingMedia.packageName.contains("apple") || playingMedia.packageName.contains("itunes") -> "Artist on Apple Music"
-                            playingMedia.packageName.contains("deezer") -> "Artist on Deezer"
-                            playingMedia.packageName.contains("soundcloud") -> "Artist on SoundCloud"
-                            playingMedia.packageName.contains("streetvoice") -> "Artist on StreetVoice"
-                            playingMedia.packageName.contains("ymusicapp") -> "Artist on YMusic"
-                            else -> "Artist Channel"
-                        }
-                        kizzyRPC.setButton2(label, url)
-                    }
+        }
+        if (artistLinkEnabled) {
+            currentMediaController?.metadata?.let { metadata ->
+                metadataResolver.getArtistUrl(metadata, playingMedia.appPackage)?.let { url ->
+                    kizzyRPC.setButton2(
+                        MediaServiceResolver.artistButtonLabel(playingMedia.appPackage),
+                        url,
+                    )
                 }
             }
         }

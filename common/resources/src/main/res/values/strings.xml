@@ -17,6 +17,10 @@
     <string name="activity_large_image">Activity Large Image</string>
     <string name="activity_small_image">Activity Small Image</string>
     <string name="activity_type">Activity Type</string>
+    <string name="auto_detect">Auto · %1$s</string>
+    <string name="auto_detect_activity_type">Auto-detect activity type</string>
+    <string name="auto_detect_activity_type_desc">Music apps are detected as music and video apps as video, so YouTube Music is no longer shown as a game. A type picked for a single app always wins.</string>
+    <string name="activity_type_fallback_desc">Used for the apps that are not recognized, and for every app when the automatic detection is switched off.</string>
     <string name="activity_platform">Activity Platform</string>
     <string name="load_config">Load From Files</string>
     <string name="save_config">Save Config</string>
@@ -255,7 +259,7 @@
     <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
-    <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
+    <string name="link_to_artist_channel_desc">Adds a second button that links to the artist of the playing media</string>
     <string name="experimental_rpc_title_toggle">Title</string>
     <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>

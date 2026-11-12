@@ -147,12 +147,19 @@ class KizzyRPC @Inject constructor(
         }
     }
 
-    private fun presenceHash(name: String?, details: String?, state: String?, playbackState: Int?): Int {
+    private fun presenceHash(commonRpc: CommonRpc, buttons: List<ActivityButton>?): Int {
         var result = 1
-        result = 31 * result + (name?.hashCode() ?: 0)
-        result = 31 * result + (details?.hashCode() ?: 0)
-        result = 31 * result + (state?.hashCode() ?: 0)
-        result = 31 * result + (playbackState?.hashCode() ?: 0)
+        result = 31 * result + (commonRpc.name?.hashCode() ?: 0)
+        result = 31 * result + (commonRpc.details?.hashCode() ?: 0)
+        result = 31 * result + (commonRpc.state?.hashCode() ?: 0)
+        result = 31 * result + (commonRpc.playbackState?.hashCode() ?: 0)
+        // The activity type and the platform change the way Discord renders the
+        // presence, so they belong to the fingerprint. Without them a changed
+        // activity type would be dropped as "content unchanged" and would
+        // never reach Discord.
+        result = 31 * result + (commonRpc.type ?: 0)
+        result = 31 * result + (commonRpc.platform?.hashCode() ?: 0)
+        result = 31 * result + (buttons?.hashCode() ?: 0)
         return result
     }
 
@@ -582,7 +589,18 @@ class KizzyRPC @Inject constructor(
         // Instead we wait out the remainder of the interval and then send, so the new
         // state always reaches Discord (just not faster than the rate limit allows).
         val now = System.currentTimeMillis()
-        val hash = presenceHash(commonRpc.name, commonRpc.details, commonRpc.state, commonRpc.playbackState)
+
+        // The buttons are part of the presence, so they have to be part of the
+        // fingerprint as well. Otherwise switching a button off would be dropped
+        // as "content unchanged" and the old button would stay on the profile.
+        buttonsLock.lock()
+        val buttonsSnapshot = try {
+            buttons.toList().takeIf { it.isNotEmpty() }
+        } finally {
+            buttonsLock.unlock()
+        }
+
+        val hash = presenceHash(commonRpc, buttonsSnapshot)
         val contentChanged = hash != lastPresenceHash
         val timelineJumped = isTimelineJump(time)
         // Always send on first call (lastPresenceTimeMs == 0) so Discord receives
@@ -605,12 +623,6 @@ class KizzyRPC @Inject constructor(
             }
         }
 
-        buttonsLock.lock()
-        val buttonsSnapshot = try {
-            buttons.toList().takeIf { it.isNotEmpty() }
-        } finally {
-            buttonsLock.unlock()
-        }
         val presence = Presence(
             activities = listOf(
                 Activity(
