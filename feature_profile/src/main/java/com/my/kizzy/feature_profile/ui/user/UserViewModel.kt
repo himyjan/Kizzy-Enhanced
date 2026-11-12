@@ -3,6 +3,7 @@ package com.my.kizzy.feature_profile.ui.user
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.domain.model.Resource
+import com.my.kizzy.data.rpc.LastPresence
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_rpc_base.AppUtils
@@ -81,29 +82,16 @@ class UserViewModel @Inject constructor(
             stateRepository.currentTimestampStop
         ) { title, artist, isPaused, tsStart, tsStop ->
             stateRepository.currentLargeImageUrl.combine(stateRepository.currentSmallImageUrl) { largeImg, smallImg ->
-                val currentRpcConfig = try {
-                    when {
-                        AppUtils.customRpcRunning() -> {
-                            val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                            if (json.isNotBlank()) runCatching { Json.decodeFromString<RpcConfig>(json) }
-                                .getOrDefault(kizzyDefault())
-                            else kizzyDefault()
-                        }
-                        AppUtils.mediaRpcRunning() -> RpcConfig(name = "Media RPC", details = "Playing media", type = "2")
-                        AppUtils.experimentalRpcRunning() -> RpcConfig(name = "Experimental RPC", details = "Active")
-                        AppUtils.appDetectionRunning() -> RpcConfig(name = "App Detection", details = "Detecting apps")
-                        else -> kizzyDefault()
-                    }
-                } catch (e: Exception) { kizzyDefault() }
+                val currentRpcConfig = currentRpcConfig()
 
                 currentRpcConfig.copy(
                     name = currentRpcConfig.name.copyIfNotEmpty(title ?: currentRpcConfig.name),
                     details = currentRpcConfig.details.copyIfNotEmpty(artist ?: currentRpcConfig.details),
                     state = currentRpcConfig.state.copyIfNotEmpty(artist ?: currentRpcConfig.state),
-                    timestampsStart = tsStart?.toString() ?: "",
-                    timestampsStop = tsStop?.toString() ?: "",
-                    largeImg = largeImg ?: "",
-                    smallImg = smallImg ?: ""
+                    timestampsStart = tsStart?.toString() ?: currentRpcConfig.timestampsStart,
+                    timestampsStop = tsStop?.toString() ?: currentRpcConfig.timestampsStop,
+                    largeImg = largeImg ?: currentRpcConfig.largeImg,
+                    smallImg = smallImg ?: currentRpcConfig.smallImg
                 )
             }
         }
@@ -125,6 +113,14 @@ class UserViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    /**
+     * The presence that is shown on Discord right now.
+     *
+     * Every service remembers the presence it sent last, so the preview shows
+     * the real data - the name, the details, the timestamps and the buttons -
+     * instead of a placeholder. When the service is not running, the memory of
+     * the last run is used.
+     */
     private fun currentRpcConfig(): RpcConfig = try {
         when {
             AppUtils.customRpcRunning() -> {
@@ -133,10 +129,12 @@ class UserViewModel @Inject constructor(
                     .getOrDefault(kizzyDefault())
                 else kizzyDefault()
             }
-            AppUtils.mediaRpcRunning() -> RpcConfig(name = "Media RPC", details = "Playing media", type = "2")
-            AppUtils.experimentalRpcRunning() -> RpcConfig(name = "Experimental RPC", details = "Active")
+            AppUtils.mediaRpcRunning() ->
+                LastPresence.media() ?: RpcConfig(name = "Media RPC", details = "Playing media", type = "2")
+            AppUtils.experimentalRpcRunning() ->
+                LastPresence.experimental() ?: RpcConfig(name = "Experimental RPC", details = "Active")
             AppUtils.appDetectionRunning() -> RpcConfig(name = "App Detection", details = "Detecting apps")
-            else -> kizzyDefault()
+            else -> LastPresence.media() ?: LastPresence.experimental() ?: kizzyDefault()
         }
     } catch (e: Exception) { kizzyDefault() }
 

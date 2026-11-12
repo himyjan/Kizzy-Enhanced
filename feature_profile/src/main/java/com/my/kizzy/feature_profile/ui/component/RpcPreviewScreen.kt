@@ -42,8 +42,6 @@ import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,17 +51,10 @@ fun RpcPreviewScreen(
     rpcConfig: RpcConfig? = null,
     onBackPressed: () -> Unit
 ) {
-    // Decode the avatar URL from navigation argument
+    // The navigation library already decodes the arguments of the route, so the
+    // avatar url must not be decoded a second time - that broke the url.
     val decodedAvatarUrl = remember(userId, avatarUrl) {
-        if (avatarUrl.isNotBlank()) {
-            try {
-                URLDecoder.decode(avatarUrl, StandardCharsets.UTF_8.toString())
-            } catch (_: Exception) {
-                avatarUrl
-            }
-        } else {
-            ""
-        }
+        avatarUrl
     }
 
     Scaffold(
