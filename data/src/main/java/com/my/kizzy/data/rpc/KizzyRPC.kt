@@ -426,16 +426,19 @@ class KizzyRPC @Inject constructor(
      * Button1 text and url
      *
      * @param label Button label text
-     * @param url Button URL
+     * @param url Button URL (must be a valid http(s) url, empty/null urls are ignored)
      * @return
      */
     fun setButton1(label: String?, url: String?): KizzyRPC {
+        val validUrl = url?.takeIf { it.isNotEmpty() && (it.startsWith("http://") || it.startsWith("https://")) }
         label?.let { lbl ->
-            buttonsLock.lock()
-            try {
-                buttons.add(ActivityButton(label = lbl, url = url.orEmpty()))
-            } finally {
-                buttonsLock.unlock()
+            validUrl?.let { u ->
+                buttonsLock.lock()
+                try {
+                    buttons.add(ActivityButton(label = lbl, url = u))
+                } finally {
+                    buttonsLock.unlock()
+                }
             }
         }
         return this
@@ -445,16 +448,19 @@ class KizzyRPC @Inject constructor(
      * Button2 text and url
      *
      * @param button2Text Button label text
-     * @param url Button URL
+     * @param url Button URL (must be a valid http(s) url, empty/null urls are ignored)
      * @return
      */
     fun setButton2(button2Text: String?, url: String? = null): KizzyRPC {
+        val validUrl = url?.takeIf { it.isNotEmpty() && (it.startsWith("http://") || it.startsWith("https://")) }
         button2Text?.let { txt ->
-            buttonsLock.lock()
-            try {
-                buttons.add(ActivityButton(label = txt, url = url.orEmpty()))
-            } finally {
-                buttonsLock.unlock()
+            validUrl?.let { u ->
+                buttonsLock.lock()
+                try {
+                    buttons.add(ActivityButton(label = txt, url = u))
+                } finally {
+                    buttonsLock.unlock()
+                }
             }
         }
         return this
