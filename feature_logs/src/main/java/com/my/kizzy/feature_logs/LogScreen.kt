@@ -401,7 +401,7 @@ fun ToolBarContent(
                     expanded = menuClicked,
                     onDismissRequest = { menuClicked = !menuClicked }) {
                     DropdownMenuItem(
-                        onClick = onToggleAutoScroll,
+                        onClick = {}, // empty to avoid double-firing with KSwitch.onClick
                         text = {
                             Row(
                                 Modifier.fillMaxSize(),
