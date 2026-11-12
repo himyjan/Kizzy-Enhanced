@@ -28,6 +28,7 @@ import android.os.Build
 import android.os.IBinder
 import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMediaAll
+import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.LastPresence
@@ -72,6 +73,9 @@ class ExperimentalRpc : Service() {
 
     @Inject
     lateinit var getCurrentPlayingMediaAll: GetCurrentPlayingMediaAll
+
+    @Inject
+    lateinit var metadataResolver: MetadataResolver
 
     @Inject
     lateinit var getCurrentlyRunningApp: GetCurrentlyRunningApp
@@ -603,7 +607,10 @@ class ExperimentalRpc : Service() {
             smallText = finalSmallText,
             time = finalTimestamps,
             packageName = effectivePackageName ?: "",
-            playbackState = richMediaInfo?.playbackState
+            playbackState = richMediaInfo?.playbackState,
+            mediaUrl = rawMediaMetadata?.let {
+                metadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
+            },
         )
 
         // De-duplication: skip if nothing changed since the last push.
@@ -649,7 +656,10 @@ class ExperimentalRpc : Service() {
             // not configure the buttons by hand. When a media session is
             // playing, the link of the track and of the artist are used instead,
             // so the presence links to the music like the Media RPC does.
-            richMediaInfo?.mediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
+            val mediaUrl = rawMediaMetadata?.let {
+                metadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
+            }
+            mediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
                 kizzyRPC.setButton1(
                     MediaServiceResolver.mediaButtonLabel(
                         effectivePackageName,
@@ -658,11 +668,13 @@ class ExperimentalRpc : Service() {
                     url,
                 )
             }
-            richMediaInfo?.artistUrl?.takeIf { it.isNotBlank() }?.let { url ->
-                kizzyRPC.setButton2(
-                    MediaServiceResolver.artistButtonLabel(effectivePackageName),
-                    url,
-                )
+            rawMediaMetadata?.let { metadata ->
+                metadataResolver.getArtistUrl(metadata, richMediaInfo?.packageName)?.let { url ->
+                    kizzyRPC.setButton2(
+                        MediaServiceResolver.artistButtonLabel(effectivePackageName),
+                        url,
+                    )
+                }
             }
         }
         if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false]) {
