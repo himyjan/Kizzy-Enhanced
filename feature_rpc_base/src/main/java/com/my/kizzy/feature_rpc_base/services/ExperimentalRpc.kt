@@ -30,6 +30,8 @@ import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMediaAll
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.ActivityTypeResolver
+import com.my.kizzy.data.rpc.LastPresence
+import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.KizzyRPC
@@ -235,8 +237,16 @@ class ExperimentalRpc : Service() {
                 this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
             )
 
-            // Open main app when notification is clicked
-            val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
+            // Open main app when notification is clicked. The intent reuses the
+            // existing task, otherwise the app is started a second time and the
+            // user sees two layers of the UI on top of each other.
+            val appIntent = packageManager.getLaunchIntentForPackage(packageName)
+                ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
+            appIntent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+            )
             val appPendingIntent = PendingIntent.getActivity(
                 this, 0, appIntent,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -634,6 +644,26 @@ class ExperimentalRpc : Service() {
             if (button2Text.isNotEmpty() && button2Url.isNotEmpty()) {
                 kizzyRPC.setButton2(button2Text, button2Url)
             }
+        } else {
+            // The Experimental RPC did not have any link at all when the user did
+            // not configure the buttons by hand. When a media session is
+            // playing, the link of the track and of the artist are used instead,
+            // so the presence links to the music like the Media RPC does.
+            richMediaInfo?.mediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
+                kizzyRPC.setButton1(
+                    MediaServiceResolver.mediaButtonLabel(
+                        effectivePackageName,
+                        commonRpc.type ?: ActivityTypeResolver.DEFAULT_TYPE,
+                    ),
+                    url,
+                )
+            }
+            richMediaInfo?.artistUrl?.takeIf { it.isNotBlank() }?.let { url ->
+                kizzyRPC.setButton2(
+                    MediaServiceResolver.artistButtonLabel(effectivePackageName),
+                    url,
+                )
+            }
         }
         if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false]) {
             kizzyRPC.setApplicationId(Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID, ""])
@@ -643,6 +673,24 @@ class ExperimentalRpc : Service() {
         kizzyRPC.updateRPC(
             commonRpc = commonRpc,
             enableTimestamps = Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]
+        )
+
+        // Remember the presence for the RPC preview.
+        LastPresence.rememberExperimental(
+            com.my.kizzy.domain.model.rpc.RpcConfig(
+                name = finalName.orEmpty(),
+                details = finalDetails.orEmpty(),
+                state = finalState.orEmpty(),
+                type = (commonRpc.type ?: 0).toString(),
+                timestampsStart = finalTimestamps?.start?.toString().orEmpty(),
+                timestampsStop = finalTimestamps?.end?.toString().orEmpty(),
+                largeText = finalLargeText.orEmpty(),
+                smallText = finalSmallText.orEmpty(),
+                button1 = kizzyRPC.currentButtons()?.getOrNull(0)?.label.orEmpty(),
+                button1link = kizzyRPC.currentButtons()?.getOrNull(0)?.url.orEmpty(),
+                button2 = kizzyRPC.currentButtons()?.getOrNull(1)?.label.orEmpty(),
+                button2link = kizzyRPC.currentButtons()?.getOrNull(1)?.url.orEmpty(),
+            )
         )
 
         val notifTitle = finalName.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.app_name_full)

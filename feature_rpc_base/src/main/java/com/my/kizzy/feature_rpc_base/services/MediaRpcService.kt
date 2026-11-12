@@ -394,25 +394,7 @@ class MediaRpcService : Service() {
     private suspend fun resolveDirectMediaUrl(): String? {
         val metadata = currentMediaController?.metadata ?: return null
         val packageName = currentPackageName ?: return null
-        if (!MediaServiceResolver.isYouTube(packageName)) return null
-
-        // YouTube Music ships the video id in METADATA_KEY_MEDIA_ID as
-        // "yt:video:VIDEO_ID" or "t:VIDEO_ID". Extract it and build a direct
-        // youtu.be/ link instead of a search page.
-        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
-        if (!mediaId.isNullOrEmpty()) {
-            val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
-            if (id.isNotBlank() && id.length >= 11) {
-                return "https://youtu.be/${id.take(11)}"
-            }
-        }
-
-        // Fall back to resolving a watch url through the oEmbed endpoint.
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
-        if (title.isNullOrEmpty()) return null
-        val searchUrl = MediaServiceResolver.mediaSearchUrl(packageName, title) ?: return null
-        val video = YouTubeResolver.lookup(searchUrl) ?: return null
-        return video.watchUrl
+        return metadataResolver.getDirectMediaUrl(metadata, packageName)
     }
 
     /**

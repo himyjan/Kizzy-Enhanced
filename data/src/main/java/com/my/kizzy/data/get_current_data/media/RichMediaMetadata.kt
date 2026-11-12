@@ -35,5 +35,13 @@ data class RichMediaMetadata(
      * Whether the media session carries artist or album metadata, which means
      * it is a music track rather than a video.
      */
-    val isMusicMetadata: Boolean = false
+    val isMusicMetadata: Boolean = false,
+    /**
+     * The direct url of the track, when the session publishes one.
+     */
+    val mediaUrl: String? = null,
+    /**
+     * The url of the channel of the artist, when it is known.
+     */
+    val artistUrl: String? = null
 )

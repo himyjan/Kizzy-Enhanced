@@ -201,6 +201,62 @@ class MetadataResolver @Inject constructor(
     }
 
     /**
+     * The direct url of the track, when it can be found.
+     *
+     * The media session of YouTube Music does not publish the url of the
+     * video, so the link of the button used to be a search page. The video is
+     * looked up by its id (YouTube Music ships it in the media id) or by its
+     * title, and the direct watch url is built from it.
+     *
+     * Returns null when the url cannot be found, so the caller can fall back
+     * to the search page.
+     */
+    suspend fun getDirectMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
+        if (!MediaServiceResolver.isYouTube(packageName)) return null
+
+        // The id of the video, when the session ships it.
+        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
+        if (!mediaId.isNullOrEmpty()) {
+            val id = if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/")) {
+                YouTubeResolver.extractVideoId(mediaId)
+            } else {
+                mediaId.substringAfterLast(":").substringAfterLast("/")
+                    .substringBefore('?').substringBefore('&')
+                    .takeIf { it.isNotBlank() && it.length >= 11 }
+                    ?.take(11)
+            }
+            if (id != null) {
+                return "https://youtu.be/$id"
+            }
+        }
+
+        // The video of the track, looked up by its title.
+        val video = resolveYouTubeVideo(metadata) ?: return null
+        return video.watchUrl
+    }
+
+    /**
+     * The video of the playing track, when the app is a YouTube app.
+     *
+     * The url of the video is used when the session publishes it, otherwise the
+     * video is looked up by its title.
+     */
+    suspend fun resolveYouTubeVideo(metadata: MediaMetadata): YouTubeResolver.Video? {
+        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
+        if (!sourceUrl.isNullOrEmpty() &&
+            (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be"))
+        ) {
+            YouTubeResolver.lookup(sourceUrl)?.let { return it }
+        }
+
+        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
+        if (title.isNullOrEmpty()) return null
+        val artist = metadataResolverArtistName(metadata)
+
+        return YouTubeResolver.lookupByTitle(title, artist)
+    }
+
+    /**
      * Looks through every entry of the metadata for something that looks like
      * a url of a media service.
      *
@@ -341,28 +397,9 @@ class MetadataResolver @Inject constructor(
         // (https://www.youtube.com/@handle or https://www.youtube.com/channel/UCxxxx).
         // Guessing "@artistName" does not work because the artist name is not the channel handle.
         if (MediaServiceResolver.isYouTube(packageName)) {
-            val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
-            var videoId: String? = null
-            if (!mediaId.isNullOrEmpty()) {
-                if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/")) {
-                    videoId = YouTubeResolver.extractVideoId(mediaId)
-                } else {
-                    val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
-                    if (id.isNotBlank() && id.length >= 11) {
-                        videoId = id.take(11)
-                    }
-                }
-            }
-            if (videoId.isNullOrBlank()) {
-                // Fall back to extracting from the resolved media URL.
-                val mediaUrl = getMediaUrl(metadata, packageName)
-                videoId = mediaUrl?.let { YouTubeResolver.extractVideoId(it) }
-            }
-            videoId?.let { id ->
-                val video = YouTubeResolver.lookupById(id)
-                if (video != null && video.channelUrl.isNotBlank()) {
-                    return video.channelUrl
-                }
+            val video = resolveYouTubeVideo(metadata)
+            if (video != null && video.channelUrl.isNotBlank()) {
+                return video.channelUrl
             }
         }
 
