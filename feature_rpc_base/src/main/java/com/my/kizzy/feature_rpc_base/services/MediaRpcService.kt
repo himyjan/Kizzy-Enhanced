@@ -157,14 +157,10 @@ class MediaRpcService : Service() {
         }
 
         val token = Prefs[TOKEN, ""]
-        if (token.isEmpty()) {
-            Prefs[Prefs.MEDIA_RPC_ENABLED] = false
-            stopSelf()
-            return
-        }
-        // The service is alive, so the user wants the Media RPC. The watchdog
-        // uses this flag to tell "the service died" apart from "the user
-        // switched the Media RPC off".
+        // Don't stop the service when the token is empty - the user may log in
+        // later. refreshFromPrefs() in updateRPC() will pick up the token when
+        // it becomes available. MEDIA_RPC_ENABLED is set to true so the watchdog
+        // knows the service should be running.
         Prefs[Prefs.MEDIA_RPC_ENABLED] = true
         setupWakeLock()
 
