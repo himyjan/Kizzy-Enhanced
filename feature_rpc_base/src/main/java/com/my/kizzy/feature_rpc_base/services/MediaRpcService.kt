@@ -24,6 +24,7 @@ import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.MediaServiceResolver
+import com.my.kizzy.data.rpc.YouTubeResolver
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.Timestamps
@@ -156,7 +157,15 @@ class MediaRpcService : Service() {
         }
 
         val token = Prefs[TOKEN, ""]
-        if (token.isEmpty()) stopSelf()
+        if (token.isEmpty()) {
+            Prefs[Prefs.MEDIA_RPC_ENABLED] = false
+            stopSelf()
+            return
+        }
+        // The service is alive, so the user wants the Media RPC. The watchdog
+        // uses this flag to tell "the service died" apart from "the user
+        // switched the Media RPC off".
+        Prefs[Prefs.MEDIA_RPC_ENABLED] = true
         setupWakeLock()
 
         val stopIntent = Intent(this, MediaRpcService::class.java)
@@ -375,6 +384,38 @@ class MediaRpcService : Service() {
     }
 
     /**
+     * The direct url of the playing track.
+     *
+     * The media session of some players does not publish the url of the track,
+     * so the link of the button used to be a search page. For YouTube the real
+     * watch url is resolved through the oEmbed endpoint instead, which knows
+     * the video that belongs to the title.
+     */
+    private suspend fun resolveDirectMediaUrl(): String? {
+        val metadata = currentMediaController?.metadata ?: return null
+        val packageName = currentPackageName ?: return null
+        if (!MediaServiceResolver.isYouTube(packageName)) return null
+
+        // YouTube Music ships the video id in METADATA_KEY_MEDIA_ID as
+        // "yt:video:VIDEO_ID" or "t:VIDEO_ID". Extract it and build a direct
+        // youtu.be/ link instead of a search page.
+        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
+        if (!mediaId.isNullOrEmpty()) {
+            val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
+            if (id.isNotBlank() && id.length >= 11) {
+                return "https://youtu.be/${id.take(11)}"
+            }
+        }
+
+        // Fall back to resolving a watch url through the oEmbed endpoint.
+        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
+        if (title.isNullOrEmpty()) return null
+        val searchUrl = MediaServiceResolver.mediaSearchUrl(packageName, title) ?: return null
+        val video = YouTubeResolver.lookup(searchUrl) ?: return null
+        return video.watchUrl
+    }
+
+    /**
      * The Discord activity type of the app.
      *
      * It used to be a single global preference, so every app - YouTube Music
@@ -433,7 +474,8 @@ class MediaRpcService : Service() {
         // on the profile.
         kizzyRPC.clearButtons()
         if (mediaButtonEnabled) {
-            playingMedia.mediaUrl?.let { url ->
+            val url = playingMedia.mediaUrl ?: resolveDirectMediaUrl()
+            if (url != null) {
                 kizzyRPC.setButton1(
                     MediaServiceResolver.mediaButtonLabel(
                         playingMedia.appPackage,
@@ -445,7 +487,11 @@ class MediaRpcService : Service() {
         }
         if (artistLinkEnabled) {
             currentMediaController?.metadata?.let { metadata ->
-                metadataResolver.getArtistUrl(metadata, playingMedia.appPackage)?.let { url ->
+                // The artist url of YouTube is the real channel of the uploader,
+                // which has to be looked up. It is a suspending call, so it is
+                // made here and not inside the listener callback.
+                val artistUrl = metadataResolver.getArtistUrl(metadata, playingMedia.appPackage)
+                artistUrl?.let { url ->
                     kizzyRPC.setButton2(
                         MediaServiceResolver.artistButtonLabel(playingMedia.appPackage),
                         url,
@@ -549,7 +595,16 @@ class MediaRpcService : Service() {
         progressSec: Int,
         durationSec: Int,
     ): Notification {
-        val appIntent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(Intent.ACTION_MAIN)
+        // The notification opens the app. The intent has to reuse the existing
+        // task, otherwise the app is started a second time and the user sees
+        // two layers of the UI on top of each other.
+        val appIntent = packageManager.getLaunchIntentForPackage(packageName)
+            ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
+        appIntent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_SINGLE_TOP
+        )
         val appPendingIntent = PendingIntent.getActivity(
             this, 0, appIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -681,29 +736,78 @@ class MediaRpcService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            it.action?.let { ac ->
-                if (ac == Constants.ACTION_STOP_SERVICE) {
-                    stopSelf()
-                } else if (ac == Constants.ACTION_RESTART_SERVICE) {
-                    stopSelf()
-                    startService(Intent(this, MediaRpcService::class.java))
-                } else if (ac == Constants.ACTION_TOGGLE) {
-                    isPaused = !isPaused
-                    stateRepository.setPaused(isPaused)
-                    logger.d("MediaRPC", "Toggle pressed: paused=$isPaused")
-                    updateNotificationPauseButton()
-                    if (!isPaused) {
-                        scope.launch { updatePresence() }
-                    } else {
-                        stopTimelineUpdates()
-                        scope.launch { kizzyRPC.clearPresence() }
-                        stateRepository.setConnected(false)
-                    }
+        val ac = intent?.action
+        when (ac) {
+            Constants.ACTION_STOP_SERVICE -> {
+                // The user switched the Media RPC off, so the watchdog must
+                // not bring the service back up.
+                Prefs[Prefs.MEDIA_RPC_ENABLED] = false
+                stopSelf()
+            }
+            Constants.ACTION_RESTART_SERVICE -> {
+                // The service must NOT be stopped first. stopSelf() tears the
+                // service down and the pending stop then killed the fresh
+                // instance, so the restart did nothing. Instead the current
+                // instance is reused and its state is reset.
+                logger.d("MediaRPC", "Restart requested, resetting the running service")
+                restartInPlace()
+            }
+            Constants.ACTION_TOGGLE -> {
+                isPaused = !isPaused
+                stateRepository.setPaused(isPaused)
+                logger.d("MediaRPC", "Toggle pressed: paused=$isPaused")
+                updateNotificationPauseButton()
+                if (!isPaused) {
+                    scope.launch { updatePresence() }
+                } else {
+                    stopTimelineUpdates()
+                    scope.launch { kizzyRPC.clearPresence() }
+                    stateRepository.setConnected(false)
                 }
+            }
+            null -> {
+                // Normal start (no action): the user wants the Media RPC running.
+                // Mark it as enabled so the watchdog knows it should stay alive.
+                Prefs[Prefs.MEDIA_RPC_ENABLED] = true
             }
         }
         return START_REDELIVER_INTENT
+    }
+
+    /**
+     * Restarts the RPC without tearing the service down.
+     *
+     * The service re-reads the preferences, re-reads the media session and
+     * sends the presence again, so a restart is visible on Discord right away.
+     */
+    private fun restartInPlace() {
+        Prefs[Prefs.MEDIA_RPC_ENABLED] = true
+
+        // Forget what was sent, so the next update is not dropped as
+        // "content unchanged".
+        lastSentName = null
+        lastSentDetails = null
+        lastSentState = null
+        lastSentStartTimestamps = null
+        lastSentStopTimestamps = null
+        lastSentLargeImageUrl = null
+        lastSentPackageName = null
+        lastPresenceUpdateTime = 0L
+
+        isPaused = false
+        stateRepository.setPaused(false)
+
+        // Pick the current media session up again.
+        val sessions: List<MediaController> = try {
+            mediaSessionManager.getActiveSessions(ComponentName(this, NotificationListener::class.java))
+        } catch (_: SecurityException) {
+            emptyList()
+        }
+        applySessionChange(sessions)
+
+        scope.launch {
+            updatePresence(forceRefresh = true)
+        }
     }
 
     override fun onTaskRemoved(intent: Intent?) {
