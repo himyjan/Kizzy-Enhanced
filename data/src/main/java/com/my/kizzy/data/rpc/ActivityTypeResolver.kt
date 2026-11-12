@@ -156,6 +156,14 @@ object ActivityTypeResolver {
         "apple.android.music",
         "google.android.music",
         "music",
+        // YouTube Music wrapper / alternative clients - all play YouTube Music content
+        "mist",
+        "metrolist",
+        "meld",
+        "bitchord",
+        "archivetune",
+        "simpmusic",
+        "ymusic",
     )
 
     private val VIDEO_SIGNATURES = listOf(
