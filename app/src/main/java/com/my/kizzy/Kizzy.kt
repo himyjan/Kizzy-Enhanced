@@ -205,22 +205,20 @@ internal fun ComponentActivity.Kizzy(
                                 is UserState.Error -> currentState.rpcConfig
                                 else -> null
                             }
+                            // The config is serialized with the real serializer and
+                            // then encoded once. Building the json by hand broke on
+                            // every name that contained a quote or a backslash, and
+                            // the hand written json did not match the model, so
+                            // the preview showed nothing.
                             val encodedRpcConfig = if (rpcConfig != null) {
                                 java.net.URLEncoder.encode(
-                                    buildString {
-                                        append("{")
-                                        append("\"name\":\"${rpcConfig.name.replace("\\", "\\\\").replace("\"", "\\\"")}\"")
-                                        append(",\"details\":\"${rpcConfig.details?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
-                                        append(",\"state\":\"${rpcConfig.state?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
-                                        append(",\"button1\":\"${rpcConfig.button1?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
-                                        append(",\"button1link\":\"${rpcConfig.button1link?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
-                                        append(",\"button2\":\"${rpcConfig.button2?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
-                                        append(",\"button2link\":\"${rpcConfig.button2link?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
-                                        append(",\"timestampsStart\":\"${rpcConfig.timestampsStart?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
-                                        append(",\"timestampsStop\":\"${rpcConfig.timestampsStop?.replace("\\", "\\\\")?.replace("\"", "\\\"")}\"")
-                                        append(",\"type\":\"${rpcConfig.type.replace("\\", "\\\\").replace("\"", "\\\"")}\"")
-                                        append("}")
-                                    },
+                                    kotlinx.serialization.json.Json {
+                                        ignoreUnknownKeys = true
+                                        encodeDefaults = true
+                                    }.encodeToString(
+                                        com.my.kizzy.domain.model.rpc.RpcConfig.serializer(),
+                                        rpcConfig
+                                    ),
                                     java.nio.charset.StandardCharsets.UTF_8.toString()
                                 )
                             } else ""
@@ -300,10 +298,14 @@ internal fun ComponentActivity.Kizzy(
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 val avatarUrl = backStackEntry.arguments?.getString("avatarUrl") ?: ""
                 val rpcConfigParam = backStackEntry.arguments?.getString("rpcConfig") ?: ""
+                // The navigation library already decodes the arguments of the
+                // route, so decoding them a second time broke the json.
                 val decodedRpcConfig = if (rpcConfigParam.isNotBlank()) {
                     try {
-                        java.net.URLDecoder.decode(rpcConfigParam, java.nio.charset.StandardCharsets.UTF_8.toString())
-                            .let { kotlinx.serialization.json.Json.decodeFromString<com.my.kizzy.domain.model.rpc.RpcConfig>(it) }
+                        kotlinx.serialization.json.Json {
+                            ignoreUnknownKeys = true
+                            encodeDefaults = true
+                        }.decodeFromString<com.my.kizzy.domain.model.rpc.RpcConfig>(rpcConfigParam)
                     } catch (_: Exception) {
                         null
                     }
