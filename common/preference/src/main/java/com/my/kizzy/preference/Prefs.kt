@@ -185,6 +185,29 @@ object Prefs {
     const val MEDIA_RPC_MEDIA_BUTTON = "media_rpc_media_button"
     const val MEDIA_RPC_ARTIST_LINK = "media_rpc_artist_link"
 
+    /**
+     * Whether the user wants the Media RPC to run.
+     *
+     * It is written by the Media RPC service when it starts and cleared when the
+     * service is stopped - by the switch in the Media RPC screen, by the "exit"
+     * action of the notification and by every other RPC feature that takes over.
+     * The watchdog in the notification listener uses it to tell "the user wants
+     * the Media RPC, but the service died" apart from "the user switched the
+     * Media RPC off".
+     */
+    const val MEDIA_RPC_ENABLED = "media_rpc_enabled"
+
+    /**
+     * The last presence the Media RPC sent. The RPC preview screen reads it so
+     * it can show the real data even when the service is not running anymore.
+     */
+    const val LAST_RUN_MEDIA_RPC = "last_run_media_rpc"
+
+    /**
+     * The last presence the Experimental RPC sent.
+     */
+    const val LAST_RUN_EXPERIMENTAL_RPC = "last_run_experimental_rpc"
+
     //Rpc Setting Preferences
     const val USE_RPC_BUTTONS = "use_saved_rpc_buttons"
     const val RPC_BUTTONS_DATA = "saved_rpc_buttons_data"

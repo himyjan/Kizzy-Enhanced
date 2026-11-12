@@ -25,6 +25,23 @@ import javax.inject.Singleton
 @Singleton
 object AppUtils {
     private lateinit var activityManager: ActivityManager
+
+    /**
+     * The running services are cached for a short time.
+     *
+     * The list of the running services is a binder call into the system, and
+     * the screens ask for it on every recomposition. Without the cache the
+     * binder was called several times a second, which shows up in the battery
+     * statistics.
+     */
+    private const val RUNNING_SERVICES_CACHE_MS = 1000L
+
+    @Volatile
+    private var cachedRunningServices: List<String>? = null
+
+    @Volatile
+    private var cachedRunningServicesAt: Long = 0L
+
     fun init(context: Context) {
         activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     }
@@ -49,12 +66,26 @@ object AppUtils {
         if (!isActivityManagerInitialized()) {
             return false
         }
-        for (runningServiceInfo in activityManager.getRunningServices(
-            Int.MAX_VALUE
-        )) {
-            if (T::class.java.name == runningServiceInfo.service.className)
-                return true
+        return runningServiceNames().contains(T::class.java.name)
+    }
+
+    /**
+     * The names of the services that are currently running.
+     */
+    private fun runningServiceNames(): List<String> {
+        val now = System.currentTimeMillis()
+        val cached = cachedRunningServices
+        if (cached != null && now - cachedRunningServicesAt < RUNNING_SERVICES_CACHE_MS) {
+            return cached
         }
-        return false
+        val names = try {
+            activityManager.getRunningServices(Int.MAX_VALUE)
+                .map { it.service.className }
+        } catch (_: Exception) {
+            emptyList()
+        }
+        cachedRunningServices = names
+        cachedRunningServicesAt = now
+        return names
     }
 }

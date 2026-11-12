@@ -104,6 +104,15 @@ open class DiscordWebSocketImpl(
     private var connectStartedAtNanos = 0L
 
     override suspend fun connect() {
+        // Early return if already connected and the WebSocket is active.
+        // updateRPC() calls connect() on every presence update; without this
+        // guard each call launches a coroutine on the supervisor job even when
+        // the gateway is already open, which contributes to socket churn.
+        if (websocket?.isActive == true && connected) {
+            logger.d("Gateway", "Connect called while already connected; keeping it")
+            return
+        }
+
         launch(coroutineContext) {
             try {
                 logger.i("Gateway", "Connect called")
