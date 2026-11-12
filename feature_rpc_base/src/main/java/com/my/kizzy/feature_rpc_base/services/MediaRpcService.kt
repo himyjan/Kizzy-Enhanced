@@ -390,7 +390,7 @@ class MediaRpcService : Service() {
     private suspend fun resolveDirectMediaUrl(): String? {
         val metadata = currentMediaController?.metadata ?: return null
         val packageName = currentPackageName ?: return null
-        return metadataResolver.getDirectMediaUrl(metadata, packageName)
+        return metadataResolver.getMediaUrl(metadata, packageName)
     }
 
     /**
@@ -442,7 +442,8 @@ class MediaRpcService : Service() {
                 end = playingMedia.time?.end
             ) else null,
             packageName = playingMedia.appPackage,
-            playbackState = playingMedia.playbackState
+            playbackState = playingMedia.playbackState,
+            mediaUrl = playingMedia.mediaUrl
         )
 
         val mediaButtonEnabled = Prefs[MEDIA_RPC_MEDIA_BUTTON, false]

@@ -181,13 +181,6 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 timestamps = timestamps,
                 audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) },
                 allArtists = metadata?.let { metadataResolver.getAllArtists(it) } ?: emptyList(),
-                mediaUrl = metadata?.let {
-                    metadataResolver.getDirectMediaUrl(it, mediaController.packageName)
-                        ?: metadataResolver.getMediaUrl(it, mediaController.packageName)
-                },
-                artistUrl = metadata?.let {
-                    metadataResolver.getArtistUrl(it, mediaController.packageName)
-                },
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")

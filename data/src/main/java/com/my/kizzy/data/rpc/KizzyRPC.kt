@@ -683,6 +683,7 @@ class KizzyRPC @Inject constructor(
                     type = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0],
                     platform = commonRpc.platform?.sanitize(),
                     timestamps = time,
+                    url = commonRpc.mediaUrl?.takeIf { it.isNotEmpty() },
                     assets = Assets(
                         largeImage = resolvedLargeImage,
                         smallImage = resolvedSmallImage,
