@@ -71,7 +71,7 @@ fun PreferenceSwitch(
     onClick: () -> Unit = {},
 ) {
     Surface(
-        modifier = if (enabled) Modifier.clickable { onClick() } else Modifier
+        modifier = if (enabled) Modifier else Modifier
     ) {
         Row(
             modifier = Modifier

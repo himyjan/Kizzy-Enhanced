@@ -17,6 +17,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
@@ -52,15 +53,15 @@ fun KSwitch(
     Surface(
         modifier = modifier
             .requiredSize(56.dp, 28.dp)
+            .clickable(enabled = enable && onClick != null) {
+                onClick?.invoke()
+            }
             .alpha(if (enable) 1f else 0.5f),
-        shape = CircleShape,
+        shape = RoundedCornerShape(14.dp),
         color = backgroundColor
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
-                .clickable(enabled = enable && onClick != null) {
-                    onClick?.invoke()
-                }
         ) {
             Surface(
                 modifier = Modifier

@@ -14,7 +14,6 @@ package com.my.kizzy.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,9 +45,6 @@ fun SwitchBar(
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .clip(RoundedCornerShape(28.dp))
             .background(containerColor)
-            .toggleable(enabled) {
-                onClick()
-            }
             .padding(20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
