@@ -43,9 +43,7 @@ fun AppsItem(
     }
 
     Surface(
-        modifier = Modifier.clickable {
-            onClick()
-        }
+        modifier = Modifier
     ) {
         Row(
             modifier = Modifier
@@ -83,6 +81,7 @@ fun AppsItem(
             KSwitch(
                 checked = isChecked,
                 modifier = Modifier.padding(start = 20.dp, end = 6.dp),
+                onClick = onClick
             )
         }
     }
