@@ -114,6 +114,10 @@ object MediaServiceResolver {
             Service("StreetVoice", Kind.MUSIC, STREETVOICE_SEARCH, STREETVOICE_SEARCH)
         ),
         Entry(
+            listOf("nicobox"),
+            Service("Nicobox", Kind.MUSIC, null, null)
+        ),
+        Entry(
             listOf("netflix"),
             Service("Netflix", Kind.VIDEO, NETFLIX_SEARCH, null)
         ),

@@ -164,6 +164,9 @@ object ActivityTypeResolver {
         "archivetune",
         "simpmusic",
         "ymusic",
+        // Other music streaming services
+        "streetvoice",
+        "nicobox",
     )
 
     private val VIDEO_SIGNATURES = listOf(
