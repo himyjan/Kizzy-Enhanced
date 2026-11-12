@@ -13,6 +13,8 @@ dependencies {
     implementation (libs.material3.windows.size)
     implementation (projects.color)
     implementation (libs.coil)
+    implementation(libs.coil.network)
+
     implementation (projects.common.resources)
     implementation (libs.material.icons.extended)
 }

@@ -18,6 +18,8 @@ dependencies {
     implementation (projects.featureSettings)
     implementation (projects.common.navigation)
     implementation (libs.coil)
+    implementation(libs.coil.network)
+
     implementation (libs.activity.compose)
 
     // Hilt annotation processor required for @HiltViewModel

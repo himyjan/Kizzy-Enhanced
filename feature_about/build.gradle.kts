@@ -15,6 +15,8 @@ android {
 
 dependencies {
     implementation (libs.coil)
+    implementation(libs.coil.network)
+
     implementation (libs.material.icons.extended)
     implementation (libs.activity.compose)
 }

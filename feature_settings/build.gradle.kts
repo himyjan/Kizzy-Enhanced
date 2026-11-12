@@ -17,6 +17,8 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.material.icons.extended)
     implementation(libs.coil)
+    implementation(libs.coil.network)
+
     implementation(libs.kotlinx.serialization.json)
 
     implementation(projects.color)
