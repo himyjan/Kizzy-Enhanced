@@ -195,6 +195,10 @@ open class DiscordWebSocketImpl(
                                 val jsonString = it.readText()
                                 if (gen == generation) onMessage(jsonString)
                             }
+                            is Frame.Close -> {
+                                val reason = it.readReason()
+                                logger.w("Gateway", "WebSocket close frame: code=${reason?.code}, reason=${reason?.message ?: "none"}")
+                            }
                             else -> {}
                         }
                     }
@@ -327,11 +331,15 @@ open class DiscordWebSocketImpl(
         )
     }
 
-    private suspend fun handleClose(session: WebSocketSession) {
+    private suspend fun handleClose(session: DefaultWebSocketSession) {
         heartbeatJob?.cancel()
         connected = false
+        val closeReason = session.closeReason.await()
         if (!deliberateClose) {
-            logger.w("Gateway", "WebSocket closed")
+            logger.w(
+                "Gateway",
+                "WebSocket closed: code=${closeReason?.code ?: -1}, reason=${closeReason?.message ?: "none"}"
+            )
             scheduleReconnect()
         }
     }
