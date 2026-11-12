@@ -47,11 +47,11 @@ sealed interface ConnectionState {
 }
 
 open class DiscordWebSocketImpl(
-    private val token: String,
+    private var token: String,
     private val logger: Logger = NoOpLogger,
-    private val identifyBrowser: String = "Discord Client",
-    private val identifyOs: String = "Windows",
-    private val identifyDevice: String = "ktor",
+    private var identifyBrowser: String = "Discord Client",
+    private var identifyOs: String = "Windows",
+    private var identifyDevice: String = "ktor",
     private val externalScope: CoroutineScope? = null,
     private val isOnlineState: StateFlow<Boolean>? = null
 ) : DiscordWebSocket {
@@ -104,6 +104,15 @@ open class DiscordWebSocketImpl(
     private var connectStartedAtNanos = 0L
 
     override suspend fun connect() {
+        // Early return if already connected and the WebSocket is active.
+        // updateRPC() calls connect() on every presence update; without this
+        // guard each call launches a coroutine on the supervisor job even when
+        // the gateway is already open, which contributes to socket churn.
+        if (websocket?.isActive == true && connected) {
+            logger.d("Gateway", "Connect called while already connected; keeping it")
+            return
+        }
+
         launch(coroutineContext) {
             try {
                 logger.i("Gateway", "Connect called")
@@ -526,7 +535,28 @@ open class DiscordWebSocketImpl(
     }
 
     private suspend fun connectWithToken(token: String) {
+        refreshIdentifyProperties(token, identifyBrowser, identifyOs, identifyDevice)
         connect()
+    }
+
+    /**
+     * Refreshes the token and platform-indicator properties before (re)connecting.
+     *
+     * These are stored as constructor parameters and were immutable, so a token or
+     * platform change after DI never took effect. If the Media RPC service auto-starts
+     * before the user logs in, the token is empty and Discord rejects the IDENTIFY,
+     * so the presence is never sent.
+     */
+    public fun refreshIdentifyProperties(
+        token: String,
+        browser: String,
+        os: String,
+        device: String,
+    ) {
+        this.token = token
+        this.identifyBrowser = browser
+        this.identifyOs = os
+        this.identifyDevice = device
     }
 
     fun disconnect() {
