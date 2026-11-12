@@ -2,9 +2,10 @@ package com.my.kizzy.data.rpc
 
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
-import javax.inject.Inject
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.CUSTOM_ACTIVITY_TYPE
+import com.my.kizzy.data.rpc.Constants
+import javax.inject.Inject
 import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
 import kizzy.gateway.entities.presence.Activity
@@ -23,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.math.abs
 
 class KizzyRPC @Inject constructor(
-    private val token: String,
+    private var token: String,
     private val kizzyRepository: KizzyRepository,
     private val discordWebSocket: DiscordWebSocket,
     private val logger: Logger
@@ -104,6 +105,26 @@ class KizzyRPC @Inject constructor(
         lastConnectedTimeMs = System.currentTimeMillis()
         // Re-apply the last presence after reconnect so Discord doesn't show an empty card
         launchReapplyPresence()
+    }
+
+    /**
+     * Refreshes the Discord gateway token and platform-indicator properties from
+     * preferences before (re)connecting.
+     *
+     * Both [token] and the identify properties on [discordWebSocket] are immutable
+     * constructor parameters. If the Media RPC service auto-starts before the user
+     * logs in (e.g. from Application.onCreate), the token is empty and Discord rejects
+     * the IDENTIFY, so the presence is never sent. Refreshing before every connect
+     * ensures a late login still works without restarting the service.
+     */
+    suspend fun refreshFromPrefs() {
+        token = Prefs[Prefs.TOKEN, ""]
+        val (browser, os, device) = Constants.spoofIdentifyProperties(
+            Prefs[Prefs.EXPERIMENTAL_RPC_PLATFORM, ""]
+        )
+        if (discordWebSocket is DiscordWebSocketImpl) {
+            discordWebSocket.refreshIdentifyProperties(token, browser, os, device)
+        }
     }
 
     /**
@@ -373,6 +394,21 @@ class KizzyRPC @Inject constructor(
     }
 
     /**
+     * The buttons of the presence that was sent last.
+     *
+     * The RPC preview shows them, so the preview shows the same buttons as
+     * Discord.
+     */
+    fun currentButtons(): List<ActivityButton>? {
+        buttonsLock.lock()
+        return try {
+            buttons.toList().takeIf { it.isNotEmpty() }
+        } finally {
+            buttonsLock.unlock()
+        }
+    }
+
+    /**
      * Clears any previously set buttons and their urls.
      * Useful before re-applying buttons on a reconnect so they don't accumulate.
      */
@@ -519,6 +555,10 @@ class KizzyRPC @Inject constructor(
         connectToWebSocket()
     }
     private suspend fun connectToWebSocket() {
+        // Refresh token and identify properties from prefs before connecting, so a
+        // login that happened after DI (e.g. service auto-started before login) takes effect.
+        refreshFromPrefs()
+
         if (!isUserTokenValid()) {
             logger.e(
                 tag = "KizzyRPC",
@@ -623,6 +663,11 @@ class KizzyRPC @Inject constructor(
             }
         }
 
+        // The images are resolved once, so the presence and the memory of the
+        // presence show the same artwork.
+        val resolvedLargeImage = commonRpc.largeImage?.resolveImage(kizzyRepository)
+        val resolvedSmallImage = commonRpc.smallImage?.resolveImage(kizzyRepository)
+
         val presence = Presence(
             activities = listOf(
                 Activity(
@@ -633,8 +678,8 @@ class KizzyRPC @Inject constructor(
                     platform = commonRpc.platform?.sanitize(),
                     timestamps = time,
                     assets = Assets(
-                        largeImage = commonRpc.largeImage?.resolveImage(kizzyRepository),
-                        smallImage = commonRpc.smallImage?.resolveImage(kizzyRepository),
+                        largeImage = resolvedLargeImage,
+                        smallImage = resolvedSmallImage,
                         largeText = commonRpc.largeText?.sanitize(),
                         smallText = commonRpc.smallText?.sanitize()
                     ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
@@ -663,5 +708,46 @@ class KizzyRPC @Inject constructor(
         // seeked (timeline jump) or the track simply kept playing.
         lastPresenceStart = time?.start
         lastPresenceEnd = time?.end
+
+        // Remember the presence for the RPC preview, so it shows what Discord
+        // actually displays even when the service is not running anymore.
+        rememberLastPresence(
+            commonRpc = commonRpc,
+            buttonsSnapshot = buttonsSnapshot,
+            time = time,
+            largeImage = resolvedLargeImage,
+            smallImage = resolvedSmallImage,
+        )
+    }
+
+    /**
+     * Remembers the presence that was sent last.
+     */
+    private fun rememberLastPresence(
+        commonRpc: CommonRpc,
+        buttonsSnapshot: List<ActivityButton>?,
+        time: kizzy.gateway.entities.presence.Timestamps?,
+        largeImage: String?,
+        smallImage: String?,
+    ) {
+        val button1 = buttonsSnapshot?.getOrNull(0)
+        val button2 = buttonsSnapshot?.getOrNull(1)
+        val config = com.my.kizzy.domain.model.rpc.RpcConfig(
+            name = commonRpc.name,
+            details = commonRpc.details.orEmpty(),
+            state = commonRpc.state.orEmpty(),
+            type = (commonRpc.type ?: 0).toString(),
+            timestampsStart = time?.start?.toString().orEmpty(),
+            timestampsStop = time?.end?.toString().orEmpty(),
+            largeImg = largeImage.orEmpty(),
+            smallImg = smallImage.orEmpty(),
+            largeText = commonRpc.largeText.orEmpty(),
+            smallText = commonRpc.smallText.orEmpty(),
+            button1 = button1?.label.orEmpty(),
+            button1link = button1?.url.orEmpty(),
+            button2 = button2?.label.orEmpty(),
+            button2link = button2?.url.orEmpty(),
+        )
+        LastPresence.rememberMedia(config)
     }
 }
