@@ -576,9 +576,6 @@ class KizzyRPC @Inject constructor(
 
     suspend fun build() {
         val cleanButtons = sanitizeButtons(buttons.takeIf { buttons.isNotEmpty() })
-        val buttonMetadata = cleanButtons?.let { list ->
-            Metadata(buttonUrls = list.map { it.url })
-        }
         presence = Presence(
             activities = listOf(
                 Activity(
@@ -598,8 +595,9 @@ class KizzyRPC @Inject constructor(
                         largeText = largeText?.sanitize(),
                         smallText = smallText?.sanitize()
                     ).takeIf { largeImage != null || smallImage != null },
-                    buttons = cleanButtons,
-                    metadata = buttonMetadata,
+                    // Client-presence format: labels in buttons, urls in metadata.
+                    buttons = cleanButtons?.map { it.label },
+                    metadata = cleanButtons?.let { Metadata(buttonUrls = it.map { b -> b.url }) },
                     applicationId = applicationIdNumber.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID,
                     // Top-level url is only valid for Streaming (type 1).
                     url = sanitizeStreamUrl(url, type)
@@ -741,11 +739,6 @@ class KizzyRPC @Inject constructor(
         // silently drop the whole activity. The mediaUrl goes into the buttons.
         val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0]
         val cleanButtons = sanitizeButtons(buttonsSnapshot)
-        // Newer Discord builds match the button urls through metadata.button_urls.
-        // Without it, Gateway OP 3 can drop the whole activity when buttons are present.
-        val buttonMetadata = cleanButtons?.let { list ->
-            Metadata(buttonUrls = list.map { it.url })
-        }
 
         val presence = Presence(
             activities = listOf(
@@ -764,8 +757,9 @@ class KizzyRPC @Inject constructor(
                         smallText = commonRpc.smallText?.sanitize()
                     ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
                     party = party.takeIf { party != null },
-                    buttons = cleanButtons,
-                    metadata = buttonMetadata,
+                    // Client-presence format: labels in buttons, urls in metadata.
+                    buttons = cleanButtons?.map { it.label },
+                    metadata = cleanButtons?.let { Metadata(buttonUrls = it.map { b -> b.url }) },
 
                     applicationId = applicationIdNumber.takeIf { it.isNotEmpty() }
                         ?: Constants.APPLICATION_ID

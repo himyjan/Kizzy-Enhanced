@@ -12,8 +12,8 @@
 
 package com.my.kizzy.data.di
 
-import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.data.rpc.KizzyRPC
+import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
 import com.my.kizzy.preference.Prefs
