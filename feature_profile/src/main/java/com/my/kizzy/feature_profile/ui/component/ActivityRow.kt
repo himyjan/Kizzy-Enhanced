@@ -86,12 +86,31 @@ fun ActivityRow(
 
             if (isPlayingMedia && start != null && stop != null) {
                 val difference = stop - start
-                val elapsed1 = now - start
-                sliderPosition = (elapsed1.toFloat() / difference.toFloat())
-                elapsedText = if (elapsed1 >= 0L && elapsed1 < difference) {
-                    getFormatFromMs(elapsed1)
+                val paused = cfg?.paused == true
+                if (paused) {
+                    // Freeze the timeline where the player stopped. `start` is
+                    // computed as "read time - position", so it cannot be used with
+                    // the wall clock while paused - it would keep counting.
+                    val position = (cfg?.pausedPositionMs ?: 0L)
+                        .coerceIn(0L, difference.coerceAtLeast(0L))
+                    sliderPosition = if (difference > 0L) {
+                        position.toFloat() / difference.toFloat()
+                    } else {
+                        0f
+                    }
+                    elapsedText = getFormatFromMs(position)
                 } else {
-                    getFormatFromMs(difference.coerceAtLeast(0))
+                    val elapsed1 = now - start
+                    sliderPosition = if (difference > 0L) {
+                        elapsed1.toFloat() / difference.toFloat()
+                    } else {
+                        0f
+                    }
+                    elapsedText = if (elapsed1 >= 0L && elapsed1 < difference) {
+                        getFormatFromMs(elapsed1)
+                    } else {
+                        getFormatFromMs(difference.coerceAtLeast(0))
+                    }
                 }
             } else {
                 sliderPosition = 0f

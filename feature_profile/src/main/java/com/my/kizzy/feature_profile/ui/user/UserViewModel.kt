@@ -41,7 +41,10 @@ class UserViewModel @Inject constructor(
 
     private fun getUser() {
         getUserUseCase(Prefs[Prefs.USER_ID, ""]).onEach { result ->
-            viewModelScope.launch {
+            // The ViewModel is created from inside the profile composition. A flow that
+            // emits eagerly would otherwise run this code synchronously during that
+            // composition. Posting to the main queue moves it to after the frame.
+            viewModelScope.launch(Dispatchers.Main) {
                 // Compute new state (off Main thread via coroutine dispatcher)
                 val newState = when (result) {
                     is Resource.Success -> {
@@ -65,10 +68,7 @@ class UserViewModel @Inject constructor(
                     }
                     is Resource.Loading -> UserState.Loading
                 }
-                // Write on Main thread AFTER current composition frame completes
-                viewModelScope.launch(Dispatchers.Main) {
-                    _state.value = newState
-                }
+                _state.value = newState
             }
         }.launchIn(viewModelScope)
     }
@@ -81,7 +81,11 @@ class UserViewModel @Inject constructor(
             stateRepository.currentTimestampStart,
             stateRepository.currentTimestampStop
         ) { title, artist, isPaused, tsStart, tsStop ->
-            stateRepository.currentLargeImageUrl.combine(stateRepository.currentSmallImageUrl) { largeImg, smallImg ->
+            combine(
+                stateRepository.currentLargeImageUrl,
+                stateRepository.currentSmallImageUrl,
+                stateRepository.pausedPositionMs
+            ) { largeImg, smallImg, pausedPositionMs ->
                 val currentRpcConfig = currentRpcConfig()
 
                 currentRpcConfig.copy(
@@ -91,24 +95,32 @@ class UserViewModel @Inject constructor(
                     timestampsStart = tsStart?.toString() ?: currentRpcConfig.timestampsStart,
                     timestampsStop = tsStop?.toString() ?: currentRpcConfig.timestampsStop,
                     largeImg = largeImg ?: currentRpcConfig.largeImg,
-                    smallImg = smallImg ?: currentRpcConfig.smallImg
+                    smallImg = smallImg ?: currentRpcConfig.smallImg,
+                    paused = isPaused,
+                    pausedPositionMs = pausedPositionMs
                 )
             }
         }
         mediaFlow.flatMapLatest { it }.onEach { newRpcConfig ->
-            viewModelScope.launch {
-                // Compute new state
-                val newState = UserState.LoadingCompleted(
-                    when {
-                        _state.value is UserState.LoadingCompleted -> (_state.value as UserState.LoadingCompleted).user
+            // Post the write instead of doing it inside the flow collection. The state
+            // is read during composition, so it must not change while the profile is
+            // composing.
+            viewModelScope.launch(Dispatchers.Main) {
+                val current = _state.value
+                // The media service can publish the same presence again (for example a
+                // duplicate metadata callback). Replacing the state with an equal value
+                // would only trigger another recomposition of the whole profile.
+                if (current is UserState.LoadingCompleted && current.rpcConfig == newRpcConfig) {
+                    return@launch
+                }
+                _state.value = UserState.LoadingCompleted(
+                    when (current) {
+                        is UserState.LoadingCompleted -> current.user
+                        is UserState.Error -> current.user
                         else -> User()
                     },
                     newRpcConfig
                 )
-                // Write on Main thread AFTER current composition frame completes
-                viewModelScope.launch(Dispatchers.Main) {
-                    _state.value = newState
-                }
             }
         }.launchIn(viewModelScope)
     }

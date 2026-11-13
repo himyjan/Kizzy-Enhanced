@@ -36,6 +36,16 @@ class KizzyStateRepository @Inject constructor() {
     private val _currentSmallImageUrl = MutableStateFlow<String?>(null)
     val currentSmallImageUrl: StateFlow<String?> = _currentSmallImageUrl.asStateFlow()
 
+    /**
+     * The position (in milliseconds) at which playback was paused.
+     *
+     * The preview used to derive the elapsed time from the wall clock, so a
+     * paused track still showed a running timeline. Publishing the frozen
+     * position lets the UI stop the timer exactly where the track stopped.
+     */
+    private val _pausedPositionMs = MutableStateFlow<Long?>(null)
+    val pausedPositionMs: StateFlow<Long?> = _pausedPositionMs.asStateFlow()
+
     fun setPaused(paused: Boolean) {
         _isPaused.value = paused
     }
@@ -60,9 +70,14 @@ class KizzyStateRepository @Inject constructor() {
         _currentSmallImageUrl.value = small
     }
 
+    fun setPausedPosition(positionMs: Long?) {
+        _pausedPositionMs.value = positionMs
+    }
+
     fun clearTrackInfo() {
         setTrackInfo(null, null, null)
         setTimestamps(null, null)
         setImageUrls(null, null)
+        setPausedPosition(null)
     }
 }
