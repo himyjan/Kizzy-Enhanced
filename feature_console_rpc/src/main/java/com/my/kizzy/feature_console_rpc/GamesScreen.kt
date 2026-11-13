@@ -73,27 +73,29 @@ import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.shimmer.AnimatedShimmer
-import com.my.kizzy.ui.components.shimmer.ShimmerGamesScreen
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import androidx.compose.material.icons.outlined.Search
+import com.my.kizzy.ui.components.shimmer.ShimmerGamesScreen
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.runtime.tracing.ComposeTracing
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
+@Composable
 fun GamesScreen(
     onBackPressed: () -> Unit,
     onEvent: (UiEvent) -> Unit,
     state: GamesState,
     isSearchBarVisible: Boolean,
     serviceEnabled: Boolean = false,
-    consoleRpcRunning: Boolean = AppUtils.consoleRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning(),
-    otherRpcServicesRunning: Boolean = AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning() || AppUtils.appDetectionRunning(),
+    consoleRpcRunning: Boolean,
+    otherRpcServicesRunning: Boolean,
     detectedConsole: DetectedConsole? = null,
     autoDetect: Boolean = true,
     onToggleAutoDetect: (Boolean) -> Unit = {},
     includeSpoofed: Boolean = false,
     onToggleIncludeSpoofed: (Boolean) -> Unit = {},
 ) {
+    ComposeTracing.markStart("GamesScreen")
     val context = LocalContext.current
     var isConsoleRpcRunning by remember {
         mutableStateOf(consoleRpcRunning)
@@ -535,14 +537,15 @@ fun GamesScreenPreview2() {
         onEvent = {},
         onBackPressed = {},
         state = GamesState.Error(stringResource(id = R.string.no_internet_connection)),
-        isSearchBarVisible = false,
-        serviceEnabled = false,
-        consoleRpcRunning = false,
-        otherRpcServicesRunning = false
-    )
-}
-@Preview
-@Composable
+        isSearchBarVisible = false,
+        serviceEnabled = false,
+        consoleRpcRunning = false,
+        otherRpcServicesRunning = false
+    )
+    ComposeTracing.markEnd()
+}
+@Preview
+@Composable
 fun GamesScreenPreview3() {
     GamesScreen(
         onEvent = {},
