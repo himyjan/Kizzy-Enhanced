@@ -1,27 +1,16 @@
 package com.my.kizzy.data.rpc
 
+import android.media.session.PlaybackState
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
-import android.media.session.PlaybackState
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.CUSTOM_ACTIVITY_TYPE
-import com.my.kizzy.data.rpc.Constants
-import javax.inject.Inject
+import jakarta.inject.Inject
 import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
-import kizzy.gateway.entities.presence.Activity
-import kizzy.gateway.entities.presence.ActivityButton
-import kizzy.gateway.entities.presence.Assets
-import kizzy.gateway.entities.presence.Metadata
-import kizzy.gateway.entities.presence.Party
-import kizzy.gateway.entities.presence.Presence
+import kizzy.gateway.entities.presence.*
 import kizzy.gateway.entities.presence.Timestamps
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.locks.ReentrantLock
@@ -671,7 +660,7 @@ class KizzyRPC @Inject constructor(
     private fun effectiveStatus(explicit: String?): String =
         explicit?.takeIf { it.isNotBlank() } ?: status?.takeIf { it.isNotBlank() } ?: "online"
 
-    suspend fun build() {
+    suspend fun build(forceRefresh: Boolean = false) {
         val cleanButtons = sanitizeButtons(buttons.takeIf { buttons.isNotEmpty() })
         presence = Presence(
             activities = listOf(
@@ -708,9 +697,9 @@ class KizzyRPC @Inject constructor(
         )
         // Remember the presence so we can re-apply after reconnect
         lastPresence = presence
-        connectToWebSocket()
+        connectToWebSocket(forceRefresh = forceRefresh)
     }
-    private suspend fun connectToWebSocket() {
+    private suspend fun connectToWebSocket(forceRefresh: Boolean = false) {
         // Refresh token and identify properties from prefs before connecting, so a
         // login that happened after DI (e.g. service auto-started before login) takes effect.
         refreshFromPrefs()
@@ -723,13 +712,16 @@ class KizzyRPC @Inject constructor(
             return
         }
         // Don't reconnect if already connected - prevents multiple concurrent WebSocket connections
-        // that cause Discord 4003 Not authenticated errors
-        if (discordWebSocket.isWebSocketConnected()) {
+        // that cause Discord 4003 Not authenticated errors. When forceRefresh is true
+        // (e.g. notification restart), we still send the presence on the existing connection.
+        if (discordWebSocket.isWebSocketConnected() && !forceRefresh) {
             logger.d("KizzyRPC", "WebSocket already connected, skipping connect")
             return
         }
-        discordWebSocket.connect()
-        markConnected()
+        if (!discordWebSocket.isWebSocketConnected()) {
+            discordWebSocket.connect()
+            markConnected()
+        }
         discordWebSocket.sendActivity(presence)
     }
 

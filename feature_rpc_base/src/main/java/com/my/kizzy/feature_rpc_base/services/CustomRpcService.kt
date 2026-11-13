@@ -31,16 +31,9 @@ import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import jakarta.inject.Inject
+import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class CustomRpcService : Service() {
@@ -80,6 +73,9 @@ class CustomRpcService : Service() {
             }
             if (ac == Constants.ACTION_RESTART_SERVICE) {
                 // Restart in place: re-read the RPC config and resend presence.
+                // forceRefresh=true ensures the presence is actually sent even
+                // when the WebSocket is already connected (build() otherwise
+                // returns early without sending).
                 val string = intent?.getStringExtra("RPC")
                 string?.takeIf { it.isNotBlank() }?.let {
                     rpcData = try {
@@ -88,7 +84,7 @@ class CustomRpcService : Service() {
                         null
                     }
                 }
-                sendPresenceAndNotification()
+                sendPresenceAndNotification(forceRefresh = true)
                 startConsoleDetectionIfNeeded()
                 return super.onStartCommand(intent, flags, startId)
             }
@@ -193,8 +189,12 @@ class CustomRpcService : Service() {
     /**
      * Builds the notification and sends the presence to Discord.
      * Extracted so both the initial start and the restart action can reuse it.
+     *
+     * @param forceRefresh when true, the presence is sent even if the WebSocket is
+     *   already connected (bypasses the "already connected" early return in
+     *   KizzyRPC.build()). Used by the notification restart button.
      */
-    private fun sendPresenceAndNotification() {
+    private fun sendPresenceAndNotification(forceRefresh: Boolean = false) {
         val stopIntent = Intent(this, CustomRpcService::class.java)
         stopIntent.action = Constants.ACTION_STOP_SERVICE
         val pendingIntent: PendingIntent = PendingIntent.getService(
@@ -270,7 +270,7 @@ class CustomRpcService : Service() {
                     setLargeImage(it.largeImg.toRpcImage(), it.largeText)
                     setSmallImage(it.smallImg.toRpcImage(), it.smallText)
                     setStreamUrl(it.url.ifEmpty { null })
-                    build()
+                    build(forceRefresh = forceRefresh)
                 }
             }
         }
