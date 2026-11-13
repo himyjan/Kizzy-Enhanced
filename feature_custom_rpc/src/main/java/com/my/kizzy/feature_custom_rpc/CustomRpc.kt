@@ -237,20 +237,23 @@ private fun RpcTextFieldsColumn(
                 isChecked = isCustomRpcEnabled,
                 enabled = !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning()
             ) {
-                isCustomRpcEnabled = !isCustomRpcEnabled
-                when (isCustomRpcEnabled) {
-                    true -> {
-                        context.stopService(Intent(context, AppDetectionService::class.java))
-                        context.stopMediaRpcService()
-                        context.stopService(Intent(context, ExperimentalRpc::class.java))
-                        val intent = Intent(context, CustomRpcService::class.java)
-                        val string = uiState.rpcConfig.dataToString()
-                        intent.putExtra("RPC", string)
-                        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = string
-                        context.startService(intent)
+                isCustomRpcEnabled = !isCustomRpcEnabled
+                when (isCustomRpcEnabled) {
+                    true -> {
+                        context.stopService(Intent(context, AppDetectionService::class.java))
+                        context.stopMediaRpcService()
+                        context.stopService(Intent(context, ExperimentalRpc::class.java))
+                        val intent = Intent(context, CustomRpcService::class.java)
+                        val string = uiState.rpcConfig.dataToString()
+                        intent.putExtra("RPC", string)
+                        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = string
+                        context.startService(intent)
+                    }
+
+                    false -> {
+                        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
+                        context.stopService(Intent(context, CustomRpcService::class.java))
                     }
-
-                    false -> context.stopService(Intent(context, CustomRpcService::class.java))
                 }
             }
         }
