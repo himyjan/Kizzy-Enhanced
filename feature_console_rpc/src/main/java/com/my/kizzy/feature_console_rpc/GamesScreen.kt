@@ -178,19 +178,20 @@ fun GamesScreen(
                         ) {
                             isConsoleRpcRunning = !isConsoleRpcRunning
                             when (isConsoleRpcRunning) {
-                                true -> {
-                                    val rpcString = if (intent.hasExtra("RPC")) {
-                                        intent.getStringExtra("RPC")
-                                    } else {
-                                        Json.encodeToString(
-                                            RpcConfig(
-                                                name = "Console RPC",
-                                                details = "Console RPC running",
-                                                type = "0",
-                                                status = "online",
-                                            )
-                                        )
-                                    }
+                                true -> {
+                                    Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
+                                    val rpcString = if (intent.hasExtra("RPC")) {
+                                        intent.getStringExtra("RPC")
+                                    } else {
+                                        Json.encodeToString(
+                                            RpcConfig(
+                                                name = "Console RPC",
+                                                details = "Console RPC running",
+                                                type = "0",
+                                                status = "online",
+                                            )
+                                        )
+                                    }
                                     Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = rpcString
                                     context.stopService(
                                         Intent(
