@@ -688,6 +688,10 @@ class ExperimentalRpc : Service() {
         )
 
         // Remember the presence for the RPC preview.
+        // The image urls are the ones that were actually resolved (and uploaded) for the
+        // presence above. Without them the preview of the Experimental RPC had no cover
+        // art, even though Discord showed it.
+        val (resolvedLargeImage, resolvedSmallImage) = kizzyRPC.currentImageUrls()
         LastPresence.rememberExperimental(
             com.my.kizzy.domain.model.rpc.RpcConfig(
                 name = finalName.orEmpty(),
@@ -698,6 +702,8 @@ class ExperimentalRpc : Service() {
                 timestampsStop = finalTimestamps?.end?.toString().orEmpty(),
                 largeText = finalLargeText.orEmpty(),
                 smallText = finalSmallText.orEmpty(),
+                largeImg = resolvedLargeImage.orEmpty(),
+                smallImg = resolvedSmallImage.orEmpty(),
                 button1 = kizzyRPC.currentButtons()?.getOrNull(0)?.label.orEmpty(),
                 button1link = kizzyRPC.currentButtons()?.getOrNull(0)?.url.orEmpty(),
                 button2 = kizzyRPC.currentButtons()?.getOrNull(1)?.label.orEmpty(),
