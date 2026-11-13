@@ -78,6 +78,11 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="privacy_policy_desc">Check the Privacy Policy</string>
     <string name="enable_console_rpc">Enable Console RPC</string>
+    <string name="console_auto_detect">Auto-detect DroidDeck / Eden</string>
+    <string name="console_include_spoofed">Include spoofed builds</string>
+    <string name="console_detected">Detected</string>
+    <string name="console_detected_in_game">In game</string>
+    <string name="console_detected_hint">Tap to use this game for Console RPC</string>
     <string name="rpc_settings_button_configs">Button configuration for Media and AppDetection RPC</string>
     <string name="use_custom_buttons">Use Custom Buttons</string>
     <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
@@ -97,6 +102,16 @@
     <string name="user_data_policy">This app does not collect any user data</string>
     <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions
         to make sure all the features of the app work.</string>
+    <string name="discord_setup_title">Before you start</string>
+    <string name="discord_setup_desc">Make sure Discord allows your activity to show on your profile.</string>
+    <string name="discord_step1_title">Step 1: Open Privacy Settings</string>
+    <string name="discord_step1_content">Open the Discord app → tap your You (profile picture) icon → tap Settings (⚙️) → scroll down and tap Content &amp; Social (or Activity Privacy on older app versions).</string>
+    <string name="discord_step2_title">Step 2: Turn On Activity Sharing</string>
+    <string name="discord_step2_content">Find Share my activity and turn it ON. Under Where I Share Activity, select Share in all servers. Scroll to My Servers and turn ON the servers where you want your status visible.</string>
+    <string name="discord_step3_title">Step 3: Check Your Online Status</string>
+    <string name="discord_step3_content">Tap your Status (below your username) and select Online, Idle, or Do Not Disturb. ⚠️ Do not use Invisible — Discord hides Kizzy activity when you are Invisible.</string>
+    <string name="discord_tip_title">Can&apos;t find &quot;Share my activity&quot;?</string>
+    <string name="discord_tip_content">Some Discord mobile versions hide this toggle. Open discord.com in Chrome → enable Desktop site → log in → Settings (⚙️) → Activity Privacy → turn on Share my activity.</string>
     <string name="permission_granted">Granted</string>
     <string name="permission_not_granted">Not Granted, Click to Allow</string>
     <string name="activity_large_text">Activity Large Text</string>
