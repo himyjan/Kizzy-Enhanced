@@ -244,13 +244,13 @@ class MediaRpcService : Service() {
         stopTimelineUpdates()
         timelineJob.value = scope.launch {
             while (isActive) {
-                delay(1000)
+                // 2-second tick instead of 1 second: the CPU wakes half as often
+                // while media is playing, saving battery. Discord's progress bar
+                // does not need 1-second precision, and the presence update is
+                // deduplicated anyway - only a real seek is sent to the gateway.
+                delay(2000)
                 if (!isPaused && kizzyRPC.isRpcRunning()) {
                     withWakeLock {
-                        // One read per tick: updatePresence() refreshes the notification and
-                        // the presence from the same snapshot. The presence itself is
-                        // deduplicated, so a playing track does not hit the gateway every
-                        // second - only a seek (timeline jump) is actually sent.
                         updatePresence()
                     }
                 }
