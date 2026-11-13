@@ -242,6 +242,8 @@ internal fun ComponentActivity.Kizzy(
                     onEvent = { viewModel.onUiEvent(it) },
                     isSearchBarVisible = viewModel.isSearchBarVisible.value,
                     state = viewModel.state.value,
+                    consoleRpcRunning = viewModel.consoleRpcRunning.value,
+                    otherRpcServicesRunning = viewModel.otherRpcServicesRunning.value,
                     detectedConsole = viewModel.detected.value,
                     autoDetect = viewModel.autoDetect.value,
                     onToggleAutoDetect = viewModel::toggleAutoDetect,
