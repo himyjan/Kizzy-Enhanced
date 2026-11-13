@@ -48,6 +48,7 @@ import com.my.kizzy.feature_media_rpc.MediaRPC
 import com.my.kizzy.feature_media_rpc.MediaScreenViewModel
 import com.my.kizzy.feature_profile.ui.login.LoginScreen
 import com.my.kizzy.feature_profile.ui.component.RpcPreviewScreen
+import com.my.kizzy.feature_profile.ui.component.RpcPreviewViewModel
 import com.my.kizzy.feature_profile.ui.user.UserScreen
 import com.my.kizzy.feature_profile.ui.user.UserState
 import com.my.kizzy.feature_profile.ui.user.UserViewModel
@@ -58,8 +59,6 @@ import com.my.kizzy.feature_settings.style.DarkThemePreferences
 import com.my.kizzy.feature_startup.StartUp
 import com.my.kizzy.navigation.Routes
 import com.my.kizzy.preference.Prefs
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import xyz.dead8309.feature_experimental_rpc.ExperimentalRpcScreen
 import xyz.dead8309.feature_experimental_rpc.ExperimentalRpcViewmodel
 import xyz.dead8309.feature_experimental_rpc.apps.ExperimentalRpcAppsScreen
@@ -199,7 +198,10 @@ internal fun ComponentActivity.Kizzy(
                             }
                             val userId = user?.id ?: ""
                             val avatarUrl = user?.getAvatarImage() ?: ""
-                            val encodedAvatarUrl = java.net.URLEncoder.encode(avatarUrl, java.nio.charset.StandardCharsets.UTF_8.toString())
+                            // Uri.encode (not URLEncoder): URLEncoder turns a space into
+                            // "+", which the navigation route does not decode back, so
+                            // "Penthouse Rules" was shown as "Penthouse+Rules".
+                            val encodedAvatarUrl = android.net.Uri.encode(avatarUrl)
                             val rpcConfig = when (currentState) {
                                 is UserState.LoadingCompleted -> currentState.rpcConfig
                                 is UserState.Error -> currentState.rpcConfig
@@ -211,15 +213,14 @@ internal fun ComponentActivity.Kizzy(
                             // the hand written json did not match the model, so
                             // the preview showed nothing.
                             val encodedRpcConfig = if (rpcConfig != null) {
-                                java.net.URLEncoder.encode(
+                                android.net.Uri.encode(
                                     kotlinx.serialization.json.Json {
                                         ignoreUnknownKeys = true
                                         encodeDefaults = true
                                     }.encodeToString(
                                         com.my.kizzy.domain.model.rpc.RpcConfig.serializer(),
                                         rpcConfig
-                                    ),
-                                    java.nio.charset.StandardCharsets.UTF_8.toString()
+                                    )
                                 )
                             } else ""
                             navController.navigate("${Routes.RPC_PREVIEW}/$userId/$encodedAvatarUrl/$encodedRpcConfig")
@@ -297,25 +298,16 @@ internal fun ComponentActivity.Kizzy(
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 val avatarUrl = backStackEntry.arguments?.getString("avatarUrl") ?: ""
-                val rpcConfigParam = backStackEntry.arguments?.getString("rpcConfig") ?: ""
-                // The navigation library already decodes the arguments of the
-                // route, so decoding them a second time broke the json.
-                val decodedRpcConfig = if (rpcConfigParam.isNotBlank()) {
-                    try {
-                        kotlinx.serialization.json.Json {
-                            ignoreUnknownKeys = true
-                            encodeDefaults = true
-                        }.decodeFromString<com.my.kizzy.domain.model.rpc.RpcConfig>(rpcConfigParam)
-                    } catch (_: Exception) {
-                        null
-                    }
-                } else {
-                    null
-                }
+                // The route argument is only a snapshot of the presence at the
+                // moment the page was opened. The ViewModel decodes it and, while
+                // Media RPC runs, replaces the media fields with the live ones so
+                // the next song, seek and pause state show up here too.
+                val previewViewModel = hiltViewModel<RpcPreviewViewModel>(backStackEntry)
+                val rpcConfig by previewViewModel.rpcConfig.collectAsState()
                 RpcPreviewScreen(
                     userId = userId,
                     avatarUrl = avatarUrl,
-                    rpcConfig = decodedRpcConfig,
+                    rpcConfig = rpcConfig,
                     onBackPressed = { navController.popBackStack() }
                 )
             }

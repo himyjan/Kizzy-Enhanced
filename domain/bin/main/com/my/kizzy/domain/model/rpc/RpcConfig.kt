@@ -56,4 +56,11 @@ data class RpcConfig(
     val partyMaxSize: String = "",
     @SerialName("platform")
     val platform: String = "",
+    // Media RPC only: playback is paused right now, and where it was paused.
+    // The preview needs both to freeze the timeline instead of letting the
+    // wall clock keep counting while the track is not playing.
+    @SerialName("paused")
+    val paused: Boolean = false,
+    @SerialName("pausedPositionMs")
+    val pausedPositionMs: Long? = null,
 )

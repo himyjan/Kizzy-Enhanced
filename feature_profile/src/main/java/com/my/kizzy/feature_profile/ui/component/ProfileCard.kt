@@ -193,17 +193,6 @@ fun ProfileCard(
                         bold = false
                     )
                 }
-                ProfileText(
-                    text = when (rpcConfig?.type?.toIntOrNull()) {
-                        2 -> stringResource(R.string.activity_listening_title, rpcConfig?.name.orEmpty().ifEmpty { "music" })
-                        3 -> stringResource(R.string.activity_watching_title, rpcConfig?.name.orEmpty().ifEmpty { "video" })
-                        else -> if (rpcConfig?.name.isNullOrEmpty() || rpcConfig?.name == "Kizzy")
-                            type
-                        else
-                            stringResource(R.string.activity_playing_title)
-                    },
-                    style = MaterialTheme.typography.titleSmall
-                )
                 ActivityRow(
                     rpcConfig = rpcConfig,
                     showTs = showTs,
