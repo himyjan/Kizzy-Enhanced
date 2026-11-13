@@ -4,7 +4,7 @@ import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 /**
  * Returns the package of the app that is in the foreground right now.
