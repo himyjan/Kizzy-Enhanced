@@ -5,7 +5,14 @@ import kotlinx.coroutines.CoroutineScope
 
 sealed interface DiscordWebSocket : CoroutineScope {
     suspend fun connect()
-    suspend fun sendActivity(presence: Presence)
+
+    /**
+     * Sends a presence update.
+     *
+     * @return true when the payload was handed to the socket, false when the
+     *         connection was not ready (the caller must keep its cache and retry).
+     */
+    suspend fun sendActivity(presence: Presence): Boolean
     fun isWebSocketConnected(): Boolean
     fun close()
 

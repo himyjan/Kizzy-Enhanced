@@ -19,6 +19,7 @@ import kizzy.gateway.entities.op.OpCode.*
 import kizzy.gateway.entities.presence.Assets
 import kizzy.gateway.entities.presence.Activity
 import kizzy.gateway.entities.presence.ActivityButton
+import kizzy.gateway.entities.presence.Metadata
 import kizzy.gateway.entities.presence.Presence
 import kizzy.gateway.entities.presence.Timestamps
 import kotlinx.coroutines.*
@@ -408,8 +409,9 @@ open class DiscordWebSocketImpl(
         return websocket?.incoming != null && websocket?.outgoing?.isClosedForSend == false
     }
 
-    private suspend inline fun <reified T> send(op: OpCode, d: T?) {
-        if (websocket?.isActive == true) {
+    private suspend inline fun <reified T> send(op: OpCode, d: T?): Boolean {
+        val socket = websocket
+        if (socket?.isActive == true) {
             val payload = json.encodeToString(
                 OutgoingPayload(
                     op = op,
@@ -417,8 +419,10 @@ open class DiscordWebSocketImpl(
                 )
             )
             logger.d("Gateway", "Outgoing op:$op: $payload")
-            websocket?.send(Frame.Text(payload))
+            socket.send(Frame.Text(payload))
+            return true
         }
+        return false
     }
 
     override fun close() {
@@ -442,7 +446,7 @@ open class DiscordWebSocketImpl(
         logger.e("Gateway", "Connection to gateway closed")
     }
 
-    override suspend fun sendActivity(presence: Presence) {
+    override suspend fun sendActivity(presence: Presence): Boolean {
         val connectedInTime = withTimeoutOrNull(CONNECT_WAIT_TIMEOUT_MS) {
             while (!isSocketConnectedToAccount()) {
                 delay(250.milliseconds)
@@ -451,13 +455,18 @@ open class DiscordWebSocketImpl(
         }
         if (connectedInTime != true) {
             logger.w("Gateway", "Socket not connected within timeout — dropping presence update")
-            return
+            return false
         }
         logger.i("Gateway", "Sending $PRESENCE_UPDATE")
-        send(
-            op = PRESENCE_UPDATE,
-            d = presence
-        )
+        return runCatching {
+            send(
+                op = PRESENCE_UPDATE,
+                d = presence
+            )
+        }.getOrElse { e ->
+            logger.e("Gateway", "Failed to send presence: ${e.message ?: ""}")
+            false
+        }
     }
 
     suspend fun updatePresence(
@@ -487,6 +496,10 @@ open class DiscordWebSocketImpl(
             Assets(largeImage = largeImageKey, smallImage = smallImageKey, largeText = largeText, smallText = smallText)
         } else null
 
+        // Client-presence format: labels in buttons, urls in metadata.
+        val btnLabels = buttons?.map { it.label }
+        val btnMetadata = buttons?.let { Metadata(buttonUrls = it.map { it.url }) }
+
         val activity = Activity(
             name = name,
             type = 0,
@@ -494,7 +507,8 @@ open class DiscordWebSocketImpl(
             details = details,
             timestamps = timestamps,
             assets = assets,
-            buttons = buttons
+            buttons = btnLabels,
+            metadata = btnMetadata
         )
 
         val presence = Presence(
