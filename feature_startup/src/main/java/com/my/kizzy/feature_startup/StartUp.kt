@@ -65,7 +65,6 @@ import com.my.kizzy.preference.getLanguageDesc
 import com.my.kizzy.preference.languages
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.Subtitle
-import androidx.compose.runtime.tracing.ComposeTracing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +75,6 @@ fun StartUp(
     navigateToLogin: () -> Unit = {},
     navigateToHome: () -> Unit = {}
 ) {
-    ComposeTracing.markStart("StartUp")
     val user = Prefs.getUser()
     val context = LocalContext.current
     var storagePermissionGranted by remember {
@@ -402,5 +400,4 @@ private fun DiscordSetupStep(
             )
         }
     }
-    ComposeTracing.markEnd()
 }
