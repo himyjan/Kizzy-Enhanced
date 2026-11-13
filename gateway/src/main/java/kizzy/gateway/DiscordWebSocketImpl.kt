@@ -19,6 +19,7 @@ import kizzy.gateway.entities.op.OpCode.*
 import kizzy.gateway.entities.presence.Assets
 import kizzy.gateway.entities.presence.Activity
 import kizzy.gateway.entities.presence.ActivityButton
+import kizzy.gateway.entities.presence.Metadata
 import kizzy.gateway.entities.presence.Presence
 import kizzy.gateway.entities.presence.Timestamps
 import kotlinx.coroutines.*
@@ -487,6 +488,10 @@ open class DiscordWebSocketImpl(
             Assets(largeImage = largeImageKey, smallImage = smallImageKey, largeText = largeText, smallText = smallText)
         } else null
 
+        // Client-presence format: labels in buttons, urls in metadata.
+        val btnLabels = buttons?.map { it.label }
+        val btnMetadata = buttons?.let { Metadata(buttonUrls = it.map { it.url }) }
+
         val activity = Activity(
             name = name,
             type = 0,
@@ -494,7 +499,8 @@ open class DiscordWebSocketImpl(
             details = details,
             timestamps = timestamps,
             assets = assets,
-            buttons = buttons
+            buttons = btnLabels,
+            metadata = btnMetadata
         )
 
         val presence = Presence(
