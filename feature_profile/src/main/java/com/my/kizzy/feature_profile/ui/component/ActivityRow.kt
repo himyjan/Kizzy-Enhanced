@@ -76,7 +76,9 @@ fun ActivityRow(
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(1000)
+            // 2-second tick instead of 1 second: reduces UI recompositions
+            // by 50% while the profile screen is visible and media is playing.
+            delay(2000)
             val now = System.currentTimeMillis()
             val cfg = latestRpcConfig
             val type = cfg?.type?.toIntOrNull()
