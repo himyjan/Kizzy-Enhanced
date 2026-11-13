@@ -12,13 +12,13 @@
 
 package com.my.kizzy.domain.use_case.get_games
 
-import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.model.Game
+import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.repository.KizzyRepository
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
-import javax.inject.Inject
 
 class GetGamesUseCase @Inject constructor(
     private val kizzyRepository: KizzyRepository
