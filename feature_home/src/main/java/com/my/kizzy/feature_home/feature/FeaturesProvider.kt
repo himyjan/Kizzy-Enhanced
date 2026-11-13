@@ -67,13 +67,14 @@ fun homeFeaturesProvider(
             onClick = {
                 navigateTo(it)
             },
-            onCheckedChange = {
-                if (it) {
-                    val lastRpc = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                    val intent = Intent(ctx, CustomRpcService::class.java)
-                    intent.apply {
-                        putExtra("RPC", lastRpc)
-                    }
+            onCheckedChange = {
+                if (it) {
+                    val lastRpc = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                    val intent = Intent(ctx, CustomRpcService::class.java)
+                    intent.apply {
+                        putExtra("RPC", lastRpc)
+                    }
+                    Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
                     ctx.stopMediaRpcService()
                     ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
                     ctx.stopService(Intent(ctx, AppDetectionService::class.java))
@@ -92,17 +93,20 @@ fun homeFeaturesProvider(
             route = Routes.CONSOLE_RPC,
             isChecked = AppUtils.customRpcRunning(),
             onClick = { navigateTo(it) },
-            onCheckedChange = {
-                if (it) {
-                    val lastRpc = Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
-                    val intent = Intent(ctx, CustomRpcService::class.java)
-                    intent.putExtra("RPC", lastRpc)
-                    ctx.stopMediaRpcService()
-                    ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
-                    ctx.stopService(Intent(ctx, AppDetectionService::class.java))
-                    ctx.startService(intent)
-                } else
-                    ctx.stopService(Intent(ctx, CustomRpcService::class.java))
+            onCheckedChange = {
+                if (it) {
+                    val lastRpc = Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
+                    val intent = Intent(ctx, CustomRpcService::class.java)
+                    intent.putExtra("RPC", lastRpc)
+                    intent.putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, true)
+                    ctx.stopMediaRpcService()
+                    ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
+                    ctx.stopService(Intent(ctx, AppDetectionService::class.java))
+                    ctx.startService(intent)
+                } else {
+                    Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
+                    ctx.stopService(Intent(ctx, CustomRpcService::class.java))
+                }
             },
             shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
             showSwitch = true,

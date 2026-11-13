@@ -242,6 +242,11 @@ internal fun ComponentActivity.Kizzy(
                     onEvent = { viewModel.onUiEvent(it) },
                     isSearchBarVisible = viewModel.isSearchBarVisible.value,
                     state = viewModel.state.value,
+                    detectedConsole = viewModel.detected.value,
+                    autoDetect = viewModel.autoDetect.value,
+                    onToggleAutoDetect = viewModel::toggleAutoDetect,
+                    includeSpoofed = viewModel.includeSpoofed.value,
+                    onToggleIncludeSpoofed = viewModel::toggleIncludeSpoofed,
                 )
             }
             composable(Routes.LANGUAGES) {

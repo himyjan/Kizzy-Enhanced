@@ -11,6 +11,7 @@ android {
 
 dependencies {
     implementation (projects.featureRpcBase)
+    implementation (projects.data)
     implementation (libs.material.icons.extended)
     implementation (libs.coil)
     implementation(libs.coil.network)

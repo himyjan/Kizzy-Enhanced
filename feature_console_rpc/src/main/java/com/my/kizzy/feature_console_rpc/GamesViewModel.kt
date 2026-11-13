@@ -5,7 +5,7 @@
  *  *  * GamesViewModel.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
+ *  *****************************************************************
  *
  *
  */
@@ -18,22 +18,42 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.my.kizzy.data.get_current_data.app.GetForegroundPackage
+import com.my.kizzy.data.rpc.ActiveGameTracker
+import com.my.kizzy.data.rpc.ConsoleAppRegistry
+import com.my.kizzy.data.rpc.ConsoleGameCatalog
 import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.use_case.get_games.GetGamesUseCase
+import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+/**
+ * A DroidDeck/Eden instance that is currently open.
+ */
+data class DetectedConsole(
+    val platformName: String,
+    val packageName: String,
+    val gameTitle: String?,
+    val largeImage: String?,
+    val smallImage: String?,
+)
 
 @HiltViewModel
 class GamesViewModel @Inject constructor(
     private val getGamesUseCase: GetGamesUseCase,
+    private val foregroundPackage: GetForegroundPackage,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -42,18 +62,32 @@ class GamesViewModel @Inject constructor(
     private val games = mutableListOf<Game>()
     val isSearchBarVisible = mutableStateOf(false)
 
+    /** DroidDeck/Eden currently in the foreground, if any. */
+    private val _detected = mutableStateOf<DetectedConsole?>(null)
+    val detected: State<DetectedConsole?> = _detected
+
+    val autoDetect = mutableStateOf(Prefs[Prefs.CONSOLE_RPC_AUTO_DETECT, true])
+    val includeSpoofed = mutableStateOf(Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false])
+
     private var searchJob: Job? = null
+    private var detectionJob: Job? = null
 
     init {
         getGames()
+        observeConsoleForeground()
     }
 
     private fun getGames() {
         getGamesUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = GamesState.Success(games = result.data ?: emptyList())
-                    games.addAll(result.data ?: emptyList())
+                    val freshGames = result.data ?: emptyList()
+                    games.clear()
+                    games.addAll(freshGames)
+                    _state.value = GamesState.Success(games = freshGames)
+                    // The service reuses this catalog to attach cover art to an
+                    // automatically detected game without fetching it again.
+                    ConsoleGameCatalog.update(freshGames)
                 }
 
                 is Resource.Error -> {
@@ -69,12 +103,69 @@ class GamesViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    /**
+     * Watches the foreground app while the screen is open.
+     *
+     * The heavy lookup runs on IO; the Compose state is written on the main
+     * thread so it cannot race with composition.
+     */
+    private fun observeConsoleForeground() {
+        detectionJob?.cancel()
+        detectionJob = viewModelScope.launch {
+            while (isActive) {
+                val detected = withContext(Dispatchers.IO) { readDetectedConsole() }
+                _detected.value = detected
+                delay(DETECTION_INTERVAL_MS)
+            }
+        }
+    }
+
+    private fun readDetectedConsole(): DetectedConsole? {
+        val includeSpoofed = Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false]
+        val foreground = foregroundPackage()
+        // While the Console RPC screen itself is open, Kizzy is the foreground
+        // app and the launcher cannot be seen. Fall back to the launcher that
+        // most recently posted a game notification so the card still shows
+        // what will be used when the user starts Console RPC.
+        val packageName = when {
+            ConsoleAppRegistry.isKnown(foreground, includeSpoofed) -> foreground
+            foreground == null || foreground in SELF_PACKAGES ->
+                ActiveGameTracker.currentPackage()
+            else -> null
+        }
+        val console = ConsoleAppRegistry.resolve(packageName, includeSpoofed) ?: return null
+        val title = ActiveGameTracker.titleFor(console.packageName)
+        val game = ConsoleGameCatalog.match(title)
+        return DetectedConsole(
+            platformName = console.platform.displayName,
+            packageName = console.packageName,
+            gameTitle = title,
+            largeImage = game?.large_image,
+            smallImage = game?.small_image,
+        )
+    }
+
     fun onUiEvent(uiEvent: UiEvent) {
         when (uiEvent) {
             UiEvent.CloseSearchBar -> isSearchBarVisible.value = false
             UiEvent.OpenSearchBar -> isSearchBarVisible.value = true
             is UiEvent.Search -> onSearch(uiEvent.query)
             UiEvent.TryAgain -> getGames()
+        }
+    }
+
+    fun toggleAutoDetect(enabled: Boolean) {
+        autoDetect.value = enabled
+        Prefs[Prefs.CONSOLE_RPC_AUTO_DETECT] = enabled
+    }
+
+    fun toggleIncludeSpoofed(enabled: Boolean) {
+        includeSpoofed.value = enabled
+        Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED] = enabled
+        // Refresh immediately so the currently open launcher appears/disappears
+        // without waiting for the next poll.
+        viewModelScope.launch {
+            _detected.value = withContext(Dispatchers.IO) { readDetectedConsole() }
         }
     }
 
@@ -94,12 +185,9 @@ class GamesViewModel @Inject constructor(
         }
         _state.value = GamesState.Success(games = newList)
     }
+
+    private companion object {
+        const val DETECTION_INTERVAL_MS = 2000L
+        val SELF_PACKAGES = setOf("com.my.kizzy", "com.my.kizzy.enhanced", "com.discord")
+    }
 }
-
-
-
-
-
-
-
-

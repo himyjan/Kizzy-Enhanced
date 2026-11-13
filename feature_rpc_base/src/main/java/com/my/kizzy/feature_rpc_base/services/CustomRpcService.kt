@@ -20,14 +20,23 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
+import com.my.kizzy.data.get_current_data.app.GetForegroundPackage
+import com.my.kizzy.data.rpc.ActiveGameTracker
+import com.my.kizzy.data.rpc.ConsoleAppRegistry
+import com.my.kizzy.data.rpc.ConsoleGameCatalog
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.setLargeIcon
+import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -42,7 +51,16 @@ class CustomRpcService : Service() {
     lateinit var kizzyRPC: com.my.kizzy.data.rpc.KizzyRPC
 
     @Inject
+    lateinit var foregroundPackage: GetForegroundPackage
+
+    @Inject
     lateinit var scope: CoroutineScope
+
+    /** True when this service instance was started by the Console RPC screen. */
+    private var consoleMode = false
+
+    /** Polls the foreground app while Console RPC should follow DroidDeck/Eden. */
+    private var consoleDetectionJob: Job? = null
 
     @Inject
     lateinit var notificationBuilder: Notification.Builder
@@ -53,6 +71,8 @@ class CustomRpcService : Service() {
     @SuppressLint("WakelockTimeout")
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let { readConsoleMode(it) }
+
         intent?.action?.let { ac ->
             if (ac == Constants.ACTION_STOP_SERVICE) {
                 stopSelf()
@@ -69,6 +89,7 @@ class CustomRpcService : Service() {
                     }
                 }
                 sendPresenceAndNotification()
+                startConsoleDetectionIfNeeded()
                 return super.onStartCommand(intent, flags, startId)
             }
         }
@@ -83,7 +104,90 @@ class CustomRpcService : Service() {
         }
 
         sendPresenceAndNotification()
+        startConsoleDetectionIfNeeded()
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    /**
+     * Console RPC and Custom RPC share this service. The screen marks its
+     * intent so the service only starts the DroidDeck/Eden watcher for a
+     * Console RPC session.
+     */
+    private fun readConsoleMode(intent: Intent) {
+        if (intent.hasExtra(EXTRA_CONSOLE_RPC)) {
+            consoleMode = intent.getBooleanExtra(EXTRA_CONSOLE_RPC, false)
+        } else if (
+            intent.action != Constants.ACTION_RESTART_SERVICE &&
+            intent.action != Constants.ACTION_STOP_SERVICE
+        ) {
+            // A normal start without the marker is a Custom RPC session. The
+            // same service instance may still be running from a Console RPC
+            // session, so the watcher has to be switched off.
+            consoleMode = false
+        }
+        if (!consoleMode) {
+            consoleDetectionJob?.cancel()
+            consoleDetectionJob = null
+        }
+    }
+
+    /**
+     * Starts the watcher that keeps the presence on the game DroidDeck/Eden is
+     * running. It is only active for Console RPC and only while the user has
+     * not switched the auto-detection off.
+     */
+    private fun startConsoleDetectionIfNeeded() {
+        if (!consoleMode) return
+        if (!Prefs[Prefs.CONSOLE_RPC_AUTO_DETECT, true]) return
+        if (consoleDetectionJob?.isActive == true) return
+
+        consoleDetectionJob = scope.launch {
+            while (isActive) {
+                try {
+                    if (Prefs[Prefs.CONSOLE_RPC_AUTO_DETECT, true]) {
+                        refreshDetectedConsole()
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // Detection must never take the RPC service down.
+                }
+                delay(CONSOLE_DETECTION_INTERVAL_MS)
+            }
+        }
+    }
+
+    /**
+     * Reads the foreground app and, when it is DroidDeck or Eden, replaces the
+     * console presence with the game that the launcher reports.
+     *
+     * Only a change is sent. When the user switches to a different app the
+     * last detected game stays on Discord, which is the expected behaviour for
+     * a console presence.
+     */
+    private fun refreshDetectedConsole() {
+        val current = rpcData ?: return
+        val includeSpoofed = Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false]
+        val packageName = foregroundPackage() ?: return
+        val console = ConsoleAppRegistry.resolve(packageName, includeSpoofed) ?: return
+
+        val gameTitle = ActiveGameTracker.titleFor(packageName) ?: return
+        val matchedGame = ConsoleGameCatalog.match(gameTitle)
+        val platformName = console.platform.displayName
+
+        val updated = current.copy(
+            name = platformName,
+            details = gameTitle,
+            type = "0",
+            largeImg = matchedGame?.large_image.orEmpty(),
+            smallImg = matchedGame?.small_image.orEmpty(),
+        )
+
+        if (updated == current) return
+
+        rpcData = updated
+        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = Json.encodeToString(updated)
+        sendPresenceAndNotification()
     }
 
     /**
@@ -100,6 +204,7 @@ class CustomRpcService : Service() {
         val restartIntent = Intent(this, CustomRpcService::class.java)
         restartIntent.action = Constants.ACTION_RESTART_SERVICE
         restartIntent.putExtra("RPC", if (rpcData != null) Json.encodeToString(rpcData) else "")
+        restartIntent.putExtra(EXTRA_CONSOLE_RPC, consoleMode)
         val restartPendingIntent: PendingIntent = PendingIntent.getService(
             this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -120,6 +225,10 @@ class CustomRpcService : Service() {
         )
 
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        // Auto-detection may update the presence several times. Releasing the
+        // previous lock first keeps the wake-lock count at one instead of
+        // stacking a new lock on every update.
+        wakeLock?.let { if (it.isHeld) it.release() }
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK)
         wakeLock?.acquire()
         scope.launch {
@@ -168,6 +277,8 @@ class CustomRpcService : Service() {
     }
 
     override fun onDestroy() {
+        consoleDetectionJob?.cancel()
+        consoleDetectionJob = null
         scope.cancel()
         kizzyRPC.closeRPC()
         wakeLock?.let {
@@ -182,5 +293,14 @@ class CustomRpcService : Service() {
 
     companion object {
         const val WAKELOCK = "kizzy:CustomRPC"
+
+        /**
+         * Marks an intent as belonging to Console RPC. Custom RPC uses the same
+         * service, so the DroidDeck/Eden watcher must only run for console
+         * sessions.
+         */
+        const val EXTRA_CONSOLE_RPC = "CONSOLE_RPC"
+
+        private const val CONSOLE_DETECTION_INTERVAL_MS = 2500L
     }
 }
