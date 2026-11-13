@@ -27,18 +27,18 @@ subprojects {
     }
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
-            if (project.findProperty("composeCompilerReports") == "true") {
-                freeCompilerArgs.addAll(listOf(
-                    "-P",
-                    "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.layout.buildDirectory.asFile.get().absolutePath}/compose_compiler"
-                ))
-            }
-            if (project.findProperty("composeCompilerMetrics") == "true") {
-                freeCompilerArgs.addAll(listOf(
-                    "-P",
-                    "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.layout.buildDirectory.asFile.get().absolutePath}/compose_compiler"
-                ))
-            }
+            // Compose compiler reports and metrics are always enabled for
+            // performance tuning. Reports go to build/compose_compiler/ in each
+            // module; use them to find recomposition hot spots and unstable
+            // composables that cause wasted work (and battery drain).
+            freeCompilerArgs.addAll(listOf(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.layout.buildDirectory.asFile.get().absolutePath}/compose_compiler"
+            ))
+            freeCompilerArgs.addAll(listOf(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.layout.buildDirectory.asFile.get().absolutePath}/compose_compiler"
+            ))
         }
     }
     // The runtime bundle of a library (the jar/dir the app actually dexes) did not
