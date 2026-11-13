@@ -493,6 +493,15 @@ class MetadataResolver @Inject constructor(
         }
 
         // The page of the service that belongs to the artist.
+        // For multi-artist collaborations, build a combined search query
+        // from all parsed artists instead of passing the raw string
+        // ("Aimer feat. milet" -> "Aimer milet").
+        if (isMultiArtist && parsedCollaborators.isNotEmpty()) {
+            val combinedQuery = parsedCollaborators.joinToString(" ")
+            if (combinedQuery.isNotBlank()) {
+                return MediaServiceResolver.artistUrl(packageName, combinedQuery)
+            }
+        }
         return MediaServiceResolver.artistUrl(packageName, artist)
     }
 
