@@ -71,16 +71,41 @@ suspend fun HttpResponse.toAttachmentAsset(): String? {
 /**
  * Converts Bitmap to file
  * @param context Context
- * @param outputPathFolder Folder name for storing the png file eg (images, media, custom)
+ * @param outputPathFolder Folder name for storing the image file eg (images, media, custom)
+ * @param compressFormat PNG keeps transparency (app icons); JPEG is much smaller and is
+ *        used for album art. A 500x500 PNG cover was ~400 KB and blocked the presence
+ *        update on a slow connection for almost two seconds.
+ * @param quality compression quality for lossy formats
  */
-fun Bitmap?.toFile(context: Context, outputPathFolder: String): File {
+fun Bitmap?.toFile(
+    context: Context,
+    outputPathFolder: String,
+    compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG,
+    quality: Int = 100,
+): File {
     val dir = File(context.filesDir.toString() + File.separator + outputPathFolder)
     dir.mkdirs()
-    val image = File(dir, "Temp.png")
+    val extension = if (compressFormat == Bitmap.CompressFormat.JPEG) "jpg" else "png"
+    val image = File(dir, "Temp.$extension")
     FileOutputStream(image).use {
-        this?.compress(Bitmap.CompressFormat.PNG, 100, it)
+        this?.compress(compressFormat, quality, it)
     }
     return image
+}
+
+/**
+ * Scales the bitmap down so its largest side is at most [maxDimension].
+ *
+ * Album art is shown at a few dozen pixels in Discord, so uploading a full-size
+ * YouTube thumbnail (1280x720) wastes bandwidth and delays the presence update.
+ */
+fun Bitmap.scaleToMaxDimension(maxDimension: Int): Bitmap {
+    val largest = maxOf(width, height)
+    if (largest <= maxDimension || largest <= 0) return this
+    val scale = maxDimension.toFloat() / largest
+    val newWidth = (width * scale).toInt().coerceAtLeast(1)
+    val newHeight = (height * scale).toInt().coerceAtLeast(1)
+    return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
 }
 
 @Suppress("DEPRECATION")
