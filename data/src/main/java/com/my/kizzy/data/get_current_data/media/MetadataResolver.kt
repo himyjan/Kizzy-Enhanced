@@ -321,10 +321,36 @@ class MetadataResolver @Inject constructor(
     private fun extractYouTubeUrl(metadata: MediaMetadata): String? {
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
 
-        // Check METADATA_KEY_SOURCE_URL for any YouTube URL
+        // Try to extract video ID from METADATA_KEY_MEDIA_ID FIRST.
+        // YouTube Music ships media ids like "yt:video:VIDEO_ID" or "t:VIDEO_ID".
+        // This gives the direct watch URL https://youtu.be/VIDEO_ID instead of
+        // a search page. METADATA_KEY_SOURCE_URL often contains a search page
+        // (e.g. "youtube.com/results?search_query=..."), so it must not be
+        // preferred over the real video id.
+        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
+        if (!mediaId.isNullOrEmpty()) {
+            // Full watch url
+            if (mediaId.contains("youtube.com/watch?v=")) {
+                return mediaId
+            }
+            // youtu.be/VIDEO_ID
+            if (mediaId.contains("youtu.be/")) {
+                return mediaId
+            }
+            // yt:video:VIDEO_ID or t:VIDEO_ID
+            val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
+            if (id.isNotBlank() && id.length >= 11) {
+                return "https://youtu.be/$id"
+            }
+        }
+
+        // Check METADATA_KEY_SOURCE_URL for any YouTube URL, but skip search
+        // pages - they don't link to a specific video.
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be"))) {
-            return sourceUrl
+            if (!sourceUrl.contains("/results?search_query")) {
+                return sourceUrl
+            }
         }
 
         // Check custom keys that might contain YouTube URLs
@@ -341,26 +367,9 @@ class MetadataResolver @Inject constructor(
         for (key in youtubeKeys) {
             val value = metadata.getString(key)
             if (!value.isNullOrEmpty() && (value.contains("youtube.com") || value.contains("youtu.be"))) {
-                return value
-            }
-        }
-
-        // Try to extract video ID from METADATA_KEY_MEDIA_ID or similar.
-        // YouTube Music ships media ids like "yt:video:VIDEO_ID" or "t:VIDEO_ID".
-        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
-        if (!mediaId.isNullOrEmpty()) {
-            // Full watch url
-            if (mediaId.contains("youtube.com/watch?v=")) {
-                return mediaId
-            }
-            // youtu.be/VIDEO_ID
-            if (mediaId.contains("youtu.be/")) {
-                return mediaId
-            }
-            // yt:video:VIDEO_ID or t:VIDEO_ID
-            val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
-            if (id.isNotBlank() && id.length >= 11) {
-                return "https://youtu.be/$id"
+                if (!value.contains("/results?search_query")) {
+                    return value
+                }
             }
         }
 
@@ -399,12 +408,19 @@ class MetadataResolver @Inject constructor(
         val artist = metadataResolverArtistName(metadata)
         if (artist.isNullOrEmpty()) return null
 
+        val artists = getAllArtists(metadata)
+        val isMultiArtist = artists.size > 1
+
         // The real channel of the uploader, when the service publishes one.
         // For YouTube, extract the video id from the media id (e.g. "yt:video:VIDEO_ID")
         // and look it up in the oEmbed endpoint, which returns the real channel URL
         // (https://www.youtube.com/@handle or https://www.youtube.com/channel/UCxxxx).
         // Guessing "@artistName" does not work because the artist name is not the channel handle.
-        if (MediaServiceResolver.isYouTube(packageName)) {
+        //
+        // Only single-artist tracks get a direct channel link. For multi-artist
+        // videos (collaborations) there is no single channel, so a search page
+        // is the better fallback.
+        if (MediaServiceResolver.isYouTube(packageName) && !isMultiArtist) {
             val video = resolveYouTubeVideo(metadata)
             if (video != null && video.channelUrl.isNotBlank()) {
                 return video.channelUrl
@@ -412,7 +428,40 @@ class MetadataResolver @Inject constructor(
         }
 
         // The page of the service that belongs to the artist.
+        // For SoundCloud, when the session publishes a track URL like
+        // "https://soundcloud.com/artist/track", derive the artist URL
+        // "https://soundcloud.com/artist" instead of falling back to a search page.
+        if (packageName?.lowercase()?.contains("soundcloud") == true) {
+            val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
+            val artistUrl = soundcloudArtistUrl(sourceUrl)
+            if (artistUrl != null) return artistUrl
+        }
+
         return MediaServiceResolver.artistUrl(packageName, artist)
+    }
+
+    /**
+     * Derives a SoundCloud artist URL from a track URL.
+     *
+     * "https://soundcloud.com/artist-name/track-name" ->
+     *   "https://soundcloud.com/artist-name"
+     *
+     * Returns null when the URL is not a SoundCloud track URL.
+     */
+    private fun soundcloudArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("soundcloud.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val path = uri.path ?: return null
+            val segments = path.split("/").filter { it.isNotEmpty() }
+            // soundcloud.com/<artist>[/<track>] -> need at least the artist segment
+            if (segments.size < 1) return null
+            val artist = segments[0]
+            return "https://soundcloud.com/$artist"
+        } catch (_: Exception) {
+            return null
+        }
     }
 
     private fun metadataResolverArtistName(metadata: MediaMetadata): String? {
