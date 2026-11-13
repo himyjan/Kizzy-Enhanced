@@ -85,7 +85,7 @@ fun GamesScreen(
     state: GamesState,
     isSearchBarVisible: Boolean,
     serviceEnabled: Boolean = false,
-    consoleRpcRunning: Boolean = AppUtils.customRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning(),
+    consoleRpcRunning: Boolean = AppUtils.consoleRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning(),
     otherRpcServicesRunning: Boolean = AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning() || AppUtils.appDetectionRunning(),
 ) {
     val context = LocalContext.current
