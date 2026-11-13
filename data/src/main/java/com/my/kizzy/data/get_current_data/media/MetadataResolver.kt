@@ -159,6 +159,14 @@ class MetadataResolver @Inject constructor(
      * Returns null if no playable URL is found.
      */
     fun getMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
+        // YouTube apps: extract the video ID from METADATA_KEY_MEDIA_ID first
+        // (e.g. "yt:video:VIDEO_ID" or "t:VIDEO_ID") so we link directly to
+        // https://youtu.be/VIDEO_ID instead of a search page. sourceUrl often
+        // contains a search page URL which would be returned as-is.
+        if (MediaServiceResolver.isYouTube(packageName)) {
+            extractYouTubeUrl(metadata)?.let { return normalizeMediaUrl(it, packageName) }
+        }
+
         // Try standard source URL key first
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
