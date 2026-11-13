@@ -1,19 +1,19 @@
 [versions]
 # project level
-gradle = "9.9.0"
+gradle = "9.9.1"
 agp = "9.6.0-alpha03"
-kotlin = "2.4.21"
+kotlin = "2.5.0-RC"
 ksp = "2.3.13"
 version-name = "6.2-enhanced-0"
 version-code = "14"
 
 # app level
-activity-compose = "1.13.0"
+activity-compose = "1.14.0-alpha03"
 androidx-material = "1.14.0"
-androidxMacroBenchmark = "1.3.3"
+androidxMacroBenchmark = "1.6.0-alpha01"
 app-compat = "1.8.0"
 coil = "3.6.3"
-compose-bom = "2026.09.00"
+compose-bom = "2026.11.00"
 compose-navigation = "2.10.2"
 core-ktx = "1.19.1"
 datastore-preferences = "1.3.0"
@@ -50,7 +50,7 @@ activity-compose = { module = "androidx.activity:activity-compose", version.ref 
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 
 # Compose BOM (manages all androidx.compose.* versions)
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+compose-bom = { group = "androidx.compose", name = "compose-bom-alpha", version.ref = "compose-bom" }
 
 # Material3 — version from BOM
 material3 = { module = "androidx.compose.material3:material3" }
@@ -101,12 +101,13 @@ hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", ve
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workmanager" }
 hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 androidx-macro-benchmark = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidxMacroBenchmark" }
-androidx-test-ext-junit = { module = "androidx.test.ext:junit", version = "1.2.1" }
-androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.3.0" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version = "1.4.0-alpha03" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.4.1" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+android-test = { id = "com.android.test", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
