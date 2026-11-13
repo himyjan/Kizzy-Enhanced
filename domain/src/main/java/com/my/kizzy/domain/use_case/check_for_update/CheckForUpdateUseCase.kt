@@ -15,9 +15,9 @@ package com.my.kizzy.domain.use_case.check_for_update
 import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.model.release.Release
 import com.my.kizzy.domain.repository.KizzyRepository
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 class CheckForUpdateUseCase @Inject constructor(
     private val repository: KizzyRepository

@@ -13,8 +13,8 @@
 package com.my.kizzy.domain.use_case.upload_galleryImage
 
 import com.my.kizzy.domain.repository.KizzyRepository
+import jakarta.inject.Inject
 import java.io.File
-import javax.inject.Inject
 
 class UploadGalleryImageUseCase @Inject constructor(
     private val kizzyRepository: KizzyRepository
