@@ -1,9 +1,11 @@
 package com.my.kizzy.macrobenchmark
 
+import android.content.Intent
 import androidx.benchmark.junit.macro.BaselineProfileMode
 import androidx.benchmark.junit.macro.RepeatMode
 import androidx.benchmark.junit.macro.SamplingMode
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Until
@@ -36,32 +38,38 @@ class BaselineProfileGenerator {
         repeatMode = RepeatMode.RepeatMultiple,
         iterations = 3,
         setupBlock = {
+            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
             device.pressHome()
             device.waitForIdle()
         },
         blocks = listOf(
             // Block 1: Cold start - launch app and wait for home screen
             {
-                val context = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
-                    .targetContext
+                val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+                val context = InstrumentationRegistry.getInstrumentation().targetContext
                 val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)!!
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
                 device.waitForIdle()
-                // Wait for the home screen to be ready
-                device.wait(Until.hasObject(By.text("Kizzy")), 10_000)
+                // Wait for the home screen "Features" heading to appear
+                device.wait(Until.hasObject(By.text("Features")), 10_000)
             },
-            // Block 2: Open Media RPC screen
+            // Block 2: Open Media RPC screen (triggers media RPC service + presence composition)
             {
-                val mediaRpcButton = device.findObject(By.res("com.my.kizzy.enhanced:id/mediaRpcButton"))
-                if (mediaRpcButton != null) {
-                    mediaRpcButton.click()
+                val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+                val mediaRpcCard = device.findObject(By.text("Media RPC"))
+                if (mediaRpcCard != null) {
+                    mediaRpcCard.click()
                     device.waitForIdle()
                 }
             },
             // Block 3: Open Profile screen (triggers RPC preview composition)
             {
-                val profileButton = device.findObject(By.res("com.my.kizzy.enhanced:id/profileButton"))
+                val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+                // Return to home first, then open profile
+                device.pressHome()
+                device.waitForIdle()
+                val profileButton = device.findObject(By.desc("Person"))
                 if (profileButton != null) {
                     profileButton.click()
                     device.waitForIdle()
