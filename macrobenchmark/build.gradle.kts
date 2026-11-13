@@ -4,11 +4,11 @@ plugins {
 
 android {
     namespace = "com.my.kizzy.macrobenchmark"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 37
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // 🔓 Allow macrobenchmark to run on a rooted physical device
@@ -31,6 +31,7 @@ android {
             matchingFallbacks.add("debug")
         }
     }
+    compileSdkMinor = 1
 }
 
 dependencies {
