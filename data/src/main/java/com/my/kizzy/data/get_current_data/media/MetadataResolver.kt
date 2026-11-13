@@ -2,12 +2,12 @@ package com.my.kizzy.data.get_current_data.media
 
 import android.graphics.Bitmap
 import android.media.MediaMetadata
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
-import javax.inject.Inject
 import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.data.rpc.YouTubeResolver
 import com.my.kizzy.domain.interfaces.Logger
+import jakarta.inject.Inject
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class MetadataResolver @Inject constructor(
     private val logger: Logger,

@@ -11,14 +11,13 @@ import android.net.Uri
 import android.os.SystemClock
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.CommonRpc
-import com.my.kizzy.data.rpc.Constants.APPLICATION_ID
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class GetCurrentPlayingMedia @Inject constructor(
     private val metadataResolver: MetadataResolver,
