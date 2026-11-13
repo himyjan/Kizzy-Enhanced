@@ -18,6 +18,7 @@ import android.util.Log
 import com.my.kizzy.domain.repository.KizzyRepository
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.data.utils.getAppInfo
+import com.my.kizzy.data.utils.scaleToMaxDimension
 import com.my.kizzy.data.utils.toBitmap
 import com.my.kizzy.data.utils.toFile
 import kotlinx.coroutines.CoroutineScope
@@ -232,7 +233,12 @@ sealed class RpcImage {
             val upload = inFlightArtUploads.computeIfAbsent(schema) {
                 uploadScope.async {
                     try {
-                        val file = bmp.toFile(context, "art")
+                        // Album art: downscale and use JPEG. PNG kept the full size
+                        // (often ~400 KB) and the upload delayed the presence for seconds.
+                        // Discord renders the cover at well under 400 px, so 400 px q80
+                        // looks identical and uploads several times faster.
+                        val file = bmp.scaleToMaxDimension(400)
+                            .toFile(context, "art", Bitmap.CompressFormat.JPEG, 80)
                         if (!file.exists() || file.length() == 0L) {
                             runCatching { file.delete() }
                             return@async null

@@ -102,6 +102,10 @@ class GetCurrentPlayingMedia @Inject constructor(
             val artistEnabled = Prefs[Prefs.MEDIA_RPC_ARTIST_NAME, true]
             val albumEnabled = Prefs[Prefs.MEDIA_RPC_ALBUM_NAME, true]
             val showSongAsTitle = Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true]
+            // The "Show Cover Art" switch used to be written by the Media RPC screen
+            // but never read, so it had no effect. When it is off the whole artwork
+            // block below is skipped: no bitmap decoding and no image upload either.
+            val showCoverArt = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true]
 
             // Build state with multi-artist and multi-channel info.
             val stateParts = buildList {
@@ -123,19 +127,29 @@ class GetCurrentPlayingMedia @Inject constructor(
             // (not just STATE_PLAYING), so the bar keeps showing during buffering/connecting.
             // YouTube freezes position at lastPositionUpdateTime, so extrapolate by speed.
             val position = mediaController.playbackState?.position?.coerceAtLeast(0L) ?: 0L
-            if (position > 0L) {
+            val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L
+            // A track that just started reports position 0. It still has a timeline, so
+            // it is computed too - otherwise the very first presence of every track had
+            // no progress bar and a second presence had to follow a rate-limit wait later.
+            if (duration > 0L) {
                 var extrapolated = position
                 val lastUpdate = mediaController.playbackState?.lastPositionUpdateTime ?: 0L
-                if (lastUpdate > 0L) {
+                // Only advance the position while the track is actually playing.
+                // Players keep `lastPositionUpdateTime` from the pause moment, so
+                // extrapolating while paused made the timeline keep running even
+                // though nothing was playing.
+                if (isPlaybackActive(playbackState) && lastUpdate > 0L) {
                     val sinceUpdate = SystemClock.elapsedRealtime() - lastUpdate
                     val speed = mediaController.playbackState?.playbackSpeed?.takeIf { it > 0f } ?: 1f
                     extrapolated = (extrapolated + (sinceUpdate * speed).toLong()).coerceAtLeast(0L)
                 }
-                val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L
-                if (duration > 0L) extrapolated = extrapolated.coerceAtMost(duration)
+                extrapolated = extrapolated.coerceAtMost(duration)
                 val now = System.currentTimeMillis()
                 val start = now - extrapolated
-                timestamps = if (duration > 0L) Timestamps(start = start, end = start + duration) else Timestamps(start = start)
+                timestamps = Timestamps(start = start, end = start + duration)
+            } else if (position > 0L) {
+                val now = System.currentTimeMillis()
+                timestamps = Timestamps(start = now - position)
             }
 
             val appIcon = RpcImage.ApplicationIcon(
@@ -143,45 +157,49 @@ class GetCurrentPlayingMedia @Inject constructor(
             )
 
             var coverArt: RpcImage? = null
-            val bitmap = metadata?.let { metadataResolver.getCoverArt(it) }
-            if (bitmap != null) {
-                coverArt = RpcImage.BitmapImage(
-                    context = context,
-                    bitmap = bitmap,
-                    packageName = mediaController.packageName,
-                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
-                )
-                logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from ALBUM_ART/ART/DISPLAY_ICON)")
-            } else {
-                val artworkUri = metadata?.let { metadataResolver.getArtworkUri(it) }
-                if (artworkUri != null) {
-                    val parsedUri = Uri.parse(artworkUri)
-                    if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
-                        val bmp = runCatching {
-                            context.contentResolver.openInputStream(parsedUri)?.use { BitmapFactory.decodeStream(it) }
-                        }.getOrNull()
-                        if (bmp != null) {
-                            coverArt = RpcImage.BitmapImage(
-                                context = context,
-                                bitmap = bmp,
-                                packageName = mediaController.packageName,
-                                title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
-                            )
-                            logger.d("MediaImage", "YT '$title': coverBitmap=decodedBitmap(from artworkUri=$artworkUri), chosenCover=BitmapImage(decoded)")
+            if (showCoverArt) {
+                val bitmap = metadata?.let { metadataResolver.getCoverArt(it) }
+                if (bitmap != null) {
+                    coverArt = RpcImage.BitmapImage(
+                        context = context,
+                        bitmap = bitmap,
+                        packageName = mediaController.packageName,
+                        title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                    )
+                    logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from ALBUM_ART/ART/DISPLAY_ICON)")
+                } else {
+                    val artworkUri = metadata?.let { metadataResolver.getArtworkUri(it) }
+                    if (artworkUri != null) {
+                        val parsedUri = Uri.parse(artworkUri)
+                        if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
+                            val bmp = runCatching {
+                                context.contentResolver.openInputStream(parsedUri)?.use { BitmapFactory.decodeStream(it) }
+                            }.getOrNull()
+                            if (bmp != null) {
+                                coverArt = RpcImage.BitmapImage(
+                                    context = context,
+                                    bitmap = bmp,
+                                    packageName = mediaController.packageName,
+                                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                                )
+                                logger.d("MediaImage", "YT '$title': coverBitmap=decodedBitmap(from artworkUri=$artworkUri), chosenCover=BitmapImage(decoded)")
+                            } else {
+                                coverArt = artworkUri.toRpcImage()
+                                logger.d("MediaImage", "YT '$title': coverBitmap=artworkUri(artworkUri=$artworkUri), chosenCover=ImageUrl")
+                            }
                         } else {
                             coverArt = artworkUri.toRpcImage()
-                            logger.d("MediaImage", "YT '$title': coverBitmap=artworkUri(artworkUri=$artworkUri), chosenCover=ImageUrl")
+                            logger.d("MediaImage", "YT '$title': coverBitmap=null, artworkUri=$artworkUri, chosenCover=ImageUrl")
                         }
                     } else {
-                        coverArt = artworkUri.toRpcImage()
-                        logger.d("MediaImage", "YT '$title': coverBitmap=null, artworkUri=$artworkUri, chosenCover=ImageUrl")
+                        logger.d("MediaImage", "YT '$title': coverBitmap=null, chosenCover=null")
                     }
-                } else {
-                    logger.d("MediaImage", "YT '$title': coverBitmap=null, chosenCover=null")
                 }
+            } else {
+                logger.d("MediaImage", "YT '$title': cover art disabled by preference, skipping artwork")
             }
 
-            logger.d("MediaRPC", "Session '${mediaController.packageName}' title='$title' artist='$author' album=$album package=${mediaController.packageName} playbackState=${playbackState} coverBitmap=${bitmap != null}")
+            logger.d("MediaRPC", "Session '${mediaController.packageName}' title='$title' artist='$author' album=$album package=${mediaController.packageName} playbackState=${playbackState} coverArt=${coverArt != null}")
 
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
