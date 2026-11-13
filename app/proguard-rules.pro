@@ -109,7 +109,24 @@
 # ============================================================
 -dontskipnonpubliclibraryclassmembers
 
+# Full R8 analysis reports for build size/performance tuning
 -printconfiguration build/outputs/mapping/release/configuration.txt
 -printmapping build/outputs/mapping/release/mapping.txt
 -printseeds build/outputs/mapping/release/seeds.txt
 -printusage build/outputs/mapping/release/usage.txt
+
+# Keep classes referenced via reflection by Kotlin serialization
+-keepclassmembers class kotlinx.serialization.** {
+    <fields>;
+}
+
+# Keep descriptor classes needed for reflection-based serialization
+-keepnames class kotlinx.serialization.internal.** { *; }
+
+# Preserve parameter names for better stack trace readability
+-keepattributes SourceFile,LineNumberTable
+
+# Keep annotations used by Hilt for reliable DI
+-keep @interface dagger.hilt.android.EntryPoint
+-keep @interface dagger.hilt.android.HiltAndroidApp
+-keep @interface dagger.hilt.android.AndroidEntryPoint
