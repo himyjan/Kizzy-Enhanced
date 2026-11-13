@@ -20,6 +20,7 @@ import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
+import com.my.kizzy.preference.Prefs
 import javax.inject.Singleton
 
 @Singleton
@@ -54,7 +55,11 @@ object AppUtils {
     }
 
     fun customRpcRunning(): Boolean {
-        return checkForRunningService<CustomRpcService>()
+        return Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty() && checkForRunningService<CustomRpcService>()
+    }
+
+    fun consoleRpcRunning(): Boolean {
+        return Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isNotEmpty() && checkForRunningService<CustomRpcService>()
     }
 
     fun experimentalRpcRunning(): Boolean {
