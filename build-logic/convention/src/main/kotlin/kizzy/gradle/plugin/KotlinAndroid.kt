@@ -13,7 +13,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * Shared core compilation settings applied across all Android modules.
  */
 private fun Project.configureCommonAndroidBody(commonExtension: CommonExtension) {
-    commonExtension.compileSdk = 37
+    commonExtension.compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     commonExtension.defaultConfig.minSdk = 26
 

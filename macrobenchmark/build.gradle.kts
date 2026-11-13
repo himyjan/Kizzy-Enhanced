@@ -1,6 +1,6 @@
 plugins {
     id("com.android.test")
-    id("androidx.baselineprofile")
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -40,8 +40,7 @@ dependencies {
     implementation(libs.junit)
     implementation(libs.androidx.test.ext.junit)
     implementation(libs.androidx.test.uiautomator)
-    implementation(libs.androidx.profileinstaller)
-    baselineProfile(libs.androidx.baselineprofile)
+    implementation(libs.profileinstaller)
 }
 
 // Match project-wide Kotlin JVM target (VERSION_26 per build-logic convention)
