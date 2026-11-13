@@ -408,8 +408,16 @@ class MetadataResolver @Inject constructor(
         val artist = metadataResolverArtistName(metadata)
         if (artist.isNullOrEmpty()) return null
 
+        // Detect multi-artist (collaboration) tracks from both the structured
+        // metadata (getAllArtists) and the raw artist string
+        // (parseCollaboratingArtists). Collaborations have no single channel,
+        // so they fall back to a search page instead of a direct artist link.
         val artists = getAllArtists(metadata)
-        val isMultiArtist = artists.size > 1
+        val rawArtistString = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)
+            ?: metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+            ?: metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+        val parsedCollaborators = parseCollaboratingArtists(rawArtistString)
+        val isMultiArtist = artists.size > 1 || parsedCollaborators.size > 1
 
         // Comprehensive multi-platform URL parser for RPC and artist links.
         // Derives the artist URL directly from the track URL the session
@@ -785,5 +793,37 @@ class MetadataResolver @Inject constructor(
         return metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.takeIf { it.isNotEmpty() }
             ?: metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR)?.takeIf { it.isNotEmpty() }
             ?: metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.takeIf { it.isNotEmpty() }
+    }
+
+    /**
+     * Parses a track's artist metadata string into a clean list of individual artist names.
+     *
+     * Handles common collaboration keywords, symbols, and separators:
+     * - "feat.", "featuring", "ft", "with", "vs", "and"
+     * - " & ", " x ", " × ", ","
+     *
+     * Examples:
+     *   "Aimer feat. milet"        -> ["Aimer", "milet"]
+     *   "Orangestar & IA"          -> ["Orangestar", "IA"]
+     *   "Artist A x Artist B"      -> ["Artist A", "Artist B"]
+     *   "Artist 1, Artist 2, Artist 3" -> ["Artist 1", "Artist 2", "Artist 3"]
+     */
+    private fun parseCollaboratingArtists(artistMetadata: String?): List<String> {
+        if (artistMetadata.isNullOrBlank()) return emptyList()
+
+        // Normalize common collaboration markers and symbols into a standard delimiter ('|')
+        val normalized = artistMetadata
+            // Match words like feat, featuring, ft, with, vs, and (case-insensitive, optional dots)
+            .replace(Regex("(?i)\\b(feat\\.?|featuring|ft\\.?|with|vs\\.?|and)\\b"), "|")
+            // Match common collaborative symbols
+            .replace(" & ", "|")
+            .replace(" x ", "|")
+            .replace(" × ", "|")
+            .replace(",", "|")
+
+        // Split by the pipe delimiter, trim whitespace, and drop empty entries
+        return normalized.split("|")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
     }
 }
