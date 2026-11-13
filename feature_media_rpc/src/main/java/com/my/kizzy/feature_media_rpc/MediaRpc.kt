@@ -65,8 +65,9 @@ import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.feature_rpc_base.utils.stopMediaRpcService
 import com.my.kizzy.preference.Prefs
-import com.my.kizzy.preference.Prefs.MEDIA_RPC_ALBUM_NAME
-import com.my.kizzy.preference.Prefs.MEDIA_RPC_APP_ICON
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_ALBUM_NAME
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_APP_ICON
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_COVER_ART
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_NAME
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_HIDE_ON_PAUSE
@@ -83,8 +84,9 @@ import com.my.kizzy.ui.components.Subtitle
 import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import com.my.kizzy.ui.components.preference.PreferencesHint
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Audiotrack
 import androidx.compose.material.icons.outlined.PauseCircle
@@ -107,7 +109,8 @@ fun MediaRPC(
         mutableStateOf(AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning())
     }
     var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, true]) }
-    var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, true]) }
+    var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, true]) }
+    var isCoverArtEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_COVER_ART, true]) }
     var isAppIconEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_APP_ICON, false]) }
     var isTimestampsEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]) }
     var hideOnPause by remember { mutableStateOf(Prefs[MEDIA_RPC_HIDE_ON_PAUSE, false]) }
@@ -145,8 +148,13 @@ fun MediaRPC(
         },
         isArtistEnabled = isArtistEnabled,
         onArtistEnabledChanged = { isArtistEnabled = !isArtistEnabled; Prefs[MEDIA_RPC_ARTIST_NAME] = isArtistEnabled },
-        isAlbumEnabled = isAlbumEnabled,
-        onAlbumEnabledChanged = { isAlbumEnabled = !isAlbumEnabled; Prefs[MEDIA_RPC_ALBUM_NAME] = isAlbumEnabled },
+        isAlbumEnabled = isAlbumEnabled,
+        onAlbumEnabledChanged = { isAlbumEnabled = !isAlbumEnabled; Prefs[MEDIA_RPC_ALBUM_NAME] = isAlbumEnabled },
+        isCoverArtEnabled = isCoverArtEnabled,
+        onCoverArtEnabledChanged = {
+            isCoverArtEnabled = !isCoverArtEnabled
+            Prefs[MEDIA_RPC_SHOW_COVER_ART] = isCoverArtEnabled
+        },
         isAppIconEnabled = isAppIconEnabled,
         onAppIconEnabledChanged = {
             val newValue = !isAppIconEnabled
@@ -198,8 +206,10 @@ fun MediaRPCContent(
     onMediaRpcRunningChanged: () -> Unit,
     isArtistEnabled: Boolean,
     onArtistEnabledChanged: () -> Unit,
-    isAlbumEnabled: Boolean,
-    onAlbumEnabledChanged: () -> Unit,
+    isAlbumEnabled: Boolean,
+    onAlbumEnabledChanged: () -> Unit,
+    isCoverArtEnabled: Boolean,
+    onCoverArtEnabledChanged: () -> Unit,
     isAppIconEnabled: Boolean,
     onAppIconEnabledChanged: () -> Unit,
     isTimestampsEnabled: Boolean,
@@ -307,12 +317,20 @@ fun MediaRPCContent(
                         isChecked = isArtistEnabled,
                     ) { onArtistEnabledChanged() }
                 }
-                item {
-                    PreferenceSwitch(
-                        title = stringResource(id = R.string.enable_album_name),
-                        icon = Icons.Outlined.Album,
-                        isChecked = isAlbumEnabled
-                    ) { onAlbumEnabledChanged() }
+                item {
+                    PreferenceSwitch(
+                        title = stringResource(id = R.string.enable_album_name),
+                        icon = Icons.Outlined.Album,
+                        isChecked = isAlbumEnabled
+                    ) { onAlbumEnabledChanged() }
+                }
+                item {
+                    PreferenceSwitch(
+                        title = stringResource(id = R.string.show_cover_art),
+                        description = stringResource(id = R.string.show_cover_art_desc),
+                        icon = Icons.Outlined.Image,
+                        isChecked = isCoverArtEnabled,
+                    ) { onCoverArtEnabledChanged() }
                 }
                 item {
                     PreferenceSwitch(
@@ -451,28 +469,30 @@ fun MediaRPCLightPreview() {
                 onMediaRpcRunningChanged = {},
                 isArtistEnabled = true,
                 onArtistEnabledChanged = {},
-                isAlbumEnabled = true,
-                onAlbumEnabledChanged = {},
-                isAppIconEnabled = false,
-                onAppIconEnabledChanged = {},
-                isTimestampsEnabled = true,
-                onTimestampsEnabledChanged = {},
-                isShowPlaybackState = false,
-                onShowPlaybackStateChanged = {},
-                hideOnPause = false,
-                onHideOnPauseChanged = {},
-                showSongAsTitle = false,
-                onShowSongAsTitleChanged = {},
-                isAutoActivityTypeEnabled = true,
-                onAutoActivityTypeEnabledChanged = {},
-                activityType = 3,
-                onActivityTypeChanged = {},
-                onAppActivityTypeChanged = { _, _ -> },
-            )
-        }
-    )
-}
-
+                isAlbumEnabled = true,
+                onAlbumEnabledChanged = {},
+                isCoverArtEnabled = true,
+                onCoverArtEnabledChanged = {},
+                isAppIconEnabled = false,
+                onAppIconEnabledChanged = {},
+                isTimestampsEnabled = true,
+                onTimestampsEnabledChanged = {},
+                isShowPlaybackState = false,
+                onShowPlaybackStateChanged = {},
+                hideOnPause = false,
+                onHideOnPauseChanged = {},
+                showSongAsTitle = false,
+                onShowSongAsTitleChanged = {},
+                isAutoActivityTypeEnabled = true,
+                onAutoActivityTypeEnabledChanged = {},
+                activityType = 3,
+                onActivityTypeChanged = {},
+                onAppActivityTypeChanged = { _, _ -> },
+            )
+        }
+    )
+}
+
 @Preview(name = "MediaRPC Dark")
 @Composable
 fun MediaRPCDarkPreview() {
@@ -514,24 +534,26 @@ fun MediaRPCDarkPreview() {
                 onMediaRpcRunningChanged = {},
                 isArtistEnabled = true,
                 onArtistEnabledChanged = {},
-                isAlbumEnabled = true,
-                onAlbumEnabledChanged = {},
-                isAppIconEnabled = false,
-                onAppIconEnabledChanged = {},
-                isTimestampsEnabled = true,
-                onTimestampsEnabledChanged = {},
-                isShowPlaybackState = false,
-                onShowPlaybackStateChanged = {},
-                hideOnPause = false,
-                onHideOnPauseChanged = {},
-                showSongAsTitle = false,
-                onShowSongAsTitleChanged = {},
-                isAutoActivityTypeEnabled = true,
-                onAutoActivityTypeEnabledChanged = {},
-                activityType = 3,
-                onActivityTypeChanged = {},
-                onAppActivityTypeChanged = { _, _ -> },
-            )
-        }
-    )
+                isAlbumEnabled = true,
+                onAlbumEnabledChanged = {},
+                isCoverArtEnabled = true,
+                onCoverArtEnabledChanged = {},
+                isAppIconEnabled = false,
+                onAppIconEnabledChanged = {},
+                isTimestampsEnabled = true,
+                onTimestampsEnabledChanged = {},
+                isShowPlaybackState = false,
+                onShowPlaybackStateChanged = {},
+                hideOnPause = false,
+                onHideOnPauseChanged = {},
+                showSongAsTitle = false,
+                onShowSongAsTitleChanged = {},
+                isAutoActivityTypeEnabled = true,
+                onAutoActivityTypeEnabledChanged = {},
+                activityType = 3,
+                onActivityTypeChanged = {},
+                onAppActivityTypeChanged = { _, _ -> },
+            )
+        }
+    )
 }
