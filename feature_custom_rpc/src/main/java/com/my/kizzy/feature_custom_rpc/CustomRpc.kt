@@ -243,6 +243,7 @@ private fun RpcTextFieldsColumn(
                         context.stopService(Intent(context, AppDetectionService::class.java))
                         context.stopMediaRpcService()
                         context.stopService(Intent(context, ExperimentalRpc::class.java))
+                        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
                         val intent = Intent(context, CustomRpcService::class.java)
                         val string = uiState.rpcConfig.dataToString()
                         intent.putExtra("RPC", string)
