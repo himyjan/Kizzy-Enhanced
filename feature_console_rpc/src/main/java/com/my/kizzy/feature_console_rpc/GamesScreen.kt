@@ -210,12 +210,15 @@ fun GamesScreen(
                                     context.startService(intent)
                                 }
 
-                                false -> context.stopService(
-                                    Intent(
-                                        context,
-                                        CustomRpcService::class.java
-                                    )
-                                )
+                                false -> {
+                                    Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
+                                    context.stopService(
+                                        Intent(
+                                            context,
+                                            CustomRpcService::class.java
+                                        )
+                                    )
+                                }
                             }
                         }
                         LazyColumn {
