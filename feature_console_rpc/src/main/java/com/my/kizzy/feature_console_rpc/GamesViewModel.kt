@@ -25,6 +25,7 @@ import com.my.kizzy.data.rpc.ConsoleGameCatalog
 import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.use_case.get_games.GetGamesUseCase
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,6 +69,16 @@ class GamesViewModel @Inject constructor(
 
     val autoDetect = mutableStateOf(Prefs[Prefs.CONSOLE_RPC_AUTO_DETECT, true])
     val includeSpoofed = mutableStateOf(Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false])
+
+    /** Whether Console RPC is running (updated from AppUtils on init). */
+    private val _consoleRpcRunning = mutableStateOf(AppUtils.consoleRpcRunning())
+    val consoleRpcRunning: State<Boolean> = _consoleRpcRunning
+
+    /** Whether another RPC service is running (updated from AppUtils on init). */
+    private val _otherRpcServicesRunning = mutableStateOf(
+        AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning() || AppUtils.appDetectionRunning()
+    )
+    val otherRpcServicesRunning: State<Boolean> = _otherRpcServicesRunning
 
     private var searchJob: Job? = null
     private var detectionJob: Job? = null
@@ -187,7 +198,11 @@ class GamesViewModel @Inject constructor(
     }
 
     private companion object {
-        const val DETECTION_INTERVAL_MS = 2000L
+        // 5 seconds instead of 2: the foreground app rarely changes while the
+        // screen is open, and polling every 2 seconds keeps the CPU awake for
+        // no reason. 5 seconds is still responsive enough for the auto-detect
+        // card while saving meaningful battery.
+        const val DETECTION_INTERVAL_MS = 5000L
         val SELF_PACKAGES = setOf("com.my.kizzy", "com.my.kizzy.enhanced", "com.discord")
     }
 }
