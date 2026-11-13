@@ -13,28 +13,25 @@
 package com.my.kizzy.data.di
 
 import com.my.kizzy.data.BuildConfig
-import com.my.kizzy.data.repository.KizzyRepositoryImpl
-import com.my.kizzy.data.remote.ApiService
 import com.my.kizzy.data.remote.Base
 import com.my.kizzy.data.remote.Discord
 import com.my.kizzy.data.remote.Github
 import com.my.kizzy.data.remote.Imgur
+import com.my.kizzy.data.repository.KizzyRepositoryImpl
 import com.my.kizzy.domain.repository.KizzyRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.http.HttpHeaders
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import jakarta.inject.Singleton
 import kotlinx.serialization.json.Json
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

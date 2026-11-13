@@ -13,18 +13,12 @@
 package com.my.kizzy.data.remote
 
 import com.my.kizzy.data.rpc.Constants.APPLICATION_ID
-import io.ktor.client.HttpClient
-import io.ktor.client.request.forms.MultiPartFormDataContent
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.headers
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.request.url
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.contentType
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
+import jakarta.inject.Inject
 import java.io.File
-import javax.inject.Inject
 
 class ImgurApiService @Inject constructor(
     private val client: HttpClient,

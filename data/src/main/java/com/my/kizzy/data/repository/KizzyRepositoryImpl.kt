@@ -26,10 +26,10 @@ import com.my.kizzy.domain.model.release.Release
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.domain.repository.KizzyRepository
 import com.my.kizzy.preference.Prefs
-import io.ktor.client.call.body
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.call.*
+import io.ktor.client.statement.*
+import jakarta.inject.Inject
 import java.io.File
-import javax.inject.Inject
 
 class KizzyRepositoryImpl @Inject constructor(
     private val api: ApiService,

@@ -17,14 +17,9 @@ import android.app.usage.UsageStatsManager
 import android.content.Context
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.RpcImage
-import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import java.util.Objects
-import java.util.SortedMap
-import java.util.TreeMap
-import javax.inject.Inject
+import jakarta.inject.Inject
+import java.util.*
 
 class GetCurrentlyRunningApp @Inject constructor(
     @ApplicationContext private val context: Context,

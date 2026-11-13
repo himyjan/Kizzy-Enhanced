@@ -12,7 +12,7 @@
 
 package com.my.kizzy.data.remote
 
-import javax.inject.Qualifier
+import jakarta.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
