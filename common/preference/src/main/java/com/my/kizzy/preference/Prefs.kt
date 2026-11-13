@@ -169,6 +169,10 @@ object Prefs {
     const val USER_NITRO = "user-nitro"
     const val LAST_RUN_CONSOLE_RPC = "last_run_console_rpc"
     const val LAST_RUN_CUSTOM_RPC = "last_run_custom_rpc"
+    // Console RPC: follow DroidDeck / Eden and show the game running inside them.
+    const val CONSOLE_RPC_AUTO_DETECT = "console_rpc_auto_detect"
+    // Also treat the spoofed benchmark/game package names as DroidDeck/Eden.
+    const val CONSOLE_RPC_INCLUDE_SPOOFED = "console_rpc_include_spoofed"
     const val LANGUAGE = "language"
     const val ENABLED_APPS = "enabled_apps"
     const val ENABLED_MEDIA_APPS = "enabled_media_apps"

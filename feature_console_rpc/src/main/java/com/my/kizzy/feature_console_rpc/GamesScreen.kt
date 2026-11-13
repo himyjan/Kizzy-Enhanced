@@ -31,7 +31,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
@@ -79,23 +80,45 @@ import androidx.compose.material.icons.outlined.Search
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GamesScreen(
-    onBackPressed: () -> Unit,
-    onEvent: (UiEvent) -> Unit,
-    state: GamesState,
-    isSearchBarVisible: Boolean,
-    serviceEnabled: Boolean = false,
-    consoleRpcRunning: Boolean = AppUtils.consoleRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning(),
-    otherRpcServicesRunning: Boolean = AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning() || AppUtils.appDetectionRunning(),
-) {
-    val context = LocalContext.current
-    var isConsoleRpcRunning by remember {
-        mutableStateOf(consoleRpcRunning)
+fun GamesScreen(
+    onBackPressed: () -> Unit,
+    onEvent: (UiEvent) -> Unit,
+    state: GamesState,
+    isSearchBarVisible: Boolean,
+    serviceEnabled: Boolean = false,
+    consoleRpcRunning: Boolean = AppUtils.consoleRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning(),
+    otherRpcServicesRunning: Boolean = AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning() || AppUtils.appDetectionRunning(),
+    detectedConsole: DetectedConsole? = null,
+    autoDetect: Boolean = true,
+    onToggleAutoDetect: (Boolean) -> Unit = {},
+    includeSpoofed: Boolean = false,
+    onToggleIncludeSpoofed: (Boolean) -> Unit = {},
+) {
+    val context = LocalContext.current
+    var isConsoleRpcRunning by remember {
+        mutableStateOf(consoleRpcRunning)
+    }
+    var selected by remember { mutableStateOf("") }
+    var searchText by remember { mutableStateOf("") }
+
+    // Must survive recomposition: the selected game (or detected console) is
+    // stored in the intent and only read when the switch starts the service.
+    val intent = remember { Intent(context, CustomRpcService::class.java) }
+
+    val selectConfig: (String, RpcConfig) -> Unit = { key, config ->
+        selected = key
+        val string = Json.encodeToString(config)
+        intent.apply {
+            removeExtra("RPC")
+            putExtra("RPC", string)
+            putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, true)
+        }
+        // When Console RPC is already running, apply the new game right away
+        // instead of requiring the user to toggle the switch off and on.
+        if (isConsoleRpcRunning) {
+            context.startService(intent)
+        }
     }
-    var selected by remember { mutableStateOf("") }
-    var searchText by remember { mutableStateOf("") }
-
-    val intent = Intent(context, CustomRpcService::class.java)
     Scaffold(
         Modifier.fillMaxSize(),
         topBar = {
@@ -206,8 +229,9 @@ fun GamesScreen(
                                             ExperimentalRpc::class.java
                                         )
                                     )
-                                    intent.removeExtra("RPC")
-                                    intent.putExtra("RPC", rpcString)
+                                    intent.removeExtra("RPC")
+                                    intent.putExtra("RPC", rpcString)
+                                    intent.putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, true)
                                     context.startService(intent)
                                 }
 
@@ -222,33 +246,68 @@ fun GamesScreen(
                                 }
                             }
                         }
-                        LazyColumn {
-                            items(
-                                items = state.games,
-                                key = { game -> game.game_title }
-                            ) { game ->
-                                SingleChoiceGameItem(
-                                    game = game,
-                                    selected = game.game_title == selected
-                                ) { info ->
-                                    selected = game.game_title
-                                    val string = Json.encodeToString(
-                                        RpcConfig(
-                                            name = info.platform,
-                                            details = info.game_title,
-                                            timestampsStart = System.currentTimeMillis().toString(),
-                                            status = "dnd",
-                                            largeImg = info.large_image ?: "",
-                                            smallImg = info.small_image,
-                                            type = "0",
-                                        )
-                                    )
-                                    intent.apply {
-                                        removeExtra("RPC")
-                                        putExtra("RPC", string)
-                                    }
-                                }
-                            }
+                        LazyColumn {
+                            item {
+                                SwitchBar(
+                                    title = stringResource(id = R.string.console_auto_detect),
+                                    isChecked = autoDetect,
+                                ) {
+                                    onToggleAutoDetect(!autoDetect)
+                                }
+                            }
+                            item {
+                                SwitchBar(
+                                    title = stringResource(id = R.string.console_include_spoofed),
+                                    isChecked = includeSpoofed,
+                                ) {
+                                    onToggleIncludeSpoofed(!includeSpoofed)
+                                }
+                            }
+                            detectedConsole?.let { detected ->
+                                item {
+                                    DetectedConsoleItem(
+                                        detected = detected,
+                                        selected = selected == "detected:${detected.packageName}",
+                                        onClick = {
+                                            selectConfig(
+                                                "detected:${detected.packageName}",
+                                                RpcConfig(
+                                                    name = detected.platformName,
+                                                    details = detected.gameTitle
+                                                        ?: context.getString(R.string.console_detected_in_game),
+                                                    largeImg = detected.largeImage.orEmpty(),
+                                                    smallImg = detected.smallImage.orEmpty(),
+                                                    timestampsStart = System.currentTimeMillis().toString(),
+                                                    status = "dnd",
+                                                    type = "0",
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                            items(
+                                items = state.games,
+                                key = { game -> game.game_title }
+                            ) { game ->
+                                SingleChoiceGameItem(
+                                    game = game,
+                                    selected = game.game_title == selected
+                                ) { info ->
+                                    selectConfig(
+                                        info.game_title,
+                                        RpcConfig(
+                                            name = info.platform,
+                                            details = info.game_title,
+                                            timestampsStart = System.currentTimeMillis().toString(),
+                                            status = "dnd",
+                                            largeImg = info.large_image ?: "",
+                                            smallImg = info.small_image,
+                                            type = "0",
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -333,6 +392,115 @@ fun SingleChoiceGameItem(
     }
 }
 
+@Composable
+fun DetectedConsoleItem(
+    detected: DetectedConsole,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    ElevatedCard(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clip(RoundedCornerShape(25.dp))
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(15.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                val artwork = detected.largeImage ?: detected.smallImage
+                if (artwork != null) {
+                    AsyncImage(
+                        model = artwork,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(15.dp)),
+                        contentDescription = detected.platformName,
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.SportsEsports,
+                        contentDescription = detected.platformName,
+                        modifier = Modifier.size(44.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = selected,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                    enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
+                    exit = shrinkOut(shrinkTowards = Alignment.Center) + fadeOut()
+                ) {
+                    Icon(
+                        Icons.Outlined.Check,
+                        null,
+                        modifier = Modifier
+                            .size(40.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(9f)
+                    .padding(5.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.console_detected),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = detected.platformName,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                    color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = detected.gameTitle
+                        ?: stringResource(id = R.string.console_detected_in_game),
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = stringResource(id = R.string.console_detected_hint),
+                    maxLines = 1,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Icon(
+                imageVector = Icons.Filled.SportsEsports,
+                contentDescription = detected.platformName,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
 // <-------------- Previews --------------->
 private val fakeGames = buildList {
     repeat(10) {

@@ -1,5 +1,6 @@
 package com.my.kizzy.feature_rpc_base.services
 
+import android.app.Notification
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -10,7 +11,11 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.service.notification.NotificationListenerService
+import android.service.notification.StatusBarNotification
 import android.util.Log
+import com.my.kizzy.data.rpc.ActiveGameTracker
+import com.my.kizzy.data.rpc.ConsoleAppRegistry
+import com.my.kizzy.data.rpc.ConsoleNotificationParser
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.utils.MediaMetadataParser
@@ -121,6 +126,35 @@ class NotificationListener : NotificationListenerService() {
         } else {
             startService(intent)
         }
+    }
+
+    /**
+     * DroidDeck and Eden post an ongoing notification that contains the name
+     * of the game they are running. Console RPC follows that notification, so
+     * the game title can be shown instead of just "DroidDeck"/"Eden".
+     *
+     * Every package of both launchers is accepted here (spoofed ones too),
+     * because only the parsed title is stored - the user's preference decides
+     * later whether a spoofed package should be treated as a launcher.
+     */
+    override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        super.onNotificationPosted(sbn)
+        val packageName = sbn?.packageName ?: return
+        if (!ConsoleAppRegistry.isKnown(packageName, includeSpoofed = true)) return
+        val extras = sbn.notification?.extras ?: return
+        val title = ConsoleNotificationParser.pickTitle(
+            title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString(),
+            text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString(),
+            bigText = extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString(),
+            subText = extras.getCharSequence(Notification.EXTRA_SUB_TEXT)?.toString(),
+        )
+        ActiveGameTracker.update(packageName, title)
+        Log.d("NotificationListener", "Console notification from $packageName: game='${title ?: ""}'")
+    }
+
+    override fun onNotificationRemoved(sbn: StatusBarNotification?) {
+        super.onNotificationRemoved(sbn)
+        sbn?.packageName?.let { ActiveGameTracker.clearIfPackage(it) }
     }
 
     private fun updateActiveController(controllers: List<MediaController>?) {
