@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 /**
  * Dynamically detects AI/LLM applications and games on the device without hardcoded package lists.

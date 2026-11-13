@@ -10,6 +10,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.material3)
     implementation (libs.material.icons.extended)
     implementation(libs.activity.compose)
     implementation(libs.coil)

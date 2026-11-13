@@ -17,8 +17,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.logs.LogEvent
 import com.my.kizzy.domain.model.logs.LogLevel
-import javax.inject.Inject
-import javax.inject.Singleton
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 
 @Singleton
 class KLogger @Inject constructor() : Logger {

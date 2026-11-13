@@ -63,7 +63,6 @@ android {
 
     packaging.resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     packaging.resources.excludes.add("/META-INF/gradle/incremental.annotation.processors")
-    packaging.resources.excludes.add("/META-INF/services/javax.annotation.processing.Processor")
 
     // Disables dependency metadata when building APKs.
     dependenciesInfo {

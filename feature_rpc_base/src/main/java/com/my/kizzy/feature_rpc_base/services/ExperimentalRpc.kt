@@ -30,34 +30,18 @@ import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMediaAll
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
-import com.my.kizzy.data.rpc.ActivityTypeResolver
-import com.my.kizzy.data.rpc.LastPresence
-import com.my.kizzy.data.rpc.MediaServiceResolver
-import com.my.kizzy.domain.model.rpc.RpcConfig
-import com.my.kizzy.data.rpc.CommonRpc
-import com.my.kizzy.data.rpc.KizzyRPC
-import com.my.kizzy.data.rpc.RpcImage
-import com.my.kizzy.data.rpc.TemplateKeys
-import com.my.kizzy.data.rpc.TemplateProcessor
-import com.my.kizzy.data.rpc.Timestamps
+import com.my.kizzy.data.rpc.*
+import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
-import com.my.kizzy.data.work.WorkManagerHelper
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import jakarta.inject.Inject
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 private const val TAG = "ExperimentalRPC"
 

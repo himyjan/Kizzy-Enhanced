@@ -26,31 +26,17 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import com.my.kizzy.data.rpc.ActivityTypeResolver
-import com.my.kizzy.data.rpc.CommonRpc
-import com.my.kizzy.data.rpc.KizzyRPC
-import com.my.kizzy.data.rpc.RpcImage
-import com.my.kizzy.data.rpc.Timestamps
+import com.my.kizzy.data.rpc.*
 import com.my.kizzy.domain.model.rpc.RpcButtons
-import com.my.kizzy.feature_rpc_base.services.DetectedAiApp
-import com.my.kizzy.feature_rpc_base.services.DetectedGameApp
-import com.my.kizzy.feature_rpc_base.services.DynamicActivityDetectionEngine
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import jakarta.inject.Inject
+import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
-import java.util.SortedMap
-import java.util.TreeMap
-import javax.inject.Inject
+import java.util.*
 
 @AndroidEntryPoint
 class AppDetectionService : Service() {

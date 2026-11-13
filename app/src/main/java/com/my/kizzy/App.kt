@@ -5,22 +5,19 @@ import android.content.Intent
 import android.os.Build
 import androidx.compose.runtime.Composer
 import androidx.compose.runtime.tooling.ComposeStackTraceMode
-import com.google.android.material.color.DynamicColors
-import com.my.kizzy.feature_logs.LoggerProvider
-import com.my.kizzy.preference.PreferenceConfig
-import com.my.kizzy.feature_rpc_base.AppUtils
-import com.my.kizzy.data.work.WorkManagerHelper
-import androidx.work.Configuration
-import com.my.kizzy.preference.Prefs
-import com.my.kizzy.preference.Prefs.USE_RPC_BUTTONS
-import com.my.kizzy.preference.Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC
-import com.my.kizzy.preference.Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC
-import dagger.hilt.android.HiltAndroidApp
 import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import com.google.android.material.color.DynamicColors
+import com.my.kizzy.data.work.WorkManagerHelper
+import com.my.kizzy.feature_logs.LoggerProvider
+import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.preference.PreferenceConfig
+import com.my.kizzy.preference.Prefs
+import dagger.hilt.android.HiltAndroidApp
+import jakarta.inject.Inject
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.system.exitProcess
-import javax.inject.Inject
 
 @HiltAndroidApp
 class App : Application(), Configuration.Provider {
