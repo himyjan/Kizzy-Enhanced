@@ -119,35 +119,31 @@ class CustomRpcService : Service() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
-            .setContentTitle(getString(R.string.custom_rpc_running))
-            .setContentText(rpcData?.name ?: "")
-            .setSmallIcon(R.drawable.ic_rpc_placeholder)
-            .setContentIntent(appPendingIntent)
-            .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.restart), restartPendingIntent)
-            .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.exit), pendingIntent)
-            .build()
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            startForeground(Constants.NOTIFICATION_ID, notification)
-        } else {
-            startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
-        }
-
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK)
         wakeLock?.acquire()
         scope.launch {
-            notificationManager.notify(
-                Constants.NOTIFICATION_ID,
-                Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_rpc_placeholder)
-                    .setLargeIcon(
-                        rpcImage = rpcData?.largeImg?.toRpcImage(),
-                        context = this@CustomRpcService
-                    )
-                    .build()
-            )
+            // Build the complete notification (content intent, actions, and large icon)
+            // in one place so nothing is dropped. A second notify() call had previously
+            // replaced the notification entirely, removing its click intent and buttons.
+            val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
+                .setContentTitle(getString(R.string.custom_rpc_running))
+                .setContentText(rpcData?.name ?: "")
+                .setSmallIcon(R.drawable.ic_rpc_placeholder)
+                .setContentIntent(appPendingIntent)
+                .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.restart), restartPendingIntent)
+                .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.exit), pendingIntent)
+                .setLargeIcon(
+                    rpcImage = rpcData?.largeImg?.toRpcImage(),
+                    context = this@CustomRpcService
+                )
+                .build()
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                startForeground(Constants.NOTIFICATION_ID, notification)
+            } else {
+                startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+            }
 
             kizzyRPC.apply {
                 rpcData?.let {

@@ -179,24 +179,35 @@ fun GamesScreen(
                             isConsoleRpcRunning = !isConsoleRpcRunning
                             when (isConsoleRpcRunning) {
                                 true -> {
-                                    if (intent.hasExtra("RPC")) {
-                                        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] =
-                                            intent.getStringExtra("RPC")
-                                        context.stopService(
-                                            Intent(
-                                                context,
-                                                AppDetectionService::class.java
+                                    val rpcString = if (intent.hasExtra("RPC")) {
+                                        intent.getStringExtra("RPC")
+                                    } else {
+                                        Json.encodeToString(
+                                            RpcConfig(
+                                                name = "Console RPC",
+                                                details = "Console RPC running",
+                                                type = "0",
+                                                status = "online",
                                             )
                                         )
-                                        context.stopMediaRpcService()
-                                        context.stopService(
-                                            Intent(
-                                                context,
-                                                ExperimentalRpc::class.java
-                                            )
-                                        )
-                                        context.startService(intent)
                                     }
+                                    Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = rpcString
+                                    context.stopService(
+                                        Intent(
+                                            context,
+                                            AppDetectionService::class.java
+                                        )
+                                    )
+                                    context.stopMediaRpcService()
+                                    context.stopService(
+                                        Intent(
+                                            context,
+                                            ExperimentalRpc::class.java
+                                        )
+                                    )
+                                    intent.removeExtra("RPC")
+                                    intent.putExtra("RPC", rpcString)
+                                    context.startService(intent)
                                 }
 
                                 false -> context.stopService(
