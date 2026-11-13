@@ -409,8 +409,9 @@ open class DiscordWebSocketImpl(
         return websocket?.incoming != null && websocket?.outgoing?.isClosedForSend == false
     }
 
-    private suspend inline fun <reified T> send(op: OpCode, d: T?) {
-        if (websocket?.isActive == true) {
+    private suspend inline fun <reified T> send(op: OpCode, d: T?): Boolean {
+        val socket = websocket
+        if (socket?.isActive == true) {
             val payload = json.encodeToString(
                 OutgoingPayload(
                     op = op,
@@ -418,8 +419,10 @@ open class DiscordWebSocketImpl(
                 )
             )
             logger.d("Gateway", "Outgoing op:$op: $payload")
-            websocket?.send(Frame.Text(payload))
+            socket.send(Frame.Text(payload))
+            return true
         }
+        return false
     }
 
     override fun close() {
@@ -443,7 +446,7 @@ open class DiscordWebSocketImpl(
         logger.e("Gateway", "Connection to gateway closed")
     }
 
-    override suspend fun sendActivity(presence: Presence) {
+    override suspend fun sendActivity(presence: Presence): Boolean {
         val connectedInTime = withTimeoutOrNull(CONNECT_WAIT_TIMEOUT_MS) {
             while (!isSocketConnectedToAccount()) {
                 delay(250.milliseconds)
@@ -452,13 +455,18 @@ open class DiscordWebSocketImpl(
         }
         if (connectedInTime != true) {
             logger.w("Gateway", "Socket not connected within timeout — dropping presence update")
-            return
+            return false
         }
         logger.i("Gateway", "Sending $PRESENCE_UPDATE")
-        send(
-            op = PRESENCE_UPDATE,
-            d = presence
-        )
+        return runCatching {
+            send(
+                op = PRESENCE_UPDATE,
+                d = presence
+            )
+        }.getOrElse { e ->
+            logger.e("Gateway", "Failed to send presence: ${e.message ?: ""}")
+            false
+        }
     }
 
     suspend fun updatePresence(
