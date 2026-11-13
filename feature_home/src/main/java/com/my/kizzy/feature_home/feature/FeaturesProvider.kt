@@ -29,20 +29,39 @@ import com.my.kizzy.navigation.Routes
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 
-@Composable
-fun homeFeaturesProvider(
-    navigateTo: (String) -> Unit,
-    hasUsageAccess: MutableState<Boolean>,
-    hasNotificationAccess: MutableState<Boolean>,
-    userVerified: Boolean,
-): List<HomeFeature> {
-    val ctx = LocalContext.current
-    return listOf(
-        HomeFeature(
-            title = stringResource(id = R.string.main_mediaRpc),
-            icon = R.drawable.ic_media_rpc,
-            route = Routes.MEDIA_RPC,
-            isChecked = AppUtils.mediaRpcRunning(),
+@Composable
+fun homeFeaturesProvider(
+    navigateTo: (String) -> Unit,
+    hasUsageAccess: MutableState<Boolean>,
+    hasNotificationAccess: MutableState<Boolean>,
+    userVerified: Boolean,
+): List<HomeFeature> {
+    val ctx = LocalContext.current
+    // Remember the feature list keyed on RPC running states so the list
+    // is not rebuilt on every recomposition. AppUtils caches running
+    // services for 1 second, so these values are stable enough.
+    val mediaRpcRunning by remember(AppUtils.mediaRpcRunning().toString()) {
+        mutableStateOf(AppUtils.mediaRpcRunning())
+    }
+    val customRpcRunning by remember(AppUtils.customRpcRunning().toString()) {
+        mutableStateOf(AppUtils.customRpcRunning())
+    }
+    val consoleRpcRunning by remember(AppUtils.consoleRpcRunning().toString()) {
+        mutableStateOf(AppUtils.consoleRpcRunning())
+    }
+    val experimentalRpcRunning by remember(AppUtils.experimentalRpcRunning().toString()) {
+        mutableStateOf(AppUtils.experimentalRpcRunning())
+    }
+    val appDetectionRunning by remember(AppUtils.appDetectionRunning().toString()) {
+        mutableStateOf(AppUtils.appDetectionRunning())
+    }
+
+    return listOf(
+        HomeFeature(
+            title = stringResource(id = R.string.main_mediaRpc),
+            icon = R.drawable.ic_media_rpc,
+            route = Routes.MEDIA_RPC,
+            isChecked = mediaRpcRunning,
             showSwitch = true,
             onClick = {
                 navigateTo(it)
@@ -59,11 +78,11 @@ fun homeFeaturesProvider(
             shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
             tooltipText = stringResource(id = R.string.main_mediaRpc_details),
             featureDocsLink = ToolTipContent.MEDIA_RPC_DOCS_LINK
-        ), HomeFeature(
-            title = stringResource(id = R.string.main_customRpc),
-            icon = R.drawable.ic_rpc_placeholder,
-            route = Routes.CUSTOM_RPC,
-            isChecked = AppUtils.customRpcRunning(),
+        ), HomeFeature(
+            title = stringResource(id = R.string.main_customRpc),
+            icon = R.drawable.ic_rpc_placeholder,
+            route = Routes.CUSTOM_RPC,
+            isChecked = customRpcRunning,
             onClick = {
                 navigateTo(it)
             },
@@ -87,11 +106,11 @@ fun homeFeaturesProvider(
             tooltipText = stringResource(id = R.string.main_customRpc_details),
             featureDocsLink = ToolTipContent.CUSTOM_RPC_DOCS_LINK
         ),
-        HomeFeature(
-            title = stringResource(id = R.string.main_consoleRpc),
-            icon = R.drawable.ic_console_games,
-            route = Routes.CONSOLE_RPC,
-            isChecked = AppUtils.customRpcRunning(),
+        HomeFeature(
+            title = stringResource(id = R.string.main_consoleRpc),
+            icon = R.drawable.ic_console_games,
+            route = Routes.CONSOLE_RPC,
+            isChecked = consoleRpcRunning,
             onClick = { navigateTo(it) },
             onCheckedChange = {
                 if (it) {
@@ -113,12 +132,12 @@ fun homeFeaturesProvider(
             tooltipText = stringResource(id = R.string.main_consoleRpc_details),
             featureDocsLink = ToolTipContent.CONSOLE_RPC_DOCS_LINK
         ),
-        HomeFeature(
-            title = stringResource(id = R.string.main_experimentalRpc),
-            icon = R.drawable.ic_dev_rpc,
-            route = Routes.EXPERIMENTAL_RPC,
-            onClick = { navigateTo(it) },
-            isChecked = AppUtils.experimentalRpcRunning(),
+        HomeFeature(
+            title = stringResource(id = R.string.main_experimentalRpc),
+            icon = R.drawable.ic_dev_rpc,
+            route = Routes.EXPERIMENTAL_RPC,
+            onClick = { navigateTo(it) },
+            isChecked = experimentalRpcRunning,
             onCheckedChange = {
                 if (it) {
                     ctx.stopMediaRpcService()
