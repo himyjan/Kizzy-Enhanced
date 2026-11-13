@@ -23,12 +23,24 @@ import javax.inject.Singleton
 @Singleton
 class KLogger @Inject constructor() : Logger {
     private val logs = mutableStateListOf<LogEvent>()
+
+    /**
+     * Compose snapshot state is not thread-safe. The media service logs from
+     * background coroutine workers, and appending to [logs] there corrupted the
+     * global snapshot while the UI was composing ("Unsupported concurrent change
+     * during composition"). Every mutation is therefore posted to the main thread;
+     * background callers return immediately.
+     */
+    private val mainHandler by lazy {
+        android.os.Handler(android.os.Looper.getMainLooper())
+    }
+
     fun getLogs(): SnapshotStateList<LogEvent> {
         return logs
     }
 
     override fun clear() {
-        synchronized(logs) { logs.clear() }
+        runOnMain { logs.clear() }
     }
 
     override fun i(tag: String, event: String) {
@@ -48,11 +60,12 @@ class KLogger @Inject constructor() : Logger {
     }
 
     private fun addToLog(level: LogLevel, tag: String, event: String) {
-        synchronized(logs) {
-            if (logs.size >= 300) {
+        // Capture the time on the calling thread so a queued log keeps its order.
+        val log = LogEvent(level, tag, event, System.currentTimeMillis())
+        runOnMain {
+            if (logs.size >= MAX_LOG_ENTRIES) {
                 logs.removeAt(0)
             }
-            val log = LogEvent(level, tag, event, System.currentTimeMillis())
             logs.add(log)
         }
         // Mirror to logcat so the RPC can be debugged from adb without opening the app.
@@ -68,7 +81,16 @@ class KLogger @Inject constructor() : Logger {
         )
     }
 
+    private inline fun runOnMain(crossinline block: () -> Unit) {
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+            block()
+        } else {
+            mainHandler.post { block() }
+        }
+    }
+
     companion object {
+        private const val MAX_LOG_ENTRIES = 300
         private var instance: KLogger? = null
         @JvmStatic
         fun getInstance(): KLogger? {
