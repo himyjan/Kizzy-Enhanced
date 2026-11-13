@@ -1,14 +1,11 @@
 package com.my.kizzy.feature_rpc_base.services
 
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -17,46 +14,31 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
-import android.graphics.Bitmap
+import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.IconCompat
-import androidx.annotation.RequiresApi
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
-import com.my.kizzy.data.rpc.ActivityTypeResolver
-import com.my.kizzy.data.rpc.MediaServiceResolver
-import com.my.kizzy.data.rpc.YouTubeResolver
-import com.my.kizzy.data.rpc.KizzyRPC
-import com.my.kizzy.data.rpc.CommonRpc
-import com.my.kizzy.data.rpc.Timestamps
+import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.work.RpcRecoveryHiltWorker
 import com.my.kizzy.domain.interfaces.Logger
-import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
-import com.my.kizzy.feature_rpc_base.R as FeatureRpcR
 import com.my.kizzy.preference.Prefs
-import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
 import com.my.kizzy.preference.Prefs.TOKEN
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import jakarta.inject.Inject
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.serialization.json.Json
-import androidx.core.app.NotificationCompat
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import javax.inject.Inject
+import com.my.kizzy.feature_rpc_base.R as FeatureRpcR
 
 @AndroidEntryPoint
 class MediaRpcService : Service() {

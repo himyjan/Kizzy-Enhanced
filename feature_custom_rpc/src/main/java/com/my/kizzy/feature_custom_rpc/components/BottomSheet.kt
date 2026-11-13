@@ -16,6 +16,7 @@ import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.Delete
@@ -38,81 +39,90 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet(onEvent: (UiEvent.SheetEvent) -> Unit,onDismiss: () -> Unit) {
+fun BottomSheet(
+    onEvent: (UiEvent.SheetEvent) -> Unit,
+    onDismiss: () -> Unit,
+) {
     val scope = rememberCoroutineScope()
     val state = rememberModalBottomSheetState()
+
+    fun dismissAndRun(action: () -> Unit) {
+        scope.launch {
+            state.hide()
+        }.invokeOnCompletion {
+            if (!state.isVisible) {
+                onDismiss()
+                action()
+            }
+        }
+    }
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = state,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             SheetItem(
                 title = stringResource(id = R.string.load_config),
                 icon = Icons.Outlined.FileOpen,
                 onClick = {
-                    scope.launch {
-                        state.hide()
+                    dismissAndRun {
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                             onEvent(UiEvent.SheetEvent.TriggerStoragePermissionRequest)
                         }
                         onEvent(UiEvent.SheetEvent.TriggerLoadDialog)
                     }
-                }
+                },
             )
             SheetItem(
                 title = stringResource(id = R.string.save_config),
-                icon = Icons.Outlined.SaveAs
-            ) {
-                scope.launch {
-                    state.hide()
-                    onEvent(UiEvent.SheetEvent.TriggerSaveDialog)
-                }
-            }
-
+                icon = Icons.Outlined.SaveAs,
+                onClick = {
+                    dismissAndRun {
+                        onEvent(UiEvent.SheetEvent.TriggerSaveDialog)
+                    }
+                },
+            )
             SheetItem(
                 title = stringResource(id = R.string.delete_configs),
-                icon = Icons.Outlined.Delete
-            ) {
-                scope.launch {
-                    state.hide()
-                    onEvent(UiEvent.SheetEvent.TriggerDeleteDialog)
-                }
-            }
-
+                icon = Icons.Outlined.Delete,
+                onClick = {
+                    dismissAndRun {
+                        onEvent(UiEvent.SheetEvent.TriggerDeleteDialog)
+                    }
+                },
+            )
             SheetItem(
                 title = stringResource(id = R.string.preview_rpc),
+                icon = R.drawable.ic_rpc_placeholder,
                 onClick = {
-                    scope.launch {
-                        state.hide()
+                    dismissAndRun {
                         onEvent(UiEvent.SheetEvent.TriggerPreviewDialog)
                     }
                 },
-                icon = R.drawable.ic_rpc_placeholder
             )
-
             SheetItem(
                 title = stringResource(id = R.string.clear_all_fields),
+                icon = Icons.Outlined.ClearAll,
                 onClick = {
-                    scope.launch {
-                        state.hide()
+                    dismissAndRun {
                         onEvent(UiEvent.SheetEvent.ClearAllFields)
                     }
                 },
-                icon = Icons.Outlined.ClearAll
             )
-
             SheetItem(
                 title = stringResource(id = R.string.share_config),
                 icon = Icons.Outlined.Share,
                 onClick = {
-                    scope.launch {
-                        state.hide()
+                    dismissAndRun {
                         onEvent(UiEvent.SheetEvent.TriggerShareDialog)
                     }
-                }
+                },
             )
         }
     }
@@ -121,7 +131,8 @@ fun BottomSheet(onEvent: (UiEvent.SheetEvent) -> Unit,onDismiss: () -> Unit) {
 @Preview
 @Composable
 fun BottomSheetPreview() {
-    BottomSheet({}){
-
-    }
+    BottomSheet(
+        onEvent = {},
+        onDismiss = {},
+    )
 }

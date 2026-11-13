@@ -2,28 +2,20 @@ package com.my.kizzy.feature_profile.ui.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.data.rpc.LastPresence
+import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
+import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
-import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(

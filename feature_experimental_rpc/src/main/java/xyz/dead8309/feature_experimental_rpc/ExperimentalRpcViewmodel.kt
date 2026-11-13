@@ -24,12 +24,12 @@ import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ExperimentalRpcViewmodel @Inject constructor(

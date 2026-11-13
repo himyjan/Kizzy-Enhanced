@@ -17,11 +17,11 @@ import androidx.lifecycle.viewModelScope
 import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.use_case.get_contributors.GetContributorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
 @HiltViewModel
 class CreditsScreenViewModel @Inject constructor(
