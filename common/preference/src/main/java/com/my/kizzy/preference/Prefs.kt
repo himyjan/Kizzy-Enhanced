@@ -178,6 +178,14 @@ object Prefs {
     const val MEDIA_RPC_ARTIST_NAME = "media_rpc_artist_name"
     const val MEDIA_RPC_ALBUM_NAME = "media_rpc_album_name"
     const val MEDIA_RPC_APP_ICON = "media_rpc_app_icon"
+
+    /**
+     * Whether the album/song cover art is sent as the large image of the presence.
+     *
+     * Turning it off drops the cover art (and the image upload that goes with it)
+     * from the Discord activity while the rest of the Media RPC keeps running.
+     */
+    const val MEDIA_RPC_SHOW_COVER_ART = "media_rpc_show_cover_art"
     const val MEDIA_RPC_ENABLE_TIMESTAMPS = "enable_timestamps"
     const val MEDIA_RPC_HIDE_ON_PAUSE = "hide_on_pause"
     const val MEDIA_RPC_SHOW_PLAYBACK_STATE = "show_playback_state"

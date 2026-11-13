@@ -85,6 +85,23 @@ class MediaRpcService : Service() {
     private var wakeLock: WakeLock? = null
 
     private var isPaused = false
+
+    /** Holds the wake lock only while actively updating presence, then releases it. */
+    private suspend fun withWakeLock(block: suspend () -> Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // PARTIAL_WAKE_LOCK is needed on API 31+ to keep CPU alive during work
+            wakeLock?.acquire(10_000)
+        } else {
+            wakeLock?.acquire()
+        }
+        try {
+            block()
+        } finally {
+            if (wakeLock?.isHeld == true) {
+                wakeLock?.release()
+            }
+        }
+    }
     private var currentPackageName: String? = null
     private var lastKnownTrackTitle: String? = null
     private var lastKnownTrackArtist: String? = null
@@ -98,6 +115,18 @@ class MediaRpcService : Service() {
     private var lastSentPackageName: String? = null
     private var lastPresenceUpdateTime: Long = 0L
     private val PRESENCE_UPDATE_MIN_INTERVAL_MS = 1500L
+
+    /**
+     * The last playback state and metadata that were reported to Discord.
+     *
+     * Media players fire their callbacks very often - a buffering state change or a
+     * repeated metadata event with identical values does not mean the song changed.
+     * Remembering the values keeps the update pipeline from being woken for noise
+     * (and from queueing behind the rate limit), which is what made the next song
+     * appear late.
+     */
+    private var lastPlaybackStateCode: Int? = null
+    private var lastMetadataSignature: String? = null
 
     /**
      * How far the start timestamp has to move before it is treated as a seek. Players
@@ -217,18 +246,13 @@ class MediaRpcService : Service() {
             while (isActive) {
                 delay(1000)
                 if (!isPaused && kizzyRPC.isRpcRunning()) {
-                    val playingMedia = getCurrentPlayingMedia()
-                    if (playingMedia.name.isNotBlank() && playingMedia.time?.start != null) {
-                        stateRepository.setTimestamps(playingMedia.time?.start, playingMedia.time?.end)
-                        val largeImageUrl = playingMedia.largeImage?.resolveImage(kizzyRepository)
-                        val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
-                        stateRepository.setImageUrls(largeImageUrl, smallImageUrl)
-
-                        // Update presence - respects interval limits (no forceRefresh)
+                    withWakeLock {
+                        // One read per tick: updatePresence() refreshes the notification and
+                        // the presence from the same snapshot. The presence itself is
+                        // deduplicated, so a playing track does not hit the gateway every
+                        // second - only a seek (timeline jump) is actually sent.
                         updatePresence()
                     }
-                    // Update notification progress bar every second while playing
-                    updateNotificationPauseButton()
                 }
             }
         }
@@ -243,8 +267,10 @@ class MediaRpcService : Service() {
         stopHeartbeat()
         heartbeatJob.value = scope.launch {
             while (isActive) {
-                delay(3000)
-                scope.launch { updatePresence(forceRefresh = true) }
+                delay(10000)
+                withWakeLock {
+                    scope.launch { updatePresence(forceRefresh = true) }
+                }
             }
         }
     }
@@ -254,14 +280,35 @@ class MediaRpcService : Service() {
         heartbeatJob.value = null
     }
 
+    /**
+     * Serializes presence updates.
+     *
+     * The media callbacks and the timeline ticker call this at the same time. If two
+     * updates run concurrently an older track can finish (cover-art upload) after a
+     * newer one and overwrite it on Discord. Holding the mutex for the whole update -
+     * including reading the media session and sending - makes the last call win.
+     */
     suspend private fun updatePresence(forceRefresh: Boolean = false) {
+        presenceUpdateMutex.withLock {
+            updatePresenceLocked(forceRefresh)
+        }
+    }
+
+    private suspend fun updatePresenceLocked(forceRefresh: Boolean = false) {
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
+        val showCoverArt = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true]
         val playingMedia = getCurrentPlayingMedia()
 
         currentMediaTitle = playingMedia.name.takeIf { it.isNotBlank() }
         currentMediaArtist = playingMedia.state?.takeIf { it.isNotBlank() }
-        currentMediaCoverArt = playingMedia.largeImage?.let {
-            if (it is com.my.kizzy.data.rpc.RpcImage.BitmapImage) it.bitmap else null
+        // The "Show Cover Art" switch hides the art from the notification as well,
+        // so the setting is honored in one place for the whole service.
+        currentMediaCoverArt = if (showCoverArt) {
+            playingMedia.largeImage?.let {
+                if (it is com.my.kizzy.data.rpc.RpcImage.BitmapImage) it.bitmap else null
+            }
+        } else {
+            null
         }
 
         // Track playback progress for notification progress bar
@@ -281,6 +328,13 @@ class MediaRpcService : Service() {
             currentMediaProgressSec = 0
             currentMediaPositionMs = 0L
         }
+
+        // While paused the preview must show the frozen position. The position is
+        // computed from the timestamps above, so it is the real point where the
+        // player stopped - not "now". Clearing it on resume restarts the timer.
+        stateRepository.setPausedPosition(
+            if (isPaused && currentMediaDurationSec > 0) currentMediaPositionMs else null
+        )
 
         val playingPkg = playingMedia.appPackage.takeIf { it.isNotBlank() }
 
@@ -331,52 +385,71 @@ class MediaRpcService : Service() {
         val currentName = playingMedia.name.takeIf { it.isNotBlank() }
         val currentDetails = playingMedia.details
         val currentState = playingMedia.state
-        val currentLargeImageUrl = playingMedia.largeImage?.let {
-            (it as? com.my.kizzy.data.rpc.RpcImage.BitmapImage)?.title ?: it.toString()
+        val currentLargeImageUrl = if (showCoverArt) {
+            playingMedia.largeImage?.let {
+                (it as? com.my.kizzy.data.rpc.RpcImage.BitmapImage)?.title ?: it.toString()
+            }
+        } else {
+            null
         }
 
         // Update notification with current playback progress before skip check
         updateNotificationPauseButton()
 
-        stateRepository.setTimestamps(playingMedia.time?.start, playingMedia.time?.end)
+        val now = System.currentTimeMillis()
+        val packageChanged = playingPkg != null && playingPkg != lastSentPackageName
 
-        presenceUpdateMutex.withLock {
-            val now = System.currentTimeMillis()
-            val packageChanged = playingPkg != null && playingPkg != lastSentPackageName
+        // The start timestamp is "now - position", so it stays constant while the track
+        // plays and only moves when the user SEEKS. A move larger than the tolerance
+        // is therefore a seek and must be pushed to Discord right away.
+        val currentStart = playingMedia.time?.start
+        val timelineJumped = currentStart != null && lastSentStartTimestamps != null &&
+            kotlin.math.abs(currentStart - lastSentStartTimestamps!!) > TIMELINE_JUMP_TOLERANCE_MS
 
-            // The start timestamp is "now - position", so it stays constant while the track
-            // plays and only moves when the user SEEKS. A move larger than the tolerance
-            // is therefore a seek and must be pushed to Discord right away.
-            val currentStart = playingMedia.time?.start
-            val timelineJumped = currentStart != null && lastSentStartTimestamps != null &&
-                kotlin.math.abs(currentStart - lastSentStartTimestamps!!) > TIMELINE_JUMP_TOLERANCE_MS
+        // The cover art belongs to the content as well: a new track can have the same
+        // title/artist (e.g. a re-upload or a live stream) but different artwork.
+        val contentChanged = currentName != lastSentName ||
+            currentDetails != lastSentDetails ||
+            currentState != lastSentState ||
+            currentLargeImageUrl != lastSentLargeImageUrl
 
-            val contentChanged = currentName != lastSentName ||
-                currentDetails != lastSentDetails ||
-                currentState != lastSentState
-
-            // Nothing worth sending: skip early to avoid the (costly) image resolution below.
-            if (!forceRefresh && !packageChanged && !contentChanged && !timelineJumped) {
-                logger.d("MediaRPC", "Presence unchanged, skipping redundant update")
-                return
-            }
-
-            lastSentName = currentName
-            lastSentDetails = currentDetails
-            lastSentState = currentState
-            lastSentStartTimestamps = currentStart
-            lastSentStopTimestamps = playingMedia.time?.end
-            lastSentLargeImageUrl = currentLargeImageUrl
-            lastSentPackageName = playingPkg
-            lastSentProgressSec = currentMediaProgressSec
-            lastPresenceUpdateTime = now
+        // Nothing worth sending: skip early to avoid the (costly) image resolution below.
+        if (!forceRefresh && !packageChanged && !contentChanged && !timelineJumped) {
+            logger.d("MediaRPC", "Presence unchanged, skipping redundant update")
+            return
         }
 
-        val largeImageUrl = playingMedia.largeImage?.resolveImage(kizzyRepository)
+        // Publish the timeline only when the presence actually changes. The timeline
+        // ticker used to call this every second, which pushed a new value into the
+        // StateFlows once per second. The profile screen collects those flows, so it
+        // recomposed the whole card every second for a progress bar that ticks on its
+        // own anyway. A seek or a new track still reaches the UI immediately because
+        // both bypass the "unchanged" check above.
+        stateRepository.setTimestamps(playingMedia.time?.start, playingMedia.time?.end)
+
+        // Resolving a bitmap cover art uploads it to Discord, which costs battery
+        // and time - skip it entirely when the switch is off.
+        val largeImageUrl = if (showCoverArt) {
+            playingMedia.largeImage?.resolveImage(kizzyRepository)
+        } else {
+            null
+        }
         val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
         stateRepository.setImageUrls(largeImageUrl, smallImageUrl)
 
-        sendPresenceUpdate(playingMedia, enableTimestamps)
+        sendPresenceUpdate(playingMedia, enableTimestamps, showCoverArt)
+
+        // Only remember what was sent after the send completed. If the upload or the
+        // gateway failed, the next update must not be dropped as "unchanged".
+        lastSentName = currentName
+        lastSentDetails = currentDetails
+        lastSentState = currentState
+        lastSentStartTimestamps = currentStart
+        lastSentStopTimestamps = playingMedia.time?.end
+        lastSentLargeImageUrl = currentLargeImageUrl
+        lastSentPackageName = playingPkg
+        lastSentProgressSec = currentMediaProgressSec
+        lastPresenceUpdateTime = now
     }
 
     /**
@@ -416,7 +489,11 @@ class MediaRpcService : Service() {
         )
     }
 
-    private suspend fun sendPresenceUpdate(playingMedia: CommonRpc, enableTimestamps: Boolean) {
+    private suspend fun sendPresenceUpdate(
+        playingMedia: CommonRpc,
+        enableTimestamps: Boolean,
+        showCoverArt: Boolean = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true],
+    ) {
         if (playingMedia.name.isBlank()) {
             stateRepository.setConnected(false)
             stateRepository.clearTrackInfo()
@@ -433,9 +510,9 @@ class MediaRpcService : Service() {
             type = resolveActivityType(playingMedia),
             details = playingMedia.details,
             state = playingMedia.state,
-            largeImage = playingMedia.largeImage,
+            largeImage = if (showCoverArt) playingMedia.largeImage else null,
             smallImage = playingMedia.smallImage,
-            largeText = playingMedia.largeText,
+            largeText = if (showCoverArt) playingMedia.largeText else null,
             smallText = playingMedia.smallText,
             time = if (enableTimestamps && !isPaused) Timestamps(
                 start = playingMedia.time?.start,
@@ -487,7 +564,22 @@ class MediaRpcService : Service() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             super.onPlaybackStateChanged(state)
 
-            val newPaused = state?.state != PlaybackState.STATE_PLAYING
+            // Players emit playback state events for every little buffering/position
+            // change. Only a different state can change the presence, so the rest is
+            // ignored instead of queueing another (rate limited) update.
+            val stateCode = state?.state
+            if (stateCode == lastPlaybackStateCode) return
+            lastPlaybackStateCode = stateCode
+
+            // Buffering/connecting are part of an active playback. Treating them as
+            // "paused" stripped the timeline from the presence during the first second
+            // of every new track (and then restored it a moment later).
+            val newPaused = when (stateCode) {
+                PlaybackState.STATE_PLAYING,
+                PlaybackState.STATE_BUFFERING,
+                PlaybackState.STATE_CONNECTING -> false
+                else -> true
+            }
             if (isPaused != newPaused) {
                 isPaused = newPaused
                 stateRepository.setPaused(isPaused)
@@ -496,7 +588,7 @@ class MediaRpcService : Service() {
             }
 
             scope.launch {
-                delay(200)
+                delay(100)
                 updatePresence(forceRefresh = true)
             }
         }
@@ -504,11 +596,29 @@ class MediaRpcService : Service() {
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
 
+            // The signature covers everything that ends up in the presence. A metadata
+            // event that only repeats the same values must not delay the next real one.
+            val signature = buildString {
+                append(metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)).append('|')
+                append(metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)).append('|')
+                append(metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)).append('|')
+                append(metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)).append('|')
+                append(metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)).append('|')
+                append(metadata?.getString(MediaMetadata.METADATA_KEY_ART_URI))
+            }
+            if (signature == lastMetadataSignature) {
+                logger.d("MediaRPC", "Metadata unchanged, skipping redundant update")
+                return
+            }
+            lastMetadataSignature = signature
+
             currentMediaTitle = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
             currentMediaArtist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
 
             scope.launch {
-                delay(1000)
+                // A new song is the update the user is waiting for; the old 1000 ms
+                // delay made Discord show the previous track for over a second.
+                delay(150)
                 updatePresence(forceRefresh = true)
                 updateNotificationPauseButton()
             }
@@ -547,7 +657,8 @@ class MediaRpcService : Service() {
             content = content,
             coverArt = currentMediaCoverArt,
             progressSec = currentMediaProgressSec,
-            durationSec = currentMediaDurationSec
+            durationSec = currentMediaDurationSec,
+            paused = isPaused
         )
         notificationManager.notify(Constants.NOTIFICATION_ID, notification)
     }
@@ -573,6 +684,7 @@ class MediaRpcService : Service() {
         coverArt: Bitmap?,
         progressSec: Int,
         durationSec: Int,
+        paused: Boolean,
     ): Notification {
         // The notification opens the app. The intent has to reuse the existing
         // task, otherwise the app is started a second time and the user sees
@@ -596,11 +708,6 @@ class MediaRpcService : Service() {
             .setContentIntent(appPendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            // Chronometer counts UP from the given time, so it has to be a wall-clock
-            // timestamp of "now - position" for the elapsed time to be correct.
-            .setWhen(System.currentTimeMillis() - currentMediaPositionMs)
-            .setUsesChronometer(true)
-            .setShowWhen(false)
             .addAction(
                 NotificationCompat.Action.Builder(
                     R.drawable.ic_media_rpc,
@@ -623,6 +730,20 @@ class MediaRpcService : Service() {
                     )
                 ).build()
             )
+
+        if (paused) {
+            // A chronometer cannot be frozen, and the timeline must not keep
+            // counting while the track is paused. The progress bar below still
+            // shows the position where playback stopped.
+            builder.setUsesChronometer(false)
+            builder.setShowWhen(false)
+        } else {
+            // Chronometer counts UP from the given time, so it has to be a wall-clock
+            // timestamp of "now - position" for the elapsed time to be correct.
+            builder.setWhen(System.currentTimeMillis() - currentMediaPositionMs)
+            builder.setUsesChronometer(true)
+            builder.setShowWhen(false)
+        }
 
         coverArt?.let { builder.setLargeIcon(it) }
 
@@ -711,7 +832,8 @@ class MediaRpcService : Service() {
     private fun setupWakeLock() {
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kizzy:MediaRPC")
-        wakeLock?.acquire()
+        // Do NOT acquire here - wake lock is acquired per-work in withWakeLock()
+        // so the CPU can sleep between media updates, saving battery.
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -772,6 +894,8 @@ class MediaRpcService : Service() {
         lastSentLargeImageUrl = null
         lastSentPackageName = null
         lastPresenceUpdateTime = 0L
+        lastPlaybackStateCode = null
+        lastMetadataSignature = null
 
         isPaused = false
         stateRepository.setPaused(false)

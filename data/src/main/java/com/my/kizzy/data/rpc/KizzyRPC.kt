@@ -2,6 +2,7 @@ package com.my.kizzy.data.rpc
 
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
+import android.media.session.PlaybackState
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.CUSTOM_ACTIVITY_TYPE
 import com.my.kizzy.data.rpc.Constants
@@ -21,6 +22,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.math.abs
 
@@ -88,6 +91,14 @@ class KizzyRPC @Inject constructor(
         private const val REAPPLY_COOLDOWN_MS = 10000L
 
         /**
+         * Discord answers every PRESENCE_UPDATE with a SESSIONS_REPLACE that already
+         * contains the activity we just sent. Re-applying in that case sends the same
+         * presence again (extra gateway traffic). Only a SESSIONS_REPLACE that arrives
+         * after this window can mean Discord actually cleared the activity.
+         */
+        private const val PRESENCE_ECHO_WINDOW_MS = 4000L
+
+        /**
          * Sanitizes a button url so it can never break the whole presence.
          *
          * Discord Gateway OP 3 rejects the ENTIRE activity when a button url is
@@ -137,10 +148,26 @@ class KizzyRPC @Inject constructor(
             return clean.takeIf { it.isNotEmpty() }
         }
     }
+    /**
+     * Serializes every presence that is actually sent.
+     *
+     * Media detection triggers many update calls at once (metadata + playback state +
+     * timeline ticker). Without this lock two calls can both compute "content changed",
+     * both pass the rate limit and both send - and the OLDER one may reach the gateway
+     * last, leaving Discord stuck on the previous song. Holding the lock across the
+     * dedup check, the rate-limit wait and the send makes the last call win.
+     */
+    private val presenceSendMutex = Mutex()
     private var lastPresenceTimeMs: Long = 0L
     private var lastPresenceHash: Int = -1
     // Timestamp of the last presence re-apply, used to break the SESSIONS_REPLACE loop.
     private var lastReapplyTimeMs: Long = 0L
+    // Image urls resolved for the presence that was sent last. The RPC preview uses
+    // them so it can show the same cover art as Discord.
+    @Volatile
+    private var lastResolvedLargeImage: String? = null
+    @Volatile
+    private var lastResolvedSmallImage: String? = null
     // Start/end timestamps of the last presence that was actually sent. Used to detect seeks.
     private var lastPresenceStart: Long? = null
     private var lastPresenceEnd: Long? = null
@@ -188,9 +215,18 @@ class KizzyRPC @Inject constructor(
      * restoring the activity after a genuine session replacement.
      */
     private suspend fun launchReapplyPresence() {
-        val presence = lastPresence ?: return
+        if (lastPresence == null) return
         withContext(Dispatchers.IO) {
             val now = System.currentTimeMillis()
+            // The SESSIONS_REPLACE that follows our own PRESENCE_UPDATE already shows
+            // our activity. Re-sending it would be a pure duplicate.
+            if (lastPresenceTimeMs != 0L && now - lastPresenceTimeMs < PRESENCE_ECHO_WINDOW_MS) {
+                logger.d(
+                    "KizzyRPC",
+                    "Skipping presence re-apply (SESSIONS_REPLACE is the echo of our own update)"
+                )
+                return@withContext
+            }
             if (now - lastReapplyTimeMs < REAPPLY_COOLDOWN_MS) {
                 logger.d(
                     "KizzyRPC",
@@ -208,9 +244,17 @@ class KizzyRPC @Inject constructor(
                     continue
                 }
                 try {
-                    discordWebSocket.sendActivity(presence)
-                    logger.i("KizzyRPC", "Presence re-applied after reconnect (attempt $attempt)")
-                    return@withContext
+                    // Read the presence INSIDE the lock: a track change may have been
+                    // sent while this re-apply was waiting, and re-sending the older
+                    // presence afterwards would revert Discord to the previous song.
+                    val sent = presenceSendMutex.withLock {
+                        val latest = lastPresence ?: return@withLock false
+                        discordWebSocket.sendActivity(latest)
+                    }
+                    if (sent) {
+                        logger.i("KizzyRPC", "Presence re-applied after reconnect (attempt $attempt)")
+                        return@withContext
+                    }
                 } catch (e: Exception) {
                     logger.e("KizzyRPC", "Presence re-apply attempt $attempt failed: ${e.message ?: ""}")
                 }
@@ -224,15 +268,54 @@ class KizzyRPC @Inject constructor(
         result = 31 * result + (commonRpc.name?.hashCode() ?: 0)
         result = 31 * result + (commonRpc.details?.hashCode() ?: 0)
         result = 31 * result + (commonRpc.state?.hashCode() ?: 0)
-        result = 31 * result + (commonRpc.playbackState?.hashCode() ?: 0)
+        result = 31 * result + normalizedPlaybackState(commonRpc.playbackState)
         // The activity type and the platform change the way Discord renders the
         // presence, so they belong to the fingerprint. Without them a changed
         // activity type would be dropped as "content unchanged" and would
         // never reach Discord.
         result = 31 * result + (commonRpc.type ?: 0)
         result = 31 * result + (commonRpc.platform?.hashCode() ?: 0)
+        // The images belong to the fingerprint as well: switching the cover art
+        // switch off has to drop the large image from the profile immediately,
+        // not only when the next track starts.
+        result = 31 * result + imageFingerprint(commonRpc.largeImage)
+        result = 31 * result + imageFingerprint(commonRpc.smallImage)
+        // Whether a timeline is shown is part of the presence. A paused track has no
+        // timestamps, and the first presence of a just-started track often has a
+        // position of 0 (so no timeline) - without these the later presence that
+        // carries the real timeline would be dropped as "content unchanged".
+        result = 31 * result + (commonRpc.time?.start != null).hashCode()
+        result = 31 * result + (commonRpc.time?.end != null).hashCode()
         result = 31 * result + (buttons?.hashCode() ?: 0)
         return result
+    }
+
+    /**
+     * Buffering and connecting are transient states of the *same* playback.
+     *
+     * Discord renders the same activity card for them, so counting them as a
+     * content change made every track change send three presences (metadata,
+     * buffering, playing). The rate limit then delayed the one with the real
+     * timeline. Only a genuine play/pause transition may cause a new send.
+     */
+    private fun normalizedPlaybackState(state: Int?): Int = when (state) {
+        PlaybackState.STATE_BUFFERING,
+        PlaybackState.STATE_CONNECTING -> PlaybackState.STATE_PLAYING
+        else -> state ?: 0
+    }
+
+    /**
+     * A stable identity of an image that survives across recompositions of the
+     * same artwork: `RpcImage` has no `equals()`, and the bitmap of a
+     * `BitmapImage` changes instance on every media update, so hashing the
+     * object itself would make every update look like new content.
+     */
+    private fun imageFingerprint(image: RpcImage?): Int = when (image) {
+        null -> 0
+        is RpcImage.DiscordImage -> image.image.hashCode()
+        is RpcImage.ExternalImage -> image.image.hashCode()
+        is RpcImage.ApplicationIcon -> image.packageName.hashCode()
+        is RpcImage.BitmapImage -> image.title.hashCode()
     }
 
     /**
@@ -268,21 +351,25 @@ class KizzyRPC @Inject constructor(
      * The WebSocket connection is kept alive so presence can resume when media starts again.
      * Must be called from a coroutine context. */
     suspend fun clearPresence() {
-        // Send empty presence to clear Discord's activity card.
-        // The status must be a valid value ("invisible" hides the activity entirely).
-        discordWebSocket.sendActivity(
-            Presence(
-                activities = emptyList(),
-                afk = true,
-                since = null,
-                status = "invisible"
+        presenceSendMutex.withLock {
+            // Send empty presence to clear Discord's activity card.
+            // The status must be a valid value ("invisible" hides the activity entirely).
+            discordWebSocket.sendActivity(
+                Presence(
+                    activities = emptyList(),
+                    afk = true,
+                    since = null,
+                    status = "invisible"
+                )
             )
-        )
-        // Forget the cached presence so the next update is not treated as unchanged.
-        lastPresence = null
-        lastPresenceHash = -1
-        lastPresenceStart = null
-        lastPresenceEnd = null
+            // Forget the cached presence so the next update is not treated as unchanged.
+            lastPresence = null
+            lastPresenceHash = -1
+            lastPresenceStart = null
+            lastPresenceEnd = null
+            lastResolvedLargeImage = null
+            lastResolvedSmallImage = null
+        }
     }
 
     fun isRpcRunning(): Boolean {
@@ -458,6 +545,16 @@ class KizzyRPC @Inject constructor(
             buttonsLock.unlock()
         }
     }
+
+    /**
+     * The large/small image urls that were resolved for the presence sent last.
+     *
+     * The RPC preview needs them to show the same cover art as Discord. A caller
+     * that builds its own preview config (Experimental RPC) would otherwise have
+     * to upload the artwork a second time.
+     */
+    fun currentImageUrls(): Pair<String?, String?> =
+        lastResolvedLargeImage to lastResolvedSmallImage
 
     /**
      * Clears any previously set buttons and their urls.
@@ -682,117 +779,132 @@ class KizzyRPC @Inject constructor(
             lastPresenceEnd = null
         }
 
-        // Deduplication.
-        //
-        // A presence is only re-sent when something actually changed: a different
-        // track/app, a different play state, or the user seeking (timeline jump).
-        // Re-sending an identical presence every few seconds is pure gateway traffic.
-        //
-        // IMPORTANT: a changed presence must never be DROPPED. The old code skipped
-        // whenever the minimum interval had not elapsed, which silently swallowed the
-        // update - the RPC then kept showing the previous app until the next pause/play.
-        // Instead we wait out the remainder of the interval and then send, so the new
-        // state always reaches Discord (just not faster than the rate limit allows).
-        val now = System.currentTimeMillis()
+        // Everything that decides whether a presence is sent, the rate-limit wait and
+        // the send itself is serialized. Media detection calls updateRPC() from several
+        // coroutines at once; without this an older presence could be sent after a newer
+        // one and leave Discord showing the previous song.
+        presenceSendMutex.withLock {
+            // Deduplication.
+            //
+            // A presence is only re-sent when something actually changed: a different
+            // track/app, a different play state, or the user seeking (timeline jump).
+            // Re-sending an identical presence every few seconds is pure gateway traffic.
+            //
+            // IMPORTANT: a changed presence must never be DROPPED. The old code skipped
+            // whenever the minimum interval had not elapsed, which silently swallowed the
+            // update - the RPC then kept showing the previous app until the next pause/play.
+            // Instead we wait out the remainder of the interval and then send, so the new
+            // state always reaches Discord (just not faster than the rate limit allows).
+            val now = System.currentTimeMillis()
 
-        // The buttons are part of the presence, so they have to be part of the
-        // fingerprint as well. Otherwise switching a button off would be dropped
-        // as "content unchanged" and the old button would stay on the profile.
-        buttonsLock.lock()
-        val buttonsSnapshot = try {
-            buttons.toList().takeIf { it.isNotEmpty() }
-        } finally {
-            buttonsLock.unlock()
-        }
-
-        val hash = presenceHash(commonRpc, buttonsSnapshot)
-        val contentChanged = hash != lastPresenceHash
-        val timelineJumped = isTimelineJump(time)
-        // Always send on first call (lastPresenceTimeMs == 0) so Discord receives
-        // the initial presence even if WebSocket was still connecting.
-        val isFirstRun = lastPresenceTimeMs == 0L
-
-        if (!forceRefresh && !isFirstRun && !contentChanged && !timelineJumped) {
-            logger.d("KizzyRPC", "Skipping presence update (content unchanged)")
-            return
-        }
-
-        if (!forceRefresh && !isFirstRun) {
-            val elapsed = now - lastPresenceTimeMs
-            if (elapsed < PRESENCE_MIN_INTERVAL_MS) {
-                logger.d(
-                    "KizzyRPC",
-                    "Presence changed - delaying ${PRESENCE_MIN_INTERVAL_MS - elapsed}ms to respect the rate limit"
-                )
-                delay(PRESENCE_MIN_INTERVAL_MS - elapsed)
+            // The buttons are part of the presence, so they have to be part of the
+            // fingerprint as well. Otherwise switching a button off would be dropped
+            // as "content unchanged" and the old button would stay on the profile.
+            buttonsLock.lock()
+            val buttonsSnapshot = try {
+                buttons.toList().takeIf { it.isNotEmpty() }
+            } finally {
+                buttonsLock.unlock()
             }
+
+            val hash = presenceHash(commonRpc, buttonsSnapshot)
+            val contentChanged = hash != lastPresenceHash
+            val timelineJumped = isTimelineJump(time)
+            // Always send on first call (lastPresenceTimeMs == 0) so Discord receives
+            // the initial presence even if WebSocket was still connecting.
+            val isFirstRun = lastPresenceTimeMs == 0L
+
+            if (!forceRefresh && !isFirstRun && !contentChanged && !timelineJumped) {
+                logger.d("KizzyRPC", "Skipping presence update (content unchanged)")
+                return@withLock
+            }
+
+            if (!forceRefresh && !isFirstRun) {
+                val elapsed = now - lastPresenceTimeMs
+                if (elapsed < PRESENCE_MIN_INTERVAL_MS) {
+                    logger.d(
+                        "KizzyRPC",
+                        "Presence changed - delaying ${PRESENCE_MIN_INTERVAL_MS - elapsed}ms to respect the rate limit"
+                    )
+                    delay(PRESENCE_MIN_INTERVAL_MS - elapsed)
+                }
+            }
+
+            // The images are resolved once, so the presence and the memory of the
+            // presence show the same artwork.
+            val resolvedLargeImage = commonRpc.largeImage?.resolveImage(kizzyRepository)
+            val resolvedSmallImage = commonRpc.smallImage?.resolveImage(kizzyRepository)
+
+            // Discord only accepts a top-level activity `url` for type 1 (Streaming).
+            // Media RPC uses type 2/3 (Listening/Watching), so its mediaUrl must NOT
+            // be placed here - a non-null url with a non-streaming type makes Discord
+            // silently drop the whole activity. The mediaUrl goes into the buttons.
+            val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0]
+            val cleanButtons = sanitizeButtons(buttonsSnapshot)
+
+            val presence = Presence(
+                activities = listOf(
+                    Activity(
+                        name = commonRpc.name,
+                        details = commonRpc.details?.takeIf { it.isNotEmpty() }?.sanitize(),
+                        state = commonRpc.state?.takeIf { it.isNotEmpty() }?.sanitize(),
+                        type = activityType,
+                        platform = commonRpc.platform?.sanitize(),
+                        timestamps = time,
+                        url = sanitizeStreamUrl(commonRpc.mediaUrl, activityType),
+                        assets = Assets(
+                            largeImage = resolvedLargeImage,
+                            smallImage = resolvedSmallImage,
+                            largeText = commonRpc.largeText?.sanitize(),
+                            smallText = commonRpc.smallText?.sanitize()
+                        ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
+                        party = party.takeIf { party != null },
+                        // Client-presence format: labels in buttons, urls in metadata.
+                        buttons = cleanButtons?.map { it.label },
+                        metadata = cleanButtons?.let { Metadata(buttonUrls = it.map { b -> b.url }) },
+
+                        applicationId = applicationIdNumber.takeIf { it.isNotEmpty() }
+                            ?: Constants.APPLICATION_ID
+
+                    )
+                ),
+                // The user is actively doing something, so they are not AFK. Sending
+                // `afk = true` made Discord render the profile as idle.
+                afk = false,
+                since = null,
+                status = effectiveStatus(status)
+            )
+            val sent = discordWebSocket.sendActivity(presence)
+            if (!sent) {
+                // The socket was not ready. Do NOT touch the cache, otherwise the next
+                // update is dropped as "content unchanged" and Discord keeps showing the
+                // previous song until the track changes again.
+                logger.w("KizzyRPC", "Presence not sent (socket not ready); will retry on the next update")
+                return@withLock
+            }
+            // Remember the presence so we can re-apply after SESSIONS_REPLACE reconnect
+            lastPresence = presence
+            lastPresenceHash = hash
+            // The send may have waited for an artwork upload, so record the actual
+            // completion time - the rate limiter and the echo window depend on it.
+            lastPresenceTimeMs = System.currentTimeMillis()
+            // Track the timeline that was sent so the next update can tell whether the user
+            // seeked (timeline jump) or the track simply kept playing.
+            lastPresenceStart = time?.start
+            lastPresenceEnd = time?.end
+            lastResolvedLargeImage = resolvedLargeImage
+            lastResolvedSmallImage = resolvedSmallImage
+
+            // Remember the presence for the RPC preview, so it shows what Discord
+            // actually displays even when the service is not running anymore.
+            rememberLastPresence(
+                commonRpc = commonRpc,
+                buttonsSnapshot = buttonsSnapshot,
+                time = time,
+                largeImage = resolvedLargeImage,
+                smallImage = resolvedSmallImage,
+            )
         }
-
-        // The images are resolved once, so the presence and the memory of the
-        // presence show the same artwork.
-        val resolvedLargeImage = commonRpc.largeImage?.resolveImage(kizzyRepository)
-        val resolvedSmallImage = commonRpc.smallImage?.resolveImage(kizzyRepository)
-
-        // Discord only accepts a top-level activity `url` for type 1 (Streaming).
-        // Media RPC uses type 2/3 (Listening/Watching), so its mediaUrl must NOT
-        // be placed here - a non-null url with a non-streaming type makes Discord
-        // silently drop the whole activity. The mediaUrl goes into the buttons.
-        val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0]
-        val cleanButtons = sanitizeButtons(buttonsSnapshot)
-
-        val presence = Presence(
-            activities = listOf(
-                Activity(
-                    name = commonRpc.name,
-                    details = commonRpc.details?.takeIf { it.isNotEmpty() }?.sanitize(),
-                    state = commonRpc.state?.takeIf { it.isNotEmpty() }?.sanitize(),
-                    type = activityType,
-                    platform = commonRpc.platform?.sanitize(),
-                    timestamps = time,
-                    url = sanitizeStreamUrl(commonRpc.mediaUrl, activityType),
-                    assets = Assets(
-                        largeImage = resolvedLargeImage,
-                        smallImage = resolvedSmallImage,
-                        largeText = commonRpc.largeText?.sanitize(),
-                        smallText = commonRpc.smallText?.sanitize()
-                    ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
-                    party = party.takeIf { party != null },
-                    // Client-presence format: labels in buttons, urls in metadata.
-                    buttons = cleanButtons?.map { it.label },
-                    metadata = cleanButtons?.let { Metadata(buttonUrls = it.map { b -> b.url }) },
-
-                    applicationId = applicationIdNumber.takeIf { it.isNotEmpty() }
-                        ?: Constants.APPLICATION_ID
-
-                )
-            ),
-            // The user is actively doing something, so they are not AFK. Sending
-            // `afk = true` made Discord render the profile as idle.
-            afk = false,
-            since = null,
-            status = effectiveStatus(status)
-        )
-        discordWebSocket.sendActivity(presence)
-        // Remember the presence so we can re-apply after SESSIONS_REPLACE reconnect
-        lastPresence = presence
-        // Only update cache AFTER successful upload - if sendActivity() timed out
-        // (socket not connected within 15s), we want to retry next time
-        lastPresenceHash = hash
-        lastPresenceTimeMs = now
-        // Track the timeline that was sent so the next update can tell whether the user
-        // seeked (timeline jump) or the track simply kept playing.
-        lastPresenceStart = time?.start
-        lastPresenceEnd = time?.end
-
-        // Remember the presence for the RPC preview, so it shows what Discord
-        // actually displays even when the service is not running anymore.
-        rememberLastPresence(
-            commonRpc = commonRpc,
-            buttonsSnapshot = buttonsSnapshot,
-            time = time,
-            largeImage = resolvedLargeImage,
-            smallImage = resolvedSmallImage,
-        )
     }
 
     /**
