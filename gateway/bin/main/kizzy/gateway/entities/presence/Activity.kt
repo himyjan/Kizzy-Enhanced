@@ -30,7 +30,11 @@ data class Activity(
     @SerialName("assets")
     val assets: Assets? = null,
     @SerialName("buttons")
-    val buttons: List<ActivityButton>? = null,
+    // Discord's Gateway PRESENCE_UPDATE (client-presence / self-bot) format uses
+    // an array of LABEL STRINGS here; the URLs live in metadata.button_urls.
+    // The RPC/IPC format [{label, url}] is a different protocol and is rejected
+    // by newer Discord clients, which drops the whole activity.
+    val buttons: List<String>? = null,
     @SerialName("metadata")
     val metadata: Metadata? = null,
     @SerialName("application_id")
