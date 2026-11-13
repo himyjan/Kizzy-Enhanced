@@ -301,6 +301,6 @@ class CustomRpcService : Service() {
          */
         const val EXTRA_CONSOLE_RPC = "CONSOLE_RPC"
 
-        private const val CONSOLE_DETECTION_INTERVAL_MS = 2500L
+        private const val CONSOLE_DETECTION_INTERVAL_MS = 5000L
     }
 }
