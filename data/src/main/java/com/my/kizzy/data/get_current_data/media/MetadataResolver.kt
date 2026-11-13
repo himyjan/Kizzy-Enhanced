@@ -411,15 +411,72 @@ class MetadataResolver @Inject constructor(
         val artists = getAllArtists(metadata)
         val isMultiArtist = artists.size > 1
 
-        // The real channel of the uploader, when the service publishes one.
-        // For YouTube, extract the video id from the media id (e.g. "yt:video:VIDEO_ID")
-        // and look it up in the oEmbed endpoint, which returns the real channel URL
-        // (https://www.youtube.com/@handle or https://www.youtube.com/channel/UCxxxx).
-        // Guessing "@artistName" does not work because the artist name is not the channel handle.
-        //
-        // Only single-artist tracks get a direct channel link. For multi-artist
-        // videos (collaborations) there is no single channel, so a search page
-        // is the better fallback.
+        // Comprehensive multi-platform URL parser for RPC and artist links.
+        // Derives the artist URL directly from the track URL the session
+        // publishes (METADATA_KEY_SOURCE_URL), instead of falling back to a
+        // search page or guessing a handle from the artist name.
+        val pkg = packageName?.lowercase().orEmpty()
+        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
+
+        val parsedArtistUrl = when {
+            // 1. SoundCloud
+            "soundcloud" in pkg -> soundcloudArtistUrl(sourceUrl)
+
+            // 2. Spotify
+            "spotify" in pkg -> spotifyArtistUrl(sourceUrl)
+
+            // 3. Bandcamp
+            "bandcamp" in pkg -> bandcampArtistUrl(sourceUrl)
+
+            // 4. YouTube, YouTube Music & Open-Source Clients
+            //    (SimpMusic, ViMusic, InnerTune, YMusic)
+            "youtube" in pkg || "ymusic" in pkg || "simpmusic" in pkg ||
+            "vimusic" in pkg || "innertune" in pkg -> youtubeArtistUrl(sourceUrl)
+
+            // 5. Spotube (Spotify UI + YouTube backend)
+            "spotube" in pkg -> if (sourceUrl?.contains("spotify.com") == true) {
+                spotifyArtistUrl(sourceUrl)
+            } else {
+                youtubeArtistUrl(sourceUrl)
+            }
+
+            // 6. Deezer
+            "deezer" in pkg -> deezerArtistUrl(sourceUrl)
+
+            // 7. Apple Music
+            "apple" in pkg -> appleMusicArtistUrl(sourceUrl)
+
+            // 8. Amazon Music
+            "amazon" in pkg -> amazonMusicArtistUrl(sourceUrl)
+
+            // 9. StreetVoice
+            "streetvoice" in pkg -> streetVoiceArtistUrl(sourceUrl)
+
+            // 10. KKBOX
+            "kkbox" in pkg -> kkboxArtistUrl(sourceUrl)
+
+            // 11. NicoBox / Niconico
+            "nicobox" in pkg || "nicovideo" in pkg -> nicoBoxArtistUrl(sourceUrl)
+
+            // 12. LINE MUSIC
+            "linemusic" in pkg || "linecorp.linemusic" in pkg -> lineMusicArtistUrl(sourceUrl)
+
+            // 13. ArchiveTune / Internet Archive
+            "archivetune" in pkg || "archive.org" in pkg -> archiveTuneArtistUrl(sourceUrl)
+
+            // 14. LX Music / YesPlayMusic
+            "lxmusic" in pkg || "yesplaymusic" in pkg -> null
+
+            else -> null
+        }
+
+        if (parsedArtistUrl != null) return parsedArtistUrl
+
+        // For YouTube single-artist tracks the real channel comes from oEmbed
+        // (@handle or /channel/UCxxxx). Guessing "@artistName" does not work
+        // because the artist name is not the channel handle.
+        // Multi-artist (collaboration) videos fall back to a search page since
+        // there is no single channel.
         if (MediaServiceResolver.isYouTube(packageName) && !isMultiArtist) {
             val video = resolveYouTubeVideo(metadata)
             if (video != null && video.channelUrl.isNotBlank()) {
@@ -428,15 +485,6 @@ class MetadataResolver @Inject constructor(
         }
 
         // The page of the service that belongs to the artist.
-        // For SoundCloud, when the session publishes a track URL like
-        // "https://soundcloud.com/artist/track", derive the artist URL
-        // "https://soundcloud.com/artist" instead of falling back to a search page.
-        if (packageName?.lowercase()?.contains("soundcloud") == true) {
-            val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
-            val artistUrl = soundcloudArtistUrl(sourceUrl)
-            if (artistUrl != null) return artistUrl
-        }
-
         return MediaServiceResolver.artistUrl(packageName, artist)
     }
 
@@ -453,15 +501,284 @@ class MetadataResolver @Inject constructor(
         if (!url.contains("soundcloud.com")) return null
         try {
             val uri = java.net.URI(url)
-            val path = uri.path ?: return null
-            val segments = path.split("/").filter { it.isNotEmpty() }
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             // soundcloud.com/<artist>[/<track>] -> need at least the artist segment
-            if (segments.size < 1) return null
-            val artist = segments[0]
-            return "https://soundcloud.com/$artist"
-        } catch (_: Exception) {
-            return null
-        }
+            if (segments.isNotEmpty()) return "https://soundcloud.com/${segments[0]}"
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives a Spotify artist/album/playlist URL from a track/artist/album/playlist URL.
+     *
+     * "https://open.spotify.com/artist/XXXX" ->
+     *   "https://open.spotify.com/artist/XXXX"
+     * "https://open.spotify.com/album/XXXX" ->
+     *   "https://open.spotify.com/album/XXXX"
+     * "https://open.spotify.com/playlist/XXXX" ->
+     *   "https://open.spotify.com/playlist/XXXX"
+     */
+    private fun spotifyArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("spotify.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            if (segments.size >= 2) {
+                when (segments[0]) {
+                    "artist", "album", "playlist" -> {
+                        return "https://open.spotify.com/${segments[0]}/${segments[1]}"
+                    }
+                }
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives a Bandcamp artist URL from a track/album URL.
+     *
+     * "https://artistname.bandcamp.com/track/..." ->
+     *   "https://artistname.bandcamp.com"
+     */
+    private fun bandcampArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("bandcamp.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val host = uri.host ?: return null
+            if (host.endsWith("bandcamp.com") && host != "bandcamp.com") {
+                return "https://$host"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives a YouTube channel/playlist URL from a video/channel/playlist URL.
+     *
+     * "https://www.youtube.com/@handle" ->
+     *   "https://www.youtube.com/@handle"
+     * "https://www.youtube.com/channel/UCxxxx" ->
+     *   "https://www.youtube.com/channel/UCxxxx"
+     * "https://www.youtube.com/playlist?list=PLxxx" ->
+     *   "https://www.youtube.com/playlist?list=PLxxx"
+     * "https://www.youtube.com/watch?v=ID&list=PLxxx" ->
+     *   "https://www.youtube.com/playlist?list=PLxxx"
+     */
+    private fun youtubeArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("youtube.com") && !url.contains("youtu.be")) return null
+        try {
+            val uri = java.net.URI(url)
+            val path = uri.path ?: return null
+            val query = uri.query ?: ""
+
+            // 1. Handle Playlists (e.g., youtube.com/playlist?list=PLxxx)
+            if (path.contains("playlist") || query.contains("list=")) {
+                val listParam = query.split("&")
+                    .map { it.split("=") }
+                    .find { it.size == 2 && it[0] == "list" }
+                if (listParam != null) {
+                    return "https://www.youtube.com/playlist?list=${listParam[1]}"
+                }
+            }
+
+            // 2. Handle Handles (/@handle)
+            if (path.startsWith("/@")) {
+                val handle = path.split("/").filter { it.isNotEmpty() }.getOrNull(0)
+                if (handle != null) return "https://www.youtube.com/$handle"
+            }
+
+            // 3. Handle Traditional Channels (/channel/ or /c/)
+            if (path.startsWith("/channel/")) {
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.size >= 2) return "https://www.youtube.com/channel/${segments[1]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives a Deezer artist URL from a track/album URL.
+     *
+     * "https://www.deezer.com/track/..." or ".../album/..." ->
+     *   does NOT contain an artist segment -> null
+     * "https://www.deezer.com/artist/XXXX" ->
+     *   "https://www.deezer.com/artist/XXXX"
+     */
+    private fun deezerArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("deezer.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            if (segments.size >= 2 && segments[0] == "artist") {
+                return "https://www.deezer.com/artist/${segments[1]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives an Apple Music artist/album/playlist URL from a track URL.
+     *
+     * "https://music.apple.com/us/artist/NAME/idXXXX" ->
+     *   "https://music.apple.com/us/artist/NAME/idXXXX"
+     * "https://music.apple.com/us/album/NAME/idXXXX" ->
+     *   "https://music.apple.com/us/album/NAME/idXXXX"
+     * "https://music.apple.com/us/playlist/NAME/idXXXX" ->
+     *   "https://music.apple.com/us/playlist/NAME/idXXXX"
+     */
+    private fun appleMusicArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("music.apple.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            if (segments.size >= 4) {
+                val country = segments[0]
+                val type = segments[1] // artist, album, playlist
+                if (type in listOf("artist", "album", "playlist")) {
+                    return "https://music.apple.com/$country/$type/${segments[2]}/${segments[3]}"
+                }
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives an Amazon Music artist URL from a track URL.
+     *
+     * "https://music.amazon.com/artists/XXXX..." ->
+     *   "https://music.amazon.com/artists/XXXX"
+     */
+    private fun amazonMusicArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("amazon.com") && !url.contains("amazon.co.jp")) return null
+        try {
+            val uri = java.net.URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            val artistIndex = segments.indexOf("artists")
+            if (artistIndex != -1 && segments.size > artistIndex + 1) {
+                val domain = uri.host ?: "music.amazon.com"
+                return "https://$domain/artists/${segments[artistIndex + 1]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives a StreetVoice artist URL from a track URL.
+     *
+     * "https://streetvoice.com/username/track/..." ->
+     *   "https://streetvoice.com/username"
+     */
+    private fun streetVoiceArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("streetvoice.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            if (segments.isNotEmpty()) {
+                val username = segments[0]
+                if (username !in listOf("music", "discovery", "activity")) {
+                    return "https://streetvoice.com/$username"
+                }
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives a KKBOX artist URL from a track/album URL.
+     *
+     * "https://www.kkbox.com/tw/artist/XXXX" ->
+     *   "https://www.kkbox.com/tw/artist/XXXX"
+     */
+    private fun kkboxArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("kkbox.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            val artistIndex = segments.indexOf("artist")
+            if (artistIndex != -1 && segments.size > artistIndex + 1) {
+                val prefix = if (artistIndex >= 2) "/${segments[0]}/${segments[1]}" else ""
+                return "https://www.kkbox.com$prefix/artist/${segments[artistIndex + 1]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives a NicoBox / Niconico artist (channel) URL from a video URL.
+     *
+     * "https://ch.nicovideo.jp/username" ->
+     *   "https://ch.nicovideo.jp/username"
+     * "https://www.nicovideo.jp/user/XXXX" ->
+     *   "https://www.nicovideo.jp/user/XXXX"
+     */
+    private fun nicoBoxArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("nicovideo.jp") && !url.contains("nico.ms")) return null
+        try {
+            val uri = java.net.URI(url)
+            val host = uri.host ?: return null
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            if (host == "ch.nicovideo.jp" && segments.isNotEmpty()) {
+                return "https://ch.nicovideo.jp/${segments[0]}"
+            }
+            val userIndex = segments.indexOf("user")
+            if (userIndex != -1 && segments.size > userIndex + 1) {
+                return "https://www.nicovideo.jp/user/${segments[userIndex + 1]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives a LINE MUSIC artist URL from a track URL.
+     *
+     * "https://music.line.me/webapp/artist/XXXX" ->
+     *   "https://music.line.me/webapp/artist/XXXX"
+     * "https://music-tw.line.me/artist/XXXX" ->
+     *   "https://music-tw.line.me/artist/XXXX"
+     */
+    private fun lineMusicArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("music.line.me") && !url.contains("music-tw.line.me")) return null
+        try {
+            val uri = java.net.URI(url)
+            val host = uri.host ?: return null
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            val artistIndex = segments.indexOf("artist")
+            if (artistIndex != -1 && segments.size > artistIndex + 1) {
+                val artistId = segments[artistIndex + 1]
+                return if (host.contains("music-tw")) "https://music-tw.line.me/artist/$artistId" else "https://music.line.me/webapp/artist/$artistId"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /**
+     * Derives an ArchiveTune / Internet Archive artist URL from an item URL.
+     *
+     * "https://archive.org/details/ITEM_ID" ->
+     *   "https://archive.org/details/ITEM_ID"
+     */
+    private fun archiveTuneArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("archive.org")) return null
+        try {
+            val uri = java.net.URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            val detailsIndex = segments.indexOf("details")
+            if (detailsIndex != -1 && segments.size > detailsIndex + 1) {
+                return "https://archive.org/details/${segments[detailsIndex + 1]}"
+            }
+        } catch (_: Exception) {}
+        return null
     }
 
     private fun metadataResolverArtistName(metadata: MediaMetadata): String? {
