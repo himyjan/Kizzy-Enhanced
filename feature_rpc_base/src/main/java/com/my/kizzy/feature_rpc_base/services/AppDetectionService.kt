@@ -11,9 +11,11 @@
  */
 
 @file:Suppress("DEPRECATION")
+@file:SuppressLint("MissingPermission")
 
 package com.my.kizzy.feature_rpc_base.services
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -26,6 +28,7 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.Constants
@@ -37,8 +40,10 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import java.util.*
+import kotlin.time.Duration.Companion.milliseconds
 
 @AndroidEntryPoint
+@SuppressLint("MissingPermission")
 class AppDetectionService : Service() {
 
     @Inject
@@ -63,13 +68,17 @@ class AppDetectionService : Service() {
     private var runningPackage = ""
     override fun onBind(intent: Intent): IBinder? = null
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == Constants.ACTION_STOP_SERVICE) {
-            stopSelf()
-        } else if (intent?.action == Constants.ACTION_RESTART_SERVICE) {
-            stopSelf()
-            startService(Intent(this, AppDetectionService::class.java))
-        } else {
-            handleAppDetection()
+        when (intent?.action) {
+            Constants.ACTION_STOP_SERVICE -> {
+                stopSelf()
+            }
+            Constants.ACTION_RESTART_SERVICE -> {
+                stopSelf()
+                startService(Intent(this, AppDetectionService::class.java))
+            }
+            else -> {
+                handleAppDetection()
+            }
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -141,7 +150,7 @@ class AppDetectionService : Service() {
                 } catch (e: Exception) {
                     Log.e("AppDetectionService", "Detection cycle failed: ${e.message}")
                 }
-                delay(2000)
+                delay(2000.milliseconds)
             }
         }
     }
@@ -250,8 +259,8 @@ class AppDetectionService : Service() {
     ) {
         val isAiApp = aiApp != null
         val isGameApp = gameApp != null
-        val displayName = if (isAiApp) aiApp!!.displayName else if (isGameApp) gameApp!!.displayName else null
-        val iconUrl = if (isAiApp) aiApp!!.iconUrl else if (isGameApp) gameApp!!.iconUrl else null
+        val displayName = if (isAiApp) aiApp.displayName else if (isGameApp) gameApp.displayName else null
+        val iconUrl = if (isAiApp) aiApp.iconUrl else if (isGameApp) gameApp.iconUrl else null
         val appLabel = displayName
             ?: this.packageManager.getApplicationLabel(
                 this.packageManager.getApplicationInfo(packageName, 0)
