@@ -196,7 +196,7 @@
     <string name="start_appDetection">Start app-detektion</string>
     <string name="start_mediaRpc">Start Medie-RPC</string>
     <string name="start_experimentalRpc">Start Eksperimentel RPC</string>
-    <string name="stop_rpc">Stop RPC</string>
+    <string name="stop_rpc">Afbryd RPC</string>
     <string name="stop">Stop</string>
     <string name="start_appDetectionToast">App-detektion startet</string>
     <string name="start_mediaRpcToast">Media RPC startet</string>
