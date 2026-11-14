@@ -39,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 
 import androidx.compose.ui.platform.LocalContext
 
@@ -72,6 +73,7 @@ fun homeFeaturesProvider(
 ): List<HomeFeature> {
     val ctx = LocalContext.current
     val rpcManager = RpcManager.getInstance(ctx)
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         rpcManager.refreshFromServices()
     }
@@ -103,7 +105,9 @@ fun homeFeaturesProvider(
             },
 
             onCheckedChange = {
-                rpcManager.switchTo(if (it) RpcType.MediaRpc else RpcType.None)
+                scope.launch {
+                    rpcManager.switchTo(if (it) RpcType.MediaRpc else RpcType.None)
+                }
             },
 
             shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
@@ -125,11 +129,13 @@ fun homeFeaturesProvider(
             },
 
             onCheckedChange = {
-                if (it) {
-                    val lastRpc = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                    rpcManager.switchTo(RpcType.CustomRpc, rpcConfigString = lastRpc, isConsoleRpc = false)
-                } else {
-                    rpcManager.switchTo(RpcType.None)
+                scope.launch {
+                    if (it) {
+                        val lastRpc = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                        rpcManager.switchTo(RpcType.CustomRpc, rpcConfigString = lastRpc, isConsoleRpc = false)
+                    } else {
+                        rpcManager.switchTo(RpcType.None)
+                    }
                 }
             },
 
@@ -152,11 +158,13 @@ fun homeFeaturesProvider(
             onClick = { navigateTo(it) },
 
             onCheckedChange = {
-                if (it) {
-                    val lastRpc = Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
-                    rpcManager.switchTo(RpcType.ConsoleRpc, rpcConfigString = lastRpc, isConsoleRpc = true)
-                } else {
-                    rpcManager.switchTo(RpcType.None)
+                scope.launch {
+                    if (it) {
+                        val lastRpc = Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
+                        rpcManager.switchTo(RpcType.ConsoleRpc, rpcConfigString = lastRpc, isConsoleRpc = true)
+                    } else {
+                        rpcManager.switchTo(RpcType.None)
+                    }
                 }
             },
 
@@ -178,7 +186,9 @@ fun homeFeaturesProvider(
             isChecked = experimentalRpcRunning.value,
 
             onCheckedChange = {
-                rpcManager.switchTo(if (it) RpcType.ExperimentalRpc else RpcType.None)
+                scope.launch {
+                    rpcManager.switchTo(if (it) RpcType.ExperimentalRpc else RpcType.None)
+                }
             },
 
             shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),

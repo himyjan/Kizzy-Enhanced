@@ -414,7 +414,8 @@ class MetadataResolver @Inject constructor(
             contains("deezer.com") ||
             contains("soundcloud.com") ||
             contains("spotify.com") ||
-            contains("itunes.apple.com")
+            contains("itunes.apple.com") ||
+            contains("nicovideo.jp") // Niconico
     }
 
     /**

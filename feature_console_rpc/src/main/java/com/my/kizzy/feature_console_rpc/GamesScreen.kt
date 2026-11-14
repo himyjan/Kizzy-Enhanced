@@ -95,6 +95,7 @@ import androidx.compose.runtime.mutableStateOf
 
 import androidx.compose.runtime.remember
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Alignment
@@ -176,6 +177,7 @@ fun GamesScreen(
         mutableStateOf(consoleRpcRunning)
     }
     val rpcManager = RpcManager.getInstance(context)
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         rpcManager.refreshFromServices()
     }
@@ -184,6 +186,39 @@ fun GamesScreen(
     }
     var selected by remember { mutableStateOf("") }
     var searchText by remember { mutableStateOf("") }
+
+    // Console RPC configurable settings
+    var consolePlatform by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"])
+    }
+    var consoleActivityType by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_ACTIVITY_TYPE, "0"].toString())
+    }
+    var consoleStatus by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_STATUS, "online"])
+    }
+    var consoleEnableTimestamps by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_ENABLE_TIMESTAMPS, false])
+    }
+    var consoleShowCoverArt by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART, true])
+    }
+    var consoleButton1Text by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON1_TEXT, ""])
+    }
+    var consoleButton1Url by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON1_URL, ""])
+    }
+    var consoleButton2Text by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON2_TEXT, ""])
+    }
+    var consoleButton2Url by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON2_URL, ""])
+    }
+    var showConsolePlatformDialog by remember { mutableStateOf(false) }
+    var showConsoleActivityTypeDialog by remember { mutableStateOf(false) }
+    var showConsoleStatusDialog by remember { mutableStateOf(false) }
+    var showConsoleButtonsDialog by remember { mutableStateOf(false) }
 
     // Must survive recomposition: the selected game (or detected console) is
     // stored in the intent and only read when the switch starts the service.
@@ -367,64 +402,45 @@ fun GamesScreen(
                             when (isConsoleRpcRunning) {
 
                                 true -> {
-                                    Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
                                     val rpcString = if (intent.hasExtra("RPC")) {
                                         intent.getStringExtra("RPC")
                                     } else {
+                                        val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
+                                        val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
                                         Json.encodeToString(
                                             RpcConfig(
                                                 name = "Console RPC",
                                                 details = "Console RPC running",
-                                                type = "0",
-                                                status = "online",
+                                                type = consoleActivityType,
+                                                status = consoleStatus,
+                                                timestampsStart = startTs,
+                                                timestampsStop = endTs,
+                                                platform = consolePlatform,
+                                                largeImg = if (consoleShowCoverArt) "" else "",
+                                                smallImg = if (consoleShowCoverArt) "" else "",
+                                                button1 = consoleButton1Text,
+                                                button1link = consoleButton1Url,
+                                                button2 = consoleButton2Text,
+                                                button2link = consoleButton2Url,
                                             )
                                         )
                                     }
-                                    Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = rpcString
-
-                                    context.stopService(
-
-                                        Intent(
-
-                                            context,
-
-                                            AppDetectionService::class.java
-
+                                    scope.launch {
+                                        rpcManager.switchTo(
+                                            RpcType.ConsoleRpc,
+                                            rpcConfigString = rpcString,
+                                            isConsoleRpc = true
                                         )
-
-                                    )
-
-                                    context.stopMediaRpcService()
-
-                                    context.stopService(
-
-                                        Intent(
-
-                                            context,
-
-                                            ExperimentalRpc::class.java
-
-                                        )
-
-                                    )
-
-                                    intent.removeExtra("RPC")
-                                    intent.putExtra("RPC", rpcString)
-                                    intent.putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, true)
-                                    context.startService(intent)
-
+                                    }
                                 }
 
 
 
                                 false -> {
                                     Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
-                                    context.stopService(
-                                        Intent(
-                                            context,
-                                            CustomRpcService::class.java
-                                        )
-                                    )
+                                    scope.launch {
+                                        rpcManager.switchTo(RpcType.None)
+                                    }                                }
                                 }
 
                             }
@@ -455,16 +471,22 @@ fun GamesScreen(
                                         detected = detectedConsole,
                                         selected = selected == "detected:${detectedConsole.packageName}",
                                         onClick = {
-                                            selectConfig(
+                                                                                        selectConfig(
                                                 "detected:${detectedConsole.packageName}",
-                                                RpcConfig(
+                                                 RpcConfig(
                                                     name = detectedConsole.platformName,
                                                     details = detectedGameTitle,
-                                                    largeImg = detectedConsole.largeImage.orEmpty(),
-                                                    smallImg = detectedConsole.smallImage.orEmpty(),
-                                                    timestampsStart = System.currentTimeMillis().toString(),
-                                                    status = "dnd",
-                                                    type = "0",
+                                                    type = consoleActivityType,
+                                                    status = consoleStatus,
+                                                    timestampsStart = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else "",
+                                                    timestampsStop = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else "",
+                                                    platform = consolePlatform,
+                                                    largeImg = if (consoleShowCoverArt) detectedConsole.largeImage.orEmpty() else "",
+                                                    smallImg = if (consoleShowCoverArt) detectedConsole.smallImage.orEmpty() else "",
+                                                    button1 = consoleButton1Text,
+                                                    button1link = consoleButton1Url,
+                                                    button2 = consoleButton2Text,
+                                                    button2link = consoleButton2Url,
                                                 )
                                             )
                                         }
@@ -484,11 +506,17 @@ fun GamesScreen(
                                         RpcConfig(
                                             name = info.platform,
                                             details = info.game_title,
-                                            timestampsStart = System.currentTimeMillis().toString(),
-                                            status = "dnd",
-                                            largeImg = info.large_image ?: "",
-                                            smallImg = info.small_image,
-                                            type = "0",
+                                            type = consoleActivityType,
+                                            status = consoleStatus,
+                                            timestampsStart = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else "",
+                                            timestampsStop = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else "",
+                                            platform = consolePlatform,
+                                            largeImg = if (consoleShowCoverArt) info.large_image ?: "" else "",
+                                            smallImg = if (consoleShowCoverArt) info.small_image else "",
+                                            button1 = consoleButton1Text,
+                                            button1link = consoleButton1Url,
+                                            button2 = consoleButton2Text,
+                                            button2link = consoleButton2Url,
                                         )
                                     )
                                 }
@@ -501,7 +529,6 @@ fun GamesScreen(
 
             }
 
-        }
 
     }
 

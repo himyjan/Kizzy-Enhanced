@@ -132,10 +132,6 @@ import com.my.kizzy.feature_rpc_base.RpcManager
 
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 
-import com.my.kizzy.feature_rpc_base.RpcManager
-
-import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
-
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
@@ -164,6 +160,12 @@ import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
 
 import com.my.kizzy.ui.components.preference.PreferencesHint
+
+import androidx.compose.runtime.rememberCoroutineScope
+
+import androidx.compose.runtime.LaunchedEffect
+
+import kotlinx.coroutines.launch
 
 import androidx.compose.material.icons.outlined.AppsOutage
 
