@@ -399,5 +399,9 @@
     <string name="discord_oauth_authorize_desc">Authorize Kizzy to show your activity on your Discord profile</string>
     <string name="logs_saved_toast">Logs saved to %1$s</string>
     <string name="logs_save_error">Failed to save logs</string>
+    <string name="select_all">Select All</string>
+    <string name="select_all_desc">Enable all apps for Media RPC</string>
+    <string name="deselect_all">Deselect All</string>
+    <string name="deselect_all_desc">Disable all apps for Media RPC</string>
 
 </resources>
