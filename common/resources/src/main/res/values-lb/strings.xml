@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy Verbessert</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">Numm vun der Aktivitéit</string>
@@ -14,7 +14,7 @@
     <string name="select_a_config">Konfiguratioun auswielen</string>
     <string name="login_with_discord">Mat Discord umellen</string>
     <string name="github_readme">LIESMICH (README)</string>
-    <string name="credits">Credits</string>
+    <string name="credits">Matulegungen</string>
     <string name="welcome">Wëllkomm</string>
     <string name="features">Funktiounen</string>
     <string name="account">Konto</string>
@@ -42,4 +42,12 @@
     <string name="no_internet_connection">Keng Internetverbindung</string>
     <string name="unknown_error">En onerwaarte Fehler ass opgetrueden</string>
     <string name="copied_to_clipboard">An de Tëschenträger kopiert</string>
+
+    <string name="rpc_connection_method">Verbindungsmethode</string>
+    <string name="rpc_connection_method_desc">Wielt wéi Kizzy sech mam Discord verbinnt</string>
+    <string name="rpc_connection_method_gateway">Gateway (Bot-Token)</string>
+    <string name="rpc_connection_method_oauth">OAuth (ären Discord-Konto)</string>
+    <string name="discord_oauth_authorize">Mat Discord verbannen</string>
+    <string name="discord_oauth_authorize_desc">Erlaabt Kizzy, Är Aktivité op Ärem Discord-Profil ze weisen</string>
+
 </resources>

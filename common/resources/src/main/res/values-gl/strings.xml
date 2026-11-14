@@ -111,12 +111,12 @@
     <string name="idling_notification">Inactivo…</string>
     <string name="main_appDetection">Deteción de aplicacións</string>
     <string name="main_appDetectionDetails">Kizzy permiteche compartir a túa actividade actual no Discord detectando que aplicación estás usando no teu dispositivo.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">RPC de medios</string>
     <string name="main_mediaRpcDetails">Kizzy permiteche compartir a túa actividade actual de medios no Discord, como a canción ou vídeo que estás a ouvir ou ver.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">RPC personalizado</string>
+    <string name="main_consoleRpc">RPC de consola</string>
     <string name="main_consoleRpcDetails">Kizzy permiteche usar algunhas configuracións predefinidas para establecer a túa presença no Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">RPC experimental</string>
     <string name="main_experimentalRpcDetails">Experimental RPC é unha funcionalidade en Kizzy que cambia constantemente entre Apps RPC e Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy permiteche crear a túa propia presença rica totalmente personalizable para Discord.</string>
     <string name="main_comingSoon">Próximamente</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Personalizado</string>
     <string name="update_installing">Instalándose…</string>
     <string name="update_download_error">A descarga fallou. Proba de novo.</string>
+
+    <string name="rpc_connection_method">Método de conexión</string>
+    <string name="rpc_connection_method_desc">Escolle como se conecta Kizzy con Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (token de bot)</string>
+    <string name="rpc_connection_method_oauth">OAuth (a túa conta de Discord)</string>
+    <string name="discord_oauth_authorize">Conectar con Discord</string>
+    <string name="discord_oauth_authorize_desc">Permite que Kizzy mostre a túa actividade no teu perfil de Discord</string>
 
 </resources>

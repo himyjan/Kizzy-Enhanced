@@ -382,6 +382,12 @@
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
     <string name="save_logs_to_file">Save Logs to File</string>
+    <string name="rpc_connection_method">Connection Method</string>
+    <string name="rpc_connection_method_desc">Choose how Kizzy connects to Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (Bot Token)</string>
+    <string name="rpc_connection_method_oauth">OAuth (Your Discord Account)</string>
+    <string name="discord_oauth_authorize">Connect to Discord</string>
+    <string name="discord_oauth_authorize_desc">Authorize Kizzy to show your activity on your Discord profile</string>
     <string name="logs_saved_toast">Logs saved to %1$s</string>
     <string name="logs_save_error">Failed to save logs</string>
 

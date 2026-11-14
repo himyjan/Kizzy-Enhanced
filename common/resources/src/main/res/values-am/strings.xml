@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy የተጨመረተ</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <!-- Activities -->
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">ብጁ</string>
     <string name="update_installing">በመጫን ላይ…</string>
     <string name="update_download_error">ማውረድ አልተሳካም። እንደገና ሞክር።</string>
+
+    <string name="rpc_connection_method">የግንክና ዘዴ</string>
+    <string name="rpc_connection_method_desc">Kizzy ከ Discord ጋር እንዴት ለመገናኝ ይምረጡ</string>
+    <string name="rpc_connection_method_gateway">ጌትዌይ (ቦት ቶከን)</string>
+    <string name="rpc_connection_method_oauth">OAuth (የእርስዎ ዲስካርድ መለያ)</string>
+    <string name="discord_oauth_authorize">ከ Discord ጋር ይገናኙ</string>
+    <string name="discord_oauth_authorize_desc">የእርስዎን እንድቤት በዲስካርድ መገልጫ ላይ የKizzy ንብር ይሰጡ</string>
 
 </resources>

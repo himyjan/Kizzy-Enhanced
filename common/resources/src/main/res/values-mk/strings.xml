@@ -31,7 +31,7 @@
     <string name="github_latest_release_desc">Најдете нова верзија и променински дневник</string>
     <string name="github_issue">GitHub проблем</string>
     <string name="github_issueDesc">Пратете грешка или할 증언</string>
-    <string name="credits">Credits</string>
+    <string name="credits">Придонеси</string>
     <string name="credits_desc">Благодарност за користење библиотеки и参加тели</string>
     <string name="enable_artist_name">Онегоди име на уметник</string>
     <string name="enable_album_name">Активирај име на альбом</string>
@@ -111,12 +111,12 @@
     <string name="idling_notification">Празнање…</string>
     <string name="main_appDetection">Примена детекција</string>
     <string name="main_appDetectionDetails">Киззи дава вам могаћност да Heideте своје тренутне активности на Discord,잠ulating који апликација користите.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">Медиа RPC</string>
     <string name="main_mediaRpcDetails">Kizzy штера ваше прилично мулатмедијска активност Discord, аас optimizovana možnost.</string>
-    <string name="main_customRpc">Custom RPC</string>
+    <string name="main_customRpc">Прилагоден RPC</string>
     <string name="main_consoleRpc">Консола RPC</string>
     <string name="main_consoleRpcDetails">Kizzy се користи за тестову прибаву за обезбеђење успoredоване DC/RPC имплементације.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Експериментален RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC је Characteristic на Kizzy, у који сеј efforts RBAC и медијски RPC 효릇но.</string>
     <string name="main_customRpcDetails">Kizzy даје вам могућност да постигнете prilagođeno prisustvo на Discord.</string>
     <string name="main_comingSoon">Ѕе доћи</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Целост</string>
     <string name="update_installing">Инсталирај</string>
     <string name="update_download_error">Преузми</string>
+
+    <string name="rpc_connection_method">Начин на поврзување</string>
+    <string name="rpc_connection_method_desc">Изберете како Kizzy се поврзува со Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (токен на бот)</string>
+    <string name="rpc_connection_method_oauth">OAuth (вашата Discord сметка)</string>
+    <string name="discord_oauth_authorize">Поврзи се со Discord</string>
+    <string name="discord_oauth_authorize_desc">Дозволете на Kizzy да ја прикажува вашата активност на вашиот Discord профил</string>
 
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy Poboljšano</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">Naziv aktivnosti</string>
@@ -42,4 +42,12 @@
     <string name="no_internet_connection">Nema internetske veze</string>
     <string name="unknown_error">Došlo je do neočekivane greške</string>
     <string name="copied_to_clipboard">Kopirano u međuspremnik</string>
+
+    <string name="rpc_connection_method">Način povezivanja</string>
+    <string name="rpc_connection_method_desc">Odaberite kako se Kizzy povezuje sa Discordom</string>
+    <string name="rpc_connection_method_gateway">Gateway (bot token)</string>
+    <string name="rpc_connection_method_oauth">OAuth (vaš Discord nalog)</string>
+    <string name="discord_oauth_authorize">Poveži se sa Discordom</string>
+    <string name="discord_oauth_authorize_desc">Dozvolite Kizzy-ju da prikaže vašu aktivnost na vašem Discord profilu</string>
+
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy Pêşvekirî</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">Navê Çalakiyê</string>
@@ -42,4 +42,12 @@
     <string name="no_internet_connection">Têkiliya înternetê tune ye</string>
     <string name="unknown_error">Çewtiyeke nenas çêbû</string>
     <string name="copied_to_clipboard">Hate kopîkirin bo clipboard</string>
+
+    <string name="rpc_connection_method">Şêwirmethod</string>
+    <string name="rpc_connection_method_desc">Hilbijardine Kizzy çawa bi Discordê têkev</string>
+    <string name="rpc_connection_method_gateway">Gateway (tokenê botê)</string>
+    <string name="rpc_connection_method_oauth">OAuth (hesaba Discord ya te)</string>
+    <string name="discord_oauth_authorize">Bi Discordê ve</string>
+    <string name="discord_oauth_authorize_desc">Kizzy bê xwe bibeşê bibe ku egirtekên te di profîla Discord ya te de nîşan bide</string>
+
 </resources>

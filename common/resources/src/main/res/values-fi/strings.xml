@@ -111,12 +111,12 @@
     <string name="idling_notification">Odotus…</string>
     <string name="main_appDetection">Sovelluksen tunnistus</string>
     <string name="main_appDetectionDetails">Kizzy antaa sinun jakaa nykyisen aktiviteettisi Discordissa tunnistamalla, minkä sovelluksen käytät laitteellasi.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">Media-RPC</string>
     <string name="main_mediaRpcDetails">Kizzy antaa sinun jakaa nykyisen median aktiviteettisi Discordissa, kuten kappaleen tai videon, jota kuuntelet tai katsot.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">Mukautettu RPC</string>
+    <string name="main_consoleRpc">Konsoli-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy antaa sinun käyttää muutamia ennalta määritettyjä asetuksia asettaaksesi läsnäolosi Discordissa.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Kokeellinen RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC on Kizzyn ominaisuus, joka vaihtaa jatkuvasti Apps RPC:n ja Median RPC:n välillä.</string>
     <string name="main_customRpcDetails">Kizzy antaa sinun luoda oman täysin muokattavan rich presence -ominaisuuden Discordissa.</string>
     <string name="main_comingSoon">Tulossa pian</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Mukautettu</string>
     <string name="update_installing">Asennetaan…</string>
     <string name="update_download_error">Lataus epäonnistui. Yritä uudelleen.</string>
+
+    <string name="rpc_connection_method">Yhdistämistapa</string>
+    <string name="rpc_connection_method_desc">Valitse, miten Kizzy yhdistää Discordiin</string>
+    <string name="rpc_connection_method_gateway">Gateway (bot-token)</string>
+    <string name="rpc_connection_method_oauth">OAuth (Discord-tilisi)</string>
+    <string name="discord_oauth_authorize">Yhdistä Discordiin</string>
+    <string name="discord_oauth_authorize_desc">Salli Kizzy:n näyttää aktiivisuutesi Discord-profiilissasi</string>
 
 </resources>

@@ -108,15 +108,15 @@
     <string name="clear">Hapus</string>
     <string name="search_placeholder">Cari…</string>
     <string name="hide_on_pause">Sembunyikan RPC saat jeda</string>
-    <string name="idling_notification">Idling…</string>
+    <string name="idling_notification">Menganggur…</string>
     <string name="main_appDetection">Deteksi Aplikasi</string>
     <string name="main_appDetection_details">Kizzy memungkinkan Anda berbagi aktivitas saat ini di Discord dengan mendeteksi aplikasi apa yang sedang Anda gunakan di perangkat Anda.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">RPC Media</string>
     <string name="main_mediaRpcDetails">Kizzy memungkinkan Anda berbagi aktivitas media terkini Anda di Discord, seperti lagu atau video yang sedang Anda dengar atau tonton.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">RPC Kustom</string>
+    <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpcDetails">Kizzy memungkinkan Anda menggunakan beberapa pengaturan yang telah ditetapkan untuk menentukan kehadiran Anda di Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">RPC Eksperimental</string>
     <string name="main_experimentalRpcDetails">Experimental RPC adalah fitur di Kizzy yang terus beralih antara Apps RPC dan Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy memungkinkan Anda membuat kustomisasi penuh dari Rich Presence untuk Discord.</string>
     <string name="main_comingSoon">Segera Hadir</string>
@@ -143,11 +143,11 @@
     <string name="custom_rpcDirectory">Direktori untuk menyimpan konfigurasi Custom RPC</string>
     <string name="select_directory">Pilih Direktori</string>
     <string name="enter_details">Masukkan Detail</string>
-    <string name="status_online">Online</string>
+    <string name="status_online">Daring</string>
     <string name="status_idle">Idling</string>
     <string name="status_dnd">Jangan Ganggu</string>
     <string name="status_invisible_offline">Tidak Terlihat dan ditampilkan sebagai Offline</string>
-    <string name="status_offline">Offline</string>
+    <string name="status_offline">Luring</string>
     <string name="notification_access">Akses Notifikasi</string>
     <string name="post_notification">Poskan Notifikasi</string>
     <string name="request_for_postNotification">Berikan izin untuk menampilkan notifikasi</string>
@@ -189,7 +189,7 @@
     <string name="time_elapsed">%1$s telah lewat</string>
     <string name="time_left">%1$s tersisa</string>
     <string name="config_name_empty">Nama konfigurasi tidak boleh kosong</string>
-    <string name="restart">Restart</string>
+    <string name="restart">Mulai Ulang</string>
     <string name="custom_rpc_running">Custom RPC Sedang Berjalan</string>
     <string name="use_imgur">Imgur sebagai Proxy Gambar</string>
     <string name="use_imgurDesc">Gunakan Imgur sebagai proxy gambar alternatif.</string>
@@ -249,10 +249,17 @@
     <string name="platform_xbox">Xbox</string>
     <string name="platform_playstation">Playstation</string>
     <string name="platform_vr">VR</string>
-    <string name="timestamp_mode_default">Media / App (default)</string>
+    <string name="timestamp_mode_default">Media / Aplikasi (bawaan)</string>
     <string name="timestamp_mode_current">Sama dengan waktu sekarang hari ini</string>
-    <string name="timestamp_mode_custom">Custom</string>
+    <string name="timestamp_mode_custom">Kustom</string>
     <string name="update_installing">Menginstal…</string>
     <string name="update_download_error">Unduhan gagal. Coba lagi.</string>
+
+    <string name="rpc_connection_method">Metode koneksi</string>
+    <string name="rpc_connection_method_desc">Pilih cara Kizzy terhubung ke Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (token bot)</string>
+    <string name="rpc_connection_method_oauth">OAuth (akun Discord Anda)</string>
+    <string name="discord_oauth_authorize">Hubungkan ke Discord</string>
+    <string name="discord_oauth_authorize_desc">Izinkan Kizzy menampilkan aktivitas Anda di profil Discord Anda</string>
 
 </resources>

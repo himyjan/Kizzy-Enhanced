@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy Millorat</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">Nom de lapos;activitat</string>
@@ -42,4 +42,12 @@
     <string name="no_internet_connection"> Sense connexió a Internet</string>
     <string name="unknown_error">Sapos;ha produït un error inesperat</string>
     <string name="copied_to_clipboard">Copiat al porta-retalls</string>
+
+    <string name="rpc_connection_method">Mètode de connexió</string>
+    <string name="rpc_connection_method_desc">Tria com es connecta Kizzy amb Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (teston del bot)</string>
+    <string name="rpc_connection_method_oauth">OAuth (el teu compte de Discord)</string>
+    <string name="discord_oauth_authorize">Connecta\'t a Discord</string>
+    <string name="discord_oauth_authorize_desc">Permet que Kizzy mostri la teva activitat al teu perfil de Discord</string>
+
 </resources>

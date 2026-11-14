@@ -274,4 +274,12 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+
+    <string name="rpc_connection_method">ସଂଯୋଗ ପଦ୍ଧତି</string>
+    <string name="rpc_connection_method_desc">ଚାରୁ କି Kizzy Discord ସହ କିପରେ ଯୋଡ଼ିବ ବାଛି ବାହାର ବାଛନ୍ତା ଚାରୁ କରନ୍ତୁ</string>
+    <string name="rpc_connection_method_gateway">Gateway (ବୋଟ ଟୋକନ)</string>
+    <string name="rpc_connection_method_oauth">OAuth (ଆପଣଙ୍କ Discord ଖାତା)</string>
+    <string name="discord_oauth_authorize">Discord ସହ ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="discord_oauth_authorize_desc">ଆପଣଙ୍କ Discord ପ୍ରୋଫାଇଲରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳପ ଦେଖାଇବାକୁ Kizzy କୁ ଅନୁମତି ଦିଅନ୍ତୁ</string>
+
 </resources>

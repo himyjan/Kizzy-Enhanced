@@ -111,9 +111,9 @@
     <string name="idling_notification">Бездіяльність…</string>
     <string name="main_appDetection">Виявлення програм</string>
     <string name="main_appDetection_details">Kizzy дозволяє вам ділитися своєю поточною активністю на Discord, визначаючи, який додаток ви використовуєте на своєму пристрої.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">Медіа RPC</string>
     <string name="main_mediaRpc_details">Kizzy дозволяє вам ділитися своєю поточною медіаактивністю на Discord, такою як музика або відео, яке ви зараз слухаєте або дивитеся.</string>
-    <string name="main_customRpc">Custom RPC</string>
+    <string name="main_customRpc">Власний RPC</string>
     <string name="main_consoleRpc">Консоль RPC</string>
     <string name="main_consoleRpc_details">Kizzy дозволяє використовувати деякі попередньо налаштовані налаштування, щоб встановити вашу присутність на Discord.</string>
     <string name="main_experimentalRpc">Експериментальний RPC</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Користувальничий</string>
     <string name="update_installing">Встановлення…</string>
     <string name="update_download_error">Завантаження не вдалося. Спробуйте ще раз.</string>
+
+    <string name="rpc_connection_method">Спосіб підключення</string>
+    <string name="rpc_connection_method_desc">Виберіть, як Kizzy підключається до Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (токен бота)</string>
+    <string name="rpc_connection_method_oauth">OAuth (ваш обліковий запис Discord)</string>
+    <string name="discord_oauth_authorize">Підключитися до Discord</string>
+    <string name="discord_oauth_authorize_desc">Дозвольте Kizzy показувати вашу активність у вашому профілі Discord</string>
 
 </resources>

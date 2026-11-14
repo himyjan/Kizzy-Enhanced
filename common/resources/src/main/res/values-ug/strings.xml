@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy ياخشىلانغان</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">پائالىيەت ئىسمى</string>
@@ -53,4 +53,12 @@
     <string name="no_internet_connection">ئىنتېرنېت ئۇلىنىشى يوق</string>
     <string name="unknown_error">نامەلۇم خاتالىق كۆرۈلدى</string>
     <string name="copied_to_clipboard">קלيبوردقا كۆچۈرۈلدى</string>
+
+    <string name="rpc_connection_method">ئۇلىنىش ئۇسۇلى</string>
+    <string name="rpc_connection_method_desc">Kizzy Discord قا ئۇلايدىغان ئۇسۇلنى تاللاڭ</string>
+    <string name="rpc_connection_method_gateway">Gateway (-bot توكىنى)</string>
+    <string name="rpc_connection_method_oauth">OAuth (سىزنىڭ Discord ھېساباتىڭىز)</string>
+    <string name="discord_oauth_authorize">Discord قا ئۇلىنىش</string>
+    <string name="discord_oauth_authorize_desc">Kizzy غا سىزنىڭ Discord پروفايلىڭىزدىكى ئېشغىلىڭىزنى كۆرسىتىشكە رۇخسەت بېرىڭ</string>
+
 </resources>

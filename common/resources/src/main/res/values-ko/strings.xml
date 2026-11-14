@@ -255,4 +255,11 @@
     <string name="update_installing">설치 중…</string>
     <string name="update_download_error">다운로드 실패했습니다. 다시 시도하십시오.</string>
 
+    <string name="rpc_connection_method">연결 방법</string>
+    <string name="rpc_connection_method_desc">Kizzy가 Discord에 연결하는 방식을 선택하세요</string>
+    <string name="rpc_connection_method_gateway">게이트웨이 (봇 토큰)</string>
+    <string name="rpc_connection_method_oauth">OAuth (내 Discord 계정)</string>
+    <string name="discord_oauth_authorize">Discord에 연결</string>
+    <string name="discord_oauth_authorize_desc">내 Discord 프로필에서 Kizzy가 내 활동을 표시하도록 허용</string>
+
 </resources>

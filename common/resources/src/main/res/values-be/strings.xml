@@ -274,4 +274,12 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+
+    <string name="rpc_connection_method">Спосаб падключэння</string>
+    <string name="rpc_connection_method_desc">Выберыце, як Kizzy падключаецца да Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (токен бота)</string>
+    <string name="rpc_connection_method_oauth">OAuth (ваш улікнага Discord)</string>
+    <string name="discord_oauth_authorize">Падключыцца да Discord</string>
+    <string name="discord_oauth_authorize_desc">Дазвольце Kizzy паказваць вашу актыўнасць у профілі Discord</string>
+
 </resources>

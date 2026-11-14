@@ -31,7 +31,7 @@
     <string name="github_latest_release_desc">Find ny version og ændringslog</string>
     <string name="github_issue">GitHub-problem</string>
     <string name="github_issueDesc">Send fejlrapport eller funktionsanmodning</string>
-    <string name="credits">Credits</string>
+    <string name="credits">Bidragyder</string>
     <string name="creditsDesc">Tak til de biblioteker der bruges og bidragyderne</string>
     <string name="enable_artist_name">Aktiver kunstnernavn</string>
     <string name="enable_album_name">Aktiver albumnavn</string>
@@ -111,12 +111,12 @@
     <string name="idling_notification">Dvale…</string>
     <string name="main_appDetection">App-detektion</string>
     <string name="main_appDetectionDetails">Kizzy giver dig mulighed for at dele din nuværende aktivitet på Discord ved at detektere hvilken app du bruger på din enhed.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">Medie-RPC</string>
     <string name="main_mediaRpcDetails">Kizzy giver dig mulighed for at dele din nuværende medieaktivitet på Discord, såsom sangen eller videoen du i øjeblikket lytter til eller ser.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">Brugerdefineret RPC</string>
+    <string name="main_consoleRpc">Konsol-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy giver dig mulighed for at bruge nogle foruddefinerede indstillinger for at sætte din tilstedeværelse på Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Eksperimentel RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC er en funktion i Kizzy der konstant skifter mellem apps RPC og media RPC.</string>
     <string name="main_customRpcDetails">Kizzy giver dig mulighed for at oprette din egen fuldt tilpasselige rich presence til Discord.</string>
     <string name="main_comingSoon">Kommer snart</string>
@@ -194,8 +194,8 @@
     <string name="use_imgur">Imgur som billedproxy</string>
     <string name="use_imgurDesc">Brug Imgur som alternativ billedproxy.</string>
     <string name="start_appDetection">Start app-detektion</string>
-    <string name="start_mediaRpc">Start Media RPC</string>
-    <string name="start_experimentalRpc">Start Experimental RPC</string>
+    <string name="start_mediaRpc">Start Medie-RPC</string>
+    <string name="start_experimentalRpc">Start Eksperimentel RPC</string>
     <string name="stop_rpc">Stop RPC</string>
     <string name="stop">Stop</string>
     <string name="start_appDetectionToast">App-detektion startet</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Brugerdefineret</string>
     <string name="update_installing">Installerer…</string>
     <string name="update_download_error">Download fejlede. Prøv igen.</string>
+
+    <string name="rpc_connection_method">Forbindelsesmetode</string>
+    <string name="rpc_connection_method_desc">Vælg, hvordan Kizzy forbinder til Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (bot-token)</string>
+    <string name="rpc_connection_method_oauth">OAuth (din Discord-konto)</string>
+    <string name="discord_oauth_authorize">Forbind til Discord</string>
+    <string name="discord_oauth_authorize_desc">Tillad Kizzy at vise din aktivitet på din Discord-profil</string>
 
 </resources>

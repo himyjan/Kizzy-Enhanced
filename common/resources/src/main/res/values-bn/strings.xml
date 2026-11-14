@@ -254,4 +254,11 @@
     <string name="update_installing">ইনস্টল করছি…</string>
     <string name="update_download_error">ডাউনলোড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন</string>
 
+    <string name="rpc_connection_method">সংযোগ পদ্ধতি</string>
+    <string name="rpc_connection_method_desc">Kizzy কীভাবে Discord-এর সাথে সংযুক্ত হবে তা নির্বাচন করুন</string>
+    <string name="rpc_connection_method_gateway">গেটওয়ে (বট টোকেন)</string>
+    <string name="rpc_connection_method_oauth">OAuth (আপনার Discord অ্যাকাউন্ট)</string>
+    <string name="discord_oauth_authorize">Discord-এর সাথে সংযুক্ত হোন</string>
+    <string name="discord_oauth_authorize_desc">আপনার Discord প্রোফাইলে Kizzy-কে আপনার কার্যকলাপ দেখানোর অনুমতি দিন</string>
+
 </resources>

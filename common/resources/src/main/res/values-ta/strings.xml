@@ -255,4 +255,11 @@
     <string name="update_installing">இன்ஸ்டால்ams</string>
     <string name="update_download_error">டெக்ஜெனಿಸಿ ப &lt;%4$pS</string>
 
+    <string name="rpc_connection_method">இணைப்பு முறை</string>
+    <string name="rpc_connection_method_desc">Kizzy எப்படி Discord-உடன் இணைகிறது என்பதைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="rpc_connection_method_gateway">Gateway (பாட் டோக்கன்)</string>
+    <string name="rpc_connection_method_oauth">OAuth (உங்கள் Discord கணக்கு)</string>
+    <string name="discord_oauth_authorize">Discord-உடன் இணைக்கவும்</string>
+    <string name="discord_oauth_authorize_desc">உங்கள் Discord சுயவிவரத்தில் உங்கள் செயல்பாட்டைக் காட்ட Kizzy-க்கு அனுமதியுங்கள்</string>
+
 </resources>

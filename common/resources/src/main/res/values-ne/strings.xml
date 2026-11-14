@@ -255,4 +255,11 @@
     <string name="update_installing">इन्स्टल गरिरहेको छ…</string>
     <string name="update_download_error">डाउनलोड असफल भयो। फेरि प्रयास गर्नुहोस्.</string>
 
+    <string name="rpc_connection_method">जडान विधि</string>
+    <string name="rpc_connection_method_desc">Kizzy ले Discord मा कसरी जोडिन्छ भन्ने छान्नुहोस्</string>
+    <string name="rpc_connection_method_gateway">गेटवे (बोट टोकन)</string>
+    <string name="rpc_connection_method_oauth">OAuth (तपाईंको Discord खाता)</string>
+    <string name="discord_oauth_authorize">Discord मा जोड्नुहोस्</string>
+    <string name="discord_oauth_authorize_desc">तपाईंको Discord प्रोफाइलमा तपाईंको गतिविधि देखाउन Kizzy लाई अनुमति दिनुहोस्</string>
+
 </resources>

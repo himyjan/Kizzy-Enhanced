@@ -274,4 +274,12 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+
+    <string name="rpc_connection_method">วิธีการเชื่อมต่อ</string>
+    <string name="rpc_connection_method_desc">เลือกว่า Kizzy จะเชื่อมต่อกับ Discord อย่างไร</string>
+    <string name="rpc_connection_method_gateway">Gateway (โทเค็นบอต)</string>
+    <string name="rpc_connection_method_oauth">OAuth (บัญชี Discord ของคุณ)</string>
+    <string name="discord_oauth_authorize">เชื่อมต่อกับ Discord</string>
+    <string name="discord_oauth_authorize_desc">อนุญาตให้ Kizzy แสดงกิจกรรมของคุณบนโปรไฟล์ Discord</string>
+
 </resources>

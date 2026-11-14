@@ -111,12 +111,12 @@
     <string name="idling_notification">Pärast…</string>
     <string name="main_appDetection">Rakenduse tuvastus</string>
     <string name="main_appDetectionDetails">Kizzy lubab teil oma praeguse aktiivsuse Discordis jagada, avastades, millist rakendust kasutate oma seadmel.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">Meedia-RPC</string>
     <string name="main_mediaRpcDetails">Kizzy annab teile võimaluse oma praeguse meedia aktiivsuse jagamiseks Discordis, nagu laulu või video, mida praegu kuulate või vaatate.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">Kohandatud RPC</string>
+    <string name="main_consoleRpc">Konsooli RPC</string>
     <string name="main_consoleRpcDetails">Kizzy lubab teil kasutada ette määratud seadistusi, et määrata oma olemasolu Discordis.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Katse-RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC on Kizzy funktsioon, mis vahetab pidevalt Apps RPC ja Media RPC vahel.</string>
     <string name="main_customRpcDetails">Kizzy annab teil võimaluse luua oma täielikult kohandatava rich presence Discordis.</string>
     <string name="main_comingSoon">Kiiresti tuleb</string>
@@ -147,7 +147,7 @@
     <string name="status_idle">Tühi</string>
     <string name="status_dnd">Ära häiri</string>
     <string name="status_invisible_offline">Vaamatuna ja kuvatakse offline’na</string>
-    <string name="status_offline">Offline</string>
+    <string name="status_offline">Võrlas</string>
     <string name="notification_access">Hoiatused juurdepääs</string>
     <string name="post_notification">Julka ilmoitus</string>
     <string name="request_for_postNotification">Annetage luba kuvada teavitusi</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Oma</string>
     <string name="update_installing">Paigaldatakse…</string>
     <string name="update_download_error">Laadimise viga. Proovige uuesti.</string>
+
+    <string name="rpc_connection_method">Ühendusmeetod</string>
+    <string name="rpc_connection_method_desc">Vali, kuidas Kizzy Discordiga ühendub</string>
+    <string name="rpc_connection_method_gateway">Gateway (boti token)</string>
+    <string name="rpc_connection_method_oauth">OAuth (teie Discordi konto)</string>
+    <string name="discord_oauth_authorize">Ühenda Discordiga</string>
+    <string name="discord_oauth_authorize_desc">Luba Kizzy-l näidata teie aktiivsust teie Discordi profiilil</string>
 
 </resources>
