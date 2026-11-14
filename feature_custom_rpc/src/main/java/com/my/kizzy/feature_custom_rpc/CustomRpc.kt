@@ -44,11 +44,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -66,7 +67,9 @@ import com.my.kizzy.feature_custom_rpc.components.DateTimePickerDialog
 import com.my.kizzy.feature_custom_rpc.components.ImagePicker
 import com.my.kizzy.feature_custom_rpc.components.sheet.DeleteConfigDialog
 import com.my.kizzy.feature_custom_rpc.components.sheet.LoadConfig
-import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.feature_custom_rpc.components.sheet.PreviewDialog
 import com.my.kizzy.feature_custom_rpc.components.sheet.RequestStoragePermissionDialog
 import com.my.kizzy.feature_custom_rpc.components.sheet.SaveConfigDialog
@@ -223,10 +226,18 @@ private fun RpcTextFieldsColumn(
     uiState: UiState,
     snackBarHostState: SnackbarHostState,
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    var isCustomRpcEnabled by remember {
-        mutableStateOf(AppUtils.customRpcRunning() && !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning())
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val rpcManager = RpcManager.getInstance(context)
+    // Re-sync from services every time this screen enters so UI matches reality
+    LaunchedEffect(Unit) {
+        rpcManager.refreshFromServices()
+    }
+    var isCustomRpcEnabled by remember {
+        mutableStateOf(rpcManager.activeRpc.value == RpcType.CustomRpc)
+    }
+    LaunchedEffect(rpcManager.activeRpc) {
+        isCustomRpcEnabled = rpcManager.activeRpc.value == RpcType.CustomRpc
     }
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -235,27 +246,19 @@ private fun RpcTextFieldsColumn(
             SwitchBar(
                 title = stringResource(id = R.string.enable_customRpc),
                 isChecked = isCustomRpcEnabled,
-                enabled = !AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning() && !AppUtils.appDetectionRunning()
-            ) {
-                isCustomRpcEnabled = !isCustomRpcEnabled
-                when (isCustomRpcEnabled) {
+                enabled = rpcManager.activeRpc.value != RpcType.MediaRpc
+                    && rpcManager.activeRpc.value != RpcType.ExperimentalRpc
+                    && rpcManager.activeRpc.value != RpcType.AppDetectionRpc
+            ) {
+                val newValue = !isCustomRpcEnabled
+                isCustomRpcEnabled = newValue
+                when (newValue) {
                     true -> {
-                        context.stopService(Intent(context, AppDetectionService::class.java))
-                        context.stopMediaRpcService()
-                        context.stopService(Intent(context, ExperimentalRpc::class.java))
-                        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
-                        val intent = Intent(context, CustomRpcService::class.java)
                         val string = uiState.rpcConfig.dataToString()
-                        intent.putExtra("RPC", string)
-                        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = string
-                        context.startService(intent)
+                        rpcManager.switchTo(RpcType.CustomRpc, rpcConfigString = string, isConsoleRpc = false)
                     }
-
-                    false -> {
-                        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
-                        context.stopService(Intent(context, CustomRpcService::class.java))
-                    }
-                }
+                    false -> rpcManager.switchTo(RpcType.None)
+                }
             }
         }
         with(uiState.rpcConfig) {

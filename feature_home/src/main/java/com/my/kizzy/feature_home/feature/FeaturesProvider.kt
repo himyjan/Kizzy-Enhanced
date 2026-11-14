@@ -68,23 +68,21 @@ fun homeFeaturesProvider(
     userVerified: Boolean,
 ): List<HomeFeature> {
     val ctx = LocalContext.current
-    // Remember the feature list keyed on RPC running states so the list
-    // is not rebuilt on every recomposition. AppUtils caches running
-    // services for 1 second, so these values are stable enough.
-    val mediaRpcRunning = remember(AppUtils.mediaRpcRunning().toString()) {
-        mutableStateOf(AppUtils.mediaRpcRunning())
+    val rpcManager = RpcManager.getInstance(ctx)
+    LaunchedEffect(Unit) {
+        rpcManager.refreshFromServices()
     }
-    val customRpcRunning = remember(AppUtils.customRpcRunning().toString()) {
-        mutableStateOf(AppUtils.customRpcRunning())
-    }
-    val consoleRpcRunning = remember(AppUtils.consoleRpcRunning().toString()) {
-        mutableStateOf(AppUtils.consoleRpcRunning())
-    }
-    val experimentalRpcRunning = remember(AppUtils.experimentalRpcRunning().toString()) {
-        mutableStateOf(AppUtils.experimentalRpcRunning())
-    }
-    val appDetectionRunning = remember(AppUtils.appDetectionRunning().toString()) {
-        mutableStateOf(AppUtils.appDetectionRunning())
+    val mediaRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.MediaRpc) }
+    val customRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.CustomRpc) }
+    val consoleRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ConsoleRpc) }
+    val experimentalRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ExperimentalRpc) }
+    val appDetectionRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.AppDetectionRpc) }
+    LaunchedEffect(rpcManager.activeRpc) {
+        mediaRpcRunning.value = rpcManager.activeRpc.value == RpcType.MediaRpc
+        customRpcRunning.value = rpcManager.activeRpc.value == RpcType.CustomRpc
+        consoleRpcRunning.value = rpcManager.activeRpc.value == RpcType.ConsoleRpc
+        experimentalRpcRunning.value = rpcManager.activeRpc.value == RpcType.ExperimentalRpc
+        appDetectionRunning.value = rpcManager.activeRpc.value == RpcType.AppDetectionRpc
     }
 
     return listOf(
@@ -102,21 +100,7 @@ fun homeFeaturesProvider(
             },
 
             onCheckedChange = {
-
-                if (it) {
-
-                    ctx.stopService(Intent(ctx, CustomRpcService::class.java))
-
-                    ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
-
-                    ctx.stopService(Intent(ctx, AppDetectionService::class.java))
-
-                    ctx.startService(Intent(ctx, MediaRpcService::class.java))
-
-                } else
-
-                    ctx.stopMediaRpcService()
-
+                rpcManager.switchTo(if (it) RpcType.MediaRpc else RpcType.None)
             },
 
             shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
@@ -140,23 +124,10 @@ fun homeFeaturesProvider(
             onCheckedChange = {
                 if (it) {
                     val lastRpc = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                    val intent = Intent(ctx, CustomRpcService::class.java)
-                    intent.apply {
-                        putExtra("RPC", lastRpc)
-                    }
-                    Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
-                    ctx.stopMediaRpcService()
-
-                    ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
-
-                    ctx.stopService(Intent(ctx, AppDetectionService::class.java))
-
-                    ctx.startService(intent)
-
-                } else
-
-                    ctx.stopService(Intent(ctx, CustomRpcService::class.java))
-
+                    rpcManager.switchTo(RpcType.CustomRpc, rpcConfigString = lastRpc, isConsoleRpc = false)
+                } else {
+                    rpcManager.switchTo(RpcType.None)
+                }
             },
 
             shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
@@ -180,16 +151,9 @@ fun homeFeaturesProvider(
             onCheckedChange = {
                 if (it) {
                     val lastRpc = Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
-                    val intent = Intent(ctx, CustomRpcService::class.java)
-                    intent.putExtra("RPC", lastRpc)
-                    intent.putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, true)
-                    ctx.stopMediaRpcService()
-                    ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
-                    ctx.stopService(Intent(ctx, AppDetectionService::class.java))
-                    ctx.startService(intent)
+                    rpcManager.switchTo(RpcType.ConsoleRpc, rpcConfigString = lastRpc, isConsoleRpc = true)
                 } else {
-                    Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
-                    ctx.stopService(Intent(ctx, CustomRpcService::class.java))
+                    rpcManager.switchTo(RpcType.None)
                 }
             },
 
@@ -211,21 +175,7 @@ fun homeFeaturesProvider(
             isChecked = experimentalRpcRunning.value,
 
             onCheckedChange = {
-
-                if (it) {
-
-                    ctx.stopMediaRpcService()
-
-                    ctx.stopService(Intent(ctx, CustomRpcService::class.java))
-
-                    ctx.stopService(Intent(ctx, AppDetectionService::class.java))
-
-                    ctx.startService(Intent(ctx, ExperimentalRpc::class.java))
-
-                } else
-
-                    ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
-
+                rpcManager.switchTo(if (it) RpcType.ExperimentalRpc else RpcType.None)
             },
 
             shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),

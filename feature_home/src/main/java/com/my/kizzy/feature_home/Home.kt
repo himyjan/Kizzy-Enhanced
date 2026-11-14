@@ -123,17 +123,16 @@ fun Home(
         homeItems = features
     }
 
+    val rpcManager = RpcManager.getInstance(ctx)
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
-            // Re-detect RPC service states so switches show correct on/off
-            // when returning to home after toggling from other screens.
-            AppUtils.init(ctx)
+            rpcManager.refreshFromServices()
             homeItems = features.map { item ->
                 when (item.title) {
-                    mediaRpcTitle -> item.copy(isChecked = AppUtils.mediaRpcRunning())
-                    customRpcTitle -> item.copy(isChecked = AppUtils.customRpcRunning())
-                    consoleRpcTitle -> item.copy(isChecked = AppUtils.customRpcRunning())
-                    experimentalRpcTitle -> item.copy(isChecked = AppUtils.experimentalRpcRunning())
+                    mediaRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.MediaRpc)
+                    customRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.CustomRpc)
+                    consoleRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ConsoleRpc)
+                    experimentalRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ExperimentalRpc)
                     else -> item
                 }
             }

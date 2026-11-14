@@ -43,9 +43,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,7 +58,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.utils.AppsInfo
-import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.ui.theme.KizzyTheme
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
@@ -104,9 +107,17 @@ fun MediaRPC(
     updateMediaAppEnabled: (String) -> Unit,
     updateAppActivityType: (String, Int?) -> Unit = { _, _ -> },
 ) {
-    val context = LocalContext.current
-    var mediaRpcRunning by remember {
-        mutableStateOf(AppUtils.mediaRpcRunning() && !AppUtils.experimentalRpcRunning())
+    val context = LocalContext.current
+    val rpcManager = RpcManager.getInstance(context)
+    // Re-sync from services every time this screen enters so UI matches reality
+    LaunchedEffect(Unit) {
+        rpcManager.refreshFromServices()
+    }
+    var mediaRpcRunning by remember {
+        mutableStateOf(rpcManager.activeRpc.value == RpcType.MediaRpc)
+    }
+    LaunchedEffect(rpcManager.activeRpc) {
+        mediaRpcRunning = rpcManager.activeRpc.value == RpcType.MediaRpc
     }
     var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, true]) }
     var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, true]) }
@@ -133,18 +144,15 @@ fun MediaRPC(
         hasNotificationAccess = hasNotificationAccess,
         updateMediaAppEnabled = updateMediaAppEnabled,
         mediaRpcRunning = mediaRpcRunning,
-        onMediaRpcRunningChanged = {
-            val newValue = !mediaRpcRunning
-            mediaRpcRunning = newValue
-            when (newValue) {
-                true -> {
-                    context.stopService(Intent(context, AppDetectionService::class.java))
-                    context.stopService(Intent(context, CustomRpcService::class.java))
-                    context.stopService(Intent(context, ExperimentalRpc::class.java))
-                    context.startService(Intent(context, MediaRpcService::class.java))
-                }
-                false -> context.stopMediaRpcService()
-            }
+        onMediaRpcRunningChanged = {
+            val newValue = !mediaRpcRunning
+            mediaRpcRunning = newValue
+            when (newValue) {
+                true -> {
+                    rpcManager.switchTo(RpcType.MediaRpc)
+                }
+                false -> rpcManager.switchTo(RpcType.None)
+            }
         },
         isArtistEnabled = isArtistEnabled,
         onArtistEnabledChanged = { isArtistEnabled = !isArtistEnabled; Prefs[MEDIA_RPC_ARTIST_NAME] = isArtistEnabled },
