@@ -299,6 +299,10 @@ class MetadataResolver @Inject constructor(
      */
     private fun normalizeMediaUrl(url: String, packageName: String?): String {
         val trimmed = url.trim()
+        // Do not alter browse links or playlist links into single-video short links
+        if (trimmed.contains("/browse/") || trimmed.contains("list=")) {
+            return trimmed
+        }
         if (!MediaServiceResolver.isYouTube(packageName) &&
             !trimmed.contains("youtube.com") && !trimmed.contains("youtu.be")
         ) {
@@ -383,6 +387,7 @@ class MetadataResolver @Inject constructor(
 
     private fun String.isValidMediaUrl(): Boolean {
         return contains("youtube.com") ||
+            contains("music.youtube.com") || // YouTube Music domain explicitly
             contains("youtu.be") ||
             contains("streetvoice.com") ||
             contains("ymusicapp.com") ||
@@ -591,13 +596,19 @@ class MetadataResolver @Inject constructor(
             val path = uri.path ?: return null
             val query = uri.query ?: ""
 
-            // 1. Handle Playlists (e.g., youtube.com/playlist?list=PLxxx)
-            if (path.contains("playlist") || query.contains("list=")) {
+            // 1. Handle Playlists and Browse/Album links
+            //    (e.g., youtube.com/playlist?list=PLxxx or music.youtube.com/browse/xxxxxxxxx)
+            if (path.contains("playlist") || path.contains("browse") || query.contains("list=")) {
                 val listParam = query.split("&")
                     .map { it.split("=") }
                     .find { it.size == 2 && it[0] == "list" }
                 if (listParam != null) {
                     return "https://www.youtube.com/playlist?list=${listParam[1]}"
+                }
+
+                // If it's a browse URL (like an album browse link), preserve it
+                if (path.contains("browse")) {
+                    return url
                 }
             }
 
