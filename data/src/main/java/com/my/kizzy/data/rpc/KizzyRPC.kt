@@ -202,6 +202,19 @@ class KizzyRPC @Inject constructor(
         val tokenChanged = newToken != token
         token = newToken
 
+        // Validate OAuth token format: Discord OAuth user tokens have 3 parts
+        // (user_id.timestamp.hmac). Bot tokens have 2 parts (client_id.secret).
+        // If we have a 2-part token in OAuth mode, it's invalid — clear it and
+        // force the user to re-authenticate.
+        if (connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH && newToken.isNotEmpty()) {
+            val parts = newToken.split(".")
+            if (parts.size < 3) {
+                logger.w("KizzyRPC", "Stored OAuth token is not a valid user token (bot token format detected). Clearing and forcing re-authentication.")
+                Prefs.remove(Prefs.DISCORD_OAUTH_ACCESS_TOKEN)
+                token = ""
+            }
+        }
+
         if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
             logger.d("KizzyRPC", "Token changed, reconnecting WebSocket with new token")
             (discordWebSocket as DiscordWebSocketImpl).updateTokenAndReconnect(newToken)
