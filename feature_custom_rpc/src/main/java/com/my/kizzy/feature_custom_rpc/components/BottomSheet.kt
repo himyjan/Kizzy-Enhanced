@@ -5,7 +5,7 @@
  *  *  * BottomSheet.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
+ *  *  ******************************************************************
  *
  *
  */
@@ -44,7 +44,8 @@ fun BottomSheet(
     onDismiss: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val state = rememberBottomSheetState(initialValue = BottomSheetValue.Expanded)
+    // Fixed: Updated to use the standard Material 3 rememberModalBottomSheetState()
+    val state = rememberModalBottomSheetState()
 
     fun dismissAndRun(action: () -> Unit) {
         scope.launch {
