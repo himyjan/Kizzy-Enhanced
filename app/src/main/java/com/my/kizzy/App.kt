@@ -63,7 +63,7 @@ class App : Application(), Configuration.Provider {
             // Dynamic colors not available on this device - non-critical
         }
 
-        // 3. Preferences (MMKV) - wrap in try-catch for storage issues on emulators
+        // 3. Preferences (DataStore) - wrap in try-catch for storage issues on emulators
         try {
             PreferenceConfig.apply(this)
         } catch (e: Exception) {
