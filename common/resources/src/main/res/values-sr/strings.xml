@@ -111,12 +111,12 @@
     <string name="idling_notification">Бездељниост…</string>
     <string name="main_appDetection">Ап discover</string>
     <string name="main_appDetection_details">Kizzy омогућава да делите своје тренутне активности на Discord’anu, тако што открива који програм користите на вашем уређају.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">Medijski RPC</string>
     <string name="main_mediaRpcDetails">Kizzy вам дозвољава да diableте ваше trenutno медијске активности у Discord-u, на пример песму коју слушате или видео који гледате.</string>
-    <string name="main_customRpc">Custom RPC</string>
+    <string name="main_customRpc">Prilagođen RPC</string>
     <string name="main_consoleRpc">Конзола RPC</string>
     <string name="main_consoleRpcDetails">Kizzy vam omogućava da koristite一些 predefined settings kako bi postavili svoje prisustvo na Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Eksperimentalan RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC je new feature u Kizzy koji stalno mijenja između Apps RPC i Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vam omogućava da stvorite svoju potpuno prilagodljivu rich presence za Discord.</string>
     <string name="main_comingSoon">Brzo dolazi</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Последњи час</string>
     <string name="update_installing">Инсталација…</string>
     <string name="update_download_error">Преузимање није успешно. Покушајте поново.</string>
+
+    <string name="rpc_connection_method">Начин повезивања</string>
+    <string name="rpc_connection_method_desc">Изаберите како се Kizzy повезује са Discord-ом</string>
+    <string name="rpc_connection_method_gateway">Gateway (бот токен)</string>
+    <string name="rpc_connection_method_oauth">OAuth (ваш Discord налог)</string>
+    <string name="discord_oauth_authorize">Повежите се са Discord-ом</string>
+    <string name="discord_oauth_authorize_desc">Дозволите Kizzy-ју да прикаже вашу активност на вашем Discord профилу</string>
 
 </resources>

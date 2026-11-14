@@ -255,4 +255,11 @@
     <string name="update_installing">Telepítés…</string>
     <string name="update_download_error">Letöltés sikertelan. Próbálja meg újra.</string>
 
+    <string name="rpc_connection_method">Kapcsolódási mód</string>
+    <string name="rpc_connection_method_desc">Válassza ki, hogyan kapcsolódik a Kizzy a Discordhoz</string>
+    <string name="rpc_connection_method_gateway">Gateway (bot token)</string>
+    <string name="rpc_connection_method_oauth">OAuth (a Discord-fiókja)</string>
+    <string name="discord_oauth_authorize">Kapcsolódás a Discordhoz</string>
+    <string name="discord_oauth_authorize_desc">Engedélyezze a Kizzy-nek, hogy megjelenítse a tevékenységét a Discord-profilján</string>
+
 </resources>

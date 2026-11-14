@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy Giňeldilen</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">Işjeňlik ady</string>
@@ -42,4 +42,12 @@
     <string name="no_internet_connection">Internet birikmesi ýok</string>
     <string name="unknown_error">Garaşylmadyk ýalňyşlyk ýüze çykdy</string>
     <string name="copied_to_clipboard">Wagtlaýyn ýatda saklanyldy</string>
+
+    <string name="rpc_connection_method">Birikdirme usuly</string>
+    <string name="rpc_connection_method_desc">Kizzy-niň Discord-y nähili birikdirýändigi saýlaň</string>
+    <string name="rpc_connection_method_gateway">Gateway (bot belgisi)</string>
+    <string name="rpc_connection_method_oauth">OAuth (siziň Discord hasabyňyz)</string>
+    <string name="discord_oauth_authorize">Discord-a birik</string>
+    <string name="discord_oauth_authorize_desc">Kizzy-niň siziň hereketiňizi Discord profiliňizde görkezmegine rugsat beriň</string>
+
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy La Kacaanay</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">Magaca Dhaqdhaqaaqa</string>
@@ -42,4 +42,12 @@
     <string name="no_internet_connection">Ma jiro xiriir internet</string>
     <string name="unknown_error">Cillad aan la filayn ayaa dhacday</string>
     <string name="copied_to_clipboard">Lagu guulaystay in la koobiyo</string>
+
+    <string name="rpc_connection_method">Habraac ku xiriirka</string>
+    <string name="rpc_connection_method_desc">Dooro sida Kizzy ugu xiriiro Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (token-ka bot-ka)</string>
+    <string name="rpc_connection_method_oauth">OAuth (miisaankaada Discord)</string>
+    <string name="discord_oauth_authorize">Ku xiriir Discord</string>
+    <string name="discord_oauth_authorize_desc">U oggolow in Kizzy uu muujinayo dhaqdhaqaaqiiintaada profilkaaga Discord</string>
+
 </resources>

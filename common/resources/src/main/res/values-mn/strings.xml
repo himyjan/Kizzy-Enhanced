@@ -274,4 +274,12 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+
+    <string name="rpc_connection_method">Холбох арга</string>
+    <string name="rpc_connection_method_desc">Kizzy Discord-тай хэрхэн холбогдохыг сонгоно уу</string>
+    <string name="rpc_connection_method_gateway">Gateway (бот токен)</string>
+    <string name="rpc_connection_method_oauth">OAuth (таны Discord аккаунт)</string>
+    <string name="discord_oauth_authorize">Discord-тай холбох</string>
+    <string name="discord_oauth_authorize_desc">Discord профилдээ хөдөлмөрийг харуулахыг Kizzy-д зөвшөөрнө үү</string>
+
 </resources>

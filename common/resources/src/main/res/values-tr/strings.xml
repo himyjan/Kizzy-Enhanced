@@ -274,4 +274,12 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+
+    <string name="rpc_connection_method">Bağlantı yöntemi</string>
+    <string name="rpc_connection_method_desc">Kizzy\'nin Discord\'a nasıl bağlandığını seçin</string>
+    <string name="rpc_connection_method_gateway">Gateway (bot belirteci)</string>
+    <string name="rpc_connection_method_oauth">OAuth (Discord hesabınız)</string>
+    <string name="discord_oauth_authorize">Discord\'a bağlan</string>
+    <string name="discord_oauth_authorize_desc">Kizzy\'nin etkinliğinizi Discord profilinizde göstermesine izin verin</string>
+
 </resources>

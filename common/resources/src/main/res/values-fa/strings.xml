@@ -274,4 +274,12 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+
+    <string name="rpc_connection_method">روش اتصال</string>
+    <string name="rpc_connection_method_desc">انتخاب کنید که Kizzy چگونه به Discord متصل شود</string>
+    <string name="rpc_connection_method_gateway">دروازه (توکن ربات)</string>
+    <string name="rpc_connection_method_oauth">OAuth (حساب Discord شما)</string>
+    <string name="discord_oauth_authorize">اتصال به Discord</string>
+    <string name="discord_oauth_authorize_desc">اجازه دهید Kizzy فعالیت شما را در پروفایل Discord نمایش دهد</string>
+
 </resources>

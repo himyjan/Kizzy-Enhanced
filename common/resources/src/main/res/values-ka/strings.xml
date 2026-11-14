@@ -255,4 +255,11 @@
     <string name="update_installing">설치 중...</string>
     <string name="update_download_error">다운로드 실패했습니다. 다시 시도하십시오.</string>
 
+    <string name="rpc_connection_method">კავშირის მეთოდი</string>
+    <string name="rpc_connection_method_desc">აირჩიეთ, როგორ აკავშირებს Kizzy Discord-ს</string>
+    <string name="rpc_connection_method_gateway">Gateway (ბოტის ტოკენი)</string>
+    <string name="rpc_connection_method_oauth">OAuth (თქვენი Discord ანგანტი)</string>
+    <string name="discord_oauth_authorize">დაკავშირება Discord-თან</string>
+    <string name="discord_oauth_authorize_desc">მიეცალით Kizzy-გან აჩვენეთ თქვენი აქტივობა თქვენს Discord პროფილზე</string>
+
 </resources>

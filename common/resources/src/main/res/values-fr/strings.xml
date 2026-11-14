@@ -111,17 +111,17 @@
     <string name="idling_notification">Inactif…</string>
     <string name="main_appDetection">Détection dapos;application</string>
     <string name="main_appDetectionDetails">Kizzy vous permet de partager votre activité actuelle sur Discord en détectant quelle application vous utilisez sur votre appareil.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">RPC média</string>
     <string name="main_mediaRpcDetails">Kizzy vous permet de partager votre activité média actuelle sur Discord, telle que la chanson ou la vidéo que vous écoutez ou regardez.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">RPC personnalisé</string>
+    <string name="main_consoleRpc">RPC console</string>
     <string name="main_consoleRpcDetails">Kizzy vous permet dapos;utiliser quelques préréglages prédéfinis pour définir votre présence sur Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">RPC expérimental</string>
     <string name="main_experimentalRpcDetails">Experimental RPC est une fonctionnalité de Kizzy qui alterne constamment entre Apps RPC et Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vous permet de créer votre propre présence riche entièrement personnalisable pour Discord.</string>
     <string name="main_comingSoon">Bientôt disponible</string>
     <string name="exit">Quitter</string>
-    <string name="logs">Logs</string>
+    <string name="logs">Journaux</string>
     <string name="drawer_subtitle_help">AIDE</string>
     <string name="drawer_faq">FAQ</string>
     <string name="go_to_profile">Aller au profil</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Personnalisé</string>
     <string name="update_installing">Installation en cours…</string>
     <string name="update_download_error">Échec du téléchargement. Veuillez réessayer.</string>
+
+    <string name="rpc_connection_method">Méthode de connexion</string>
+    <string name="rpc_connection_method_desc">Choisissez comment Kizzy se connecte à Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (jeton de bot)</string>
+    <string name="rpc_connection_method_oauth">OAuth (votre compte Discord)</string>
+    <string name="discord_oauth_authorize">Se connecter à Discord</string>
+    <string name="discord_oauth_authorize_desc">Autorisez Kizzy à afficher votre activité sur votre profil Discord</string>
 
 </resources>

@@ -274,4 +274,12 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+
+    <string name="rpc_connection_method">संपर्क पद्धति</string>
+    <string name="rpc_connection_method_desc">चिनो Kizzy Discord सङ्गः कथं सम्बद्धवति</string>
+    <string name="rpc_connection_method_gateway">Gateway (बॉट् टोकन्)</string>
+    <string name="rpc_connection_method_oauth">OAuth (भवतः Discord खाता)</string>
+    <string name="discord_oauth_authorize">Discord सङ्गः सम्बद्धवतु</string>
+    <string name="discord_oauth_authorize_desc">Kizzy एतत् भवतः Discord प्रोफैले आपदाम् दर्शयितुम् अनुमन्यताम्</string>
+
 </resources>

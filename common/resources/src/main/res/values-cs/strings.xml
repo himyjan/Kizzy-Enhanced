@@ -113,10 +113,10 @@
     <string name="main_appDetectionDetails">Kizzy vám umožňuje sdílet svou aktuální aktivitu na Discord tím, že detekuje, jakou aplikaci používáte na svém zařízení.</string>
     <string name="main_mediaRpc">Media RPC</string>
     <string name="main_mediaRpcDetails">Kizzy vám umožňuje sdílet svou aktuální mediální aktivitu na Discord, například píseň nebo video, které právě posloucháte nebo sledujete.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">Vlastní RPC</string>
+    <string name="main_consoleRpc">Konzolové RPC</string>
     <string name="main_consoleRpcDetails">Kizzy vám umožňuje použít některé předdefinované nastavení pro nastavení vaší přítomnosti na Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Experimentální RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC je funkce v Kizzy, která nepřetržitě přepíná mezi Apps RPC a Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vám umožňuje vytvořit si vlastní plně přizpůsobitelnou rich presence pro Discord.</string>
     <string name="main_comingSoon">Brzy</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Vlastní</string>
     <string name="update_installing">Instaluje se…</string>
     <string name="update_download_error">Stahování selhalo. Zkuste to znovu.</string>
+
+    <string name="rpc_connection_method">Způsob připojení</string>
+    <string name="rpc_connection_method_desc">Vyberte, jak se Kizzy připojí k Discordu</string>
+    <string name="rpc_connection_method_gateway">Gateway (token bota)</string>
+    <string name="rpc_connection_method_oauth">OAuth (váš Discord účet)</string>
+    <string name="discord_oauth_authorize">Připojit k Discordu</string>
+    <string name="discord_oauth_authorize_desc">Povolte Kizzy zobrazovat vaši aktivitu na vašem profilu Discordu</string>
 
 </resources>

@@ -274,4 +274,12 @@
     <string name="timestamp_mode_custom">Custom</string>
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
+
+    <string name="rpc_connection_method">dull method cysylltu</string>
+    <string name="rpc_connection_method_desc">Dewiswch sut y mae Kizzy yn cysylltu â Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (token bot)</string>
+    <string name="rpc_connection_method_oauth">OAuth (eich cyfrif Discord)</string>
+    <string name="discord_oauth_authorize">Cysylltu â Discord</string>
+    <string name="discord_oauth_authorize_desc">Canolwch i Kizzy ddangos eich gweithgaredd i\'ch profil Discord</string>
+
 </resources>

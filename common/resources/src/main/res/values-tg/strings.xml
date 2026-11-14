@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy Бехтаршуда</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">Номи фаъолият</string>
@@ -42,4 +42,12 @@
     <string name="no_internet_connection">Пайвасти интернет мавҷуд нест</string>
     <string name="unknown_error">Хатогии ғайричашмдошт рух дод</string>
     <string name="copied_to_clipboard">Ба буфери хотира нусхабардорӣ шуд</string>
+
+    <string name="rpc_connection_method">Усули пайвастшавӣ</string>
+    <string name="rpc_connection_method_desc">Интихобед ку да Kizzy бо Discord пайваст шавад</string>
+    <string name="rpc_connection_method_gateway">Gateway (токени бот)</string>
+    <string name="rpc_connection_method_oauth">OAuth (ҳисоби Discord-и шумо)</string>
+    <string name="discord_oauth_authorize">Бо Discord пайваст шавед</string>
+    <string name="discord_oauth_authorize_desc">Иҷозод ба Kizzy фаъолияти шуморо дар профили Discord-и шумто нишон диҳад</string>
+
 </resources>

@@ -111,12 +111,12 @@
     <string name="idling_notification">Stebimas…</string>
     <string name="main_appDetection">Programos aptikimas</string>
     <string name="main_appDetectionDetails">Kizzy leidžia jums bendrinti savo dabartinę veiklą Discord, aptodami, kokią programą naudojate savo įrenginyje.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">Medijos RPC</string>
     <string name="main_mediaRpcDetails">Kizzy leidžia jums bendrinti savo dabartine medija aktivitę Discord, kaip būtų vaikdojamą muziką ar video kurio peržiūrėjote.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">Pasirinktinis RPC</string>
+    <string name="main_consoleRpc">Konsolės RPC</string>
     <string name="main_consoleRpcDetails">Kizzy leidžia jums naudoti kai kurias nustatytas nustatymus, kad nustatytų savo būseną Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Eksperimentinis RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC yra funkcija Kizzy, kuris nuolat keičiasi tarp programų RPC ir media RPC.</string>
     <string name="main_customRpcDetails">Kizzy leidžia jums savo savoką sukurti visiškai pasitelkite įmanoma naudoti Discord.</string>
     <string name="main_comingSoon">Artimiausiu metu</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Individualus</string>
     <string name="update_installing">Įdiegiamas…</string>
     <string name="update_download_error">Atsisiuntimas nepavyko. Meskite dar kartą.</string>
+
+    <string name="rpc_connection_method">Prisijungimo būdas</string>
+    <string name="rpc_connection_method_desc">Pasirinkite, kaip Kizzy prisijungia prie Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (boto žetonas)</string>
+    <string name="rpc_connection_method_oauth">OAuth (jūsų Discord paskyra)</string>
+    <string name="discord_oauth_authorize">Prisijungti prie Discord</string>
+    <string name="discord_oauth_authorize_desc">Leiskite Kizzy rodyti jūsų veiklą jūsų Discord profilyje</string>
 
 </resources>

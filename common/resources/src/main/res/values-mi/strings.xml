@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kizzy</string>
-    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="app_name_full">Kizzy Whakapaketia</string>
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <string name="activity_name">Ingoa Mahi</string>
@@ -42,4 +42,12 @@
     <string name="no_internet_connection">Kāore he hononga ipurangi</string>
     <string name="unknown_error">I puta he hapa kāore i tumanakohia</string>
     <string name="copied_to_clipboard">Kua tāruatia ki te papatopenga</string>
+
+    <string name="rpc_connection_method">Tikina huarahi</string>
+    <string name="rpc_connection_method_desc">Whiriwhiri te manner Kizzy e hono ki Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (token pātai)</string>
+    <string name="rpc_connection_method_oauth">OAuth (tou kōtuitanga Discord)</string>
+    <string name="discord_oauth_authorize">Hono ki Discord</string>
+    <string name="discord_oauth_authorize_desc">Tuku Kizzy ki te whakaatu i tō mahi ki tō kōtuitanga Discord</string>
+
 </resources>

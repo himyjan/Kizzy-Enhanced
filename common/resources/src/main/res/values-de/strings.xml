@@ -31,7 +31,7 @@
     <string name="github_latest_release_desc">Nach neuer Version und Changelog suchen</string>
     <string name="github_issue">GitHub-Problem</string>
     <string name="github_issueDesc">Fehlerbericht oder Funktionsanfrage einreichen</string>
-    <string name="credits">Credits</string>
+    <string name="credits">Mitwirkende</string>
     <string name="credits_desc">Credits an verwendete Bibliotheken und Mitwirkende</string>
     <string name="enable_artist_name">Künstlername aktivieren</string>
     <string name="enable_album_name">Albumnamen aktivieren</string>
@@ -111,12 +111,12 @@
     <string name="idling_notification">Im Ruhezustand…</string>
     <string name="main_appDetection">App-Erkennung</string>
     <string name="main_appDetectionDetails">Kizzy erlaubt es Ihnen, Ihre aktuelle Aktivität auf Discord zu teilen, indem es erkennt, welche App Sie auf Ihrem Gerät verwenden.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">Medien-RPC</string>
     <string name="main_mediaRpcDetails">Kizzy erlaubt es Ihnen, Ihre aktuelle Medienaktivität auf Discord zu teilen, wie das Lied oder Video, das Sie gerade hören oder ansehen.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">Eigenes RPC</string>
+    <string name="main_consoleRpc">Konsolen-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy erlaubt es Ihnen, einige vordefinierte Voreinstellungen zu verwenden, um Ihre Präsenz auf Discord festzulegen.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Experimentelles RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC ist eine Funktion in Kizzy, die ständig zwischen Apps RPC und Media RPC wechselt.</string>
     <string name="main_customRpcDetails">Kizzy erlaubt es Ihnen, Ihre eigene vollständig anpassbare Rich Presence für Discord zu erstellen.</string>
     <string name="main_comingSoon">Demnächst</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Benutzerdefiniert</string>
     <string name="update_installing">Installiere…</string>
     <string name="update_download_error">Download fehlgeschlagen. Bitte erneut versuchen.</string>
+
+    <string name="rpc_connection_method">Verbindungsmethode</string>
+    <string name="rpc_connection_method_desc">Wähle, wie sich Kizzy mit Discord verbindet</string>
+    <string name="rpc_connection_method_gateway">Gateway (Bot-Token)</string>
+    <string name="rpc_connection_method_oauth">OAuth (dein Discord-Konto)</string>
+    <string name="discord_oauth_authorize">Mit Discord verbinden</string>
+    <string name="discord_oauth_authorize_desc">Erlaube Kizzy, deine Aktivität in deinem Discord-Profil anzuzeigen</string>
 
 </resources>

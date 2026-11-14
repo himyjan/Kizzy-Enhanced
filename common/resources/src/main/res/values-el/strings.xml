@@ -111,12 +111,12 @@
     <string name="idling_notification">Αναβολή…</string>
     <string name="main_appDetection">Ανίχνευση εφαρμογών</string>
     <string name="main_appDetectionDetails">Το Kizzy σας επιτρέποντα να μοιράζεστε την τρέχουσα δραστηριότητά σας στο Discord εντοπίζοντας ποια εφαρμογή χρησιμοποιείτε στην συσκευή σας.</string>
-    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc">RPC μέσων</string>
     <string name="main_mediaRpcDetails">Το Kizzy σας επιτρέπεται να κοινοποιήσετε την τρέχουσα δραστηριότητα μέσων στην Discord, όπως το τραγούδι ή το βίντεο που ακούτε ή δείτε αυτήν την στιγμή.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_customRpc">Προσαρμοσμένο RPC</string>
+    <string name="main_consoleRpc">RPC κονσόλας</string>
     <string name="main_consoleRpcDetails">Το Kizzy σάς επιτρέπει να χρησιμοποιήσετε ορισμένες καθορισμένες previously-hourly ρυθμίσεις για να ορίσετε την παρουσία σας στο Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
+    <string name="main_experimentalRpc">Πειραματικό RPC</string>
     <string name="main_experimentalRpcDetails">Experimental RPC είναι μια λειτουργία στο Kizzy που συνεχώς commute μεταξύ 애πlicações RPC και Media RPC.</string>
     <string name="main_customRpcDetails">Το Kizzy σας επιτρέπει να δημιουργήσετε το δικό σας πλήρως προσαρμοσιμο Rich Presence για το Discord.</string>
     <string name="main_comingSoon">Εructe σύντομα</string>
@@ -254,5 +254,12 @@
     <string name="timestamp_mode_custom">Προσαρμοσμένο</string>
     <string name="update_installing">Εγκατάσταση…</string>
     <string name="update_download_error">Το λήψimas απέτυχε. Ελέγξτε ξανά.</string>
+
+    <string name="rpc_connection_method">Μέθοδος σύνδεσης</string>
+    <string name="rpc_connection_method_desc">Επιλέξτε πώς συνδέεται το Kizzy με το Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (διακριτικό bot)</string>
+    <string name="rpc_connection_method_oauth">OAuth (ο λογαριασμός σας στο Discord)</string>
+    <string name="discord_oauth_authorize">Σύνδεση στο Discord</string>
+    <string name="discord_oauth_authorize_desc">Επιτρέψτε στο Kizzy να εμφανίζει τη δραστηριότητά σας στο προφίλ σας στο Discord</string>
 
 </resources>
