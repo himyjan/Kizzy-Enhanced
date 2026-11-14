@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Verbind met Discord</string>
     <string name="discord_oauth_authorize_desc">Magtig Kizzy toe om jou aktiwiteit op jou Discord-profiel te vertoon</string>
 
+    <string name="console_include_spoofed">Voeg verskuifde bouwe by</string>
+    <string name="auto_detect">Outomaties · %1$s</string>
+    <string name="save_logs_to_file">Logboeke na lêer stuur</string>
+    <string name="logs_saved_toast">Logboeke gestuur na %1$s</string>
+    <string name="discord_step3_content">Tik jou Status (onder jou gebruikersnaam) en kies Aanlyn, Doelloos of Moenie Afleid nie. ⚠️ Moenie Onsigbaar gebruik nie — Discord versteek Kizzy-aktiwiteit wanneer jy Onsigbaar is.</string>
+    <string name="discord_setup_title">Voordat jy begin</string>
+    <string name="console_auto_detect">DroidDeck / Eden outomaties opspoor</string>
+    <string name="console_detected_hint">Tik om hierdie spel vir Console RPC te gebruik</string>
+    <string name="discord_step2_content">Vind Deel my aktiwiteit en skakel dit AAN. Kies onder Waar Ek Aktiwiteit Deel met alle bedieners. Skuur na My Bedieners en skakel die bedieners aan waar jy jou status wil sien.</string>
+    <string name="discord_tip_content">Sommige Discord mobiele weergawes versteek hierdie skakelaar. Maak discord.com oop in Chrome → aktiveer Desktop-webwerf → meld aan → Instellings (⚙️) → Aktiviteitsprivaatheid → skakel Deel my aktiwiteit aan.</string>
+    <string name="discord_setup_desc">Maak seker dat Discord jou aktiwiteit op jou profiel laat verskyn.</string>
+    <string name="auto_detect_activity_type_desc">Musiekappe word as musiek opgespoor en videokappe as video, so YouTube Music word nie langer as ’n spel gewys nie. ’n Tipe wat vir ’n enkele app gekies is, het altyd voorrang.</string>
+    <string name="auto_detect_activity_type">Aktiwiteitstipe outomaties opspoor</string>
+    <string name="logs_save_error">Kon nie logboeke stuur nie</string>
+    <string name="discord_tip_title">Kan jy nie "Deel my aktiwiteit" vind nie?</string>
+    <string name="console_detected_in_game">In spel</string>
+    <string name="rich_presence_active">Rich Presence aktief</string>
+    <string name="discord_step1_title">Stap 1: Open Privaatheidinstellings</string>
+    <string name="console_detected">Opgemerkt</string>
+    <string name="discord_step2_title">Stap 2: Skakel Aktiwiteitsdeling aan</string>
+    <string name="discord_step1_content">Maak die Discord-app oop → tik jou Jy (profielprent) ikoon → tik Instellings (⚙️) → skuur af en tik Inhoud &amp; Sosiaal (of Aktiviteitsprivaatheid in ouer appweergawes).</string>
+    <string name="activity_type_fallback_desc">Gebruik vir die apps wat nie herken word nie, en vir elke app wanneer outomatiese opsporing afgeskakel is.</string>
+    <string name="discord_step3_title">Stap 3: Kyk jou aanlynstatus</string>
 </resources>

@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">له Discord سره اړتیا</string>
     <string name="discord_oauth_authorize_desc">اجازه ورکړئ چې Kizzy ستاسو فعالیت ستاسو پروفایل کې ښودلی شي</string>
 
+    <string name="console_include_spoofed">پکړې جوړړنې پورته کړئ</string>
+    <string name="auto_detect">خودکار · %1$s</string>
+    <string name="save_logs_to_file">لاستې په فایل کې خوندي کړئ</string>
+    <string name="logs_saved_toast">لاستې په %1$s کې خوندي شوې</string>
+    <string name="discord_step3_content">خپل حالت (ستاسې د کاروونکي نوم لاندې) ته ونږۍ وښک په آنلاین، بېکاره یا مه شړ کړئ تر ټولو غوره کړئ. ⚠️ پټې مه کاروئ — Discord ستاسې Kizzy فعالیت پټوي کله چې تاسو پټې یاست.</string>
+    <string name="discord_setup_title">مخکې له پیل</string>
+    <string name="console_auto_detect">DroidDeck / Eden خودکار کشف</string>
+    <string name="console_detected_hint">ونږۍ د دې لوبې لپاره Console RPC ولوبوئ</string>
+    <string name="discord_step2_content">"زما فعالیت شریکول" وپیژئ او ON یې کړئ. د "زما فعالیت چیرې شریکوم" لاندې "په ټولو سرورونو کې شریکول" غوره کړئ. د "زما سرورونه" ته ورځږئ او هغه سرورونه ON کړئ چې غواړئ ستاسې حالت ښکاره شي.</string>
+    <string name="discord_tip_content">د Discord د ځینې موبایل نسخې دا ټوګل پټوي. په Chrome کې discord.com پرانیزئ → Desktop سایټ فعال کړئ → ولېږئ → تنظیمات (⚙️) → د فعالیت محرمانیت → "زما فعالیت شریکول" ON کړئ.</string>
+    <string name="discord_setup_desc">ډاګړه وکړئ چې Discord ستاسې فعالیت ستاسې پروفایل کې ښودلی ته اجازه ورکوي.</string>
+    <string name="auto_detect_activity_type_desc">د موسیقي اپلیکیشنونه د موسیقي په توګه او د ویډیو اپلیکیشنونه د ویډیو په توګه کشف کېږي، ځکه YouTube Music اوس د لوبې په توګه نه ښکاره کېږي. د یوې اپلیکیشن لپاره غوره شوی ډول تل وړتیا لري.</string>
+    <string name="auto_detect_activity_type">د فعالیت ډول خودکار کشف</string>
+    <string name="logs_save_error">لاستې نه شوې خوندي کړل.</string>
+    <string name="discord_tip_title">"زما فعالیت شریکول" نه موندل کېږي؟</string>
+    <string name="console_detected_in_game">په لوب کې</string>
+    <string name="rich_presence_active">Rich Presence فعال</string>
+    <string name="discord_step1_title">1 ګام: محرمانیت تنظیمات پرانیزئ</string>
+    <string name="console_detected">کشف شوی</string>
+    <string name="discord_step2_title">2 ګام: د فعالیت شریکول فعال کړئ</string>
+    <string name="discord_step1_content">د Discord اپلیکیشن پرانیزئ → خپل "ته" (د پروفایل انځور) نښه ته ونږۍ → تنظیمات (⚙️) ته ونږۍ → ښکته scroll کړئ او "منځپانګه او ټولنیزې شبکې" (یا په کړنۍو اپلیکیشن نسخو کې "د فعالیت محرمانیت") ته ونږۍ.</string>
+    <string name="activity_type_fallback_desc">د ناڅرګند شویو اپلیکیشنونو لپاره، او د هر اپلیکیشن لپاره کله چې خودکار کشف بند وي.</string>
+    <string name="discord_step3_title">3 ګام: خپل آنلاین حالت وګورئ</string>
 </resources>

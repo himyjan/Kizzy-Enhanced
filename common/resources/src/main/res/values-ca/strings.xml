@@ -50,4 +50,27 @@
     <string name="discord_oauth_authorize">Connecta\'t a Discord</string>
     <string name="discord_oauth_authorize_desc">Permet que Kizzy mostri la teva activitat al teu perfil de Discord</string>
 
+    <string name="console_include_spoofed">Inclou les compilacions falsificades</string>
+    <string name="auto_detect">Automàtic · %1$s</string>
+    <string name="save_logs_to_file">Desa els registres en un fitxer</string>
+    <string name="logs_saved_toast">Els registres s\'han desat a %1$s</string>
+    <string name="discord_step3_content">Toca el teu Estat (a sota del nom d\'usuari) i tria En línia, Ociós o No molestis. ⚠️ No facis servir Invisible — Discord amaga l\'activitat de Kizzy quan ets Invisible.</string>
+    <string name="discord_setup_title">Abans de començar</string>
+    <string name="console_auto_detect">Detecció automàtica de DroidDeck / Eden</string>
+    <string name="console_detected_hint">Toca per fer servir aquest joc per a Console RPC</string>
+    <string name="discord_step2_content">Troba "Comparteix la meva activitat" i activa\'l. A sota de "On comparteixo l\'activitat", tria "Comparteix a tots els servidors"; desplaça\'t fins a "Els meus servidors" i activa els servidors on vulguis veure el teu estat.</string>
+    <string name="discord_tip_content">Algunes versions mòbils de Discord amaguen aquest commutador. Obre discord.com al Chrome → activa el lloc d\'escriptori → inicia la sessió → Configuració (⚙️) → Privadesa de l\'activitat → activa "Comparteix la meva activitat".</string>
+    <string name="discord_setup_desc">Assegura\'t que Discord permet mostrar la teva activitat al teu perfil.</string>
+    <string name="auto_detect_activity_type_desc">Les aplicacions de música es detecten com a música i les de vídeo com a vídeo, de manera que YouTube Music ja no es mostra com a joc. El tipus triat per a una aplicació sempre té prioritat.</string>
+    <string name="auto_detect_activity_type">Detecció automàtica del tipus d\'activitat</string>
+    <string name="logs_save_error">No s\'han pogut desar els registres</string>
+    <string name="discord_tip_title">No trobes "Comparteix la meva activitat"?</string>
+    <string name="console_detected_in_game">Al joc</string>
+    <string name="rich_presence_active">Rich Presence actiu</string>
+    <string name="discord_step1_title">Pas 1: Obre la configuració de privadesa</string>
+    <string name="console_detected">Detectat</string>
+    <string name="discord_step2_title">Pas 2: Activa la compartició d\'activitat</string>
+    <string name="discord_step1_content">Obre l\'aplicació Discord → toca la teva icona Tu (foto de perfil) → toca Configuració (⚙️) → desplaça\'t cap avall i toca Contingut i social (o Privadesa de l\'activitat en versions antigues de l\'app).</string>
+    <string name="activity_type_fallback_desc">S\'utilitza per a les aplicacions que no es reconeixen i per a qualsevol aplicació quan la detecció automàtica està desactivada.</string>
+    <string name="discord_step3_title">Pas 3: Comprova el teu estat en línia</string>
 </resources>

@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Conectați-vă la Discord</string>
     <string name="discord_oauth_authorize_desc">Permiteți lui Kizzy să afișeze activitatea dumneavoastră pe profilul Discord</string>
 
+    <string name="console_include_spoofed">Includează build-uri falsificate</string>
+    <string name="auto_detect">Automat · %1$s</string>
+    <string name="save_logs_to_file">Salvează jurnalele în fișier</string>
+    <string name="logs_saved_toast">Jurnalele au fost salvate în %1$s</string>
+    <string name="discord_step3_content">Atinge-ți starea (sub numele de utilizator) și alege Online, Inactiv sau Nu deranja. ⚠️ Nu folosi Invizibil — Discord ascunde activitatea Kizzy când ești Invizibil.</string>
+    <string name="discord_setup_title">Înainte de a începe</string>
+    <string name="console_auto_detect">Detectare automată DroidDeck / Eden</string>
+    <string name="console_detected_hint">Atinge pentru a folosi acest joc pentru Console RPC</string>
+    <string name="discord_step2_content">Găsește „Partajează activitatea mea" și pornește-l. Sub „Unde partajez activitatea", alege „Partajează în toate serverele". Derulează la „Serverele mele" și pornește serverele pe care vrei ca starea ta să fie vizibilă.</string>
+    <string name="discord_tip_content">Unele versiuni mobile de Discord ascund acest comutator. Deschide discord.com în Chrome → activează Site desktop → autentifică-te → Setări (⚙️) → Confidențialitatea activității → pornește „Partajează activitatea mea".</string>
+    <string name="discord_setup_desc">Asigură-te că Discord permite afișarea activității tale pe profilul tău.</string>
+    <string name="auto_detect_activity_type_desc">Aplicațiile muzicale sunt detectate ca muzică, iar aplicațiile video ca video, astfel YouTube Music nu mai este afișat ca joc. Tipul ales pentru o singură aplicație are întotdeauna prioritate.</string>
+    <string name="auto_detect_activity_type">Detectare automată a tipului de activitate</string>
+    <string name="logs_save_error">Jurnalele nu au putut fi salvate</string>
+    <string name="discord_tip_title">Nu găsești „Partajează activitatea mea"?</string>
+    <string name="console_detected_in_game">În joc</string>
+    <string name="rich_presence_active">Rich Presence activ</string>
+    <string name="discord_step1_title">Pasul 1: Deschide setările de confidențialitate</string>
+    <string name="console_detected">Detectat</string>
+    <string name="discord_step2_title">Pasul 2: Pornește partajarea activității</string>
+    <string name="discord_step1_content">Deschide aplicația Discord → atinge pictograma Tu (poza de profil) → atinge Setări (⚙️) → derulează în jos și atinge Conținut și social (sau Confidențialitatea activității în versiunile mai vechi).</string>
+    <string name="activity_type_fallback_desc">Se folosește pentru aplicațiile care nu sunt recunoscute și pentru fiecare aplicație când detectarea automată este oprită.</string>
+    <string name="discord_step3_title">Pasul 3: Verifică-ți starea online</string>
 </resources>

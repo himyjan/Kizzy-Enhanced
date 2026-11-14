@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord နှင့် ချိတ်ပါ</string>
     <string name="discord_oauth_authorize_desc">သင့် Discord အမှာတစ်ခုတွင် လှုပ်ရှားမှုကို ပြသို့ Kizzy ကို ခွင့်ပြုပါ</string>
 
+    <string name="console_include_spoofed">လှောင်ပုံစံများ ထည့်သွင်းရန်</string>
+    <string name="auto_detect">အလိုအလျောက် · %1$s</string>
+    <string name="save_logs_to_file">မှတ်တမ်းများကိုဖိုင်သိုးရန်</string>
+    <string name="logs_saved_toast">မှတ်တမ်းများကို %1$s တွင် သိုးပြီးပါပြီ</string>
+    <string name="discord_step3_content">သင့်အခြေအနေ (သင့်အမည်အောက်တွင်) ကို နှိပ်ပါ။ Online၊ အလုပ်မလုပ် သို့မဟုတ် မနိုင်ပူခွင်း ဆိုရှာပါ။ ⚠️ မမြင်ရသော အခြေအနေကို မသုံးပါစေ — မမြင်ရသည့်အခါ Discord သည် Kizzy လှုပ်ရှားမှုကို ဖျောက်ပေးပါမည်။</string>
+    <string name="discord_setup_title">မစတင်မီ</string>
+    <string name="console_auto_detect">DroidDeck / Eden ကို အလိုအလျောက် ရှာဖွေရန်</string>
+    <string name="console_detected_hint">Console RPC အတွက် ဤဂိမ်းကို သုံးရန် နှိပ်ပါ</string>
+    <string name="discord_step2_content">"Share my activity" ကို ရှာပြီး ON ဖြစ်အောင် ဖွင့်ပါ။ "Where I Share Activity" အောက်တွင် "Share in all servers" ကို ရွေးပါ။ "My Servers" သို့ လှိမ့်ပြီး သင့်အခြေအနေ မြင်ရစ်ရန် လိုချင်သော ဆာဗ်ဆာများကို ON ဖြစ်အောင် ဖွင့်ပါ။</string>
+    <string name="discord_tip_content">Discord မိုဘိုင်းဗားရှိ ယခင်ဗားများသည် ဤ toggle ကို ဖျောက်ထားပါသည်။ Chrome တွင် discord.com ဖွင့်ပါ → Desktop site ကို ဖွင့်ပါ → ဝင်ပါ → ဆက်တင်များ (⚙️) → Activity Privacy → "Share my activity" ကို ဖွင့်ပါ။</string>
+    <string name="discord_setup_desc">Discord က သင့်ပရိုဖိုင်တွင် လှုပ်ရှားမှုကို ပြသနိုင်ရန် ခွင့်ပေးကြောင်း သေချာပါ။</string>
+    <string name="auto_detect_activity_type_desc">ဂီတရိုင်းအက်ပ်များကို ဂီတ၊ ဗီဒီယိုအက်ပ်များကို ဗီဒီယိုအဖြစ် ရှာဖွေသည့်ကြောင့် YouTube Music ကို ယခုအခါ ဂိမ်းအဖြစ် မပြပါ။ လုံးဝတစ်ခုချင်းအတွက် ရွေးချယ်သော အမျိုးအစားသည် အမြဲတွင် ဦးစွာရှိပါသည်။</string>
+    <string name="auto_detect_activity_type">လှုပ်ရှားမှုအမျိုးအစားကို အလိုအလျောက် ရှာဖွေရန်</string>
+    <string name="logs_save_error">မှတ်တမ်းများ သိုးပြီးမရပါ</string>
+    <string name="discord_tip_title">"Share my activity" ကို မတွေ့ရှိပါဘူးလား?</string>
+    <string name="console_detected_in_game">ဂိမ်းအတွင်း</string>
+    <string name="rich_presence_active">Rich Presence အသုံးပြုနေသည်</string>
+    <string name="discord_step1_title">အဆင့် ၁ - သိကျန်းရေးဆက်တင်များ ဖွင့်ရန်</string>
+    <string name="console_detected">ရှာဖွေတွေ့ပါသည်</string>
+    <string name="discord_step2_title">အဆင့် ၂ - လှုပ်ရှားမှု မျှဝေမှု ဖွင့်ရန်</string>
+    <string name="discord_step1_content">Discord အက်ပ်ကို ဖွင့်ပါ → သင့် "သင်" (ပရိုဖိုင်ပုံ) အိုကောက်ကို နှိပ်ပါ → ဆက်တင်များ (⚙️) ကို နှိပ်ပါ → အောက်သို့ လှိမ့်ပြီး "အကြောင်းအရာနှင့် လူမှုဆက်ဆံရေး" (သို့မဟုတ် အက်ပ်ဗားဟောင်းများတွင် "Activity Privacy") ကို နှိပ်ပါ။</string>
+    <string name="activity_type_fallback_desc">မသိမ်းနိုင်သော အက်ပ်များအတွက်နှင့် အလိုအလျောက်ရှာဖွေခြင်း ပိတ်ထားသည့်အခါ လှုပ်ရှားမှုအမျိုးအစားပြောင်း အက်ပ်တိုင်းအတွက် အသုံးပြုသည်။</string>
+    <string name="discord_step3_title">အဆင့် ၃ - အွန်လိုင်အခြေအနေကို စစ်ဆေးပါ</string>
 </resources>

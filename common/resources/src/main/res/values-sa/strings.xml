@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord सङ्गः सम्बद्धवतु</string>
     <string name="discord_oauth_authorize_desc">Kizzy एतत् भवतः Discord प्रोफैले आपदाम् दर्शयितुम् अनुमन्यताम्</string>
 
+    <string name="console_include_spoofed">नक्कली बिल्डहरू समावेश गर्नुहोस्</string>
+    <string name="auto_detect">स्वतः · %1$s</string>
+    <string name="save_logs_to_file">लगहरू फाइलमा सुरक्षित गर्नुहोस्</string>
+    <string name="logs_saved_toast">लगहरू %1$s मा सुरक्षित भए</string>
+    <string name="discord_step3_content">आफ्नो स्टेटस (प्रयोगकर्ता नामको तल) थिच्नुहोस् र अनलाइन, निष्क्रिय वा नछोड्नुहोस् छान्नुहोस्। ⚠️ अदृश्य प्रयोग नगर्नुहोस् — तपाईं अदृश्य हुँदा Discord ले Kizzy कार्यक्रम लुकाउँछ।</string>
+    <string name="discord_setup_title">सुरु गर्नु अघि</string>
+    <string name="console_auto_detect">DroidDeck / Eden स्वतः पहिचान्नुहोस्</string>
+    <string name="console_detected_hint">Console RPC का लागि यो खेल प्रयोग गर्न थिच्नुहोस्</string>
+    <string name="discord_step2_content">"मेरो गतिविधि साझा" भन्ने खोज्नुहोस् र ON गर्नुहोस्। "मैले गतिविधि कहाँ साझा गर्छु" भित्र "सबै सर्भरमा साझा गर्नुहोस्" छान्नुहोस्। "मेरा सर्भर" सम्म स्क्रोल गरी आफ्नो स्टेटस देखिन चाहेका सर्भरहरू ON गर्नुहोस्।</string>
+    <string name="discord_tip_content">Discord का केही मोबाइल संस्करणले यो टगल लुकाउँछन्। Chrome मा discord.com खोल्नुहोस् → Desktop साइट सक्रिय गर्नुहोस् → लगइन गर्नुहोस् → सेटिङहरू (⚙️) → गतिविधि गोपनीयता → "मेरो गतिविधि साझा" ON गर्नुहोस्।</string>
+    <string name="discord_setup_desc">Discord ले तपाईंको प्रोफाइलमा गतिविधि देखाउन दिइन्छ भन्ने निश्चित गर्नुहोस्।</string>
+    <string name="auto_detect_activity_type_desc">सङ्गीतका एपहरू सङ्गीत र भिडियोका एपहरू भिडियोका रूपमा पहिचानिन्छन्, त्यसैले YouTube Music अब खेलका रूपमा देखाइँदैन। एउटै एपका लागि छानिएको प्रकार सधैँ पहिले आउँछ।</string>
+    <string name="auto_detect_activity_type">गतिविधिको प्रकार स्वतः पहिचान्नुहोस्</string>
+    <string name="logs_save_error">लगहरू सुरक्षित गर्न असफल भयो</string>
+    <string name="discord_tip_title">"मेरो गतिविधि साझा" भेटिएन?</string>
+    <string name="console_detected_in_game">खेलभित्र</string>
+    <string name="rich_presence_active">Rich Presence सक्रिय</string>
+    <string name="discord_step1_title">चरण 1: गोपनीयता सेटिङहरू खोल्नुहोस्</string>
+    <string name="console_detected">पहिचान भयो</string>
+    <string name="discord_step2_title">चरण 2: गतिविधि साझेदारी ON गर्नुहोस्</string>
+    <string name="discord_step1_content">Discord एप खोल्नुहोस् → आफ्नो "तपाईं" (प्रोफाइल तस्वीर) चिन्ह थिच्नुहोस् → सेटिङहरू (⚙️) थिच्नुहोस् → तल स्क्रोल गरी "सामग्री र सामाजिक" (वा पुराना संस्करणमा "गतिविधि गोपनीयता") थिच्नुहोस्।</string>
+    <string name="activity_type_fallback_desc">पहिचान नभएका एपहरू र स्वतः पहिचान बन्द भएका सबै एपका लागि प्रयोग हुन्छ।</string>
+    <string name="discord_step3_title">चरण 3: आफ्नो अनलाइन स्टेटस जाँच्नुहोस्</string>
 </resources>

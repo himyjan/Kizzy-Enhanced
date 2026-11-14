@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Connettiti a Discord</string>
     <string name="discord_oauth_authorize_desc">Consenti a Kizzy di mostrare la tua attività sul tuo profilo Discord</string>
 
+    <string name="console_include_spoofed">Includi build falsificati</string>
+    <string name="auto_detect">Automatico · %1$s</string>
+    <string name="save_logs_to_file">Salva i log in un file</string>
+    <string name="logs_saved_toast">Log salvati in %1$s</string>
+    <string name="discord_step3_content">Tocca il tuo stato (sotto il nome utente) e scegli Online, Inattivo o Non disturbare. ⚠️ Non usare Invisibile: Discord nasconde l\'attività di Kizzy quando sei Invisibile.</string>
+    <string name="discord_setup_title">Prima di iniziare</string>
+    <string name="console_auto_detect">Rilevamento automatico di DroidDeck / Eden</string>
+    <string name="console_detected_hint">Tocca per usare questo gioco con Console RPC</string>
+    <string name="discord_step2_content">Trova "Condividi la mia attività" e attivalo. Sotto "Dove condivido l\'attività", scegli "Condividi in tutti i server". Scorri fino a "I miei server" e attiva i server dove vuoi che il tuo stato sia visibile.</string>
+    <string name="discord_tip_content">Alcune versioni mobili di Discord nascondono questo interruttore. Apri discord.com in Chrome → abilita il sito per computer → accedi → Impostazioni (⚙️) → Privacy dell\'attività → attiva "Condividi la mia attività".</string>
+    <string name="discord_setup_desc">Assicurati che Discord consenta di mostrare la tua attività sul tuo profilo.</string>
+    <string name="auto_detect_activity_type_desc">Le app musicali vengono rilevate come musica e le app video come video, quindi YouTube Music non viene più mostrato come gioco. Il tipo scelto per una singola app ha sempre la precedenza.</string>
+    <string name="auto_detect_activity_type">Rileva automaticamente il tipo di attività</string>
+    <string name="logs_save_error">Salvataggio dei log non riuscito</string>
+    <string name="discord_tip_title">Non trovi "Condividi la mia attività"?</string>
+    <string name="console_detected_in_game">In gioco</string>
+    <string name="rich_presence_active">Rich Presence attivo</string>
+    <string name="discord_step1_title">Passaggio 1: apri le impostazioni sulla privacy</string>
+    <string name="console_detected">Rilevato</string>
+    <string name="discord_step2_title">Passaggio 2: attiva la condivisione dell\'attività</string>
+    <string name="discord_step1_content">Apri l\'app Discord → tocca la tua icona «Tu» (foto del profilo) → tocca Impostazioni (⚙️) → scorri verso il basso e tocca «Contenuti e social» (oppure «Privacy dell\'attività» nelle versioni precedenti dell\'app).</string>
+    <string name="activity_type_fallback_desc">Usato per le app non riconosciute e per ogni app quando il rilevamento automatico è disattivato.</string>
+    <string name="discord_step3_title">Passaggio 3: controlla il tuo stato online</string>
 </resources>

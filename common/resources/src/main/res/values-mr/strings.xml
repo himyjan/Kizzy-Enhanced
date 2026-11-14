@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Discord सोबत जोडा</string>
     <string name="discord_oauth_authorize_desc">तुमच्या Discord प्रोफाइलवर तुमची क्रिया दाखवण्यासाठी Kizzy ला परवानगी द्या</string>
 
+    <string name="console_include_spoofed">खोटे बिल्ड समाविष्ट करा</string>
+    <string name="auto_detect">स्वयं · %1$s</string>
+    <string name="save_logs_to_file">लॉग फाइलमध्ये जतन करा</string>
+    <string name="logs_saved_toast">लॉग %1$s मध्ये जतन झाले</string>
+    <string name="discord_step3_content">तुमची स्थितीवर (वापरकर्त्याच्या नावाखाली) टॅप करा आणि ऑनलाइन, निष्क्रिय किंवा त्रास देऊ नका असे निवडा. ⚠️ अदृश्य वापरू नका — तुम्ही अदृश्य असताना Discord Kizzy ची क्रिया लपवते.</string>
+    <string name="discord_setup_title">सुरू करण्यापूर्वी</string>
+    <string name="console_auto_detect">DroidDeck / Eden चे आपोआप ओळख</string>
+    <string name="console_detected_hint">हा गेम Console RPC साठी वापरण्यासाठी टॅप करा</string>
+    <string name="discord_step2_content">"माझी क्रिया सामायिक करा" शोधा आणि चालू करा. "माझी क्रिया कुठे सामायिक करतो" याखाली "सर्व सर्व्हरवर सामायिक करा" निवडा. "माझे सर्व्हर" पर्यंत स्क्रोल करा आणि तुमची स्थिती दिसायची असलेले सर्व्हर चालू करा.</string>
+    <string name="discord_tip_content">Discord च्या काही मोबाइल आवृत्त्यांनी हे टॉगल लपवले आहे. Chrome मध्ये discord.com उघडा → डेस्कटॉप साइट सक्षम करा → लॉग इन करा → सेटिंग्ज (⚙️) → ॲक्टिव्हिटी गोपनीयता → "माझी क्रिया सामायिक करा" चालू करा.</string>
+    <string name="discord_setup_desc">खात्री करा की Discord तुमच्या प्रोफाइलवर तुमची क्रिया दाखवू देतो.</string>
+    <string name="auto_detect_activity_type_desc">संगीत अ‍ॅप्स संगीत म्हणून आणि व्हिडिओ अ‍ॅप्स व्हिडिओ म्हणून ओळखले जातात, त्यामुळे YouTube Music आता गेम म्हणून दाखवला जात नाही. एका अ‍ॅपसाठी निवडलेला प्रकार नेहमी प्राधान्य धरतो.</string>
+    <string name="auto_detect_activity_type">क्रियेचा प्रकार आपोआप ओळख</string>
+    <string name="logs_save_error">लॉग जतन करता आले नाहीत</string>
+    <string name="discord_tip_title">"माझी क्रिया सामायिक करा" सापडत नाही?</string>
+    <string name="console_detected_in_game">खेळात</string>
+    <string name="rich_presence_active">Rich Presence सक्रिय</string>
+    <string name="discord_step1_title">पायरी 1: गोपनीयता सेटिंग्ज उघडा</string>
+    <string name="console_detected">ओळखले गेले</string>
+    <string name="discord_step2_title">पायरी 2: क्रिया सामायिक करणे चालू करा</string>
+    <string name="discord_step1_content">Discord अ‍ॅप उघडा → तुमचा "तुम्ही" (प्रोफाइल फोटो) आयकॉन टॅप करा → सेटिंग्ज (⚙️) टॅप करा → खाली स्क्रोल करा आणि "कंटेंट आणि सोशल" (किंवा जुन्या अ‍ॅप आवृत्त्यांतील "ॲक्टिव्हिटी गोपनीयता") टॅप करा.</string>
+    <string name="activity_type_fallback_desc">ओळखले न जाणार्या अ‍ॅप्ससाठी आणि आपोआप ओळख बंद केल्यावर प्रत्येक अ‍ॅपसाठी वापरले जाते.</string>
+    <string name="discord_step3_title">पायरी 3: तुमची ऑनलाइन स्थिती तपासा</string>
 </resources>

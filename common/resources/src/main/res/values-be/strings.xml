@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Падключыцца да Discord</string>
     <string name="discord_oauth_authorize_desc">Дазвольце Kizzy паказваць вашу актыўнасць у профілі Discord</string>
 
+    <string name="console_include_spoofed">Уключыць падробленыя зборкі</string>
+    <string name="auto_detect">Аўтаматычна · %1$s</string>
+    <string name="save_logs_to_file">Захаваць журналы ў файл</string>
+    <string name="logs_saved_toast">Журналы захаваны ў %1$s</string>
+    <string name="discord_step3_content">Націсніце на свой статус (ніжэй вашага імя карыстальніка) і выберыце «У сетцы», «Без дзеянняў» або «Не турбаваць». ⚠️ Не выкарыстоўвайте «Нявідымы» — Discord хавае актыўнасць Kizzy, калі вы невідымы.</string>
+    <string name="discord_setup_title">Перад пачаткам</string>
+    <string name="console_auto_detect">Аўтавызначэнне DroidDeck / Eden</string>
+    <string name="console_detected_hint">Націсніце, каб выкарыстаць гэту гульню для Console RPC</string>
+    <string name="discord_step2_content">Знайдзіце «Дзяліцца маёй актыўнасцю» і ўключыце ЯЕ. У раздзеле «Дзе я дзялюся актыўнасцю» выберыце «Дзяліцца на ўсіх серверах». Пракруціце да «Мае серверы» і ўключыце серверы, дзе вы хочаце бачыць свой статус.</string>
+    <string name="discord_tip_content">Некаторыя мабільныя версіі Discord хаваюць гэты пераключальнік. Адкрыйце discord.com у Chrome → уключыце «Desktop-сайт» → увайдзіце → Налады (⚙️) → Прыватнасць актыўнасці → уключыце «Дзяліцца маёй актыўнасцю».</string>
+    <string name="discord_setup_desc">Пераканайцеся, што Discord дазволяе паказваць вашу актыўнасць на профілі.</string>
+    <string name="auto_detect_activity_type_desc">Музычныя праграмы вызначаюцца як музыка, а відэапраграмы — як відэа, таму YouTube Music больш не паказваецца як гульня. Тып, выбраны для адной праграмы, заўсёды мае перавагу.</string>
+    <string name="auto_detect_activity_type">Аўтавызначэнне тыпу актыўнасці</string>
+    <string name="logs_save_error">Не ўдалося захаваць журналы</string>
+    <string name="discord_tip_title">Не знайшлі «Дзяліцца маёй актыўнасцю»?</string>
+    <string name="console_detected_in_game">У гульні</string>
+    <string name="rich_presence_active">Rich Presence актыўны</string>
+    <string name="discord_step1_title">Крок 1: адкрыйце налады прыватнасці</string>
+    <string name="console_detected">Вызначана</string>
+    <string name="discord_step2_title">Крок 2: уключыце дзяленне актыўнасцю</string>
+    <string name="discord_step1_content">Адкрыйце праграму Discord → націсніце на сваю іконку «Вы» (фота профілю) → націсніце «Налады» (⚙️) → пракруціце ўніз і націсніце «Змест і сацыяльныя сеткі» (або «Прыватнасць актыўнасці» ў старыяў версіях).</string>
+    <string name="activity_type_fallback_desc">Выкарыстоўваецца для праграм, якія не распазнаюцца, і для ўсіх праграм, калі аўтавызначэнне адключана.</string>
+    <string name="discord_step3_title">Крок 3: праверце свой статус у сетцы</string>
 </resources>

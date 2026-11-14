@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Forbind til Discord</string>
     <string name="discord_oauth_authorize_desc">Tillad Kizzy at vise din aktivitet på din Discord-profil</string>
 
+    <string name="console_include_spoofed">Inkludér falske builds</string>
+    <string name="auto_detect">Automatisk · %1$s</string>
+    <string name="save_logs_to_file">Gem logfiler i en fil</string>
+    <string name="logs_saved_toast">Logfilerne blev gemt i %1$s</string>
+    <string name="discord_step3_content">Tryk på din Status (under dit brugernavn), og vælg Online, Ledig eller Vil ikke forstyrres. ⚠️ Brug ikke Usynlig — Discord skjuler Kizzy-aktivitet, når du er Usynlig.</string>
+    <string name="discord_setup_title">Før du begynder</string>
+    <string name="console_auto_detect">Automatisk registrering af DroidDeck / Eden</string>
+    <string name="console_detected_hint">Tryk for at bruge dette spil til Console RPC</string>
+    <string name="discord_step2_content">Find "Del min aktivitet", og slå den til. Under "Hvor jeg deler aktivitet" vælger du "Del på alle servere". Rul ned til "Mine servere", og slå de servere til, hvor du vil have din status vist.</string>
+    <string name="discord_tip_content">Nogle mobile versioner af Discord skjuler denne kontakt. Åbn discord.com i Chrome → aktivér Desktop-websted → log ind → Indstillinger (⚙️) → Aktivitetsprivatliv → slå "Del min aktivitet" til.</string>
+    <string name="discord_setup_desc">Sørg for, at Discord tillader, at din aktivitet vises på din profil.</string>
+    <string name="auto_detect_activity_type_desc">Musikapps registreres som musik, og videoapps som video, så YouTube Music vises ikke længere som et spil. Den type, der vælges til en enkelt app, har altid prioritet.</string>
+    <string name="auto_detect_activity_type">Registrer aktivitetstype automatisk</string>
+    <string name="logs_save_error">Kunne ikke gemme logfiler</string>
+    <string name="discord_tip_title">Kan du ikke finde "Del min aktivitet"?</string>
+    <string name="console_detected_in_game">I spillet</string>
+    <string name="rich_presence_active">Rich Presence aktiv</string>
+    <string name="discord_step1_title">Trin 1: Åbn privatlivsindstillinger</string>
+    <string name="console_detected">Registreret</string>
+    <string name="discord_step2_title">Trin 2: Slå aktivitetsdeling til</string>
+    <string name="discord_step1_content">Åbn Discord-appen → tryk på dit "Du"-ikon (profilbillede) → tryk på Indstillinger (⚙️) → rul ned og tryk på "Indhold og sociale medier" (eller "Aktivitetsprivatliv" på ældre appversioner).</string>
+    <string name="activity_type_fallback_desc">Bruges til apps, der ikke genkendes, og til alle apps, når automatisk registrering er slået fra.</string>
+    <string name="discord_step3_title">Trin 3: Kontrollér din online-status</string>
 </resources>

@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord\'га байланыңыз</string>
     <string name="discord_oauth_authorize_desc">Kizzy сиздин аракеттериңизди Discord профилиңизде көрсөтүгө уруксат берүңүз</string>
 
+    <string name="console_include_spoofed">Жалган курулуштарды кошуу</string>
+    <string name="auto_detect">Автоматтуу · %1$s</string>
+    <string name="save_logs_to_file">Журналдарды файлга салуу</string>
+    <string name="logs_saved_toast">Журналдар %1$s ичине сакталды</string>
+    <string name="discord_step3_content">Колдонуучунун атынын астындагы абалын басыңыз жана Онлайн, Иш кылбай жатышы же Бөгөтүп жол болгон үнүшөсүн тандаңыз. ⚠️ Көрүнбөгөн абалды колдонбоңуз — Көрүнбөгөндө Discord Kizzyнин иш-аракетин жашырат.</string>
+    <string name="discord_setup_title">Баштоодон кийин</string>
+    <string name="console_auto_detect">DroidDeck / Eden автоматтуу аныктоо</string>
+    <string name="console_detected_hint">Бул оюнду Console RPC үчүн колдонуу үчүн басыңыз</string>
+    <string name="discord_step2_content">«Менин активдүүлүгүмдү бөлүшүү» дегенди тап, аны КЕЙИНКИ кылыңыз. «Активдүүлүгүмдү кайда бөлүшөм» астында «Бардык серверлерге бөлүшүү» дегенди тандаңыз. «Менин серверлерим» дегенге чейин сыдырып, абалыңыз көрүнгөн серверлерди КЕЙИНКИ кылыңыз.</string>
+    <string name="discord_tip_content">Discord\'тун кээ бир мобилдик версиялары бул которуучуну жашырат. Chrome\'до discord.com ачыңыз → Desktop сайтты күйгүзүңүз → кириңиз → Жөндөөлөр (⚙️) → Активдүүлүк купуялыгы → «Менин активдүүлүгүмдү бөлүшүү» КЕЙИНКИ кылыңыз.</string>
+    <string name="discord_setup_desc">Discord профилиңизде активдүүлүгүңүздү көрсөтүүгө уруксат бергенине көз жеткозиңиз.</string>
+    <string name="auto_detect_activity_type_desc">Музыка колдонмолору музыка, видео колдонмолору видео катарында аныкталат, ошондуктан YouTube Music мындай оюн катарында көрсөтүлбөйт. Бир колдонмо үчүн тандалган түр дайыма артыкча.</string>
+    <string name="auto_detect_activity_type">Активдүүлүк түрүн автоматтуу аныктоо</string>
+    <string name="logs_save_error">Журналдарды салуу ишке богобок</string>
+    <string name="discord_tip_title">«Менин активдүүлүгүмдү бөлүшүү» табылбайбы?</string>
+    <string name="console_detected_in_game">Оюнда</string>
+    <string name="rich_presence_active">Rich Presence күйгү</string>
+    <string name="discord_step1_title">1-кадам: Купуялык жөндөөлөрүн ачыңыз</string>
+    <string name="console_detected">Аныкталды</string>
+    <string name="discord_step2_title">2-кадам: Активдүүлүктү бөлүшүүнү КЕЙИНКИ кылыңыз</string>
+    <string name="discord_step1_content">Discord колдонмосун ачыңыз → «Сиз» (профиль сүрөтү) сөлкөсүн басыңыз → Жөндөөлөр (⚙️) → төмөн жүгүртүп, «Маздак жана социалдык тармактар» (же эски версиялардагы «Активдүүлүк купуялыгы») бөлүмүн басыңыз.</string>
+    <string name="activity_type_fallback_desc">Таанылбаган колдонмолор үчүн жана автоматтуу аныктоо өчүккөндө ар кандай колдонмо үчүн колдонулат.</string>
+    <string name="discord_step3_title">3-кадам: Онлайн абалыңызды текшериңиз</string>
 </resources>

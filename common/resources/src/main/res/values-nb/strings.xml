@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Koble til Discord</string>
     <string name="discord_oauth_authorize_desc">La Kizzy vise aktiviteten din på profilen din på Discord</string>
 
+    <string name="console_include_spoofed">Inkluder falske bygg</string>
+    <string name="auto_detect">Automatisk · %1$s</string>
+    <string name="save_logs_to_file">Lagre loggene i en fil</string>
+    <string name="logs_saved_toast">Loggene ble lagret i %1$s</string>
+    <string name="discord_step3_content">Trykk på statusen din (under brukernavnet ditt) og velg Pålogget, Inaktiv eller Ikke forstyrr. ⚠️ Ikke bruk Usynlig — Discord skjuler Kizzy-aktiviteten når du er Usynlig.</string>
+    <string name="discord_setup_title">Før du begynner</string>
+    <string name="console_auto_detect">Automatisk gjenkjenning av DroidDeck / Eden</string>
+    <string name="console_detected_hint">Trykk for å bruke dette spillet med Console RPC</string>
+    <string name="discord_step2_content">Finn «Del min aktivitet» og slå den på. Under «Hvor jeg deler aktivitet», velg «Del på alle servere». Rull ned til «Mine servere» og slå på serverene der du vil at statusen din skal være synlig.</string>
+    <string name="discord_tip_content">Noen mobilversjoner av Discord skjuler denne bryteren. Åpne discord.com i Chrome → slå på «Nettsted for datamaskin» → logg inn → Innstillinger (⚙️) → Aktivitetspersonvern → slå på «Del min aktivitet».</string>
+    <string name="discord_setup_desc">Kontroller at Discord tillater at aktiviteten din vises på profilen din.</string>
+    <string name="auto_detect_activity_type_desc">Musikkapper gjenkjennes som musikk, og videoapper som video, så YouTube Music vises ikke lenger som et spill. Typen som er valgt for én app, har alltid prioritet.</string>
+    <string name="auto_detect_activity_type">Gjenkjenn aktivitetstype automatisk</string>
+    <string name="logs_save_error">Kunne ikke lagre loggene</string>
+    <string name="discord_tip_title">Finner du ikke «Del min aktivitet»?</string>
+    <string name="console_detected_in_game">I spillet</string>
+    <string name="rich_presence_active">Rich Presence aktiv</string>
+    <string name="discord_step1_title">Trinn 1: Åpne personverinnstillingene</string>
+    <string name="console_detected">Gjenkjent</string>
+    <string name="discord_step2_title">Trinn 2: Slå på deling av aktivitet</string>
+    <string name="discord_step1_content">Åpne Discord-appen → trykk på «Du»-ikonet (profilbilde) → trykk på Innstillinger (⚙️) → rull ned og trykk på «Innhold og sosiale nettverk» (eller «Aktivitetspersonvern» på eldre apper).</string>
+    <string name="activity_type_fallback_desc">Brukes for apper som ikke gjenkjennes, og for alle apper når automatisk gjenkjenning er slått av.</string>
+    <string name="discord_step3_title">Trinn 3: Sjekk statusen din på nett</string>
 </resources>

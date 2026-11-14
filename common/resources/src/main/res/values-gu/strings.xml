@@ -67,7 +67,6 @@
     <string name="dark_theme">ડાર્ક થીમ</string>
     <string name="privacy_policy">પ્રાઈવેસી પોલિસી</string>
     <string name="privacy_policy_desc">પ્રાઈવેસી પોલિસી વાંચો</string>
-    <string name="enable_consoleRpc">કન્સોલ RsmbH تأیید</string>
     <string name="rpc_settings_button_configs">મીડિયા અને AppDetection રપી બટન સેટિંગ્સ</string>
     <string name="use_custom_buttons">કસ્ટમ બટન્સ વાપરો</string>
     <string name="use_custom_buttons_desc">સેટ પરસ્થિતિમાં મીડિયા અને એપ ડિટેક્શન ઓટોમેટિક બટન દર્શાવવું</string>
@@ -177,7 +176,7 @@
     <string name="activity_playingTitle">ગેમ રમી રહ્યું છે</string>
     <string name="activity_listeningTitle">સંગીત સાંભળી રહ્યું છે</string>
     <string name="activity_watchingTitle">વિડિયો જોવા માંગે છે</string>
-    <string name="activity_competitive">મુકਾਬલા કરવા માંગે છે</string>
+    <string name="activity_competitive">સ્પર્ધાપત્ર</string>
     <string name="activity_streaming_title">સાધન પર સ્ટ્રીમ કરે છે</string>
     <string name="delete_config_successfullyToast">%1$s સફળતાપૂર્વક ડિલીટ થયું</string>
     <string name="service_enabled">સેવા સક્રિય કરી લીધી</string>
@@ -232,7 +231,7 @@
     <string name="set_imgur_client_id_desc">આપના ફોટોગ્રાફ્સ સારી રીતે પ્રદર્શિત થતા નથી, તો તમે તમારા પોતાના ક્લાયન્ટ ID સેટ કરી શકો છો</string>
     <string name="show_songAsTitle">ગીત શીર્ષક તરીકે દર્શાવો</string>
     <string name="use_youtubeButton">મીડિયા બટન ઉમેરો</string>
-    <string name="use_youtubeButtonDesc">મીડિયા ટાઇમલાઈન પર ઓટોમેટિક મુভી બટન ઉમેરવું</string>
+    <string name="use_youtubeButtonDesc">YouTube બટનનો ઉપયોગ વિવરણ</string>
     <string name="link_toArtistChannel">લિંક કરો સોશિયલ મીડિયા ખાતા સાથે</string>
     <string name="link_toArtistChannel_desc">બટન `અમલમાં` પહેલાં મીડિયાપ્લેયર પ્રોગ્રામમાં ચાલી રહેલા પુષ્કળ સંગીતકારોને મુખ્યાત્મક હેઠળ સ્વિચ કરે છે.</string>
     <string name="experimental_rpcTitle_toggle">શીર્ષક</string>
@@ -250,7 +249,7 @@
     <string name="platform_playstation">પ્લેસ્ટેશન</string>
     <string name="platform_vr">VR</string>
     <string name="timestamp_mode_default">મીડિયા/એપ્લિકેશન (મુખ્ય મોડ)</string>
-    <string name="timestamp_mode_custom">लोकलાઇઝેશન</string>
+    <string name="timestamp_mode_custom">કસ્ટમ</string>
     <string name="timestamp_mode_current">કસ્ટમાઇઝ કરો</string>
     <string name="update_installing">ઇન્સ્ટોલ કરી રહ્યું છે</string>
     <string name="update_download_error">ડાઉનલોડ ન થઈ શક્યું, ફરીથી પ્રયત્ન કરો</string>
@@ -262,4 +261,27 @@
     <string name="discord_oauth_authorize">Discord સાથે જોડાઓ</string>
     <string name="discord_oauth_authorize_desc">Kizzy ને તમારી Discord પ્રોફાઇલ પર તમારી પ્રવૃત્તિ બતાવવા પરવાનગી આપો</string>
 
+    <string name="console_include_spoofed">નકલી બિલ્ડ સમાવો</string>
+    <string name="auto_detect">ઓટોમેટિક · %1$s</string>
+    <string name="save_logs_to_file">લોગ ફાઇલમાં સાચવો</string>
+    <string name="logs_saved_toast">લોગ %1$s માં સાચવાયા</string>
+    <string name="discord_step3_content">તમારી સ્ટેટસ (વર્તાન નામ ની નીચે) પર ટેપ કરો અને ઓનલાઇન, નિષ્ક્રિય કે વસ્તુ ન થાવે તે પસંદ કરો. ⚠️ અદૃશ્ય વાપરશો નહીં — તમે અદૃશ્ય હોયો ત્યારે Discord Kizzy ની પ્રવૃત્તિ છુપાવી રાખે છે.</string>
+    <string name="discord_setup_title">શરૂ કરતાં પહેલાં</string>
+    <string name="console_auto_detect">DroidDeck / Eden ને ઓટોમેટિક રીતે શોધો</string>
+    <string name="console_detected_hint">Console RPC માટે આ ગેમ વાપરવા ટેપ કરો</string>
+    <string name="discord_step2_content">"મારી પ્રવૃત્તિ શેર કરો" શોધો અને તેને ON કરો. "હું મારી પ્રવૃત્તિ ક્યાં શેર કરું છું" ની નીચે "બધા સર્વર પર શેર કરો" પસંદ કરો. "મારા સર્વર" સુધી સ્ક્રોલ કરો અને તમારી સ્ટેટસ દેખાઈ તેવા જોઈતા હોય તે સર્વર ને ON કરો.</string>
+    <string name="discord_tip_content">Discord ના કેટલાક મોબાઇલ વર્ઝન આ ટોગલ છુપાવે છે. Chrome માં discord.com ખોલો → ડેસ્કટોપ સાઇટ સક્રિય કરો → લોગિન કરો → સેટિંગ્સ (⚙️) → એક્ટિવિટી ગોપનીયતા → "મારી પ્રવૃત્તિ શેર કરો" ON કરો.</string>
+    <string name="discord_setup_desc">ખાતરી કરો કે Discord તમારી પ્રવૃત્તિ તમારી પ્રોફાઇલ પર બતાવવાની પરવાનગી આપે છે.</string>
+    <string name="auto_detect_activity_type_desc">સંગીત એપ્સને સંગીત અને વિડિયો એપ્સને વિડિયો તરીકે શોધાય છે, તેથી YouTube Music હવે ગેમ તરીકે બતાવાતું નથી. એક જ એપ માટે પસંદ કરેલો પ્રકાર હંમેશા અગ્રાધિકારી હોય છે.</string>
+    <string name="auto_detect_activity_type">પ્રવૃત્તિનો પ્રકાર ઓટોમેટિક રીતે શોધો</string>
+    <string name="logs_save_error">લોગ સાચવવામાં નિષ્ફળતા</string>
+    <string name="discord_tip_title">"મારી પ્રવૃત્તિ શેર કરો" મળતું નથી?</string>
+    <string name="console_detected_in_game">ગેમ અંદર</string>
+    <string name="rich_presence_active">Rich Presence સક્રિય</string>
+    <string name="discord_step1_title">પગલું 1: ગોપનીયતા સેટિંગ્સ ખોલો</string>
+    <string name="console_detected">શોધાયું</string>
+    <string name="discord_step2_title">પગલું 2: પ્રવૃત્તિ શેરિંગ ચાલુ કરો</string>
+    <string name="discord_step1_content">Discord એપ ખોલો → તમારો "તમે" (પ્રોફાઇલ ફોટો) આઇકન ટેપ કરો → સેટિંગ્સ (⚙️) ટેપ કરો → નીચે સ્ક્રોલ કરો અને "કન્ટેન્ટ અને સોશિયલ" (કે જૂની એપ વર્ઝનમાં "એક્ટિવિટી ગોપનીયતા") ટેપ કરો.</string>
+    <string name="activity_type_fallback_desc">ઓળખાતા ન આવેલી એપ્સ માટે અને ઓટોમેટિક શોધ બંધ હોય ત્યારે દરેક એપ માટે વપરાય છે.</string>
+    <string name="discord_step3_title">પગલું 3: તમારી ઓનલાઇન સ્ટેટસ તપાસો</string>
 </resources>

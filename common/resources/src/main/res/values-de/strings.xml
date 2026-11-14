@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Mit Discord verbinden</string>
     <string name="discord_oauth_authorize_desc">Erlaube Kizzy, deine Aktivität in deinem Discord-Profil anzuzeigen</string>
 
+    <string name="console_include_spoofed">Gefälschte Builds einbeziehen</string>
+    <string name="auto_detect">Automatisch · %1$s</string>
+    <string name="save_logs_to_file">Protokolle in Datei speichern</string>
+    <string name="logs_saved_toast">Protokolle in %1$s gespeichert</string>
+    <string name="discord_step3_content">Tippe auf deinen Status (unterhalb deines Benutzernamens) und wähle Online, Idle oder Nicht stören. ⚠️ Verwende nicht Unsichtbar — Discord blendet Kizzy-Aktivität aus, wenn du Unsichtbar bist.</string>
+    <string name="discord_setup_title">Bevor du beginnst</string>
+    <string name="console_auto_detect">DroidDeck / Eden automatisch erkennen</string>
+    <string name="console_detected_hint">Tippe, um dieses Spiel für Console RPC zu verwenden</string>
+    <string name="discord_step2_content">Finde "Aktivität teilen" und schalte es EIN. Wähle unter "Wo ich Aktivität teile" die Option "Auf allen Servern teilen". Scrolle zu "Meine Server" und schalte die Server ein, auf denen dein Status sichtbar sein soll.</string>
+    <string name="discord_tip_content">Einige mobile Discord-Versionen blenden diesen Schalter aus. Öffne discord.com in Chrome → aktiviere „Desktop-Website“ → melde dich an → Einstellungen (⚙️) → Aktivitätsprivatsphäre → schalte „Aktivität teilen“ ein.</string>
+    <string name="discord_setup_desc">Stelle sicher, dass Discord erlaubt, deine Aktivität in deinem Profil anzuzeigen.</string>
+    <string name="auto_detect_activity_type_desc">Musik-Apps werden als Musik und Video-Apps als Video erkannt, daher wird YouTube Music nicht mehr als Spiel angezeigt. Ein für eine einzelne App gewählter Typ hat immer Vorrang.</string>
+    <string name="auto_detect_activity_type">Aktivitätstyp automatisch erkennen</string>
+    <string name="logs_save_error">Protokolle konnten nicht gespeichert werden</string>
+    <string name="discord_tip_title">„Aktivität teilen“ nicht gefunden?</string>
+    <string name="console_detected_in_game">Im Spiel</string>
+    <string name="rich_presence_active">Rich Presence aktiv</string>
+    <string name="discord_step1_title">Schritt 1: Datenschutzeinstellungen öffnen</string>
+    <string name="console_detected">Erkannt</string>
+    <string name="discord_step2_title">Schritt 2: Aktivität teilen einschalten</string>
+    <string name="discord_step1_content">Öffne die Discord-App → tippe auf dein „Du“-Symbol (Profilbild) → tippe auf Einstellungen (⚙️) → scrolle nach unten und tippe auf „Inhalt und soziale Kontakte“ (oder „Aktivitätsprivatsphäre“ bei älteren Appversionen).</string>
+    <string name="activity_type_fallback_desc">Wird für nicht erkannte Apps und für jede App verwendet, wenn die automatische Erkennung deaktiviert ist.</string>
+    <string name="discord_step3_title">Schritt 3: Prüfe deinen Online-Status</string>
 </resources>

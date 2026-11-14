@@ -224,7 +224,7 @@
     <string name="completion_media_album_artist">فنان الألبوم</string>
     <string name="completion_media_duration">مدة المسار</string>
     <string name="completion_media_writer">الكاتب</string>
-    <string name="completion_media_composer">المלחن</string>
+    <string name="completion_media_composer">المؤلف الموسيقي</string>
     <string name="completion_battery">مستوى البطارية</string>
     <string name="completion_playback">حالة التشغيل</string>
     <string name="imgur_client_id">معرف عميل Imgur</string>
@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">الاتصال بـ Discord</string>
     <string name="discord_oauth_authorize_desc">اسمح لـ Kizzy بعرض نشاطك على ملفك الشخصي على Discord</string>
 
+    <string name="console_include_spoofed">تضمين البناءات المزيفة</string>
+    <string name="auto_detect">تلقائي · %1$s</string>
+    <string name="save_logs_to_file">حفظ السجلات في ملف</string>
+    <string name="logs_saved_toast">تم حفظ السجلات في %1$s</string>
+    <string name="discord_step3_content">اضغط على حالتك (أسفل اسم المستخدم) واختر متصل أو خامل أو لا تزعجني. ⚠️ لا تستخدم غير مرئي — يخفي Discord نشاط Kizzy عندما تكون غير مرئي.</string>
+    <string name="discord_setup_title">قبل أن تبدأ</string>
+    <string name="console_auto_detect">الكشف التلقائي عن DroidDeck / Eden</string>
+    <string name="console_detected_hint">اضغط لاستخدام هذه اللعبة مع Console RPC</string>
+    <string name="discord_step2_content">ابحث عن «مشاركة نشاطي» وفعّله. ضمن «أين أشارك نشاطي»، اختر «المشاركة في جميع الخوادم». مرّر إلى «خوادمي» وفعّل الخوادم التي تريد أن يظهر فيها حالتك.</string>
+    <string name="discord_tip_content">تخفي بعض إصدارات Discord للهواتف هذا المفتاح. افتح discord.com في Chrome → فعّل «موقع سطح المكتب» → سجّل الدخول → الإعدادات (⚙️) → خصوصية النشاط → فعّل «مشاركة نشاطي».</string>
+    <string name="discord_setup_desc">تأكد من أن Discord يسمح بعرض نشاطك على ملفك الشخصي.</string>
+    <string name="auto_detect_activity_type_desc">يُكتشف تطبيقات الموسيقى كموسيقى وتُكتشف تطبيقات الفيديو كفيديو، لذا لم يعد YouTube Music يظهر كلعبة. النوع المختار لتطبيق واحد له الأولوية دائمًا.</string>
+    <string name="auto_detect_activity_type">الكشف التلقائي عن نوع النشاط</string>
+    <string name="logs_save_error">فشل حفظ السجلات</string>
+    <string name="discord_tip_title">ألا تجد «مشاركة نشاطي»؟</string>
+    <string name="console_detected_in_game">في اللعبة</string>
+    <string name="rich_presence_active">Rich Presence نشط</string>
+    <string name="discord_step1_title">الخطوة 1: افتح إعدادات الخصوصية</string>
+    <string name="console_detected">تم الاكتشاف</string>
+    <string name="discord_step2_title">الخطوة 2: فعّل مشاركة النشاط</string>
+    <string name="discord_step1_content">افتح تطبيق Discord → اضغط على أيقونة «أنت» (صورة الملف الشخصي) → اضغط على «الإعدادات» (⚙️) → مرّر إلى الأسفل واضغط على «المحتوى والشبكات الاجتماعية» (أو «خصوصية النشاط» في الإصدارات الأقدم).</string>
+    <string name="activity_type_fallback_desc">يُستخدم للتطبيقات التي لم يتم التعرف عليها، ولكل تطبيق عند إيقاف الكشف التلقائي.</string>
+    <string name="discord_step3_title">الخطوة 3: تحقق من حالة اتصالك</string>
 </resources>

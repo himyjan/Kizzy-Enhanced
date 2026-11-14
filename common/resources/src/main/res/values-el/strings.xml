@@ -48,7 +48,7 @@
     <string name="delete_saved_icon_urls">Διαγραφή αποθηκευμένων URL εικονιδίων</string>
     <string name="delete_saved_icon_urls_desc">Διαγραφή αποθηκευμένων URL εικονιδίων εφαρμογών σε τοπικά αρχεία (χρησιμοποιήστε μόνο όταν χρειάζεστε, γιατί θα επιστρέψουν εικόνες στους σερβερους του Discord, που εξάγουν περισσότερες δεδομένες)</string>
     <string name="app_crashed">Η εφαρμογή πέ structurally</string>
-    <string name="share_crash_logsDesc">Να επιστρέψετε τα αρχεία σφάλματος στο κανάλι του Discord με την ακόλουθη στοίβαν 되τομίας.</string>
+    <string name="share_crash_logsDesc">Περιγραφή κοινής χρήσης αρχείων σφαλμάτων</string>
     <string name="share_crash_logs">Κοινή χρήση αρχείων</string>
     <string name="welcome">Καλώς ήρθατε</string>
     <string name="features">Λειτουργίες</string>
@@ -97,7 +97,7 @@
     <string name="set_previousRunConfigInCustomRpcDesc">Ρυθμίστε αυτόματα τα πεδία Custom RPC από την προηγούμενη εκτέλεση RPC</string>
     <string name="clear_allFields">Καθαρίστε όλα τα πεδία</string>
     <string name="share_config">Κοινή χρήση ρύθμισης</string>
-    <string name="change_log">Λογ记载 changing</string>
+    <string name="change_log">Αρχείο αλλαγών</string>
     <string name="update">Ενημέρωση</string>
     <string name="configs_directory">Κατάλογος ρυθμίσεων</string>
     <string name="custom_activity_type">Ειδικός τύπος δραστηριότητας</string>
@@ -117,7 +117,6 @@
     <string name="main_consoleRpc">RPC κονσόλας</string>
     <string name="main_consoleRpcDetails">Το Kizzy σάς επιτρέπει να χρησιμοποιήσετε ορισμένες καθορισμένες previously-hourly ρυθμίσεις για να ορίσετε την παρουσία σας στο Discord.</string>
     <string name="main_experimentalRpc">Πειραματικό RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC είναι μια λειτουργία στο Kizzy που συνεχώς commute μεταξύ 애πlicações RPC και Media RPC.</string>
     <string name="main_customRpcDetails">Το Kizzy σας επιτρέπει να δημιουργήσετε το δικό σας πλήρως προσαρμοσιμο Rich Presence για το Discord.</string>
     <string name="main_comingSoon">Εructe σύντομα</string>
     <string name="exit">Έξοδος</string>
@@ -127,7 +126,7 @@
     <string name="go_to_profile">Μετάβαση στο προφίλ</string>
     <string name="version">Έκδοση</string>
     <string name="try_again">Προσπαθήστε ξανά</string>
-    <string name="request_for_notificationAccess">Η πρόσβαση σε ειδοποιήσεις είναι απαραίτητη για την εφαρμογή να εξαγάγει μεθενηमीνες πληροφορίες μείδου.</string>
+    <string name="request_for_notificationAccess">Αίτημα για πρόσβαση στις ειδοποιήσεις</string>
     <string name="update_check_forUpdate">Έλεγχος για ενημερώσεις…</string>
     <string name="update_noUpdatesAvailable">Δεν υπάρχουν ενημερώσεις</string>
     <string name="compact_mode">Συμπακέτη mặcourn</string>
@@ -143,7 +142,7 @@
     <string name="custom_rpcDirectory">Φάκελος για αποθήκευση ρυθμίσεων Custom RPC</string>
     <string name="select_directory">Επιλέξτε φάκελο</string>
     <string name="enter_details">Καταχωρίστε λεπτομέρειες</string>
-    <string name="status_online">Ανترنت</string>
+    <string name="status_online">Σε σύνδεση</string>
     <string name="status_idle">Νεκρό</string>
     <string name="status_dnd">Μη εκδίδετε ηχούς</string>
     <string name="status_invisible_offline">Οπτικά ανόρατο και εμφανίζεται ως μη σύνδεσμος</string>
@@ -182,7 +181,7 @@
     <string name="delete_config_successfullyToast">%1$s διαγράφηκε επιτυχώς</string>
     <string name="service_enabled">Υπηρεσία ενεργοποιήθηκε</string>
     <string name="no_internetConnection">Δεν υπάρχει σύνδεση στο διαδίκτυο</string>
-    <string name="unknown_error">Προέκυψε ένας αcmp Αकालπscής σφάλμα</string>
+    <string name="unknown_error">Παρουσιάστηκε απροσδόκητο σφάλμα</string>
     <string name="rpc_buttons">Κουμπιά RPC</string>
     <string name="choose_rpc">Επιλέξτε ένα RPC</string>
     <string name="off">Απενεργοποιημένο</string>
@@ -262,4 +261,27 @@
     <string name="discord_oauth_authorize">Σύνδεση στο Discord</string>
     <string name="discord_oauth_authorize_desc">Επιτρέψτε στο Kizzy να εμφανίζει τη δραστηριότητά σας στο προφίλ σας στο Discord</string>
 
+    <string name="console_include_spoofed">Συμπερίλαβε πλαστολογημένες εκδόσεις</string>
+    <string name="auto_detect">Αυτόματα · %1$s</string>
+    <string name="save_logs_to_file">Αποθήκευση αρχείων καταγραφής σε αρχείο</string>
+    <string name="logs_saved_toast">Τα αρχεία καταγραφής αποθηκεύτηκαν στο %1$s</string>
+    <string name="discord_step3_content">Πατήστε την Κατάστασή σας (κάτω από το όνομα χρήστη σας) και επιλέξτε Σε σύνδεση, Αδρανή ή Μην ενοχλείτε. ⚠️ Μην χρησιμοποιείτε Αόρατο — το Discord κρύβει τη δραστηριότητα του Kizzy όταν είστε Αόρατοι.</string>
+    <string name="discord_setup_title">Πριν ξεκινήσετε</string>
+    <string name="console_auto_detect">Αυτόματη ανίχνευση DroidDeck / Eden</string>
+    <string name="console_detected_hint">Πατήστε για να χρησιμοποιήσετε αυτό το παιχνίδι για Console RPC</string>
+    <string name="discord_step2_content">Βρείτε το «Κοινή χρήση της δραστηριότητάς μου» και ενεργοποιήστε το. Στο «Πού μοιράζομαι τη δραστηριότητα», επιλέξτε «Κοινή χρήση σε όλους τους διακομιστές». Κάντε κύλιση στο «Οι διακομιστές μου» και ενεργοποιήστε τους διακομιστές όπου θέλετε να φαίνεται η κατάστασή σας.</string>
+    <string name="discord_tip_content">Ορισμένες κινητές εκδόσεις του Discord κρύβουν αυτόν τον διακόπτη. Ανοίξτε το discord.com στο Chrome → ενεργοποιήστε το «Ιστότοπος για υπολογιστή» → συνδεθείτε → Ρυθμίσεις (⚙️) → Απόρρητο δραστηριότητας → ενεργοποιήστε το «Κοινή χρήση της δραστηριότητάς μου».</string>
+    <string name="discord_setup_desc">Βεβαιωθείτε ότι το Discord επιτρέπει την εμφάνιση της δραστηριότητάς σας στο προφίλ σας.</string>
+    <string name="auto_detect_activity_type_desc">Οι εφαρμογές μουσικής εντοπίζονται ως μουσική και οι εφαρμογές βίντεο ως βίντεο, οπότε το YouTube Music δεν εμφανίζεται πλέον ως παιχνίδι. Ο τύπος που επιλέγεται για μία εφαρμογή έχει πάντα προτεραιότητα.</string>
+    <string name="auto_detect_activity_type">Αυτόματη ανίχνευση τύπου δραστηριότητας</string>
+    <string name="logs_save_error">Αποτυχία αποθήκευσης αρχείων καταγραφής</string>
+    <string name="discord_tip_title">Δεν βρίσκετε το «Κοινή χρήση της δραστηριότητάς μου»;</string>
+    <string name="console_detected_in_game">Στο παιχνίδι</string>
+    <string name="rich_presence_active">Ενεργό Rich Presence</string>
+    <string name="discord_step1_title">Βήμα 1: Ανοίξτε τις ρυθμίσεις απορρήτου</string>
+    <string name="console_detected">Εντοπίστηκε</string>
+    <string name="discord_step2_title">Βήμα 2: Ενεργοποιήστε την κοινή χρήση δραστηριότητας</string>
+    <string name="discord_step1_content">Ανοίξτε την εφαρμογή Discord → πατήστε το εικονίδιο «Εσείς» (φωτογραφία προφίλ) → πατήστε Ρυθμίσεις (⚙️) → κάντε κύλιση προς τα κάτω και πατήστε «Περιεχόμενο και κοινωνικά δίκτυα» (ή «Απόρρητο δραστηριότητας» σε παλαιότερες εκδόσεις).</string>
+    <string name="activity_type_fallback_desc">Χρησιμοποιείται για εφαρμογές που δεν αναγνωρίζονται και για κάθε εφαρμογή όταν η αυτόματη ανίχνευση είναι απενεργοποιημένη.</string>
+    <string name="discord_step3_title">Βήμα 3: Ελέγξτε την κατάστασή σας στο δίκτυο</string>
 </resources>

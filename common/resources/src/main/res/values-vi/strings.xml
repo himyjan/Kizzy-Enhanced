@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Kết nối với Discord</string>
     <string name="discord_oauth_authorize_desc">Cho phép Kizzy hiển thị hoạt động của bạn trên hồ sơ Discord</string>
 
+    <string name="console_include_spoofed">Bao gồm các bản dựng giả</string>
+    <string name="auto_detect">Tự động · %1$s</string>
+    <string name="save_logs_to_file">Lưu nhật ký vào tệp</string>
+    <string name="logs_saved_toast">Đã lưu nhật ký vào %1$s</string>
+    <string name="discord_step3_content">Nhấn vào Trạng thái của bạn (bên dưới tên người dùng) và chọn Trực tuyến, Rảnh rỗi hoặc Không làm phiền. ⚠️ Đừng dùng Ẩn danh — Discord ẩn hoạt động của Kizzy khi bạn Ẩn danh.</string>
+    <string name="discord_setup_title">Trước khi bắt đầu</string>
+    <string name="console_auto_detect">Tự động phát hiện DroidDeck / Eden</string>
+    <string name="console_detected_hint">Nhấn để dùng trò chơi này cho Console RPC</string>
+    <string name="discord_step2_content">Tìm "Chia sẻ hoạt động của tôi" và bật nó. Ở mục "Chia sẻ hoạt động ở đâu", chọn "Chia sẻ với mọi máy chủ". Cuộn xuống "Máy chủ của tôi" và bật những máy chủ mà bạn muốn trạng thái của mình hiển thị.</string>
+    <string name="discord_tip_content">Một số phiên bản di động của Discord ẩn nút này. Mở discord.com trong Chrome → bật "Trang web máy tính" → đăng nhập → Cài đặt (⚙️) → Quyền riêng tư hoạt động → bật "Chia sẻ hoạt động của tôi".</string>
+    <string name="discord_setup_desc">Hãy đảm bảo Discord cho phép hiển thị hoạt động của bạn trên hồ sơ của bạn.</string>
+    <string name="auto_detect_activity_type_desc">Các ứng dụng nhạc được nhận diện là nhạc và các ứng dụng video là video, nên YouTube Music không còn hiển thị như một trò chơi. Loại được chọn cho một ứng dụng đơn lẻ luôn được ưu tiên.</string>
+    <string name="auto_detect_activity_type">Tự động nhận diện loại hoạt động</string>
+    <string name="logs_save_error">Không thể lưu nhật ký</string>
+    <string name="discord_tip_title">Không tìm thấy "Chia sẻ hoạt động của tôi"?</string>
+    <string name="console_detected_in_game">Trong trò chơi</string>
+    <string name="rich_presence_active">Rich Presence đang bật</string>
+    <string name="discord_step1_title">Bước 1: Mở cài đặt quyền riêng tư</string>
+    <string name="console_detected">Đã phát hiện</string>
+    <string name="discord_step2_title">Bước 2: Bật chia sẻ hoạt động</string>
+    <string name="discord_step1_content">Mở ứng dụng Discord → nhấn vào biểu tượng "Bạn" (ảnh hồ sơ) → nhấn Cài đặt (⚙️) → cuộn xuống và nhấn "Nội dung và Mạng xã hội" (hoặc "Quyền riêng tư hoạt động" ở các phiên bản ứng dụng cũ).</string>
+    <string name="activity_type_fallback_desc">Dùng cho các ứng dụng không được nhận diện và cho mọi ứng dụng khi tắt phát hiện tự động.</string>
+    <string name="discord_step3_title">Bước 3: Kiểm tra trạng thái trực tuyến của bạn</string>
 </resources>

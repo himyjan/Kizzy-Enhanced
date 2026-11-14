@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Cysylltu â Discord</string>
     <string name="discord_oauth_authorize_desc">Canolwch i Kizzy ddangos eich gweithgaredd i\'ch profil Discord</string>
 
+    <string name="console_include_spoofed">Cynnwys adeiladau ffug</string>
+    <string name="auto_detect">Awto · %1$s</string>
+    <string name="save_logs_to_file">Cadw logiau i ffeil</string>
+    <string name="logs_saved_toast">Cadwyd y logiau i %1$s</string>
+    <string name="discord_step3_content">TAPio dy Statws (islaw y dy enw defnyddiwr) a dewis Ar-lein, Dim yn gwneud, neu Peidiwch â chanfyd. ⚠️ Peidiwch â chanfyd — Mae Discord yn cuddio gweithrediad Kizzy pan fyddwch yn anweledig.</string>
+    <string name="discord_setup_title">Cyn i ddechrau</string>
+    <string name="console_auto_detect">Auto-dodi DroidDeck / Eden</string>
+    <string name="console_detected_hint">TAPio i ddefnyddio\'r gêm hon ar gyfer Console RPC</string>
+    <string name="discord_step2_content">Dod o hyd i "Rhannu fy ngweithrediad" a\'i hwyluso YN. Dan "Ble rwy\'n Rhannu Gweithrediad", dewis "Rhannu yn pob gweinydd". Llusgo i "Fy Ngweinyddion" a hwyluso\'r gweinyddion lle rydwch chi eisiau gwneud eich statws yn welad.</string>
+    <string name="discord_tip_content">Mae rhai fersiynau symudol o Discord yn cuddio\'r newid hwn. Agorwch discord.com yn Chrome → galluogi\'r wefan ddesktop → mewngofio → Gosodiadau (⚙️) → Preifatwydd Gweithrediad → hwyluso "Rhannu fy ngweithrediad".</string>
+    <string name="discord_setup_desc">Gakwn yn siŵr bod Discord yn caniatáu i\'ch gweithrediad ddangosydd ar eich proffil.</string>
+    <string name="auto_detect_activity_type_desc">Mae apiau cerddoriaeth yn cael eu canfod fel cerddoriaeth a gweithrediadau fideo fel fideo, felly mae YouTube Music bellach yn cael ei ddangos fel gêm. Mae\'r math a ddewiswyd ar gyfer un ap bob amser yn ennill.</string>
+    <string name="auto_detect_activity_type">Auto-dodi math gweithrediad</string>
+    <string name="logs_save_error">Methwyd cadw logiau</string>
+    <string name="discord_tip_title">Methwch chi ddod o hyd i "Rhannu fy ngweithrediad"?</string>
+    <string name="console_detected_in_game">Yn y gêm</string>
+    <string name="rich_presence_active">Rich Presence yn weithredo</string>
+    <string name="discord_step1_title">Cam 1: Agor Gosodiadau Preifatwydd</string>
+    <string name="console_detected">Canfydwyd</string>
+    <string name="discord_step2_title">Cam 2: Trowch Rhannu Gweithrediad ymlaen</string>
+    <string name="discord_step1_content">Agorwch yr ap Discord → tapio eich icon Chi (llun proffil) → tapio Gosodiadau (⚙️) → llusgo i lawr a tapio Cynwys a Chymdeithas (neu Weli Preifatwydd Gweithrediad ar fersiynau hŷn).</string>
+    <string name="activity_type_fallback_desc">Yn cael ei ddefnyddio ar gyfer yr apiau nad ydynt yn cael eu adnabod, ac ar gyfer pob ap pan gaethpwyd y synhudd awtomatig.</string>
+    <string name="discord_step3_title">Cam 3: Gwirio eich statws ar-lein</string>
 </resources>

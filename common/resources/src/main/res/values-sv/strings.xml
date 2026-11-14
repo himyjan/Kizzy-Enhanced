@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Anslut till Discord</string>
     <string name="discord_oauth_authorize_desc">Låt Kizzy visa din aktivitet på din Discord-profil</string>
 
+    <string name="console_include_spoofed">Inkludera förfalskade byggen</string>
+    <string name="auto_detect">Automatisk · %1$s</string>
+    <string name="save_logs_to_file">Spara loggar i en fil</string>
+    <string name="logs_saved_toast">Loggarna sparades i %1$s</string>
+    <string name="discord_step3_content">Tryck på din Status (under ditt användarnamn) och välj Online, Inaktiv eller Stör ej. ⚠️ Använd inte Osynlig — Discord döljer Kizzy-aktiviteten när du är Osynlig.</string>
+    <string name="discord_setup_title">Innan du börjar</string>
+    <string name="console_auto_detect">Automatisk igenkänning av DroidDeck / Eden</string>
+    <string name="console_detected_hint">Tryck för att använda det här spelet med Console RPC</string>
+    <string name="discord_step2_content">Hitta "Dela min aktivitet" och slå på det. Under "Var jag delar min aktivitet" väljer du "Dela på alla servrar". Rulla ned till "Mina servrar" och slå på de servrar där du vill att din status ska synas.</string>
+    <string name="discord_tip_content">Vissa mobilversioner av Discord döljer den här växeln. Öppna discord.com i Chrome → aktivera Skrivbordswebbplats → logga in → Inställningar (⚙️) → Aktivitetsintegritet → slå på "Dela min aktivitet".</string>
+    <string name="discord_setup_desc">Se till att Discord tillåter att din aktivitet visas på din profil.</string>
+    <string name="auto_detect_activity_type_desc">Musikappar identifieras som musik och videoappar som video, så YouTube Music visas inte längre som ett spel. Den typ som valts för en enda app har alltid företräde.</string>
+    <string name="auto_detect_activity_type">Identifiera aktivitetstyp automatiskt</string>
+    <string name="logs_save_error">Det gick inte att spara loggarna</string>
+    <string name="discord_tip_title">Hittar du inte "Dela min aktivitet"?</string>
+    <string name="console_detected_in_game">I spelet</string>
+    <string name="rich_presence_active">Rich Presence aktiv</string>
+    <string name="discord_step1_title">Steg 1: Öppna integritetsinställningarna</string>
+    <string name="console_detected">Identifierad</string>
+    <string name="discord_step2_title">Steg 2: Slå på delning av aktivitet</string>
+    <string name="discord_step1_content">Öppna Discord-appen → tryck på din "Du"-ikon (profilbild) → tryck på Inställningar (⚙️) → rulla ned och tryck på "Innehåll och sociala" (eller "Aktivitetsintegritet" i äldre appversioner).</string>
+    <string name="activity_type_fallback_desc">Används för appar som inte känns igen och för varje app när automatisk identifiering är avstängd.</string>
+    <string name="discord_step3_title">Steg 3: Kontrollera din onlinestatus</string>
 </resources>

@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">连接到 Discord</string>
     <string name="discord_oauth_authorize_desc">允许 Kizzy 在你的 Discord 个人资料上显示你的活动状态</string>
 
+    <string name="console_include_spoofed">包含伪造版本</string>
+    <string name="auto_detect">自动 · %1$s</string>
+    <string name="save_logs_to_file">将日志保存到文件</string>
+    <string name="logs_saved_toast">日志已保存到 %1$s</string>
+    <string name="discord_step3_content">点击你的状态（在你用户名下方），然后选择在线、空闲或请勿打扰。⚠️ 请勿使用隐身 — 当你处于隐身状态时，Discord 会隐藏 Kizzy 的活动。</string>
+    <string name="discord_setup_title">开始之前</string>
+    <string name="console_auto_detect">自动检测 DroidDeck / Eden</string>
+    <string name="console_detected_hint">点击以将此游戏用于 Console RPC</string>
+    <string name="discord_step2_content">找到“分享我的活动”并将其开启。在“我在何处分享活动”下，选择“在所有服务器中分享”。向下滚动到“我的服务器”，并开启你希望显示状态的服务器。</string>
+    <string name="discord_tip_content">部分 Discord 移动版会隐藏此开关。在 Chrome 中打开 discord.com → 启用“桌面版网站” → 登录 → 设置 (⚙️) → 活动隐私 → 开启“分享我的活动”。</string>
+    <string name="discord_setup_desc">确保 Discord 允许在您的个人资料中显示你的活动。</string>
+    <string name="auto_detect_activity_type_desc">音乐应用会被识别为音乐，视频应用会被识别为视频，因此 YouTube Music 不再显示为游戏。为单个应用选择的类型始终优先。</string>
+    <string name="auto_detect_activity_type">自动检测活动类型</string>
+    <string name="logs_save_error">保存日志失败</string>
+    <string name="discord_tip_title">找不到“分享我的活动”？</string>
+    <string name="console_detected_in_game">在游戏中</string>
+    <string name="rich_presence_active">Rich Presence 已启用</string>
+    <string name="discord_step1_title">第 1 步：打开隐私设置</string>
+    <string name="console_detected">已检测到</string>
+    <string name="discord_step2_title">第 2 步：开启活动分享</string>
+    <string name="discord_step1_content">打开 Discord 应用 → 点击你的“你”图标（头像）→ 点击“设置”(⚙️) → 向下滚动并点击“内容与社交”（旧版应用中为“活动隐私”）。</string>
+    <string name="activity_type_fallback_desc">用于无法识别的应用，以及关闭自动检测后的所有应用。</string>
+    <string name="discord_step3_title">第 3 步：检查你的在线状态</string>
 </resources>

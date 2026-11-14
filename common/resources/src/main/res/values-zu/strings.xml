@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Xhumana ne-Discord</string>
     <string name="discord_oauth_authorize_desc">Vumela i-Kizzy ukubonisa umsebenzi wakho ku-profaili yakho ye-Discord</string>
 
+    <string name="console_include_spoofed">Faka ukwengeziyo ukuthi</string>
+    <string name="auto_detect">Okuzenzakalayo · %1$s</string>
+    <string name="save_logs_to_file">Songa amarekhodi kwifayela</string>
+    <string name="logs_saved_toast">Amarekhodi asonjathelwe ku-%1$s</string>
+    <string name="discord_step3_content">Cindisha isimo lakho (ngaphansi kwegama lakho) bese ukhetha Ku-inthanethi, Akukho okwenzakayo noma Ungomi. ⚠️ Ungasebenzisi Ukuxhweka — Discord ifihla umsebenzi wa Kizzy uma unguxhweka.</string>
+    <string name="discord_setup_title">Ngaphambi kokuba qale</string>
+    <string name="console_auto_detect">Ukuthola i-DroidDeck / Eden ngokuzenzakalayo</string>
+    <string name="console_detected_hint">Cindisha ukuze usebenzise lo mdlalo we-Console RPC</string>
+    <string name="discord_step2_content">Thola "Ukwabelana nomsebenzi wami" bese uyakuvula. Ngaphansi kwe"Ukuthi ngabelana nomsebenzi nini", khetha "Ukwabelana emisebenzini yonke". Skroliya ku-"Izinsiza zami" bese uvula izinsiza ofuna ukuthi isimo sakho sibonakale.</string>
+    <string name="discord_tip_content">Ezinye izinguqulo zemobha ze-Discord zifihla lo switch. Vula i-discord.com ku-Chrome → nika i-sitesi ye-Desktop → ngena ngemilayezo → Izilungiselelo (⚙️) → Ubucwaningi bemsebenzi → vula "Ukwabelana nomsebenzi wami".</string>
+    <string name="discord_setup_desc">Uqinisekise ukuthi i-Discord ivumela umsebenzi wakho ukubonakala ku-prophile yakho.</string>
+    <string name="auto_detect_activity_type_desc">Ezinye izinhlelo zemculo zithola umculo, kanti izinhlelo zevidiyo zithola ividiyo, ngakho YouTube Music akusabikadi ukubonakala njengomdlalo. Uhlobo olukhethiwe izinhlelo ezingabhali zihlaba njengolunye.</string>
+    <string name="auto_detect_activity_type">Ukuthola uhlobo lwemsebenzi ngokuzenzakalayo</string>
+    <string name="logs_save_error">Akuphezu ukusonga amarekhodi</string>
+    <string name="discord_tip_title">Uthola "Ukwabelana nomsebenzi wami"?</string>
+    <string name="console_detected_in_game">Ngaphakathi komdlalo</string>
+    <string name="rich_presence_active">I-Rich Presence isisebenzi</string>
+    <string name="discord_step1_title">Isinyathelo 1: Vula izilungiselelo zokubucwaningi</string>
+    <string name="console_detected">Kutholwe</string>
+    <string name="discord_step2_title">Isinyathelo 2: Vula ukwabelana nomsebenzi</string>
+    <string name="discord_step1_content">Vula i-app ye-Discord → cindisha isithombe sakho ("Wena") → cindisha Izilungiselelo (⚙️) → skroliya phansi bese ucindisha "Umsayezo kanye Nezokuxhumana" (noma "Ubucwaningi bemsebenzi" emVERSIONS ezindala).</string>
+    <string name="activity_type_fallback_desc">Isetshenziselwa izinhlelo ezingaziwayo, kanye nazo zonke izinhlelo uma ukuthola ngokuzenzakalayo kukhutshiwe.</string>
+    <string name="discord_step3_title">Isinyathelo 3: Bheka isimo sakho se-inthanethi</string>
 </resources>

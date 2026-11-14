@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord-қа қосылу</string>
     <string name="discord_oauth_authorize_desc">Kizzy-ға Discord профиліңіздегі әрекетіңізді көрсетуге рұқсат беріңіз</string>
 
+    <string name="console_include_spoofed">Жалған құрастыруларды қосу</string>
+    <string name="auto_detect">Автоматты · %1$s</string>
+    <string name="save_logs_to_file">Журналдарды файлға сақтау</string>
+    <string name="logs_saved_toast">Журналдар %1$s ішіне сақталды</string>
+    <string name="discord_step3_content">Өз күйіңізді басыңыз (пайдаланушы атыңыздың астында) және Желіде, Бос немесе Машаламаңызды таңдаңыз. ⚠️ Жасырын қолданбаңыз — Жасырын болғанда Discord Kizzy белсендігін жасырады.</string>
+    <string name="discord_setup_title">Бастамас бұрын</string>
+    <string name="console_auto_detect">DroidDeck / Eden автоматты анықтау</string>
+    <string name="console_detected_hint">Осы ойынды Console RPC үшін қолдану үшін басыңыз</string>
+    <string name="discord_step2_content">«Менің белсендігімді бөлісіңіз» дегенді табыңыз және оны ҚОСУЛЫ етіңіз. «Белсендігімді қайда бөлісемін» астында «Барлық серверлерде бөлісу» таңдаңыз. «Менің серверлерім» дейін айналдырып, күйіңіз көрінуі керек серверлерді ҚОСУЛЫ етіңіз.</string>
+    <string name="discord_tip_content">Discord-тың кейбір ұялы нұсқалары осы ауыстырғышты жасырады. Chrome-да discord.com ашыңыз → Desktop сайтты қосыңыз → кіріңіз → Параметрлер (⚙️) → Белсендік құпиялылығы → «Менің белсендігімді бөлісіңіз» қосыңыз.</string>
+    <string name="discord_setup_desc">Discord профиліңізде белсендігіңізді көрсете алуына мүмкіндік бере отырғанына көз жеткізіңіз.</string>
+    <string name="auto_detect_activity_type_desc">Музыка қолданбалары музыка ретінде, бейне қолданбалары бейне ретінде анықталады, сондықтан YouTube Music енді ойын ретінде көрсетілмейді. Бір қолданба үшін таңдалған түр әрқашан басым болады.</string>
+    <string name="auto_detect_activity_type">Белсендік түрін автоматты анықтау</string>
+    <string name="logs_save_error">Журналдарды сақтау кезінде қате жіберілді</string>
+    <string name="discord_tip_title">«Менің белсендігімді бөлісіңіз» табылмайды ма?</string>
+    <string name="console_detected_in_game">Ойын ішінде</string>
+    <string name="rich_presence_active">Rich Presence белсенді</string>
+    <string name="discord_step1_title">1-қадам: Құпиялылық параметрлерін ашыңыз</string>
+    <string name="console_detected">Анықталды</string>
+    <string name="discord_step2_title">2-қадам: Белсендікті бөлісуді қосыңыз</string>
+    <string name="discord_step1_content">Discord қолданбасын ашыңыз → «Сіз» белгісін (профиль суреті) басыңыз → Параметрлер (⚙️) → төмен сырғытып, «Мазмұн және әлеуметтік желілер» (немесе ескі нұсқалардағы «Белсендік құпиялылығы») бөлімін басыңыз.</string>
+    <string name="activity_type_fallback_desc">Танылмаған қолданбалар үшін, сондай-ақ автоматты анықтау өшірілген кезде әрбір қолданба үшін қолданылады.</string>
+    <string name="discord_step3_title">3-қадам: Желідегі күйіңізді тексеріңіз</string>
 </resources>

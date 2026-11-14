@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">اتصال به Discord</string>
     <string name="discord_oauth_authorize_desc">اجازه دهید Kizzy فعالیت شما را در پروفایل Discord نمایش دهد</string>
 
+    <string name="console_include_spoofed">شامل کردن نسخه‌های جعلی</string>
+    <string name="auto_detect">خودکار · %1$s</string>
+    <string name="save_logs_to_file">ذخیره گزارش‌ها در فایل</string>
+    <string name="logs_saved_toast">گزارش‌ها در %1$s ذخیره شد</string>
+    <string name="discord_step3_content">روی وضعیت خود (زیر نام کاربری‌تان) ضربه بزنید و آنلاین، بی‌کار یا مزاحم نشوید را انتخاب کنید. ⚠️ از نامرئی استفاده نکنید — وقتی نامرئی هستید Discord فعالیت Kizzy را پنهان می‌کند.</string>
+    <string name="discord_setup_title">پیش از شروع</string>
+    <string name="console_auto_detect">تشخیص خودکار DroidDeck / Eden</string>
+    <string name="console_detected_hint">برای استفاده از این بازی در Console RPC ضربه بزنید</string>
+    <string name="discord_step2_content">گزینه "اشتراک فعالیت من" را پیدا کنید و آن را روشن کنید. در بخش "اشتراک فعالیت من"، گزینه "اشتراک در همه سرورها" را انتخاب کنید. تا "سرورهای من" اسکرول کنید و سرورهایی را که می‌خواهید وضعیت شما در آن‌ها دیده شود روشن کنید.</string>
+    <string name="discord_tip_content">برخی نسخه‌های موبایل Discord این کلید را پنهان می‌کنند. discord.com را در Chrome باز کنید → «سایت دسکتاپ» را فعال کنید → وارد شوید → تنظیمات (⚙️) → حریم خصوصی فعالیت → «اشتراک فعالیت من» را روشن کنید.</string>
+    <string name="discord_setup_desc">مطمئن شوید Discord اجازه می‌دهد فعالیت شما در پروفایلتان نمایش داده شود.</string>
+    <string name="auto_detect_activity_type_desc">برنامه‌های موسیقی به‌عنوان موسیقی و برنامه‌های ویدیو به‌عنوان ویدیو شناسایی می‌شوند، بنابراین دیگر YouTube Music به‌عنوان بازی نمایش داده نمی‌شود. نوعی که برای یک برنامه انتخاب شود همیشه اولویت دارد.</string>
+    <string name="auto_detect_activity_type">تشخیص خودکار نوع فعالیت</string>
+    <string name="logs_save_error">ذخیره گزارش‌ها ناموفق بود</string>
+    <string name="discord_tip_title">«اشتراک فعالیت من» را پیدا نمی‌کنید؟</string>
+    <string name="console_detected_in_game">در بازی</string>
+    <string name="rich_presence_active">Rich Presence فعال</string>
+    <string name="discord_step1_title">گام ۱: باز کردن تنظیمات حریم خصوصی</string>
+    <string name="console_detected">شناسایی شد</string>
+    <string name="discord_step2_title">گام ۲: روشن کردن اشتراک فعالیت</string>
+    <string name="discord_step1_content">برنامه Discord را باز کنید → روی آیکون «شما» (عکس پروفایل) ضربه بزنید → روی تنظیمات (⚙️) ضربه بزنید → تا پایین اسکرول کنید و روی «محتوا و شبکه‌های اجتماعی» (یا «حریم خصوصی فعالیت» در نسخه‌های قدیمی‌تر) ضربه بزنید.</string>
+    <string name="activity_type_fallback_desc">برای برنامه‌هایی که شناسایی نمی‌شوند و برای هر برنامه هنگام خاموش بودن تشخیص خودکار استفاده می‌شود.</string>
+    <string name="discord_step3_title">گام ۳: بررسی وضعیت آنلاین</string>
 </resources>

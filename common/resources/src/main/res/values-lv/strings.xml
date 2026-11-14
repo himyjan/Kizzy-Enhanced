@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Savienoties ar Discord</string>
     <string name="discord_oauth_authorize_desc">Atļaujiet Kizzy rādīt jūsu aktivitāti savā Discord profilā</string>
 
+    <string name="console_include_spoofed">Iekļaut vilkoti būvieti</string>
+    <string name="auto_detect">Automātiski · %1$s</string>
+    <string name="save_logs_to_file">Saglabāt žurnālus failā</string>
+    <string name="logs_saved_toast">Žurnāli saglabāti failā %1$s</string>
+    <string name="discord_step3_content">Pieskarieties savam statusam (zem lietotājvārda) un izvēlieties Tiešsaistē, Dīkstāvē vai Netraucēt. ⚠️ Neizmantojiet Nes redzams — Discord slēpj Kizzy aktivitāti, kad esat Nes redzams.</string>
+    <string name="discord_setup_title">Pirms sākšanas</string>
+    <string name="console_auto_detect">Automātiska DroidDeck / Eden noteikšana</string>
+    <string name="console_detected_hint">Pieskarieties, lai izmantotu šo spēli ar Console RPC</string>
+    <string name="discord_step2_content">Atradiet "Dalīties ar manu aktivitāti" un ieslēdziet to. Zem "Kur dalos ar savu aktivitāti" izvēlieties "Dalīties visos serveros";. Ritiniet līdz "Mani serveri" un ieslēdziet serverus, kuros vēlaties redzēt savu statusu.</string>
+    <string name="discord_tip_content">Dažas Discord mobila versijas slēpj šo slēdzi. Atveriet discord.com Chromeā → iespējojiet "Darbvirsmas vietne" → pieteikties → Iestatījumi (⚙️) → Darbības konfidencialitāte → ieslēdziet "Dalīties ar manu aktivitāti".</string>
+    <string name="discord_setup_desc">Pārliecinieties, kaž Discord atļauj rādīt jūsu aktivitāti jūsu profilā.</string>
+    <string name="auto_detect_activity_type_desc">Mūzikas lietojumprogrammas tiek noteiktas kā mūzika, bet video lietojumprogrammas kā video, tāpēc YouTube Music vairs netiek rādīts kā spēle. Veids, kas izvēlēts vienai lietojumprogrammai, vienmēr ir svarīgāks.</string>
+    <string name="auto_detect_activity_type">Automātiski noteikt darbības veidu</string>
+    <string name="logs_save_error">Neizdevās saglabāt žurnālus</string>
+    <string name="discord_tip_title">Neatrodat "Dalīties ar manu aktivitāti"?</string>
+    <string name="console_detected_in_game">Spēlē</string>
+    <string name="rich_presence_active">Rich Presence aktīvs</string>
+    <string name="discord_step1_title">1. solis: Atveriet konfidencialitātes iestatījumus</string>
+    <string name="console_detected">Noteikts</string>
+    <string name="discord_step2_title">2. solis: Ieslēdziet darbību dalīšanos</string>
+    <string name="discord_step1_content">Atveriet Discord lietojumprogrammu → pieskarieties savai "Jūs" ikonai (profila attēlam) → pieskarieties Iestatījumiem (⚙️) → ritiniet uz leju un pieskarieties "Saturs un sociālie tīkli" (vai "Darbības konfidencialitāte" vecākās lietojumprogrammas versijās).</string>
+    <string name="activity_type_fallback_desc">Izmanto neatzināmiem lietojumprogrammām un katrai lietojumprogrammai, ja automātiskā noteikšana ir izslēgta.</string>
+    <string name="discord_step3_title">3. solis: Pārbaudiet savu tiešsaistes statusu</string>
 </resources>

@@ -50,4 +50,27 @@
     <string name="discord_oauth_authorize">Bi Discordê ve</string>
     <string name="discord_oauth_authorize_desc">Kizzy bê xwe bibeşê bibe ku egirtekên te di profîla Discord ya te de nîşan bide</string>
 
+    <string name="console_include_spoofed">Çûdax buildan têbîne</string>
+    <string name="auto_detect">Otomatîk · %1$s</string>
+    <string name="save_logs_to_file">Têgehneyan di pelê de tom bike</string>
+    <string name="logs_saved_toast">Têgehneyan di %1$s de hatin tomkirin</string>
+    <string name="discord_step3_content">Li statûsa xwe (bin navê tebûkerê) bide û hilbijêre Online, Bêkar an Nêh lê bêxe. ⚠️ Nexe învisible bî bi kar tîne — Discord de çalaklıya Kizzy di de wextê ku tu învisible bûyî ve dike.</string>
+    <string name="discord_setup_title">Berî destpêkirinê</string>
+    <string name="console_auto_detect">DroidDeck / Eden bi awayê otomatîk were nasîn</string>
+    <string name="console_detected_hint">Bide da ku bi kar jêr Console RPC biÎ sûde</string>
+    <string name="discord_step2_content">"Çalaklıya xwe parve bike" bine û veke. Li bin "Li ku çalaklıya xwe parve dikim" hilbijêre "Bi hemû serveran parve bike". Li ser "Serverên xwe" da bide ser û serverên ku tu dixwazî rewşa xwe bêdît were veke.</string>
+    <string name="discord_tip_content">Çendekin weşanên mobile yê Discord ev pergihên vekirinê dihejîn. discord.com di Chrome de veke → "Rûbara destdestûyê" were veke → tê veke → Sazgeh (⚙️) → Bangiya çalakliyê → "Çalaklıya xwe parve bike" veke.</string>
+    <string name="discord_setup_desc">Bawerîn weke Discord dest dike çalaklıya te di pîrofilê de weke nîşan bike.</string>
+    <string name="auto_detect_activity_type_desc">Appên muzîkê bi awayê muzîkê û appên vîdyoyê bi awayê vîdyoyê tê nasîn, loma YouTube Music êdî wekî lêtir nîşan dide. Tewza ji bo yek app ê hilbijandî herdem serdest e.</string>
+    <string name="auto_detect_activity_type">Tewza çalakliyê bi awayê otomatîk were nasîn</string>
+    <string name="logs_save_error">Têgehneyan nehatin tomkirin</string>
+    <string name="discord_tip_title">"Çalaklıya xwe parve bike" nenihêrî?</string>
+    <string name="console_detected_in_game">Di lêtirê de</string>
+    <string name="rich_presence_active">Rich Presence çalak e</string>
+    <string name="discord_step1_title">Girêdek 1: Sazgehên bangiyê veke</string>
+    <string name="console_detected">Hat nasîrandin</string>
+    <string name="discord_step2_title">Girêdek 2: Parvekirina çalakliyê veke</string>
+    <string name="discord_step1_content">App\'a Discord veke → îkona "Tu" (wîneyê profilê) bide → Sazgeh (⚙️) bide → bihere û "Naver û civakî" (an "Bangiya çalakliyê" di awayên kevn) bide.</string>
+    <string name="activity_type_fallback_desc">Ji bo appên nasîbar ne tê de, û ji bo her app de bi awayê ku nasîna otomatîk vekirin e.</string>
+    <string name="discord_step3_title">Girêdek 3: Rewşa xwe ya online kontrol bike</string>
 </resources>

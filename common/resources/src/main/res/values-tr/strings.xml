@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord\'a bağlan</string>
     <string name="discord_oauth_authorize_desc">Kizzy\'nin etkinliğinizi Discord profilinizde göstermesine izin verin</string>
 
+    <string name="console_include_spoofed">Sahte derlemeleri dahil et</string>
+    <string name="auto_detect">Otomatik · %1$s</string>
+    <string name="save_logs_to_file">Günlükleri dosyaya kaydet</string>
+    <string name="logs_saved_toast">Günlükler %1$s konumuna kaydedildi</string>
+    <string name="discord_step3_content">Durumunuza dokunun (kullanıcı adınızın altında) ve Çevrimiçi, Boşta veya Rahatsız Etmeyin seçeneklerinden birini seçin. ⚠️ Görünmez kullanmayın — Görünmez olduğunuzda Discord Kizzy etkinliğini gizler.</string>
+    <string name="discord_setup_title">Başlamadan önce</string>
+    <string name="console_auto_detect">DroidDeck / Eden otomatik algılama</string>
+    <string name="console_detected_hint">Bu oyunu Console RPC için kullanmak üzere dokunun</string>
+    <string name="discord_step2_content">"Etkinliğimi paylaş" seçeneğini bulun ve AÇIN. "Etkinliğimi nerede paylaşıyorum" altında "Tüm sunucularda paylaş" seçeneğini seçin. "Sunucularım" bölümüne kaydırın ve durumunuzun görünmesini istediğiniz sunucuları AÇIN.</string>
+    <string name="discord_tip_content">Bazı Discord mobil sürümleri bu anahtarı gizler. Chrome\'da discord.com\'u açın → Masaüstü sitesini etkinleştirin → giriş yapın → Ayarlar (⚙️) → Etkinlik Gizliliği → "Etkinliğimi paylaş" seçeneğini açın.</string>
+    <string name="discord_setup_desc">Discord\'un etkinliğinizin profilinizde görünmesine izin verdiğinden emin olun.</string>
+    <string name="auto_detect_activity_type_desc">Müzik uygulamaları müzik, video uygulamaları video olarak algılanır; bu nedenle YouTube Music artık bir oyun olarak gösterilmez. Tek bir uygulama için seçilen tür her zaman önceliklidir.</string>
+    <string name="auto_detect_activity_type">Etkinlik türünü otomatik algıla</string>
+    <string name="logs_save_error">Günlükler kaydedilemedi</string>
+    <string name="discord_tip_title">"Etkinliğimi paylaş" bulunamadı mı?</string>
+    <string name="console_detected_in_game">Oyunda</string>
+    <string name="rich_presence_active">Rich Presence etkin</string>
+    <string name="discord_step1_title">1. Adım: Gizlilik ayarlarını açın</string>
+    <string name="console_detected">Algılandı</string>
+    <string name="discord_step2_title">2. Adım: Etkinlik paylaşımını açın</string>
+    <string name="discord_step1_content">Discord uygulamasını açın → "Siz" simgenize (profil fotoğrafı) dokunun → Ayarlar (⚙️) üzerine dokunun → aşağı kaydırın ve "İçerik ve Sosyal" (veya eski sürümlerde "Etkinlik Gizliliği") bölümüne dokunun.</string>
+    <string name="activity_type_fallback_desc">Tanınmayan uygulamalar için ve otomatik algılama kapalıyken her uygulama için kullanılır.</string>
+    <string name="discord_step3_title">3. Adım: Çevrimiçi durumunuzu kontrol edin</string>
 </resources>

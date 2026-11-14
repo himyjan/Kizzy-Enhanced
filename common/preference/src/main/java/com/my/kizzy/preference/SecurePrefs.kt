@@ -35,7 +35,7 @@ import com.google.crypto.tink.integration.android.AndroidKeysetManager
  * written by an older version of the app (plain text) can still be read and
  * is transparently re-encrypted the next time it is written.
  */
-internal object SecurePrefs {
+object SecurePrefs {
 
     private const val ENCRYPTED_PREFIX = "enc:"
 

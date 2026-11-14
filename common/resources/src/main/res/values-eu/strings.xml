@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Konektatu Discordera</string>
     <string name="discord_oauth_authorize_desc">Utzi Kizzy-ri zure jardueraren erakustea zure Discord profilearen</string>
 
+    <string name="console_include_spoofed">Sartu eraikuntza faltsuak</string>
+    <string name="auto_detect">Automatikoa · %1$s</string>
+    <string name="save_logs_to_file">Gorde logak fitxategian</string>
+    <string name="logs_saved_toast">Logak gorde dira %1$s</string>
+    <string name="discord_step3_content">Usaizu zure egoera (zure erabiltzaile-izena azpian) eta hautatu On line, Esku edo Ez perturbatu. ⚠️ Ez erabili Ezkutatuta — Discord ezkutatzen du Kizzy jarduera zure egoera ezkutatuta dagoenean.</string>
+    <string name="discord_setup_title">Aurretik hasi</string>
+    <string name="console_auto_detect">DroidDeck / Eden auto-detectatu</string>
+    <string name="console_detected_hint">Usaizu joko hau erabiltzeko Console RPC-rako</string>
+    <string name="discord_step2_content">Aurkitu "Nire jarduera partekatu" eta piztu EZ. "Nire jarduera non partekatzen dut" azpian, hautatu "Partekatu zerbitzari guztietan". Joan nire zerbitzarietara eta piztu zerbitzariak non zure egoera ikusi nahi duzun.</string>
+    <string name="discord_tip_content">Discord-en zenbaki batzuk ezkutatzen dute bigarren hau. Irekiti discord.com Chrome-n → gaitasun webgunea mahai-gunean → hasi saioa → Ezarpenak (⚙️) → Jardueren pribatutasuna → piztu "Nire jarduera partekatu".</string>
+    <string name="discord_setup_desc">Ziurtatu Discord-ek zure jarduera zure profilean erakustea bai.</string>
+    <string name="auto_detect_activity_type_desc">Musika aplikazioak musikatzat eta bideo aplikazioak bideotat detektatzen dira, beraz YouTube Music jada joko gisa ez da agertzen. Mota batek aplikazio bakarreko bat aukeratzen badu, beti nagusia izaten da.</string>
+    <string name="auto_detect_activity_type">Jarduera mota auto-detectatu</string>
+    <string name="logs_save_error">Ezin izan dira logak gorde</string>
+    <string name="discord_tip_title">Ezin duzu "Nire jarduera partekatu" aurkitu?</string>
+    <string name="console_detected_in_game">Jokoaren barruan</string>
+    <string name="rich_presence_active">Rich Presence aktibo</string>
+    <string name="discord_step1_title">1. urratsa: Ireki pribatutasun ezarpenak</string>
+    <string name="console_detected">Detektatuta</string>
+    <string name="discord_step2_title">2. urratsa: Aktibatu jardueren partekatzea</string>
+    <string name="discord_step1_content">Irekiti Discord aplikazioa → sakatu zure Nor (argazkia) ikonoa → sakatu Ezarpenak (⚙️) → joan behera eta sakatu Edukia eta Gizartekoa (edo Jardueren pribatutasuna aplikazioaren bertsio zaharretan).</string>
+    <string name="activity_type_fallback_desc">Erabiltzen da aplikazio ezagutuak ez direnentzat, eta aplikazio guztietarako ere detekzio automatikoa itzalita dagoenean.</string>
+    <string name="discord_step3_title">3. urratsa: Aztertu zure egoera online</string>
 </resources>

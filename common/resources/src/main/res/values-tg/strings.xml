@@ -50,4 +50,27 @@
     <string name="discord_oauth_authorize">Бо Discord пайваст шавед</string>
     <string name="discord_oauth_authorize_desc">Иҷозод ба Kizzy фаъолияти шуморо дар профили Discord-и шумто нишон диҳад</string>
 
+    <string name="console_include_spoofed">Сохти сохтҳои бардурғ</string>
+    <string name="auto_detect">Худкор · %1$s</string>
+    <string name="save_logs_to_file">Саҳротҳоро дар файл захир кунед</string>
+    <string name="logs_saved_toast">Саҳротҳо дар %1$s захир шуданд</string>
+    <string name="discord_step3_content">Дар сурати ҳолати худ (зerexи номи корбар) клик кунед ва Онлайн, Без кор ва ё На пашавад интихоб кунед. ⚠️ Пинҳон накунед — ҳангуз нустар ки шумо нопишкор ҳаст, Discord фаъолияти Kizzy-ро пинҳон мекунад.</string>
+    <string name="discord_setup_title">Пеш аз оғоз</string>
+    <string name="console_auto_detect">Дарёфти худкорӣ DroidDeck / Eden</string>
+    <string name="console_detected_hint">Барои истифодаи ин бозӣ бо Console RPC клик кунед</string>
+    <string name="discord_step2_content">«Ман фаъолияти худро муҳокама мекунам» ёбед ва онро ба кор дарвед. Дар зери «Дар куҷо фаъолияти худро муҳокама мекунам», «Дар ҳамаи серверҳо муҳокама мекунам»-ро интихоб кунед. То «Серверҳои ман» то ҳарф бозгаред ва серверҳоиеро, ки мехоҳед ҳолати худро дар онҳо бинед, ба кор дарвед.</string>
+    <string name="discord_tip_content">Баъзе версияҳои мобилӣи Discord ин тугмаро пинҳон мекунанд. Дар Chrome discord.com-ро кушод ва Ҳамроҳи Desktop-ро фаъол кунед → ворид → Танзимот (⚙️) → Приватӣи фаъолият → «Ман фаъолияти худро муҳокама мекунам»-ро ба кор дарвед.</string>
+    <string name="discord_setup_desc">Маълум кунед, ки Discord ба шумо иҷозат медиҳад, ки фаъолияти худро дар профили худ нишон диҳед.</string>
+    <string name="auto_detect_activity_type_desc">Барномаҳои мусиқӣ ҳамчун мусиқӣ ва барномаҳои видео ҳамчун видео муайян мешаванд, бинобар ин YouTube Music дигар ҳамчун бозӣ нишон дода намешавад. Навъи як барои як барнома ҳар вақт афзалият дорад.</string>
+    <string name="auto_detect_activity_type">Навъи фаъолиятро худкор муайян кун</string>
+    <string name="logs_save_error">Саҳротҳо саҳра нашуданд</string>
+    <string name="discord_tip_title">«Ман фаъолияти худро муҳокама мекунам»-ро наёфтед?</string>
+    <string name="console_detected_in_game">Дар бозӣ</string>
+    <string name="rich_presence_active">Rich Presence фаъол аст</string>
+    <string name="discord_step1_title">Қадами 1: Танзимотҳои Приватӣро кушод</string>
+    <string name="console_detected">Муайян шуд</string>
+    <string name="discord_step2_title">Қадами 2: Мубодилонии фаъолиятро фаъол кун</string>
+    <string name="discord_step1_content">Барномаи Discord-ро кушод → ба нишонаи «Ту» (сурати профил) клик кунед → Танзимот (⚙️) клик кунед → ба поён ҳарф бозгаред ва ба «Мундаво ва шабароти иҷтимоӣ» (ё «Приватӣи фаъолият» дар версияҳои кӯҳни) клик кунед.</string>
+    <string name="activity_type_fallback_desc">Барои барномаҳои шинохтанашуда ва барои ҳар як барнома, вақте ки муайяни худкорӣ хомӯш аст, истифода мешавад.</string>
+    <string name="discord_step3_title">Қадами 3: Ҳолати онлайни худро тафтиш кунед</string>
 </resources>

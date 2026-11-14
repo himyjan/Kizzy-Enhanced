@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Discord に接続</string>
     <string name="discord_oauth_authorize_desc">Kizzy が Discord プロフィールにアクティビティを表示できるように許可します</string>
 
+    <string name="console_include_spoofed">偽ビルドを含める</string>
+    <string name="auto_detect">自動 · %1$s</string>
+    <string name="save_logs_to_file">ログをファイルに保存</string>
+    <string name="logs_saved_toast">ログを %1$s に保存しました</string>
+    <string name="discord_step3_content">ステータス（ユーザー名の下）をタップし、オンライン、アイドル、通知オフのいずれかを選択します。⚠️ 不可視は使用しないでください — 不可視のとき Discord は Kizzy のアクティビティを非表示にします。</string>
+    <string name="discord_setup_title">始める前に</string>
+    <string name="console_auto_detect">DroidDeck / Eden を自動検出</string>
+    <string name="console_detected_hint">タップしてこのゲームを Console RPC で使用します</string>
+    <string name="discord_step2_content">「アクティビティを共有」を見つけてオンにします。「アクティビティを共有する場所」で「すべてのサーバーで共有」を選択します。「マイサーバー」までスクロールし、ステータスを表示したいサーバーをオンにします。</string>
+    <string name="discord_tip_content">一部の Discord モバイル版はこのトグルを非表示にします。Chrome で discord.com を開き → デスクトップサイトを有効化 → ログイン → 設定 (⚙️) → アクティビティプライバシー →「アクティビティを共有」をオンにします。</string>
+    <string name="discord_setup_desc">Discord がプロフィールにアクティビティを表示できることを確認してください。</string>
+    <string name="auto_detect_activity_type_desc">音楽アプリは音楽として、動画アプリは動画として検出されるため、YouTube Music はもうゲームとして表示されません。特定のアプリに対して選択した種類は常に優先されます。</string>
+    <string name="auto_detect_activity_type">アクティビティの種類を自動検出</string>
+    <string name="logs_save_error">ログの保存に失敗しました</string>
+    <string name="discord_tip_title">「アクティビティを共有」が見つかりませんか？</string>
+    <string name="console_detected_in_game">ゲーム中</string>
+    <string name="rich_presence_active">Rich Presence 有効</string>
+    <string name="discord_step1_title">ステップ 1: プライバシー設定を開く</string>
+    <string name="console_detected">検出されました</string>
+    <string name="discord_step2_title">ステップ 2: アクティビティ共有を有効にする</string>
+    <string name="discord_step1_content">Discord アプリを開く → 「あなた」のアイコン（プロフィール画像）をタップ → 設定 (⚙️) をタップ → 下にスクロールして「コンテンツとソーシャル」（旧バージョンでは「アクティビティプライバシー」）をタップします。</string>
+    <string name="activity_type_fallback_desc">認識されないアプリ、および自動検出が無効な場合のすべてのアプリで使用されます。</string>
+    <string name="discord_step3_title">ステップ 3: オンライン状態を確認する</string>
 </resources>

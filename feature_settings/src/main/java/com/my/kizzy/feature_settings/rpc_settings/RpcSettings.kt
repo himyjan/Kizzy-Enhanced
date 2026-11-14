@@ -1,17 +1,6 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * RpcSettings.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.feature_settings.rpc_settings
 
+import android.app.Activity
 import android.os.Build
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -25,20 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cached
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.DoNotDisturbOn
-import androidx.compose.material.icons.filled.HighQuality
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Pin
-import androidx.compose.material.icons.filled.SmartButton
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -60,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.my.kizzy.data.rpc.DiscordAuth
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.preference.Prefs
@@ -72,30 +48,31 @@ import com.my.kizzy.ui.components.SettingItem
 import com.my.kizzy.ui.components.Subtitle
 import com.my.kizzy.ui.components.dialog.SingleChoiceItem
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import androidx.compose.material.icons.outlined.Cached
-import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.material.icons.outlined.DoNotDisturbOn
-import androidx.compose.material.icons.outlined.HighQuality
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Pin
-import androidx.compose.material.icons.outlined.SmartButton
-import androidx.compose.material.icons.outlined.Storage
-import androidx.compose.material.icons.outlined.Tune
+import android.util.Log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RpcSettings(onBackPressed: () -> Boolean) {
     val context = LocalContext.current
+    val activity = context as Activity
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     var isLowResIconsEnabled by remember { mutableStateOf(Prefs[Prefs.RPC_USE_LOW_RES_ICON, false]) }
     var useImgur by remember { mutableStateOf(Prefs[Prefs.USE_IMGUR, false]) }
     var configsDir by remember { mutableStateOf(Prefs[Prefs.CONFIGS_DIRECTORY, ""]) }
     var showDirConfigDialog by remember { mutableStateOf(false) }
+    var connectionMethod by remember {
+        mutableStateOf(Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY])
+    }
+    var showConnectionMethodDialog by remember { mutableStateOf(false) }
+    var discordAuth by remember {
+        DiscordAuth(context, scope)
+    }
     var useButtonConfigs by remember { mutableStateOf(Prefs[Prefs.USE_RPC_BUTTONS, false]) }
     var useYoutubeButton by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON, false]) }
     var linkToArtistChannel by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_ARTIST_LINK, false]) }
@@ -109,18 +86,10 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var customActivityType by remember {
         mutableStateOf(Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, 0].toString())
     }
-    var showActivityTypeDialog by remember {
-        mutableStateOf(false)
-    }
-    var showActivityStatusDialog by remember {
-        mutableStateOf(false)
-    }
-    var showApplicationIdDialog by remember {
-        mutableStateOf(false)
-    }
-    var showImgurClientIdDialog by remember {
-        mutableStateOf(false)
-    }
+    var showActivityTypeDialog by remember { mutableStateOf(false) }
+    var showActivityStatusDialog by remember { mutableStateOf(false) }
+    var showApplicationIdDialog by remember { mutableStateOf(false) }
+    var showImgurClientIdDialog by remember { mutableStateOf(false) }
     var setLastRunRpcConfigOption by remember {
         mutableStateOf(Prefs[Prefs.APPLY_FIELDS_FROM_LAST_RUN_RPC, false])
     }
@@ -144,9 +113,38 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     SettingItem(
                         title = stringResource(id = R.string.configs_directory),
                         description = configsDir.ifEmpty { stringResource(id = R.string.custom_rpc_directory) },
-                        icon = Icons.Outlined.Storage,
+                        icon = Icons.Default.Storage,
                     ) {
                         showDirConfigDialog = true
+                    }
+                }
+            }
+            item(key = "connection_method") {
+                SettingItem(
+                    title = stringResource(id = R.string.rpc_connection_method),
+                    description = stringResource(id = R.string.rpc_connection_method_desc),
+                    icon = Icons.Default.OpenInNew,
+                ) {
+                    showConnectionMethodDialog = true
+                }
+            }
+            AnimatedVisibility(visible = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) {
+                item(key = "oauth_authorize") {
+                    SettingItem(
+                        title = stringResource(id = R.string.discord_oauth_authorize),
+                        description = stringResource(id = R.string.discord_oauth_authorize_desc),
+                        icon = Icons.Default.Login,
+                    ) {
+                        scope.launch {
+                            try {
+                                val result = discordAuth.authorize(activity)
+                                Log.d("RpcSettings", "OAuth authorization successful")
+                                Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
+                                connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH
+                            } catch (e: Exception) {
+                                Log.e("RpcSettings", "OAuth authorization failed", e)
+                            }
+                        }
                     }
                 }
             }
@@ -154,7 +152,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_custom_buttons),
                     description = stringResource(id = R.string.use_custom_buttons_desc),
-                    icon = Icons.Outlined.Tune,
+                    icon = Icons.Default.Tune,
                     isChecked = useButtonConfigs,
                 ) {
                     useButtonConfigs = !useButtonConfigs
@@ -165,7 +163,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_youtube_button),
                     description = stringResource(id = R.string.use_youtube_button_desc),
-                    icon = Icons.AutoMirrored.Filled.OpenInNew,
+                    icon = Icons.AutoMirrored.Default.OpenInNew,
                     isChecked = useYoutubeButton,
                 ) {
                     useYoutubeButton = !useYoutubeButton
@@ -217,7 +215,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 PreferenceSwitch(
                     title = stringResource(R.string.set_previous_run_config_in_custom_rpc),
                     description = stringResource(R.string.set_previous_run_config_in_custom_rpc_desc),
-                    icon = Icons.Outlined.Cached,
+                    icon = Icons.Default.Cached,
                     isChecked = setLastRunRpcConfigOption
                 ) {
                     setLastRunRpcConfigOption = !setLastRunRpcConfigOption
@@ -287,7 +285,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 confirmButton = {},
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Storage, contentDescription = null
+                        imageVector = Icons.Default.Storage, contentDescription = null
                     )
                 },
                 title = { Text(stringResource(R.string.select_directory)) },
@@ -312,6 +310,33 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     }
                 })
         }
+        if (showConnectionMethodDialog) {
+            AlertDialog(
+                onDismissRequest = { showConnectionMethodDialog = false },
+                confirmButton = {},
+                title = { Text(stringResource(R.string.rpc_connection_method)) },
+                text = {
+                    Column {
+                        SingleChoiceItem(
+                            text = stringResource(R.string.rpc_connection_method_gateway),
+                            selected = connectionMethod == Prefs.RPC_CONNECTION_METHOD_GATEWAY
+                        ) {
+                            connectionMethod = Prefs.RPC_CONNECTION_METHOD_GATEWAY
+                            Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_GATEWAY
+                            showConnectionMethodDialog = false
+                        }
+                        SingleChoiceItem(
+                            text = stringResource(R.string.rpc_connection_method_oauth),
+                            selected = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH
+                        ) {
+                            connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH
+                            Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
+                            showConnectionMethodDialog = false
+                        }
+                    }
+                }
+            )
+        }
         if (showButtonsConfigDialog) {
             AlertDialog(
                 properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -328,7 +353,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 },
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Storage, contentDescription = null
+                        imageVector = Icons.Default.Storage, contentDescription = null
                     )
                 },
                 title = { Text(stringResource(R.string.enter_details)) },
@@ -420,7 +445,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        if (customActivityType.toInt() in 0..5) {
+                        if (customActivityType.toIntOrNull() in 0..5) {
                             Prefs[Prefs.CUSTOM_ACTIVITY_TYPE] = customActivityType.toInt()
                             showActivityTypeDialog = false
                         }

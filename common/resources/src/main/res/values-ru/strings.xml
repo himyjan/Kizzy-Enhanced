@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Подключиться к Discord</string>
     <string name="discord_oauth_authorize_desc">Разрешите Kizzy показывать вашу активность в профиле Discord</string>
 
+    <string name="console_include_spoofed">Включать поддельные сборки</string>
+    <string name="auto_detect">Автоматически · %1$s</string>
+    <string name="save_logs_to_file">Сохранить журналы в файл</string>
+    <string name="logs_saved_toast">Журналы сохранены в %1$s</string>
+    <string name="discord_step3_content">Нажмите на свой статус (под именем пользователя) и выберите «В сети», «Без действий» или «Не беспокоить». ⚠️ Не используйте «Невидимый» — Discord скрывает активность Kizzy, когда вы невидимы.</string>
+    <string name="discord_setup_title">Перед началом</string>
+    <string name="console_auto_detect">Автоматическое определение DroidDeck / Eden</string>
+    <string name="console_detected_hint">Нажмите, чтобы использовать эту игру для Console RPC</string>
+    <string name="discord_step2_content">Найдите «Поделиться активностью» и включите её. В разделе «Где я делюсь активностью» выберите «Поделиться на всех серверах». Прокрутите до «Мои серверы» и включите серверы, на которых вы хотите видеть свой статус.</string>
+    <string name="discord_tip_content">Некоторые мобильные версии Discord скрывают этот переключатель. Откройте discord.com в Chrome → включите «Версия для компьютера» → войдите → Настройки (⚙️) → Конфиденциальность активности → включите «Поделиться активностью».</string>
+    <string name="discord_setup_desc">Убедитесь, что Discord разрешает показывать вашу активность в профиле.</string>
+    <string name="auto_detect_activity_type_desc">Музыкальные приложения определяются как музыка, а видеоприложения — как видео, поэтому YouTube Music больше не отображается как игра. Тип, выбранный для одного приложения, всегда имеет приоритет.</string>
+    <string name="auto_detect_activity_type">Автоматически определять тип активности</string>
+    <string name="logs_save_error">Не удалось сохранить журналы</string>
+    <string name="discord_tip_title">Не можете найти «Поделиться активностью»?</string>
+    <string name="console_detected_in_game">В игре</string>
+    <string name="rich_presence_active">Rich Presence активен</string>
+    <string name="discord_step1_title">Шаг 1: Откройте настройки конфиденциальности</string>
+    <string name="console_detected">Обнаружено</string>
+    <string name="discord_step2_title">Шаг 2: Включите публикацию активности</string>
+    <string name="discord_step1_content">Откройте приложение Discord → нажмите на значок «Вы» (фото профиля) → нажмите «Настройки» (⚙️) → прокрутите вниз и нажмите «Контент и социальные сети» (или «Конфиденциальность активности» в более старых версиях).</string>
+    <string name="activity_type_fallback_desc">Используется для нераспознанных приложений и для каждого приложения, когда автоматическое определение отключено.</string>
+    <string name="discord_step3_title">Шаг 3: Проверьте свой статус в сети</string>
 </resources>
