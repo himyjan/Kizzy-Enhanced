@@ -76,6 +76,8 @@ import com.my.kizzy.feature_home.feature.Features
 import com.my.kizzy.feature_home.feature.HomeFeature
 import com.my.kizzy.feature_home.feature.ToolTipContent
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.feature_rpc_base.services.KizzyTileService
 import com.my.kizzy.feature_settings.SettingsDrawer
 import com.my.kizzy.resources.R

@@ -18,6 +18,7 @@ import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.logs.LogEvent
 import com.my.kizzy.domain.model.logs.LogLevel
 import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Singleton

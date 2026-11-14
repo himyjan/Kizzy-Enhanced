@@ -13,7 +13,6 @@
 package com.my.kizzy.preference
 
 import android.content.Context
-import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
@@ -22,8 +21,7 @@ object PreferenceConfig {
 
     fun apply(context: Context) {
         applicationScope = CoroutineScope(SupervisorJob())
-        MMKV.initialize(context)
-        Prefs.initMMKV()
+        Prefs.initDataStore(context)
         initializeThemePrefs()
         Prefs.checkAndAutoDeleteSavedImages()
     }

@@ -25,7 +25,6 @@ hiltWork = "1.4.0"
 ktor = "3.6.1"
 kotlinx-coroutine = "1.11.0"
 lifecycle-ktx = "2.11.0"
-mmkv = "2.4.3"
 junit = "4.13.2"
 guava-listenablefuture = "9999.0-empty-to-avoid-conflict-with-guava"
 jakarta-inject = "2.0.1"
@@ -85,7 +84,6 @@ ktor-kotlinx-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json
 ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
 # Third-party libraries
-mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 # Coil 3 splits the HTTP fetcher out of "coil-compose". Without this artifact the
 # ImageLoader has no way to load an image from a URL, so every remote image

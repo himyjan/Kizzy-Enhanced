@@ -15,9 +15,6 @@ package com.my.kizzy.feature_rpc_base
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.compose.runtime.MutableStateFlow
-import androidx.compose.runtime.StateFlow
-import androidx.compose.runtime.asStateFlow
 import androidx.compose.runtime.mutableStateOf
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
@@ -27,6 +24,9 @@ import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Centralized RPC state manager.
@@ -60,9 +60,6 @@ class RpcManager @Inject constructor(
     /** Currently active RPC type. Observed by all RPC screens. */
     private val _activeRpc = MutableStateFlow(RpcType.None)
     val activeRpc: StateFlow<RpcType> = _activeRpc.asStateFlow()
-
-    /** Whether any RPC is currently running. */
-    val isAnyRpcRunning: StateFlow<Boolean> = _activeRpc.map { it != RpcType.None }.asStateFlow()
 
     init {
         // Sync initial state from Android services on creation.

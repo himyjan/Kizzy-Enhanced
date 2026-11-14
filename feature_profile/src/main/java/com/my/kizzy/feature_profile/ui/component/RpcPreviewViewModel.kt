@@ -12,7 +12,6 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
-import kotlinx.coroutines.optIn.RequiresOptIn
 
 /**
  * Live state for the RPC preview.

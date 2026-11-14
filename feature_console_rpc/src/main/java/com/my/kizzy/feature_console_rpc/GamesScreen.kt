@@ -87,6 +87,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 
 import androidx.compose.runtime.getValue
 
@@ -123,6 +124,8 @@ import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.rpc.RpcConfig
 
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 

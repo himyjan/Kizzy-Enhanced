@@ -31,8 +31,11 @@ import android.content.Intent
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf

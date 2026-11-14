@@ -51,9 +51,9 @@ fun ActivityRow(
     special: String?,
 ) {
     val isPlaying =
-        rpcConfig?.type.isNullOrEmpty() || rpcConfig?.type.toIntOrNull()?.equals(0) == true
+        rpcConfig?.type?.isNullOrEmpty() == true || rpcConfig?.type?.toIntOrNull()?.equals(0) == true
     val isPlayingMedia =
-        rpcConfig?.type.toIntOrNull()?.equals(2) == true || rpcConfig?.type.toIntOrNull()
+        rpcConfig?.type?.toIntOrNull()?.equals(2) == true || rpcConfig?.type.toIntOrNull()
             ?.equals(3) == true
 
     // Media timeline - calculate real elapsed time from timestamps.
