@@ -346,6 +346,12 @@ class MetadataResolver @Inject constructor(
             if (id.isNotBlank() && id.length >= 11) {
                 return "https://youtu.be/$id"
             }
+            // Fallback: try YouTubeResolver.extractVideoId for any URL format
+            // (handles modded YouTube Music apps that ship media IDs in other formats)
+            val resolvedId = YouTubeResolver.extractVideoId(mediaId)
+            if (resolvedId != null) {
+                return "https://youtu.be/$resolvedId"
+            }
         }
 
         // Check METADATA_KEY_SOURCE_URL for any YouTube URL, but skip search
