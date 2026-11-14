@@ -65,6 +65,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.collectAsState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import android.util.Log
@@ -79,11 +80,17 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var useImgur by remember { mutableStateOf(Prefs[Prefs.USE_IMGUR, false]) }
     var configsDir by remember { mutableStateOf(Prefs[Prefs.CONFIGS_DIRECTORY, ""]) }
     var showDirConfigDialog by remember { mutableStateOf(false) }
-    var connectionMethod by remember {
-        mutableStateOf(Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY])
-    }
     var showConnectionMethodDialog by remember { mutableStateOf(false) }
     var oauthError by remember { mutableStateOf("") }
+
+    // Collect from DataStore state flow so OAuth2 selection persists across cold boots.
+    // DataStore priming is async (Dispatchers.IO), so Prefs[...] may return the default
+    // on first read before priming completes. Using collectAsState makes the UI react
+    // when _prefsState is primed from disk.
+    val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap())
+    var connectionMethod by remember(prefsMap) {
+        mutableStateOf(prefsMap[Prefs.RPC_CONNECTION_METHOD] as? String ?: Prefs.RPC_CONNECTION_METHOD_GATEWAY)
+    }
 
     val discordAuth = remember { DiscordAuth(context, scope) }
 
