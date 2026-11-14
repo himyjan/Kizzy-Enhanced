@@ -166,6 +166,11 @@ class KizzyRPC @Inject constructor(
     // Remember the last presence so we can re-apply after reconnect (fresh IDENTIFY
     // creates a brand-new, empty session; the previously-set activity is gone).
     private var lastPresence: Presence? = null
+    // Set when the token changes (e.g. OAuth login after bot-token session, or logout).
+    // Forces connectToWebSocket() to reconnect even if the WebSocket still appears
+    // connected, because Discord authenticates based on the IDENTIFY handshake token
+    // and a close() may not have completed yet.
+    private var forceReconnectOnTokenChange = false
 
     /** Called by DiscordWebSocketImpl after a successful RESUME or READY. */
     suspend fun markConnected() {
@@ -204,6 +209,7 @@ class KizzyRPC @Inject constructor(
         if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
             logger.d("KizzyRPC", "Token changed, closing WebSocket to re-authenticate")
             discordWebSocket.close()
+            forceReconnectOnTokenChange = true
         }
 
         val (browser, os, device) = Constants.spoofIdentifyProperties(
@@ -741,14 +747,19 @@ class KizzyRPC @Inject constructor(
         // Don't reconnect if already connected - prevents multiple concurrent WebSocket connections
         // that cause Discord 4003 Not authenticated errors. When forceRefresh is true
         // (e.g. notification restart), we still send the presence on the existing connection.
-        if (discordWebSocket.isWebSocketConnected() && !forceRefresh) {
+        // When forceReconnectOnTokenChange is true (OAuth login/logout changed the token),
+        // we must reconnect even if the socket still appears connected — close() is async
+        // and Discord authenticates based on the IDENTIFY handshake token, so the old
+        // socket keeps using the old bot token unless we force a fresh IDENTIFY.
+        if (discordWebSocket.isWebSocketConnected() && !forceRefresh && !forceReconnectOnTokenChange) {
             logger.d("KizzyRPC", "WebSocket already connected, skipping connect")
             return
         }
-        if (!discordWebSocket.isWebSocketConnected()) {
+        if (forceReconnectOnTokenChange || !discordWebSocket.isWebSocketConnected()) {
             discordWebSocket.connect()
             markConnected()
         }
+        forceReconnectOnTokenChange = false
         discordWebSocket.sendActivity(presence)
     }
 
@@ -776,8 +787,25 @@ class KizzyRPC @Inject constructor(
         // never called (e.g. Media RPC running without Experimental RPC).
         refreshFromPrefs()
 
+        if (!isUserTokenValid()) {
+            logger.e(
+                tag = "KizzyRPC",
+                event = "Token Seems to be invalid, Please Login if you haven't"
+            )
+            return
+        }
+        // Force reconnect if token changed (OAuth login/logout changed the token).
+        // close() is async, so isWebSocketConnected() might still return true even
+        // though the old socket is being torn down. Discord authenticates based on
+        // the IDENTIFY handshake token, so we must force a fresh IDENTIFY with the
+        // new token.
+        if (forceReconnectOnTokenChange || !discordWebSocket.isWebSocketConnected()) {
+            discordWebSocket.connect()
+            markConnected()
+        }
+        forceReconnectOnTokenChange = false
+
         val wasConnected = discordWebSocket.isWebSocketConnected()
-        discordWebSocket.connect()
 
         // Delay first presence update after connect/resume to avoid Discord 4003 (Not authenticated)
         // when presence is sent immediately after RESUME/READY.
