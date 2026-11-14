@@ -161,7 +161,20 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                                 Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
                                 connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH
                             } catch (e: Exception) {
-                                oauthError = e.message ?: e.javaClass.simpleName
+                                val msg = e.message
+                                val cls = e.javaClass.simpleName
+                                val cause = e.cause
+                                val causeMsg = cause?.message
+                                val causeCls = cause?.javaClass?.simpleName
+                                oauthError = buildString {
+                                    append(if (msg.isNullOrBlank()) cls else "$cls: $msg")
+                                    if (causeMsg != null && causeMsg != msg) {
+                                        append(" | caused by: ")
+                                        append(if (causeCls != null) "$causeCls: $causeMsg" else causeMsg)
+                                    } else if (causeCls != null && causeCls != cls) {
+                                        append(" | caused by: $causeCls")
+                                    }
+                                }
                                 Log.e("RpcSettings", "OAuth authorization failed", e)
                             }
                         }
