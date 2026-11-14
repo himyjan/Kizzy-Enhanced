@@ -156,7 +156,9 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                         scope.launch {
                             try {
                                 val result = discordAuth.authorize(activity)
-                                Log.d("RpcSettings", "OAuth authorization successful: ${result.accessToken}")
+                                Log.d("RpcSettings", "OAuth authorization successful: token=${result.accessToken.takeIf { it.isNotEmpty() }?.let { "saved(${it.length})" } ?: "empty"}")
+                                val tokenSaved = discordAuth.hasValidToken()
+                                Log.d("RpcSettings", "Token saved check: $tokenSaved")
                                 oauthError = ""
                                 Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
                                 connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH

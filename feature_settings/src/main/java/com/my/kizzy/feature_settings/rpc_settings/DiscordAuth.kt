@@ -253,10 +253,10 @@ class DiscordAuth(
     }
 
     fun clearTokens() {
-        Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN] = ""
-        Prefs[Prefs.DISCORD_OAUTH_REFRESH_TOKEN] = ""
-        Prefs[Prefs.DISCORD_OAUTH_EXPIRES_AT] = ""
-        Prefs[Prefs.DISCORD_OAUTH_USER_ID] = ""
-        Prefs[Prefs.DISCORD_OAUTH_USERNAME] = ""
+        Prefs.remove(Prefs.DISCORD_OAUTH_ACCESS_TOKEN)
+        Prefs.remove(Prefs.DISCORD_OAUTH_REFRESH_TOKEN)
+        Prefs.remove(Prefs.DISCORD_OAUTH_EXPIRES_AT)
+        Prefs.remove(Prefs.DISCORD_OAUTH_USER_ID)
+        Prefs.remove(Prefs.DISCORD_OAUTH_USERNAME)
     }
 }
