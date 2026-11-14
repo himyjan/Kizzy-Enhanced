@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Setup JDK 26
         uses: actions/setup-java@v6
@@ -45,11 +47,11 @@ jobs:
       - name: Set version
         run: |
           sed -i 's/version-name = ".*"/version-name = "6.2-enhanced-${{ github.run_number }}"/' gradle/libs.versions.toml
-          sed -i 's/version-code =".*"/version-code ="${{ github.run_number }}"/' gradle/libs.versions.toml
+          sed -i 's/version-code = ".*"/version-code = "${{ github.run_number }}"/' gradle/libs.versions.toml
 
       - name: Update app icon
         run: |
-          sudo apt-get install -y imagemagick
+          sudo apt-get update && sudo apt-get install -y imagemagick
           SRC="kizzy-fork-icon.png"
           convert "$SRC" -resize 48x48   app/src/main/res/mipmap-mdpi/ic_launcher.png
           convert "$SRC" -resize 72x72   app/src/main/res/mipmap-hdpi/ic_launcher.png
@@ -80,44 +82,60 @@ jobs:
           KEY_PASSWORD: kizzyfork
         run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
 
-      - name: Rename APK
+      - name: Rename Base APK and App Bundle
         run: |
-          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}.apk
-
-      - name: Rename App Bundle
-        run: |
+          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base.apk
           mv app/build/outputs/bundle/release/app-release.aab app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
 
       - name: Download bundletool
         run: |
-          curl -L https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar -o "$RUNNER_TEMP/bundletool.jar"
+          curl -L https://github.com -o "$RUNNER_TEMP/bundletool.jar"
 
-      - name: Extract installable APKs from App Bundle
+      - name: Extract Universal & Per-ABI APKs from App Bundle
         run: |
+          AAB="app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
+          OUT_DIR="$GITHUB_WORKSPACE/app/build/outputs/apk/release"
+
+          # 1. Extract Universal APK
           java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
-            --bundle="app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab" \
-            --output="$RUNNER_TEMP/kizzy-apks.apks" \
+            --bundle="$AAB" \
+            --output="$RUNNER_TEMP/universal.apks" \
             --ks="$RUNNER_TEMP/release.keystore" \
             --ks-pass=pass:kizzyfork \
             --ks-key-alias=kizzyfork \
             --key-pass=pass:kizzyfork \
             --mode=universal
-          # Extract the universal APK from the .apks archive for direct install
-          cd "$RUNNER_TEMP"
-          unzip -o -q kizzy-apks.apks "universal.apk"
-          cp universal.apk "$GITHUB_WORKSPACE/app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk"
+          unzip -o -q "$RUNNER_TEMP/universal.apks" "universal.apk" -d "$RUNNER_TEMP/out-universal"
+          cp "$RUNNER_TEMP/out-universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-universal.apk"
 
-      - name: Upload APK
+          # 2. Extract standalone APKs per ABI (arm64-v8a, armeabi-v7a, x86_64)
+          for ABI in arm64-v8a armeabi-v7a x86_64; do
+            cat > "$RUNNER_TEMP/spec-${ABI}.json" <<EOF
+          {
+            "supportedAbis": ["${ABI}"],
+            "supportedLocales": ["en"],
+            "screenDensity": 480,
+            "sdkVersion": 37
+          }
+          EOF
+            java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
+              --bundle="$AAB" \
+              --output="$RUNNER_TEMP/${ABI}.apks" \
+              --device-spec="$RUNNER_TEMP/spec-${ABI}.json" \
+              --ks="$RUNNER_TEMP/release.keystore" \
+              --ks-pass=pass:kizzyfork \
+              --ks-key-alias=kizzyfork \
+              --key-pass=pass:kizzyfork \
+              --mode=universal
+            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "universal.apk" -d "$RUNNER_TEMP/out-${ABI}"
+            cp "$RUNNER_TEMP/out-${ABI}/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+          done
+
+      - name: Upload All Release APKs
         uses: actions/upload-artifact@v6
         with:
-          name: apk-release
-          path: app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}.apk
-
-      - name: Upload Universal APK (from App Bundle)
-        uses: actions/upload-artifact@v6
-        with:
-          name: apk-universal-release
-          path: app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk
+          name: apks-release
+          path: app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-*.apk
 
       - name: Upload App Bundle
         uses: actions/upload-artifact@v6
@@ -125,30 +143,75 @@ jobs:
           name: aab-release
           path: app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
 
-      - name: Find APK
-        id: apk
-        run: echo "path=$(find app/build/outputs/apk/release -name 'KizzyEnhanced-*.apk' | head -1)" >> "$GITHUB_OUTPUT"
-
-      - name: Find Universal APK
-        id: universal-apk
-        run: echo "path=$(find app/build/outputs/apk/release -name 'KizzyEnhanced-*-universal.apk' | head -1)" >> "$GITHUB_OUTPUT"
-
-      - name: Find App Bundle
-        id: aab
-        run: echo "path=$(find app/build/outputs/bundle/release -name 'KizzyEnhanced-*.aab' | head -1)" >> "$GITHUB_OUTPUT"
-
-      - name: Generate git changelog
+      - name: Generate categorized git changelog
         id: changelog
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           if [ -n "$LAST_TAG" ]; then
-            COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"- %s" --no-merges | grep -ivE '^- (chore|ci|style|refactor):' | head -30)
+            RANGE="${LAST_TAG}..HEAD"
           else
-            COMMITS=$(git log --pretty=format:"- %s" --no-merges | grep -ivE '^- (chore|ci|style|refactor):' | head -30)
+            RANGE="-n 100"
           fi
-          echo "commits<<EOF" >> "$GITHUB_OUTPUT"
-          printf '%s\n' "$COMMITS" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+
+          RAW_COMMITS=$(git log $RANGE --pretty=format:"%s (%h)" --no-merges | rg -iv '^(chore|ci|style|build|test)(\(.+\))?:' || true)
+
+          FEATS=$(printf '%s\n' "$RAW_COMMITS" | rg -i '^feat(\(.+\))?:' | sed -E 's/^feat(\(([^)]+)\))?:\s*/- **\2**: /I; s/^\- \*\*\*\*: /- /' || true)
+          FIXES=$(printf '%s\n' "$RAW_COMMITS" | rg -i '^fix(\(.+\))?:' | sed -E 's/^fix(\(([^)]+)\))?:\s*/- **\2**: /I; s/^\- \*\*\*\*: /- /' || true)
+          PERFS=$(printf '%s\n' "$RAW_COMMITS" | rg -i '^(perf|refactor)(\(.+\))?:' | sed -E 's/^(perf|refactor)(\(([^)]+)\))?:\s*/- **\3**: /I; s/^\- \*\*\*\*: /- /' || true)
+          OTHERS=$(printf '%s\n' "$RAW_COMMITS" | rg -iv '^(feat|fix|perf|refactor)(\(.+\))?:' | sed 's/^/- /' || true)
+
+          {
+            echo "body<<EOF"
+            if [ -n "$FEATS" ]; then
+              echo "### ✨ Features"
+              printf '%s\n\n' "$FEATS"
+            fi
+            if [ -n "$FIXES" ]; then
+              echo "### 🐛 Bug Fixes"
+              printf '%s\n\n' "$FIXES"
+            fi
+            if [ -n "$PERFS" ]; then
+              echo "### ⚡ Performance & Refactoring"
+              printf '%s\n\n' "$PERFS"
+            fi
+            if [ -n "$OTHERS" ]; then
+              echo "### 📦 Other Changes"
+              printf '%s\n\n' "$OTHERS"
+            fi
+            if [ -z "$RAW_COMMITS" ]; then
+              echo "_No code changes recorded since last tag._"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate release asset table & checksums
+        id: assets
+        run: |
+          {
+            echo "table<<EOF"
+            echo "| File | Architecture / Type | Size | SHA-256 |"
+            echo "| :--- | :--- | :--- | :--- |"
+            for FILE in \
+              "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk" \
+              "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-armeabi-v7a.apk" \
+              "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk" \
+              "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk" \
+              "app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
+            do
+              NAME=$(basename "$FILE")
+              SIZE=$(du -h "$FILE" | cut -f1)
+              HASH=$(sha256sum "$FILE" | cut -d' ' -f1)
+              case "$NAME" in
+                *arm64-v8a*) ARCH="ARM64 (Recommended for modern phones)" ;;
+                *armeabi-v7a*) ARCH="ARM32 (Older Android devices)" ;;
+                *x86_64*) ARCH="x86_64 (Emulators & Chromebooks)" ;;
+                *universal*) ARCH="Universal (All architectures)" ;;
+                *.aab*) ARCH="Android App Bundle (Play Store / bundletool)" ;;
+              esac
+              echo "| \`$NAME\` | $ARCH | $SIZE | \`$HASH\` |"
+            done
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Publish to Releases
         uses: softprops/action-gh-release@v2
@@ -156,25 +219,28 @@ jobs:
           tag_name: enhanced-${{ github.run_number }}
           name: Kizzy Enhanced build ${{ github.run_number }}
           body: |
-            ## What's new
-
-            ${{ github.event.inputs.notes_en != '' && github.event.inputs.notes_en || '_No release notes provided._' }}
-
+            ## What's New
+            ${{ github.event.inputs.notes_en != '' && github.event.inputs.notes_en || 'No release notes provided.' }}
             ---
-
-            ## Commits in this build
-
-            ${{ steps.changelog.outputs.commits }}
-
+            ## Changelog
+            ${{ steps.changelog.outputs.body }}
             ---
-
-            **Package:** `com.my.kizzy.enhanced`
-            **Version:** `6.2-enhanced-${{ github.run_number }}`
-            **Base:** [Kizzy by dead8309](https://github.com/dead8309/Kizzy)
-            See the [README](../../blob/master/README.md) for the full list of fork features.
+            ## Downloads & Checksums
+            ${{ steps.assets.outputs.table }}
+            ### Installation Guide
+            1. Download KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk (or universal.apk if you are unsure of your device's CPU).
+            2. Open the APK file on your Android device and allow "Install from unknown sources" if prompted.
+            3. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand).
+            ---
+            - Package: com.my.kizzy.enhanced
+            - Version: 6.2-enhanced-${{ github.run_number }} (Code: ${{ github.run_number }})
+            - Base Project: Kizzy by dead8309
+            - Full Feature List: See the README
           files: |
-            ${{ steps.apk.outputs.path }}
-            ${{ steps.universal-apk.outputs.path }}
-            ${{ steps.aab.outputs.path }}
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-armeabi-v7a.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk
+            app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
