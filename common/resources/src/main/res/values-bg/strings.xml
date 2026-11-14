@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Свържи се с Discord</string>
     <string name="discord_oauth_authorize_desc">Разрешете на Kizzy да показва активността ви в профила ви в Discord</string>
 
+    <string name="console_include_spoofed">Включване на подправени сборки</string>
+    <string name="auto_detect">Автоматично · %1$s</string>
+    <string name="save_logs_to_file">Запиши логовете във файл</string>
+    <string name="logs_saved_toast">Логовете са записани в %1$s</string>
+    <string name="discord_step3_content">Докоснете вашия статус (под потребителското име) и изберете Онлайн, Нищо не се прави или Не безпокойствайте. ⚠️ Не използвайте Невидим — Discord скрива активността на Kizzy, когато сте невидими.</string>
+    <string name="discord_setup_title">Преди да започнете</string>
+    <string name="console_auto_detect">Автоматично откриване на DroidDeck / Eden</string>
+    <string name="console_detected_hint">Докоснете, за да използвате тази игра за Console RPC</string>
+    <string name="discord_step2_content">Намерете „Споделяне на моята активност“ и го включете. В раздел „Къде споделям активност“ изберете „Споделяне всички сървъри“. Превъртете до „Моите сървъри“ и включете сървърите, където искате статусът да е видим.</string>
+    <string name="discord_tip_content">Някои мобилни версии на Discord скриват този превключвател. Отворете discord.com в Chrome → включете „Настолен сайт“ → влезте → Настройки (⚙️) → Поверителност на активността → включете „Споделяне на моята активност“.</string>
+    <string name="discord_setup_desc">Уверете се, че Discord позволява активността ви да се показва в профила ви.</string>
+    <string name="auto_detect_activity_type_desc">Музикалните приложения се откриват като музика, а видео приложенията — като видео, затова YouTube Music вече не се показва като игра. Тип, избран за едно приложение, винаги има предимство.</string>
+    <string name="auto_detect_activity_type">Автоматично откриване на типа активност</string>
+    <string name="logs_save_error">Неуспешно запазване на логовете</string>
+    <string name="discord_tip_title">Не можете да намерите „Споделяне на моята активност“?</string>
+    <string name="console_detected_in_game">В игра</string>
+    <string name="rich_presence_active">Rich Presence е активен</string>
+    <string name="discord_step1_title">Стъпка 1: Отворете настройките за поверителност</string>
+    <string name="console_detected">Открито</string>
+    <string name="discord_step2_title">Стъпка 2: Включете споделянето на активност</string>
+    <string name="discord_step1_content">Отворете приложението Discord → докоснете иконата „Вие“ (снимка на профила) → докоснете „Настройки“ (⚙️) → превъртете надолу и докоснете „Съдържание и социални мрежи“ (или „Поверителност на активността“ при по-стари версии).</string>
+    <string name="activity_type_fallback_desc">Използва се за приложенията, които не са разпознати, и за всяко приложение, когато автоматичното откриване е изключено.</string>
+    <string name="discord_step3_title">Стъпка 3: Проверете онлайн състоянието си</string>
 </resources>

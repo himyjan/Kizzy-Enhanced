@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Hubungkan ke Discord</string>
     <string name="discord_oauth_authorize_desc">Izinkan Kizzy menampilkan aktivitas Anda di profil Discord Anda</string>
 
+    <string name="console_include_spoofed">Masukkan build palsu</string>
+    <string name="auto_detect">Otomatis · %1$s</string>
+    <string name="save_logs_to_file">Simpan log ke file</string>
+    <string name="logs_saved_toast">Log tersimpan di %1$s</string>
+    <string name="discord_step3_content">Ketuk Status Anda (di bawah nama pengguna Anda) dan pilih Online, Menganggur, atau Jangan Ganggu. ⚠️ Jangan gunakan Tidak terlihat — Discord menyembunyikan aktivitas Kizzy saat Anda tidak terlihat.</string>
+    <string name="discord_setup_title">Sebelum memulai</string>
+    <string name="console_auto_detect">Deteksi otomatis DroidDeck / Eden</string>
+    <string name="console_detected_hint">Ketuk untuk menggunakan gim ini untuk Console RPC</string>
+    <string name="discord_step2_content">Temukan Bagikan aktivitas saya dan nyalakan. Di bawah Di mana saya Bagikan Aktivitas, pilih Bagikan di semua server. Gulir ke Server Saya dan nyalakan server tempat Anda ingin status terlihat.</string>
+    <string name="discord_tip_content">Beberapa versi seluler Discord menyembunyikan sakelar ini. Buka discord.com di Chrome → aktifkan Situs Desktop → masuk → Pengaturan (⚙️) → Privasi Aktivitas → nyalakan Bagikan aktivitas saya.</string>
+    <string name="discord_setup_desc">Pastikan Discord mengizinkan aktivitas Anda ditampilkan di profil Anda.</string>
+    <string name="auto_detect_activity_type_desc">Aplikasi musik terdeteksi sebagai musik dan aplikasi video sebagai video, sehingga YouTube Music tidak lagi ditampilkan sebagai gim. Jenis yang dipilih untuk satu aplikasi selalu menang.</string>
+    <string name="auto_detect_activity_type">Deteksi otomatis jenis aktivitas</string>
+    <string name="logs_save_error">Gagal menyimpan log</string>
+    <string name="discord_tip_title">Tidak menemukan "Bagikan aktivitas saya"?</string>
+    <string name="console_detected_in_game">Dalam gim</string>
+    <string name="rich_presence_active">Rich Presence aktif</string>
+    <string name="discord_step1_title">Langkah 1: Buka Pengaturan Privasi</string>
+    <string name="console_detected">Terdeteksi</string>
+    <string name="discord_step2_title">Langkah 2: Aktifkan Pembagian Aktivitas</string>
+    <string name="discord_step1_content">Buka aplikasi Discord → ketuk ikon Anda (foto profil) → ketuk Pengaturan (⚙️) → gulir ke bawah dan ketuk Konten &amp; Sosial (atau Privasi Aktivitas pada versi aplikasi lama).</string>
+    <string name="activity_type_fallback_desc">Digunakan untuk aplikasi yang tidak dikenali, dan untuk setiap aplikasi saat deteksi otomatis dimatikan.</string>
+    <string name="discord_step3_title">Langkah 3: Periksa status daring Anda</string>
 </resources>

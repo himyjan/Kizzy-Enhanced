@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Lidhu me Discord</string>
     <string name="discord_oauth_authorize_desc">Lejo Kizzy të shfaqë aktivitetin tuaj në profilin tënd të Discord</string>
 
+    <string name="console_include_spoofed">Përfshi versionat e falsifikuara</string>
+    <string name="auto_detect">Automatik · %1$s</string>
+    <string name="save_logs_to_file">Ruaj regjistrat në skedar</string>
+    <string name="logs_saved_toast">Regjistrat u ruajtën në %1$s</string>
+    <string name="discord_step3_content">Prekni statusin tuaj (nën emrin e përdoruesit) dhe zgjidhni Online, Jo i gjallë ose Mos më shqetëso. ⚠️ Mos përdorni I padukshëm — Discord fshih aktivitetin e Kizzy kur jeni i padukshëm.</string>
+    <string name="discord_setup_title">Para se të filloni</string>
+    <string name="console_auto_detect">Zbulo automatikisht DroidDeck / Eden</string>
+    <string name="console_detected_hint">Prekni për të përdorur këtë lojë për Console RPC</string>
+    <string name="discord_step2_content">Gjeni "Ndaj aktivitetin tim" dhe ndizeni. Te "Ku ndaj aktivitetin", zgjidhni "Ndaj në të gjitha serverët". Rrisedh deri te "Serverët e mi" dhe ndizeni serverët ku doni të shihet statusi juaj.</string>
+    <string name="discord_tip_content">Disa versione mobile të Discord-it fshehin këtë çelës. Hapni discord.com në Chrome → aktivizoni "Faqe desktopi" → hyni → Cilësimet (⚙️) → Privatësia e aktivitetit → ndizni "Ndaj aktivitetin tim".</string>
+    <string name="discord_setup_desc">Sigurohuni që Discord lejon të shfaqet aktiviteti juaj në profilin tuaj.</string>
+    <string name="auto_detect_activity_type_desc">Aplikacionet e muzikës zbulojnë si muzikë dhe aplikacionet e video si video, kështu YouTube Music nuk shfaqet më si lojë. Lloji i zgjedhur për një aplikacion ka gjithmonë përparësi.</string>
+    <string name="auto_detect_activity_type">Zbulo automatikisht llojin e aktivitetit</string>
+    <string name="logs_save_error">Ruajtja e regjistrave dështoi</string>
+    <string name="discord_tip_title">Nuk e gjeni "Ndaj aktivitetin tim"?</string>
+    <string name="console_detected_in_game">Në lojë</string>
+    <string name="rich_presence_active">Rich Presence aktiv</string>
+    <string name="discord_step1_title">Hapi 1: Hapni cilësimet e privatësisë</string>
+    <string name="console_detected">Zbularo</string>
+    <string name="discord_step2_title">Hapi 2: Aktivizoni ndarjen e aktivitetit</string>
+    <string name="discord_step1_content">Hapni aplikacionin Discord → prekni ikonin "Ju" (foto e profilit) → prekni Cilësimet (⚙️) → rrisedh poshtë dhe prekni "Përmbajtja dhe Rrjetet sociale" (ose "Privatësia e aktivitetit" në versionet e vjetra të aplikacionit).</string>
+    <string name="activity_type_fallback_desc">Përdoret për aplikacionet që nuk njihen dhe për çdo aplikacion kur zbuloja automatike është e fikur.</string>
+    <string name="discord_step3_title">Hapi 3: Kontrolloni statusin tuaj online</string>
 </resources>

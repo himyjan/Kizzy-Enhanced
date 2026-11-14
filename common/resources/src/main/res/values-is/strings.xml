@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Tengjast Discord</string>
     <string name="discord_oauth_authorize_desc">Leyfðu Kizzy að sýna virkni þína á Discord profilinu þínu</string>
 
+    <string name="console_include_spoofed">Lokaðu falsbyggingum</string>
+    <string name="auto_detect">Sjálfkrafa · %1$s</string>
+    <string name="save_logs_to_file">Vista skrár í skrá</string>
+    <string name="logs_saved_toast">Skrár vistaðar í %1$s</string>
+    <string name="discord_step3_content">Ýttu á stöðuna þína (undir notandanafninu þínu) og veldu Á neti, Hegða ekki eða Neyrðu á rökkun. ⚠️ Ekki nota Ósýnilegt — Discord felur Kizzy virkni þegar þú ert Ósýnilegur.</string>
+    <string name="discord_setup_title">Áður en þú byrjar</string>
+    <string name="console_auto_detect">Greining DroidDeck / Eden</string>
+    <string name="console_detected_hint">Ýttu til að nota þennan leik fyrir Console RPC</string>
+    <string name="discord_step2_content">Finndu Share my activity og kveiktu á því. Undir Where I Share Activity veldu Share in all servers. Skrunaðu niður að My Servers og kveiktu á þeim miðlarþjónum þar sem þú vilt að staða þín sjáist.</string>
+    <string name="discord_tip_content">Sumar farsíður Discord skrúla þennan rofa. Opnaðu discord.com í Chrome → kveiktu á Desktop site → skráðu inn → Settings (⚙️) → Activity Privacy → kveiktu á Share my activity.</string>
+    <string name="discord_setup_desc">Gakktu úr skugga um að Discord leyfi þér að sýna virkni þína á snöf profileinu þínu.</string>
+    <string name="auto_detect_activity_type_desc">Tónlistarforrit greinast sem tónlist og myndbandsforrit sem myndband, svo YouTube Music er ekki lengur sýnt sem leikur. Tegund sem valin er fyrir eitt forrit hefur alltaf forgang.</string>
+    <string name="auto_detect_activity_type">Greining virknistegundar</string>
+    <string name="logs_save_error">Ekki tókst að vista skrár</string>
+    <string name="discord_tip_title">Finnst ekki "Share my activity"?</string>
+    <string name="console_detected_in_game">Í leik</string>
+    <string name="rich_presence_active">Rich Presence virkt</string>
+    <string name="discord_step1_title">Skref 1: Opnaðu einkalagstillingar</string>
+    <string name="console_detected">Greint</string>
+    <string name="discord_step2_title">Skref 2: Kveiktu á deilingu virkni</string>
+    <string name="discord_step1_content">Opnaðu Discord appið → ýttu á þín tákn (mynd af prófíl) → ýttu á Settings (⚙️) → skrunaðu niður og ýttu á Content &amp; Social (eða Activity Privacy á eldri útgáfum appiðs).</string>
+    <string name="activity_type_fallback_desc">Notað fyrir forrit sem eru ekki þekkt, og fyrir hvert forrit þegar sjálfvirk greiningu er slökkt.</string>
+    <string name="discord_step3_title">Skref 3: Athugaðu stöðu þína á neti</string>
 </resources>

@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Pripojiť sa k Discordu</string>
     <string name="discord_oauth_authorize_desc">Umožnite Kizzy zobrazovať vašu aktivitu na vašom Discord profile</string>
 
+    <string name="console_include_spoofed">Zahrnúť podvrhnuté zostavenia</string>
+    <string name="auto_detect">Automaticky · %1$s</string>
+    <string name="save_logs_to_file">Uložiť logy do súboru</string>
+    <string name="logs_saved_toast">Logy boli uložené do %1$s</string>
+    <string name="discord_step3_content">Ťuknite na svoj stav (pod používateľským menom) a vyberte Online, Nečinné alebo Nerušiť ma. ⚠️ Nepoužívajte Neviditeľný — Discord skryje aktivitu Kizzy, keď ste Neviditeľný.</string>
+    <string name="discord_setup_title">Skôr než začnete</string>
+    <string name="console_auto_detect">Automatická detekcia DroidDeck / Eden</string>
+    <string name="console_detected_hint">Ťuknutím použijete túto hru pre Console RPC</string>
+    <string name="discord_step2_content">Nájdite „Zdieľať moju aktivitu“ a zapnite ju. V časti „Kde zdieľam aktivitu“ vyberte „Zdieľať na všetkých serveroch“. Posuňte sa na „Moje servery“ a zapnite servery, na ktorých chcete vidieť svoj stav.</string>
+    <string name="discord_tip_content">Niektoré mobilné verzie Discorda skryjú tento prepínač. Otvorte discord.com v Chrome → zapnite „Desktopová lokalita“ → prihláste sa → Nastavenia (⚙️) → Súkromie aktivity → zapnite „Zdieľať moju aktivitu“.</string>
+    <string name="discord_setup_desc">Uistite sa, že Discord umožňuje zobraziť vašu aktivitu na vašom profile.</string>
+    <string name="auto_detect_activity_type_desc">Hudobné aplikácie sa detegujú ako hudba a video aplikácie ako video, takže YouTube Music sa už nezobrazuje ako hra. Typ vybraný pre jednu aplikáciu má vždy prednosť.</string>
+    <string name="auto_detect_activity_type">Automatická detekcia typu aktivity</string>
+    <string name="logs_save_error">Nepodarilo sa uložiť logy</string>
+    <string name="discord_tip_title">Nenašli ste „Zdieľať moju aktivitu“?</string>
+    <string name="console_detected_in_game">V hre</string>
+    <string name="rich_presence_active">Rich Presence aktívny</string>
+    <string name="discord_step1_title">Krok 1: Otvorte nastavenia súkromia</string>
+    <string name="console_detected">Detegované</string>
+    <string name="discord_step2_title">Krok 2: Zapnite zdieľanie aktivity</string>
+    <string name="discord_step1_content">Otvorte aplikáciu Discord → ťuknite na svoju ikonu „Vy“ (fotografia profilu) → ťuknite na „Nastavenia“ (⚙️) → posuňte sa nadol a ťuknite na „Obsah a sociálne siete“ (alebo „Súkromie aktivity“ v starších verziách aplikácie).</string>
+    <string name="activity_type_fallback_desc">Používa sa pre aplikácie, ktoré nie sú rozpoznané, a pre každú aplikáciu, keď je automatická detekcia vypnutá.</string>
+    <string name="discord_step3_title">Krok 3: Skontrolujte svoj online stav</string>
 </resources>

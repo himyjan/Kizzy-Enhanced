@@ -78,7 +78,7 @@
     <string name="dynamic_color_desc">ከዎልፔፐር ቀለሞችን ተግብር</string>
     <string name="cancel">ሰርዝ</string>
     <string name="confirm">አረጋግጥ</string>
-    <string name="primary_color">முதன்மை நிறம்</string>
+    <string name="primary_color">ዋና ቀለም</string>
     <string name="primary_color_hint">ልክ እንደ #666666 ወይም 666666</string>
     <string name="android_on">አብራ</string>
     <string name="android_off">አጥፉ</string>
@@ -119,7 +119,7 @@
     <string name="main_experimentalRpc">የሙከራ RPC</string>
     <string name="main_experimentalRpc_details">የሙከራ RPC በመተግበሪያዎች RPC እና በሚዲያ RPC መካከል ያለማቋረጥ የሚቀያየር በKizzy ውስጥ ያለ ባህሪ ነው።</string>
     <string name="main_customRpc_details">Kizzy ለዲስኮርድ የራስዎን ሙሉ በሙሉ ሊበጅ የሚችል የበለፀገ መገኘት እንዲፈጥሩ ይፈቅድልዎታል።</string>
-    <string name="main_comingSoon">בקרוב</string>
+    <string name="main_comingSoon">በቅርብ ወጥ</string>
     <string name="exit">ውጣ</string>
     <string name="logs">መዝገቦች</string>
     <string name="drawer_subtitle_help">እርዳታ</string>
@@ -144,7 +144,7 @@
     <string name="select_directory">ማውጫ ይምረጡ</string>
     <string name="enter_details">ዝርዝሮችን ያስገቡ</string>
     <string name="status_online">ኦንላይን</string>
-    <string name="status_idle">निष्क्रिय</string>
+    <string name="status_idle">በመቁም ላይ</string>
     <string name="status_dnd">አትረብሽ</string>
     <string name="status_invisible_offline">የማይታይ እና ከመስመር ውጭ ሆኖ ይታያል</string>
     <string name="status_offline">ከመስመር ውጭ</string>
@@ -172,7 +172,7 @@
     <string name="config_name">የውቅር ስም</string>
     <string name="delete">ሰርዝ</string>
     <string name="mandatory">ግዴታ</string>
-    <string name="optional">ऐच्छिक</string>
+    <string name="optional">አማራጭ</string>
     <string name="general_settings">አጠቃላይ</string>
     <string name="activity_playing_title">ጨዋታ በመጫወት ላይ</string>
     <string name="activity_listening_title">%1$s በማዳመጥ ላይ</string>
@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">ከ Discord ጋር ይገናኙ</string>
     <string name="discord_oauth_authorize_desc">የእርስዎን እንድቤት በዲስካርድ መገልጫ ላይ የKizzy ንብር ይሰጡ</string>
 
+    <string name="console_include_spoofed">የተገነበ ግንባ᫭ዎችን አካት</string>
+    <string name="auto_detect">ራስ-አርተ · %1$s</string>
+    <string name="save_logs_to_file">መዝጋቦዎችን ወደ ፋይል አስቀምጥ</string>
+    <string name="logs_saved_toast">መዝጋቦዎች ወደ %1$s ተቀምጠዋል</string>
+    <string name="discord_step3_content">ክፈልህበትህ መልእክት (በተጠቃሚው ስም ውስጥ) ን ንክክል አድርግ። በመስመር አንድ ከርህን ይምረጡ። ⚠️ የማይታይበትን አትጠቀም — በማይታይበት ሁክት Discord የKizzy እንቅስቃሴን ይደብቃል።</string>
+    <string name="discord_setup_title">ከመጀመርዎ በፊት</string>
+    <string name="console_auto_detect">DroidDeck / Eden ራስ-አርተ መለያ</string>
+    <string name="console_detected_hint">ይህን ጨዋታን ለConsole RPC ለመጠቀም ንክክል አድርግ</string>
+    <string name="discord_step2_content">የእኔን እንቅስቃሴ ማጋራት ተግኝቶ ON አድርለው ክፈት። ከታች በተገኘው የእኔን እንቅስቃሴ ላለት ቦታ ላይ በሁሉም ሰርቨሮች ማጋራት ይምረጡ። ወደ ሰርቨሮቼ ሲያወርዱ እና በትክክል ሁክት የሚታይበት ሰርቨሮች ክፈት።</string>
+    <string name="discord_tip_content">የDiscord ስልክ አንዳንድ ዝማኔዎች ይህን ቁልፍ ይደብቃሉ። በChrome ውስጥ discord.com ክፈት → የዴስክቶፕ ሳይት አብርህ → ግባ → ቅንብሮች (⚙️) → የእንቅስቃሴ ግልጽነት → የእኔን እንቅስቃሴ ማጋራት አብርህ።</string>
+    <string name="discord_setup_desc">Discord በመገለጫዎ ላይ እንቅስቃሴዎን እንዲያሳይ የሚፈቃ መሆኑን ያረጋግጡ።</string>
+    <string name="auto_detect_activity_type_desc">የሙዚቃ መተግበሪያዎች ሙዚቃ በመሆኑ የቪዲዮ መተግበሪያዎች ቪዲዮ ይሆናሉ፤ ስለዚህ YouTube Music ከአሁን ወደገም ጨዋታ አይታያም። ለአንድ መተግበሪያ የተመረጠው ዓይነት ሁልጊዜ አሸናፊ ነው።</string>
+    <string name="auto_detect_activity_type">የእንቅስቃሴ ዓይነት ራስ-አርተ መለያ</string>
+    <string name="logs_save_error">መዝጋቦዎችን ማስቀመን አልተቻለም</string>
+    <string name="discord_tip_title">የእኔን እንቅስቃሴ ማጋራት አላገኘዎትም?</string>
+    <string name="console_detected_in_game">በጨዋታ ውስጥ</string>
+    <string name="rich_presence_active">Rich Presence ነቅቷል</string>
+    <string name="discord_step1_title">ደረጃ 1፦ የግልጽነት ቅንብሮችን ክፈት</string>
+    <string name="console_detected">ተመልክቷል</string>
+    <string name="discord_step2_title">ደረጃ 2፦ የእንቅስቃሴ ማጋራትን አብርህ</string>
+    <string name="discord_step1_content">የDiscord መተግበሪያውን ክፈት → የእኔን እንቅስቃሴ ንክክል ክፈት → ንክክል ክፈት → ስርዓት ላይ አስቀምጥ → ይደረስንህና ይህን ክፈት።</string>
+    <string name="activity_type_fallback_desc">ያልታወቁ መተግበሪያዎችና ራስ-አርተ መለያ ሲጠፋ ለእያንዳንዱ መተግበሪያ ይጠቀማል።</string>
+    <string name="discord_step3_title">ደረጃ 3፦ የመስመር ሁክትዎን ያረጋግጡ</string>
 </resources>

@@ -138,7 +138,7 @@
     <string name="logs">ບັນທຶກ</string>
     <string name="drawer_subtitle_help">ຊ່ວຍ</string>
     <string name="drawer_faq">FAQ</string>
-    <string name="go_to_profile">ໄປຫາປະ�/profile</string>
+    <string name="go_to_profile">ໄປຫາໂປໄຟາມໄລ້</string>
     <string name="version">ເວີຊັນ</string>
     <string name="try_again">ລອງໃໝ່ອີ້</string>
     <string name="request_for_notification_access">Notification Access is needed for app to extract
@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">ເຊື່ອມຕໍ່ Discord</string>
     <string name="discord_oauth_authorize_desc">ອະນຸຍໃຫ້ Kizzy ສະແດງກິດຈະກຳຂອງທ່ານໃນໂປໄຟລ໌ Discord</string>
 
+    <string name="console_include_spoofed">ກຽມເພີ່ມຕົ້ນທີ່ປອມປົນ</string>
+    <string name="auto_detect">ອັດຕະໂນມັດ · %1$s</string>
+    <string name="save_logs_to_file">ບັນທຶກບາງໄຟລ໌</string>
+    <string name="logs_saved_toast">ບັນທຶກຖືກບັນທຶກໄຟລ໌ %1$s ແລ້ວ</string>
+    <string name="discord_step3_content">ກົດສະຖານະຂອງທ່ານ (ຢູ່ໃຕ້ຊື່ຜູ້ໃຊ້) ແລ້ວເລືອກ ອອນໄລນ / ບໍ່ມີຫຍັງ / ຢ່າຢູ່ລະກຽນ, ⚠️ ຢ່າຢູ່ຕົ້ນຫນາຍິບາຍ — Discord ຈະເຊັບການເຄາະຂອງ Kizzy ເມື່ອທ່ານຫນາຍິບາຍ.</string>
+    <string name="discord_setup_title">ກ່ອນຈະເລີ່ມ</string>
+    <string name="console_auto_detect">ຄົ້ນພົບ DroidDeck / Eden ອັດຕະໂນມັດ</string>
+    <string name="console_detected_hint">ກົດເພື່ອໃຊ້ເກມນີ້ກັບ Console RPC</string>
+    <string name="discord_step2_content">ຄົ້ນຫາ "ແບ່ງປັນກິດຈະກຳຂອງຂ້ອຍ" ແລ້ວເປີດໃຫ້ເປັນ ON. ພາຍໃຕ້ "ແບ່ງປັນກິດຈະກຳຂອງຂ້ອຍ ຢູ່ໃສ" ເລືອກ "ແບ່ງປັນໃນທຸກໆເຊີຣເວີເດີຣ". ເລື່ອນໄລ່ື້ລູ່ "ເຊີຣເວີຂອງຂ້ອຍ" ແລ້ວເປີດໃຫ້ ON ເຊີຣເວີທີ່ຕ້ອງການເບິ່ງເຫັນສະຖານະຂອງທ່ານ.</string>
+    <string name="discord_tip_content">ບາງລຸດສັດມືຖືອຂອງ Discord ຈະເຊັບສະລິດນີ້. ເປີດ discord.com ໃນ Chrome → ເປີດເວັບໄ຋ຕ໌ Desktop → ເຂົ້າສູ່ລະບົບ → ການຕັ້ງ (⚙️) → ຄວາມເປັນສ່ວນຕົນຂອງກິດຈະກຳ → ເປີດ "ແບ່ງປັນກິດຈະກຳຂອງຂ້ອຍ".</string>
+    <string name="discord_setup_desc">ກວດວ່າ Discord ອະນຸຍໃຫ້ສະແດງກິດຈະກຳຂອງທ່ານໃນໂປໄຟລ໌ຂອງທ່ານ.</string>
+    <string name="auto_detect_activity_type_desc">ແອັບດົນຊິງຄົນຈະຖືກມາເປັນດົນຊິງຄົນ ແລະແອັບດົນວິດີໂອຈະຖືກມາເປັນວິດີໂອ ດັ່ງນັ້ນ YouTube Music ຈະບໍ່ສະແດງເປັນເກມອີກ.</string>
+    <string name="auto_detect_activity_type">ຄົ້ນພົບປະເພດຂອງກິດຈະກຳອັດຕະໂນມັດ</string>
+    <string name="logs_save_error">ບັນທຶກບໍ່ສາມາດບັນທຶກໄຟລ໌ໄດ້</string>
+    <string name="discord_tip_title">ບໍ່ພົບ "ແບ່ງປັນກິດຈະກຳຂອງຂ້ອຍ" ບໍ?</string>
+    <string name="console_detected_in_game">ໃນເກມ</string>
+    <string name="rich_presence_active">Rich Presence ເປີດໄຟ</string>
+    <string name="discord_step1_title">ຂັ້ນຕອງທີ່ 1: ເປີດການຕັ້ງຄວາມເປັນສ່ວນຕົນ</string>
+    <string name="console_detected">ຄົ້ນພົບແລ້ວ</string>
+    <string name="discord_step2_title">ຂັ້ນຕອງທີ່ 2: ເປີດການແບ່ງປັນກິດຈະກຳ</string>
+    <string name="discord_step1_content">ເປີດແອັບ Discord → ກົດທີ່ໄອຄອນ "ຂ້ອຍ" (ຮູບໂປໂຟຟານ) → ກົດການຕັ້ງ (⚙️) → ເລື່ອນລົງ ແລະ ກົດ "ເນື້ອຄົນ ແລະ ສັງຄົມ" (ຫຼື "ຄວາມເປັນສ່ວນຕົນຂອງກິດຈະກຳ" ໃນແອັບເວີຊັ່ນເກົາ) .</string>
+    <string name="activity_type_fallback_desc">ໃຊ້ກັບແອັບທີ່ບໍ່ໄດ້ຮູ້ຮັບ ແລະ ສຳລັບທຸກໆແອັບໃນເວລາທີ່ການຄົ້ນພົບອັດຕະໂນມັດຖືກປິດໄວ້.</string>
+    <string name="discord_step3_title">ຂັ້ນຕອງທີ່ 3: ກວດສະຖານະອອນໄລນຂອງທ່ານ</string>
 </resources>

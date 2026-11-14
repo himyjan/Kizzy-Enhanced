@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Połącz się z Discordem</string>
     <string name="discord_oauth_authorize_desc">Zezwól Kizzy na wyświetlanie Twojej aktywności na profilu Discorda</string>
 
+    <string name="console_include_spoofed">Dołącz podrobione kompilacje</string>
+    <string name="auto_detect">Automatycznie · %1$s</string>
+    <string name="save_logs_to_file">Zapisz dzienniki do pliku</string>
+    <string name="logs_saved_toast">Dzienniki zapisano w %1$s</string>
+    <string name="discord_step3_content">Dotknij swojego Statusu (pod nazwą użytkownika) i wybierz Online, Bezczynny lub Nie przeszkadzać. ⚠️ Nie używaj Niewidoczny — Discord ukrywa aktywność Kizzy, gdy jesteś Niewidoczny.</string>
+    <string name="discord_setup_title">Zanim zaczniesz</string>
+    <string name="console_auto_detect">Automatyczne wykrywanie DroidDeck / Eden</string>
+    <string name="console_detected_hint">Dotknij, aby użyć tej gry w Console RPC</string>
+    <string name="discord_step2_content">Znajdź „Udostępnij moją aktywność” i włącz ją. W sekcji „Gdzie udostępniam aktywność” wybierz „Udostępniaj na wszystkich serwerach”. Przewiń do „Moje serwery” i włącz serwery, na których chcesz widzieć swój status.</string>
+    <string name="discord_tip_content">Niektóre mobilne wersje Discorda ukrywają ten przełącznik. Otwórz discord.com w Chrome → włącz „Wersja komputerowa” → zaloguj się → Ustawienia (⚙️) → Prywatność aktywności → włącz „Udostępnij moją aktywność”.</string>
+    <string name="discord_setup_desc">Upewnij się, że Discord zezwala na wyświetlanie Twojej aktywności na profilu.</string>
+    <string name="auto_detect_activity_type_desc">Aplikacje muzyczne są wykrywane jako muzyka, a aplikacje wideo jako wideo, więc YouTube Music nie jest już pokazywany jako gra. Typ wybrany dla pojedynczej aplikacji ma zawsze pierwszeństwo.</string>
+    <string name="auto_detect_activity_type">Automatycznie wykrywaj typ aktywności</string>
+    <string name="logs_save_error">Nie udało się zapisać dzienników</string>
+    <string name="discord_tip_title">Nie możesz znaleźć „Udostępnij moją aktywność”?</string>
+    <string name="console_detected_in_game">W grze</string>
+    <string name="rich_presence_active">Rich Presence aktywny</string>
+    <string name="discord_step1_title">Krok 1: Otwórz ustawienia prywatności</string>
+    <string name="console_detected">Wykryto</string>
+    <string name="discord_step2_title">Krok 2: Włącz udostępnianie aktywności</string>
+    <string name="discord_step1_content">Otwórz aplikację Discord → dotknij swojej ikony „Ty” (zdjęcie profilowe) → dotknij Ustawień (⚙️) → przewiń w dół i dotknij „Treść i społeczność” (lub „Prywatność aktywności” w starszych wersjach aplikacji).</string>
+    <string name="activity_type_fallback_desc">Używany dla aplikacji nierozpoznanych oraz dla każdej aplikacji, gdy automatyczne wykrywanie jest wyłączone.</string>
+    <string name="discord_step3_title">Krok 3: Sprawdź swój status online</string>
 </resources>

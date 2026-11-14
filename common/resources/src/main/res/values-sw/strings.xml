@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Unganisha na Discord</string>
     <string name="discord_oauth_authorize_desc">Ruhusu Kizzy kuonyesha shughuli zako kwenye wasifu wako wa Discord</string>
 
+    <string name="console_include_spoofed">Jumuisha mizigo iliyobadilishwa</string>
+    <string name="auto_detect">Kiotomatiki · %1$s</string>
+    <string name="save_logs_to_file">Hifadhi kumbukumbu kwenye faili</string>
+    <string name="logs_saved_toast">Kumbukumbu zimehifadhiwa kwenye %1$s</string>
+    <string name="discord_step3_content">Gusa Hali yako (chini ya jina la mtumiaji) na uchague Mtandaoni, Hakuna kitu au Usisumbue. ⚠️ Usitumie Isionekane — Discord huficha shughuli ya Kizzy unapokuwa Usionekane.</string>
+    <string name="discord_setup_title">Kabla ya kuanza</string>
+    <string name="console_auto_detect">Utambue kiotomatiki DroidDeck / Eden</string>
+    <string name="console_detected_hint">Gusa ili kutumia mchezo huu kwa Console RPC</string>
+    <string name="discord_step2_content">Tafuta "Shiriki shughuli yangu" na uiwashe. Chini ya "Mahali Ninashiriki Shughuli", chagua "Shiriki kwenye serveri zote". Sogeza hadi "Ma Serveri Yangu" na uwashe serveri unazotaka hali yako ionekane.</string>
+    <string name="discord_tip_content">Baadhi ya toleo za simu za Discord huficha kiungo hiki. Fungua discord.com kwenye Chrome → washa tovuti ya Desktop → ingia → Mipangilio (⚙️) → Faragha ya Shughuli → washa "Shiriki shughuli yangu".</string>
+    <string name="discord_setup_desc">Uhakikishe kuwa Discord inaruhusu shughuli yako kuonyeshwa kwenye wasifu wako.</string>
+    <string name="auto_detect_activity_type_desc">Programu za muziki hutambuliwa kama muziki na programu za video kama video, hivyo YouTube Music haionekani tena kama mchezo. Aina iliyochaguliwa kwa programu moja hushikilia kila wakati.</string>
+    <string name="auto_detect_activity_type">Tambua kiotomatiki aina ya shughuli</string>
+    <string name="logs_save_error">Imeshindwa kuhifadhi kumbukumbu</string>
+    <string name="discord_tip_title">Hawezi kupata "Shiriki shughuli yangu"?</string>
+    <string name="console_detected_in_game">Ndani ya mchezo</string>
+    <string name="rich_presence_active">Rich Presence iko hai</string>
+    <string name="discord_step1_title">Hatua ya 1: Fungua Mipangilio ya Faragha</string>
+    <string name="console_detected">Imetambuliwa</string>
+    <string name="discord_step2_title">Hatua ya 2: Washa Shiriki Shughuli</string>
+    <string name="discord_step1_content">Fungua programu ya Discord → gusa aikoni yako "Wewe" (picha ya wasifu) → gusa Mipangilio (⚙️) → sogeza chini na gusa "Maudhui na Mtandao wa Kijamii" (au "Faragha ya Shughuli" kwenye toleo za zamani za programu).</string>
+    <string name="activity_type_fallback_desc">Inatumika kwa programu haziotambuliwa, na kwa kila programu wakati utambuzi wa kiotomatiki umeshutwa.</string>
+    <string name="discord_step3_title">Hatua ya 3: Angalia hali yako ya Mtandaoni</string>
 </resources>

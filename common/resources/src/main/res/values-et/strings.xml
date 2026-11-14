@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Ühenda Discordiga</string>
     <string name="discord_oauth_authorize_desc">Luba Kizzy-l näidata teie aktiivsust teie Discordi profiilil</string>
 
+    <string name="console_include_spoofed">Kaasa mõnitatud ehitusi</string>
+    <string name="auto_detect">Automaatne · %1$s</string>
+    <string name="save_logs_to_file">Salvesta logid faili</string>
+    <string name="logs_saved_toast">Logid salvestati faili %1$s</string>
+    <string name="discord_step3_content">Puuduta oma olekut (kasutajanime all) ja vali Võrgus, Jõude või Ära häiri. ⚠️ Ära kasuta Nähtamatu — Discord peidab Kizzy tegevuse, kui oled Nähtamatu.</string>
+    <string name="discord_setup_title">Enne alustamist</string>
+    <string name="console_auto_detect">DroidDeck / Eden automaatne tuvastamine</string>
+    <string name="console_detected_hint">Puuduta, et kasutada seda mängu Console RPC jaoks</string>
+    <string name="discord_step2_content">Leia "Jaga minu tegevust" ja lülitage see sisse. Jaotises "Kus ma oma tegevust jagan" valige "Jaga kõigil serveritel". Kerige alla " minu serverid" ja lülitage sisse serverid, kus soovid oma olekut näha.</string>
+    <string name="discord_tip_content">Mõned Discord\'i mobiiliversioonid peidavad seda lülitit. Avage Chrome\'is discord.com → lubage „Töölaua sait“ → logige sisse → Seaded (⚙️) → Tegevuse privaatsus → lülitage sisse „Jaga minu tegevust“.</string>
+    <string name="discord_setup_desc">Veenduge, et Discord lubab teie tegevuse profiilil kuvada.</string>
+    <string name="auto_detect_activity_type_desc">Muusika rakendused tuvastatakse muusikana ja video rakendused videona, mistõttu YouTube Musici ei kuvata enam mänguna. Ühe rakendi jaoks valitud tüüp on alati ülimuslik.</string>
+    <string name="auto_detect_activity_type">Tuvasta tegevuse tüüp automaatselt</string>
+    <string name="logs_save_error">Logide salvestamine ebaõnnestus</string>
+    <string name="discord_tip_title">Ei leia valikut "Jaga minu tegevust"?</string>
+    <string name="console_detected_in_game">Mängus</string>
+    <string name="rich_presence_active">Rich Presence aktiivne</string>
+    <string name="discord_step1_title">1. samm: Ava privaatsuse seaded</string>
+    <string name="console_detected">Tuvastatud</string>
+    <string name="discord_step2_title">2. samm: Lülitage tegevuse jagamine sisse</string>
+    <string name="discord_step1_content">Avage Discord\'i rakendus → puuduta oma „Sina“ ikooni (profiilipilt) → puuduta Seaded (⚙️) → kerige alla ja puuduta „Sisu ja sotsiaalne“ (või „Tegevuse privaatsus“ vanemates rakenduse versioonides).</string>
+    <string name="activity_type_fallback_desc">Kasutatakse äratundmatute rakenduste ja iga rakendi puhul, kui automaatne tuvastamine on välja lülitatud.</string>
+    <string name="discord_step3_title">3. samm: Kontrollige oma võrguolekut</string>
 </resources>

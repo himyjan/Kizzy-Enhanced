@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">התחבר ל-Discord</string>
     <string name="discord_oauth_authorize_desc">אפשר ל-Kizzy להציג את הפעילות שלך בפרופיל ה-Discord שלך</string>
 
+    <string name="console_include_spoofed">כלול בנייה מזויפות</string>
+    <string name="auto_detect">אוטומטי · %1$s</string>
+    <string name="save_logs_to_file">שמור יומנים לקובץ</string>
+    <string name="logs_saved_toast">היומנים נשמרו ב-%1$s</string>
+    <string name="discord_step3_content">הקש על הסטטוס שלך (מתחת לשם המשתמש שלך) ובחר מקוון, בטל פעולה או הנמך אל תטריד. ⚠️ אל תשתמש בלא נראה — Discord מסתיר את הפעילות של Kizzy כשאתה לא נראה.</string>
+    <string name="discord_setup_title">לפני שאתה מתחיל</string>
+    <string name="console_auto_detect">זיהוי אוטומטי של DroidDeck / Eden</string>
+    <string name="console_detected_hint">הקש כדי להשתמש במשחק הזה עבור Console RPC</string>
+    <string name="discord_step2_content">מצא את Share my activity והפעל אותו. תחת Where I Share Activity, בחר Share in all servers. גלול אל My Servers והפעל את השרתים שבהם תרצה שהסטטוס שלך יוצג.</string>
+    <string name="discord_tip_content">חלק מגרסאות הנייד של Discord מסתירות את המתג הזה. פתח את discord.com ב-Chrome → הפעל Desktop site → התחבר → Settings (⚙️) → Activity Privacy → הפעל את Share my activity.</string>
+    <string name="discord_setup_desc">ודא ש-Discord מאפשר להציג את הפעילות שלך בפרופיל שלך.</string>
+    <string name="auto_detect_activity_type_desc">אפליקציות מוזיקה מזוהות כמוזיקה ואפליקציות וידאו כווידאו, כך ש-YouTube Music כבר לא מוצג כמשחק. סוג שנבחר עבור אפליקציה אחת תמיד גובר.</string>
+    <string name="auto_detect_activity_type">זיהוי אוטומטי של סוג פעילות</string>
+    <string name="logs_save_error">שמירת היומנים נכשלה</string>
+    <string name="discord_tip_title">לא מוצאים את "Share my activity"?</string>
+    <string name="console_detected_in_game">במשחק</string>
+    <string name="rich_presence_active">Rich Presence פעיל</string>
+    <string name="discord_step1_title">שלב 1: פתיחת הגדרות הפרטיות</string>
+    <string name="console_detected">זוהה</string>
+    <string name="discord_step2_title">שלב 2: הפעלת שיתוף הפעילות</string>
+    <string name="discord_step1_content">פתח את אפליקציית Discord → הקש על הסמל "You" (תמונת הפרופיל) → הקש על Settings (⚙️) → גלול למטה והקש על Content &amp; Social (או Activity Privacy בגרסאות ישנות יותר של האפליקציה).</string>
+    <string name="activity_type_fallback_desc">משמש לאפליקציות שאינן מזוהות, ולכל אפליקציה כאשר הזיהוי האוטומטי כבוי.</string>
+    <string name="discord_step3_title">שלב 3: בדיקת הסטטוס המקוון שלך</string>
 </resources>

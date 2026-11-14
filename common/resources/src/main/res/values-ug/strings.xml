@@ -47,12 +47,12 @@
     <string name="try_again">قايتا سىناڭ</string>
     <string name="yes">ھەئە</string>
     <string name="logout">چىقىش</string>
-    <string name="skip">اتلاپ өtüsh</string>
-    <string name="stop">توхтатиш</string>
+    <string name="skip">ئۆتكۈزۈش</string>
+    <string name="stop">توختىتىش</string>
     <string name="restart">قايتا باشلاش</string>
     <string name="no_internet_connection">ئىنتېرنېت ئۇلىنىشى يوق</string>
     <string name="unknown_error">نامەلۇم خاتالىق كۆرۈلدى</string>
-    <string name="copied_to_clipboard">קלيبوردقا كۆچۈرۈلدى</string>
+    <string name="copied_to_clipboard">كۆچۈرۈلدى</string>
 
     <string name="rpc_connection_method">ئۇلىنىش ئۇسۇلى</string>
     <string name="rpc_connection_method_desc">Kizzy Discord قا ئۇلايدىغان ئۇسۇلنى تاللاڭ</string>
@@ -61,4 +61,27 @@
     <string name="discord_oauth_authorize">Discord قا ئۇلىنىش</string>
     <string name="discord_oauth_authorize_desc">Kizzy غا سىزنىڭ Discord پروفايلىڭىزدىكى ئېشغىلىڭىزنى كۆرسىتىشكە رۇخسەت بېرىڭ</string>
 
+    <string name="console_include_spoofed">يالغان قۇرۇلۇشلارنى قوشۇڭ</string>
+    <string name="auto_detect">ئاپتوماتىك · %1$s</string>
+    <string name="save_logs_to_file">خاتىرىلەرنى ھۆججەتكە ساقلاڭ</string>
+    <string name="logs_saved_toast">خاتىرىلەر %1$s غا ساقلاندى</string>
+    <string name="discord_step3_content">ھالىتىڭىزنى (ئىشلەتكۈچى نامىڭىزنىڭ ئاستىدا) بېسىڭ، Onlaيn، ئىشسىز ياكى مايلىماڭ دەپ تاللاڭ. ⚠️ ئادەتمەن كۆرۈنمەيدىغاننى ئىشلىتىڭ — سىز كۆرۈنمەيدىغان ۋاقتىڭىزدا Discord Kizzy ئىشلەتكەنلىكىنى يوشۇرىدۇ.</string>
+    <string name="discord_setup_title">باشلىاشتىن بۇرۇن</string>
+    <string name="console_auto_detect">DroidDeck / Eden نى ئاپتوماتىك تېپىش</string>
+    <string name="console_detected_hint">Console RPC ئۈچۈن بۇ ئويۇننى ئىشلىتىش ئۈچۈن بېسىڭ</string>
+    <string name="discord_step2_content">"مېنىڭ پائالىيىتىمنى ھەمبەھىرلەش" نى تېپىپ ئېچىڭ. "مېنىڭ پائالىيىتىمنى قەيەردە ھەمبەھىرلەيمەن" نىڭ ئاستىدا "ھەممىلەرگە ھەمبەھىرلەش" نى تاللاڭ. "مېنىڭ مۇلازىمېلىرىم" غىچە سۈرۈپ، ھالىتىڭىزنى كۆرەلەيدىغان مۇلازىمېلىرىنى ئېچىڭ.</string>
+    <string name="discord_tip_content">Discord نىڭ بەزى مۇباۋئال نەشرلىرى بۇ تۈگۈنى يوشۇرىدۇ. Chrome دا discord.com نى ئېچىپ → Desktop تور بېكىتىنى قوزغىتىڭ → كىرىڭ → تەڭشەكلەر (⚙️) → پائالىيەت مەخپىيەت → "مېنىڭ پائالىيىتىمنى ھەمبەھىرلەش" نى ئېچىڭ.</string>
+    <string name="discord_setup_desc">Discord نىڭ پائالىيىتىڭىزنى پروفىلىڭىزدا كۆرسىتىشىگە رۇخسەت بېرىشىنى جەزملەڭ.</string>
+    <string name="auto_detect_activity_type_desc">مۇسىقا ئەپلىرى مۇسىقا، سىنەما ئەپلىرى سىنەما دەپ تېپىلىدۇ، شۇڭا YouTube Music ئەمدى ئويۇن دەپ كۆرۈلمەيدۇ. بىرلا ئەپكە تاللانغان تۈر ھەمىشە ئالدىدا تۇرىدۇ.</string>
+    <string name="auto_detect_activity_type">پائالىيەت تۈرىنى ئاپتوماتىك تېپىش</string>
+    <string name="logs_save_error">خاتىرىلەرنى ساقلىغىلى بولمىدى</string>
+    <string name="discord_tip_title">"مېنىڭ پائالىيىتىمنى ھەمبەھىرلەش" تېپىلمىدىمۇ؟</string>
+    <string name="console_detected_in_game">ئويۇن ئىچىدە</string>
+    <string name="rich_presence_active">Rich Persistence ئاكتىپ</string>
+    <string name="discord_step1_title">1-قەدەم: مەخپىيەت تەڭشەكلىرىنى ئېچىڭ</string>
+    <string name="console_detected">تېپىلدى</string>
+    <string name="discord_step2_title">2-قەدەم: پائالىيەت ھەمبەھىرلەشنى ئېچىڭ</string>
+    <string name="discord_step1_content">Discord ئەپىنى ئېچىڭ → «سىز» (پروفىل رەسىمى) بەلگىسىنى بېسىڭ → تەڭشەكلەر (⚙️) نى بېسىڭ → تۆۋەلگە سۈرۈپ «مەزمۇن ۋە ئىجتىمائىي» (ياكى كونا نەشرلىرىدىكى «پائالىيەت مەخپىيىتى») نى بېسىڭ.</string>
+    <string name="activity_type_fallback_desc">تېپىلمىغان ئەپلەر ئۈچۈن ھەم ئاپتوماتىك تېپىش تاقالغاندا ھەر بىر ئەپ ئۈچۈن ئىشلىتىلىدۇ.</string>
+    <string name="discord_step3_title">3-قەدەم: ئونلايـن ھالىتىڭىزنى تەكشۈرۈڭ</string>
 </resources>

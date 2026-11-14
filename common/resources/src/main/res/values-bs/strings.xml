@@ -50,4 +50,27 @@
     <string name="discord_oauth_authorize">Poveži se sa Discordom</string>
     <string name="discord_oauth_authorize_desc">Dozvolite Kizzy-ju da prikaže vašu aktivnost na vašem Discord profilu</string>
 
+    <string name="console_include_spoofed">Uključi lažne verzije</string>
+    <string name="auto_detect">Automatski · %1$s</string>
+    <string name="save_logs_to_file">Sačuvaj logove u datoteku</string>
+    <string name="logs_saved_toast">Logovi su sačuvani u %1$s</string>
+    <string name="discord_step3_content">Dodirnite svoju Status (ispod korisničkog imena) i odaberite Na mreži, Bes posla ili Ne uznemiravaj. ⚠️ Nemojte koristiti Nevidljivo — Discord skriva Kizzy aktivnost kada ste Nevidljivi.</string>
+    <string name="discord_setup_title">Prije nego što počnete</string>
+    <string name="console_auto_detect">Automatsko otkrivanje DroidDeck / Eden</string>
+    <string name="console_detected_hint">Dodirnite da biste ovu igru koristili za Console RPC</string>
+    <string name="discord_step2_content">Pronađite Dijeli moju aktivnost i uključite ga. Pod Gdje dijelim aktivnost odaberite Dijeli na svim serverima. Skrolujte do Moji serveri i uključite servere na kojima želite da vam status bude vidljiv.</string>
+    <string name="discord_tip_content">Neke mobilne verzije Discorda skrivaju ovaj prekidač. Otvorite discord.com u Chromu → omogućite Desktop stranicu → prijavite se → Postavke (⚙️) → Privatnost aktivnosti → uključite Dijeli moju aktivnost.</string>
+    <string name="discord_setup_desc">Provjerite da Discord dopušta prikaz vaše aktivnosti na vašem profilu.</string>
+    <string name="auto_detect_activity_type_desc">Muzičke aplikacije prepoznaju se kao muzika, a video aplikacije kao video, pa se YouTube Music više ne prikazuje kao igra. Vrsta odabrana za pojedinu aplikaciju uvijek ima prednost.</string>
+    <string name="auto_detect_activity_type">Automatsko otkrivanje vrste aktivnosti</string>
+    <string name="logs_save_error">Čuvanje logova nije uspjelo</string>
+    <string name="discord_tip_title">Ne možete pronaći "Dijeli moju aktivnost"?</string>
+    <string name="console_detected_in_game">U igri</string>
+    <string name="rich_presence_active">Rich Presence aktivan</string>
+    <string name="discord_step1_title">Korak 1: Otvorite postavke privatnosti</string>
+    <string name="console_detected">Otkriveno</string>
+    <string name="discord_step2_title">Korak 2: Uključite dijeljenje aktivnosti</string>
+    <string name="discord_step1_content">Otvorite aplikaciju Discord → dodirnite svoju ikonu Vi (slika profila) → dodirnite Postavke (⚙️) → skrolujte dolje i dodirnite Sadržaj i društvene mreže (ili Privatnost aktivnosti na starijim verzijama aplikacije).</string>
+    <string name="activity_type_fallback_desc">Koristi se za aplikacije koje nisu prepoznate i za svaku aplikaciju kada je automatsko otkrivanje isključeno.</string>
+    <string name="discord_step3_title">Korak 3: Provjerite svoju mrežnu prisutnost</string>
 </resources>

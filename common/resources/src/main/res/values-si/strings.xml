@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord සමඟ සම්බන්ධ වන්න</string>
     <string name="discord_oauth_authorize_desc">ඔබගේ Discord ප්‍රොෆයිල තුළ ඔබගේ ක්‍රියාවලිය පෙන්වීමට Kizzy ට ඉඩ දෙන්න</string>
 
+    <string name="console_include_spoofed">බොරු ගොඩනැටි ඇතුළත් කරන්න</string>
+    <string name="auto_detect">ස්වයංක්‍රිය · %1$s</string>
+    <string name="save_logs_to_file">ලොග ගොනු ගොනු වෙත සුරකින්න</string>
+    <string name="logs_saved_toast">ලොග %1$s හි සුරකාකරන ලදී</string>
+    <string name="discord_step3_content">ඔබගේ තත්ත්වය (පරිශීලක නමේ යටතේ) තට්ටු කර, Online, කිසිවක් නොකරන යන යෝධය හෝ අවදානම නොකරන්න තෝරන්න. ⚠️ අපිත්තිත භාවිත කරන්න එපා — ඔබ අපිත්තිත විට Discord ඔබගේ Kizzy ක්‍රියාවලිය සඟවයි.</string>
+    <string name="discord_setup_title">ආරම්භ කිරීමට පෙර</string>
+    <string name="console_auto_detect">DroidDeck / Eden ස්වයංක්‍රිය පහදනම්‍න</string>
+    <string name="console_detected_hint">මෙම ගෝමය Console RPC සඳහා භාවිත කිරීමට තට්ටු කරන්න</string>
+    <string name="discord_step2_content">"මගේ ක්‍රියාවලිය බෙදාගන්න" සොයා ON කරන්න. "මම කුමක් බෙදාගන්නේ කොහේ" යටතේ "සියලු සර්වර් වල බෙදාගන්න" තෝරන්න. "මගේ සර්වර්" වෙත පහතට ගෙන ඔබගේ තත්ත්වය පෙනෙන ඕන සර්වර් ON කරන්න.</string>
+    <string name="discord_tip_content">Discord හි ජංගම අනුවාදයක මෙම ටොගල සැඟවේ. Chrome තුළ discord.com විවෘත කරන්න → Desktop අඩවිය සක්‍රිය කරන්න → පිවිසින්න → සැකසුම් (⚙️) → Activity Privacy → "මගේ ක්‍රියාවලිය බෙදාගන්න" ON කරන්න.</string>
+    <string name="discord_setup_desc">Discord ඔබගේ ප්‍රොෆයිලයේ ඔබගේ ක්‍රියාවලිය පෙන්වීමට ඉඩ දෙන බව තහවුරු කරගන්න.</string>
+    <string name="auto_detect_activity_type_desc">සංගීත යෙදුම් සංගීත ලෙස හා වීඩියෝ යෙදුම් වීඩියෝ ලෙස හඳුනා ගන්නා ලදී, එබැවින් YouTube Music තවත් ගෝමයක් ලෙස පෙන්වනු ඇති නැත. එක් යෙදුමක් සඳහා තෝරන ලද භාණය සැමවිටම ප්‍රමුඛතාව ලබා දේ.</string>
+    <string name="auto_detect_activity_type">ක්‍රියාවලියේ භාණය ස්වයංක්‍රිය හඳුනාගන්න</string>
+    <string name="logs_save_error">ලොග සුරකාකිරීමට නොසුරුණි</string>
+    <string name="discord_tip_title">"මගේ ක්‍රියාවලිය බෙදාගන්න" හමු නොවේද?</string>
+    <string name="console_detected_in_game">ගෝමය ඇතුළත</string>
+    <string name="rich_presence_active">Rich Presence සක්‍රිය</string>
+    <string name="discord_step1_title">පියවර 1: රහස්‍යභාවය සැකසුම් විවෘත කරන්න</string>
+    <string name="console_detected">හඳුනාගන්නා ලදී</string>
+    <string name="discord_step2_title">පියවර 2: ක්‍රියාවලිය බෙදාගැනීම ON කරන්න</string>
+    <string name="discord_step1_content">Discord යෙදුම විවෘත කරන්න → ඔබගේ "ඔබ" (ප්‍රොෆයිල් ඡායාව) නිරූපකය තට්ටු කරන්න → සැකසුම් (⚙️) තට්ටු කරන්න → පහතට ගොස් ලෝරු කර "අන්තර් අත්ථ සහ සමාජික" (හෝ පරණ යෙදුම් අනුවාදවල "Activity Privacy") තට්ටු කරන්න.</string>
+    <string name="activity_type_fallback_desc">හඳුනා නොගන්නා යෙදුම් සඳහා, සහ ස්වයංක්‍රිය හඳුනාගැනීම අක්‍රිය කර ඇති විට සෑම යෙදුමකටම භාවිත වේ.</string>
+    <string name="discord_step3_title">පියවර 3: ඔබගේ අන්ලයින් තත්ත්වය පරීක්ෂා කරන්න</string>
 </resources>

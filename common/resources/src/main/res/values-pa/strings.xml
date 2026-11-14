@@ -84,14 +84,13 @@
     <string name="androidOff">ਬੰਦ</string>
     <string name="setup">ਸੈਟਅਪ</string>
     <string name="user_dataPolicy">ਇਹ ਐਪ ਉਪਭੋਗਤਾ ਡਾਟਾ ਸੰਗ੍ਰਹਿ ਨਹੀਂ ਕਰਦਾ</string>
-    <string name="setupDesc">ਵਧਣ ਤੋਂ ਪਹਿਲਾਂ, ਸਾਰੇ ਫੀਚਰ ਸਹੀ ਢੰਗ ਨਾਲ ਕਾਰਜ ਕਰਨ ਲਈ ਲੋੜੀਦੇ ਕਦਮ ਚੁੱਕਣ ਦੀ ਸਲਾਹ ਦਿੱਤੀ ਗਈ ਹੈ।</string>
     <string name="permissionGranted">ਦਿੱਤਾ ਗਿਆ ਹੈ</string>
     <string name="permissionNotGranted">ਦਿੱਤਾ ਗਿਆ ਨਹੀਂ, ਇਜਾਜ਼ਤ ਲਈ ਕਲਿਕ ਕਰੋ</string>
     <string name="activity_largeText">ਕਾਰਵਾਈ ਵੱਡਾ ਲਿਖਤ</string>
     <string name="activity_smallText">ਕਾਰਵਾਈ ਛੋਟਾ ਲਿਖਤ</string>
     <string name="contributors">ਯੋਗਦਾਨਕਰਤਾ</string>
     <string name="streamUrl">ਸਟ੍ਰੀਮ URL</string>
-    <string name="streamUrlInfo">ਸਿਰਫ https://twitch.tv/ ਅਤੇ https://youtube.com/ URL ਕੰਮ ਕਰਨਗੇ।</string>
+    <string name="streamUrlInfo">ਸਟ੍ਰੀਮ URL ਬਾਰੇ ਜਾਣਕਾਰੀ</string>
     <string name="activity_button_maxCharacter">ਸਭ ਤੋਂ ਵੱਡਾ ਅੱਖਰ ਸੀਮਾ 31 ਹੈ</string>
     <string name="set_previousRunConfigInCustomRpc">ਪਿਛਲਾ ਰਨ ਕੰਨਫਿਗਰੇਸ਼ਨ ਕਸਟਮ RPC ਫੀਲਡ ਵਿੱਚ ਸੈੱਟ ਕਰੋ</string>
     <string name="set_previousRunConfigInCustomRpcDesc">ਪਿਛਲੇ ਰਨ RPC ਤੋਂ ਕਸਟਮ RPC ਫੀਲਡ ਆਟੋਮੈਟਿਕ ਸੈੱਟ ਕਰੋ</string>
@@ -110,15 +109,10 @@
     <string name="hide_onPause">ਪਾਜ਼ ਹੋਣ apos;ਤੇ RPC ਲੁਕਾਓ</string>
     <string name="idling_notification">ਆਇਡਲ…</string>
     <string name="main_appDetection">ਐਪ ਡਿਟੈਕਸ਼ਨ</string>
-    <string name="main_appDetectionDetails">Kizzy ਤੁਹਾਡੇ ਡਿਵਾਈਸ apos;ਤੇ ਕਿਸ ਐਪ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ ਤਾਂ ਡਿਟੈਕਟ ਕਰਕੇ ਸਧਾਰਨ ਕਾਰਵਾਈ Discord ਤੇ ਸ਼ੇਅਰ ਕਰਨ ਦਾ ਵਿਕਲਪ ਦਿੰਦਾ ਹੈ।</string>
     <string name="main_mediaRpc">ਮੀਡੀਆ RPC</string>
-    <string name="main_mediaRpcDetails">Kizzy ਤੁਹਾਡੇ ਸਧਾਰਨ ਮੀਡੀਆ ਕਾਰਵਾਈ Discord ਤੇ ਸ਼ੇਅਰ ਕਰਨ ਦਾ ਵਿਕਲਪ ਦਿੰਦਾ ਹੈ, ਜਿਵੇਂ ਤੁਹਾਡੇ ਗਾਣਾ ਸੁਣ ਰਹੇ ਹੋ ਜਾਂ ਵੀਡੀਓ ਦੇਖ ਰਹੇ ਹੋ।</string>
     <string name="main_customRpc">ਕਸਟਮ RPC</string>
     <string name="main_consoleRpc">ਕੰਸੋਲ RPC</string>
-    <string name="main_consoleRpcDetails">Kizzy ਪ੍ਰੀ-ਡਿਫਾਈਨ ਪਲੈਟਫਾਰਮ ਵਰਤ ਕੇ Discord ਤੇ ਤੁਹਾਡੀ ਉਪਸਥਿਤ ਸੈੱਟ ਕਰਨ ਦਾ ਵਿਕਲਪ ਦਿੰਦਾ ਹੈ।</string>
     <string name="main_experimentalRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC</string>
-    <string name="main_experimentalRpcDetails">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC Kizzy ਦੀ ਇੱਕ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ ਜੋ ਐਪਸ RPC ਅਤੇ ਮੀਡੀਆ RPC ਦੇ ਵਿਚਕਾਰ ਵਾਰ-ਵਾਰ ਬਦਲਦੀ ਹੈ।</string>
-    <string name="main_customRpcDetails">Kizzy ਡਿਸਕਾਰਡ ਲਈ ਤੁਹਾਡੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਕਸਟਮਾਈਜ਼ ਕਰਨ ਯੋਗ ਰਿਚ ਪਰਚਿਊਨਸ ਬਣਾਉਣ ਦਾ ਵਿਕਲਪ ਦਿੰਦਾ ਹੈ।</string>
     <string name="main_comingSoon">ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ</string>
     <string name="exit">ਬਾਹਰ ਨਿਕਲੋ</string>
     <string name="logs">ਲਾਗ</string>
@@ -127,14 +121,13 @@
     <string name="go_to_profile">ਪ੍ਰੋਫਾਈਲ apos;ਤੇ ਜਾਓ</string>
     <string name="version">ਵਰਜ਼ਨ</string>
     <string name="try_again">ਫਿਰ ਤੋਂ ਕੋਸ਼ਿਸ਼ ਕਰੋ</string>
-    <string name="request_for_notificationAccess">ਐਪ ਨੂੰ ਮੀਡੀਆ ਜਾਣਕਾਰੀ ਕੱਢਣ ਲਈ ਨੋਟੀਫਿਕੇਸ਼ਨ ਐਕਸੈਸ ਜ਼ਰੂਰੀ ਹੈ।</string>
+    <string name="request_for_notificationAccess">ਨੋਟੀਫਿਕੇਸ਼ਨ ਐਕਸੈੱਸ ਦੀ ਬੇਨਤੀ</string>
     <string name="update_check_forUpdate">ਅਪਡੇਟ ਚੈਕ ਕਰ ਰਿਹਾ ਹੈ…</string>
     <string name="update_noUpdatesAvailable">ਕੋਈ ਅਪਡੇਟ ਨਹੀਂ</string>
     <string name="compact_mode">ਕੰਪੈਕਟ ਮੋਡ</string>
     <string name="are_you_sure">ਤੁਹਾਡੇ ਪਾਸੇ ਯਕੀਨੀ?</string>
     <string name="yes">ਹਾਂ</string>
     <string name="user_profileError">ਯੂਜ਼ਰ ਪ੍ਰੋਫਾਈਲ ਅਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਸਕਿਆ:</string>
-    <string name="no_internetUserProfile">ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ ਨਹੀਂ। ਪਿੱਛੇ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
     <string name="user_profileRpcName">KIZZY ਰਿਚ ਪਰਚਿਊਨਸ ਵਰਤ ਰਿਹਾ ਹਾਂ</string>
     <string name="user_profile_bio">ਮੇਰੇ ਬਾਰੇ</string>
     <string name="user_profile_specialButton">ਸਪੈਸ਼ਲ ਬਟਨ</string>
@@ -146,7 +139,7 @@
     <string name="status_online">ਅਨਲਾਈਨ</string>
     <string name="status_idle">ਆਇਡਲ</string>
     <string name="status_dnd">ਡੂ ਨਾਟ ਡਿਸਟਰਬ</string>
-    <string name="status_invisible_offline">ਅਦೃਸ਼্য ਅਤੇ ਅਫਲਾਈਨ ਦਿਖਾਉਣਾ</string>
+    <string name="status_invisible_offline">ਅਦ੍ਰਸ਼ਮੀ ਅਤੇ ਔਫਲਾਈਨ ਵਜੋਂ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ</string>
     <string name="status_offline">ਅਫਲਾਈਨ</string>
     <string name="notification_access">ਨੋਟੀਫਿਕੇਸ਼ਨ ਐਕਸੈਸ ਇਜਾਜ਼ਤ</string>
     <string name="post_notification">ਨੋਟੀਫਿਕੇਸ਼ਨ ਪੋਸਟ ਕਰੋ</string>
@@ -192,7 +185,7 @@
     <string name="restart">ਰੀਸਟਾਰਟ ਕਰੋ</string>
     <string name="custom_rpcRunning">ਕਸਟਮ RPC ਚੱਲ ਰਿਹਾ ਹੈ</string>
     <string name="use_imgur">ਇਮੁਆਰ ਚਿੱਤਰ ਪ੍ਰੋਕਸੀ ਵਜੋਂ ਵਰਤੋ</string>
-    <string name="use_imgurDesc">ਇਮੁਆਰ ਉਪਰੋਲ ਚਿੱਤਰ ਪ੍ਰੋਕਸੀ ਵਜੋਂ ਵਰਤੋ।</string>
+    <string name="use_imgurDesc">Imgur ਦੀ ਵਰਤੋਂ ਬਾਰੇ ਵੇਵਰਾ</string>
     <string name="start_appDetection">ਐਪ ਡਿਟੈਕਸ਼ਨ ਸ਼ੁਰੂ ਕਰੋ</string>
     <string name="start_mediaRpc">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
     <string name="start_experimentalRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
@@ -207,7 +200,7 @@
     <string name="application_id">ਐਪਲੀਕੇਸ਼ਨ ਆਈਡੀ</string>
     <string name="custom_application_id">ਕਸਟਮ ਕਾਰਵਾਈ ਐਪਲੀਕੇਸ਼ਨ ਆਈਡੀ</string>
     <string name="custom_application_idDesc">ਡਿਫੌਲਟ ਡਿਸਕਾਰਡ ਐਪਲੀਕੇਸ਼ਨ ਆਈਡੀ ਓਵਰਰਾਈਡ ਕਰੋ</string>
-    <string name="use_a_vpnDesc">ਡਿਸਕਾਰਡ ਲਾਗਇਨ ਤੁਹਾਡੇ ਦੇਸ਼ ਵਿੱਚ VPN/DPI ਬਿਨਾਂ ਕੰਮ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ VPN/DPI ਵਰਤੋ।</string>
+    <string name="use_a_vpnDesc">VPN ਦੀ ਵਰਤੋਂ ਬਾਰੇ ਵੇਵਰਾ</string>
     <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; ਠੇਕ ਕਿਹਾਅ ਰਾਹੀਂ ਵਰਤੋ। ਖਾਲੀ ਫੀਲਡ ਡਿਫੌਲਟ ਵਰਤਾਅ ਵਰਤੇਗਾ ਜਾਂ ਛੱਡ ਦਿੱਤਾ ਜਾਵੇਗਾ।&quot;</string>
     <string name="experimental_rpc_detectApps">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC-ਕੇ ਚੱਲ ਰਹੇ ਐਪ ਡਿਟੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
     <string name="experimental_rpc_detectMedia">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC-ਕੇ ਮੀਡੀਆ ਪਲੇਬੈਕ ਡਿਟੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
@@ -253,7 +246,7 @@
     <string name="timestamp_mode_common">ਮੌਜੂਦਾ ਸਮੇਂ ਵਾਂਗ</string>
     <string name="timestamp_mode_custom">ਕਸਟਮ</string>
     <string name="update_installing">ਇਨਸਟਾਲ ਕਰ ਰਿਹਾ ਹੈ…</string>
-    <string name="update_download_error">ਡਾਊਨਲੋਡ ਫੇਲ ਹੋਇਆ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="update_download_error">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
 
     <string name="rpc_connection_method">ਕਨੈਕਸ਼ਨ ਵਿਧੀ</string>
     <string name="rpc_connection_method_desc">ਚੁਣੋ ਕਿ Kizzy Discord ਨਾਲ ਕਿਵੇਂ ਜੁੰਦਾ ਹੈ</string>
@@ -262,4 +255,27 @@
     <string name="discord_oauth_authorize">Discord ਨਾਲ ਜੋੜੋ</string>
     <string name="discord_oauth_authorize_desc">Kizzy ਨੂੰ ਆਪਣੀ Discord ਪ੍ਰੋਫਾਈਲ \'ਤੇ ਆਪਣੀ ਸਰਗਰਮੀ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
 
+    <string name="console_include_spoofed">ਨਕਲੀ ਬਿਲਡ ਸ਼ਾਮਲ ਕਰੋ</string>
+    <string name="auto_detect">ਆਪਣੇ ਆਪ · %1$s</string>
+    <string name="save_logs_to_file">ਲੌਗ ਫਾਈਲ ਵਿੱਚ ਸੰਭਾਲੋ</string>
+    <string name="logs_saved_toast">ਲੌਗ %1$s ਵਿੱਚ ਸੰਭਾਲ ਦਿੱਤੇ ਗਏ</string>
+    <string name="discord_step3_content">ਆਪਣੀ ਹਾਲਤ (ਵਰਤੋਂਕਾਰ ਦੇ ਨਾਮ ਹੇਠ) ਨੂੰ ਟੈਪ ਕਰੋ ਅਤੇ ਆਨਲਾਈਨ, ਬਿਜਾਮ ਜਾਂ ਨਾ ਪਰੇਸ਼ਾਨ ਕਰੋ ਚੁਣੋ। ⚠️ ਅਦ੍ਰਸ਼ਮੀ ਨਾ ਵਰਤੋ — ਜਦੋਂ ਤੁਸੀਂ ਅਦ੍ਰਸ਼ਮੀ ਹੁੰਦੇ ਹੋ, Discord Kizzy ਦੀ ਸਰਗਰਮੀ ਲੁਕਾ ਦਿੰਦਾ ਹੈ।</string>
+    <string name="discord_setup_title">ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ</string>
+    <string name="console_auto_detect">DroidDeck / Eden ਆਪਣੇ ਆਪ ਪਛਾਣੋ</string>
+    <string name="console_detected_hint">Console RPC ਲਈ ਇਹ ਖੇਡ ਵਰਤਣ ਲਈ ਟੈਪ ਕਰੋ</string>
+    <string name="discord_step2_content">"ਮੇਰੀ ਸਰਗਰਮੀ ਸਾਂਝੀ ਕਰੋ" ਲੱਭੋ ਅਤੇ ON ਕਰੋ। "ਮੈਂ ਆਪਣੀ ਸਰਗਰਮੀ ਕਿੱਥੇ ਸਾਂਝੀ ਕਰਦਾ ਹਾਂ" ਹੇਠ ਸਾਰਵਰਾਂ \'ਤੇ "ਸਾਰਵਰਾਂ \'ਤੇ ਸਾਂਝੀ ਕਰੋ" ਚੁਣੋ। "ਮੇਰੇ ਸਾਰਵਰ" ਤੱਕ ਸਕਰੋਲ ਕਰੋ ਅਤੇ ਉਹਨਾਂ ਸਾਰਵਰਾਂ ਨੂੰ ON ਕਰੋ ਜਿੱਥੇ ਤੁਸੀਂ ਆਪਣੀ ਹਾਲਤ ਦਿਸਣੀ ਚਾਹੁੰਦੇ ਹੋ।</string>
+    <string name="discord_tip_content">Discord ਦੇ ਕੁਝ ਮੋਬਾਈਲ ਵਰਜਨ ਇਹ ਟੌਗਲ ਲੁਕਾ ਲੈਂਦੇ ਹਨ। Chrome ਵਿੱਚ discord.com ਖੋਲ੍ਹੋ → Desktop ਸਾਈਟ ਸਕ੍ਰਿਆ ਕਰੋ → ਲੌਗ ਇਨ ਕਰੋ → ਸੈਟਿੰਗਾਂ (⚙️) → ਸਰਗਰਮੀ ਗੋਪਨੀਯਤਾ → "ਮੇਰੀ ਸਰਗਰਮੀ ਸਾਂਝੀ ਕਰੋ" ON ਕਰੋ।</string>
+    <string name="discord_setup_desc">ਯਕੀਨੀ ਬਣਾਓ ਕਿ Discord ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ \'ਤੇ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿੰਦਾ ਹੈ।</string>
+    <string name="auto_detect_activity_type_desc">ਸੰਗੀਤ ਐਪਾਂ ਨੂੰ ਸੰਗੀਤ ਅਤੇ ਵੀਡੀਓ ਐਪਾਂ ਨੂੰ ਵੀਡੀਓ ਵਜੋਂ ਪਛਾਣਿਆ ਜਾਂਦਾ ਹੈ, ਇਸ ਲਈ YouTube Music ਹੁਣ ਖੇਡ ਵਜੋਂ ਨਹੀਂ ਦਿਖਾਇਆ ਜਾਂਦਾ। ਇੱਕ ਐਪ ਲਈ ਚੁਣੀ ਗਈ ਕਿਸਮ ਹਮੇਸ਼ਾ ਪਹਿਲਾਂ ਰਹਿੰਦੀ ਹੈ।</string>
+    <string name="auto_detect_activity_type">ਸਰਗਰਮੀ ਦੀ ਕਿਸਮ ਆਪਣੇ ਆਪ ਪਛਾਣੋ</string>
+    <string name="logs_save_error">ਲੌਗ ਸੰਭਾਲੇ ਨਹੀਂ ਜਾ ਸਕੇ</string>
+    <string name="discord_tip_title">"ਮੇਰੀ ਸਰਗਰਮੀ ਸਾਂਝੀ ਕਰੋ" ਨਹੀਂ ਮਿਲਿਆ?</string>
+    <string name="console_detected_in_game">ਖੇਡ ਅੰਦਰ</string>
+    <string name="rich_presence_active">Rich Presence ਸਰਗਰਮ</string>
+    <string name="discord_step1_title">ਕਦਮ 1: ਗੋਪਨੀਯਤਾ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</string>
+    <string name="console_detected">ਪਛਾਣ ਲਿਆ ਗਿਆ</string>
+    <string name="discord_step2_title">ਕਦਮ 2: ਸਰਗਰਮੀ ਸਾਂਝੀ ਕਰਨਾ ਚਾਲੂ ਕਰੋ</string>
+    <string name="discord_step1_content">Discord ਐਪ ਖੋਲ੍ਹੋ → ਆਪਣੀ "ਤੁਸੀਂ" (ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ) ਆਈਕਨ \'ਤੇ ਟੈਪ ਕਰੋ → ਸੈਟਿੰਗਾਂ (⚙️) \'ਤੇ ਟੈਪ ਕਰੋ → ਹੇਠਾਂ ਸਕਰੋਲ ਕਰੋ ਅਤੇ "ਸਮੱਗਰੀ ਤੇ ਸੋਸ਼ਲ" (ਜਾਂ ਪੁਰਾਣੀਆਂ ਐਪ ਵਰਜਨਾਂ ਵਿੱਚ "ਸਰਗਰਮੀ ਗੋਪਨੀਯਤਾ") \'ਤੇ ਟੈਪ ਕਰੋ।</string>
+    <string name="activity_type_fallback_desc">ਨਹੀਂ ਪਛਾਣੇ ਗਏ ਐਪਾਂ ਲਈ ਅਤੇ ਆਪਣੇ ਆਪ ਪਛਾਣ ਬੰਦ ਹੋਣ ਵਾਲੇ ਹਰ ਐਪ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="discord_step3_title">ਕਦਮ 3: ਆਪਣੀ ਆਨਲਾਈਨ ਹਾਲਤ ਜਾਂਚੋ</string>
 </resources>

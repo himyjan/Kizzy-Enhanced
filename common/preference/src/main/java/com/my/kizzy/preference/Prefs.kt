@@ -61,7 +61,7 @@ object Prefs {
      * The Discord token is the master key of the user's account, so it must not
      * be readable from the preferences file. Everything else is plain text.
      */
-    private val SENSITIVE_KEYS = setOf(TOKEN)
+    private val SENSITIVE_KEYS = setOf(TOKEN, DISCORD_OAUTH_ACCESS_TOKEN, DISCORD_OAUTH_REFRESH_TOKEN)
 
     /**
      * Encrypts the value of a sensitive key before it is written to disk.
@@ -284,6 +284,20 @@ object Prefs {
     const val MEDIA_RPC_ENABLED = "media_rpc_enabled"
     const val LAST_RUN_MEDIA_RPC = "last_run_media_rpc"
     const val LAST_RUN_EXPERIMENTAL_RPC = "last_run_experimental_rpc"
+
+    // Discord RPC connection method: "gateway" (default) or "oauth"
+    const val RPC_CONNECTION_METHOD = "rpc_connection_method"
+    const val RPC_CONNECTION_METHOD_GATEWAY = "gateway"
+    const val RPC_CONNECTION_METHOD_OAUTH = "oauth"
+
+    const val DISCORD_OAUTH_CLIENT_ID = "discord_oauth_client_id"
+
+    // Discord OAuth token storage (encrypted via SecurePrefs)
+    const val DISCORD_OAUTH_ACCESS_TOKEN = "discord_oauth_access_token"
+    const val DISCORD_OAUTH_REFRESH_TOKEN = "discord_oauth_refresh_token"
+    const val DISCORD_OAUTH_EXPIRES_AT = "discord_oauth_expires_at"
+    const val DISCORD_OAUTH_USER_ID = "discord_oauth_user_id"
+    const val DISCORD_OAUTH_USERNAME = "discord_oauth_username"
 
     const val USE_RPC_BUTTONS = "use_saved_rpc_buttons"
     const val RPC_BUTTONS_DATA = "saved_rpc_buttons_data"

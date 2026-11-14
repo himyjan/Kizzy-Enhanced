@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Verbinden met Discord</string>
     <string name="discord_oauth_authorize_desc">Sta Kizzy toe je activiteit op je Discord-profiel te tonen</string>
 
+    <string name="console_include_spoofed">Vervalste builds toevoegen</string>
+    <string name="auto_detect">Automatisch · %1$s</string>
+    <string name="save_logs_to_file">Logboeken opslaan in bestand</string>
+    <string name="logs_saved_toast">Logboeken opgeslagen in %1$s</string>
+    <string name="discord_step3_content">Tik op je Status (onder je gebruikersnaam) en kies Online, Inactief of Niet storen. ⚠️ Gebruik niet Onzichtbaar — Discord verbergt Kizzy-activiteit wanneer je Onzichtbaar bent.</string>
+    <string name="discord_setup_title">Voordat je begint</string>
+    <string name="console_auto_detect">DroidDeck / Eden automatisch detecteren</string>
+    <string name="console_detected_hint">Tik om dit spel te gebruiken voor Console RPC</string>
+    <string name="discord_step2_content">Zoek "Mijn activiteit delen" en zet het aan. Kies onder "Waar ik mijn activiteit deel" voor "Delen op alle servers". Scroll naar "Mijn servers" en zet de servers aan waar je je status zichtbaar wilt hebben.</string>
+    <string name="discord_tip_content">Sommige mobiele versies van Discord verbergen deze schakelaar. Open discord.com in Chrome → schakel de Desktop-site in → log in → Instellingen (⚙️) → Activiteitsprivacy → zet "Mijn activiteit delen" aan.</string>
+    <string name="discord_setup_desc">Zorg dat Discord toestaat dat je activiteit op je profiel wordt weergegeven.</string>
+    <string name="auto_detect_activity_type_desc">Muziekapps worden herkend als muziek en videoapps als video, waardoor YouTube Music niet langer als spel wordt weergegeven. Het type dat voor één app is gekozen, heeft altijd voorrang.</string>
+    <string name="auto_detect_activity_type">Activiteitstype automatisch detecteren</string>
+    <string name="logs_save_error">Kan logboeken niet opslaan</string>
+    <string name="discord_tip_title">Vind je "Mijn activiteit delen" niet?</string>
+    <string name="console_detected_in_game">In het spel</string>
+    <string name="rich_presence_active">Rich Presence actief</string>
+    <string name="discord_step1_title">Stap 1: Privacy-instellingen openen</string>
+    <string name="console_detected">Herkend</string>
+    <string name="discord_step2_title">Stap 2: Delen van activiteit inschakelen</string>
+    <string name="discord_step1_content">Open de Discord-app → tik op je \'Jij\'-pictogram (profielafbeelding) → tik op Instellingen (⚙️) → scrol omlaag en tik op "Inhoud en sociaal" (of "Activiteitsprivacy" bij oudere appversies).</string>
+    <string name="activity_type_fallback_desc">Wordt gebruikt voor apps die niet worden herkend en voor elke app wanneer automatische detectie is uitgeschakeld.</string>
+    <string name="discord_step3_title">Stap 3: Controleer je online status</string>
 </resources>

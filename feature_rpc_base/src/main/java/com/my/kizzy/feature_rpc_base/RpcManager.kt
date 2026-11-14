@@ -18,6 +18,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
+import com.my.kizzy.feature_rpc_base.services.DiscordOAuthRpcService
 import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.preference.Prefs
@@ -53,6 +54,7 @@ class RpcManager @Inject constructor(
         ConsoleRpc,
         ExperimentalRpc,
         AppDetectionRpc,
+        DiscordOAuthRpc,
     }
 
     private val TAG = "RpcManager"
@@ -77,6 +79,7 @@ class RpcManager @Inject constructor(
             AppUtils.consoleRpcRunning() -> RpcType.ConsoleRpc
             AppUtils.experimentalRpcRunning() -> RpcType.ExperimentalRpc
             AppUtils.appDetectionRunning() -> RpcType.AppDetectionRpc
+            Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""].isNotEmpty() && Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY] == Prefs.RPC_CONNECTION_METHOD_OAUTH -> RpcType.DiscordOAuthRpc
             else -> RpcType.None
         }
         if (_activeRpc.value != newType) {
@@ -110,6 +113,7 @@ class RpcManager @Inject constructor(
         Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = if (rpcType == RpcType.CustomRpc) rpcConfigString else ""
         Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = if (rpcType == RpcType.ConsoleRpc) rpcConfigString else ""
         Prefs[Prefs.MEDIA_RPC_ENABLED] = if (rpcType == RpcType.MediaRpc) true else false
+        Prefs[Prefs.RPC_CONNECTION_METHOD] = if (rpcType == RpcType.DiscordOAuthRpc) Prefs.RPC_CONNECTION_METHOD_OAUTH else Prefs.RPC_CONNECTION_METHOD_GATEWAY
 
         // Start the requested RPC (if not None)
         when (rpcType) {
@@ -142,6 +146,10 @@ class RpcManager @Inject constructor(
                 Log.d(TAG, "Starting AppDetectionService")
                 context.startService(Intent(context, AppDetectionService::class.java))
             }
+            RpcType.DiscordOAuthRpc -> {
+                Log.d(TAG, "Starting DiscordOAuthRpcService")
+                context.startService(Intent(context, DiscordOAuthRpcService::class.java))
+            }
         }
 
         _activeRpc.value = rpcType
@@ -156,6 +164,7 @@ class RpcManager @Inject constructor(
         context.stopService(Intent(context, CustomRpcService::class.java))
         context.stopService(Intent(context, ExperimentalRpc::class.java))
         context.stopService(Intent(context, AppDetectionService::class.java))
+        context.stopService(Intent(context, DiscordOAuthRpcService::class.java))
 
         Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
         Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""

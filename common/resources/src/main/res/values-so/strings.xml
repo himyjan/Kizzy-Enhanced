@@ -50,4 +50,27 @@
     <string name="discord_oauth_authorize">Ku xiriir Discord</string>
     <string name="discord_oauth_authorize_desc">U oggolow in Kizzy uu muujinayo dhaqdhaqaaqiiintaada profilkaaga Discord</string>
 
+    <string name="console_include_spoofed">Ku dar qalab been abuur ah</string>
+    <string name="auto_detect">Otomatik · %1$s</string>
+    <string name="save_logs_to_file">Kaydi di qoraal</string>
+    <string name="logs_saved_toast">Qoraallada waa la keydiyay %1$s</string>
+    <string name="discord_step3_content">Taabeeji xaaladaada (ka hoos ka magaca isticmaale) oo dooro On-leey, Areesan ama Ha uga muhiim. ⚠️ Ha isticmaalin Astaanta ma la muuqaan karo — Discord wuxuu qarsoonaya dhaqdhaqaaqii Kizzy markii aad ma la muuqaan karo.</string>
+    <string name="discord_setup_title">Ka hor bilow</string>
+    <string name="console_auto_detect">Sii oto ah oo DroidDeck / Eden</string>
+    <string name="console_detected_hint">Si u ujeeddo ugu isticmaal ciyaartaan Console RPC</string>
+    <string name="discord_step2_content">Raadi "Wadaag waxa aan sameeyay" oo fur. Hoos waxa "Halkee aan waxaaga wadaago" ku dooro "Wadaag server kasta". Sii hoos u wareeg "Server-yadaada" oo server-yada aad rabto in xaaladaadu ka muuqato fur.</string>
+    <string name="discord_tip_content">Noocyada moobil ee Discord qaar ayaa tus qarsoonaya. Samee discord.com Chrome ka → fur Desktop site → gal → Dejinta (⚙️) → Asturnaanta waxa aan qabto → fur "Wadaag waxa aan sameeyay".</string>
+    <string name="discord_setup_desc">Hubi in Discord u ogolaado in xaaladaada lagu soo bandhigo profilkaaga.</string>
+    <string name="auto_detect_activity_type_desc">Codsiyada muusikada ayaa lagu soo aqoonsadaa sida muusik, codsiyada wanaan ayaa lagu soo aqoonsadaa sida wanaan, sidaas darteed YouTube Music ma lama sheegiyo ciyaar. Noocyada loo dooro hal codsi had iyo jeer way mudan tahay.</string>
+    <string name="auto_detect_activity_type">Sii oto ah oo nooca waxa aan qabto</string>
+    <string name="logs_save_error">Qoraallada lama keydin karo</string>
+    <string name="discord_tip_title">Ma heli karto "Wadaag waxa aan sameeyay"?</string>
+    <string name="console_detected_in_game">Ciyaarta gudaha</string>
+    <string name="rich_presence_active">Rich Presence waa shaqeeyaa</string>
+    <string name="discord_step1_title">Talla 1: Fur dejinta asturnaanta</string>
+    <string name="console_detected">Waa la soo aqoonsaday</string>
+    <string name="discord_step2_title">Talla 2: Fur wadaaga waxa aan qabto</string>
+    <string name="discord_step1_content">Samee codsiga Discord → sii astaanta "Adiga" (sawirka profilka) → sii Dejinta (⚙️) → sii hoos u wareeg oo sii "Isku dhafan iyo bulshada" (ama "Asturnaanta waxa aan qabto" noocyada hore uu codsiga).</string>
+    <string name="activity_type_fallback_desc">Waxaa lagu isticmaalaa codsiyada aan la aqoonsan karin, iyo codsi kasta marka oo sii oto ah oo ogaanshaha la damiyo.</string>
+    <string name="discord_step3_title">Talla 3: Hubi xaaladaadaada on-leey</string>
 </resources>

@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Sambung ke Discord</string>
     <string name="discord_oauth_authorize_desc">Benarkan Kizzy memaparkan aktiviti anda pada profil Discord anda</string>
 
+    <string name="console_include_spoofed">Sertakan binaan palsu</string>
+    <string name="auto_detect">Otomatis · %1$s</string>
+    <string name="save_logs_to_file">Simpan log ke fail</string>
+    <string name="logs_saved_toast">Log disimpan ke %1$s</string>
+    <string name="discord_step3_content">Ketik Status anda (di bawah nama pengguna anda) dan pilih Dalam Talian, Tiada Aktiviti, atau Jangan Ganggu. ⚠️ Jangan gunakan Tidak Tampak — Discord menyembunyikan aktiviti Kizzy apabila anda Tidak Tampak.</string>
+    <string name="discord_setup_title">Sebelum anda mula</string>
+    <string name="console_auto_detect">Pengesanan automatik DroidDeck / Eden</string>
+    <string name="console_detected_hint">Ketik untuk menggunakan permainan ini untuk Console RPC</string>
+    <string name="discord_step2_content">Cari "Kongsi aktiviti saya" dan hidupkan. Di bawah "Di mana saya Kongsi Aktiviti", pilih "Kongsi di semua pelayan" dayakan. Skrol ke "Pelayan Saya" dan hidupkan pelayan tempat anda mahu status anda kelihatan.</string>
+    <string name="discord_tip_content">Sesetengah versi mudah alih Discord menyembunyikan Togol ini. Buka discord.com dalam Chrome → dayakan Laman Desktop → log masuk → Tetapan (⚙️) → Privasi Aktiviti → hidupkan "Kongsi aktiviti saya".</string>
+    <string name="discord_setup_desc">Pastikan Discord membenarkan aktiviti anda dipaparkan pada profil anda.</string>
+    <string name="auto_detect_activity_type_desc">Aplikasi muzik dikesan sebagai muzik dan aplikasi video sebagai video, jadi YouTube Music tidak lagi ditunjukkan sebagai permainan. Jenis yang dipilih untuk satu aplikasi sentiasa mendahului.</string>
+    <string name="auto_detect_activity_type">Pengesanan automatik jenis aktiviti</string>
+    <string name="logs_save_error">Gagal menyimpan log</string>
+    <string name="discord_tip_title">Tidak menemui "Kongsi aktiviti saya"?</string>
+    <string name="console_detected_in_game">Dalam permainan</string>
+    <string name="rich_presence_active">Rich Presence aktif</string>
+    <string name="discord_step1_title">Langkah 1: Buka Tetapan Privasi</string>
+    <string name="console_detected">Dikesan</string>
+    <string name="discord_step2_title">Langkah 2: Hidupkan Perkongsian Aktiviti</string>
+    <string name="discord_step1_content">Buka aplikasi Discord → ketik ikon Anda (gambar profil) → ketik Tetapan (⚙️) → skrol ke bawah dan ketik Kandungan &amp; Sosial (atau Privasi Aktiviti pada versi aplikasi lama).</string>
+    <string name="activity_type_fallback_desc">Digunakan untuk aplikasi yang tidak dikenali, dan untuk setiap aplikasi apabila pengesanan automatik dimatikan.</string>
+    <string name="discord_step3_title">Langkah 3: Semak status dalam talian anda</string>
 </resources>

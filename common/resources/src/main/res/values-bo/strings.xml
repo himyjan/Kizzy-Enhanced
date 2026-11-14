@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord ལ་སྒྲ་བཅོས་བྱེད།</string>
     <string name="discord_oauth_authorize_desc">Kizzy ལ་ཁྱོད་ཀྱི་ལས་རིགས་དེ་ Discord བརྡའི་པོ་སྟེར་འཚོགས་པའི་ཁི་བཅོས་སྟོན།</string>
 
+    <string name="console_include_spoofed">ཁྱེད་ཚོགས་བསྒྱུར་བྱས་པའི་སྒྲིག་འབྱེད་བསྣ་བཞག</string>
+    <string name="auto_detect">རང་འདོད་ · %1$s</string>
+    <string name="save_logs_to_file">ཐོན་ཐང་ཡིག་ཆའི་ནང་ཞུགས</string>
+    <string name="logs_saved_toast">ཐོན་ཐང་ %1$s ལ་སློག་ཟིན</string>
+    <string name="discord_step3_content">ཁྱེད་ཀྱི་གནས་ཡིག (གཡོད་མིང་གི་འོད་མུར) ལ་བཤད་ནས་གསར་འགྱུར་གང་ལ་འཛུལ་དང་ལས་ནོར་བུའམ། ⚠️ མི་སྣང་བ་མི་བྱེད་པའི་ཕྱིར — ཁྱེད་མི་སྣང་བ་ཡོད་སྐབས Discord ཀ Kizzy གྱི་ལས་སྒྲིག་བསྡུས་པ་མི་ནང་མིན།</string>
+    <string name="discord_setup_title">མཐོང་འགྲོའི་གནང་སྔོན་ནས</string>
+    <string name="console_auto_detect">DroidDeck / Eden རང་འདོད་ངོས་འཛིན</string>
+    <string name="console_detected_hint">Console RPC ཆེད་དུ་འདི་གྲོགས་པ་བྱེད་པར་བཤད་ནས</string>
+    <string name="discord_step2_content">"ངའི་ལས་སྤྱོད་མཉམ་སྤྱོད" མཐའས་ནས་འཛུལ་ནས་ ON གང་འདང་བསྟེན། "ངའི་ལས་སྤྱོད་དེ་ས་དེ་མཉམ་མིན" ནང་ "སེར་གྲྭ་ཡོད་སོ་མང་ལ་སྤྱོད" འཛུལ། ངའི་སེར་གྲྭ་ལ་ཉལ་ནས་དེ་སེར་གྲྭ་སྟེ་ངའི་གནས་ཡོད་མི་དགོས་པའི་སེར་གྲྭ་སྟེ་ ON གང་འདང་བསྟེན།</string>
+    <string name="discord_tip_content">Discord ཀྱི་ཁ་མཐའ་ཡིག་གི་མིག་ཅན་འགྲགས་མིག་གིས་འདི་བཤད་པ་སྦས་བྱེད། Chrome ནང་ discord.com བཀོད་པའི་ནས་→ Desktop སྨྲིག སྟེ་འཇུག → ལྗོངས་སྤྱོད → སྒྲུབ་སྒྲིག (⚙️) → ལས་སྤྱོད་གི་མངོན་བཏང་སྤྲོད → "ངའི་ལས་སྤྱོད་མཉམ་སྤྱོད" ON གང་འདང་བསྟེན།</string>
+    <string name="discord_setup_desc">ཀླད་གསལ་དུ་བཤད། Discord ཀྱིས་ཁྱེད་ཀྱི་ལས་སྤྱོད་ཁྱེད་ཀྱི་ནང་ཁུག་ནས་སྟོན་མི་ཐུབ་པར་བཤད།</string>
+    <string name="auto_detect_activity_type_desc">སྒྲོག་ཡིག་ཀྱི་ཁ་དྲག་རྒྱན་སྒྲོག་ཡིག་ལྟར་འདོད་དག, ཝི་དེའོ་ཁ་དྲག་རྒྱན་ཝི་དེར་འདོད་དག, དེའི་ཕྱིར YouTube Music ནས་གྲོགས་པ་སྟེན་མི་མངོན། ཆེད་ཕྱིར་ཁ་གཅིག་ལ་བསྟོས་པའི་རིགས་མེད་ཀྱིས་གདོད་གཞོལ།</string>
+    <string name="auto_detect_activity_type">ལས་སྤྱོད་ཀྱི་རིགས་རང་འདོད་ངོས་འཛིན</string>
+    <string name="logs_save_error">ཐོན་ཐང་ཉེན་སློག་མི་ཐུབ</string>
+    <string name="discord_tip_title">"ངའི་ལས་སྤྱོད་མཉམ་སྤྱོད" མ་རྙེད་པ་ཡིན་ནམ།</string>
+    <string name="console_detected_in_game">གྲོགས་ཀྱི་ནང་</string>
+    <string name="rich_presence_active">Rich Presence སྤྲོད</string>
+    <string name="discord_step1_title">གནས་ཚིག་ 1: མངོན་བཏང་གི་སྒྲིག་གཞི་བཀོད་པ</string>
+    <string name="console_detected">ངོས་འཛིན་ཟིན</string>
+    <string name="discord_step2_title">གནས་ཚིག་ 2: ལས་སྤྱོད་མཉམ་སྤྱོད་སྟེ་འཇུག</string>
+    <string name="discord_step1_content">Discord ཁ་དྲག་རྒྱན་བཀོད་པའི་ནས་→ ཁྱེད་ཀྱི་ངང་ (ནང་ཁུག་པའི་མདོན) མཚོན་སྟེང་ལ་བཤད་པའི་ནས་→ སྒྲུབ་སྒྲིག (⚙️) ལ་བཤད་ནས་→ གྲོལ་དུ་ཉལ་ནས་དངོས་གྲོགས་དང་སྤྱོད་ཚོགས (ཡང་ན་གནས་ཚིག་ཟད་པའི་ཁ་དྲག་རྒྱན་ནས་ལས་སྤྱོད་ཀྱི་མངོན་བཏང་སྤྲོད) ལ་བཤད།</string>
+    <string name="activity_type_fallback_desc">ངོས་མི་འཛིན་པའི་ཁ་དྲག་རྒྱན་ལ་དེ་བཞིན་འོས། དེ་མིན་རང་འདོད་ངོས་འཛིན་སྟོང་བའི་སྐབས་སུ་ཁ་དྲག་རྒྱན་ཡོད་མི་ཚང་བའི་ཆ་སོང་ལ་བྱེད།</string>
+    <string name="discord_step3_title">གནས་ཚིག་ 3: ཁྱེད་ཀྱི་གནས་ཡིག་སྟོང་དུ་བལྟས</string>
 </resources>

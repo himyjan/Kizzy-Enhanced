@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord\'ga ulanish</string>
     <string name="discord_oauth_authorize_desc">Kizzy\'ga Discord profilingizda faolligingizni ko\'rsatishga ruxsat bering</string>
 
+    <string name="console_include_spoofed">Soxta qurilmalarni qo\'shish</string>
+    <string name="auto_detect">Avtomatik · %1$s</string>
+    <string name="save_logs_to_file">Loglarni faylga saqlash</string>
+    <string name="logs_saved_toast">Loglar %1$s fayliga saqlandi</string>
+    <string name="discord_step3_content">Holatingizni bosing (foydalanuvchi nomingiz ostida) va Onlayn, Bekor qilmaydi yoki Bezovta qiling\' deb tanlang. ⚠️ Ko\'rinmaydigan holatdan foydalanmang — ko\'rinmaganda Discord Kizzy faolligini yashiradi.</string>
+    <string name="discord_setup_title">Boshlashdan oldin</string>
+    <string name="console_auto_detect">DroidDeck / Eden ni avtomatik aniqlash</string>
+    <string name="console_detected_hint">Bu o\'yinni Console RPC uchun ishlatish uchun bosing</string>
+    <string name="discord_step2_content">"Faoliyatimni ulashish" ni topib yoqing. "Faoliyatimni qayerda ulashaman" ostidan "Barcha serverlarda ulashish" ni tanlang. "Mening serverlarim" gacha aylantirib, holatingiz ko\'rinishini xohlagan serverlarni yoqing.</string>
+    <string name="discord_tip_content">Discordning ba\'zi mobil versiyalari bu tugmani yashiradi. Chrome\'da discord.com ni oching → Desktop saytni yoqing → tizimga kiring → Sozlamalar (⚙️) → Faoliyat maxfiyligi → "Faoliyatimni ulashish" ni yoqing.</string>
+    <string name="discord_setup_desc">Discord faoliyatingizning profilingizda ko\'rinishiga ruxsat berishini tekshiring.</string>
+    <string name="auto_detect_activity_type_desc">Musiqa ilovalari musiqa, video ilovalari video deb aniqlanadi, shuning uchun YouTube Music endi o\'yin sifatida ko\'rsatilmaydi. Bitta ilova uchun tanlangan tur har doim ustun bo\'ladi.</string>
+    <string name="auto_detect_activity_type">Faoliyat turini avtomatik aniqlash</string>
+    <string name="logs_save_error">Loglarni saqlab bo\'lmadi</string>
+    <string name="discord_tip_title">"Faoliyatimni ulashish" topilmadimi?</string>
+    <string name="console_detected_in_game">O\'yin ichida</string>
+    <string name="rich_presence_active">Rich Presence faol</string>
+    <string name="discord_step1_title">1-qadam: Maxfiylik sozlamalarini ochish</string>
+    <string name="console_detected">Aniqlandi</string>
+    <string name="discord_step2_title">2-qadam: Faoliyat ulashishni yoqish</string>
+    <string name="discord_step1_content">Discord ilovasini oching → o\'zingizning (profil rasm) ikonkasini bosing → Sozlamalar (⚙️) ni bosing → pastga aylantiring va "Mazmun va ijtimoiy tarmoqlar" (yoki eski versiyalarda "Faoliyat maxfiyligi") bo\'limini bosing.</string>
+    <string name="activity_type_fallback_desc">Aniqlanmagan ilovalar uchun va avtomatik aniqlash o\'chirilganda har bir ilova uchun ishlatiladi.</string>
+    <string name="discord_step3_title">3-qadam: Onlayn holatingizni tekshiring</string>
 </resources>

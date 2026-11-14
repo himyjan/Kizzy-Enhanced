@@ -50,4 +50,27 @@
     <string name="discord_oauth_authorize">Konekti al Discord</string>
     <string name="discord_oauth_authorize_desc">Permesu al Kizzy montri vian aktivecon en via Discord-profilo</string>
 
+    <string name="console_include_spoofed">Inkluzigi falsajnajn konstruebilojn</string>
+    <string name="auto_detect">Aŭtomata · %1$s</string>
+    <string name="save_logs_to_file">Konservi registrojn en dosiero</string>
+    <string name="logs_saved_toast">Registroj konserviĝis en %1$s</string>
+    <string name="discord_step3_content">Tuŝu vian Staton (sub via uzantnomo) kaj elektu Enreta, Senokupa aŭ Ne ĝenu. ⚠️ Ne uzu Kaŝebla — Discord kaŝas la agadon de Kizzy kiam vi estas Kaŝebla.</string>
+    <string name="discord_setup_title">Antaŭ ol komenci</string>
+    <string name="console_auto_detect">Aŭtomata detekto de DroidDeck / Eden</string>
+    <string name="console_detected_hint">Klaku por uzi ĉi tiun ludon por Console RPC</string>
+    <string name="discord_step2_content">Trovu „Kunhavigi mian agadon“ kaj ŝaltu ĝin. Sub „Kie mi kunhavigas agon“, elektu „Kunhavigi ĉe ĉiuj serviloj“. Ruluĝu al „Miaj serviloj“ kaj ŝaltu la servilojn, kie vi volas vidi vian staton.</string>
+    <string name="discord_tip_content">Kelkaj mobilaj versioj de Discord kaŝas ĉi tiun ŝaltilon. Malfermu discord.com en Chrome → eŝaltu „Labortabla retejo“ → )-&gt; aligu → Agordoj (⚙️) → Privateco de agado → ŝaltu „Kunhavigi mian agadon“.</string>
+    <string name="discord_setup_desc">Certiĝu, ke Discord permesas montri vian agadon en via profilo.</string>
+    <string name="auto_detect_activity_type_desc">Muzikaj aplikaĵoj estas detektataj kiel muziko kaj videoaplikaĵoj kiel video, do YouTube Music plu ne aperas kiel ludo. La tipo elektita por unu sola aplikaĵo ĉiam havas prioriton.</string>
+    <string name="auto_detect_activity_type">Aŭtomate detekti la tipon de agado</string>
+    <string name="logs_save_error">Malsukcesis konservi registrojn</string>
+    <string name="discord_tip_title">Ĉu vi ne trovas „Kunhavigi mian agadon“?</string>
+    <string name="console_detected_in_game">En la ludo</string>
+    <string name="rich_presence_active">Rich Presence aktiva</string>
+    <string name="discord_step1_title">Paŝo 1: Malfermi privatecajn agordojn</string>
+    <string name="console_detected">Detektita</string>
+    <string name="discord_step2_title">Paŝo 2: Ŝalti agadon kunhavigon</string>
+    <string name="discord_step1_content">Malfermu la aplikaĵon Discord → klaku vian „Vi“-piktogramon (profilfoto) → klaku Agordoj (⚙️) → ruluĝu malsupren kaj klaku „Enhavo kaj sociaj retoj“ (aŭ „Privateco de agado“ en pli malnovaj versioj de la aplikaĵo).</string>
+    <string name="activity_type_fallback_desc">Uzata por aplikaĵoj ne rekonataj kaj por ĉiu aplikaĵo kiam aŭtomata detekto estas malŝaltita.</string>
+    <string name="discord_step3_title">Paŝo 3: Kontroli vian retan staton</string>
 </resources>

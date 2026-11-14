@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">តាស់ភ្ជាប់ទៅ Discord</string>
     <string name="discord_oauth_authorize_desc">អនុញ្ញាតឱ្យ Kizzy បង្ហាញសកម្មភាពរបស់អ្នកនៅលើប្រូបហ្វីល Discord របស់អ្នក</string>
 
+    <string name="console_include_spoofed">បញ្ចូលការបង្កើតកំឡើង</string>
+    <string name="auto_detect">ស្វត្រការ · %1$s</string>
+    <string name="save_logs_to_file">រក្សាទុកកំណត់ត្រាទៅឯកសារ</string>
+    <string name="logs_saved_toast">កំណត់ត្រាត្រូវបានរក្សាទុកក្នុង %1$s</string>
+    <string name="discord_step3_content">ចុចលើស្ថានភាពរបស់អ្នក (នៅក្រោមឈ្មោះអ្នកប្រើប្រាស់) ហើយជ្រើសរើស Online, អ្វីមិនធ្វើអ្វី ឬ មិនប៉ះរុង។ ⚠️ កុំប្រើមិនឃើញ — Discord លាក់សកម្មភាព Kizzy ពេលអ្នកជាមិនឃើញ។</string>
+    <string name="discord_setup_title">មុនពេលចាប់ផ្ដើម</string>
+    <string name="console_auto_detect">រកឃើញ DroidDeck / Eden ដោយស្វត្រការ</string>
+    <string name="console_detected_hint">ចុចដើម្បីប្រើហ្គេមនេះសម្រាប់ Console RPC</string>
+    <string name="discord_step2_content">ស្វែងរក «Share my activity» ហើយបើកវា។ ក្រោម «Where I Share Activity» ជ្រើសរើស «Share in all servers»។ រំលោទទៅ «My Servers» ហើយបើកម៉ាស៊ីនមេដែលអ្នកចង់ឱ្យស្ថានភាពរបស់អ្នកបង្ហាញ។</string>
+    <string name="discord_tip_content">ការកំណែទំព័រស្លង់មួយចំនួននៃ Discord លាក់ការបិទបង់នេះ។ បើក discord.com ក្នុង Chrome → បើក Desktop site → ចូល → ការកំណត់ (⚙️) → Activity Privacy → បើក Share my activity។</string>
+    <string name="discord_setup_desc">ប្រាកដថា Discord អនុញ្ញាតឱ្យសកម្មភាពរបស់អ្នកបង្ហាញនៅលើប្រវត្តិរបស់អ្នក។</string>
+    <string name="auto_detect_activity_type_desc">កម្មវិធីតន្តិភាពត្រូវបានរកឃើញថាជាតន្តិភាព ហើយកម្មវិធីវីដេអូត្រូវបានរកឃើញថាជាវីដេអូ ដូច្នេះ YouTube Music លែងមិនត្រូវបានបង្ហាញជាហ្គេមទៀតហើយ។ ប្រភេទដែលបានជ្រើសរើសសម្រាប់កម្មវិធីតែមួយតែងតែមានអានភាពលើសទៀត។</string>
+    <string name="auto_detect_activity_type">រកឃើញប្រភេទសកម្មភាពដោយស្វត្រការ</string>
+    <string name="logs_save_error">រក្សាទុកកំណត់ត្រាមិនបានសម្រេច</string>
+    <string name="discord_tip_title">រកឃើញ «Share my activity» មិនបានទេ?</string>
+    <string name="console_detected_in_game">ក្នុងហ្គេម</string>
+    <string name="rich_presence_active">Rich Presence សកម្ម</string>
+    <string name="discord_step1_title">ជំហានទី ១៖ បើកការកំណត់ឯកជនភាព</string>
+    <string name="console_detected">ត្រូវបានរកឃើញ</string>
+    <string name="discord_step2_title">ជំហានទី ២៖ បើកការចែករំលែកសកម្មភាព</string>
+    <string name="discord_step1_content">បើកកម្មវិធី Discord → ចុចលើរូបតំណាង «អ្នក» (រូបភាពប្រវត្តិ) → ចុចលើការកំណត់ (⚙️) → រំលោទចុះក្រោម ហើយចុចលើ «មាតិកា និងបណ្ដាញសង្គម» (ឬ «Activity Privacy» លើកំណែកម្មវិធីចាស់)។</string>
+    <string name="activity_type_fallback_desc">ប្រើសម្រាប់កម្មវិធីដែលមិនត្រូវបានស្គាល់ ហើយក៏សម្រាប់គ្រប់កម្មវិធីពេលបិទការរកឃើញស្វត្រការត្រូវបានបិទ។</string>
+    <string name="discord_step3_title">ជំហានទី ៣៖ ពិនិត្យស្ថានភាព Online របស់អ្នក</string>
 </resources>

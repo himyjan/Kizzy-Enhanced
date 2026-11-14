@@ -50,4 +50,27 @@
     <string name="discord_oauth_authorize">Hono ki Discord</string>
     <string name="discord_oauth_authorize_desc">Tuku Kizzy ki te whakaatu i tō mahi ki tō kōtuitanga Discord</string>
 
+    <string name="console_include_spoofed">Kei te hanga tauira hangahanga</string>
+    <string name="auto_detect">Automatika · %1$s</string>
+    <string name="save_logs_to_file">Tiaki ngā rauhere ki te kōpua</string>
+    <string name="logs_saved_toast">I tiakina ngā rauhere ki %1$s</string>
+    <string name="discord_step3_content">Pēhi i tō koutua (i raro i tō ingoa kaiwhakamahi) ka waiho i Pēwhārangi, Kaorei mahi rānei, kāore rānei e whakapono. ⚠️ Aua e whakamahi i Korehe — Discord ka huna i te mahi a Kizzy ina e huna koe.</string>
+    <string name="discord_setup_title">I mua i te timatanga</string>
+    <string name="console_auto_detect">Auto-tautohu DroidDeck / Eden</string>
+    <string name="console_detected_hint">Pēhi ki te whakamahi i tēnei kēmu mō Console RPC</string>
+    <string name="discord_step2_content">Kimihanga te "Tiritiri i tō mahi" ka whakapuhi. I raro i te "Kei hea koe e tiritiri i tō mahi", whiriwhiri te "Tiritiri ki ngā server katoa". Rerero ki te "Ōku server" ka whakapuhi ngā server e hiahia ana kia kitea tō koutua.</string>
+    <string name="discord_tip_content">He pata o ngā putanga pūkokore o Discord ka huna i tēnei hihere. Whakatuwherahia discord.com i Chrome → whakapuhi te "Pūrere tūranga" → tomohia → Tītara (⚙️) → Privateness o te mahi → whakapuhi te "Tiritiri i tō mahi".</string>
+    <string name="discord_setup_desc">Whakapono kua whakaae a Discord kia whakaatu i to mahi ki runga i tō kaupapa.</string>
+    <string name="auto_detect_activity_type_desc">Ka tautohuhia ngā taiao puoro hei puoro, ngā taiao ataata hei ataata, nā reira YouTube Music kore ai e whakaaturua hei kēmu. Ko te huinga e kua whiriwhiri mō ngā taiao kotahi tonu e whai mana.</string>
+    <string name="auto_detect_activity_type">A tautohu i te huinga o te mahi</string>
+    <string name="logs_save_error">Kāore i te tiaki ngā rauhere</string>
+    <string name="discord_tip_title">Kāore e kitea ana i te "Tiritiri i tō mahi"?</string>
+    <string name="console_detected_in_game">I roto i te kēmu</string>
+    <string name="rich_presence_active">Kua whakahere a Rich Presence</string>
+    <string name="discord_step1_title">Hipanga 1: Whakatuwherahia ngā tītara mō te privateness</string>
+    <string name="console_detected">Kua tautohuhia</string>
+    <string name="discord_step2_title">Hipanga 2: Whakapuhi te tiritiri mahi</string>
+    <string name="discord_step1_content">Whakatuwherahia te taiao Discord → pēhi ki tō tohu "Koe" (whakaahua o tō kaupapa) → pēhi ki Tītara (⚙️) → rero ki raro ka pēhi ki te "Ihirangi me te Whatunga Pāpāho" (rānei te "Privateness o te mahi" i ngā putanga tawhito).</string>
+    <string name="activity_type_fallback_desc">Ka whakamahia mō ngā taiao kāore i tautohuhia, mō ia taiao katoa ina ritea te tautohu aunoa.</string>
+    <string name="discord_step3_title">Hipanga 3: Tirohia tō koutua Pēwhārangi</string>
 </resources>

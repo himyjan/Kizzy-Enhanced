@@ -185,7 +185,12 @@ class KizzyRPC @Inject constructor(
      * ensures a late login still works without restarting the service.
      */
     suspend fun refreshFromPrefs() {
-        token = Prefs[Prefs.TOKEN, ""]
+        // Determine which token to use based on connection method
+        val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
+        token = when (connectionMethod) {
+            Prefs.RPC_CONNECTION_METHOD_OAUTH -> Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""]
+            else -> Prefs[Prefs.TOKEN, ""]
+        }
         val (browser, os, device) = Constants.spoofIdentifyProperties(
             Prefs[Prefs.EXPERIMENTAL_RPC_PLATFORM, ""]
         )
@@ -378,6 +383,13 @@ class KizzyRPC @Inject constructor(
         )
         return regex.matches(token)*/
         return token.isNotBlank()
+    }
+
+    /**
+     * Checks if the OAuth access token is available for OAuth-based RPC.
+     */
+    fun isOAuthTokenAvailable(): Boolean {
+        return Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""].isNotEmpty()
     }
 
     /**

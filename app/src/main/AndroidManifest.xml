@@ -95,6 +95,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".DiscordOAuthActivity"
+            android:exported="true"
+            android:theme="@style/ActivityTranslucent">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kizzy" android:host="oauth" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name="com.my.kizzy.feature_rpc_base.services.AppDetectionService"
@@ -134,6 +145,11 @@
         <service android:name=".feature_rpc_base.services.ExperimentalRpc"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false"/>
+
+        <service
+            android:name=".feature_rpc_base.services.DiscordOAuthRpcService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false" />
 
         <service
             android:name=".feature_rpc_base.services.KizzyTileService"

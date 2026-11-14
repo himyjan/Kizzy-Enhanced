@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord ସହ ଯୋଡ଼ନ୍ତୁ</string>
     <string name="discord_oauth_authorize_desc">ଆପଣଙ୍କ Discord ପ୍ରୋଫାଇଲରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳପ ଦେଖାଇବାକୁ Kizzy କୁ ଅନୁମତି ଦିଅନ୍ତୁ</string>
 
+    <string name="console_include_spoofed">ଫଲ-ବିଲ୍ଡ ଅନ୍ତର୍ଭାଗ କରନ୍ତୁ</string>
+    <string name="auto_detect">ସ୍ୱତନ୍ତ · %1$s</string>
+    <string name="save_logs_to_file">ଲଗ୍ ଫାଇଲରେ ସଞ୍ଚିତ କରନ୍ତୁ</string>
+    <string name="logs_saved_toast">ଲଗ୍ %1$s ରେ ସଞ୍ଚିତ ହେଲା</string>
+    <string name="discord_step3_content">ଆପଣଙ୍କ ସ୍ଟାଟସ (ବ୍ୟାମରେଙ୍କ ନାମ ତଳେ) ଉପରେ ଟାପ କରନ୍ତୁ ଏବଂ ଅନଲାଇନ, କୁଛି ନାହିଁ କିମ୍ବା ଅନୁରୋଧ ନକରନ୍ତୁ ବାଛନ୍ତୁ। ⚠️ ଅଦୃଶ୍ୟ ସ୍ଥିତିକୁ ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ — ଅଦୃଶ୍ୟ ଥିବା ବେଳେ Discord ଆପଣଙ୍କ Kizzy କାର୍ଯ୍ୟକଳାପ ଲୁକାଇ ଦେଇଛି।</string>
+    <string name="discord_setup_title">ଆରମ୍ଭ କରିବା ପୂର୍ବରୁ</string>
+    <string name="console_auto_detect">DroidDeck / Eden ସ୍ୱତନ୍ତ ଚିହ୍ନଟ</string>
+    <string name="console_detected_hint">Console RPC ପାଇଁ ଏହି ଖେଳାଟି ବ୍ୟବହାର କରିବାକୁ ଟାପ କରନ୍ତୁ</string>
+    <string name="discord_step2_content">"ମୋ କାର୍ଯ୍ୟକଳା ଅଂଶ କରନ୍ତୁ" ଖୋଜ କରି ON କରନ୍ତୁ। "ମୁଁ କିଏଠି କାର୍ଯ୍ୟକଳା ଅଂଶ କରେଉଁ" ତଳେ "ସବୁ ସର୍ଭରରେ ଅଂଶ କରନ୍ତୁ" ବାଛନ୍ତୁ। "ମୋ ସର୍ଭର" ପାଇଁ ସ୍କ୍ରୋଲ କରି ଆପଣଙ୍କ ସ୍ଟାଟସ ଦେଖା ଯାଇଥିବା ସର୍ଭରଗୁଡ଼ ON କରନ୍ତୁ।</string>
+    <string name="discord_tip_content">Discord ର କିଛି ମୋବାଇଲ୍ ସଂସ୍କରଣ ଏହି ଟୋଗଲକୁ ଲୁକାଏ। Chrome ରେ discord.com ଖୋଲନ୍ତୁ → Desktop site ଚାଲୁ କରନ୍ତୁ → ଲଗ ଇନ କରନ୍ତୁ → ସେଟିଙ୍ସ (⚙️) → Activity Privacy → "ମୋ କାର୍ଯ୍ୟକଳା ଅଂଶ କରନ୍ତୁ" ON କରନ୍ତୁ।</string>
+    <string name="discord_setup_desc">Discord ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳା ପ୍ରୋଫାଇଲରେ ଦେଖାଇବାକୁ ଅନୁମତି ଦେଉଛି ବା ନା ନିଶ୍ଚିତ କରନ୍ତୁ।</string>
+    <string name="auto_detect_activity_type_desc">ସଙ୍ଗୀତ ଆପ୍ ସଙ୍ଗୀତ ଭାବେ ଏବଂ ଭିଡିଓ ଆପ୍ ଭିଡିଓ ଭାବେ ଚିହ୍ନଟ ହୁଏ, ତେଣୁ YouTube Music ଆଉ ଖେଳା ଭାବେ ଦେଖାଯାଇନି। ଗୋଟିଏ ଆପ୍ ପାଇଁ ବାଛିଥିବା ପ୍ରକାର ସର୍ବଦା ପ୍ରାଥମିକତା ଧରେ।</string>
+    <string name="auto_detect_activity_type">କାର୍ଯ୍ୟକଳା ପ୍ରକାର ସ୍ୱତନ୍ତ ଚିହ୍ନଟ</string>
+    <string name="logs_save_error">ଲଗ୍ ସଞ୍ଚିତ କରିବାରେ ବିଫଳ</string>
+    <string name="discord_tip_title">"ମୋ କାର୍ଯ୍ୟକଳା ଅଂଶ କରନ୍ତୁ" ମିଳୁନାହିଁ?</string>
+    <string name="console_detected_in_game">ଖେଳା ଭିତରେ</string>
+    <string name="rich_presence_active">Rich Presence ସକ୍ରିୟ</string>
+    <string name="discord_step1_title">ପଦ 1: ଗୋପନୀୟତା ସେଟିଙ୍ସ ଖୋଲନ୍ତୁ</string>
+    <string name="console_detected">ଚିହ୍ନଟ ହେଲା</string>
+    <string name="discord_step2_title">ପଦ 2: କାର୍ଯ୍ୟକଳା ଅଂଶ କରିବା ON କରନ୍ତୁ</string>
+    <string name="discord_step1_content">Discord ଆପ୍ ଖୋଲନ୍ତୁ → ଆପଣଙ୍କ "ଆପଣ" (ପ୍ରୋଫାଇଲ ଫଟୋ) ଆଇକନଟି ଟାପ କରନ୍ତୁ → ସେଟିଙ୍ସ (⚙️) ଟାପ କରନ୍ତୁ → ତଳେ ସ୍କ୍ରୋଲ କରି "କଣ୍ଟେଣ୍ଟ ଓ ସୋସିଆଲ" (କିମ୍ବା ପୁରାଣା ଆପ୍ ସଂସ୍କରଣରେ "Activity Privacy") ଟାପ କରନ୍ତୁ।</string>
+    <string name="activity_type_fallback_desc">ଚିହ୍ନଟ ହେବା ନଥିବା ଆପ୍‌ଗୁ ଏବଂ ସ୍ୱତନ୍ତ ଚିହ୍ନଟ ବନ୍ଦ ଥିବା ସମସ୍ତ ଆପ୍ ପାଇଁ ବ୍ୟବହାର ହୁଏ।</string>
+    <string name="discord_step3_title">ପଦ 3: ଆପଣଙ୍କ ଅନଲାଇନ ସ୍ଟାଟସ ଯାଞ୍ଚ କରନ୍ତୁ</string>
 </resources>

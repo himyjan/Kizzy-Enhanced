@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">เชื่อมต่อกับ Discord</string>
     <string name="discord_oauth_authorize_desc">อนุญาตให้ Kizzy แสดงกิจกรรมของคุณบนโปรไฟล์ Discord</string>
 
+    <string name="console_include_spoofed">รวมเวอร์ชันปลอม</string>
+    <string name="auto_detect">อัตโนมัติ · %1$s</string>
+    <string name="save_logs_to_file">บันทึกล็อกลงไฟล์</string>
+    <string name="logs_saved_toast">บันทึกล็อกไปที่ %1$s แล้ว</string>
+    <string name="discord_step3_content">แตะสถานะของคุณ (ใต้ชื่อผู้ใช้ของคุณ) แล้วเลือก ออนไลน์, ไม่มีอะไรทำ หรือ อย่ารบกวน ⚠️ อย่าใช้ไม่มองเห็น — Discord จะซ่อนกิจกรรมของ Kizzy เมื่อคุณไม่มองเห็น</string>
+    <string name="discord_setup_title">ก่อนเริ่มต้น</string>
+    <string name="console_auto_detect">ตรวจจับ DroidDeck / Eden อัตโนมัติ</string>
+    <string name="console_detected_hint">แตะเพื่อใช้เกมนี้กับ Console RPC</string>
+    <string name="discord_step2_content">ค้นหา "Share my activity" แล้วเปิดเป็น ON ภายใต้ "Where I Share Activity" เลือก "Share in all servers" เลื่อนลงไปที่ "My Servers" แล้วเปิดเซิร์ฟเวอร์ที่คุณต้องการให้เห็นสถานะของคุณ</string>
+    <string name="discord_tip_content">บางเวอร์ชันมือถือของ Discord จะซ่อนสวิตช์นี้ไว้ เปิด discord.com ใน Chrome → เปิด Desktop site → เข้าสู่ระบบ → การตั้งค่า (⚙️) → Activity Privacy → เปิด "Share my activity"</string>
+    <string name="discord_setup_desc">ตรวจสอบให้แน่ใจว่า Discord อนุญาตให้แสดงกิจกรรมของคุณบนโปรไฟล์ของคุณ</string>
+    <string name="auto_detect_activity_type_desc">แอปเพลงจะถูกตรวจจับเป็นเพลง และแอปวิดีโอจะถูกตรวจจับเป็นวิดีโอ ดังนั้น YouTube Music จะไม่แสดงเป็นเกมอีกต่อไป ประเภทที่เลือกสำหรับแอปเดียวจะมีความสำคัญเสมอ</string>
+    <string name="auto_detect_activity_type">ตรวจจับประเภทกิจกรรมอัตโนมัติ</string>
+    <string name="logs_save_error">บันทึกล็อกไม่สำเร็จ</string>
+    <string name="discord_tip_title">หา "Share my activity" ไม่เจอ?</string>
+    <string name="console_detected_in_game">อยู่ในเกม</string>
+    <string name="rich_presence_active">Rich Presence ทำงานอยู่</string>
+    <string name="discord_step1_title">ขั้นตอนที่ 1: เปิดการตั้งค่าความเป็นส่วนตัว</string>
+    <string name="console_detected">ตรวจพบ</string>
+    <string name="discord_step2_title">ขั้นตอนที่ 2: เปิดการแชร์กิจกรรม</string>
+    <string name="discord_step1_content">เปิดแอป Discord → แตะไอคอน "คุณ" (รูปโปรไฟล์) → แตะ การตั้งค่า (⚙️) → เลื่อนลงแล้วแตะ "เนื้อหาและโซเชียล" (หรือ "Activity Privacy" ในแอปเวอร์ชันเก่า)</string>
+    <string name="activity_type_fallback_desc">ใช้สำหรับแอปที่ไม่รู้จัก และสำหรับทุกแอปเมื่อปิดการตรวจจับอัตโนมัติ</string>
+    <string name="discord_step3_title">ขั้นตอนที่ 3: ตรวจสอบสถานะออนไลน์ของคุณ</string>
 </resources>

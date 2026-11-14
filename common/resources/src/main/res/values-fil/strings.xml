@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Kumonekta sa Discord</string>
     <string name="discord_oauth_authorize_desc">Payagan ang Kizzy na ipakita ang iyong aktibidad sa iyong Discord profile</string>
 
+    <string name="console_include_spoofed">Isama ang mga naghudyang build</string>
+    <string name="auto_detect">Awtomatiko · %1$s</string>
+    <string name="save_logs_to_file">I-save ang mga log sa file</string>
+    <string name="logs_saved_toast">Na-save ang mga log sa %1$s</string>
+    <string name="discord_step3_content">Pindutin ang iyong Status (sa ibaba ng iyong username) at piliin ang Online, Walang ginagawa, o Huwag Mag-abala. ⚠️ Huwag gamitin ang Invisible — nahahide ng Discord ang aktibidad ng Kizzy kapag Invisible ka.</string>
+    <string name="discord_setup_title">Bago ka magsimula</string>
+    <string name="console_auto_detect">Awtomatikong deteksyon ng DroidDeck / Eden</string>
+    <string name="console_detected_hint">Pindutin para gamitin ang laro na ito para sa Console RPC</string>
+    <string name="discord_step2_content">Hanapin ang Share my activity at i-ON ito. Sa ilalim ng Where I Share Activity, piliin ang Share in all servers. Mag-scroll sa My Servers at i-ON ang mga server kung saan mo gustong makita ang iyong status.</string>
+    <string name="discord_tip_content">May ilang mobile na bersyon ng Discord na nahahide ang toggle na ito. Buksan ang discord.com sa Chrome → i-enable ang Desktop site → mag-log in → Settings (⚙️) → Activity Privacy → i-on ang Share my activity.</string>
+    <string name="discord_setup_desc">Tiyaking pinapayagan ng Discord na ipakita ang iyong aktibidad sa iyong profile.</string>
+    <string name="auto_detect_activity_type_desc">Ang mga music app ay natutukoy bilang musika at ang mga video app bilang video, kaya ang YouTube Music ay hindi na ipinapakita bilang laro. Ang uri na pinili para sa isang app ay laging nanalo.</string>
+    <string name="auto_detect_activity_type">Awtomatikong deteksyon ng uri ng aktibidad</string>
+    <string name="logs_save_error">Nabigo ang pag-save ng mga log</string>
+    <string name="discord_tip_title">Hindi mo mahanap ang "Share my activity"?</string>
+    <string name="console_detected_in_game">Nasa laro</string>
+    <string name="rich_presence_active">Aktibo ang Rich Presence</string>
+    <string name="discord_step1_title">Hakbang 1: Buksan ang Privacy Settings</string>
+    <string name="console_detected">Natukoy</string>
+    <string name="discord_step2_title">Hakbang 2: I-on ang Activity Sharing</string>
+    <string name="discord_step1_content">Buksan ang Discord app → pindutin ang iyong You (profile picture) icon → pindutin ang Settings (⚙️) → mag-scroll pababa at pindutin ang Content &amp; Social (o Activity Privacy sa mga lumang bersyon ng app).</string>
+    <string name="activity_type_fallback_desc">Ginagamit para sa mga app na hindi natutukoy, at para sa bawat app kapag naka-off ang automatic detection.</string>
+    <string name="discord_step3_title">Hakbang 3: Suriin ang iyong online status</string>
 </resources>

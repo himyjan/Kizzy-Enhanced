@@ -5,12 +5,12 @@
     <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
 
     <!-- പ്രവർത്തനങ്ങൾ -->
-    <string name="activity_name">പ്രവർത്തനத்தின் പേര്</string>
+    <string name="activity_name">പ്രവർത്തനത്തിന്റെ പേര്</string>
     <string name="activity_details">പ്രവർത്തനത്തിന്റെ വിശദാംശങ്ങൾ</string>
-    <string name="activity_state">പ്രവർത്തനത്തിന്റെ അവस्था</string>
-    <string name="activity_start_timestamps">प्रारंभ के टाइमस्टैम्प്‌സ്</string>
-    <string name="activity_stop_timestamps">स्टॉप के टाइमस्टैम्प्‌സ്</string>
-    <string name="activity_status_online_idle_dnd">പ്രവർത്തനത്തിന്റെ അവस्था (&quot;ഓൺലൈൻ&quot;, &quot;ഐഡിൾ&quot;, &quot;ഡിഎൻഡി&quot;)</string>
+    <string name="activity_state">പ്രവർത്തനത്തിന്റെ അവസ്ഥ</string>
+    <string name="activity_start_timestamps">തുടങ്ങുന്ന സമയമുദ്ദം</string>
+    <string name="activity_stop_timestamps">ഒതിയുന്ന സമയമുദ്ദം</string>
+    <string name="activity_status_online_idle_dnd">പ്രവർത്തന അവസ്ഥ (&amp;quot;ഓൺലൈൻ&amp;quot;, &amp;quot;ഐഡിൾ&amp;quot;, &amp;quot;ഡിഎൻഡി&amp;quot;)</string>
     <string name="activity_button1_text">ചട്ടNM #1 ടെക്സ്റ്റ്</string>
     <string name="activity_button2_text">ചട്ടNM #2 ടെക്സ്റ്റ്</string>
     <string name="activity_button1_url">ബട്ടൺ 1 URL</string>
@@ -33,13 +33,13 @@
     <string name="github_issue_desc">ബഗ് റിപ്പോർട്ടോ ഫീച്ചർ അഭ്യർത്ഥന അയക്കുക</string>
     <string name="credits">ക്രെഡിറ്റുകൾ</string>
     <string name="credits_desc">ഉപയോഗിച്ച ലൈബ്രറികൾക്കും contributedkeralum credit</string>
-    <string name="enable_artist_name">കലाकാരന്റെ പേര് സജീവമാക്കുക</string>
+    <string name="enable_artist_name">കലാകാരന്റെ പേര് സജീവമാക്കുക</string>
     <string name="enable_album_name">ആൽബം പേര് സജീവമാക്കുക</string>
-    <string name="show_app_icon">ആപ്പ് ഐകಾನ್ തെളിയിക്കുക</string>
+    <string name="show_app_icon">ആപ്പ് ഐക്കൺ കാണിക്കുക</string>
     <string name="enable_timestamps">ടൈംസ്റ്റാംപ് സജീവമാക്കുക</string>
     <string name="timestamp_mode">ടൈംസ്റ്റാമ്പ് മോഡ്</string>
-    <string name="start_timestamp_ms">ആരംഭ സമയ ടൈംസ്റ്റാംപ് (മില്ലिसെക്കന്റ്)</string>
-    <string name="end_timestamp_ms">അവസാനം സമയ ടൈംസ്റ്റാംപ് (മില്ലिसെക്കന്റ്)</string>
+    <string name="start_timestamp_ms">തുടങ്ങുന്ന സമയമുദ്ദം (മില്ലിസെക്കന്റിൽ)</string>
+    <string name="end_timestamp_ms">അവസാന സമയമുദ്ദം (മില്ലിസെക്കന്റിൽ)</string>
     <string name="text_after_permission_denied">ഈ ആപ്പിന് പൊതു ഡയറക്ടറിയിൽ കോൺഫിഗറേഷൻ സംരക്ഷിക്കാൻ സ്റ്റോറേജ് ആക്‌സസ് പ ന്െラ്ട്തം. ദയവಿಟ്ട് പെർമീഷൻ നൽകുക.</string>
     <string name="request_for_storage_access">കോൺഫിഗറേഷൻ ഫീച്ചർക്ക് സ്റ്റോറേജ് പെർമിഷൻ ആവശ്യമാണ്. ദയവിറ്റ് പെർമീഷൻ നൽകുക.</string>
     <string name="grant_permission">പെർമീഷൻ നൽകുക</string>
@@ -48,13 +48,13 @@
     <string name="delete_saved_icon_urls">സേവ് ചെയ്ത ഐകണ്‍ URL നീക്കം ചെയ്യുക</string>
     <string name="delete_saved_icon_urls_desc">ലോക്കൽ ഫയലുകളിൽ സേവ് ചെയ്ത ആപ്പ് ഐകണ്‍ URL നീക്കം ചെയ്യുക (ആവശ്യമുള്ളപ്പോൾ മാത്രം ഉപയോഗിക്കുക കാരണം ഇത് വീണ്ടും Discord സർവറിൽ ചിത്രങ്ങൾ അയക്കും, കൂടുതൽ ഡാറ്റ ഉപയോഗിക്കും)</string>
     <string name="app_crashed">ആപ്പ് ക്രാഷ് ആയി</string>
-    <string name="share_crash_logs_desc">ക്രാഷ് ലോഗ്‌ಗಳು Discord ഛാനൽ�� ഷെയര് ചെയ്യുക ചുവടെയുള്ള സ്റ്റാക്ക് ട്രെയ്സുമായി:</string>
+    <string name="share_crash_logs_desc">ക്രാഷ് ലോഗുകൾ Discord ചാനലിൽ ഷെയർ ചെയ്യുക, താഴെയുള്ള സ്റ്റാക്ക് ട്രെയ്സുമായി:</string>
     <string name="share_crash_logs">ലോഗ് ഷെയര് ചെയ്യുക</string>
     <string name="welcome">വല്കം</string>
     <string name="features">ഫീച്ചറുകൾ</string>
     <string name="account">അക്കൗണ്ട്</string>
     <string name="display">ഡിസ്പ്ലേ</string>
-    <string name="about">ബారు</string>
+    <string name="about">കുറിച്ച്</string>
     <string name="settings">സെറ്റിംഗ്‌സ്</string>
     <string name="language">ഭാഷ</string>
     <string name="design_credits">ഡിസൈൻ ക്രെഡിറ്റുകൾ</string>
@@ -64,7 +64,7 @@
     <string name="enable_mediaRpc">മീഡിയ RPC സജീവമാക്കുക</string>
     <string name="permission_required">പെർമിഷൻ ആവശ്യമാണ്</string>
     <string name="enable_customRpc">കസ്റ്റം RPC സജീവമാക്കുക</string>
-    <string name="dark_theme">ഡാർക്ക് थीമ</string>
+    <string name="dark_theme">ഇരുണ്ട തീം</string>
     <string name="privacy_policy">പ്രൈവസി പോളിസി</string>
     <string name="privacy_policy_desc">പ്രൈവസി പോളിസി നോക്കുക</string>
     <string name="enable_console_rpc">കോൺസോൾ RPC സജീവമാക്കുക</string>
@@ -91,7 +91,7 @@
     <string name="activity_small_text">ചട്ടNM ചെറിയ ടെക്സ്റ്റ്</string>
     <string name="contributors">കോൺട്രിബ്യൂട്ടർമാർ</string>
     <string name="stream_url">സ്ട്രീം URL</string>
-    <string name="stream_url_info">ഓൺലി https://twitch.tv/ және https://youtube.com/ URL വർക്കुल്ല്</string>
+    <string name="stream_url_info">https://twitch.tv/ , https://youtube.com/ എന്നിവയിൽ മാത്രം URL-കൾ പ്രവർത്തിക്കും.</string>
     <string name="activity_button_max_character">പരമാവധി ക്യാരക്ടർ ലിമിറ്റ് 31 ആണ്</string>
     <string name="set_previous_run_config_in_custom_rpc">മുമ്പ്غيلി കോൺഫിഗർ ഡബ്ല്യു കസ്റ്റം RPC ഫീൽഡിൽ സെറ്റ് ചെയ്യുക</string>
     <string name="set_previous_run_config_in_custom_rpc_desc">കസ്റ്റം RPC ഫീൽഡിൽ മുമ്പ്غيلി RPC-യിൽ നിന്ന് സ്വയ(users에 의해) ഓട്ടോമാറ്റിക് സെറ്റ് ചെയ്യുക</string>
@@ -107,7 +107,7 @@
     <string name="search"> സെർച്ച് ചെയ്യുക</string>
     <string name="clear"> ക്ലിയർ ചെയ്യുക</string>
     <string name="search_placeholder"> സെർച്ച് ചെയ്യുക…</string>
-    <string name="hide_on_pause">പോസ് ചെയ്യும்பോൾ RPC മറയ്ക്കുക</string>
+    <string name="hide_on_pause">വിശ്രമിക്കുമ്പോൾ RPC മറയ്ക്കുക</string>
     <string name="idling_notification">ഐഡിള്‌ Kerala…</string>
     <string name="main_appDetection">ആപ്പ് ഡിറ്റക്ഷൻ</string>
     <string name="main_appDetection_details">Kizzy നിങ്ങളുടെ നിലവിലുള്ള പ്രവർത്തനം Discord-ൽ ഷെയര് ചെയ്യാൻ അനുവദിക്കുന്നു, നിങ്ങളുടെ ഉപകരണത്തിൽ എந்த ബന്ധപ്പെട്ട ആപ്പ് ഉപയോഗിക്കുന്‍チーム entdeckt.</string>
@@ -145,7 +145,7 @@
     <string name="enter_details">വിവരങ്ങൾ രേഖപ്പെടുത്തുക</string>
     <string name="status_online">ഓൺലൈൻ</string>
     <string name="status_idle">ഐഡിൾ</string>
-    <string name="status_dnd">ഡി ഡിএൻഡി</string>
+    <string name="status_dnd">വിശ്ലേഷിക്കരുത്</string>
     <string name="status_invisible_offline">ഇൻവിസിബിളും ഓഫ്‌ലൈനും ആയി കാണിക്കുന്നു</string>
     <string name="status_offline">ഓഫ്‌ലൈൻ</string>
     <string name="notification_access">നോട്ടിഫിക്കേഷൻ ആക്‌സസ് പെർമീഷൻ</string>
@@ -175,10 +175,10 @@
     <string name="optional">അപേക്ഷിക്കുന്നതല്ല</string>
     <string name="general_settings">സാധാരണ</string>
     <string name="activity_playing_title">ഗെയിം കളിക്കുന്നുണ്ട്</string>
-    <string name="activity_listening_title">%1$s കே‌شن</string>
+    <string name="activity_listening_title">%1$s എന്നത് കേട്ടുവരുന്നു</string>
     <string name="activity_watching_title">%1$s കാണുന്നു</string>
-    <string name="activity_competiting_title">%1$s കηση്‌പYard</string>
-    <string name="activity_streaming_title">%1$s സ്ട്രീമിംഗ് చేస్తു</string>
+    <string name="activity_competiting_title">%1$s എന്നതിൽ മത്സരിക്കുന്നു</string>
+    <string name="activity_streaming_title">%1$s എന്നിടത്ത് സ്ട്രീം ചെയ്യുന്നു</string>
     <string name="delete_config_successfully_toast">%1$s സഫലമായി നീക്കം ചെയ്തു</string>
     <string name="service_enabled">സർവ്വീസ് സജീവമായി</string>
     <string name="no_internet_connection">ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല</string>
@@ -189,7 +189,7 @@
     <string name="time_elapsed">%1$s കടന്നു</string>
     <string name="time_left">%1$s ബാക്കി</string>
     <string name="config_name_empty">കോൺഫിഗറേഷൻ പേര് ബ്ലാങ്ക് ആകാൻ പാടില്ല</string>
-    <string name="restart">�െസ്റ്റാർട്ട് ചെയ്യുക</string>
+    <string name="restart">റീസ്റ്റാർട്ട് ചെയ്യുക</string>
     <string name="custom_rpc_running">കസ്റ്റം RPC പോകുന്നു</string>
     <string name="use_imgur">ഇമുറെ ചിത്ര പ്രോക്സി ആയി ഉപയോഗിക്കുക</string>
     <string name="use_imgur_desc">ഇമുറെ വികസിപ്പിക്കേണ്ട ചിത്ര പ്രോക്സി ഉപയോഗിക്കുക.</string>
@@ -203,7 +203,7 @@
     <string name="start_experimentalRPC_toast">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങി</string>
     <string name="stop_rpc_toast">എല്ലാ സർവീസും നിർത്തി</string>
     <string name="show_playback_state">പ്ലേബാക്ക് അവസ്ഥ പ്രദർശിപ്പിക്കുക</string>
-    <string name="copied_to_clipboard">ക്ലിപ്പ്ബോര്ഡിലേക്ക് നকল് ചെയ്തു</string>
+    <string name="copied_to_clipboard">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
     <string name="application_id">ആപ്പ് ഐഡി</string>
     <string name="custom_application_id">കസ്റ്റം പ്രവർത്തന ആപ്പ് ഐഡി</string>
     <string name="custom_application_id_desc">ഡിഫോൾട്ട് ഡിസ്കോഡ് ആപ്പ് ഐഡി ഓവർട്ടൈഡ് ചെയ്യും</string>
@@ -223,7 +223,7 @@
     <string name="completion_media_album">ആൽബം പേര്</string>
     <string name="completion_media_album_artist">ആൽബം കലാകാരൻ</string>
     <string name="completion_media_duration">ട്രാക് ദൈർഘ്യം</string>
-    <string name="completion_media_writer">എഴുത്തുകاران</string>
+    <string name="completion_media_writer">എഴുത്തുകാരൻ</string>
     <string name="completion_media_composer">സംഗീതസംവിധായകൻ</string>
     <string name="completion_battery">ബാറ്ററി ലെവൽ</string>
     <string name="completion_playback">പ്ലേബാക്ക് അവസ്ഥ</string>
@@ -241,7 +241,7 @@
     <string name="title_source_artist">കലാകാരൻ</string>
     <string name="type_to_insert_variable">വേരിയബിൾ ഇടാൻ &apos;{{&apos; ടൈപ്പ് ചെയ്യുക</string>
     <string name="app_selection">ആപ്പ് തിരഞ്ഞെടുക്കൽ</string>
-    <string name="platform_none_desktop">കウルトラ</string>
+    <string name="platform_none_desktop">ഒന്നുമില്ല (ഡെസ്ക്ടോപ്പ്)</string>
     <string name="platform_desktop">ഡെസ്ക്റ്റോപ്പ്</string>
     <string name="platform_web">വെബ്</string>
     <string name="platform_android">ആൻഡ്രോയിഡ്</string>
@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Discord-ലേക്ക് ബന്ധപ്പെടുക്കുക</string>
     <string name="discord_oauth_authorize_desc">നിങ്ങളുടെ Discord പ്രൊഫൈലിൽ നിങ്ങളുടെ പ്രവൃത്തി കാണിക്കാൻ Kizzy-യ്ക്ക് അനുമതി നൽകുക</string>
 
+    <string name="console_include_spoofed">വ്യാജ ബിൽഡുകൾ ഉൾപ്പെടുക</string>
+    <string name="auto_detect">സ്വയമായി · %1$s</string>
+    <string name="save_logs_to_file">ലോഗുകൾ ഫയൽസിലേക്ക് സംരക്ഷിക്കുക</string>
+    <string name="logs_saved_toast">ലോഗുകൾ %1$s എന്നിടത്ത് സംരക്ഷിച്ചു</string>
+    <string name="discord_step3_content">നിങ്ങളുടെ സ്റ്റാറ്റസ് (ഉപയോക്താവിന്റെ പേരിന്റെ താഴെ) അമർത്തുക, തുടർന്ന് ഓൺലൈൻ, ഐഡിൾ അല്ലെങ്കിൽ ഡൂ നോട് ഡിസ്റ്റർപ് എന്നിവ തിരഞ്ഞെടുക്കുക. ⚠️ കാണാത്ത അവസ്ഥ ഉപയോഗിക്കരുത് — നിങ്ങൾ കാണാത്തവരായിരിക്കുമ്പോൾ Discord Kizzy-യുടെ പ്രവൃത്തി മറയ്ക്കും.</string>
+    <string name="discord_setup_title">തുടങ്ങുന്നതിന് മുമ്പ്</string>
+    <string name="console_auto_detect">DroidDeck / Eden സ്വയമായി കണ്ടെത്തുക</string>
+    <string name="console_detected_hint">Console RPC-നായി ഈ ഗെയിം ഉപയോഗിക്കാൻ അമർത്തുക</string>
+    <string name="discord_step2_content">"എന്റെ പ്രവൃത്തി പങ്കിടുക" എന്നത് കണ്ടെത്തി ON ചെയ്യുക. "എന്റെ പ്രവൃത്തി എവിടെ പങ്കിടുന്നു" എന്നതിന്റെ താഴെ "എല്ലാ സെർവറുകളിലും പങ്കിടുക" എന്നത് തിരഞ്ഞെടുക്കുക. "എന്റെ സെർവറുകൾ" വരെ സ്ക്രോൾ ചെയ്ത്, നിങ്ങളുടെ സ്റ്റാറ്റസ് കാണണമെന്നു വേണ്ടിയുള്ള സെർവറുകൾ ON ചെയ്യുക.</string>
+    <string name="discord_tip_content">Discord-ന്റെ ചില മൊബൈൽ പതിപ്പുകൾ ഈ ടോഗിൾ മറയ്ക്കും. Chrome-ൽ discord.com തുറന്ന് → Desktop site ആക്രമിക്കുക → ലോഗിൻ ചെയ്യുക → ക്രമാങ്ങൾ (⚙️) → ആക്ടിവിറ്റി പ്രൈവസി → "എന്റെ പ്രവൃത്തി പങ്കിടുക" ON ചെയ്യുക.</string>
+    <string name="discord_setup_desc">നിങ്ങളുടെ പ്രൊഫൈലിൽ പ്രവൃത്തി കാണിക്കാൻ Discord അനുമതി നൽകുന്നു എന്ന് ഉറപ്പാക്കുക.</string>
+    <string name="auto_detect_activity_type_desc">ഇച്ഛാമ്പുകളുടെ ആപ്പുകൾ ഇച്ഛാമ്പായിയും വീഡിയോ ആപ്പുകൾ വീഡിയോയായിയും കണ്ടെത്തുന്നതിനാൽ YouTube Music ഇനി ഒരു ഗെയിമായി കാണിക്കുന്നില്ല. ഒരു ആപ്പിന് നിരഞ്ഞെടുന്ന തരം എപ്പോഴും മുൻഗണികയാണ്.</string>
+    <string name="auto_detect_activity_type">പ്രവൃത്തിയുടെ തരം സ്വയമായി കണ്ടെത്തുക</string>
+    <string name="logs_save_error">ലോഗുകൾ സംരക്ഷിക്കാൻ കഴിഞ്ഞില്ല</string>
+    <string name="discord_tip_title">"എന്റെ പ്രവൃത്തി പങ്കിടുക" കണ്ടെത്തുന്നില്ലേ?</string>
+    <string name="console_detected_in_game">ഗെയിം അകത്ത്</string>
+    <string name="rich_presence_active">Rich Presence സജീവം</string>
+    <string name="discord_step1_title">ഘട്ടം 1: പ്രൈവസി ക്രമാങ്ങൾ തുറക്കുക</string>
+    <string name="console_detected">കണ്ടെത്തി</string>
+    <string name="discord_step2_title">ഘട്ടം 2: ആക്ടിവിറ്റി പങ്കിടൽ ON ചെയ്യുക</string>
+    <string name="discord_step1_content">Discord ആപ്പ് തുറക്കുക → നിങ്ങളുടെ "നിങ്ങൾ" (പ്രൊഫൈൽ ഫോട്ടോ) ഐക്കൺ അമർത്തുക → ക്രമാങ്ങൾ (⚙️) അമർത്തുക → താഴേക്ക് സ്ക്രോൾ ചെയ്ത് "ഉള്ളടക്കവും സോഷ്യൽ" (അല്ലെങ്കിൽ പഴയ ആപ്പ് പതിപ്പുകളിൽ "ആക്ടിവിറ്റി പ്രൈവസി") അമർത്തുക.</string>
+    <string name="activity_type_fallback_desc">തിരിച്ചറിയാത്ത ആപ്പുകൾക്കും, സ്വയമായി കണ്ടെത്തുന്നത് ഓഫ് ചെയ്തിട്ടുള്ള ഓരോ ആപ്പിനും ഉപയോഗിക്കുന്നു.</string>
+    <string name="discord_step3_title">ഘട്ടം 3: നിങ്ങളുടെ ഓൺലൈൻ സ്റ്റാറ്റസ് പരിശോധിക്കുക</string>
 </resources>

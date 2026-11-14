@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Discord से जुड़ें</string>
     <string name="discord_oauth_authorize_desc">Kizzy को अपनी Discord प्रोफ़ाइल पर आपकी गतिविधि दिखाने की अनुमति दें</string>
 
+    <string name="console_include_spoofed">नकली बिल्ड शामिल करें</string>
+    <string name="auto_detect">स्वचालित · %1$s</string>
+    <string name="save_logs_to_file">लॉग को फ़ाइल में सहेजें</string>
+    <string name="logs_saved_toast">लॉग %1$s में सहेजे गए</string>
+    <string name="discord_step3_content">अपनी स्थिति (उपयोगकर्ता नाम के नीचे) पर टैप करें और ऑनलाइन, निष्क्रिय या परेशान न करें चुनें। ⚠️ अदृश्य का उपयोग न करें — अदृश्य होने पर Discord Kizzy की गतिविधि छिपा देता है।</string>
+    <string name="discord_setup_title">शुरू करने से पहले</string>
+    <string name="console_auto_detect">DroidDeck / Eden का स्वचालित पता लगाना</string>
+    <string name="console_detected_hint">Console RPC के लिए इस गेम का उपयोग करने हेतु टैप करें</string>
+    <string name="discord_step2_content">"Share my activity" खोजें और उसे चालू करें। "Where I Share Activity" के अंतर्गत "Share in all servers" चुनें। "My Servers" तक स्क्रॉल करें और उन सर्वरों को चालू करें जहाँ आपकी स्थिति दिखनी चाहिए।</string>
+    <string name="discord_tip_content">Discord के कुछ मोबाइल संस्करण यह टॉगल छिपा देते हैं। Chrome में discord.com खोलें → डेस्कटॉप साइट सक्षम करें → लॉग इन करें → सेटिंग्स (⚙️) → गतिविधि गोपनीयता → "Share my activity" चालू करें।</string>
+    <string name="discord_setup_desc">सुनिश्चित करें कि Discord आपकी प्रोफ़ाइल पर आपकी गतिविधि दिखाने की अनुमति देता है।</string>
+    <string name="auto_detect_activity_type_desc">संगीत ऐप्स को संगीत के रूप में और वीडियो ऐप्स को वीडियो के रूप में पहचाना जाता है, इसलिए YouTube Music अब गेम के रूप में नहीं दिखाया जाता। किसी एक ऐप के लिए चुना गया प्रकार हमेशा प्राथमिकता रखता है।</string>
+    <string name="auto_detect_activity_type">गतिविधि का प्रकार स्वतः पहचानें</string>
+    <string name="logs_save_error">लॉग सहेजे नहीं जा सके</string>
+    <string name="discord_tip_title">"Share my activity" नहीं मिल रहा?</string>
+    <string name="console_detected_in_game">गेम में</string>
+    <string name="rich_presence_active">Rich Presence सक्रिय</string>
+    <string name="discord_step1_title">चरण 1: गोपनीयता सेटिंग्स खोलें</string>
+    <string name="console_detected">पहचाना गया</string>
+    <string name="discord_step2_title">चरण 2: गतिविधि साझा करना चालू करें</string>
+    <string name="discord_step1_content">Discord ऐप खोलें → अपने "You" (प्रोफ़ाइल फ़ोटो) आइकन पर टैप करें → सेटिंग्स (⚙️) पर टैप करें → नीचे स्क्रॉल करें और "कंटेंट और सोशल" (या पुराने ऐप संस्करणों में "गतिविधि गोपनीयता") पर टैप करें।</string>
+    <string name="activity_type_fallback_desc">जिन ऐप्स को पहचाना नहीं जाता उनके लिए और स्वचालित पहचान बंद होने पर हर ऐप के लिए उपयोग होता है।</string>
+    <string name="discord_step3_title">चरण 3: अपनी ऑनलाइन स्थिति जाँचें</string>
 </resources>

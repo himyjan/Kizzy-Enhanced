@@ -282,4 +282,27 @@
     <string name="discord_oauth_authorize">Discord-тай холбох</string>
     <string name="discord_oauth_authorize_desc">Discord профилдээ хөдөлмөрийг харуулахыг Kizzy-д зөвшөөрнө үү</string>
 
+    <string name="console_include_spoofed">Хуурамч загсаар оруулж иргэдэг</string>
+    <string name="auto_detect">Автомат · %1$s</string>
+    <string name="save_logs_to_file">Түүхүүдийг файлд хадгалах</string>
+    <string name="logs_saved_toast">Түүхүүдийг %1$s файлд хадгаллаа</string>
+    <string name="discord_step3_content">Өөрийн төлөв (хэрэглэгчийн нэрийн доор) дээр дарж Онлайн, Ажилгүй эсвэл Хөндөг үгүй гэж сонгоно. ⚠️ Харагдахгүй гэдгийг хэрэглэж болохгүй — харагдахгүй үед Discord Kizzy-ийн үйлдлийг нууцалдаг.</string>
+    <string name="discord_setup_title">Эхлэхийн өмнө</string>
+    <string name="console_auto_detect">DroidDeck / Eden-ийг автоматаар илрүүлэх</string>
+    <string name="console_detected_hint">Энэ тоглогрыг Console RPC-д ашиглахын тулд дарна уу</string>
+    <string name="discord_step2_content">"Миний үйлдлийг хуваалцах" гэж олж асаа ON болгоно. "Миний үйлдлийг хаана хуваалцах" гэсний доор "Бүх серверт хуваалцах" гэж сонгоно. "Миний серверүүд" руу гүйлгээд өөрийн төлөвийг харахыг хүссэн серверүүдийг ON болгоно.</string>
+    <string name="discord_tip_content">Discord-ийн зарим гар утасны хувилбар энэ сэлгүүрийг нуусан байдаг. Chrome дээр discord.com нээж → Desktop сайт асаагаад → нэвтэрч → Тохиргоо (⚙️) → Үйлдлийн нууц → "Миний үйлдлийг хуваалцах"-ыг ON болгоно.</string>
+    <string name="discord_setup_desc">Discord таны хувийн хуудсанд үйлдлийг харуулахыг зөвшөөрдөг эсэхийг шалгаарай.</string>
+    <string name="auto_detect_activity_type_desc">Хөгжмийн апп-уудыг хөгжим, видео апп-уудыг видео гэж илрүүлдэг тул YouTube Music-ийг цаашид тогloom гэж үзүүлэхгүй. Ганц апп-д сонгосон төрөл үргэлж давамгайлна.</string>
+    <string name="auto_detect_activity_type">Үйлдлийн төрлийг автоматаар илрүүлэх</string>
+    <string name="logs_save_error">Түүхүүдийг хадгалаж чадсангүй</string>
+    <string name="discord_tip_title">"Миний үйлдлийг хуваалцах" олдож байна уу?</string>
+    <string name="console_detected_in_game">Тоглодог</string>
+    <string name="rich_presence_active">Rich Presence идэвхтэй</string>
+    <string name="discord_step1_title">1-р алхам: Нууцлалын тохиргоог нээх</string>
+    <string name="console_detected">Илэрсэн</string>
+    <string name="discord_step2_title">2-р алхам: Үйлдлийг хуваалцахыг нээх</string>
+    <string name="discord_step1_content">Discord апп-ийг нээж → өөрийн "Би" (профайлын зураг) дүрсийг даран → Тохиргоо (⚙️) → доош гүйлгээд "Контент ба нийгмийн сүлжээ" (эсвэл хуучин хувилбарт "Үйлдлийн нууцлал") руу орно уу.</string>
+    <string name="activity_type_fallback_desc">Танигдаагүй апп-ууд болон автомат илрүүлэлт таалагдсан үед бүх апп-д ашиглагдана.</string>
+    <string name="discord_step3_title">3-р алхам: Онлайн төлөвөө шалгах</string>
 </resources>

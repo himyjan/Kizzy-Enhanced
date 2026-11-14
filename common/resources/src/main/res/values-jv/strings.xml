@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Nyambung karo Discord</string>
     <string name="discord_oauth_authorize_desc">Wenehi Kizzy bisa nampilake aktivitas sampeyan ing profil Discord sampeyan</string>
 
+    <string name="console_include_spoofed">Waclukake build palsu</string>
+    <string name="auto_detect">Otomatis · %1$s</string>
+    <string name="save_logs_to_file">Simpen log ing file</string>
+    <string name="logs_saved_toast">Log disimpen ing %1$s</string>
+    <string name="discord_step3_content">Ketuk Status sampeyan (ngisor jeneng pamengguna) lan pilih Online, Nganggur, utawa Aja ngrehatin. ⚠️ Aja ngunge warno — Discord nutupake aktivitas Kizzy nalika sampeyan warno.</string>
+    <string name="discord_setup_title">Sadurunge miwiti</string>
+    <string name="console_auto_detect">Deteksi otomatis DroidDeck / Eden</string>
+    <string name="console_detected_hint">Ketuk kanggo nganggo game iki kanggo Console RPC</string>
+    <string name="discord_step2_content">Temokake "Share aktivitasku" lan nyalakake. Ing sang "Ngendi aku share aktivitas", pilih "Share ing kabeh server". Gulung menyang "Server kula" lan nyalakake server sing arep supaya status sampeyan katon.</string>
+    <string name="discord_tip_content">Sawetara versi seluler Discord nutupake switch iki. Bukak discord.com ing Chrome → aktifake situs Desktop → mlebu → Setelan (⚙️) → Privasi aktivitas → nyalakake "Share aktivitasku".</string>
+    <string name="discord_setup_desc">Pastikan Discord ngidolin aktivitas sampeyan ditampilake ing profil sampeyan.</string>
+    <string name="auto_detect_activity_type_desc">App musik dideteksi minangka musik lan app video minangka video, sa mangkono YouTube Music ora maneh ditampilake minangka game. Jinis sing dipilih kanggo si app siji selalu wins.</string>
+    <string name="auto_detect_activity_type">Deteksi jinis aktivitas otomatis</string>
+    <string name="logs_save_error">Gagal nyimpen log</string>
+    <string name="discord_tip_title">Ora nemu "Share aktivitasku"?</string>
+    <string name="console_detected_in_game">Nè game</string>
+    <string name="rich_presence_active">Rich Presence aktif</string>
+    <string name="discord_step1_title">Langkah 1: Bukak setelan privasi</string>
+    <string name="console_detected">Dideteksi</string>
+    <string name="discord_step2_title">Langkah 2: Nyalakake nudbNAH aktivitas</string>
+    <string name="discord_step1_content">Buka app Discord → ketuk ikon "Sampeyan" (foto profil) → ketuk Setelan (⚙️) → gulung mudhul lan ketuk "Konten lan Sosial" (utawa "Privasi aktivitas" ing versi lawas app).</string>
+    <string name="activity_type_fallback_desc">Digunaké kanggo app sing ora dingerténi, lan kanggo saben app nalika deteksi otomatis dimatikan.</string>
+    <string name="discord_step3_title">Langkah 3: Priksa status online sampeyan</string>
 </resources>

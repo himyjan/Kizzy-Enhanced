@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Discord에 연결</string>
     <string name="discord_oauth_authorize_desc">내 Discord 프로필에서 Kizzy가 내 활동을 표시하도록 허용</string>
 
+    <string name="console_include_spoofed">위조 빌드 포함</string>
+    <string name="auto_detect">자동 · %1$s</string>
+    <string name="save_logs_to_file">로그를 파일로 저장</string>
+    <string name="logs_saved_toast">로그가 %1$s에 저장되었습니다</string>
+    <string name="discord_step3_content">내 상태(사용자 이름 아래)를 탭하고 온라인, 유휴 또는 방해 금지 중 하나를 선택하세요. ⚠️ 오프라인으로 표시되지 않는 \'보이지 않음\'을 사용하지 마세요 — 보이지 않으면 Discord가 Kizzy 활동을 숨깁니다.</string>
+    <string name="discord_setup_title">시작하기 전에</string>
+    <string name="console_auto_detect">DroidDeck / Eden 자동 감지</string>
+    <string name="console_detected_hint">탭하여 이 게임을 Console RPC에 사용하세요</string>
+    <string name="discord_step2_content">"내 활동 공유"를 찾아 켜세요. "내 활동 공유 위치"에서 "모든 서버에 공유"를 선택하세요. "내 서버"까지 스크롤하여 상태가 보이게 할 서버를 켜세요.</string>
+    <string name="discord_tip_content">일부 Discord 모바일 버전에서는 이 토글이 숨겨져 있습니다. Chrome에서 discord.com을 열고 → 데스크톱 사이트를 활성화하고 → 로그인한 뒤 → 설정(⚙️) → 활동 개인정보 → "내 활동 공유"를 켜세요.</string>
+    <string name="discord_setup_desc">Discord가 프로필에 내 활동을 표시할 수 있는지 확인하세요.</string>
+    <string name="auto_detect_activity_type_desc">음악 앱은 음악으로, 영상 앱은 영상으로 감지되므로 YouTube Music은 더 이상 게임으로 표시되지 않습니다. 특정 앱에 대해 선택한 유형은 항상 우선합니다.</string>
+    <string name="auto_detect_activity_type">활동 유형 자동 감지</string>
+    <string name="logs_save_error">로그 저장에 실패했습니다</string>
+    <string name="discord_tip_title">"내 활동 공유"를 찾을 수 없나요?</string>
+    <string name="console_detected_in_game">게임 중</string>
+    <string name="rich_presence_active">Rich Presence 활성</string>
+    <string name="discord_step1_title">1단계: 개인정보 설정 열기</string>
+    <string name="console_detected">감지됨</string>
+    <string name="discord_step2_title">2단계: 활동 공유 켜기</string>
+    <string name="discord_step1_content">Discord 앱을 열고 → 내(프로필 사진) 아이콘을 탭하고 → 설정(⚙️)을 탭한 뒤 → 아래로 스크롤하여 콘텐츠 및 소셜(구버전에서는 활동 개인정보)을 탭하세요.</string>
+    <string name="activity_type_fallback_desc">인식되지 않은 앱과 자동 감지가 꺼져 있을 때의 모든 앱에 사용됩니다.</string>
+    <string name="discord_step3_title">3단계: 온라인 상태 확인하기</string>
 </resources>

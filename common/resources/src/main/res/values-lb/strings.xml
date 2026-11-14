@@ -50,4 +50,27 @@
     <string name="discord_oauth_authorize">Mat Discord verbannen</string>
     <string name="discord_oauth_authorize_desc">Erlaabt Kizzy, Är Aktivité op Ärem Discord-Profil ze weisen</string>
 
+    <string name="console_include_spoofed">Gefaelschte Builds matgesinn</string>
+    <string name="auto_detect">Automatesch · %1$s</string>
+    <string name="save_logs_to_file">Protokoller an eng Datei späicheren</string>
+    <string name="logs_saved_toast">Protokoller goufen an %1$s gespäichert</string>
+    <string name="discord_step3_content">Klickt op Ären Status (ënnert därem Benotzernumm) a wielt Online, Däschreesen oder Net ubelcheren. ⚠️ Benotzt net Invisible — Discord verstoppt d\'Kizzy-Aktivité wann du Invisible bass.</string>
+    <string name="discord_setup_title">Ier dat du ufänks</string>
+    <string name="console_auto_detect">Automatesch DroidDeck / Eden erkennen</string>
+    <string name="console_detected_hint">Klickt, fir dëst Spill mat Console RPC ze benotzen</string>
+    <string name="discord_step2_content">Fannt "Meng Aktivité deelen" a schalt et un. Ënner "Wou deelen ech meng Aktivité" wielt "Op all Servere deelen". Scrollt op "Meng Serveren" a schalt d\'Serveren un, wou de fir wëllt d\'Status gesäit</string>
+    <string name="discord_tip_content">E puer mobil Versioune vu Discord verstoppen dësen Tupp. Opens discord.com a Chrome → Desktop-Site aktivéieren → anmelden → Astellungen (⚙️) → Privatspa vun der Aktivité → "Meng Aktivité deelen" un</string>
+    <string name="discord_setup_desc">Ensuremt, datt Discord et erlaabt, Ären Aktivität op Ärem Profil ze weisen.</string>
+    <string name="auto_detect_activity_type_desc">Musik-Apps si fir Musík erkannt a Video-Apps als Video, dofir gëtt YouTube Music net méi als Spill gewisen. D\'Typ, de fir eng eenzeg App erausgesicht gouf, huet ëmmer d\'Prioritéit.</string>
+    <string name="auto_detect_activity_type">Typ vun der Aktivité automatisch erkennen</string>
+    <string name="logs_save_error">Protokoller konnen net gespäichert ginn</string>
+    <string name="discord_tip_title">Konnt Dir "Meng Aktivité deelen" net fannen?</string>
+    <string name="console_detected_in_game">Am Spill</string>
+    <string name="rich_presence_active">Rich Presence aktiv</string>
+    <string name="discord_step1_title">Schritt 1: Privatspaastellungen opmaachen</string>
+    <string name="console_detected">Erkannt</string>
+    <string name="discord_step2_title">Schritt 2: Deelen vun der Aktivité unschalten</string>
+    <string name="discord_step1_content">Opens d\'Discord-App → klickt op Ären "Dir"-Symbol (Profilbild) → klickt op Astellungen (⚙️) → scrollt erof an klickt op "Inhalt a sozial Netzwierken" (oder "Privatspa vun der Aktivité" bei kengere Versioune).</string>
+    <string name="activity_type_fallback_desc">Gëtt fir Apps benotzt, déi net erkannt ginn, a fir all App, wann d\'automatesch Erkennen ausgeschalt ass.</string>
+    <string name="discord_step3_title">Schritt 3: Ären Online-Status kontrolléieren</string>
 </resources>

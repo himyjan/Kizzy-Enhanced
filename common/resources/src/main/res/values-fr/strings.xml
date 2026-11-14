@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Se connecter à Discord</string>
     <string name="discord_oauth_authorize_desc">Autorisez Kizzy à afficher votre activité sur votre profil Discord</string>
 
+    <string name="console_include_spoofed">Inclure les versions falsifiées</string>
+    <string name="auto_detect">Automatique · %1$s</string>
+    <string name="save_logs_to_file">Enregistrer les journaux dans un fichier</string>
+    <string name="logs_saved_toast">Journaux enregistrés dans %1$s</string>
+    <string name="discord_step3_content">Touchez votre statut (sous votre nom d\'utilisateur) et choisissez En ligne, Inactif ou Ne pas déranger. ⚠️ N\'utilisez pas Invisible : Discord masque l\'activité de Kizzy lorsque vous êtes Invisible.</string>
+    <string name="discord_setup_title">Avant de commencer</string>
+    <string name="console_auto_detect">Détection automatique de DroidDeck / Eden</string>
+    <string name="console_detected_hint">Touchez pour utiliser ce jeu avec Console RPC</string>
+    <string name="discord_step2_content">Trouvez « Partager mon activité » et activez-la. Sous « Où je partage mon activité », choisissez « Partager sur tous les serveurs ». Faites défiler jusqu\'à « Mes serveurs » et activez les serveurs où vous voulez que votre statut apparaisse.</string>
+    <string name="discord_tip_content">Certaines versions mobiles de Discord masquent ce bouton. Ouvrez discord.com dans Chrome → activez « Site pour ordinateur » → connectez-vous → Paramètres (⚙️) → Confidentialité de l\'activité → activez « Partager mon activité ».</string>
+    <string name="discord_setup_desc">Assurez-vous que Discord autorise l\'affichage de votre activité sur votre profil.</string>
+    <string name="auto_detect_activity_type_desc">Les applications musicales sont détectées comme musique et les applications vidéo comme vidéo, si bien que YouTube Music n\'est plus affiché comme un jeu. Le type choisi pour une seule application est toujours prioritaire.</string>
+    <string name="auto_detect_activity_type">Détecter automatiquement le type d\'activité</string>
+    <string name="logs_save_error">Échec de l\'enregistrement des journaux</string>
+    <string name="discord_tip_title">Vous ne trouvez pas « Partager mon activité » ?</string>
+    <string name="console_detected_in_game">En jeu</string>
+    <string name="rich_presence_active">Rich Presence actif</string>
+    <string name="discord_step1_title">Étape 1 : Ouvrir les paramètres de confidentialité</string>
+    <string name="console_detected">Détecté</string>
+    <string name="discord_step2_title">Étape 2 : Activer le partage d\'activité</string>
+    <string name="discord_step1_content">Ouvrez l\'application Discord → touchez votre icône « Vous » (photo de profil) → touchez Paramètres (⚙️) → faites défiler vers le bas et touchez « Contenu et social » (ou « Confidentialité de l\'activité » sur les anciennes versions).</string>
+    <string name="activity_type_fallback_desc">Sert pour les applications non reconnues et pour chaque application lorsque la détection automatique est désactivée.</string>
+    <string name="discord_step3_title">Étape 3 : Vérifiez votre statut en ligne</string>
 </resources>

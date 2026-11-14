@@ -262,4 +262,27 @@
     <string name="discord_oauth_authorize">Kapcsolódás a Discordhoz</string>
     <string name="discord_oauth_authorize_desc">Engedélyezze a Kizzy-nek, hogy megjelenítse a tevékenységét a Discord-profilján</string>
 
+    <string name="console_include_spoofed">Hamisített buildeket is tartalmazza</string>
+    <string name="auto_detect">Automatikus · %1$s</string>
+    <string name="save_logs_to_file">Naplókok mentése fájlba</string>
+    <string name="logs_saved_toast">A naplókok a(z) %1$s fájlba lettek mentve</string>
+    <string name="discord_step3_content">Koppintson az állapotra (a felhasználónév alatt), és válassza az Online, a Tétlen vagy a Ne zavarjon lehetőséget. ⚠️ Ne használja a Láthatatlant — a Discord elrejti a Kizzy tevékenységét, amikor Láthatatlan.</string>
+    <string name="discord_setup_title">Mielőtt elkezdené</string>
+    <string name="console_auto_detect">DroidDeck / Eden automatikus felismerése</string>
+    <string name="console_detected_hint">Koppintson, hogy ezt a játékot használhassa a Console RPC-hez</string>
+    <string name="discord_step2_content">Keresse meg a „Saját tevékenységem megosztása” elemet, és kapcsolja be. A „Hol osztom meg a tevékenységemet” alatt válassza a „Megosztás az összes kiszolgálón” lehetőséget. Görgessen le a „Saját kiszolgálóim” részhez, és kapcsolja be azokat a kiszolgálókat, ahol szeretné látni az állapotát.</string>
+    <string name="discord_tip_content">A Discord egyes mobilverziói elrejtik ezt a kapcsolót. Nyissa meg a discord.com oldalt a Chrome-ban → engedélyezze az „Asztali webhely” funkciót → jelentkezzen be → Beállítások (⚙️) → Tevékenység adatvédelme → kapcsolja be a „Saját tevékenységem megosztása” elemet.</string>
+    <string name="discord_setup_desc">Győződjön meg róla, hogy a Discord lehetővé teszi a tevékenysége megjelenítését a profilján.</string>
+    <string name="auto_detect_activity_type_desc">A zenei alkalmazások zenei, a videóalkalmazások videóként észlelésre kerülnek, így a YouTube Music már nem jelenik meg játékként. Egy adott alkalmazáshoz kiválasztott típus mindig elsőbbséget élvez.</string>
+    <string name="auto_detect_activity_type">Tevékenységtípus automatikus felismerése</string>
+    <string name="logs_save_error">A naplók mentése nem sikerült</string>
+    <string name="discord_tip_title">Nem találja a „Saját tevékenységem megosztása” elemet?</string>
+    <string name="console_detected_in_game">Játékban</string>
+    <string name="rich_presence_active">Rich Presence aktív</string>
+    <string name="discord_step1_title">1. lépés: Nyissa meg az adatvédelmi beállításokat</string>
+    <string name="console_detected">Észlelve</string>
+    <string name="discord_step2_title">2. lépés: Kapcsolja be a tevékenység megosztását</string>
+    <string name="discord_step1_content">Nyissa meg a Discord alkalmazást → koppintson a „Te” ikonjára (profilkép) → koppintson a Beállításokra (⚙️) → görgessen le, és koppintson a „Tartalom és közösség” elemre (vagy a régebbi alkalmazásverziókban a „Tevékenység adatvédelmére”).</string>
+    <string name="activity_type_fallback_desc">A nem felismerhető alkalmazásoknál, valamint minden alkalmazásnál használatos, ha az automatikus felismerés ki van kapcsolva.</string>
+    <string name="discord_step3_title">3. lépés: Ellenőrizze az online állapotát</string>
 </resources>
