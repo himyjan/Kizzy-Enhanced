@@ -192,6 +192,8 @@ class KizzyRPC @Inject constructor(
             else -> Prefs[Prefs.TOKEN, ""]
         }
 
+        logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod newToken=${newToken.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"} currentToken=${token.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"}")
+
         // If the token changed (e.g. OAuth login after bot-token session, or logout),
         // close the existing WebSocket so the next connect re-authenticates with the
         // new token. Discord authenticates based on the IDENTIFY handshake token, so
