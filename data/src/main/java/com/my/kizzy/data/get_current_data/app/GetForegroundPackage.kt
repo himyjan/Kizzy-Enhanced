@@ -32,8 +32,7 @@ class GetForegroundPackage @Inject constructor(
             while (events.hasNextEvent()) {
                 events.getNextEvent(event)
                 val isForegroundEvent =
-                    event.eventType == UsageEvents.Event.ACTIVITY_RESUMED ||
-                        event.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND
+                    event.eventType == UsageEvents.Event.ACTIVITY_RESUMED
                 if (!isForegroundEvent) continue
                 if (event.timeStamp >= latestTimestamp) {
                     latestTimestamp = event.timeStamp

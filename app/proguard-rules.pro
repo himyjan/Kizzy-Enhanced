@@ -18,6 +18,9 @@
 -dontwarn dagger.spi.internal.shaded.androidx.room3.compiler.processing.XProcessingEnvConfig$Builder
 -dontwarn dagger.spi.internal.shaded.androidx.room3.compiler.processing.XProcessingEnvConfig
 -dontwarn dagger.spi.internal.shaded.androidx.room3.compiler.processing.javac.JavacBasicAnnotationProcessor
+# Suppress javax/jakarta annotation processor service warnings (migrated to jakarta-inject)
+-dontnote javax.annotation.processing.Processor
+-dontnote jakarta.annotation.processing.Processor
 
 # Allow optimization to reshape broad rules without throwing warnings
 -allowaccessmodification

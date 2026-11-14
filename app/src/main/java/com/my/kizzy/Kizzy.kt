@@ -27,7 +27,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.navArgument
 import com.my.kizzy.domain.model.toVersion
 import com.my.kizzy.feature_about.about.About
@@ -194,7 +194,6 @@ internal fun ComponentActivity.Kizzy(
                                 is UserState.LoadingCompleted -> currentState.user
                                 is UserState.Error -> currentState.user
                                 UserState.Loading -> null
-                                else -> null
                             }
                             val userId = user?.id ?: ""
                             val avatarUrl = user?.getAvatarImage() ?: ""
@@ -205,7 +204,7 @@ internal fun ComponentActivity.Kizzy(
                             val rpcConfig = when (currentState) {
                                 is UserState.LoadingCompleted -> currentState.rpcConfig
                                 is UserState.Error -> currentState.rpcConfig
-                                else -> null
+                                UserState.Loading -> null
                             }
                             // The config is serialized with the real serializer and
                             // then encoded once. Building the json by hand broke on

@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -104,10 +103,7 @@ fun LogScreenContent(
     filterText: String = "",
 ) {
     val ctx = LocalContext.current
-    val cacheWindow = remember {
-        LazyLayoutCacheWindow(ahead = 300.dp, behind = 150.dp)
-    }
-    val lazyListState = rememberLazyListState(cacheWindow = cacheWindow)
+    val lazyListState = rememberLazyListState()
     val clipboardManager: ClipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
     Scaffold(
@@ -166,6 +162,8 @@ fun LogScreenContent(
         }
         LazyColumn(
             state = lazyListState,
+            cacheAheadItems = 5,
+            cacheBehindItems = 3,
             contentPadding = PaddingValues(10.dp),
             modifier = Modifier
                 .fillMaxSize()

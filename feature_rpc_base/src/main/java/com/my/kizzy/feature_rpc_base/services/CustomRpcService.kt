@@ -240,8 +240,20 @@ class CustomRpcService : Service() {
                 .setContentText(rpcData?.name ?: "")
                 .setSmallIcon(R.drawable.ic_rpc_placeholder)
                 .setContentIntent(appPendingIntent)
-                .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.restart), restartPendingIntent)
-                .addAction(R.drawable.ic_rpc_placeholder, getString(R.string.exit), pendingIntent)
+                .addAction(
+                    Notification.Action.Builder(
+                        R.drawable.ic_rpc_placeholder,
+                        getString(R.string.restart),
+                        restartPendingIntent
+                    ).build()
+                )
+                .addAction(
+                    Notification.Action.Builder(
+                        R.drawable.ic_rpc_placeholder,
+                        getString(R.string.exit),
+                        pendingIntent
+                    ).build()
+                )
                 .setLargeIcon(
                     rpcImage = rpcData?.largeImg?.toRpcImage(),
                     context = this@CustomRpcService

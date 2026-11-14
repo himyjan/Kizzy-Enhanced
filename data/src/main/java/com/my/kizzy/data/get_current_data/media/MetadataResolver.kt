@@ -149,7 +149,7 @@ class MetadataResolver @Inject constructor(
         val album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
         val channelMatch = Regex("""(5\.1|7\.1|2\.0|stereo|surround|atmos)""", RegexOption.IGNORE_CASE)
             .find(album)
-        return channelMatch?.value?.capitalize()
+        return channelMatch?.value?.replaceFirstChar { it.uppercase() }
     }
 
     /**

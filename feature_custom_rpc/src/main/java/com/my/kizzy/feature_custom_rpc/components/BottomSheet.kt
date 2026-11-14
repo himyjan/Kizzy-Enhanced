@@ -44,7 +44,7 @@ fun BottomSheet(
     onDismiss: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState()
+    val state = rememberBottomSheetState(initialValue = BottomSheetValue.Expanded)
 
     fun dismissAndRun(action: () -> Unit) {
         scope.launch {
