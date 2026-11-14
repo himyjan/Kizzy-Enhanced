@@ -12,52 +12,128 @@
 
 package com.my.kizzy.preference
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.my.kizzy.domain.model.release.Release
 import com.my.kizzy.domain.model.user.User
-import com.my.kizzy.preference.Prefs.isMediaAppEnabled
-import com.my.kizzy.preference.Prefs.saveMediaAppToPrefs
-import com.tencent.mmkv.MMKV
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.hours
 
 object Prefs {
-    private var _kv: MMKV? = null
 
-    val kv: MMKV
-        get() = _kv ?: error(
-            "Prefs not initialized. Call PreferenceConfig.apply(context) before accessing Prefs."
-        )
+    private var dataStore: DataStore<androidx.datastore.preferences.core.Preferences>? = null
 
-    operator fun set(key: String, value: Any?) =
-        when (value) {
-            is String? -> kv.encode(key, value)
-            is Int -> kv.encode(key, value)
-            is Boolean -> kv.encode(key, value)
-            is Float -> kv.encode(key, value)
-            is Long -> kv.encode(key, value)
-            else -> throw UnsupportedOperationException("Not yet implemented")
+    private val _prefsState = MutableStateFlow(emptyMap<String, Any?>())
+    val prefsState: Flow<Map<String, Any?>> = _prefsState.asStateFlow()
+
+    operator fun set(key: String, value: Any?) = when (value) {
+        is String? -> {
+            _prefsState.update { it + (key to value) }
+            launchDataStoreEdit { preferences ->
+                if (value == null) preferences.remove(stringPreferencesKey(key))
+                else preferences[stringPreferencesKey(key)] = value
+            }
         }
+        is Int -> {
+            _prefsState.update { it + (key to value) }
+            launchDataStoreEdit { preferences ->
+                preferences[stringPreferencesKey(key)] = value
+            }
+        }
+        is Boolean -> {
+            _prefsState.update { it + (key to value) }
+            launchDataStoreEdit { preferences ->
+                preferences[stringPreferencesKey(key)] = value
+            }
+        }
+        is Float -> {
+            _prefsState.update { it + (key to value) }
+            launchDataStoreEdit { preferences ->
+                preferences[stringPreferencesKey(key)] = value
+            }
+        }
+        is Long -> {
+            _prefsState.update { it + (key to value) }
+            launchDataStoreEdit { preferences ->
+                preferences[stringPreferencesKey(key)] = value
+            }
+        }
+        else -> throw UnsupportedOperationException("Not yet implemented")
+    }
 
     inline operator fun <reified T : Any> get(
         key: String,
         defaultValue: T? = null,
-    ): T = when (T::class) {
-        String::class -> kv.decodeString(key, defaultValue as String? ?: "") as T
-        Int::class -> kv.decodeInt(key, defaultValue as? Int ?: -1) as T
-        Boolean::class -> kv.decodeBool(key, defaultValue as? Boolean ?: false) as T
-        Float::class -> kv.decodeFloat(key, defaultValue as? Float ?: -1f) as T
-        Long::class -> kv.decodeLong(key, defaultValue as? Long ?: -1) as T
-        else -> throw UnsupportedOperationException("Not yet implemented")
+    ): T {
+        val stored = _prefsState.value[key]
+        val result = when (T::class) {
+            String::class -> (stored as? String) ?: (defaultValue as? String ?: "")
+            Int::class -> (stored as? Int) ?: (defaultValue as? Int ?: -1)
+            Boolean::class -> (stored as? Boolean) ?: (defaultValue as? Boolean ?: false)
+            Float::class -> (stored as? Float) ?: (defaultValue as? Float ?: -1f)
+            Long::class -> (stored as? Long) ?: (defaultValue as? Long ?: -1)
+            else -> throw UnsupportedOperationException("Not yet implemented")
+        }
+        return result as T
     }
 
     fun remove(key: String) {
-        kv.removeValueForKey(key)
+        _prefsState.update { it - key }
+        launchDataStoreEdit { preferences ->
+            preferences.remove(stringPreferencesKey(key))
+        }
     }
 
-    internal fun initMMKV() {
-        if (_kv == null) {
-            _kv = MMKV.defaultMMKV()
+    fun containsKey(key: String): Boolean {
+        return _prefsState.value.containsKey(key)
+    }
+
+    private fun launchDataStoreEdit(block: androidx.datastore.preferences.core.SharedPreferencesEditor.() -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore?.edit { block(it) }
+        }
+    }
+
+    internal fun initDataStore(context: Context) {
+        if (dataStore == null) {
+            dataStore = preferencesDataStore(context = context, name = "app_preferences")
+            CoroutineScope(Dispatchers.IO).launch {
+                dataStore?.data?.first()?.let { preferences ->
+                    val map = mutableMapOf<String, Any?>()
+                    preferences.keys.forEach { key ->
+                        val keyName = key.name
+                        when {
+                            preferences.getInt(key, null) != null -> {
+                                map[keyName] = preferences.getInt(key)
+                            }
+                            preferences.getBoolean(key, null) != null -> {
+                                map[keyName] = preferences.getBoolean(key)
+                            }
+                            preferences.getFloat(key, null) != null -> {
+                                map[keyName] = preferences.getFloat(key)
+                            }
+                            preferences.getLong(key, null) != null -> {
+                                map[keyName] = preferences.getLong(key)
+                            }
+                            else -> {
+                                map[keyName] = preferences.getString(key)
+                            }
+                        }
+                    }
+                    _prefsState.value = map
+                }
+            }
         }
     }
 
@@ -74,38 +150,17 @@ object Prefs {
             enabledPackages.remove(pkg)
         else
             enabledPackages.add(pkg)
-
         set(ENABLED_APPS, Json.encodeToString(enabledPackages))
     }
 
-    /**
-     * Checks if the given app is enabled in the preferences for media rpc. This is used to filter
-     * the media RPC based on the enabled media apps.
-     *
-     * Until the user actually edits the app list, EVERY app is allowed. The default list only
-     * contains a handful of well-known media apps, so applying it as a strict allow-list would
-     * silently break media RPC for every other player (custom YouTube clients, local music
-     * players, ...). Once the user touches the list, it becomes authoritative.
-     *
-     * @param packageName The package name of the app to check
-     */
     fun isMediaAppEnabled(packageName: String?): Boolean {
         if (packageName == null) return false
-        if (!kv.containsKey(ENABLED_MEDIA_APPS)) return true
+        if (!containsKey(ENABLED_MEDIA_APPS)) return true
         val apps = get(ENABLED_MEDIA_APPS, Json.encodeToString(predefinedMediaApps))
         val enabledPackages: ArrayList<String> = Json.decodeFromString(apps)
         return enabledPackages.contains(packageName)
     }
 
-    /**
-     * Saves the given package name to the preferences for media rpc. This is used to filter the
-     * media RPC based on the enabled media apps.
-     *
-     * If the package name is already saved, it will be removed. If it is not saved, it will be
-     * added.
-     *
-     * @param pkg The package name of the app to save
-     */
     fun saveMediaAppToPrefs(pkg: String) {
         val apps = get(ENABLED_MEDIA_APPS, Json.encodeToString(predefinedMediaApps))
         val enabledPackages: ArrayList<String> = Json.decodeFromString(apps)
@@ -113,16 +168,9 @@ object Prefs {
             enabledPackages.remove(pkg)
         else
             enabledPackages.add(pkg)
-
         set(ENABLED_MEDIA_APPS, Json.encodeToString(enabledPackages))
     }
 
-    /**
-     * Stores the complete list of apps enabled for the media RPC.
-     *
-     * The stored list is authoritative once it has been written, so the app list screen
-     * and the media detection always agree on which apps are allowed.
-     */
     fun setMediaAppsEnabled(enabledPackages: Collection<String>) {
         set(ENABLED_MEDIA_APPS, Json.encodeToString(ArrayList(enabledPackages)))
     }
@@ -150,7 +198,6 @@ object Prefs {
     fun checkAndAutoDeleteSavedImages() {
         val lastDeleted = get(
             key = LAST_DELETED,
-            // Force delete everyone's saved images for the first time
             defaultValue = System.currentTimeMillis() - 24.hours.inWholeMilliseconds
         )
         val currentTime = System.currentTimeMillis()
@@ -161,34 +208,23 @@ object Prefs {
         }
     }
 
-    //User Preferences
-    const val USER_DATA = "user" //Json Data Referencing User_Data class
+    const val USER_DATA = "user"
     const val TOKEN = "token"
     const val USER_ID = "user-id"
     const val USER_BIO = "user-bio"
     const val USER_NITRO = "user-nitro"
     const val LAST_RUN_CONSOLE_RPC = "last_run_console_rpc"
     const val LAST_RUN_CUSTOM_RPC = "last_run_custom_rpc"
-    // Console RPC: follow DroidDeck / Eden and show the game running inside them.
     const val CONSOLE_RPC_AUTO_DETECT = "console_rpc_auto_detect"
-    // Also treat the spoofed benchmark/game package names as DroidDeck/Eden.
     const val CONSOLE_RPC_INCLUDE_SPOOFED = "console_rpc_include_spoofed"
     const val LANGUAGE = "language"
     const val ENABLED_APPS = "enabled_apps"
     const val ENABLED_MEDIA_APPS = "enabled_media_apps"
     const val ENABLED_EXPERIMENTAL_APPS = "enabled_experimental_apps"
 
-    //Media Rpc Preferences
     const val MEDIA_RPC_ARTIST_NAME = "media_rpc_artist_name"
     const val MEDIA_RPC_ALBUM_NAME = "media_rpc_album_name"
     const val MEDIA_RPC_APP_ICON = "media_rpc_app_icon"
-
-    /**
-     * Whether the album/song cover art is sent as the large image of the presence.
-     *
-     * Turning it off drops the cover art (and the image upload that goes with it)
-     * from the Discord activity while the rest of the Media RPC keeps running.
-     */
     const val MEDIA_RPC_SHOW_COVER_ART = "media_rpc_show_cover_art"
     const val MEDIA_RPC_ENABLE_TIMESTAMPS = "enable_timestamps"
     const val MEDIA_RPC_HIDE_ON_PAUSE = "hide_on_pause"
@@ -196,43 +232,19 @@ object Prefs {
     const val MEDIA_RPC_SHOW_SONG_AS_TITLE = "show_song_as_title"
     const val MEDIA_RPC_MEDIA_BUTTON = "media_rpc_media_button"
     const val MEDIA_RPC_ARTIST_LINK = "media_rpc_artist_link"
-
-    /**
-     * Whether the user wants the Media RPC to run.
-     *
-     * It is written by the Media RPC service when it starts and cleared when the
-     * service is stopped - by the switch in the Media RPC screen, by the "exit"
-     * action of the notification and by every other RPC feature that takes over.
-     * The watchdog in the notification listener uses it to tell "the user wants
-     * the Media RPC, but the service died" apart from "the user switched the
-     * Media RPC off".
-     */
     const val MEDIA_RPC_ENABLED = "media_rpc_enabled"
-
-    /**
-     * The last presence the Media RPC sent. The RPC preview screen reads it so
-     * it can show the real data even when the service is not running anymore.
-     */
     const val LAST_RUN_MEDIA_RPC = "last_run_media_rpc"
-
-    /**
-     * The last presence the Experimental RPC sent.
-     */
     const val LAST_RUN_EXPERIMENTAL_RPC = "last_run_experimental_rpc"
 
-    //Rpc Setting Preferences
     const val USE_RPC_BUTTONS = "use_saved_rpc_buttons"
     const val RPC_BUTTONS_DATA = "saved_rpc_buttons_data"
     const val RPC_USE_LOW_RES_ICON = "use_low_res_app_icons"
     const val CONFIGS_DIRECTORY = "configs_directory"
     const val USE_IMGUR = "use_imgur"
     const val IMGUR_CLIENT_ID = "imgur_client_id"
-    // Saved Image Asset ids
     const val SAVED_IMAGES = "saved_images"
-    // Saved ArtWork
     const val SAVED_ARTWORK = "saved_artwork"
 
-    //new
     const val DARK_THEME = "dark_theme_value"
     const val HIGH_CONTRAST = "high_contrast"
     const val DYNAMIC_COLOR = "dynamic_color"
@@ -242,25 +254,14 @@ object Prefs {
     const val CUSTOM_ACTIVITY_TYPE = "custom_activity_type"
     const val SHOW_LOGS_IN_COMPACT_MODE = "logs_compact_mode"
     const val LOGS_AUTO_SCROLL = "logs_auto_scroll"
-
     const val PALETTE_STYLE = "palette_style"
-
     const val APPLY_FIELDS_FROM_LAST_RUN_RPC = "enable_setting_from_last_config"
     const val CUSTOM_ACTIVITY_STATUS = "custom_activity_status"
-
     const val LATEST_RELEASE = "latest_release"
-
-    // Last Deleted Time of Saved Images
     const val LAST_DELETED = "last_deleted"
-
     const val CUSTOM_ACTIVITY_APPLICATION_ID = "custom_activity_application_id_"
 
-    /**
-     * The list of media apps that are enabled by default. See [isMediaAppEnabled] and
-     * [saveMediaAppToPrefs] for more information.
-     */
     val predefinedMediaApps: List<String> = listOf(
-        // music steaming apps
         "com.google.android.apps.youtube.music",
         "com.spotify.music",
         "com.google.android.music",
@@ -273,54 +274,32 @@ object Prefs {
         "com.rhapsody",
         "com.sonyericsson.music",
         "com.aspiro.tidal",
-
-        // music player apps
         "com.sec.android.app.music",
         "com.tbig.playerpro",
-
-        // video streaming apps
         "com.google.android.apps.youtube.kids",
         "com.google.android.apps.youtube.unplugged",
-        "com.google.android.youtube.googletv",
-        "com.google.android.youtube.tv",
+        "com.google.android.apps.youtube.googletv",
+        "com.google.android.apps.youtube.tv",
         "com.google.android.youtube",
         "com.netflix.mediaclient",
         "com.kick.mobile",
         "tv.twitch.android.app",
-
-        // video player apps
         "com.mxtech.videoplayer.ad",
         "com.mxtech.videoplayer.pro",
         "com.google.android.apps.mediashell",
         "com.google.android.videos",
-        "org.videolan.vlc",
+        "org.videolan.vlc"
     )
 
-    //Experimental RPC Preferences
     const val EXPERIMENTAL_RPC_USE_APPS_RPC = "experimental_rpc_use_apps"
     const val EXPERIMENTAL_RPC_USE_MEDIA_RPC = "experimental_rpc_use_media"
     const val EXPERIMENTAL_RPC_TEMPLATE_NAME = "experimental_rpc_template_name"
     const val EXPERIMENTAL_RPC_TEMPLATE_DETAILS = "experimental_rpc_template_details"
     const val EXPERIMENTAL_RPC_TEMPLATE_STATE = "experimental_rpc_template_state"
     const val EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES = "experimental_rpc_app_activity_types"
-
-    /**
-     * The per-app activity types the user picked. Shared by every RPC feature.
-     */
     const val APP_ACTIVITY_TYPES = "app_activity_types"
-
-    /**
-     * The activity type the Media RPC falls back to. It is used for the apps
-     * that are not recognized and when the automatic detection is switched off.
-     */
     const val MEDIA_RPC_ACTIVITY_TYPE = "media_rpc_activity_type"
     const val ACTIVITY_TYPE_AUTO = -1
-
-    /**
-     * Whether the activity type of an app is detected automatically. The switch
-     * is shared by the Media RPC and the Experimental RPC, so the detection
-     * behaves the same in both of them. A per-app choice always wins over it.
-     */
     const val AUTO_ACTIVITY_TYPE = "auto_activity_type"
     const val EXPERIMENTAL_RPC_SHOW_COVER_ART = "experimental_rpc_show_cover_art"
     const val EXPERIMENTAL_RPC_SHOW_APP_ICON = "experimental_rpc_show_app_icon"
@@ -340,20 +319,14 @@ object Prefs {
     const val EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START = "experimental_rpc_timestamp_custom_start"
     const val EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END = "experimental_rpc_timestamp_custom_end"
     const val EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE = "experimental_rpc_show_song_as_title"
-    const val EXPERIMENTAL_RPC_TITLE_SOURCE = "experimental_rpc_title_source" // "title" or "artist"
-    /**
-     * Stores the activity type the user picked for a single app. The map is shared by
-     * every RPC feature, so a type chosen for an app applies everywhere.
-     */
+    const val EXPERIMENTAL_RPC_TITLE_SOURCE = "experimental_rpc_title_source"
+
     fun saveAppActivityType(packageName: String, activityType: Int) {
         val map = getAppActivityTypes().toMutableMap()
         map[packageName] = activityType
         set(APP_ACTIVITY_TYPES, Json.encodeToString(map))
     }
 
-    /**
-     * Removes the override of an app so the automatic detection takes over again.
-     */
     fun clearAppActivityType(packageName: String) {
         val map = getAppActivityTypes().toMutableMap()
         if (map.remove(packageName) != null) {
@@ -361,10 +334,6 @@ object Prefs {
         }
     }
 
-    /**
-     * The per-app activity types the user picked. The map used to live under an
-     * experimental-only key, so the old value is migrated to the shared key.
-     */
     fun getAppActivityTypes(): Map<String, Int> {
         val json = get(APP_ACTIVITY_TYPES, "")
         if (json.isNotBlank()) return decodeAppActivityTypes(json)
@@ -395,7 +364,6 @@ object Prefs {
             enabledPackages.remove(pkg)
         else
             enabledPackages.add(pkg)
-
         set(ENABLED_EXPERIMENTAL_APPS, Json.encodeToString(enabledPackages))
     }
 }
