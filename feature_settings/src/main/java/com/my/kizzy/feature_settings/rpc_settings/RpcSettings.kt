@@ -83,6 +83,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
         mutableStateOf(Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY])
     }
     var showConnectionMethodDialog by remember { mutableStateOf(false) }
+    var oauthError by remember { mutableStateOf("") }
 
     val discordAuth = remember { DiscordAuth(context, scope) }
 
@@ -147,16 +148,20 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 AnimatedVisibility(visible = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) {
                     SettingItem(
                         title = stringResource(id = R.string.discord_oauth_authorize),
-                        description = stringResource(id = R.string.discord_oauth_authorize_desc) + "  •  $oauthStatus",
+                        description = stringResource(id = R.string.discord_oauth_authorize_desc)
+                            + if (oauthError.isNotEmpty()) "  •  Error: $oauthError" else "  •  $oauthStatus",
                         icon = Icons.Default.Login,
                     ) {
+                        oauthError = ""
                         scope.launch {
                             try {
                                 val result = discordAuth.authorize(activity)
                                 Log.d("RpcSettings", "OAuth authorization successful: ${result.accessToken}")
+                                oauthError = ""
                                 Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
                                 connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH
                             } catch (e: Exception) {
+                                oauthError = e.message ?: e.javaClass.simpleName
                                 Log.e("RpcSettings", "OAuth authorization failed", e)
                             }
                         }
