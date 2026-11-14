@@ -65,6 +65,29 @@ object MediaServiceResolver {
     private const val QOBUZ_SEARCH = "https://www.qobuz.com/us-en/search?q=%s"
     private const val MIXCLOUD_SEARCH = "https://www.mixcloud.com/search/?q=%s"
 
+    /**
+     * Package signatures of apps that play YouTube / YouTube Music content but
+     * do NOT contain "youtube" in their package name (open-source / modded
+     * clients). These must also be treated as YouTube so the media session's
+     * video id is resolved to https://youtu.be/ID instead of a search page,
+     * and so the button labels / fallback links point at YouTube Music.
+     *
+     * StreetVoice, Spotify, Apple Music, etc. are deliberately excluded.
+     */
+    private val YOUTUBE_WRAPPER_SIGNATURES = listOf(
+        // InnerTune / OuterTune / Metrolist ecosystem
+        "metrolist", "archivetune", "natune", "intertune", "astertune", "metrofuse",
+        "innertune", "outertune", "mist", "meld", "bitchord",
+
+        // ViMusic / RiMusic ecosystem & YT Music clients
+        "kreate", "vitune", "simpmusic", "ymusic", "harmony", "harmonymusic",
+        "gyawun", "musify", "namida", "bloomee", "vimusic", "spotube",
+
+        // Full YouTube video / extractor clients
+        "newpipe", "pipepipe", "tubular", "libretube", "clipious", "skytube",
+        "grayjay", "noutube", "freetube", "bravepipe",
+    )
+
     private data class Entry(
         val signatures: List<String>,
         val service: Service,
@@ -86,7 +109,7 @@ object MediaServiceResolver {
         Entry(
             // YouTube Music wrapper / alternative clients. They all play YouTube Music
             // content, so they link to the same YouTube search pages.
-            listOf("mist", "metrolist", "meld", "bitchord", "archivetune", "simpmusic", "ymusic"),
+            YOUTUBE_WRAPPER_SIGNATURES,
             Service("YouTube Music", Kind.MUSIC, YOUTUBE_SEARCH, YOUTUBE_ARTIST_SEARCH)
         ),
         Entry(
@@ -172,19 +195,6 @@ object MediaServiceResolver {
         val pkg = packageName.lowercase()
         return entries.firstOrNull { entry -> entry.signatures.any { pkg.contains(it) } }?.service
     }
-
-    /**
-     * Package signatures of apps that play YouTube / YouTube Music content but
-     * do NOT contain "youtube" in their package name (open-source / modded
-     * clients). These must also be treated as YouTube so the media session's
-     * video id is resolved to https://youtu.be/ID instead of a search page.
-     *
-     * StreetVoice, Spotify, Apple Music, etc. are deliberately excluded.
-     */
-    private val YOUTUBE_WRAPPER_SIGNATURES = listOf(
-        "mist", "metrolist", "meld", "bitchord", "archivetune", "simpmusic",
-        "ymusic", "vimusic", "innertune", "outertune", "spotube",
-    )
 
     fun isYouTube(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
