@@ -58,6 +58,14 @@ subprojects {
             if (requested.group == "org.jetbrains.kotlinx" && requested.name == "kotlinx-metadata-jvm") {
                 useVersion("0.10.0")
             }
+            // Tink pulls in error_prone_annotations, a compile-time only
+            // annotations artifact. The version Tink asks for is not always
+            // available in the local cache, so it is pinned to one that is.
+            // The artifact only carries annotations and has no runtime
+            // behaviour, so the exact version does not matter.
+            if (requested.group == "com.google.errorprone" && requested.name == "error_prone_annotations") {
+                useVersion("2.47.0")
+            }
         }
     }
 }

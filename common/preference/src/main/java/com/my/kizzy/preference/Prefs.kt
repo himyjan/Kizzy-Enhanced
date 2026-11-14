@@ -55,12 +55,38 @@ object Prefs {
     internal val _prefsState = MutableStateFlow(emptyMap<String, Any?>())
     val prefsState: Flow<Map<String, Any?>> = _prefsState.asStateFlow()
 
+    /**
+     * The keys that hold secrets and are therefore written to disk encrypted.
+     *
+     * The Discord token is the master key of the user's account, so it must not
+     * be readable from the preferences file. Everything else is plain text.
+     */
+    private val SENSITIVE_KEYS = setOf(TOKEN)
+
+    /**
+     * Encrypts the value of a sensitive key before it is written to disk.
+     * Returns the value unchanged when the key is not sensitive or when the
+     * encryption is not available.
+     */
+    private fun encodeForStorage(key: String, value: String): String {
+        if (key !in SENSITIVE_KEYS) return value
+        return SecurePrefs.encrypt(value) ?: value
+    }
+
+    /**
+     * Decrypts the value of a sensitive key that was read from disk.
+     */
+    private fun decodeFromStorage(key: String, value: String): String {
+        if (key !in SENSITIVE_KEYS) return value
+        return SecurePrefs.decrypt(value)
+    }
+
     operator fun set(key: String, value: Any?) = when (value) {
         is String? -> {
             _prefsState.update { it + (key to value) }
             launchDataStoreEdit {
                 if (value == null) this.remove(stringPreferencesKey(key))
-                else this[stringPreferencesKey(key)] = value
+                else this[stringPreferencesKey(key)] = encodeForStorage(key, value)
             }
         }
         is Int -> {
@@ -137,12 +163,17 @@ object Prefs {
 
     internal fun initDataStore(context: Context) {
         if (dataStore == null) {
+            // Prepare the encryption before the values are read, otherwise a
+            // stored token would stay encrypted in the in-memory mirror.
+            SecurePrefs.init(context)
             dataStore = context.appPreferencesDataStore
             // Prime the synchronous mirror with the values that are already
             // stored on disk, so the first reads do not return the defaults.
             CoroutineScope(Dispatchers.IO).launch {
                 dataStore?.data?.first()?.asMap()?.forEach { (key, value) ->
-                    _prefsState.update { it + (key.name to value) }
+                    val name = key.name
+                    val plain = if (value is String) decodeFromStorage(name, value) else value
+                    _prefsState.update { it + (name to plain) }
                 }
             }
         }
