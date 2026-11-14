@@ -14,6 +14,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Cached
+import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.DoNotDisturbOn
+import androidx.compose.material.icons.outlined.HighQuality
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.outlined.SmartButton
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -35,12 +51,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import com.my.kizzy.data.rpc.DiscordAuth
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.preference.Prefs
-import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
-import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.RpcField
@@ -61,7 +74,7 @@ import android.util.Log
 fun RpcSettings(onBackPressed: () -> Boolean) {
     val context = LocalContext.current
     val activity = context as Activity
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
     var isLowResIconsEnabled by remember { mutableStateOf(Prefs[Prefs.RPC_USE_LOW_RES_ICON, false]) }
     var useImgur by remember { mutableStateOf(Prefs[Prefs.USE_IMGUR, false]) }
     var configsDir by remember { mutableStateOf(Prefs[Prefs.CONFIGS_DIRECTORY, ""]) }
@@ -70,9 +83,9 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
         mutableStateOf(Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY])
     }
     var showConnectionMethodDialog by remember { mutableStateOf(false) }
-    var discordAuth by remember {
-        DiscordAuth(context, scope)
-    }
+
+    val discordAuth = remember { DiscordAuth(context, scope) }
+
     var useButtonConfigs by remember { mutableStateOf(Prefs[Prefs.USE_RPC_BUTTONS, false]) }
     var useYoutubeButton by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON, false]) }
     var linkToArtistChannel by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_ARTIST_LINK, false]) }
@@ -128,8 +141,8 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     showConnectionMethodDialog = true
                 }
             }
-            AnimatedVisibility(visible = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) {
-                item(key = "oauth_authorize") {
+            item(key = "oauth_authorize") {
+                AnimatedVisibility(visible = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) {
                     SettingItem(
                         title = stringResource(id = R.string.discord_oauth_authorize),
                         description = stringResource(id = R.string.discord_oauth_authorize_desc),
@@ -138,7 +151,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                         scope.launch {
                             try {
                                 val result = discordAuth.authorize(activity)
-                                Log.d("RpcSettings", "OAuth authorization successful")
+                                Log.d("RpcSettings", "OAuth authorization successful: ${result.accessToken}")
                                 Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
                                 connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH
                             } catch (e: Exception) {
@@ -231,10 +244,10 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     showApplicationIdDialog = true
                 }
             }
-            item {
+            item(key = "advance_settings_subtitle") {
                 Subtitle(text = stringResource(id = R.string.advance_settings))
             }
-            item {
+            item(key = "use_imgur") {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_imgur),
                     description = stringResource(id = R.string.use_imgur_desc),
@@ -245,7 +258,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     Prefs[Prefs.USE_IMGUR] = useImgur
                 }
             }
-            item {
+            item(key = "imgur_client_id_setting") {
                 AnimatedVisibility(visible = useImgur) {
                     SettingItem(
                         title = stringResource(id = R.string.set_imgur_client_id),
@@ -256,7 +269,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     }
                 }
             }
-            item {
+            item(key = "use_low_res_icon") {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_low_res_icon),
                     description = stringResource(id = R.string.use_low_res_icon_desc),
@@ -267,7 +280,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     Prefs[Prefs.RPC_USE_LOW_RES_ICON] = isLowResIconsEnabled
                 }
             }
-            item {
+            item(key = "delete_saved_icon_urls") {
                 SettingItem(
                     title = stringResource(id = R.string.delete_saved_icon_urls),
                     description = stringResource(id = R.string.delete_saved_icon_urls_desc),
@@ -410,38 +423,39 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                         } else {
                             Icons.Outlined.KeyboardArrowDown
                         }
-                    RpcField(
-                        value = customActivityType,
-                        label = R.string.activity_type,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        trailingIcon = {
-                            Icon(
-                                imageVector = icon,
-                                contentDescription = null,
-                                modifier = Modifier.clickable {
-                                    activityTypeisExpanded = !activityTypeisExpanded
-                                })
-                        }) {
-                        customActivityType = it
-                    }
-                    DropdownMenu(
-                        expanded = activityTypeisExpanded, onDismissRequest = {
-                            activityTypeisExpanded = !activityTypeisExpanded
-                        }, modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Constants.ACTIVITY_TYPE.forEach { (label, value) ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(text = label)
-                                },
-                                onClick = {
-                                    customActivityType = value.toString()
-                                    activityTypeisExpanded = false
-                                },
-                            )
+                    Column {
+                        RpcField(
+                            value = customActivityType,
+                            label = R.string.activity_type,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.clickable {
+                                        activityTypeisExpanded = !activityTypeisExpanded
+                                    })
+                            }) {
+                            customActivityType = it
+                        }
+                        DropdownMenu(
+                            expanded = activityTypeisExpanded, onDismissRequest = {
+                                activityTypeisExpanded = !activityTypeisExpanded
+                            }, modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Constants.ACTIVITY_TYPE.forEach { (label, value) ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(text = label)
+                                    },
+                                    onClick = {
+                                        customActivityType = value.toString()
+                                        activityTypeisExpanded = false
+                                    },
+                                )
+                            }
                         }
                     }
-
                 },
                 confirmButton = {
                     TextButton(onClick = {
@@ -463,7 +477,6 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 },
                 confirmButton = {},
                 text = {
-
                     Column {
                         Constants.ACTIVITY_STATUS.forEach { (resId, value) ->
                             SingleChoiceItem(

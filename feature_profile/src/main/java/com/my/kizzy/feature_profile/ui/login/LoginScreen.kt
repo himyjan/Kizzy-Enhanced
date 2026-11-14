@@ -5,7 +5,7 @@
  *  *  * LoginScreen.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
+ *  *  ******************************************************************
  *
  *
  */
@@ -39,7 +39,9 @@ fun LoginScreen(
     var buttonEnabledState by remember { mutableStateOf(true) }
     var uiState: LoginUiState by remember { mutableStateOf(LoginUiState.InitialState) }
     val scope = rememberCoroutineScope()
-    val modalBottomSheetState = rememberBottomSheetState()
+    // Fixed: rememberModalBottomSheetState() takes no parameters by default in current M3
+    val modalBottomSheetState = rememberModalBottomSheetState()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),

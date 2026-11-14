@@ -20,6 +20,7 @@ import com.my.kizzy.data.rpc.KizzyRPC
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch // <-- Added missing import for launch extension
 
 /**
  * Discord OAuth RPC Service.
@@ -47,7 +48,7 @@ class DiscordOAuthRpcService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand")
 
-        // Start the RPC presence loop
+        // Start the RPC presence loop safely inside the injected coroutine scope
         scope.launch {
             kizzyRPC.build(forceRefresh = true)
         }
