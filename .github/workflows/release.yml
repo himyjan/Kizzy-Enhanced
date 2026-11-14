@@ -72,17 +72,21 @@ jobs:
           convert "$SRC" -resize 324x324 -colorspace gray app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.png
           convert "$SRC" -resize 432x432 -colorspace gray app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.png
 
-      - name: Assemble Release
+      - name: Assemble Release APK and App Bundle
         env:
           KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease
+        run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
 
       - name: Rename APK
         run: |
           mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}.apk
+
+      - name: Rename App Bundle
+        run: |
+          mv app/build/outputs/bundle/release/app-release.aab app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
 
       - name: Upload APK
         uses: actions/upload-artifact@v6
@@ -90,9 +94,19 @@ jobs:
           name: apk-release
           path: app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}.apk
 
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v6
+        with:
+          name: aab-release
+          path: app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
+
       - name: Find APK
         id: apk
         run: echo "path=$(find app/build/outputs/apk/release -name 'KizzyEnhanced-*.apk' | head -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Find App Bundle
+        id: aab
+        run: echo "path=$(find app/build/outputs/bundle/release -name 'KizzyEnhanced-*.aab' | head -1)" >> "$GITHUB_OUTPUT"
 
       - name: Generate git changelog
         id: changelog
@@ -129,6 +143,8 @@ jobs:
             **Version:** `6.2-enhanced-${{ github.run_number }}`
             **Base:** [Kizzy by dead8309](https://github.com/dead8309/Kizzy)
             See the [README](../../blob/master/README.md) for the full list of fork features.
-          files: ${{ steps.apk.outputs.path }}
+          files: |
+            ${{ steps.apk.outputs.path }}
+            ${{ steps.aab.outputs.path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
