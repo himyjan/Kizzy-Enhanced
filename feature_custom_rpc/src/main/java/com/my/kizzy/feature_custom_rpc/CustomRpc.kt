@@ -120,6 +120,8 @@ import com.my.kizzy.data.utils.uriToFile
 
 import com.my.kizzy.domain.model.user.User
 
+import com.my.kizzy.domain.model.rpc.RpcConfig
+
 import com.my.kizzy.feature_custom_rpc.components.BottomSheet
 
 import com.my.kizzy.feature_custom_rpc.components.DateTimePickerDialog
@@ -458,6 +460,37 @@ private fun RpcTextFieldsColumn(
     LaunchedEffect(rpcManager.activeRpc) {
         isCustomRpcEnabled = rpcManager.activeRpc.value == RpcType.CustomRpc
     }
+    var consolePlatform by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"])
+    }
+    var consoleActivityType by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_ACTIVITY_TYPE, "0"].toString())
+    }
+    var consoleStatus by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_STATUS, "online"])
+    }
+    var consoleEnableTimestamps by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_ENABLE_TIMESTAMPS, false])
+    }
+    var consoleShowCoverArt by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART, true])
+    }
+    var consoleButton1Text by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON1_TEXT, ""])
+    }
+    var consoleButton1Url by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON1_URL, ""])
+    }
+    var consoleButton2Text by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON2_TEXT, ""])
+    }
+    var consoleButton2Url by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON2_URL, ""])
+    }
+    var showConsolePlatformDialog by remember { mutableStateOf(false) }
+    var showConsoleActivityTypeDialog by remember { mutableStateOf(false) }
+    var showConsoleStatusDialog by remember { mutableStateOf(false) }
+    var showConsoleButtonsDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
 
@@ -478,9 +511,29 @@ private fun RpcTextFieldsColumn(
                 isCustomRpcEnabled = newValue
                 when (newValue) {
                     true -> {
-                        val string = uiState.rpcConfig.dataToString()
+                        val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
+                        val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
+                        val consoleConfig = RpcConfig(
+                            name = "Console RPC",
+                            details = "Console RPC running",
+                            type = consoleActivityType,
+                            status = consoleStatus,
+                            timestampsStart = startTs,
+                            timestampsStop = endTs,
+                            platform = consolePlatform,
+                            largeImg = if (consoleShowCoverArt) "" else "",
+                            smallImg = if (consoleShowCoverArt) "" else "",
+                            button1 = consoleButton1Text,
+                            button1link = consoleButton1Url,
+                            button2 = consoleButton2Text,
+                            button2link = consoleButton2Url,
+                        )
                         scope.launch {
-                            rpcManager.switchTo(RpcType.CustomRpc, rpcConfigString = string, isConsoleRpc = false)
+                            rpcManager.switchTo(
+                                RpcType.ConsoleRpc,
+                                rpcConfigString = Json.encodeToString(consoleConfig),
+                                isConsoleRpc = true
+                            )
                         }
                     }
                     false -> scope.launch {
@@ -1325,6 +1378,176 @@ private fun RpcTextFieldsColumn(
 
                 }
 
+            }
+
+            // ===== Console RPC Settings =====
+
+            item {
+                var consolePlatformExpanded by remember { mutableStateOf(false) }
+                val consolePlatformIcon = if (consolePlatformExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+
+                RpcField(
+                    value = consolePlatform,
+                    label = R.string.console_platform,
+                    trailingIcon = {
+                        Icon(
+                            imageVector = consolePlatformIcon,
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                consolePlatformExpanded = !consolePlatformExpanded
+                            }
+                        )
+                    },
+                    content = {
+                        DropdownMenu(
+                            expanded = consolePlatformExpanded,
+                            onDismissRequest = { consolePlatformExpanded = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Constants.ACTIVITY_PLATFORMS.forEach { (label, value) ->
+                                DropdownMenuItem(
+                                    text = { Text(text = label) },
+                                    onClick = {
+                                        consolePlatform = value
+                                        consolePlatformExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                ) { }
+            }
+
+            item {
+                var consoleActivityTypeExpanded by remember { mutableStateOf(false) }
+                val consoleActivityTypeIcon = if (consoleActivityTypeExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+
+                RpcField(
+                    value = consoleActivityType,
+                    label = R.string.console_activity_type,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    trailingIcon = {
+                        Icon(
+                            imageVector = consoleActivityTypeIcon,
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                consoleActivityTypeExpanded = !consoleActivityTypeExpanded
+                            }
+                        )
+                    },
+                    content = {
+                        DropdownMenu(
+                            expanded = consoleActivityTypeExpanded,
+                            onDismissRequest = { consoleActivityTypeExpanded = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Constants.ACTIVITY_TYPE.forEach { (label, value) ->
+                                DropdownMenuItem(
+                                    text = { Text(text = label) },
+                                    onClick = {
+                                        consoleActivityType = value.toString()
+                                        consoleActivityTypeExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                ) { }
+            }
+
+            item {
+                var consoleStatusExpanded by remember { mutableStateOf(false) }
+                val consoleStatusIcon = if (consoleStatusExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+
+                RpcField(
+                    value = consoleStatus,
+                    label = R.string.console_status,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    trailingIcon = {
+                        Icon(
+                            imageVector = consoleStatusIcon,
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                consoleStatusExpanded = !consoleStatusExpanded
+                            }
+                        )
+                    },
+                    content = {
+                        DropdownMenu(
+                            expanded = consoleStatusExpanded,
+                            onDismissRequest = { consoleStatusExpanded = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Constants.ACTIVITY_STATUS.forEach { (resId, value) ->
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(resId)) },
+                                    onClick = {
+                                        consoleStatus = value
+                                        consoleStatusExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                ) { }
+            }
+
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.console_enable_timestamps),
+                    isChecked = consoleEnableTimestamps,
+                ) {
+                    consoleEnableTimestamps = !consoleEnableTimestamps
+                }
+            }
+
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.console_show_cover_art),
+                    isChecked = consoleShowCoverArt,
+                ) {
+                    consoleShowCoverArt = !consoleShowCoverArt
+                }
+            }
+
+            item {
+                RpcField(
+                    value = consoleButton1Text,
+                    label = R.string.activity_button1_text,
+                ) {
+                    consoleButton1Text = it
+                }
+            }
+
+            item {
+                AnimatedVisibility(visible = consoleButton1Text.isNotBlank()) {
+                    RpcField(
+                        value = consoleButton1Url,
+                        label = R.string.activity_button1_url,
+                    ) {
+                        consoleButton1Url = it
+                    }
+                }
+            }
+
+            item {
+                RpcField(
+                    value = consoleButton2Text,
+                    label = R.string.activity_button2_text,
+                ) {
+                    consoleButton2Text = it
+                }
+            }
+
+            item {
+                AnimatedVisibility(visible = consoleButton2Text.isNotBlank()) {
+                    RpcField(
+                        value = consoleButton2Url,
+                        label = R.string.activity_button2_url,
+                    ) {
+                        consoleButton2Url = it
+                    }
+                }
             }
 
             item {

@@ -35,8 +35,6 @@ import com.my.kizzy.feature_about.about.Credits
 import com.my.kizzy.feature_about.about.CreditsScreenViewModel
 import com.my.kizzy.feature_apps_rpc.AppsRPC
 import com.my.kizzy.feature_apps_rpc.AppsScreenViewModel
-import com.my.kizzy.feature_console_rpc.GamesScreen
-import com.my.kizzy.feature_console_rpc.GamesViewModel
 import com.my.kizzy.feature_custom_rpc.CustomRPC
 import com.my.kizzy.feature_custom_rpc.CustomScreenViewModel
 import com.my.kizzy.feature_home.Home
@@ -246,19 +244,11 @@ internal fun ComponentActivity.Kizzy(
                 }
             }
             composable(Routes.CONSOLE_RPC) { navBackStackEntry ->
-                val viewModel = hiltViewModel<GamesViewModel>(navBackStackEntry)
-                GamesScreen(
+                val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)
+                CustomRPC(
                     onBackPressed = { navController.popBackStack() },
-                    onEvent = { viewModel.onUiEvent(it) },
-                    isSearchBarVisible = viewModel.isSearchBarVisible.value,
-                    state = viewModel.state.value,
-                    consoleRpcRunning = viewModel.consoleRpcRunning.value,
-                    otherRpcServicesRunning = viewModel.otherRpcServicesRunning.value,
-                    detectedConsole = viewModel.detected.value,
-                    autoDetect = viewModel.autoDetect.value,
-                    onToggleAutoDetect = viewModel::toggleAutoDetect,
-                    includeSpoofed = viewModel.includeSpoofed.value,
-                    onToggleIncludeSpoofed = viewModel::toggleIncludeSpoofed,
+                    state = viewModel.uiState.collectAsState().value,
+                    onEvent = viewModel::onEvent
                 )
             }
             composable(Routes.LANGUAGES) {
