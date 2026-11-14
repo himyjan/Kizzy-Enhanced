@@ -12,7 +12,7 @@ dependencies {
     implementation(projects.domain)
     implementation(projects.common.resources)
     implementation(libs.material3)
-    implementation(libs.datastore.preferences)
+    implementation(libs.mmkv)
     implementation(libs.kotlinx.coroutine)
     implementation(libs.compose.ui)
     implementation(libs.kotlinx.serialization.json)
