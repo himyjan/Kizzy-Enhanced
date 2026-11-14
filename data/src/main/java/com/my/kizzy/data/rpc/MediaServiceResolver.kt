@@ -173,8 +173,24 @@ object MediaServiceResolver {
         return entries.firstOrNull { entry -> entry.signatures.any { pkg.contains(it) } }?.service
     }
 
-    fun isYouTube(packageName: String?): Boolean =
-        packageName?.let { it.lowercase().contains("youtube") } == true
+    /**
+     * Package signatures of apps that play YouTube / YouTube Music content but
+     * do NOT contain "youtube" in their package name (open-source / modded
+     * clients). These must also be treated as YouTube so the media session's
+     * video id is resolved to https://youtu.be/ID instead of a search page.
+     *
+     * StreetVoice, Spotify, Apple Music, etc. are deliberately excluded.
+     */
+    private val YOUTUBE_WRAPPER_SIGNATURES = listOf(
+        "mist", "metrolist", "meld", "bitchord", "archivetune", "simpmusic",
+        "ymusic", "vimusic", "innertune", "outertune", "spotube",
+    )
+
+    fun isYouTube(packageName: String?): Boolean {
+        if (packageName.isNullOrBlank()) return false
+        val pkg = packageName.lowercase()
+        return pkg.contains("youtube") || YOUTUBE_WRAPPER_SIGNATURES.any { pkg.contains(it) }
+    }
 
     private fun encode(value: String): String =
         URLEncoder.encode(value, StandardCharsets.UTF_8.toString())
