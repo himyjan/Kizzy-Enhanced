@@ -219,8 +219,11 @@ class KizzyRPC @Inject constructor(
             }
         }
 
-        if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
-            logger.d("KizzyRPC", "Token changed, reconnecting WebSocket with new token")
+        // Force reconnect when token changed OR when we just cleared an invalid token
+        // so the WebSocket re-authenticates with the new (empty) token and the user
+        // sees the error and knows to re-authenticate via Discord consent screen.
+        if ((tokenChanged || connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) && discordWebSocket.isWebSocketConnected()) {
+            logger.d("KizzyRPC", "Token changed or invalid, reconnecting WebSocket with new token")
             (discordWebSocket as DiscordWebSocketImpl).updateTokenAndReconnect(token)
         }
 
