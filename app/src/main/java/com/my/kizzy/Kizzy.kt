@@ -167,7 +167,9 @@ internal fun ComponentActivity.Kizzy(
                     onBackPressed = { navController.popBackStack() },
                     state = viewModel.state.collectAsState().value,
                     hasNotificationAccess = notificationListenerAccess.value,
-                    updateMediaAppEnabled = viewModel::updateMediaAppEnabled
+                    updateMediaAppEnabled = viewModel::updateMediaAppEnabled,
+                    selectAllMediaApps = viewModel::selectAllMediaApps,
+                    deselectAllMediaApps = viewModel::deselectAllMediaApps,
                 )
             }
             composable(Routes.PROFILE) { navBackStackEntry ->
