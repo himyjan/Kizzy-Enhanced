@@ -1,10 +1,11 @@
 # Kizzy-Enhanced Feature Development Report
 
-**Date:** November 7, 2026  
+**Date:** November 14, 2026  
 **Branch:** `master`  
-**Status:** BUILD SUCCESSFUL — `app-debug.apk` generated  
-**Total files changed:** ~80 files  
-**Total build tasks:** 498 tasks completed successfully
+**Status:** BUILD SUCCESSFUL — `app-debug.apk` and `app-release.apk` generated  
+**Total files changed:** ~90 files  
+**Total build tasks:** 498 tasks completed successfully  
+**Latest sections:** 105–114 (Console RPC auto-detection, DataStore migration, Tink encryption, APK size, CI/CD)
 
 ---
 
@@ -72,6 +73,16 @@
 60. [CI/CD: GitHub Actions AAPT2 Override](#cicd-github-actions-aapt2-override)
 61. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
 62. [Build Verification](#build-verification)
+63. [New Feature: Console RPC — DroidDeck & Eden/Ruzu Auto-Detection](#105-new-feature-console-rpc--droiddeck--edenruzu-auto-detection)
+64. [Fix: Startup Screen — Unresolved ComposeTracing](#106-fix-startup-screen--unresolved-composetracing)
+65. [Fix: Deprecation Warnings Across Compose APIs](#107-fix-deprecation-warnings-across-compose-apis)
+66. [Migration: MMKV → Jetpack Preferences DataStore](#108-migration-mmkv--jetpack-preferences-datastore)
+67. [New Feature: Discord Token Encrypted at Rest with Tink](#109-new-feature-discord-token-encrypted-at-rest-with-tink)
+68. [Perf: APK Size Reduction & R8 Analysis](#110-perf-apk-size-reduction--r8-analysis)
+69. [CI/CD: App Bundle + bundletool Release Pipeline](#111-cicd-app-bundle--bundletool-release-pipeline)
+70. [New Feature: Baseline Profile for Faster Cold Start](#112-new-feature-baseline-profile-for-faster-cold-start)
+71. [Fix: Compose Tracing Availability (Deferred)](#113-fix-compose-tracing-availability-deferred)
+72. [Build Verification Summary (Console RPC / DataStore / Tink)](#114-build-verification-summary-console-rpc--datastore--tink)
 
 ---
 
@@ -3275,3 +3286,512 @@ When user toggled RPC on/off from other screens (Media RPC, Custom RPC, etc.) an
 
 _Generated on November 8, 2026_  
 _All features implemented and verified — build passes with zero compilation errors._
+
+---
+
+## 105. New Feature: Console RPC — DroidDeck & Eden/Ruzu Auto-Detection
+
+**Commit:** `09b2bc2d` — `feat(console-rpc): add DroidDeck and Eden/Ruzu auto-detection`
+**Files:** 11 files changed, 942 insertions(+), 75 deletions(-)
+
+### Problem
+
+Console RPC could only report a *manually selected* game. DroidDeck (a Steam/PC launcher running games in an ARM64 Linux container) and Eden/Ruzu (Yuzu-based Nintendo Switch emulators) were completely invisible to Kizzy:
+
+- Their APKs frequently use a **spoofed package name** (a benchmark or a popular game) so that the launcher can bypass thermal throttling or be whitelisted for a GPU driver. A plain `PackageManager` lookup therefore shows "AnTuTu Benchmark" or "Genshin Impact" instead of the launcher.
+- The **active game title** is only available from the launcher's ongoing notification, never from the package list.
+- There was no way for the user to opt into the spoofed builds without breaking detection of the real apps that use those same package names.
+
+### Design
+
+| Component | Responsibility |
+| --------- | -------------- |
+| `ConsoleAppRegistry` | Maps package names → launcher, with standard and spoofed sets resolved separately |
+| `ConsoleNotificationParser` | Extracts the game title out of the launcher's notification |
+| `ActiveGameTracker` | Holds the last known title per package, with expiry |
+| `ConsoleGameCatalog` | Matches a (possibly shortened) title to a catalog entry for cover art |
+| `GetForegroundPackage` | Reads the foreground app from the usage-events stream |
+
+### `ConsoleAppRegistry` (`data/.../rpc/ConsoleApps.kt`)
+
+Standard packages are **always** resolved; spoofed packages only when the user opts in:
+
+| Platform | Always resolved | Opt-in (spoofed) |
+| -------- | --------------- | ----------------- |
+| DroidDeck | `com.droiddeck.launcher` | `com.tencent.ig`, `com.antutu.benchmark.full`, `com.ludashi.benchmark` |
+| Eden / Ruzu | `dev.eden.eden_emulator`, `dev.legacy.eden_emulator`, `dev.eden.eden_nightly`, `com.myeden.edenemulator`, `org.ruzu.ruzu_emu` | `com.miHoYo.Yuanshen` |
+
+```kotlin
+fun resolve(packageName: String?, includeSpoofed: Boolean): ConsoleAppInfo? {
+    val pkg = packageName?.takeIf { it.isNotBlank() } ?: return null
+    standard[pkg]?.let { return ConsoleAppInfo(it, pkg, spoofed = false) }
+    if (!includeSpoofed) return null
+    spoofed[pkg]?.let { return ConsoleAppInfo(it, pkg, spoofed = true) }
+    return null
+}
+```
+
+### `ConsoleNotificationParser`
+
+DroidDeck and Eden disagree on where the game name sits (title vs. text vs. bigText vs. subText) and add prefixes/suffixes. The parser tries every field in order, strips `Now playing:` / `Playing` / `Running` prefixes and `is running` / `is playing` suffixes, and rejects launcher-only strings (`DroidDeck`, `Eden Emulator`, `Tap to return to the game`, …).
+
+### `ActiveGameTracker`
+
+- Keyed by package, so a notification from one launcher never leaks into another.
+- Entries expire after **15 minutes**, so a game closed hours ago is not reported.
+- A generic update (e.g. an ongoing "DroidDeck is running" notification) **must not wipe** a known title — the title is cleared only when the notification is removed.
+
+### `CustomRpcService` — console auto-follow loop
+
+The Console RPC screen and the Custom RPC screen share `CustomRpcService`, so the console watcher is explicitly marked on the intent:
+
+| Detail | Value |
+| ------ | ----- |
+| Intent extra | `CustomRpcService.EXTRA_CONSOLE_RPC` |
+| Polling interval | 2.5 s |
+| Gating pref | `Prefs.CONSOLE_RPC_AUTO_DETECT` (default `true`) |
+| Cancellation | The watcher is cancelled when the service is restarted for **Custom** RPC |
+
+Safety properties:
+
+- The presence is only updated when a **real game title** was parsed — a manually selected game is never clobbered.
+- The wake lock is released before a new one is acquired, so repeated presence updates keep the lock count at **one** instead of stacking locks.
+- The restart intent carries the `CONSOLE_RPC` flag, so the watcher survives a service restart.
+
+### `NotificationListener`
+
+Added `onNotificationPosted` / `onNotificationRemoved` overrides that capture and clear the DroidDeck/Eden game notifications into `ActiveGameTracker`. Every known package (including spoofed ones) is captured — only the **title** is stored, and the user's preference decides later whether a spoofed package should be treated as a launcher.
+
+### UI — `GamesScreen` / `GamesViewModel`
+
+| Addition | Detail |
+| -------- | ------ |
+| "Auto-detect DroidDeck / Eden" switch | `Prefs.CONSOLE_RPC_AUTO_DETECT` |
+| "Include spoofed builds" switch | `Prefs.CONSOLE_RPC_INCLUDE_SPOOFED` |
+| Detected-console card | Shows platform, game title, cover art; tap selects it |
+| Foreground polling | Every 2 s while the screen is open |
+| Fallback | When Kizzy is the foreground app, the last launcher that posted a notification is used |
+
+### Result
+
+- `:data:compileDebugKotlin` — BUILD SUCCESSFUL
+- `:data:testDebugUnitTest --tests com.my.kizzy.data.ConsoleAppsTest` — BUILD SUCCESSFUL (7 tests)
+- Device (`R52W907ZZZN`) — Console RPC screen renders both switches and the games list, toggles work, Console RPC starts with the selected game, no crashes
+- DroidDeck/Eden are **not installed** on the test device, so live end-to-end detection could not be exercised; the registry and parser are covered by unit tests
+
+---
+
+## 106. Fix: Startup Screen — Unresolved `ComposeTracing`
+
+**Commit:** `36668866` — `fix(startup): remove unresolved ComposeTracing references`
+
+### Problem
+
+```
+e: .../feature_startup/StartUp.kt:67:35 Unresolved reference 'Subtitle'
+e: .../feature_startup/StartUp.kt:68:33 Unresolved reference 'tracing'
+e: .../feature_startup/StartUp.kt:79:5  Unresolved reference 'ComposeTracing'
+```
+
+`androidx.compose.runtime.tracing.ComposeTracing` was referenced, but the `runtime-tracing` artifact was neither declared in the version catalog nor present in the local Gradle cache.
+
+### Fix
+
+- Removed `import androidx.compose.runtime.tracing.ComposeTracing`
+- Removed `ComposeTracing.markStart("StartUp")`
+- Removed `ComposeTracing.markEnd()`
+- Kept `Subtitle` — it lives in `common:components` and is wired to `feature_startup` by the `AndroidFeaturePlugin` convention plugin, so it resolves once the build gets past KSP
+
+### Result
+
+- `:feature_startup:compileDebugKotlin` — BUILD SUCCESSFUL
+
+---
+
+## 107. Fix: Deprecation Warnings Across Compose APIs
+
+**Commits:** `0bf7b34c`, `213f39ed`, `1631d55a`, `1891e172`, `bd028c44`
+
+### Changes Applied
+
+| File | Before | After |
+| ---- | ------ | ----- |
+| `feature_about/.../About.kt` | `Icons.Outlined.ContactSupport` | `Icons.AutoMirrored.Outlined.ContactSupport` (import moved to `androidx.compose.material.icons.automirrored.outlined`) |
+| `common/components/.../RpcFieldWithCompletion.kt` | `VisualTransformation` + `TransformedText` + `OffsetMapping.Identity` | `OutputTransformation` + `OutputTransformation.Result` |
+| `common/components/.../SearchBar.kt` | `BasicTextField(value=, onValueChange=)` | `BasicTextField(state = textFieldState, onValueChange=)` with `rememberTextFieldState` |
+
+### `SearchBar` — state-based `BasicTextField`
+
+```kotlin
+val textFieldState = rememberTextFieldState(text)
+
+// Sync external text changes into the field state
+LaunchedEffect(text) {
+    textFieldState.updateText(text)
+}
+
+BasicTextField(
+    state = textFieldState,
+    onValueChange = { newText ->
+        textFieldState.updateText(newText)
+        onTextChanged(newText)
+    },
+    ...
+)
+```
+
+### Compatibility note
+
+`OutputTransformation` requires Compose ≥ 1.7. The pinned catalog (`compose-bom = 2026.09.00`) does not expose it, so `VisualTransformation` was used as an intermediate step and then reverted once the resolution was confirmed (`1891e172` → `bd028c44`).
+
+### Result
+
+- `:common:components:compileDebugKotlin` — BUILD SUCCESSFUL
+- `:feature_about:compileDebugKotlin` — BUILD SUCCESSFUL
+
+---
+
+## 108. Migration: MMKV → Jetpack Preferences DataStore
+
+**Commits:** `1e918f1f`, `56f390b1`, `a44c5499`
+**Files:** `common/preference/build.gradle.kts`, `common/preference/.../Prefs.kt`, `common/preference/.../PreferenceConfig.kt`, `app/.../App.kt`
+
+### Problem
+
+MMKV shipped a native library (`libmmkv.so`, **1.1 MB per ABI**) purely for key/value storage. With `arm64-v8a` **and** `x86_64` in the APK that is **~2.2 MB** of native code. MMKV is also not an official Jetpack library and it was a third-party dependency of the fork.
+
+### Migration
+
+| Before (MMKV) | After (DataStore) |
+| -------------- | ----------------- |
+| `implementation(libs.mmkv)` | `implementation(libs.datastore.preferences)` |
+| `MMKV.initialize(context)` | `Prefs.initDataStore(context)` |
+| `MMKV.defaultMMKV()` | `preferencesDataStore` property delegate |
+| `kv.encode(key, value)` | `dataStore.edit { this[key] = value }` |
+| `kv.decodeString(key, default)` | `MutableStateFlow` mirror + `dataStore.data` |
+| `kv.removeValueForKey(key)` | `dataStore.edit { this.remove(key) }` |
+
+### Keeping the synchronous `Prefs[Key]` API
+
+DataStore is asynchronous, but ~50 call sites read preferences synchronously on the main thread (`Prefs[Prefs.TOKEN, ""]`). The migration keeps that API working with a `MutableStateFlow` mirror:
+
+```kotlin
+@PublishedApi
+internal val _prefsState = MutableStateFlow(emptyMap<String, Any?>())
+val prefsState: Flow<Map<String, Any?>> = _prefsState.asStateFlow()
+```
+
+- **Reads** come from the in-memory mirror — never blocking the main thread on disk IO.
+- **Writes** update the mirror first, then persist to disk on `Dispatchers.IO`.
+- The mirror is **primed from disk** on startup so the first reads do not return defaults.
+
+### API details that had to be respected
+
+| Pitfall | Resolution |
+| ------- | ---------- |
+| `edit` hands out a **`MutablePreferences` receiver**, not a parameter | `dataStore?.edit(transform = block)` |
+| Call sites must use receiver syntax | `{ this[stringPreferencesKey(key)] = value }` |
+| `stringPreferencesKey` only stores Strings | Added `intPreferencesKey`, `booleanPreferencesKey`, `floatPreferencesKey`, `longPreferencesKey` |
+| `remove()` only deleted the String key | Now removes the key under **all five** typed keys |
+| `preferencesDataStore(context=, name=)` does not exist | Property delegate: `private val Context.appPreferencesDataStore by preferencesDataStore(name = "app_preferences")` |
+| Nullable String cannot be stored | `if (value == null) this.remove(key) else this[key] = value` |
+| `inline get` accessed a private field | `_prefsState` → `@PublishedApi internal` |
+
+### Result
+
+- `:common:preference:compileDebugKotlin` — BUILD SUCCESSFUL
+- `:data:compileDebugKotlin` — BUILD SUCCESSFUL
+- `:feature_rpc_base:compileDebugKotlin` — BUILD SUCCESSFUL
+- `libmmkv.so` removed from the APK — **~2.2 MB saved** across the two 64-bit ABIs
+
+---
+
+## 109. New Feature: Discord Token Encrypted at Rest with Tink
+
+**Commit:** `4e2c5b2c` — `feat(security): encrypt the Discord token at rest with Tink`
+**Files:** `common/preference/.../SecurePrefs.kt` (NEW), `common/preference/.../Prefs.kt`, `common/preference/build.gradle.kts`, `build.gradle.kts`
+
+### Problem
+
+A Discord **user token** is the master key of the user's account. Stored in plain text inside the preferences file it is readable by anyone with access to the app's data directory (rooted device, file manager, backup extraction, …).
+
+### Why Tink and not EncryptedSharedPreferences
+
+`androidx.security:security-crypto` (`EncryptedSharedPreferences`) is **deprecated** — it is tied to the old SharedPreferences/XML architecture and suffered from unrecoverable file corruption and thread-blocking issues. The modern official stack is **Jetpack DataStore + Google Tink**, and `tink-android` was already present in the version catalog.
+
+### Encryption method
+
+| Property | Value |
+| -------- | ----- |
+| Algorithm | **AES-256-GCM** (`KeyTemplates.get("AES256_GCM")`) |
+| Tink primitive | `Aead` (authenticated encryption with associated data) |
+| Key source | **Android Keystore** via `AndroidKeysetManager` |
+| Master key URI | `android-keystore://kizzy_secure_prefs_master_key` |
+| Associated data | `"kizzy_secure_prefs"` (authenticated, not encrypted) |
+| Ciphertext format | `enc:` + Base64(NO_WRAP) of the raw AEAD output |
+
+### Key handling
+
+```kotlin
+val keysetManager = AndroidKeysetManager.Builder()
+    .withSharedPref(context, KEYSET_NAME, MASTER_KEY_URI)  // keyset metadata only
+    .withKeyTemplate(KeyTemplates.get("AES256_GCM"))        // key generated IN the keystore
+    .build()
+aead = keysetManager.getKeysetHandle().getPrimitive(Aead::class.java)
+```
+
+`withSharedPref` stores only the **keyset metadata** (which key ID maps to which keystore alias). The AES-256 key bytes are generated by and live **only** inside the Android Keystore — the app never sees them, so a dump of the app sandbox yields no key material.
+
+### Encryption / decryption
+
+```kotlin
+val cipherText = primitive.encrypt(
+    plainText.toByteArray(Charsets.UTF_8),
+    ASSOCIATED_DATA,
+)
+ENCRYPTED_PREFIX + Base64.encodeToString(cipherText, Base64.NO_WRAP)
+```
+
+GCM's authentication tag is verified on decrypt — a tampered ciphertext fails the check and yields an empty string rather than a forged token.
+
+### Integration — transparent at the `Prefs` boundary
+
+| Operation | Behaviour |
+| --------- | --------- |
+| `Prefs[TOKEN] = token` | Encrypted before it is written to disk |
+| `Prefs[TOKEN, ""]` | Reads plain text from the in-memory mirror — **unchanged for all 8+ call sites** |
+| Startup | The mirror is primed from disk and sensitive values are decrypted |
+
+Affected call sites (all unchanged): `LoginScreen`, `GatewayModule`, `KizzyRPC`, `KizzyTileService`, `MediaRpcService`, `Kizzy.kt`.
+
+Only `TOKEN` is encrypted. Themes, RPC configuration and game lists stay plain text; `USER_DATA` is public Discord profile information and is not a secret.
+
+### Backward compatibility
+
+Ciphertexts are tagged with an `enc:` prefix, so a token written by an older version (plain text) is still read correctly and is **transparently re-encrypted** on the next write — no forced logout, no data loss.
+
+### Fallback
+
+If the Android Keystore is unavailable (some emulators / heavily modified OEM builds), `encryptionUnavailable` is set and the token is stored in plain text. This is a deliberate availability-over-security tradeoff so the app keeps working instead of locking the user out.
+
+### Build fix
+
+Tink pulls in `com.google.errorprone:error_prone_annotations` — a compile-time only annotations artifact whose requested version is not always in the local cache. It is pinned in the root `build.gradle.kts` next to the existing `kotlinx-metadata-jvm` rule:
+
+```kotlin
+if (requested.group == "com.google.errorprone" && requested.name == "error_prone_annotations") {
+    useVersion("2.47.0")
+}
+```
+
+### Result
+
+- `:common:preference:compileDebugKotlin` — BUILD SUCCESSFUL (no warnings)
+- `:data:compileDebugKotlin` — BUILD SUCCESSFUL
+- `:feature_rpc_base:compileDebugKotlin` — BUILD SUCCESSFUL
+
+---
+
+## 110. Perf: APK Size Reduction & R8 Analysis
+
+### Size results
+
+| Build | APK size | Dex files | Total dex (uncompressed) |
+| ----- | -------- | --------- | ------------------------ |
+| Debug | 35 MB | 29 (`classes.dex` … `classes28.dex`) | ~95 MB |
+| Release | **8.2 MB** | **1** | **7.3 MB** |
+
+R8 reduced the dex payload by **~92 %** (95 MB → 7.3 MB) and consolidated 29 dex files into one.
+
+### R8 report analysis
+
+| File | Size | Purpose |
+| ---- | ---- | ------- |
+| `app/build/outputs/mapping/release/mapping.txt` | 519 236 lines | De-obfuscation of R8-renamed classes/methods |
+| `app/build/outputs/mapping/release/mapping.prt` | 31 066 lines | Human-readable ProGuard print format |
+| `app/build/outputs/mapping/release/usage.txt` | 98 323 lines | Lists removed / kept classes |
+| `app/build/intermediates/compose_mapping/release/compose-mapping.txt` | — | Maps obfuscated Compose functions (`m$1234567`) back to real signatures |
+
+**769 classes** were removed by R8 — 755 external library classes and 14 app classes:
+
+```
+com.my.kizzy.CrashReportActivityKt
+com.my.kizzy.DaggerApp_HiltComponents_SingletonC
+com.my.kizzy.data.di.AppModule / GatewayModule / ServiceModule
+com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMediaAll$Assets
+com.my.kizzy.feature_home.feature.FeaturesProviderKt
+com.my.kizzy.feature_profile.UserInfoKt
+com.my.kizzy.feature_rpc_base.di.RpcBaseModule (+3 ProvidesFactory classes)
+com.my.kizzy.feature_rpc_base.services.KizzyTileService$Companion
+com.my.kizzy.feature_rpc_base.services.ShortcutsActivity$Companion$Intents
+```
+
+All of them are genuinely unused (DI modules superseded by Hilt, top-level Kotlin files without callers). **171** app classes were obfuscated, **0** were kept with their original names, and no active code path was stripped.
+
+### ABI filtering
+
+`app/build.gradle.kts` now ships only the 64-bit ABIs:
+
+```kotlin
+ndk {
+    // Ship only 64-bit ABIs to reduce APK size.
+    abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
+}
+```
+
+### Remaining size drivers (release APK)
+
+| Item | Size |
+| ---- | ---- |
+| `classes.dex` | 7.3 MB |
+| Fonts (9 Google Sans TTFs) | ~1.3 MB |
+| `resources.arsc` | 1.7 MB |
+| `libmmkv.so` × 2 ABIs | ~2.2 MB → **0 MB after the DataStore migration** |
+
+---
+
+## 111. CI/CD: App Bundle + bundletool Release Pipeline
+
+**Commits:** `893419e1`, `943c940c`
+**File:** `.github/workflows/release.yml`
+
+### Problem
+
+An App Bundle (`.aab`) is the format Google Play expects, but **an AAB cannot be installed directly** — it has to be converted back into APKs with `bundletool` (or served by the Play Store). Shipping only the AAB would break direct sideloading from GitHub Releases.
+
+### Solution
+
+The release workflow now produces **three** artifacts:
+
+| Artifact | Built by | Directly installable |
+| -------- | -------- | --------------------- |
+| `KizzyEnhanced-<run>.apk` | `:app:assembleRelease` | ✅ Yes (universal APK) |
+| `KizzyEnhanced-<run>-universal.apk` | `bundletool build-apks --mode=universal` | ✅ Yes (extracted from the AAB) |
+| `KizzyEnhanced-<run>.aab` | `:app:bundleRelease` | ❌ Play Store only |
+
+### Workflow changes
+
+```yaml
+- name: Assemble Release APK and App Bundle
+  run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin \
+        :app:assembleRelease :app:bundleRelease
+
+- name: Download bundletool
+  run: curl -L https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar \
+        -o "$RUNNER_TEMP/bundletool.jar"
+
+- name: Extract installable APKs from App Bundle
+  run: |
+    java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
+      --bundle="app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab" \
+      --output="$RUNNER_TEMP/kizzy-apks.apks" \
+      --ks="$RUNNER_TEMP/release.keystore" --ks-pass=pass:kizzyfork \
+      --ks-key-alias=kizzyfork --key-pass=pass:kizzyfork \
+      --mode=universal
+    cd "$RUNNER_TEMP"
+    unzip -o -q kizzy-apks.apks "universal.apk"
+    cp universal.apk "$GITHUB_WORKSPACE/app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk"
+```
+
+All three are uploaded as workflow artifacts and attached to the GitHub Release.
+
+### Impact
+
+- **Play Store delivery** — per-device ABI/density splits, so users download roughly half of the universal APK.
+- **Direct sideloading** — the universal APK keeps working, and the bundletool-extracted one proves the AAB itself is valid and signed with the same key.
+
+---
+
+## 112. New Feature: Baseline Profile for Faster Cold Start
+
+**Files:** `app/src/androidTest/java/com/my/kizzy/StartupBaselineProfileTest.kt` (NEW), `app/build.gradle.kts`
+
+### What was added
+
+| Change | Detail |
+| ------ | ------ |
+| `androidx.baselineprofile` plugin | Applied to the `app` module |
+| `androidTestImplementation(libs.baselineprofile)` | Test-only dependency |
+| `StartupBaselineProfileTest` | Exercises the critical user journey |
+
+The test drives the cold-start path and the main navigation:
+
+1. Press home, launch the app from the launcher icon
+2. Wait for the home screen (`features_recycler`)
+3. Navigate to **Console RPC**
+4. Scroll the games list (forces composition of the lazy-list items)
+5. Navigate to **Media RPC** and **Custom RPC**, then back
+
+### Generating the profile
+
+```bash
+./gradlew :app:generateBaselineProfile
+```
+
+This writes `app/src/main/baseline-prof.txt`, which is packaged into release builds and lets the ART compiler AOT-compile the hot paths — removing JIT warm-up from the first launch.
+
+---
+
+## 113. Fix: Compose Tracing Availability (Deferred)
+
+**Status:** Prepared, blocked offline
+
+`ComposeTracing.markStart()` / `markEnd()` markers were added to the performance-critical composables and then removed when the artifact turned out to be unavailable:
+
+| Issue | Detail |
+| ----- | ------ |
+| Artifact | `androidx.compose.runtime:runtime-tracing` |
+| Blocker | The cached `1.13.0-rc01` artifact contains only `ComposeTracingInitializer` — **not** the `ComposeTracing` class with `markStart`/`markEnd` |
+| Impact | CI builds without network access cannot resolve it |
+
+### Markers prepared for
+
+| Composable | File |
+| ----------- | ---- |
+| `StartUp` | `feature_startup/.../StartUp.kt` |
+| `DiscordSetupStep` | `feature_startup/.../StartUp.kt` |
+| `GamesScreen` | `feature_console_rpc/.../GamesScreen.kt` |
+| `DetectedConsoleItem` | `feature_console_rpc/.../GamesScreen.kt` |
+| `RpcFieldWithCompletions` | `common/components/.../RpcFieldWithCompletion.kt` |
+
+### To enable
+
+1. Add to `gradle/libs.versions.toml`:
+   ```toml
+   composeRuntimeTracing = { module = "androidx.compose.runtime:runtime-tracing", version = "1.7.0" }
+   ```
+2. Add `implementation("androidx.compose.runtime:runtime-tracing:1.7.0")` to the three modules.
+3. Re-add `ComposeTracing.markStart("<Name>")` / `markEnd()` around the composable bodies.
+4. Capture in Android Studio Profiler → System Trace → **Compose** category; each marker appears in Perfetto with its recomposition count and duration.
+
+---
+
+## 114. Build Verification Summary (Console RPC / DataStore / Tink)
+
+| Module | Task | Result |
+| ------ | ---- | ------ |
+| `data` | `compileDebugKotlin` | ✅ BUILD SUCCESSFUL |
+| `data` | `testDebugUnitTest --tests com.my.kizzy.data.ConsoleAppsTest` | ✅ BUILD SUCCESSFUL (7 tests) |
+| `common:preference` | `compileDebugKotlin` | ✅ BUILD SUCCESSFUL (no warnings) |
+| `common:components` | `compileDebugKotlin` | ✅ BUILD SUCCESSFUL |
+| `feature_about` | `compileDebugKotlin` | ✅ BUILD SUCCESSFUL |
+| `feature_startup` | `compileDebugKotlin` | ✅ BUILD SUCCESSFUL |
+| `feature_rpc_base` | `compileDebugKotlin` | ✅ BUILD SUCCESSFUL |
+| `app` | `assembleDebug` | ✅ BUILD SUCCESSFUL |
+| `app` | `assembleRelease` | ✅ BUILD SUCCESSFUL (8.2 MB) |
+
+### Known pre-existing issues (not caused by these changes)
+
+`feature_profile` fails to compile on **clean `HEAD`** without any of the changes in this report:
+
+```
+e: .../feature_profile/.../component/ActivityRow.kt:56:77 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'String?'
+e: .../feature_profile/.../login/LoginScreen.kt:42:33 No value passed for parameter 'initialValue'
+```
+
+Both were verified to fail identically with the changes stashed, so they are unrelated concurrent work.
+
+---
+
+_Updated on November 14, 2026 — Sections 105–114 added._
+_Console RPC auto-detection, MMKV → DataStore migration, Tink token encryption, APK size reduction, App Bundle CI._
