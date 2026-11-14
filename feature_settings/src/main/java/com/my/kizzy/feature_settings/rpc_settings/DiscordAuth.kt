@@ -4,19 +4,19 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import androidx.core.net.toUri
 import com.my.kizzy.preference.Prefs
-import com.my.kizzy.preference.SecurePrefs
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
@@ -114,56 +114,56 @@ class DiscordAuth(
         redirectUri: String,
         clientId: String,
     ): DiscordAuthResult {
-        return performTokenExchange(
-            grantType = "authorization_code",
-            extraParams = mutableMapOf(
-                "code" to code,
-                "redirect_uri" to redirectUri,
-                "code_verifier" to verifier,
-                "client_id" to clientId
-            ),
+        val params = mapOf(
+            "client_id" to clientId,
+            "grant_type" to "authorization_code",
+            "code" to code,
+            "redirect_uri" to redirectUri,
+            "code_verifier" to verifier
         )
+        return performTokenExchange(params)
     }
 
     suspend fun refresh(refreshToken: String): DiscordAuthResult {
         val clientId = Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, DEFAULT_CLIENT_ID]
-        return performTokenExchange(
-            grantType = "refresh_token",
-            extraParams = mutableMapOf(
-                "refresh_token" to refreshToken,
-                "client_id" to clientId
-            ),
+        val params = mapOf(
+            "client_id" to clientId,
+            "grant_type" to "refresh_token",
+            "refresh_token" to refreshToken
         )
+        return performTokenExchange(params)
     }
 
-    private suspend fun performTokenExchange(
-        grantType: String,
-        extraParams: Map<String, String>,
-    ): DiscordAuthResult {
-        val client = io.ktor.client.HttpClient(io.ktor.client.engine.okhttp.OkHttp) {
-            install(io.ktor.client.plugins.HttpTimeout) {
-                requestTimeoutMillis = 15_000L
-                connectTimeoutMillis = 10_000L
-            }
-            expectSuccess = false
-        }
-
+    private fun performTokenExchange(params: Map<String, String>): DiscordAuthResult {
+        var connection: HttpURLConnection? = null
         try {
-            val response = client.post(DISCORD_OAUTH_TOKEN) {
-                setBody(io.ktor.client.request.forms.submitForm {
-                    append("client_id", Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, DEFAULT_CLIENT_ID])
-                    append("grant_type", grantType)
-                    extraParams.forEach { name, values ->
-                        values.forEach { value -> append(name, value) }
-                    }
-                })
+            val url = URL(DISCORD_OAUTH_TOKEN)
+            connection = (url.openConnection() as HttpURLConnection).apply {
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+                setRequestProperty("Accept", "application/json")
+                connectTimeout = 15_000
+                readTimeout = 10_000
+                doOutput = true
             }
 
-            val status = response.status
-            val body = response.bodyAsText()
+            val postData = params.entries.joinToString("&") { (key, value) ->
+                "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
+            }
 
-            if (status.value in 200..299) {
-                val json = JSONObject(body)
+            OutputStreamWriter(connection.outputStream, StandardCharsets.UTF_8).use { writer ->
+                writer.write(postData)
+                writer.flush()
+            }
+
+            val responseCode = connection.responseCode
+            val stream = if (responseCode in 200..299) connection.inputStream else connection.errorStream
+            val responseBody = stream?.use { inputStream ->
+                BufferedReader(InputStreamReader(inputStream, StandardCharsets.UTF_8)).use { it.readText() }
+            } ?: ""
+
+            if (responseCode in 200..299) {
+                val json = JSONObject(responseBody)
                 val accessToken = json.getString("access_token")
                 val refreshToken = json.optString("refresh_token", "")
                 val expiresIn = json.optLong("expires_in", 0L)
@@ -184,10 +184,8 @@ class DiscordAuth(
                     scope = scope,
                 )
             } else {
-                val errorCode = runCatching { JSONObject(body).optString("error", "") }
-                    .getOrDefault("")
-                Log.w(TAG, "token exchange: HTTP $status.value error=$errorCode body=$body")
-                throw DiscordAuthException.NetworkFailure(java.io.IOException("HTTP ${status.value}: $body"))
+                Log.w(TAG, "token exchange: HTTP $responseCode error body=$responseBody")
+                throw DiscordAuthException.NetworkFailure(java.io.IOException("HTTP $responseCode:$responseBody"))
             }
         } catch (e: DiscordAuthException) {
             throw e
@@ -195,7 +193,7 @@ class DiscordAuth(
             Log.e(TAG, "token exchange: network failure", e)
             throw DiscordAuthException.NetworkFailure(e)
         } finally {
-            client.close()
+            connection?.disconnect()
         }
     }
 
