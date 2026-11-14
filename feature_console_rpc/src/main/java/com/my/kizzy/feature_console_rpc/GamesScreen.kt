@@ -360,8 +360,6 @@ fun GamesScreen(
 
                             isChecked = isConsoleRpcRunning,
 
-                            enabled = rpcManager.activeRpc.value != RpcType.MediaRpc && rpcManager.activeRpc.value != RpcType.CustomRpc && rpcManager.activeRpc.value != RpcType.ExperimentalRpc && rpcManager.activeRpc.value != RpcType.AppDetectionRpc
-
                         ) {
 
                             isConsoleRpcRunning = !isConsoleRpcRunning
