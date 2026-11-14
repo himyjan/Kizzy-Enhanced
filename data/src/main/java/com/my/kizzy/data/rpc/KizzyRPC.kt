@@ -212,12 +212,16 @@ class KizzyRPC @Inject constructor(
                 logger.w("KizzyRPC", "Stored OAuth token is not a valid user token (bot token format detected). Clearing and forcing re-authentication.")
                 Prefs.remove(Prefs.DISCORD_OAUTH_ACCESS_TOKEN)
                 token = ""
+                if (discordWebSocket.isWebSocketConnected()) {
+                    logger.d("KizzyRPC", "Invalid token, closing WebSocket")
+                    discordWebSocket.close()
+                }
             }
         }
 
         if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
             logger.d("KizzyRPC", "Token changed, reconnecting WebSocket with new token")
-            (discordWebSocket as DiscordWebSocketImpl).updateTokenAndReconnect(newToken)
+            (discordWebSocket as DiscordWebSocketImpl).updateTokenAndReconnect(token)
         }
 
         val (browser, os, device) = Constants.spoofIdentifyProperties(
