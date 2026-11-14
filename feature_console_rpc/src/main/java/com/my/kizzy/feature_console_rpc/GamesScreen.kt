@@ -172,6 +172,13 @@ fun GamesScreen(
     var isConsoleRpcRunning by remember {
         mutableStateOf(consoleRpcRunning)
     }
+    val rpcManager = RpcManager.getInstance(context)
+    LaunchedEffect(Unit) {
+        rpcManager.refreshFromServices()
+    }
+    LaunchedEffect(rpcManager.activeRpc) {
+        isConsoleRpcRunning = rpcManager.activeRpc.value == RpcType.ConsoleRpc
+    }
     var selected by remember { mutableStateOf("") }
     var searchText by remember { mutableStateOf("") }
 
@@ -350,7 +357,7 @@ fun GamesScreen(
 
                             isChecked = isConsoleRpcRunning,
 
-                            enabled = !otherRpcServicesRunning
+                            enabled = rpcManager.activeRpc.value != RpcType.MediaRpc && rpcManager.activeRpc.value != RpcType.CustomRpc && rpcManager.activeRpc.value != RpcType.ExperimentalRpc && rpcManager.activeRpc.value != RpcType.AppDetectionRpc
 
                         ) {
 

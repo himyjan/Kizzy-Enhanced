@@ -4,6 +4,7 @@ plugins {
     id("kizzy.android.application")
     id("kizzy.android.application.compose")
     id("kizzy.android.hilt")
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -126,6 +127,7 @@ dependencies {
 
     // Baseline Profiles for faster startup
     implementation(libs.profileinstaller)
+    androidTestImplementation(libs.baselineprofile)
 }
 
 configurations {
