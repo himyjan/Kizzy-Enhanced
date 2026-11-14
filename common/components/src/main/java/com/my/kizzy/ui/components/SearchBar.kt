@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.resources.R
@@ -127,7 +126,6 @@ fun SearchBar(
                 ),
                 cursorBrush = SolidColor(colorScheme.primary),
                 singleLine = true,
-                visualTransformation = VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
                 modifier = Modifier

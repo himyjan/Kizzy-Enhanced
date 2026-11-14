@@ -120,15 +120,12 @@ class DynamicActivityDetectionEngine @Inject constructor(
             val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
             val appLabel = packageManager.getApplicationLabel(appInfo).toString()
 
-            // 1. FLAG_IS_GAME — set by the OS for any app categorized as a game
-            val isGameFlag = (appInfo.flags and ApplicationInfo.FLAG_IS_GAME) != 0
-
-            // 2. CATEGORY_GAME — explicit category hint
+            // 1. CATEGORY_GAME — explicit category hint
             val isGameCategory = if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
                 appInfo.category == ApplicationInfo.CATEGORY_GAME
             } else false
 
-            if (isGameFlag || isGameCategory) {
+            if (isGameCategory) {
                 DetectedGameApp(
                     displayName = appLabel,
                     packageName = packageName,
