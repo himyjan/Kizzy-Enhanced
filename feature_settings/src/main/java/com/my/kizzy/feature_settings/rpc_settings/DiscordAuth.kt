@@ -33,7 +33,7 @@ class DiscordAuth(
         private const val DISCORD_OAUTH_TOKEN = "https://discord.com/api/v10/oauth2/token"
         private const val DISCORD_SCOPES = "identify guilds"
         private const val REDIRECT_URI = "kizzy://oauth/callback"
-        private const val DEFAULT_CLIENT_ID = "1144460930916270110"
+        private const val DEFAULT_CLIENT_ID = "1571063796418744412"
     }
 
     data class DiscordAuthResult(

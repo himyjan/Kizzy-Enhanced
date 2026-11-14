@@ -14,28 +14,14 @@ package com.my.kizzy.preference
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.MutablePreferences
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.my.kizzy.domain.model.release.Release
 import com.my.kizzy.domain.model.user.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.hours
 
@@ -290,7 +276,7 @@ object Prefs {
     const val RPC_CONNECTION_METHOD_GATEWAY = "gateway"
     const val RPC_CONNECTION_METHOD_OAUTH = "oauth"
 
-    const val DISCORD_OAUTH_CLIENT_ID = "discord_oauth_client_id"
+    const val DISCORD_OAUTH_CLIENT_ID = "1571063796418744412"
 
     // Discord OAuth token storage (encrypted via SecurePrefs)
     const val DISCORD_OAUTH_ACCESS_TOKEN = "discord_oauth_access_token"
