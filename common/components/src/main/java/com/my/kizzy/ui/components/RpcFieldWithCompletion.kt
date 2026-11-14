@@ -35,7 +35,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -59,8 +59,10 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OutputTransformation
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -111,14 +113,14 @@ fun RpcFieldWithCompletions(
     val containerColor = colorScheme.primaryContainer.copy(alpha = 0.3f)
     val surfaceColor = colorScheme.surface.copy(alpha = 0.98f)
 
-    // Cache output transformation per text value - avoids rebuilding on every recomposition
-    val outputTransformation = remember(textFieldValue.text) {
+    // Cache visual transformation per text value - avoids rebuilding on every recomposition
+    val visualTransformation = remember(textFieldValue.text) {
         val color = primaryColor
         val background = containerColor
-        OutputTransformation { state ->
+        VisualTransformation { text ->
             val annotatedString = buildAnnotatedString {
-                append(state.text)
-                TEMPLATE_REGEX.toRegex().findAll(state.text).forEach { matchResult ->
+                append(text)
+                TEMPLATE_REGEX.toRegex().findAll(text).forEach { matchResult ->
                     addStyle(
                         style = SpanStyle(
                             color = color,
@@ -127,7 +129,10 @@ fun RpcFieldWithCompletions(
                     )
                 }
             }
-            OutputTransformation.Result(annotatedString)
+
+            TransformedText(
+                text = annotatedString, offsetMapping = OffsetMapping.Identity
+            )
         }
     }
 
@@ -150,7 +155,7 @@ fun RpcFieldWithCompletions(
                     }
                 },
             value = textFieldValue,
-            outputTransformation = outputTransformation,
+            visualTransformation = visualTransformation,
             onValueChange = { newTextFieldValue ->
                 textFieldValue = newTextFieldValue
                 onValueChange(newTextFieldValue.text)
@@ -317,7 +322,7 @@ fun RpcFieldWithCompletions(
                                     )
                                 }
                                 if (itemsIndex < lastIndex) {
-                                    HorizontalDivider(
+                                    Divider(
                                         modifier = Modifier.padding(horizontal = 12.dp),
                                         thickness = DividerDefaults.Thickness,
                                         color = colorScheme.outline.copy(alpha = 0.08f)
@@ -382,6 +387,7 @@ private fun updateSuggestions(
     completionList: List<Pair<String, ResourceId>>,
 ) {
     // Filtering is handled by the remember block based on textFieldValue changes
+    Unit
 }
 
 private fun getCurrentWord(text: String): String {
