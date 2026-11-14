@@ -89,6 +89,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 
+import kotlinx.coroutines.launch
+
 import androidx.compose.runtime.getValue
 
 import androidx.compose.runtime.mutableStateOf
@@ -415,7 +417,7 @@ fun GamesScreen(
                                                 status = consoleStatus,
                                                 timestampsStart = startTs,
                                                 timestampsStop = endTs,
-                                                platform = consolePlatform,
+                                                platform = info.platform,
                                                 largeImg = if (consoleShowCoverArt) "" else "",
                                                 smallImg = if (consoleShowCoverArt) "" else "",
                                                 button1 = consoleButton1Text,
@@ -480,7 +482,7 @@ fun GamesScreen(
                                                     status = consoleStatus,
                                                     timestampsStart = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else "",
                                                     timestampsStop = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else "",
-                                                    platform = consolePlatform,
+                                                    platform = detectedConsole.platformName,
                                                     largeImg = if (consoleShowCoverArt) detectedConsole.largeImage.orEmpty() else "",
                                                     smallImg = if (consoleShowCoverArt) detectedConsole.smallImage.orEmpty() else "",
                                                     button1 = consoleButton1Text,
@@ -510,7 +512,7 @@ fun GamesScreen(
                                             status = consoleStatus,
                                             timestampsStart = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else "",
                                             timestampsStop = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else "",
-                                            platform = consolePlatform,
+                                            platform = info.platform,
                                             largeImg = if (consoleShowCoverArt) info.large_image ?: "" else "",
                                             smallImg = if (consoleShowCoverArt) info.small_image else "",
                                             button1 = consoleButton1Text,
