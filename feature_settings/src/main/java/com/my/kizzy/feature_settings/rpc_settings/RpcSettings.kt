@@ -133,19 +133,21 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 }
             }
             item(key = "connection_method") {
+                val currentMethod = if (connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) "OAuth2" else "Gateway"
                 SettingItem(
                     title = stringResource(id = R.string.rpc_connection_method),
-                    description = stringResource(id = R.string.rpc_connection_method_desc),
+                    description = stringResource(id = R.string.rpc_connection_method_desc) + "  •  Currently using: $currentMethod",
                     icon = Icons.Default.OpenInNew,
                 ) {
                     showConnectionMethodDialog = true
                 }
             }
             item(key = "oauth_authorize") {
+                val oauthStatus = if (discordAuth.hasValidToken()) "Authorized" else "Not authorized"
                 AnimatedVisibility(visible = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) {
                     SettingItem(
                         title = stringResource(id = R.string.discord_oauth_authorize),
-                        description = stringResource(id = R.string.discord_oauth_authorize_desc),
+                        description = stringResource(id = R.string.discord_oauth_authorize_desc) + "  •  $oauthStatus",
                         icon = Icons.Default.Login,
                     ) {
                         scope.launch {
