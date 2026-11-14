@@ -76,7 +76,7 @@ class CustomRpcService : Service() {
                 // forceRefresh=true ensures the presence is actually sent even
                 // when the WebSocket is already connected (build() otherwise
                 // returns early without sending).
-                val string = intent?.getStringExtra("RPC")
+                val string = intent!!.getStringExtra("RPC")
                 string?.takeIf { it.isNotBlank() }?.let {
                     rpcData = try {
                         Json.decodeFromString(it)
