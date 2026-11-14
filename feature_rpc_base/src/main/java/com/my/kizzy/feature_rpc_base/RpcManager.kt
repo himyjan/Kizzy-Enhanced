@@ -25,9 +25,12 @@ import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * Centralized RPC state manager.
@@ -98,7 +101,7 @@ class RpcManager @Inject constructor(
      * @param rpcConfigString Optional serialized RpcConfig for Custom/Console RPC.
      * @param isConsoleRpc Whether the CustomRpcService should run in console mode.
      */
-    fun switchTo(
+    suspend fun switchTo(
         rpcType: RpcType,
         rpcConfigString: String? = null,
         isConsoleRpc: Boolean = false
@@ -109,11 +112,15 @@ class RpcManager @Inject constructor(
         // Stop all RPC services first
         stopAllRpcServices()
 
+        // Wait briefly for services to fully stop before starting the new one
+        withContext(Dispatchers.Main) {
+            delay(300L)
+        }
+
         // Update prefs so AppUtils reflects the new state
         Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = if (rpcType == RpcType.CustomRpc) rpcConfigString else ""
         Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = if (rpcType == RpcType.ConsoleRpc) rpcConfigString else ""
         Prefs[Prefs.MEDIA_RPC_ENABLED] = if (rpcType == RpcType.MediaRpc) true else false
-        Prefs[Prefs.RPC_CONNECTION_METHOD] = if (rpcType == RpcType.DiscordOAuthRpc) Prefs.RPC_CONNECTION_METHOD_OAUTH else Prefs.RPC_CONNECTION_METHOD_GATEWAY
 
         // Start the requested RPC (if not None)
         when (rpcType) {

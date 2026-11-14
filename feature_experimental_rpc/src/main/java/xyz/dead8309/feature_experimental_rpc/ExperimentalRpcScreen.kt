@@ -128,6 +128,14 @@ import com.my.kizzy.data.rpc.TemplateKeys
 
 import com.my.kizzy.feature_rpc_base.AppUtils
 
+import com.my.kizzy.feature_rpc_base.RpcManager
+
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
+
+import com.my.kizzy.feature_rpc_base.RpcManager
+
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
+
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
@@ -222,8 +230,16 @@ fun ExperimentalRpcScreen(
 ) {
 
     val context = LocalContext.current
+    val rpcManager = RpcManager.getInstance(context)
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        rpcManager.refreshFromServices()
+    }
 
-    var experimentalRpcRunning by remember { mutableStateOf(AppUtils.experimentalRpcRunning() && !AppUtils.mediaRpcRunning()) }
+    var experimentalRpcRunning by remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ExperimentalRpc) }
+    LaunchedEffect(rpcManager.activeRpc) {
+        experimentalRpcRunning = rpcManager.activeRpc.value == RpcType.ExperimentalRpc
+    }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
 
@@ -335,30 +351,14 @@ fun ExperimentalRpcScreen(
 
                 isChecked = experimentalRpcRunning,
 
-                enabled = hasUsageAccess && hasNotificationAccess && !AppUtils.mediaRpcRunning(),
+                enabled = hasUsageAccess && hasNotificationAccess,
 
             ) {
 
-                experimentalRpcRunning = !experimentalRpcRunning
-
-                when (experimentalRpcRunning) {
-
-                    true -> {
-
-                        context.stopService(Intent(context, AppDetectionService::class.java))
-
-                        context.stopService(Intent(context, CustomRpcService::class.java))
-
-                        context.stopMediaRpcService()
-
-                        context.startService(Intent(context, ExperimentalRpc::class.java))
-
-                    }
-
-
-
-                    false -> context.stopService(Intent(context, ExperimentalRpc::class.java))
-
+                val newValue = !experimentalRpcRunning
+                experimentalRpcRunning = newValue
+                scope.launch {
+                    rpcManager.switchTo(if (newValue) RpcType.ExperimentalRpc else RpcType.None)
                 }
 
             }

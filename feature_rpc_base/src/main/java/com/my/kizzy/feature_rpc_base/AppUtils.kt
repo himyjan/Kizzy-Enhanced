@@ -55,7 +55,9 @@ object AppUtils {
     }
 
     fun customRpcRunning(): Boolean {
-        return Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty() && checkForRunningService<CustomRpcService>()
+        return Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty()
+            && Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isEmpty()
+            && checkForRunningService<CustomRpcService>()
     }
 
     fun consoleRpcRunning(): Boolean {
