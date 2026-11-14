@@ -20,6 +20,7 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
+import android.graphics.drawable.Icon
 import com.my.kizzy.data.get_current_data.app.GetForegroundPackage
 import com.my.kizzy.data.rpc.ActiveGameTracker
 import com.my.kizzy.data.rpc.ConsoleAppRegistry
@@ -76,7 +77,7 @@ class CustomRpcService : Service() {
                 // forceRefresh=true ensures the presence is actually sent even
                 // when the WebSocket is already connected (build() otherwise
                 // returns early without sending).
-                val string = intent!!.getStringExtra("RPC")
+                val string = intent.getStringExtra("RPC")
                 string?.takeIf { it.isNotBlank() }?.let {
                     rpcData = try {
                         Json.decodeFromString(it)
@@ -242,14 +243,14 @@ class CustomRpcService : Service() {
                 .setContentIntent(appPendingIntent)
                 .addAction(
                     Notification.Action.Builder(
-                        R.drawable.ic_rpc_placeholder,
+                        Icon.createWithResource(this@CustomRpcService, R.drawable.ic_rpc_placeholder),
                         getString(R.string.restart),
                         restartPendingIntent
                     ).build()
                 )
                 .addAction(
                     Notification.Action.Builder(
-                        R.drawable.ic_rpc_placeholder,
+                        Icon.createWithResource(this@CustomRpcService, R.drawable.ic_rpc_placeholder),
                         getString(R.string.exit),
                         pendingIntent
                     ).build()
