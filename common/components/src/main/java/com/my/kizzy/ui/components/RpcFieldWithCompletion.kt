@@ -59,10 +59,8 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.OutputTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -113,14 +111,14 @@ fun RpcFieldWithCompletions(
     val containerColor = colorScheme.primaryContainer.copy(alpha = 0.3f)
     val surfaceColor = colorScheme.surface.copy(alpha = 0.98f)
 
-    // Cache visual transformation per text value - avoids rebuilding on every recomposition
-    val visualTransformation = remember(textFieldValue.text) {
+    // Cache output transformation per text value - avoids rebuilding on every recomposition
+    val outputTransformation = remember(textFieldValue.text) {
         val color = primaryColor
         val background = containerColor
-        VisualTransformation { text ->
+        OutputTransformation { state ->
             val annotatedString = buildAnnotatedString {
-                append(text.text)
-                TEMPLATE_REGEX.toRegex().findAll(text.text).forEach { matchResult ->
+                append(state.text)
+                TEMPLATE_REGEX.toRegex().findAll(state.text).forEach { matchResult ->
                     addStyle(
                         style = SpanStyle(
                             color = color,
@@ -129,7 +127,7 @@ fun RpcFieldWithCompletions(
                     )
                 }
             }
-            TransformedText(annotatedString, OffsetMapping.Identity)
+            OutputTransformation.Result(annotatedString)
         }
     }
 
@@ -152,7 +150,7 @@ fun RpcFieldWithCompletions(
                     }
                 },
             value = textFieldValue,
-            visualTransformation = visualTransformation,
+            outputTransformation = outputTransformation,
             onValueChange = { newTextFieldValue ->
                 textFieldValue = newTextFieldValue
                 onValueChange(newTextFieldValue.text)

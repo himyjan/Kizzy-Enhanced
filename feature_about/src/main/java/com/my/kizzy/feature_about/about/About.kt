@@ -28,8 +28,8 @@ import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.preference.PreferencesHint
 import com.my.kizzy.ui.components.SettingItem
 import com.my.kizzy.feature_about.BuildConfig
+import androidx.compose.material.icons.automirrored.outlined.ContactSupport
 import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.ContactSupport
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.NewReleases
@@ -101,7 +101,7 @@ fun About(
                 SettingItem(
                     title = stringResource(id = R.string.github_issue),
                     description = stringResource(id = R.string.github_issue_desc),
-                    icon = Icons.Outlined.ContactSupport
+                    icon = Icons.AutoMirrored.Outlined.ContactSupport
                 ) {
                     openUrl(github_Issues)
                 }
