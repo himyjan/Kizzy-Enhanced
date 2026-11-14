@@ -187,10 +187,23 @@ class KizzyRPC @Inject constructor(
     suspend fun refreshFromPrefs() {
         // Determine which token to use based on connection method
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
-        token = when (connectionMethod) {
+        val newToken = when (connectionMethod) {
             Prefs.RPC_CONNECTION_METHOD_OAUTH -> Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""]
             else -> Prefs[Prefs.TOKEN, ""]
         }
+
+        // If the token changed (e.g. OAuth login after bot-token session, or logout),
+        // close the existing WebSocket so the next connect re-authenticates with the
+        // new token. Discord authenticates based on the IDENTIFY handshake token, so
+        // simply updating the in-memory token is not enough on an already-open socket.
+        val tokenChanged = newToken != token
+        token = newToken
+
+        if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
+            logger.d("KizzyRPC", "Token changed, closing WebSocket to re-authenticate")
+            discordWebSocket.close()
+        }
+
         val (browser, os, device) = Constants.spoofIdentifyProperties(
             Prefs[Prefs.EXPERIMENTAL_RPC_PLATFORM, ""]
         )
