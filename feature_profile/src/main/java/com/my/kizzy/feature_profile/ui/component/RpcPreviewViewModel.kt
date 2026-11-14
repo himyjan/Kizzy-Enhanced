@@ -9,8 +9,10 @@ import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.optIn.RequiresOptIn
 
 /**
  * Live state for the RPC preview.
@@ -22,12 +24,12 @@ import kotlinx.serialization.json.Json
  * the state repository so the preview follows the current track (and freezes when
  * the music is paused). Every other RPC type keeps using the route snapshot.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class RpcPreviewViewModel @Inject constructor(
     stateRepository: KizzyStateRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-
     private val passedConfig: RpcConfig? = savedStateHandle.get<String>("rpcConfig")
         ?.takeIf { it.isNotBlank() }
         ?.let { raw ->
