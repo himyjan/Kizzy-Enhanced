@@ -23,6 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.TextFieldState
+import androidx.compose.foundation.text.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Search
@@ -85,6 +87,12 @@ fun SearchBar(
     val colorScheme = MaterialTheme.colorScheme
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val textFieldState = rememberTextFieldState(text)
+
+    // Sync external text changes into the field state
+    LaunchedEffect(text) {
+        textFieldState.updateText(text)
+    }
 
     // The focus has to be requested *after* the field was attached to the
     // composition. Asking for it during the very first composition is silently
@@ -119,8 +127,11 @@ fun SearchBar(
                 .padding(start = 10.dp, end = 6.dp)
         ) {
             BasicTextField(
-                value = text,
-                onValueChange = onTextChanged,
+                state = textFieldState,
+                onValueChange = { newText ->
+                    textFieldState.updateText(newText)
+                    onTextChanged(newText)
+                },
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     color = colorScheme.onSurface
                 ),
@@ -133,7 +144,7 @@ fun SearchBar(
                     .focusRequester(focusRequester),
                 decorationBox = { innerTextField ->
                     Box {
-                        if (text.isEmpty()) {
+                        if (textFieldState.text.isEmpty()) {
                             Text(
                                 text = placeholder,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -149,14 +160,14 @@ fun SearchBar(
 
         IconButton(
             onClick = {
-                if (text.isNotEmpty()) onTextChanged("")
+                if (textFieldState.text.isNotEmpty()) textFieldState.updateText("")
                 else onClose()
             }
         ) {
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = stringResource(
-                    id = if (text.isNotEmpty()) R.string.clear else R.string.cancel
+                    id = if (textFieldState.text.isNotEmpty()) R.string.clear else R.string.cancel
                 ),
                 tint = colorScheme.onSurfaceVariant,
             )
