@@ -82,6 +82,9 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var showDirConfigDialog by remember { mutableStateOf(false) }
     var showConnectionMethodDialog by remember { mutableStateOf(false) }
     var oauthError by remember { mutableStateOf("") }
+    var discordOAuthClientId by remember {
+        mutableStateOf(Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, ""])
+    }
 
     // Collect from DataStore state flow so OAuth2 selection persists across cold boots.
     // DataStore priming is async (Dispatchers.IO), so Prefs[...] may return the default
@@ -148,6 +151,16 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     icon = Icons.Default.OpenInNew,
                 ) {
                     showConnectionMethodDialog = true
+                }
+            }
+            item(key = "oauth_client_id") {
+                SettingItem(
+                    title = stringResource(id = R.string.discord_oauth_client_id),
+                    description = stringResource(id = R.string.discord_oauth_client_id_desc),
+                    icon = Icons.Outlined.Person,
+                ) {
+                    discordOAuthClientId = Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, ""]
+                    // TODO: open dialog to edit client ID
                 }
             }
             item(key = "oauth_authorize") {

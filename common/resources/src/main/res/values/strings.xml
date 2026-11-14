@@ -90,6 +90,11 @@
     <string name="console_enable_timestamps_desc">Show start and end timestamps</string>
     <string name="console_show_cover_art">Show Cover Art</string>
     <string name="console_show_cover_art_desc">Show cover art for detected games</string>
+    <string name="console_preset_games">Preset Games</string>
+    <string name="console_preset_xbox">Xbox</string>
+    <string name="console_preset_playstation">PlayStation</string>
+    <string name="console_preset_nintendo">Nintendo</string>
+    <string name="console_preset_desktop">Desktop</string>
     <string name="console_buttons">Buttons</string>
     <string name="console_buttons_desc">Configure custom buttons</string>
     <string name="rpc_settings_button_configs">Button configuration for Media and AppDetection RPC</string>
@@ -397,6 +402,8 @@
     <string name="rpc_connection_method_oauth">OAuth (Your Discord Account)</string>
     <string name="discord_oauth_authorize">Connect to Discord</string>
     <string name="discord_oauth_authorize_desc">Authorize Kizzy to show your activity on your Discord profile</string>
+    <string name="discord_oauth_client_id">Discord OAuth Client ID</string>
+    <string name="discord_oauth_client_id_desc">Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications</string>
     <string name="logs_saved_toast">Logs saved to %1$s</string>
     <string name="logs_save_error">Failed to save logs</string>
     <string name="select_all">Select All</string>

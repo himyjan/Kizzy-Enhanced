@@ -285,7 +285,7 @@ object Prefs {
     const val RPC_CONNECTION_METHOD_GATEWAY = "gateway"
     const val RPC_CONNECTION_METHOD_OAUTH = "oauth"
 
-    const val DISCORD_OAUTH_CLIENT_ID = "1571063796418744412"
+    const val DISCORD_OAUTH_CLIENT_ID = "discord_oauth_client_id"
 
     // Discord OAuth token storage (encrypted via SecurePrefs)
     const val DISCORD_OAUTH_ACCESS_TOKEN = "discord_oauth_access_token"
@@ -423,5 +423,9 @@ object Prefs {
         else
             enabledPackages.add(pkg)
         set(ENABLED_EXPERIMENTAL_APPS, Json.encodeToString(enabledPackages))
+    }
+
+    fun setExperimentalAppsEnabled(packages: List<String>) {
+        set(ENABLED_EXPERIMENTAL_APPS, Json.encodeToString(packages.toMutableList()))
     }
 }
