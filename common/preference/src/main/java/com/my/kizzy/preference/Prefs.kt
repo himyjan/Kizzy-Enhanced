@@ -16,7 +16,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.my.kizzy.domain.model.release.Release
@@ -47,38 +51,40 @@ object Prefs {
      * working without blocking on disk IO: every write updates the mirror
      * first and is persisted to disk in the background.
      */
-    private val _prefsState = MutableStateFlow(emptyMap<String, Any?>())
+    @PublishedApi
+    internal val _prefsState = MutableStateFlow(emptyMap<String, Any?>())
     val prefsState: Flow<Map<String, Any?>> = _prefsState.asStateFlow()
 
     operator fun set(key: String, value: Any?) = when (value) {
         is String? -> {
             _prefsState.update { it + (key to value) }
-            launchDataStoreEdit { preferences ->
-                preferences[stringPreferencesKey(key)] = value
+            launchDataStoreEdit {
+                if (value == null) this.remove(stringPreferencesKey(key))
+                else this[stringPreferencesKey(key)] = value
             }
         }
         is Int -> {
             _prefsState.update { it + (key to value) }
-            launchDataStoreEdit { preferences ->
-                preferences[stringPreferencesKey(key)] = value
+            launchDataStoreEdit {
+                this[intPreferencesKey(key)] = value
             }
         }
         is Boolean -> {
             _prefsState.update { it + (key to value) }
-            launchDataStoreEdit { preferences ->
-                preferences[stringPreferencesKey(key)] = value
+            launchDataStoreEdit {
+                this[booleanPreferencesKey(key)] = value
             }
         }
         is Float -> {
             _prefsState.update { it + (key to value) }
-            launchDataStoreEdit { preferences ->
-                preferences[stringPreferencesKey(key)] = value
+            launchDataStoreEdit {
+                this[floatPreferencesKey(key)] = value
             }
         }
         is Long -> {
             _prefsState.update { it + (key to value) }
-            launchDataStoreEdit { preferences ->
-                preferences[stringPreferencesKey(key)] = value
+            launchDataStoreEdit {
+                this[longPreferencesKey(key)] = value
             }
         }
         else -> throw UnsupportedOperationException("Not yet implemented")
@@ -102,8 +108,14 @@ object Prefs {
 
     fun remove(key: String) {
         _prefsState.update { it - key }
-        launchDataStoreEdit { preferences ->
-            preferences.remove(stringPreferencesKey(key))
+        launchDataStoreEdit {
+            // The value could have been stored under any of the typed keys, so
+            // every one of them is removed.
+            this.remove(stringPreferencesKey(key))
+            this.remove(intPreferencesKey(key))
+            this.remove(booleanPreferencesKey(key))
+            this.remove(floatPreferencesKey(key))
+            this.remove(longPreferencesKey(key))
         }
     }
 
@@ -119,13 +131,13 @@ object Prefs {
      */
     private fun launchDataStoreEdit(block: suspend MutablePreferences.() -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            dataStore?.edit { block() }
+            dataStore?.edit(transform = block)
         }
     }
 
     internal fun initDataStore(context: Context) {
         if (dataStore == null) {
-            dataStore = preferencesDataStore(context = context, name = "app_preferences")
+            dataStore = context.appPreferencesDataStore
             // Prime the synchronous mirror with the values that are already
             // stored on disk, so the first reads do not return the defaults.
             CoroutineScope(Dispatchers.IO).launch {
@@ -135,6 +147,13 @@ object Prefs {
             }
         }
     }
+
+    /**
+     * The DataStore delegate. `preferencesDataStore` returns a property
+     * delegate that creates (and caches) the DataStore for the given context.
+     */
+    private val Context.appPreferencesDataStore: DataStore<Preferences> by
+        preferencesDataStore(name = "app_preferences")
 
     fun isAppEnabled(packageName: String?): Boolean {
         val apps = get(ENABLED_APPS, "[]")
