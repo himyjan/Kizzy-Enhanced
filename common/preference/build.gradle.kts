@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.common.resources)
     implementation(libs.material3)
     implementation(libs.datastore.preferences)
+    implementation(libs.tink.android)
     implementation(libs.kotlinx.coroutine)
     implementation(libs.compose.ui)
     implementation(libs.kotlinx.serialization.json)
