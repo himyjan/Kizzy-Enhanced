@@ -39,9 +39,7 @@ fun LoginScreen(
     var buttonEnabledState by remember { mutableStateOf(true) }
     var uiState: LoginUiState by remember { mutableStateOf(LoginUiState.InitialState) }
     val scope = rememberCoroutineScope()
-    val modalBottomSheetState = rememberBottomSheetState(
-        initialValue = BottomSheetValue.Hidden
-    )
+    val modalBottomSheetState = rememberBottomSheetState()
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),

@@ -162,8 +162,6 @@ fun LogScreenContent(
         }
         LazyColumn(
             state = lazyListState,
-            cacheAheadItems = 5,
-            cacheBehindItems = 3,
             contentPadding = PaddingValues(10.dp),
             modifier = Modifier
                 .fillMaxSize()
