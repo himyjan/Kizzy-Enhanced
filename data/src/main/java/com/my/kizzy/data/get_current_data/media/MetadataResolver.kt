@@ -236,6 +236,13 @@ class MetadataResolver @Inject constructor(
             if (id != null) {
                 return "https://youtu.be/$id"
             }
+            // Raw video ID from modded apps (no yt:video: prefix).
+            val rawId = mediaId.trim()
+            if (rawId.length == 11 && rawId.matches(Regex("[A-Za-z0-9_-]{11}"))) {
+                return "https://youtu.be/$rawId"
+            }
+            // Any other recognizable YouTube URL form in the media id.
+            YouTubeResolver.extractVideoId(mediaId)?.let { return "https://youtu.be/$it" }
         }
 
         // The video of the track, looked up by its title.
@@ -346,8 +353,13 @@ class MetadataResolver @Inject constructor(
             if (id.isNotBlank() && id.length >= 11) {
                 return "https://youtu.be/$id"
             }
+            // Fallback: raw video ID (11 chars, alphanumeric/_/-) from modded YouTube apps
+            // that ship just the video ID without yt:video: prefix
+            val rawId = mediaId.trim()
+            if (rawId.length == 11 && rawId.matches(Regex("[A-Za-z0-9_-]{11}"))) {
+                return "https://youtu.be/$rawId"
+            }
             // Fallback: try YouTubeResolver.extractVideoId for any URL format
-            // (handles modded YouTube Music apps that ship media IDs in other formats)
             val resolvedId = YouTubeResolver.extractVideoId(mediaId)
             if (resolvedId != null) {
                 return "https://youtu.be/$resolvedId"

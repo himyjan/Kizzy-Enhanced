@@ -445,6 +445,13 @@ class MediaRpcService : Service() {
     private suspend fun resolveDirectMediaUrl(): String? {
         val metadata = currentMediaController?.metadata ?: return null
         val packageName = currentPackageName ?: return null
+        // For YouTube-based apps (including modded / wrapper clients), prefer the
+        // suspend resolver that looks the video up by media id or title via the
+        // oEmbed endpoint. It returns https://youtu.be/ID instead of falling back
+        // to a "youtube.com/results?search_query=..." search page.
+        if (MediaServiceResolver.isYouTube(packageName)) {
+            metadataResolver.getDirectMediaUrl(metadata, packageName)?.let { return it }
+        }
         return metadataResolver.getMediaUrl(metadata, packageName)
     }
 
