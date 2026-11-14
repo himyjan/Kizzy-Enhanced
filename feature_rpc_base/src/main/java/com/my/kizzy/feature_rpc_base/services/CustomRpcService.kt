@@ -291,6 +291,11 @@ class CustomRpcService : Service() {
     override fun onDestroy() {
         consoleDetectionJob?.cancel()
         consoleDetectionJob = null
+        // Clear Discord presence before closing the WebSocket so the activity
+        // card is removed from the user's profile
+        CoroutineScope(Dispatchers.IO).launch {
+            kizzyRPC.clearPresence()
+        }
         scope.cancel()
         kizzyRPC.closeRPC()
         wakeLock?.let {

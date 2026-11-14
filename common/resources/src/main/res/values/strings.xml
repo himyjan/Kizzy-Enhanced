@@ -83,6 +83,15 @@
     <string name="console_detected">Detected</string>
     <string name="console_detected_in_game">In game</string>
     <string name="console_detected_hint">Tap to use this game for Console RPC</string>
+    <string name="console_platform">Platform</string>
+    <string name="console_activity_type">Activity Type</string>
+    <string name="console_status">Status</string>
+    <string name="console_enable_timestamps">Enable Timestamps</string>
+    <string name="console_enable_timestamps_desc">Show start and end timestamps</string>
+    <string name="console_show_cover_art">Show Cover Art</string>
+    <string name="console_show_cover_art_desc">Show cover art for detected games</string>
+    <string name="console_buttons">Buttons</string>
+    <string name="console_buttons_desc">Configure custom buttons</string>
     <string name="rpc_settings_button_configs">Button configuration for Media and AppDetection RPC</string>
     <string name="use_custom_buttons">Use Custom Buttons</string>
     <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
