@@ -417,7 +417,6 @@ fun GamesScreen(
                                                 status = consoleStatus,
                                                 timestampsStart = startTs,
                                                 timestampsStop = endTs,
-                                                platform = info.platform,
                                                 largeImg = if (consoleShowCoverArt) "" else "",
                                                 smallImg = if (consoleShowCoverArt) "" else "",
                                                 button1 = consoleButton1Text,

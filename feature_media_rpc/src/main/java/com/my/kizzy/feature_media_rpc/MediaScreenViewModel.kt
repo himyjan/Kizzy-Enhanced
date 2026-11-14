@@ -75,6 +75,27 @@ class MediaScreenViewModel @Inject constructor(
         }
     }
 
+    fun selectAllMediaApps() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val allApps = state.value.apps.map { it.pkg }
+            Prefs.setMediaAppsEnabled(allApps)
+            val updated = allApps.associate { it to true }
+            _state.update { currentState ->
+                currentState.copy(enabledApps = updated)
+            }
+        }
+    }
+
+    fun deselectAllMediaApps() {
+        viewModelScope.launch(Dispatchers.IO) {
+            Prefs.setMediaAppsEnabled(emptyList())
+            val updated = state.value.apps.associate { it.pkg to false }
+            _state.update { currentState ->
+                currentState.copy(enabledApps = updated)
+            }
+        }
+    }
+
     /**
      * Stores the activity type of a single app. A null type removes the choice, so
      * the automatic detection takes over again.
