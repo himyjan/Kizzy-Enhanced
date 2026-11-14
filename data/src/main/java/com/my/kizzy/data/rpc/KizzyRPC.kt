@@ -204,7 +204,7 @@ class KizzyRPC @Inject constructor(
 
         if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
             logger.d("KizzyRPC", "Token changed, reconnecting WebSocket with new token")
-            discordWebSocket.updateTokenAndReconnect(newToken)
+            (discordWebSocket as DiscordWebSocketImpl).updateTokenAndReconnect(newToken)
         }
 
         val (browser, os, device) = Constants.spoofIdentifyProperties(
