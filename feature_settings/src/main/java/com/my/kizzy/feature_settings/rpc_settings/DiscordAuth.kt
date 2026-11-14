@@ -11,6 +11,7 @@ import com.my.kizzy.preference.Prefs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -134,9 +135,10 @@ class DiscordAuth(
         return performTokenExchange(params)
     }
 
-    private fun performTokenExchange(params: Map<String, String>): DiscordAuthResult {
-        var connection: HttpURLConnection? = null
-        try {
+    private suspend fun performTokenExchange(params: Map<String, String>): DiscordAuthResult {
+        return withContext(Dispatchers.IO) {
+            var connection: HttpURLConnection? = null
+            try {
             val url = URL(DISCORD_OAUTH_TOKEN)
             connection = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
@@ -177,7 +179,7 @@ class DiscordAuth(
                 }
                 Prefs[Prefs.DISCORD_OAUTH_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
 
-                return DiscordAuthResult(
+                return@withContext DiscordAuthResult(
                     accessToken = accessToken,
                     refreshToken = refreshToken,
                     expiresInSec = expiresIn,
@@ -196,6 +198,7 @@ class DiscordAuth(
             connection?.disconnect()
         }
     }
+}
 
     private fun buildAuthorizeUrl(
         clientId: String,
