@@ -30,11 +30,17 @@ import android.content.Intent
 
 import androidx.compose.animation.AnimatedVisibility
 
+import androidx.compose.foundation.background
+
 import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Column
 
+import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Row
+
+import androidx.compose.foundation.layout.Arrangement
 
 import androidx.compose.foundation.layout.Spacer
 
@@ -52,6 +58,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 
 import androidx.compose.material.icons.Icons
 
+import androidx.compose.material.icons.filled.DesktopWindows
+
 import androidx.compose.material.icons.filled.EditCalendar
 
 import androidx.compose.material.icons.filled.Image
@@ -63,6 +71,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.SportsEsports
 
 import androidx.compose.material3.DropdownMenu
 
@@ -97,6 +106,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+
+import androidx.compose.ui.Alignment
+
+import androidx.compose.ui.graphics.vector.ImageVector
 
 import androidx.compose.ui.Modifier
 
@@ -1550,6 +1563,70 @@ private fun RpcTextFieldsColumn(
                 }
             }
 
+            // ===== Console RPC Preset Games (Quick Select) =====
+
+            item {
+                Text(
+                    text = stringResource(id = R.string.console_preset_games),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val presetGames = listOf(
+                        PresetConsoleGame(
+                            name = stringResource(id = R.string.console_preset_xbox),
+                            platform = "xbox",
+                            activityType = "0",
+                            status = "online",
+                            icon = Icons.Filled.SportsEsports
+                        ),
+                        PresetConsoleGame(
+                            name = stringResource(id = R.string.console_preset_playstation),
+                            platform = "ps5",
+                            activityType = "0",
+                            status = "online",
+                            icon = Icons.Filled.SportsEsports
+                        ),
+                        PresetConsoleGame(
+                            name = stringResource(id = R.string.console_preset_nintendo),
+                            platform = "nintendo",
+                            activityType = "0",
+                            status = "online",
+                            icon = Icons.Filled.SportsEsports
+                        ),
+                        PresetConsoleGame(
+                            name = stringResource(id = R.string.console_preset_desktop),
+                            platform = "desktop",
+                            activityType = "0",
+                            status = "online",
+                            icon = Icons.Filled.DesktopWindows
+                        )
+                    )
+
+                    presetGames.forEach { preset ->
+                        ConsolePresetChip(
+                            preset = preset,
+                            selected = consolePlatform == preset.platform,
+                            onClick = {
+                                consolePlatform = preset.platform
+                                consoleActivityType = preset.activityType
+                                consoleStatus = preset.status
+                                consoleEnableTimestamps = false
+                                consoleShowCoverArt = true
+                            }
+                        )
+                    }
+                }
+            }
+
             item {
 
                 AnimatedVisibility(visible = type == "1") {
@@ -1614,4 +1691,53 @@ fun CustomRpcPreview() {
 
     CustomRPC(onBackPressed = {})
 
+}
+
+/** Preset console game for quick Console RPC setup. */
+data class PresetConsoleGame(
+    val name: String,
+    val platform: String,
+    val activityType: String,
+    val status: String,
+    val icon: ImageVector
+)
+
+@Composable
+
+fun ConsolePresetChip(
+    preset: PresetConsoleGame,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+
+    val colorScheme = MaterialTheme.colorScheme
+
+    Box(
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .background(
+                if (selected) colorScheme.primaryContainer else colorScheme.surfaceVariant,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+            )
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                imageVector = preset.icon,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = preset.name,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant
+            )
+        }
+    }
 }
