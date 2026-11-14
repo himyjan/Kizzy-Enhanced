@@ -80,13 +80,11 @@ fun homeFeaturesProvider(
     }
     val mediaRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.MediaRpc) }
     val customRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.CustomRpc) }
-    val consoleRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ConsoleRpc) }
     val experimentalRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ExperimentalRpc) }
     val appDetectionRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.AppDetectionRpc) }
     LaunchedEffect(rpcManager.activeRpc) {
         mediaRpcRunning.value = rpcManager.activeRpc.value == RpcType.MediaRpc
         customRpcRunning.value = rpcManager.activeRpc.value == RpcType.CustomRpc
-        consoleRpcRunning.value = rpcManager.activeRpc.value == RpcType.ConsoleRpc
         experimentalRpcRunning.value = rpcManager.activeRpc.value == RpcType.ExperimentalRpc
         appDetectionRunning.value = rpcManager.activeRpc.value == RpcType.AppDetectionRpc
     }
@@ -147,35 +145,6 @@ fun homeFeaturesProvider(
             tooltipText = stringResource(id = R.string.main_customRpc_details),
 
             featureDocsLink = ToolTipContent.CUSTOM_RPC_DOCS_LINK
-
-        ),
-
-        HomeFeature(
-            title = stringResource(id = R.string.main_consoleRpc),
-            icon = R.drawable.ic_console_games,
-            route = Routes.CONSOLE_RPC,
-            isChecked = consoleRpcRunning.value,
-
-            onClick = { navigateTo(it) },
-
-            onCheckedChange = {
-                scope.launch {
-                    if (it) {
-                        val lastRpc = Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
-                        rpcManager.switchTo(RpcType.ConsoleRpc, rpcConfigString = lastRpc, isConsoleRpc = true)
-                    } else {
-                        rpcManager.switchTo(RpcType.None)
-                    }
-                }
-            },
-
-            shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-
-            showSwitch = true,
-
-            tooltipText = stringResource(id = R.string.main_consoleRpc_details),
-
-            featureDocsLink = ToolTipContent.CONSOLE_RPC_DOCS_LINK
 
         ),
 
