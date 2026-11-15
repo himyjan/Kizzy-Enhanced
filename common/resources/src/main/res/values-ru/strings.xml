@@ -317,4 +317,6 @@
     <string name="console_preset_samsung">Samsung</string>
     <string name="console_presets_title">Пресеты</string>
     <string name="console_options_title">Параметры Console RPC</string>
+
+    <string name="discord_oauth_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
 </resources>
