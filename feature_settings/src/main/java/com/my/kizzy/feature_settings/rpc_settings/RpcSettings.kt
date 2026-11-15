@@ -124,6 +124,18 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var customApplicationId by remember { mutableStateOf(Prefs[Prefs.CUSTOM_ACTIVITY_APPLICATION_ID, ""]) }
     var imgurClientId by remember { mutableStateOf(Prefs[Prefs.IMGUR_CLIENT_ID, Constants.IMGUR_CLIENT_ID]) }
 
+    // Last.fm scrobbling settings
+    var showLastFmDialog by remember { mutableStateOf(false) }
+    var lastfmApiKey by remember { mutableStateOf(Prefs[Prefs.LASTFM_API_KEY, ""]) }
+    var lastfmSecret by remember { mutableStateOf(Prefs[Prefs.LASTFM_SECRET, ""]) }
+    var lastfmUsername by remember { mutableStateOf(Prefs[Prefs.LASTFM_USERNAME, ""]) }
+    var lastfmPassword by remember { mutableStateOf(Prefs[Prefs.LASTFM_PASSWORD, ""]) }
+    var lastfmShowTimestamps by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS, true]) }
+    var lastfmShowCoverArt by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_COVER_ART, true]) }
+    var lastfmShowPartyCurrent by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_PARTY_CURRENT, true]) }
+    var lastfmShowPartyMax by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_PARTY_MAX, false]) }
+    var isLastFmEnabled by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLED, false]) }
+
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         LargeTopAppBar(title = {
             Text(
@@ -214,7 +226,9 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 }
             }
             item(key = "rpc_hide_cover_art") {
-                var hideCoverArt by remember { mutableStateOf(Prefs[Prefs.RPC_HIDE_COVER_ART, false]) }
+                var hideCoverArt by remember(prefsMap) {
+                    mutableStateOf(prefsMap[Prefs.RPC_HIDE_COVER_ART] as? Boolean ?: false)
+                }
                 PreferenceSwitch(
                     title = stringResource(id = R.string.rpc_hide_cover_art),
                     description = stringResource(id = R.string.rpc_hide_cover_art_desc),
@@ -373,6 +387,27 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     Prefs.remove(Prefs.SAVED_IMAGES)
                     Prefs.remove(Prefs.SAVED_ARTWORK)
                     Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
+                }
+            }
+            item(key = "lastfm_settings") {
+                val lastFmStatus = when {
+                    isLastFmEnabled -> "Enabled"
+                    else -> "Disabled"
+                }
+                SettingItem(
+                    title = stringResource(id = R.string.lastfm_settings_title),
+                    description = stringResource(id = R.string.lastfm_enabled) + "  •  $lastFmStatus",
+                ) {
+                    lastfmApiKey = Prefs[Prefs.LASTFM_API_KEY, ""]
+                    lastfmSecret = Prefs[Prefs.LASTFM_SECRET, ""]
+                    lastfmUsername = Prefs[Prefs.LASTFM_USERNAME, ""]
+                    lastfmPassword = Prefs[Prefs.LASTFM_PASSWORD, ""]
+                    lastfmShowTimestamps = Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS, true]
+                    lastfmShowCoverArt = Prefs[Prefs.LASTFM_SHOW_COVER_ART, true]
+                    lastfmShowPartyCurrent = Prefs[Prefs.LASTFM_SHOW_PARTY_CURRENT, true]
+                    lastfmShowPartyMax = Prefs[Prefs.LASTFM_SHOW_PARTY_MAX, false]
+                    isLastFmEnabled = Prefs[Prefs.LASTFM_ENABLED, false]
+                    showLastFmDialog = true
                 }
             }
         }
@@ -704,6 +739,97 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     // presence (name/state/details = null) that overwrites the real
                     // Media/Custom presence. The running RPC service already calls
                     // KizzyRPC.refreshFromPrefs() and picks up the new token.
+                },
+            )
+        }
+
+        if (showLastFmDialog) {
+            AlertDialog(
+                onDismissRequest = { showLastFmDialog = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        Prefs[Prefs.LASTFM_API_KEY] = lastfmApiKey
+                        Prefs[Prefs.LASTFM_SECRET] = lastfmSecret
+                        Prefs[Prefs.LASTFM_USERNAME] = lastfmUsername
+                        Prefs[Prefs.LASTFM_PASSWORD] = lastfmPassword
+                        Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS] = lastfmShowTimestamps
+                        Prefs[Prefs.LASTFM_SHOW_COVER_ART] = lastfmShowCoverArt
+                        Prefs[Prefs.LASTFM_SHOW_PARTY_CURRENT] = lastfmShowPartyCurrent
+                        Prefs[Prefs.LASTFM_SHOW_PARTY_MAX] = lastfmShowPartyMax
+                        Prefs[Prefs.LASTFM_ENABLED] = isLastFmEnabled
+                        showLastFmDialog = false
+                    }) {
+                        Text(stringResource(R.string.save))
+                    }
+                },
+                title = { Text(stringResource(R.string.lastfm_settings_title)) },
+                text = {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.lastfm_enabled),
+                            isChecked = isLastFmEnabled,
+                        ) {
+                            isLastFmEnabled = !isLastFmEnabled
+                        }
+
+                        RpcField(
+                            value = lastfmApiKey,
+                            label = R.string.lastfm_api_key,
+                        ) {
+                            lastfmApiKey = it
+                        }
+
+                        RpcField(
+                            value = lastfmSecret,
+                            label = R.string.lastfm_secret,
+                        ) {
+                            lastfmSecret = it
+                        }
+
+                        RpcField(
+                            value = lastfmUsername,
+                            label = R.string.lastfm_username,
+                        ) {
+                            lastfmUsername = it
+                        }
+
+                        RpcField(
+                            value = lastfmPassword,
+                            label = R.string.lastfm_password,
+                        ) {
+                            lastfmPassword = it
+                        }
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.lastfm_show_timestamps),
+                            isChecked = lastfmShowTimestamps,
+                        ) {
+                            lastfmShowTimestamps = !lastfmShowTimestamps
+                        }
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.lastfm_show_cover_art),
+                            isChecked = lastfmShowCoverArt,
+                        ) {
+                            lastfmShowCoverArt = !lastfmShowCoverArt
+                        }
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.lastfm_show_party_current),
+                            isChecked = lastfmShowPartyCurrent,
+                        ) {
+                            lastfmShowPartyCurrent = !lastfmShowPartyCurrent
+                        }
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.lastfm_show_party_max),
+                            isChecked = lastfmShowPartyMax,
+                        ) {
+                            lastfmShowPartyMax = !lastfmShowPartyMax
+                        }
+                    }
                 },
             )
         }

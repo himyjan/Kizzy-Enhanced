@@ -311,6 +311,10 @@ object Prefs {
     const val LASTFM_PASSWORD = "lastfm_password"
     const val LASTFM_SESSION_KEY = "lastfm_session_key"
     const val LASTFM_ENABLED = "lastfm_enabled"
+    const val LASTFM_ENABLE_TIMESTAMPS = "lastfm_enable_timestamps"
+    const val LASTFM_SHOW_COVER_ART = "lastfm_show_cover_art"
+    const val LASTFM_SHOW_PARTY_CURRENT = "lastfm_show_party_current"
+    const val LASTFM_SHOW_PARTY_MAX = "lastfm_show_party_max"
 
     const val USE_RPC_BUTTONS = "use_saved_rpc_buttons"
     const val RPC_BUTTONS_DATA = "saved_rpc_buttons_data"

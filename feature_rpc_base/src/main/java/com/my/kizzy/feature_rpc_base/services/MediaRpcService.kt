@@ -513,14 +513,30 @@ class MediaRpcService : Service() {
         stateRepository.setConnected(true)
         stateRepository.setPaused(isPaused)
 
+        // Global toggle: if user disabled cover art entirely, hide cover art from all RPCs
+        val showCoverArtGlobal = Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false
+
+        // Resolve cover art: user explicit choice first, then per-app image, then default cover art
+        val largeImage = if (showCoverArtGlobal && showCoverArt) {
+            playingMedia.largeImage ?: Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""].takeIf { it.isNotEmpty() }?.let { RpcImage.ExternalImage(it) }
+        } else {
+            null
+        }
+
+        val smallImage = if (showCoverArtGlobal && showCoverArt) {
+            playingMedia.smallImage ?: Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""].takeIf { it.isNotEmpty() }?.let { RpcImage.ExternalImage(it) }
+        } else {
+            null
+        }
+
         val commonRpc = CommonRpc(
             name = playingMedia.name,
             type = resolveActivityType(playingMedia),
             details = playingMedia.details,
             state = playingMedia.state,
-            largeImage = if (showCoverArt) playingMedia.largeImage else null,
-            smallImage = playingMedia.smallImage,
-            largeText = if (showCoverArt) playingMedia.largeText else null,
+            largeImage = largeImage,
+            smallImage = smallImage,
+            largeText = if (showCoverArtGlobal && showCoverArt) playingMedia.largeText else null,
             smallText = playingMedia.smallText,
             time = if (enableTimestamps && !isPaused) Timestamps(
                 start = playingMedia.time?.start,

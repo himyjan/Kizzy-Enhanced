@@ -572,20 +572,6 @@ private fun RpcTextFieldsColumn(
     var showConsoleStatusDialog by remember { mutableStateOf(false) }
     var showConsoleButtonsDialog by remember { mutableStateOf(false) }
 
-    // Last.fm scrobbling settings
-    var lastfmApiKey by remember { mutableStateOf(Prefs[Prefs.LASTFM_API_KEY, ""]) }
-    var lastfmSecret by remember { mutableStateOf(Prefs[Prefs.LASTFM_SECRET, ""]) }
-    var lastfmUsername by remember { mutableStateOf(Prefs[Prefs.LASTFM_USERNAME, ""]) }
-    var lastfmPassword by remember { mutableStateOf(Prefs[Prefs.LASTFM_PASSWORD, ""]) }
-    var lastfmShowTimestamps by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS, true]) }
-    var lastfmShowCoverArt by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_COVER_ART, true]) }
-    var lastfmShowPartyCurrent by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_PARTY_CURRENT, true]) }
-    var lastfmShowPartyMax by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_PARTY_MAX, false]) }
-
-    // Last.fm state
-    var lastFmSessionKey by remember { mutableStateOf(Prefs[Prefs.LASTFM_SESSION_KEY, ""]) }
-    var isLastFmEnabled by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLED, false]) }
-
     // Console RPC presets. The user presets are kept in a state so a preset
     // created or edited in the dialog shows up in the list immediately.
     var consoleCustomPresets by remember { mutableStateOf(ConsolePresetStore.custom()) }
@@ -2009,106 +1995,6 @@ private fun RpcTextFieldsColumn(
                 ) {
                     consoleIncludeSpoofed = !consoleIncludeSpoofed
                     Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED] = consoleIncludeSpoofed
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.size(24.dp))
-            }
-
-            item {
-                Text(
-                    text = stringResource(id = R.string.lastfm_settings_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                )
-            }
-
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.lastfm_enabled),
-                    isChecked = isLastFmEnabled,
-                ) {
-                    isLastFmEnabled = !isLastFmEnabled
-                    Prefs[Prefs.LASTFM_ENABLED] = isLastFmEnabled
-                }
-            }
-
-            item {
-                RpcField(
-                    value = lastfmApiKey,
-                    label = R.string.lastfm_api_key,
-                ) {
-                    lastfmApiKey = it
-                }
-            }
-
-            item {
-                RpcField(
-                    value = lastfmSecret,
-                    label = R.string.lastfm_secret,
-                ) {
-                    lastfmSecret = it
-                }
-            }
-
-            item {
-                RpcField(
-                    value = lastfmUsername,
-                    label = R.string.lastfm_username,
-                ) {
-                    lastfmUsername = it
-                }
-            }
-
-            item {
-                RpcField(
-                    value = lastfmPassword,
-                    label = R.string.lastfm_password,
-                ) {
-                    lastfmPassword = it
-                }
-            }
-
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.lastfm_show_timestamps),
-                    isChecked = lastfmShowTimestamps,
-                ) {
-                    lastfmShowTimestamps = !lastfmShowTimestamps
-                    Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS] = lastfmShowTimestamps
-                }
-            }
-
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.lastfm_show_cover_art),
-                    isChecked = lastfmShowCoverArt,
-                ) {
-                    lastfmShowCoverArt = !lastfmShowCoverArt
-                    Prefs[Prefs.LASTFM_SHOW_COVER_ART] = lastfmShowCoverArt
-                }
-            }
-
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.lastfm_show_party_current),
-                    isChecked = lastfmShowPartyCurrent,
-                ) {
-                    lastfmShowPartyCurrent = !lastfmShowPartyCurrent
-                    Prefs[Prefs.LASTFM_SHOW_PARTY_CURRENT] = lastfmShowPartyCurrent
-                }
-            }
-
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.lastfm_show_party_max),
-                    isChecked = lastfmShowPartyMax,
-                ) {
-                    lastfmShowPartyMax = !lastfmShowPartyMax
-                    Prefs[Prefs.LASTFM_SHOW_PARTY_MAX] = lastfmShowPartyMax
                 }
             }
 

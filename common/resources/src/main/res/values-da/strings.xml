@@ -319,22 +319,14 @@
     <string name="console_options_title">Console RPC-indstillinger</string>
 
     <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
-
-    <string name="lastfm_enabled">Enable Last.fm Scrobbling</string>
-
-    <string name="lastfm_api_key">Last.fm API Key</string>
-
-    <string name="lastfm_secret">Last.fm Secret Key</string>
-
-    <string name="lastfm_username">Last.fm Username</string>
-
-    <string name="lastfm_password">Last.fm Password</string>
-
+    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
+    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="lastfm_api_key">API Key</string>
+    <string name="lastfm_secret">Secret</string>
+    <string name="lastfm_username">Username</string>
+    <string name="lastfm_password">Password</string>
     <string name="lastfm_show_timestamps">Show Timestamps</string>
-
     <string name="lastfm_show_cover_art">Show Cover Art</string>
-
     <string name="lastfm_show_party_current">Show Party Current Size</string>
-
     <string name="lastfm_show_party_max">Show Party Max Size</string>
 </resources>

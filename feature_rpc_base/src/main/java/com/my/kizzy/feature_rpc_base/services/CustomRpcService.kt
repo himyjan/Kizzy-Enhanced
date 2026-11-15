@@ -25,6 +25,7 @@ import com.my.kizzy.data.get_current_data.app.GetForegroundPackage
 import com.my.kizzy.data.rpc.ActiveGameTracker
 import com.my.kizzy.data.rpc.ConsoleAppRegistry
 import com.my.kizzy.data.rpc.ConsoleGameCatalog
+import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.Constants
@@ -277,8 +278,22 @@ class CustomRpcService : Service() {
                     setStopTimestamps(it.timestampsStop.toLongOrNull())
                     setButton1(it.button1.ifEmpty { null }, it.button1link.ifEmpty { null })
                     setButton2(it.button2.ifEmpty { null }, it.button2link.ifEmpty { null })
-                    setLargeImage(it.largeImg.toRpcImage(), it.largeText)
-                    setSmallImage(it.smallImg.toRpcImage(), it.smallText)
+                    setLargeImage(
+                        if (consoleShowCoverArt && Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false) {
+                            it.largeImg.toRpcImage()
+                        } else {
+                            Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""].takeIf { it.isNotEmpty() }?.let { RpcImage.ExternalImage(it) }
+                        },
+                        it.largeText
+                    )
+                    setSmallImage(
+                        if (consoleShowCoverArt && Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false) {
+                            it.smallImg.toRpcImage()
+                        } else {
+                            Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""].takeIf { it.isNotEmpty() }?.let { RpcImage.ExternalImage(it) }
+                        },
+                        it.smallText
+                    )
                     setStreamUrl(it.url.ifEmpty { null })
                     build(forceRefresh = forceRefresh)
                 }
