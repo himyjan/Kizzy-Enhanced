@@ -86,7 +86,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
         mutableStateOf(Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""])
     }
     var showClientIdDialog by remember { mutableStateOf(false) }
-    var editingClientId2 by remember { mutableStateOf("") }
+    var editingClientId22 by remember { mutableStateOf("") }
     var showUserLogin by remember { mutableStateOf(false) }
 
     // Collect from DataStore state flow so OAuth2 selection persists across cold boots.
@@ -163,7 +163,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     icon = Icons.Outlined.Person,
                 ) {
                     discordOAuth2ClientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""]
-                    editingClientId2 = discordOAuth2ClientId
+                    editingClientId22 = discordOAuth2ClientId
                     showClientIdDialog = true
                 }
             }

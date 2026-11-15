@@ -148,7 +148,7 @@
             android:exported="false"/>
 
         <service
-            android:name=".feature_rpc_base.services.DiscordOAuthRpcService"
+            android:name=".feature_rpc_base.services.DiscordOAuth2RpcService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false" />
 
