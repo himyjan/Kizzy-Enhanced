@@ -64,6 +64,7 @@ object MediaServiceResolver {
     private const val BANDCAMP_SEARCH = "https://bandcamp.com/search?q=%s"
     private const val QOBUZ_SEARCH = "https://www.qobuz.com/us-en/search?q=%s"
     private const val MIXCLOUD_SEARCH = "https://www.mixcloud.com/search/?q=%s"
+    private const val JOOX_SEARCH = "https://www.joox.com/search?q=%s"
 
     /**
      * Package signatures of apps that play YouTube / YouTube Music content but
@@ -159,6 +160,10 @@ object MediaServiceResolver {
         Entry(
             listOf("tidal"),
             Service("Tidal", Kind.MUSIC, TIDAL_SEARCH, TIDAL_SEARCH)
+        ),
+        Entry(
+            listOf("joox"),
+            Service("Joox", Kind.MUSIC, JOOX_SEARCH, JOOX_SEARCH)
         ),
         Entry(
             listOf("bandcamp"),
