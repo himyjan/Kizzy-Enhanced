@@ -1,49 +1,59 @@
-*.iml
-.gradle
 /local.properties
-.DS_Store
 /build
 /app/release
 /captures
 .externalNativeBuild
 .cxx
-local.properties
 /app/Kizzy.keystore
 /app/debug/
 /buildSrc/build/
 
-# Build directories for all modules (macrobenchmark, app, libraries, etc.)
-**/build/
-**/.kotlin/
+# built application files
+*.apk
+*.ap_
 
-# User-specific configurations
-.idea/caches/
-.idea/libraries/
-.idea/shelf/
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/.name
-.idea/compiler.xml
-.idea/copyright/profiles_settings.xml
-.idea/encodings.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/scopes/scope_settings.xml
-.idea/dictionaries
-.idea/vcs.xml
-.idea/jsLibraryMappings.xml
-.idea/datasources.xml
-.idea/dataSources.ids
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
-.idea/assetWizardSettings.xml
-.idea/gradle.xml
-.idea/jarRepositories.xml
-.idea/navEditor.xml
-/.idea/
-commonMain/
+# files for the dex VM
+*.dex
 
-# Build artifacts & temporary scripts (do not commit)
-*.bak
-fix_r8.py
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+out/
+build/
+generated/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Eclipse project files
+.classpath
+.project
+
+# Windows thumbnail db
+.DS_Store
+
+# IDEA/Android Studio project files, because
+# the project can be imported from settings.gradle.kts
+*.iml
+.idea/*
+!.idea/copyright
+# Keep the code styles.
+!/.idea/codeStyles
+/.idea/codeStyles/*
+!/.idea/codeStyles/Project.xml
+!/.idea/codeStyles/codeStyleConfig.xml
+
+# Gradle cache
+.gradle
+
+# Sandbox stuff
+_sandbox
+
+# Android Studio captures folder
+captures/
+
+# Kotlin
+.kotlin
