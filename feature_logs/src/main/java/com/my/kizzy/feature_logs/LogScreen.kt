@@ -160,6 +160,13 @@ fun LogScreenContent(
         LaunchedEffect(autoScroll, visibleLogs.size) {
             if (autoScroll && visibleLogs.isNotEmpty()) {
                 // Use scrollToItem for instant, lag-free scrolling instead of animateScrollToItem
+                // This prevents the scroll from being cancelled by rapid updates
+                lazyListState.scrollToItem(visibleLogs.lastIndex)
+            }
+        }
+        // Additional effect to handle rapid log arrivals - scroll immediately on each new log
+        LaunchedEffect(visibleLogs) {
+            if (autoScroll && visibleLogs.isNotEmpty()) {
                 lazyListState.scrollToItem(visibleLogs.lastIndex)
             }
         }
