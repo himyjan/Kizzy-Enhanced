@@ -168,6 +168,7 @@ internal fun ComponentActivity.Kizzy(
                     updateMediaAppEnabled = viewModel::updateMediaAppEnabled,
                     selectAllMediaApps = viewModel::selectAllMediaApps,
                     deselectAllMediaApps = viewModel::deselectAllMediaApps,
+                    updateAppActivityType = viewModel::updateAppActivityType,
                 )
             }
             composable(Routes.PROFILE) { navBackStackEntry ->
