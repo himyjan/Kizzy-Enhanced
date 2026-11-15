@@ -28,6 +28,10 @@ package com.my.kizzy.feature_custom_rpc
 
 import android.content.Intent
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+
 import androidx.compose.animation.AnimatedVisibility
 
 import androidx.compose.foundation.background
@@ -609,6 +613,32 @@ private fun RpcTextFieldsColumn(
     // Console RPC game list state
     var consoleSearchText by remember { mutableStateOf("") }
     var consoleSelectedGameTitle by remember { mutableStateOf("") }
+
+    // Image pickers for preset cover art URLs
+    val pickLargeCoverArt = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            val edited = consolePresetBeingEdited
+            if (edited != null) {
+                consolePresetBeingEdited = edited.copy(
+                    largeCoverArtUrl = it.toString()
+                )
+            }
+        }
+    }
+    val pickSmallCoverArt = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            val edited = consolePresetBeingEdited
+            if (edited != null) {
+                consolePresetBeingEdited = edited.copy(
+                    smallCoverArtUrl = it.toString()
+                )
+            }
+        }
+    }
 
     /** Writes the console values to the preferences so they survive a restart. */
     fun persistConsoleSettings() {
@@ -1964,20 +1994,6 @@ private fun RpcTextFieldsColumn(
             }
 
             item {
-                androidx.compose.material3.OutlinedButton(
-                    onClick = {
-                        consolePresetBeingEdited = ConsolePresetStore.newPreset()
-                        consolePresetEditorOpen = true
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Text(text = stringResource(id = R.string.console_preset_new))
-                }
-            }
-
-            item {
                 Text(
                     text = stringResource(id = R.string.console_options_title),
                     style = MaterialTheme.typography.titleMedium,
@@ -2142,7 +2158,9 @@ private fun RpcTextFieldsColumn(
                 ConsolePresetStore.delete(presetToEdit.id)
                 consoleCustomPresets = ConsolePresetStore.custom()
                 consolePresetEditorOpen = false
-            })
+            }),
+            pickLargeImage = { pickLargeCoverArt.launch(it) },
+            pickSmallImage = { pickSmallCoverArt.launch(it) },
         )
     }
 
