@@ -194,6 +194,15 @@ class KizzyRPC @Inject constructor(
 
         logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod newToken=${newToken.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"} currentToken=${token.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"}")
 
+        // Never mutate/delete the stored token here. refreshFromPrefs() runs on every
+        // service start and settings change; deleting a freshly obtained OAuth token
+        // caused an endless "authorize -> token cleared" loop. Discord is the only
+        // authority on whether a token is valid, so let IDENTIFY fail naturally.
+        logger.d(
+            "KizzyRPC",
+            "token shape: parts=${newToken.count { it == '.' } + if (newToken.isEmpty()) 0 else 1} len=${newToken.length}"
+        )
+
         // If the token changed (e.g. OAuth login after bot-token session, or logout),
         // reconnect the WebSocket with the new token. Discord authenticates based on
         // the IDENTIFY handshake token, so simply updating the in-memory token is not
@@ -202,28 +211,8 @@ class KizzyRPC @Inject constructor(
         val tokenChanged = newToken != token
         token = newToken
 
-        // Validate OAuth token format: Discord OAuth user tokens have 3 parts
-        // (user_id.timestamp.hmac). Bot tokens have 2 parts (client_id.secret).
-        // If we have a 2-part token in OAuth mode, it's invalid — clear it and
-        // force the user to re-authenticate.
-        if (connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH && newToken.isNotEmpty()) {
-            val parts = newToken.split(".")
-            if (parts.size < 3) {
-                logger.w("KizzyRPC", "Stored OAuth token is not a valid user token (bot token format detected). Clearing and forcing re-authentication.")
-                Prefs.remove(Prefs.DISCORD_OAUTH_ACCESS_TOKEN)
-                token = ""
-                if (discordWebSocket.isWebSocketConnected()) {
-                    logger.d("KizzyRPC", "Invalid token, closing WebSocket")
-                    discordWebSocket.close()
-                }
-            }
-        }
-
-        // Force reconnect when token changed OR when we just cleared an invalid token
-        // so the WebSocket re-authenticates with the new (empty) token and the user
-        // sees the error and knows to re-authenticate via Discord consent screen.
-        if ((tokenChanged || connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) && discordWebSocket.isWebSocketConnected()) {
-            logger.d("KizzyRPC", "Token changed or invalid, reconnecting WebSocket with new token")
+        if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
+            logger.d("KizzyRPC", "Token changed, reconnecting WebSocket with new token")
             (discordWebSocket as DiscordWebSocketImpl).updateTokenAndReconnect(token)
         }
 
