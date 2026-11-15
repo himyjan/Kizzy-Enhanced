@@ -121,7 +121,7 @@ fun ActivityTypeChip(
     // AUTO (-1) behaves like "no explicit choice": the detected type is displayed
     // and the "Auto" entry in the menu is checked.
     val isAuto = selectedTypeId == null || selectedTypeId == ActivityType.AUTO
-    val effectiveType = if (isAuto) detectedTypeId else selectedTypeId!!
+    val effectiveType = if (isAuto) detectedTypeId else selectedTypeId
     val typeColor = ActivityType.color(effectiveType)
 
     Box(modifier) {

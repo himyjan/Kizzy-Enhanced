@@ -119,7 +119,13 @@ import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.draw.clip
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+
 import androidx.compose.ui.graphics.vector.ImageVector
+
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+
+import coil3.compose.AsyncImage
 
 import androidx.compose.ui.Modifier
 
@@ -204,6 +210,8 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 
 import androidx.compose.material.icons.outlined.MoreVert
+
+import androidx.compose.material.icons.outlined.BrokenImage
 
 
 
@@ -453,11 +461,27 @@ fun CustomRpcScreen(
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = "Custom RPC",
+                            modifier = Modifier.size(24.dp),
+                            tint = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
                     text = { Text(text = stringResource(id = R.string.rpc_tab_custom_settings)) }
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.DesktopWindows,
+                            contentDescription = "Console RPC",
+                            modifier = Modifier.size(24.dp),
+                            tint = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
                     text = { Text(text = stringResource(id = R.string.rpc_tab_console_presets)) }
                 )
             }
@@ -503,6 +527,9 @@ private fun RpcTextFieldsColumn(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val rpcManager = RpcManager.getInstance(context)
+    // Cover art preview toggles
+    var showLargeCoverArtPreview by remember { mutableStateOf(uiState.showLargeCoverArt) }
+    var showSmallCoverArtPreview by remember { mutableStateOf(uiState.showSmallCoverArt) }
     // Re-sync from services every time this screen enters so UI matches reality
     LaunchedEffect(Unit) {
         rpcManager.refreshFromServices()
@@ -1331,6 +1358,18 @@ private fun RpcTextFieldsColumn(
 
             item {
 
+                            error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+
+                        )
+
+                    }
+
+                }
+
+            }
+
+            item {
+
                 AnimatedVisibility(visible = largeImg.isNotBlank()) {
 
                     RpcField(
@@ -1414,6 +1453,30 @@ private fun RpcTextFieldsColumn(
                     }) {
 
                     onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallImg = it)))
+
+                }
+
+            }
+
+                        AsyncImage(
+
+                            model = smallImg,
+
+                            contentDescription = null,
+
+                            modifier = Modifier
+
+                                .size(120.dp)
+
+                                .clip(RoundedCornerShape(8.dp)),
+
+                            placeholder = rememberVectorPainter(Icons.Outlined.Image),
+
+                            error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+
+                        )
+
+                    }
 
                 }
 

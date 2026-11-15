@@ -15,7 +15,9 @@
     <string name="activity_button1_url">Button 1 URL</string>
     <string name="activity_button2_url">Button 2 URL</string>
     <string name="activity_large_image">Activity Large Image</string>
+    <string name="activity_large_image_preview">Large Cover Art Preview</string>
     <string name="activity_small_image">Activity Small Image</string>
+    <string name="activity_small_image_preview">Small Cover Art Preview</string>
     <string name="activity_type">Activity Type</string>
     <string name="auto_detect">Auto · %1$s</string>
     <string name="auto_detect_activity_type">Auto-detect activity type</string>
