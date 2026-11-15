@@ -140,5 +140,7 @@ Open the project in Android Studio, import it, then Build and Run. Release build
 
 ✨ [Monet](https://github.com/Kyant0/Monet) for Material3 palettes
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) for Metrolist music player support
+
 ## Licence
 **Kizzy** is an open source project under the GNU GPL 3.0 Open Source License, which allows you to use, reference, and modify the source code for free, but does not allow the modified and derived code to be distributed and sold as closed-source commercial software.
