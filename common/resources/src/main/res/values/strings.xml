@@ -403,11 +403,11 @@
     <string name="rpc_connection_method">Connection Method</string>
     <string name="rpc_connection_method_desc">Choose how Kizzy connects to Discord</string>
     <string name="rpc_connection_method_gateway">Gateway (Bot Token)</string>
-    <string name="rpc_connection_method_oauth">OAuth (Your Discord Account)</string>
-    <string name="discord_oauth_authorize">Connect to Discord</string>
-    <string name="discord_oauth_authorize_desc">Authorize Kizzy to show your activity on your Discord profile</string>
-    <string name="discord_oauth_client_id">Discord OAuth Client ID</string>
-    <string name="discord_oauth_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="rpc_connection_method_oauth2">OAuth (Your Discord Account)</string>
+    <string name="discord_oauth2_authorize">Connect to Discord</string>
+    <string name="discord_oauth2_authorize_desc">Authorize Kizzy to show your activity on your Discord profile</string>
+    <string name="discord_oauth2_client_id">Discord OAuth Client ID</string>
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
     <string name="logs_saved_toast">Logs saved to %1$s</string>
     <string name="logs_save_error">Failed to save logs</string>
     <string name="turn_on_all_apps">Turn on all apps</string>

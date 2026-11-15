@@ -46,9 +46,9 @@
     <string name="rpc_connection_method">Mètode de connexió</string>
     <string name="rpc_connection_method_desc">Tria com es connecta Kizzy amb Discord</string>
     <string name="rpc_connection_method_gateway">Gateway (teston del bot)</string>
-    <string name="rpc_connection_method_oauth">OAuth (el teu compte de Discord)</string>
-    <string name="discord_oauth_authorize">Connecta\'t a Discord</string>
-    <string name="discord_oauth_authorize_desc">Permet que Kizzy mostri la teva activitat al teu perfil de Discord</string>
+    <string name="rpc_connection_method_oauth2">OAuth (el teu compte de Discord)</string>
+    <string name="discord_oauth2_authorize">Connecta\'t a Discord</string>
+    <string name="discord_oauth2_authorize_desc">Permet que Kizzy mostri la teva activitat al teu perfil de Discord</string>
 
     <string name="console_include_spoofed">Inclou les compilacions falsificades</string>
     <string name="auto_detect">Automàtic · %1$s</string>
@@ -106,5 +106,5 @@
     <string name="console_presets_title">Presets</string>
     <string name="console_options_title">Console RPC options</string>
 
-    <string name="discord_oauth_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
 </resources>

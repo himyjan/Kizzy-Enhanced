@@ -18,7 +18,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
-import com.my.kizzy.feature_rpc_base.services.DiscordOAuthRpcService
+import com.my.kizzy.feature_rpc_base.services.DiscordOAuth2RpcService
 import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.preference.Prefs
@@ -57,7 +57,7 @@ class RpcManager @Inject constructor(
         ConsoleRpc,
         ExperimentalRpc,
         AppDetectionRpc,
-        DiscordOAuthRpc,
+        DiscordOAuth2Rpc,
     }
 
     private val TAG = "RpcManager"
@@ -82,7 +82,7 @@ class RpcManager @Inject constructor(
             AppUtils.consoleRpcRunning() -> RpcType.ConsoleRpc
             AppUtils.experimentalRpcRunning() -> RpcType.ExperimentalRpc
             AppUtils.appDetectionRunning() -> RpcType.AppDetectionRpc
-            Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""].isNotEmpty() && Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY] == Prefs.RPC_CONNECTION_METHOD_OAUTH -> RpcType.DiscordOAuthRpc
+            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].isNotEmpty() && Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY] == Prefs.RPC_CONNECTION_METHOD_OAUTH2 -> RpcType.DiscordOAuth2Rpc
             else -> RpcType.None
         }
         if (_activeRpc.value != newType) {
@@ -116,11 +116,11 @@ class RpcManager @Inject constructor(
         Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = if (rpcType == RpcType.CustomRpc) rpcConfigString else ""
         Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = if (rpcType == RpcType.ConsoleRpc) rpcConfigString else ""
         Prefs[Prefs.MEDIA_RPC_ENABLED] = if (rpcType == RpcType.MediaRpc) true else false
-        // Only set connection method when explicitly switching to DiscordOAuthRpc.
+        // Only set connection method when explicitly switching to DiscordOAuth2Rpc.
         // Never reset to Gateway when switching away — the user's saved choice
         // (Gateway or OAuth2) must persist across RPC service switches.
-        if (rpcType == RpcType.DiscordOAuthRpc) {
-            Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
+        if (rpcType == RpcType.DiscordOAuth2Rpc) {
+            Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH2
         }
 
         // Start the requested RPC (if not None)
@@ -154,9 +154,9 @@ class RpcManager @Inject constructor(
                 Log.d(TAG, "Starting AppDetectionService")
                 context.startService(Intent(context, AppDetectionService::class.java))
             }
-            RpcType.DiscordOAuthRpc -> {
-                Log.d(TAG, "Starting DiscordOAuthRpcService")
-                context.startService(Intent(context, DiscordOAuthRpcService::class.java))
+            RpcType.DiscordOAuth2Rpc -> {
+                Log.d(TAG, "Starting DiscordOAuth2RpcService")
+                context.startService(Intent(context, DiscordOAuth2RpcService::class.java))
             }
         }
 
@@ -172,7 +172,7 @@ class RpcManager @Inject constructor(
         context.stopService(Intent(context, CustomRpcService::class.java))
         context.stopService(Intent(context, ExperimentalRpc::class.java))
         context.stopService(Intent(context, AppDetectionService::class.java))
-        context.stopService(Intent(context, DiscordOAuthRpcService::class.java))
+        context.stopService(Intent(context, DiscordOAuth2RpcService::class.java))
 
         Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
         Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""

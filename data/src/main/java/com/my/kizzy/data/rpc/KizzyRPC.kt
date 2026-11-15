@@ -188,14 +188,14 @@ class KizzyRPC @Inject constructor(
         // Determine which token to use based on connection method
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
         val newToken = when (connectionMethod) {
-            Prefs.RPC_CONNECTION_METHOD_OAUTH -> Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""]
+            Prefs.RPC_CONNECTION_METHOD_OAUTH2 -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
             else -> Prefs[Prefs.TOKEN, ""]
         }
 
         logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod newToken=${newToken.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"} currentToken=${token.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"}")
 
         // Never mutate/delete the stored token here. refreshFromPrefs() runs on every
-        // service start and settings change; deleting a freshly obtained OAuth token
+        // service start and settings change; deleting a freshly obtained OAuth2 token
         // caused an endless "authorize -> token cleared" loop. Discord is the only
         // authority on whether a token is valid, so let IDENTIFY fail naturally.
         logger.d(
@@ -203,7 +203,7 @@ class KizzyRPC @Inject constructor(
             "token shape: parts=${newToken.count { it == '.' } + if (newToken.isEmpty()) 0 else 1} len=${newToken.length}"
         )
 
-        // If the token changed (e.g. OAuth login after bot-token session, or logout),
+        // If the token changed (e.g. OAuth2 login after bot-token session, or logout),
         // reconnect the WebSocket with the new token. Discord authenticates based on
         // the IDENTIFY handshake token, so simply updating the in-memory token is not
         // enough on an already-open socket. updateTokenAndReconnect() closes the old
@@ -411,10 +411,10 @@ class KizzyRPC @Inject constructor(
     }
 
     /**
-     * Checks if the OAuth access token is available for OAuth-based RPC.
+     * Checks if the OAuth2 access token is available for OAuth2-based RPC.
      */
-    fun isOAuthTokenAvailable(): Boolean {
-        return Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""].isNotEmpty()
+    fun isOAuth2TokenAvailable(): Boolean {
+        return Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].isNotEmpty()
     }
 
     /**

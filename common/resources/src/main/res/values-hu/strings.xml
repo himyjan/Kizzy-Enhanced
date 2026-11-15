@@ -258,9 +258,9 @@
     <string name="rpc_connection_method">Kapcsolódási mód</string>
     <string name="rpc_connection_method_desc">Válassza ki, hogyan kapcsolódik a Kizzy a Discordhoz</string>
     <string name="rpc_connection_method_gateway">Gateway (bot token)</string>
-    <string name="rpc_connection_method_oauth">OAuth (a Discord-fiókja)</string>
-    <string name="discord_oauth_authorize">Kapcsolódás a Discordhoz</string>
-    <string name="discord_oauth_authorize_desc">Engedélyezze a Kizzy-nek, hogy megjelenítse a tevékenységét a Discord-profilján</string>
+    <string name="rpc_connection_method_oauth2">OAuth (a Discord-fiókja)</string>
+    <string name="discord_oauth2_authorize">Kapcsolódás a Discordhoz</string>
+    <string name="discord_oauth2_authorize_desc">Engedélyezze a Kizzy-nek, hogy megjelenítse a tevékenységét a Discord-profilján</string>
 
     <string name="console_include_spoofed">Hamisített buildeket is tartalmazza</string>
     <string name="auto_detect">Automatikus · %1$s</string>
@@ -318,5 +318,5 @@
     <string name="console_presets_title">Presets</string>
     <string name="console_options_title">Console RPC options</string>
 
-    <string name="discord_oauth_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
 </resources>

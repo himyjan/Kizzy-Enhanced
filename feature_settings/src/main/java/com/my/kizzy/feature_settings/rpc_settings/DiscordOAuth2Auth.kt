@@ -23,22 +23,22 @@ import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.SecureRandom
 
-class DiscordAuth(
+class DiscordOAuth2Auth(
     private val context: Context,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 ) {
 
     companion object {
-        private const val TAG = "DiscordAuth"
-        private const val DISCORD_OAUTH_AUTHORIZE = "https://discord.com/oauth2/authorize"
-        private const val DISCORD_OAUTH_TOKEN = "https://discord.com/api/v10/oauth2/token"
+        private const val TAG = "DiscordOAuth2Auth"
+        private const val DISCORD_OAUTH2_AUTHORIZE = "https://discord.com/oauth2/authorize"
+        private const val DISCORD_OAUTH2_TOKEN = "https://discord.com/api/v10/oauth2/token"
         private const val DISCORD_SCOPES = "identify guilds"
-        private const val REDIRECT_URI = "kizzy://oauth/callback"
-        
-        private const val DEFAULT_DISCORD_OAUTH_APPLICATION_CLIENT_ID = "1571063796418744412"
+        private const val REDIRECT_URI = "kizzy://oauth2/callback"
+
+        private const val DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID = "1571063796418744412"
     }
 
-    data class DiscordAuthResult(
+    data class DiscordOAuth2Result(
         val accessToken: String,
         val refreshToken: String,
         val expiresInSec: Long,
@@ -47,19 +47,19 @@ class DiscordAuth(
 
     data class PkcePair(val verifier: String, val challenge: String)
 
-    sealed class DiscordAuthException(message: String, cause: Throwable? = null) : Exception(message, cause) {
-        class UserCancelled(message: String = "User cancelled authorization") : DiscordAuthException(message)
-        class NetworkFailure(cause: Throwable) : DiscordAuthException("Network failure: ${cause.message}", cause)
-        class InvalidGrant(message: String = "Invalid or expired grant") : DiscordAuthException(message)
-        class StateMismatch : DiscordAuthException("OAuth state mismatch")
-        class NoBrowser(message: String = "No browser available") : DiscordAuthException(message)
-        class InvalidClientId(message: String = "Invalid or missing Client ID") : DiscordAuthException(message)
+    sealed class DiscordOAuth2Exception(message: String, cause: Throwable? = null) : Exception(message, cause) {
+        class UserCancelled(message: String = "User cancelled authorization") : DiscordOAuth2Exception(message)
+        class NetworkFailure(cause: Throwable) : DiscordOAuth2Exception("Network failure: ${cause.message}", cause)
+        class InvalidGrant(message: String = "Invalid or expired grant") : DiscordOAuth2Exception(message)
+        class StateMismatch : DiscordOAuth2Exception("OAuth2 state mismatch")
+        class NoBrowser(message: String = "No browser available") : DiscordOAuth2Exception(message)
+        class InvalidClientId(message: String = "Invalid or missing Client ID") : DiscordOAuth2Exception(message)
     }
 
-    suspend fun authorize(activity: Activity): DiscordAuthResult {
-        val clientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH_APPLICATION_CLIENT_ID]
+    suspend fun authorize(activity: Activity): DiscordOAuth2Result {
+        val clientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID]
         if (clientId.isBlank()) {
-            throw DiscordAuthException.InvalidClientId()
+            throw DiscordOAuth2Exception.InvalidClientId()
         }
 
         val pkce = generatePkcePair()
@@ -73,7 +73,7 @@ class DiscordAuth(
                 challenge = pkce.challenge,
             )
 
-            Log.d(TAG, "authorize: launching OAuth URL")
+            Log.d(TAG, "authorize: launching OAuth2 URL")
 
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = authUrl.toUri()
@@ -85,15 +85,15 @@ class DiscordAuth(
                 activity.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
                 Log.w(TAG, "authorize: no browser available", e)
-                throw DiscordAuthException.NoBrowser()
+                throw DiscordOAuth2Exception.NoBrowser()
             }
 
-            val deferred = DiscordOAuthActivity.startAuthorization()
+            val deferred = DiscordOAuth2Activity.startAuthorization()
             val callback = deferred.await()
 
             if (callback.state != state) {
                 Log.w(TAG, "authorize: state mismatch")
-                throw DiscordAuthException.StateMismatch()
+                throw DiscordOAuth2Exception.StateMismatch()
             }
 
             return exchangeAuthorizationCode(
@@ -102,11 +102,11 @@ class DiscordAuth(
                 redirectUri = REDIRECT_URI,
                 clientId = clientId,
             )
-        } catch (e: DiscordAuthException) {
+        } catch (e: DiscordOAuth2Exception) {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "authorize: unexpected failure", e)
-            throw DiscordAuthException.NetworkFailure(e)
+            throw DiscordOAuth2Exception.NetworkFailure(e)
         }
     }
 
@@ -115,7 +115,7 @@ class DiscordAuth(
         verifier: String,
         redirectUri: String,
         clientId: String,
-    ): DiscordAuthResult {
+    ): DiscordOAuth2Result {
         val params = mapOf(
             "client_id" to clientId,
             "grant_type" to "authorization_code",
@@ -126,8 +126,8 @@ class DiscordAuth(
         return performTokenExchange(params)
     }
 
-    suspend fun refresh(refreshToken: String): DiscordAuthResult {
-        val clientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH_APPLICATION_CLIENT_ID]
+    suspend fun refresh(refreshToken: String): DiscordOAuth2Result {
+        val clientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID]
         val params = mapOf(
             "client_id" to clientId,
             "grant_type" to "refresh_token",
@@ -136,11 +136,11 @@ class DiscordAuth(
         return performTokenExchange(params)
     }
 
-    private suspend fun performTokenExchange(params: Map<String, String>): DiscordAuthResult {
+    private suspend fun performTokenExchange(params: Map<String, String>): DiscordOAuth2Result {
         return withContext(Dispatchers.IO) {
             var connection: HttpURLConnection? = null
             try {
-            val url = URL(DISCORD_OAUTH_TOKEN)
+            val url = URL(DISCORD_OAUTH2_TOKEN)
             connection = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
@@ -174,13 +174,13 @@ class DiscordAuth(
 
                 Log.d(TAG, "token exchange: success")
 
-                Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN] = accessToken
+                Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
                 if (refreshToken.isNotEmpty()) {
-                    Prefs[Prefs.DISCORD_OAUTH_REFRESH_TOKEN] = refreshToken
+                    Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
                 }
-                Prefs[Prefs.DISCORD_OAUTH_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
+                Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
 
-                return@withContext DiscordAuthResult(
+                return@withContext DiscordOAuth2Result(
                     accessToken = accessToken,
                     refreshToken = refreshToken,
                     expiresInSec = expiresIn,
@@ -188,18 +188,18 @@ class DiscordAuth(
                 )
             } else {
                 Log.w(TAG, "token exchange: HTTP $responseCode error body=$responseBody")
-                throw DiscordAuthException.NetworkFailure(java.io.IOException("HTTP $responseCode:$responseBody"))
+                throw DiscordOAuth2Exception.NetworkFailure(java.io.IOException("HTTP $responseCode:$responseBody"))
             }
-        } catch (e: DiscordAuthException) {
+        } catch (e: DiscordOAuth2Exception) {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "token exchange: network failure", e)
-            throw DiscordAuthException.NetworkFailure(e)
+            throw DiscordOAuth2Exception.NetworkFailure(e)
         } finally {
             connection?.disconnect()
         }
     }
-}
+    }
 
     private fun buildAuthorizeUrl(
         clientId: String,
@@ -210,7 +210,7 @@ class DiscordAuth(
         val encodedRedirect = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name())
         val encodedScope = URLEncoder.encode(DISCORD_SCOPES, StandardCharsets.UTF_8.name())
         return buildString {
-            append(DISCORD_OAUTH_AUTHORIZE)
+            append(DISCORD_OAUTH2_AUTHORIZE)
             append("?client_id=").append(clientId)
             append("&response_type=code")
             append("&redirect_uri=").append(encodedRedirect)
@@ -245,19 +245,47 @@ class DiscordAuth(
     }
 
     fun hasValidToken(): Boolean {
-        val token = Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""]
-        return token.isNotEmpty()
+        val token = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+        return token.isNotEmpty() && !isTokenExpired()
+    }
+
+    /**
+     * Returns true when the stored access token has passed its expiry time.
+     * When no expiry is stored we assume the token is still valid.
+     */
+    fun isTokenExpired(): Boolean {
+        val expiresAt = Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT, 0L]
+        return expiresAt > 0L && System.currentTimeMillis() >= expiresAt
+    }
+
+    /**
+     * Returns a usable access token, refreshing it first if it has expired and a
+     * refresh token is available.
+     */
+    suspend fun getValidAccessToken(): String? {
+        val token = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+        if (token.isEmpty()) return null
+        if (!isTokenExpired()) return token
+        val refreshToken = Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN, ""]
+        if (refreshToken.isEmpty()) return token
+        try {
+            val refreshed = refresh(refreshToken)
+            return refreshed.accessToken
+        } catch (e: DiscordOAuth2Exception) {
+            Log.w(TAG, "getValidAccessToken: refresh failed", e)
+            return token
+        }
     }
 
     fun getAccessToken(): String? {
-        return Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN, ""].takeIf { it.isNotEmpty() }
+        return Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].takeIf { it.isNotEmpty() }
     }
 
     fun clearTokens() {
-        Prefs.remove(Prefs.DISCORD_OAUTH_ACCESS_TOKEN)
-        Prefs.remove(Prefs.DISCORD_OAUTH_REFRESH_TOKEN)
-        Prefs.remove(Prefs.DISCORD_OAUTH_EXPIRES_AT)
-        Prefs.remove(Prefs.DISCORD_OAUTH_USER_ID)
-        Prefs.remove(Prefs.DISCORD_OAUTH_USERNAME)
+        Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
+        Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
+        Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)
+        Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
+        Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
     }
 }

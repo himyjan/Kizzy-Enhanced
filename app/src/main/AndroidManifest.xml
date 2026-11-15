@@ -96,7 +96,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.my.kizzy.feature_settings.rpc_settings.DiscordOAuthActivity"
+            android:name="com.my.kizzy.feature_settings.rpc_settings.DiscordOAuth2Activity"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/ActivityTranslucent">
@@ -104,7 +104,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="kizzy" android:host="oauth" android:path="/callback" />
+                <data android:scheme="kizzy" android:host="oauth2" android:path="/callback" />
             </intent-filter>
         </activity>
 

@@ -258,9 +258,9 @@
     <string name="rpc_connection_method">連線方式</string>
     <string name="rpc_connection_method_desc">選擇 Kizzy 如何連線到 Discord</string>
     <string name="rpc_connection_method_gateway">閘道（機器人權杖）</string>
-    <string name="rpc_connection_method_oauth">OAuth（你的 Discord 帳號）</string>
-    <string name="discord_oauth_authorize">連線到 Discord</string>
-    <string name="discord_oauth_authorize_desc">允許 Kizzy 在你的 Discord 個人檔案上顯示你的活動狀態</string>
+    <string name="rpc_connection_method_oauth2">OAuth（你的 Discord 帳號）</string>
+    <string name="discord_oauth2_authorize">連線到 Discord</string>
+    <string name="discord_oauth2_authorize_desc">允許 Kizzy 在你的 Discord 個人檔案上顯示你的活動狀態</string>
 
     <string name="console_include_spoofed">包含偽造版本</string>
     <string name="auto_detect">自動 · %1$s</string>
@@ -318,5 +318,5 @@
     <string name="console_presets_title">預設</string>
     <string name="console_options_title">Console RPC 選項</string>
 
-    <string name="discord_oauth_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
 </resources>

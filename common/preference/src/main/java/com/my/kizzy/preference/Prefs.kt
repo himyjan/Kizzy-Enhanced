@@ -47,7 +47,11 @@ object Prefs {
      * The Discord token is the master key of the user's account, so it must not
      * be readable from the preferences file. Everything else is plain text.
      */
-    private val SENSITIVE_KEYS = setOf(TOKEN, DISCORD_OAUTH_ACCESS_TOKEN, DISCORD_OAUTH_REFRESH_TOKEN)
+    private val SENSITIVE_KEYS = setOf(
+        TOKEN,
+        DISCORD_OAUTH2_ACCESS_TOKEN,
+        DISCORD_OAUTH2_REFRESH_TOKEN,
+    )
 
     /**
      * Encrypts the value of a sensitive key before it is written to disk.
@@ -289,16 +293,16 @@ object Prefs {
     // Discord RPC connection method: "gateway" (default) or "oauth"
     const val RPC_CONNECTION_METHOD = "rpc_connection_method"
     const val RPC_CONNECTION_METHOD_GATEWAY = "gateway"
-    const val RPC_CONNECTION_METHOD_OAUTH = "oauth"
+    const val RPC_CONNECTION_METHOD_OAUTH2 = "oauth"
 
-    const val DISCORD_OAUTH_APPLICATION_CLIENT_ID = "discord_oauth_client_id"
+    const val DISCORD_OAUTH2_APPLICATION_CLIENT_ID = "discord_oauth2_client_id"
 
-    // Discord OAuth token storage (encrypted via SecurePrefs)
-    const val DISCORD_OAUTH_ACCESS_TOKEN = "discord_oauth_access_token"
-    const val DISCORD_OAUTH_REFRESH_TOKEN = "discord_oauth_refresh_token"
-    const val DISCORD_OAUTH_EXPIRES_AT = "discord_oauth_expires_at"
-    const val DISCORD_OAUTH_USER_ID = "discord_oauth_user_id"
-    const val DISCORD_OAUTH_USERNAME = "discord_oauth_username"
+    // Discord OAuth2 token storage (encrypted via SecurePrefs)
+    const val DISCORD_OAUTH2_ACCESS_TOKEN = "discord_oauth_access_token"
+    const val DISCORD_OAUTH2_REFRESH_TOKEN = "discord_oauth_refresh_token"
+    const val DISCORD_OAUTH2_EXPIRES_AT = "discord_oauth_expires_at"
+    const val DISCORD_OAUTH2_USER_ID = "discord_oauth_user_id"
+    const val DISCORD_OAUTH2_USERNAME = "discord_oauth_username"
 
     const val USE_RPC_BUTTONS = "use_saved_rpc_buttons"
     const val RPC_BUTTONS_DATA = "saved_rpc_buttons_data"

@@ -81,12 +81,12 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var configsDir by remember { mutableStateOf(Prefs[Prefs.CONFIGS_DIRECTORY, ""]) }
     var showDirConfigDialog by remember { mutableStateOf(false) }
     var showConnectionMethodDialog by remember { mutableStateOf(false) }
-    var oauthError by remember { mutableStateOf("") }
-    var discordOAuthClientId by remember {
-        mutableStateOf(Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, ""])
+    var oauth2Error by remember { mutableStateOf("") }
+    var discordOAuth2ClientId by remember {
+        mutableStateOf(Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""])
     }
     var showClientIdDialog by remember { mutableStateOf(false) }
-    var editingClientId by remember { mutableStateOf("") }
+    var editingClientId2 by remember { mutableStateOf("") }
     var showUserLogin by remember { mutableStateOf(false) }
 
     // Collect from DataStore state flow so OAuth2 selection persists across cold boots.
@@ -98,7 +98,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
         mutableStateOf(prefsMap[Prefs.RPC_CONNECTION_METHOD] as? String ?: Prefs.RPC_CONNECTION_METHOD_GATEWAY)
     }
 
-    val discordAuth = remember { DiscordAuth(context, scope) }
+    val discordAuth = remember<DiscordOAuth2Auth> { DiscordOAuth2Auth(context, scope) }
 
     var useButtonConfigs by remember { mutableStateOf(Prefs[Prefs.USE_RPC_BUTTONS, false]) }
     var useYoutubeButton by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON, false]) }
@@ -147,7 +147,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 }
             }
             item(key = "connection_method") {
-                val currentMethod = if (connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) "OAuth2" else "Gateway"
+                val currentMethod = if (connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH2) "OAuth2" else "Gateway"
                 SettingItem(
                     title = stringResource(id = R.string.rpc_connection_method),
                     description = stringResource(id = R.string.rpc_connection_method_desc) + "  •  Currently using: $currentMethod",
@@ -156,32 +156,59 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     showConnectionMethodDialog = true
                 }
             }
-            item(key = "oauth_client_id") {
+            item(key = "oauth2_client_id") {
                 SettingItem(
-                    title = stringResource(id = R.string.discord_oauth_client_id),
-                    description = stringResource(id = R.string.discord_oauth_client_id_desc) + (if (discordOAuthClientId.isNotEmpty()) "  •  $discordOAuthClientId" else "  •  (optional)"),
+                    title = stringResource(id = R.string.discord_oauth2_client_id),
+                    description = stringResource(id = R.string.discord_oauth2_client_id_desc) + (if (discordOAuth2ClientId.isNotEmpty()) "  •  $discordOAuth2ClientId" else "  •  (optional)"),
                     icon = Icons.Outlined.Person,
                 ) {
-                    discordOAuthClientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, ""]
-                    editingClientId = discordOAuthClientId
+                    discordOAuth2ClientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""]
+                    editingClientId2 = discordOAuth2ClientId
                     showClientIdDialog = true
                 }
             }
-            item(key = "oauth_authorize") {
-                val oauthStatus = if (discordAuth.hasValidToken()) "Authorized (account token)" else "Not authorized"
-                AnimatedVisibility(visible = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH) {
+            item(key = "oauth2_authorize") {
+                val oauthStatus = when {
+                    discordAuth.hasValidToken() -> "Authorized (OAuth2 + account token)"
+                    Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].isNotEmpty() -> "Account token only"
+                    else -> "Not authorized"
+                }
+                AnimatedVisibility(visible = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH2) {
                     SettingItem(
-                        title = stringResource(id = R.string.discord_oauth_authorize),
-                        description = stringResource(id = R.string.discord_oauth_authorize_desc)
-                            + if (oauthError.isNotEmpty()) "  •  Error: $oauthError" else "  •  $oauthStatus",
+                        title = stringResource(id = R.string.discord_oauth2_authorize),
+                        description = stringResource(id = R.string.discord_oauth2_authorize_desc)
+                            + if (oauth2Error.isNotEmpty()) "  •  Error: $oauth2Error" else "  •  $oauthStatus",
                         icon = Icons.AutoMirrored.Filled.Login,
                     ) {
-                        oauthError = ""
-                        // Discord rejects OAuth2 bearer tokens on the gateway (close code
-                        // 4004). Log in through Discord's web login instead so we capture
-                        // the real account token (user_id.timestamp.hmac), which the
-                        // gateway accepts.
-                        showUserLogin = true
+                        oauth2Error = ""
+                        scope.launch {
+                            try {
+                                // OAuth 2.1 Authorization Code flow with PKCE S256.
+                                // discordAuth.authorize() opens the system browser for
+                                // user consent, exchanges the authorization code for
+                                // bearer + refresh tokens, and stores them internally.
+                                val result = discordAuth.authorize(activity)
+                                Log.d("RpcSettings", "OAuth2 authorized: bearer_token len=${result.accessToken.length}, refresh_token len=${result.refreshToken.length}, expires_in=${result.expiresInSec}s")
+
+                                // Discord's OAuth2 returns a bearer token, which the
+                                // gateway rejects with 4004. We still need the real
+                                // account token (user_id.timestamp.hmac) for the gateway,
+                                // so open the WebView login to capture it from page storage.
+                                showUserLogin = true
+                                oauth2Error = ""
+                                Toast.makeText(
+                                    context,
+                                    "Discord OAuth2 authorized. Now log in to capture your account token.",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
+                                oauth2Error = e.message ?: "Authorization failed"
+                                Log.e("RpcSettings", "OAuth2 authorization failed", e)
+                            } catch (e: Exception) {
+                                oauth2Error = "Unexpected error: ${e.message}"
+                                Log.e("RpcSettings", "OAuth2 authorization unexpected failure", e)
+                            }
+                        }
                     }
                 }
             }
@@ -363,11 +390,11 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                             showConnectionMethodDialog = false
                         }
                         SingleChoiceItem(
-                            text = stringResource(R.string.rpc_connection_method_oauth),
-                            selected = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH
+                            text = stringResource(id = R.string.rpc_connection_method_oauth2),
+                            selected = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH2
                         ) {
-                            connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH
-                            Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
+                            connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH2
+                            Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH2
                             showConnectionMethodDialog = false
                         }
                     }
@@ -598,15 +625,15 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
         if (showClientIdDialog) {
             AlertDialog(
                 onDismissRequest = { showClientIdDialog = false },
-                title = { Text(stringResource(R.string.discord_oauth_client_id)) },
+                title = { Text(stringResource(R.string.discord_oauth2_client_id)) },
                 text = {
                     Column {
                         Spacer(modifier = Modifier.height(8.dp))
                         RpcField(
-                            value = discordOAuthClientId,
-                            label = R.string.discord_oauth_client_id,
+                            value = discordOAuth2ClientId,
+                            label = R.string.discord_oauth2_client_id,
                             onValueChange = { newText ->
-                                discordOAuthClientId = newText
+                                discordOAuth2ClientId = newText
                             }
                         )
                     }
@@ -614,11 +641,11 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            if (discordOAuthClientId.isBlank()) {
+                            if (discordOAuth2ClientId.isBlank()) {
                                 // Keep existing value if empty
-                                discordOAuthClientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, ""]
+                                discordOAuth2ClientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""]
                             } else {
-                                Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID] = discordOAuthClientId
+                                Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID] = discordOAuth2ClientId
                             }
                             showClientIdDialog = false
                         }
@@ -633,14 +660,14 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
             DiscordUserLoginDialog(
                 onDismiss = { showUserLogin = false },
                 onToken = { token ->
-                    Prefs[Prefs.DISCORD_OAUTH_ACCESS_TOKEN] = token
-                    Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH
-                    connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH
+                    Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = token
+                    Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH2
+                    connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH2
                     showUserLogin = false
-                    oauthError = ""
+                    oauth2Error = ""
                     Toast.makeText(context, "Discord account connected", Toast.LENGTH_SHORT).show()
                     Log.d("RpcSettings", "Account token saved (len=${token.length}, parts=${token.count { it == '.' } + 1})")
-                    // Do NOT start DiscordOAuthRpcService here. It builds an empty
+                    // Do NOT start DiscordOAuth2RpcService here. It builds an empty
                     // presence (name/state/details = null) that overwrites the real
                     // Media/Custom presence. The running RPC service already calls
                     // KizzyRPC.refreshFromPrefs() and picks up the new token.

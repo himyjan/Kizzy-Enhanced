@@ -187,14 +187,14 @@ internal fun ComponentActivity.Kizzy(
                             Prefs.remove(Prefs.USER_DATA)
                             Prefs.remove(Prefs.USER_BIO)
                             Prefs.remove(Prefs.USER_NITRO)
-                            // Clear OAuth tokens and reset connection method so
-                            // Discord OAuth is fully logged out and the next login
+                            // Clear OAuth2 tokens and reset connection method so
+                            // Discord OAuth2 is fully logged out and the next login
                             // starts fresh with the Gateway default.
-                            Prefs.remove(Prefs.DISCORD_OAUTH_ACCESS_TOKEN)
-                            Prefs.remove(Prefs.DISCORD_OAUTH_REFRESH_TOKEN)
-                            Prefs.remove(Prefs.DISCORD_OAUTH_EXPIRES_AT)
-                            Prefs.remove(Prefs.DISCORD_OAUTH_USER_ID)
-                            Prefs.remove(Prefs.DISCORD_OAUTH_USERNAME)
+                            Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
+                            Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
+                            Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)
+                            Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
+                            Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
                             Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
                             loggedIn = false
                         },

@@ -278,9 +278,9 @@
     <string name="rpc_connection_method">ସଂଯୋଗ ପଦ୍ଧତି</string>
     <string name="rpc_connection_method_desc">ଚାରୁ କି Kizzy Discord ସହ କିପରେ ଯୋଡ଼ିବ ବାଛି ବାହାର ବାଛନ୍ତା ଚାରୁ କରନ୍ତୁ</string>
     <string name="rpc_connection_method_gateway">Gateway (ବୋଟ ଟୋକନ)</string>
-    <string name="rpc_connection_method_oauth">OAuth (ଆପଣଙ୍କ Discord ଖାତା)</string>
-    <string name="discord_oauth_authorize">Discord ସହ ଯୋଡ଼ନ୍ତୁ</string>
-    <string name="discord_oauth_authorize_desc">ଆପଣଙ୍କ Discord ପ୍ରୋଫାଇଲରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳପ ଦେଖାଇବାକୁ Kizzy କୁ ଅନୁମତି ଦିଅନ୍ତୁ</string>
+    <string name="rpc_connection_method_oauth2">OAuth (ଆପଣଙ୍କ Discord ଖାତା)</string>
+    <string name="discord_oauth2_authorize">Discord ସହ ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="discord_oauth2_authorize_desc">ଆପଣଙ୍କ Discord ପ୍ରୋଫାଇଲରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳପ ଦେଖାଇବାକୁ Kizzy କୁ ଅନୁମତି ଦିଅନ୍ତୁ</string>
 
     <string name="console_include_spoofed">ଫଲ-ବିଲ୍ଡ ଅନ୍ତର୍ଭାଗ କରନ୍ତୁ</string>
     <string name="auto_detect">ସ୍ୱତନ୍ତ · %1$s</string>
@@ -338,5 +338,5 @@
     <string name="console_presets_title">Presets</string>
     <string name="console_options_title">Console RPC options</string>
 
-    <string name="discord_oauth_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
 </resources>

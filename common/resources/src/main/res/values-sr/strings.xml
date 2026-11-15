@@ -255,9 +255,9 @@
     <string name="rpc_connection_method">Начин повезивања</string>
     <string name="rpc_connection_method_desc">Изаберите како се Kizzy повезује са Discord-ом</string>
     <string name="rpc_connection_method_gateway">Gateway (бот токен)</string>
-    <string name="rpc_connection_method_oauth">OAuth (ваш Discord налог)</string>
-    <string name="discord_oauth_authorize">Повежите се са Discord-ом</string>
-    <string name="discord_oauth_authorize_desc">Дозволите Kizzy-ју да прикаже вашу активност на вашем Discord профилу</string>
+    <string name="rpc_connection_method_oauth2">OAuth (ваш Discord налог)</string>
+    <string name="discord_oauth2_authorize">Повежите се са Discord-ом</string>
+    <string name="discord_oauth2_authorize_desc">Дозволите Kizzy-ју да прикаже вашу активност на вашем Discord профилу</string>
 
     <string name="console_include_spoofed">Укључи фалсификоване верзије</string>
     <string name="auto_detect">Аутоматски · %1$s</string>
@@ -315,5 +315,5 @@
     <string name="console_presets_title">Presets</string>
     <string name="console_options_title">Console RPC options</string>
 
-    <string name="discord_oauth_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
 </resources>

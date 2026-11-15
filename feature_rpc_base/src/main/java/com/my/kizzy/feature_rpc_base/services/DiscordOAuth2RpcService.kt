@@ -2,7 +2,7 @@
  *
  *  ******************************************************************
  *  *  * Copyright (C) 2022
- *  *  *  * DiscordOAuthRpcService.kt is part of Kizzy
+ *  *  *  * DiscordOAuth2RpcService.kt is part of Kizzy
  *  *  *  *  and can not be copied and/or distributed without the express
  *  *  *  * permission of yzziK(Vaibhav)
  *  *  *  ******************************************************************
@@ -23,14 +23,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch // <-- Added missing import for launch extension
 
 /**
- * Discord OAuth RPC Service.
+ * Discord OAuth2 RPC Service.
  *
  * Uses Discord OAuth2 token (obtained via OAuth2 authorization flow) instead of
  * a bot token to identify with the Discord Gateway. This allows users to show
  * their own Discord account as the RPC source instead of the Kizzy bot.
  */
 @AndroidEntryPoint
-class DiscordOAuthRpcService : Service() {
+class DiscordOAuth2RpcService : Service() {
 
     @Inject
     lateinit var kizzyRPC: KizzyRPC
@@ -38,7 +38,7 @@ class DiscordOAuthRpcService : Service() {
     @Inject
     lateinit var scope: CoroutineScope
 
-    private val TAG = "DiscordOAuthRpc"
+    private val TAG = "DiscordOAuth2Rpc"
 
     override fun onCreate() {
         super.onCreate()

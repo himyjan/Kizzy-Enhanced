@@ -19,40 +19,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CompletableDeferred
 
-class DiscordOAuthActivity : ComponentActivity() {
+class DiscordOAuth2Activity : ComponentActivity() {
 
-    data class OAuthCallback(val code: String, val state: String)
+    data class OAuth2Callback(val code: String, val state: String)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val result = when {
             intent?.data?.scheme != "kizzy" ->
-                OAuthResult.Error("Invalid callback scheme")
-            intent?.data?.host != "oauth" ->
-                OAuthResult.Error("Invalid callback host")
+                OAuth2Result.Error("Invalid callback scheme")
+            intent?.data?.host != "oauth2" ->
+                OAuth2Result.Error("Invalid callback host")
             intent?.data?.path != "/callback" ->
-                OAuthResult.Error("Invalid callback path")
+                OAuth2Result.Error("Invalid callback path")
             else -> {
                 val code = intent?.data?.getQueryParameter("code") ?: ""
                 val state = intent?.data?.getQueryParameter("state") ?: ""
                 val error = intent?.data?.getQueryParameter("error")
 
                 if (error != null) {
-                    OAuthResult.Error("Discord authorization denied: $error")
+                    OAuth2Result.Error("Discord authorization denied: $error")
                 } else if (code.isBlank() || state.isBlank()) {
-                    OAuthResult.Error("Missing code or state in callback")
+                    OAuth2Result.Error("Missing code or state in callback")
                 } else {
-                    OAuthResult.Success(OAuthCallback(code, state))
+                    OAuth2Result.Success(OAuth2Callback(code, state))
                 }
             }
         }
 
         when (result) {
-            is OAuthResult.Success -> {
+            is OAuth2Result.Success -> {
                 deferredResult?.complete(result.callback)
             }
-            is OAuthResult.Error -> {
+            is OAuth2Result.Error -> {
                 deferredResult?.completeExceptionally(Exception(result.message))
             }
         }
@@ -65,20 +65,20 @@ class DiscordOAuthActivity : ComponentActivity() {
                 Column {
                     Text(
                         text = when (result) {
-                            is OAuthResult.Success -> "Authorizing with Discord..."
-                            is OAuthResult.Error -> "Authorization failed"
+                            is OAuth2Result.Success -> "Authorizing with Discord..."
+                            is OAuth2Result.Error -> "Authorization failed"
                         },
                         style = MaterialTheme.typography.headlineMedium,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = when (result) {
-                            is OAuthResult.Success -> "Please wait while we complete the Discord OAuth2 authorization."
-                            is OAuthResult.Error -> result.message
+                            is OAuth2Result.Success -> "Please wait while we complete the Discord OAuth2 authorization."
+                            is OAuth2Result.Error -> result.message
                         },
                         style = MaterialTheme.typography.bodyMedium,
                     )
-                    if (result is OAuthResult.Error) {
+                    if (result is OAuth2Result.Error) {
                         Spacer(modifier = Modifier.height(16.dp))
                         TextButton(onClick = { finish() }) {
                             Text(text = "Close")
@@ -88,22 +88,22 @@ class DiscordOAuthActivity : ComponentActivity() {
             }
         }
 
-        if (result is OAuthResult.Success) {
+        if (result is OAuth2Result.Success) {
             finish()
         }
     }
 
     companion object {
-        private var deferredResult: CompletableDeferred<OAuthCallback>? = null
+        private var deferredResult: CompletableDeferred<OAuth2Callback>? = null
 
-        fun startAuthorization(): CompletableDeferred<OAuthCallback> {
+        fun startAuthorization(): CompletableDeferred<OAuth2Callback> {
             deferredResult = CompletableDeferred()
             return deferredResult!!
         }
     }
 
-    private sealed class OAuthResult {
-        data class Success(val callback: OAuthCallback) : OAuthResult()
-        data class Error(val message: String) : OAuthResult()
+    private sealed class OAuth2Result {
+        data class Success(val callback: OAuth2Callback) : OAuth2Result()
+        data class Error(val message: String) : OAuth2Result()
     }
 }
