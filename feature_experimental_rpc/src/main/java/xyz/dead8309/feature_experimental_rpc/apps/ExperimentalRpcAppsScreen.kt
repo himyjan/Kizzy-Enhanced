@@ -288,13 +288,35 @@ fun ExperimentalRpcAppsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     TextButton(
-                        onClick = { onEvent(UiEvent.SelectAllApps) },
+                        onClick = {
+                            // Select only filtered apps
+                            val filteredPackages = filteredApps.map { it.pkg }
+                            Prefs.setExperimentalAppsEnabled(filteredPackages)
+                            _uiState.update { state ->
+                                state.copy(
+                                    enabledApps = filteredApps.associate { it.pkg to true }
+                                )
+                            }
+                            restartServiceIfRunning()
+                        },
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(text = stringResource(id = R.string.turn_on_all_apps))
                     }
                     TextButton(
-                        onClick = { onEvent(UiEvent.DeselectAllApps) },
+                        onClick = {
+                            // Deselect only filtered apps
+                            val filteredPackages = filteredApps.map { it.pkg }
+                            val newEnabledApps = _uiState.value.enabledApps.toMutableMap()
+                            filteredPackages.forEach { pkg ->
+                                newEnabledApps[pkg] = false
+                            }
+                            Prefs.setExperimentalAppsEnabled(filteredPackages.filter { newEnabledApps[it] == true })
+                            _uiState.update { state ->
+                                state.copy(enabledApps = newEnabledApps)
+                            }
+                            restartServiceIfRunning()
+                        },
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(text = stringResource(id = R.string.turn_off_all_apps))
