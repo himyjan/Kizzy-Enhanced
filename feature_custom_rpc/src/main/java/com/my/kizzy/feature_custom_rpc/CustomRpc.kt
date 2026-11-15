@@ -552,8 +552,12 @@ private fun RpcTextFieldsColumn(
     var isCustomRpcEnabled by remember {
         mutableStateOf(rpcManager.activeRpc.value == RpcType.CustomRpc)
     }
+    var isConsoleRpcEnabled by remember {
+        mutableStateOf(rpcManager.activeRpc.value == RpcType.ConsoleRpc)
+    }
     LaunchedEffect(rpcManager.activeRpc) {
         isCustomRpcEnabled = rpcManager.activeRpc.value == RpcType.CustomRpc
+        isConsoleRpcEnabled = rpcManager.activeRpc.value == RpcType.ConsoleRpc
     }
     var consolePlatform by remember {
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"])
@@ -683,7 +687,8 @@ private fun RpcTextFieldsColumn(
     }
 
     /** Applies a preset to the console values and, when running, to Discord.
-     *  Also updates the Custom RPC tab text fields so the user can see and edit them. */
+     *  Also updates the Custom RPC tab text fields so the user can see and edit them.
+     *  If Console RPC is not running, starts it so the preset takes effect immediately. */
     fun applyConsolePreset(preset: ConsolePreset, presetName: String) {
         consolePlatform = preset.platform
         consoleActivityType = preset.activityType
@@ -711,7 +716,19 @@ private fun RpcTextFieldsColumn(
         )))
 
         persistConsoleSettings()
-        applyConsoleSettingsIfRunning()
+
+        // If Console RPC is not running, start it so the preset takes effect immediately
+        if (rpcManager.activeRpc.value != RpcType.ConsoleRpc) {
+            scope.launch {
+                rpcManager.switchTo(
+                    RpcType.ConsoleRpc,
+                    rpcConfigString = Json.encodeToString(buildConsoleConfig()),
+                    isConsoleRpc = true
+                )
+            }
+        } else {
+            applyConsoleSettingsIfRunning()
+        }
     }
 
     /** Applies a game to the console values and, when running, to Discord. */
@@ -727,7 +744,19 @@ private fun RpcTextFieldsColumn(
             smallImg = if (consoleShowCoverArt) game.small_image ?: "" else "",
         )))
         persistConsoleSettings()
-        applyConsoleSettingsIfRunning()
+
+        // If Console RPC is not running, start it so the game takes effect immediately
+        if (rpcManager.activeRpc.value != RpcType.ConsoleRpc) {
+            scope.launch {
+                rpcManager.switchTo(
+                    RpcType.ConsoleRpc,
+                    rpcConfigString = Json.encodeToString(buildConsoleConfig()),
+                    isConsoleRpc = true
+                )
+            }
+        } else {
+            applyConsoleSettingsIfRunning()
+        }
     }
 
     LazyColumn(
@@ -736,26 +765,32 @@ private fun RpcTextFieldsColumn(
 
     ) {
 
+        // Enable Custom RPC / Console RPC switch - shown on both tabs but starts
+        // the appropriate RPC type based on which tab is active.
         item {
 
             SwitchBar(
 
-                title = stringResource(id = R.string.enable_customRpc),
+                title = stringResource(if (selectedTab == 0) R.string.enable_customRpc else R.string.enable_console_rpc),
 
-                isChecked = isCustomRpcEnabled,
+                isChecked = if (selectedTab == 0) isCustomRpcEnabled else isConsoleRpcEnabled,
 
             ) {
-                val newValue = !isCustomRpcEnabled
-                isCustomRpcEnabled = newValue
+                val newValue = !if (selectedTab == 0) isCustomRpcEnabled else isConsoleRpcEnabled
+                if (selectedTab == 0) {
+                    isCustomRpcEnabled = newValue
+                } else {
+                    isConsoleRpcEnabled = newValue
+                }
                 when (newValue) {
                     true -> {
                         persistConsoleSettings()
                         val consoleConfig = buildConsoleConfig()
                         scope.launch {
                             rpcManager.switchTo(
-                                RpcType.ConsoleRpc,
+                                if (selectedTab == 0) RpcType.CustomRpc else RpcType.ConsoleRpc,
                                 rpcConfigString = Json.encodeToString(consoleConfig),
-                                isConsoleRpc = true
+                                isConsoleRpc = selectedTab == 1
                             )
                         }
                     }
