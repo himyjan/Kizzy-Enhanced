@@ -1,12 +1,11 @@
 /*
  *
- *  ******************************************************************
+ * ******************************************************************
  *  *  * Copyright (C) 2022
  *  *  * LogScreen.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
+ *  *  ******************************************************************
  *
  */
 
@@ -20,6 +19,9 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,12 +34,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -58,6 +62,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -81,12 +86,10 @@ import com.my.kizzy.domain.model.logs.LogLevel
 import com.my.kizzy.ui.theme.KizzyTheme
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.foundation.background
-import androidx.compose.foundation.ExperimentalFoundationApi
 import java.text.SimpleDateFormat
 import java.util.Date
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogScreenContent(
     visibleLogs: List<LogEvent>,
@@ -108,24 +111,26 @@ fun LogScreenContent(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { ToolBarContent(
-            isSearchBarVisible = isSearchBarVisible,
-            filterText = filterText,
-            autoScroll = autoScroll,
-            showCompat = showCompat,
-            visibleLogs = visibleLogs,
-            onBackPressed = onBackPressed,
-            onSearchToggle = onSearchToggle,
-            onFilterChange = onFilterChange,
-            onToggleAutoScroll = onToggleAutoScroll,
-            onScrollToTop = { lazyListState.animateScrollToItem(0) },
-            onScrollToBottom = { lazyListState.animateScrollToItem(visibleLogs.lastIndex) },
-            onToggleShowCompat = onToggleShowCompat,
-            onSaveLogs = onSaveLogs,
-            onClearLogs = onClearLogs,
-            ctx = ctx,
-            lazyListState = lazyListState,
-        ) },
+        topBar = {
+            ToolBarContent(
+                isSearchBarVisible = isSearchBarVisible,
+                filterText = filterText,
+                autoScroll = autoScroll,
+                showCompat = showCompat,
+                visibleLogs = visibleLogs,
+                onBackPressed = onBackPressed,
+                onSearchToggle = onSearchToggle,
+                onFilterChange = onFilterChange,
+                onToggleAutoScroll = onToggleAutoScroll,
+                onScrollToTop = { lazyListState.animateScrollToItem(0) },
+                onScrollToBottom = { lazyListState.animateScrollToItem(visibleLogs.lastIndex) },
+                onToggleShowCompat = onToggleShowCompat,
+                onSaveLogs = onSaveLogs,
+                onClearLogs = onClearLogs,
+                ctx = ctx,
+                lazyListState = lazyListState,
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -133,7 +138,6 @@ fun LogScreenContent(
                     val allLogs = visibleLogs.joinToString("\n") { log ->
                         "[" + sdf.format(Date(log.createdAt)) + "] " + log.level.name + " " + log.tag + ": " + log.text
                     }
-                    // Clipboard transaction limit ~1MB; truncate if too large.
                     val truncated = if (allLogs.length > 500_000) allLogs.takeLast(500_000) + "\n... (truncated)" else allLogs
                     clipboardManager.setPrimaryClip(ClipData.newPlainText("kizzy_logs", truncated))
                     Toast.makeText(
@@ -151,10 +155,6 @@ fun LogScreenContent(
             }
         }
     ) { paddingValues ->
-        // Auto-scroll to bottom when autoScroll is enabled.
-        // Single LaunchedEffect with both keys: restarts (cancelling any ongoing animation)
-        // when autoScroll toggles OR when new logs arrive. Checks current autoScroll value
-        // each time so toggling OFF stops any in-progress scroll immediately.
         LaunchedEffect(autoScroll, visibleLogs.size) {
             if (autoScroll && visibleLogs.isNotEmpty()) {
                 lazyListState.animateScrollToItem(visibleLogs.lastIndex)
@@ -169,7 +169,9 @@ fun LogScreenContent(
         ) {
             items(
                 items = visibleLogs,
-                contentType = { if (showCompat) "compat" else "card" }
+                key = { logEvent ->
+                    "${logEvent.createdAt}-${logEvent.tag}-${logEvent.text.length}-${logEvent.text.hashCode()}"
+                }
             ) { logEvent ->
                 if (showCompat) {
                     LogEntryCompat(logEvent, clipboardManager, ctx)
@@ -211,8 +213,6 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
         onSearchToggle = {
             val visible = !viewModel.isSearchBarVisible.value
             viewModel.isSearchBarVisible.value = visible
-            // Closing the search also drops the filter, otherwise the list would
-            // stay filtered while there is no search field to show it.
             if (!visible) viewModel.setFilterStrings("")
         },
         onFilterChange = { viewModel.setFilterStrings(it) },
@@ -228,33 +228,52 @@ fun LogEntryCompat(
     ctx: Context
 ) {
     val isExpanded = remember(logEvent) { mutableStateOf(false) }
-    Text(
-        text = logEvent.annotated(),
-        style = MaterialTheme.typography.labelMedium.copy(
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-        ),
+    val colorScheme = MaterialTheme.colorScheme
+    val levelColor = logEvent.level.color()
+
+    Box(
         modifier = Modifier
-            .combinedClickable(
-                onClick = {
-                    isExpanded.value = !isExpanded.value
-                },
-                onLongClick = {
-                    val sdf = SimpleDateFormat("h:mm:ss a")
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", "[" + sdf.format(Date(logEvent.createdAt)) + "] " + logEvent.level.name + " " + logEvent.tag + ": " + logEvent.text))
-                    Toast.makeText(
-                        ctx,
-                        ctx.getString(R.string.copied_to_clipboard),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                },
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = colorScheme.surfaceVariant.copy(alpha = 0.06f)
+            ),
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(levelColor.copy(alpha = 0.05f), RoundedCornerShape(10.dp))
+                .border(1.dp, levelColor.copy(alpha = 0.25f), RoundedCornerShape(10.dp))
+                .padding(12.dp)
+        ) {
+            Text(
+                text = logEvent.annotated(),
+                style = MaterialTheme.typography.labelMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                ),
+                modifier = Modifier
+                    .combinedClickable(
+                        onClick = { isExpanded.value = !isExpanded.value },
+                        onLongClick = {
+                            val sdf = SimpleDateFormat("h:mm:ss a")
+                            clipboardManager.setPrimaryClip(ClipData.newPlainText("", "[" + sdf.format(Date(logEvent.createdAt)) + "] " + logEvent.level.name + " " + logEvent.tag + ": " + logEvent.text))
+                            Toast.makeText(
+                                ctx,
+                                ctx.getString(R.string.copied_to_clipboard),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
+                    )
+                    .padding(4.dp),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = if (isExpanded.value) Int.MAX_VALUE else 10
             )
-            .padding(4.dp),
-        overflow = TextOverflow.Ellipsis,
-        maxLines = if (isExpanded.value) Int.MAX_VALUE else 10
-    )
+        }
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogsCard(
     logEvent: LogEvent,
@@ -265,85 +284,131 @@ fun LogsCard(
     val colorScheme = MaterialTheme.colorScheme
     val levelColor = logEvent.level.color()
 
-    ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(levelColor.copy(alpha = 0.05f), RoundedCornerShape(12.dp))
+            .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
-        AnimatedVisibility(
-            visible = true,
-            enter = fadeIn(),
-            exit = fadeOut()
+        ElevatedCard(
+            colors = CardDefaults.cardColors(
+                containerColor = colorScheme.surface.copy(alpha = 0.5f)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorScheme.surfaceVariant.copy(alpha = 0.04f), RoundedCornerShape(14.dp))
+                .border(
+                    width = 1.dp,
+                    color = levelColor.copy(alpha = 0.35f),
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(0.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = logEvent.tag,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Medium
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                            .padding(horizontal = 8.dp, vertical = 2.dp)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(levelColor.copy(alpha = 0.12f))
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = logEvent.level.name,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 10.sp,
+                                    color = levelColor
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.size(8.dp))
+
+                        Text(
+                            text = logEvent.tag,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = colorScheme.onSurfaceVariant
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(colorScheme.surfaceVariant.copy(alpha = 0.25f))
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+
+                        Text(
+                            text = SimpleDateFormat("h:mm:ss a").format(Date(logEvent.createdAt)),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 10.sp,
+                                color = colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
                         text = logEvent.text,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = colorScheme.onSurface.copy(alpha = 0.92f)
+                        ),
                         overflow = TextOverflow.Ellipsis,
                         maxLines = if (isExpanded.value) Int.MAX_VALUE else 3,
-                        modifier = Modifier.combinedClickable(
-                            onClick = {
-                                isExpanded.value = !isExpanded.value
-                            },
-                            onLongClick = {
-                                val sdf = SimpleDateFormat("h:mm:ss a")
-                                clipboardManager.setPrimaryClip(ClipData.newPlainText("", "[" + sdf.format(Date(logEvent.createdAt)) + "] " + logEvent.level.name + " " + logEvent.tag + ": " + logEvent.text))
-                                Toast.makeText(
-                                    ctx,
-                                    ctx.getString(R.string.copied_to_clipboard),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            },
-                        )
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .combinedClickable(
+                                onClick = { isExpanded.value = !isExpanded.value },
+                                onLongClick = {
+                                    val sdf = SimpleDateFormat("h:mm:ss a")
+                                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", "[" + sdf.format(Date(logEvent.createdAt)) + "] " + logEvent.level.name + " " + logEvent.tag + ": " + logEvent.text))
+                                    Toast.makeText(
+                                        ctx,
+                                        ctx.getString(R.string.copied_to_clipboard),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                },
+                            )
                     )
-                    Text(
-                        text = SimpleDateFormat("h:mm:ss a").format(Date(logEvent.createdAt)),
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                            fontSize = 10.sp,
-                            color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+
+                    if (isExpanded.value) {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            Text(
+                                text = "Tap to collapse",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
+                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                ),
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
     }
-    Spacer(
-        modifier = Modifier
-            .height(8.dp)
-            .fillMaxWidth()
-    )
+
+    Spacer(modifier = Modifier.height(6.dp).fillMaxWidth())
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolBarContent(
     isSearchBarVisible: Boolean,
@@ -369,9 +434,6 @@ fun ToolBarContent(
     val scope = rememberCoroutineScope()
     val colorScheme = MaterialTheme.colorScheme
 
-    // The search field lives in its own row below the app bar. Placing it inside
-    // the `title` slot of a `LargeTopAppBar` renders it twice (collapsed and
-    // expanded row) and the hidden copy still swallows touches.
     Column {
         LargeTopAppBar(
             title = {
@@ -390,112 +452,109 @@ fun ToolBarContent(
                     Icon(Icons.Outlined.Search, stringResource(id = R.string.search))
                 }
                 IconButton(onClick = { menuClicked = !menuClicked }) {
-                Icon(
-                    imageVector = Icons.Outlined.MoreVert, contentDescription = "menu"
-                )
-                DropdownMenu(
-                    expanded = menuClicked,
-                    onDismissRequest = { menuClicked = !menuClicked }) {
-                    DropdownMenuItem(
-                        onClick = {}, // empty to avoid double-firing with KSwitch.onClick
-                        text = {
-                            Row(
-                                Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.auto_scroll),
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                KSwitch(
-                                    checked = autoScroll,
-                                    onClick = onToggleAutoScroll,
-                                    modifier = Modifier.padding(start = 20.dp)
-                                )
+                    Icon(
+                        imageVector = Icons.Outlined.MoreVert, contentDescription = "menu"
+                    )
+                    DropdownMenu(
+                        expanded = menuClicked,
+                        onDismissRequest = { menuClicked = !menuClicked }
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {},
+                            text = {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.auto_scroll),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    KSwitch(
+                                        checked = autoScroll,
+                                        onClick = onToggleAutoScroll,
+                                        modifier = Modifier.padding(start = 20.dp)
+                                    )
+                                }
                             }
-                        })
-                    DropdownMenuItem(
-                        onClick = {},
-                        text = {
-                            Row(
-                                Modifier
-                                    .fillMaxSize()
-                                    .clickable {
-                                        scope.launch {
-                                            onScrollToTop()
-                                        }
-                                    }, horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
+                        )
+                        DropdownMenuItem(
+                            onClick = {
+                                menuClicked = false
+                                scope.launch {
+                                    onScrollToTop()
+                                }
+                            },
+                            text = {
                                 Text(
                                     text = "📍 跳至最上方",
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }
-                        })
-                    DropdownMenuItem(
-                        onClick = {},
-                        text = {
-                            Row(
-                                Modifier
-                                    .fillMaxSize()
-                                    .clickable {
-                                        scope.launch {
-                                            onScrollToBottom()
-                                        }
-                                    }, horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
+                        )
+                        DropdownMenuItem(
+                            onClick = {
+                                menuClicked = false
+                                scope.launch {
+                                    onScrollToBottom()
+                                }
+                            },
+                            text = {
                                 Text(
                                     text = "📍 跳至最下方",
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }
-                        })
-                    DropdownMenuItem(
-                        onClick = onToggleShowCompat,
-                        text = {
-                            Row(
-                                Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
+                        )
+                        DropdownMenuItem(
+                            onClick = onToggleShowCompat,
+                            text = {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.compact_mode),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    KSwitch(
+                                        checked = showCompat,
+                                        onClick = onToggleShowCompat,
+                                        modifier = Modifier.padding(start = 20.dp)
+                                    )
+                                }
+                            }
+                        )
+                        DropdownMenuItem(
+                            onClick = {
+                                menuClicked = false
+                                scope.launch {
+                                    onSaveLogs()
+                                }
+                            },
+                            text = {
                                 Text(
-                                    text = stringResource(R.string.compact_mode),
+                                    text = stringResource(R.string.save_logs_to_file),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
-                                KSwitch(
-                                    checked = showCompat,
-                                    onClick = onToggleShowCompat,
-                                    modifier = Modifier.padding(start = 20.dp)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.clear),
+                                    style = MaterialTheme.typography.bodyLarge
                                 )
+                            },
+                            onClick = {
+                                onClearLogs()
+                                menuClicked = false
                             }
-                        })
-                    DropdownMenuItem(
-                        onClick = {
-                            menuClicked = false
-                            scope.launch {
-                                onSaveLogs()
-                            }
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(R.string.save_logs_to_file),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        })
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.clear),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        },
-                        onClick = {
-                            onClearLogs()
-                            menuClicked = false
-                        }
-                    )
+                        )
+                    }
                 }
             }
-        })
+        )
         AnimatedVisibility(visible = isSearchBarVisible) {
             SearchBar(
                 text = filterText,
@@ -511,7 +570,7 @@ fun ToolBarContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolBar(
     viewModel: LogsViewModel,
@@ -559,6 +618,7 @@ fun ToolBar(
         lazyListState = lazyListState,
     )
 }
+
 @SuppressLint("SimpleDateFormat")
 @Composable
 fun LogEvent.annotated() = buildAnnotatedString {

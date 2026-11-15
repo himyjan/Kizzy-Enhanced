@@ -1358,6 +1358,42 @@ private fun RpcTextFieldsColumn(
 
             item {
 
+                AnimatedVisibility(visible = showLargeCoverArtPreview && largeImg.isNotBlank()) {
+
+                    Column(
+
+                        modifier = Modifier
+
+                            .fillMaxWidth()
+
+                            .padding(16.dp, 8.dp)
+
+                    ) {
+
+                        Text(
+
+                            text = stringResource(id = R.string.activity_large_image_preview),
+
+                            style = MaterialTheme.typography.bodySmall,
+
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+
+                        )
+
+                        AsyncImage(
+
+                            model = largeImg,
+
+                            contentDescription = null,
+
+                            modifier = Modifier
+
+                                .size(200.dp)
+
+                                .clip(RoundedCornerShape(8.dp)),
+
+                            placeholder = rememberVectorPainter(Icons.Outlined.Image),
+
                             error = rememberVectorPainter(Icons.Outlined.BrokenImage)
 
                         )
@@ -1457,6 +1493,30 @@ private fun RpcTextFieldsColumn(
                 }
 
             }
+
+            item {
+
+                AnimatedVisibility(visible = showSmallCoverArtPreview && smallImg.isNotBlank()) {
+
+                    Column(
+
+                        modifier = Modifier
+
+                            .fillMaxWidth()
+
+                            .padding(16.dp, 8.dp)
+
+                    ) {
+
+                        Text(
+
+                            text = stringResource(id = R.string.activity_small_image_preview),
+
+                            style = MaterialTheme.typography.bodySmall,
+
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+
+                        )
 
                         AsyncImage(
 
