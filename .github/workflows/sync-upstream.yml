@@ -7,6 +7,15 @@ on:
         description: 'Target branch to sync to'
         required: true
         default: 'master'
+      strategy:
+        description: 'Conflict resolution strategy'
+        required: true
+        default: 'manual'
+        type: choice
+        options:
+          - manual
+          - ours
+          - theirs
   schedule:
     - cron: '0 2 * * *'   # daily 02:00 UTC
 
@@ -20,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout your fork
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
         with:
           repository: himyjan/Kizzy-Enhanced
           ref: ${{ github.event.inputs.branch || 'master' }}
@@ -36,22 +45,36 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream
 
-      - name: Show upstream changes not in origin
+      - name: Check for upstream changes
+        id: check_changes
         run: |
-          echo "=== Upstream commits not in origin/${{ github.event.inputs.branch || 'master' }} ==="
-          git log --oneline origin/${{ github.event.inputs.branch || 'master' }}..upstream/master | head -30 || true
-          echo "=== Count ==="
-          git rev-list --count origin/${{ github.event.inputs.branch || 'master' }}..upstream/master || true
+          COMMIT_COUNT=$(git rev-list --count origin/${{ github.event.inputs.branch || 'master' }}..upstream/master)
+          echo "Upstream commits not in origin: $COMMIT_COUNT"
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+          if [ "$COMMIT_COUNT" -gt 0 ]; then
+            echo "=== Upstream commits ==="
+            git log --oneline origin/${{ github.event.inputs.branch || 'master' }}..upstream/master | head -30
+          fi
 
       - name: Rebase onto upstream/master
+        if: steps.check_changes.outputs.commit_count > 0
         run: |
           set -e
-          git rebase upstream/master
+          STRATEGY="${{ github.event.inputs.strategy }}"
+          if [ "$STRATEGY" = "theirs" ]; then
+            git rebase -X theirs upstream/master
+          elif [ "$STRATEGY" = "ours" ]; then
+            git rebase -X ours upstream/master
+          else
+            git rebase upstream/master
+          fi
 
       - name: Push to origin
+        if: steps.check_changes.outputs.commit_count > 0
         run: |
           git push --force-with-lease origin ${{ github.event.inputs.branch || 'master' }}
 
       - name: Verify
         run: |
+          echo "=== Current HEAD ==="
           git log --oneline -5
