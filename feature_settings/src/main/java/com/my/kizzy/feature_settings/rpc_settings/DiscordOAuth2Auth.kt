@@ -8,16 +8,16 @@ import android.util.Base64
 import android.util.Log
 import androidx.core.net.toUri
 import com.my.kizzy.preference.Prefs
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.request.*
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
@@ -138,32 +138,22 @@ class DiscordOAuth2Auth(
 
     private suspend fun performTokenExchange(params: Map<String, String>): DiscordOAuth2Result {
         return withContext(Dispatchers.IO) {
-            var connection: HttpURLConnection? = null
-            try {
-            val url = URL(DISCORD_OAUTH2_TOKEN)
-            connection = (url.openConnection() as HttpURLConnection).apply {
-                requestMethod = "POST"
-                setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
-                setRequestProperty("Accept", "application/json")
-                connectTimeout = 15_000
-                readTimeout = 10_000
-                doOutput = true
+            val client = HttpClient(OkHttp) {
+                defaultRequest {
+                    url(DISCORD_OAUTH2_TOKEN)
+                    connectTimeout = 15_000
+                    readTimeout = 10_000
+                }
             }
-
             val postData = params.entries.joinToString("&") { (key, value) ->
                 "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
             }
-
-            OutputStreamWriter(connection.outputStream, StandardCharsets.UTF_8).use { writer ->
-                writer.write(postData)
-                writer.flush()
+            val response = client.post {
+                contentType(ContentType.Application.FormUrlEncoded)
+                setBody(postData)
             }
-
-            val responseCode = connection.responseCode
-            val stream = if (responseCode in 200..299) connection.inputStream else connection.errorStream
-            val responseBody = stream?.use { inputStream ->
-                BufferedReader(InputStreamReader(inputStream, StandardCharsets.UTF_8)).use { it.readText() }
-            } ?: ""
+            val responseCode = response.status.value
+            val responseBody = response.bodyAsText()
 
             if (responseCode in 200..299) {
                 val json = JSONObject(responseBody)
@@ -190,13 +180,6 @@ class DiscordOAuth2Auth(
                 Log.w(TAG, "token exchange: HTTP $responseCode error body=$responseBody")
                 throw DiscordOAuth2Exception.NetworkFailure(java.io.IOException("HTTP $responseCode:$responseBody"))
             }
-        } catch (e: DiscordOAuth2Exception) {
-            throw e
-        } catch (e: Exception) {
-            Log.e(TAG, "token exchange: network failure", e)
-            throw DiscordOAuth2Exception.NetworkFailure(e)
-        } finally {
-            connection?.disconnect()
         }
     }
     }

@@ -24,7 +24,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
@@ -73,7 +73,7 @@ object AppModule {
         json: Json,
         kLogger: com.my.kizzy.domain.interfaces.Logger
     ): HttpClient {
-        return HttpClient(CIO) {
+        return HttpClient(OkHttp) {
             install(ContentNegotiation) {
                 json(json)
             }

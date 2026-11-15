@@ -1,15 +1,3 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * Ext.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- */
-
-
 package com.my.kizzy.feature_rpc_base
 
 import android.app.Notification
@@ -19,22 +7,30 @@ import android.graphics.BitmapFactory
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.utils.getAppInfo
 import com.my.kizzy.data.utils.toBitmap
-import java.net.HttpURLConnection
-import java.net.URL
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsBytes
+
+// Reuse a single HttpClient instance across requests for optimal connection pooling
+private val httpClient = HttpClient(OkHttp) {
+    engine {
+        config {
+            retryOnConnectionFailure(true)
+        }
+    }
+}
 
 internal suspend fun Notification.Builder.setLargeIcon(
     rpcImage: RpcImage?,
     context: Context,
-): Notification.Builder = suspendCancellableCoroutine { continuation ->
+): Notification.Builder {
     if (rpcImage == null) {
-        continuation.resume(this)
-        return@suspendCancellableCoroutine
+        return this
     }
 
     val data = when (rpcImage) {
-        is RpcImage.ApplicationIcon -> context.getAppInfo(rpcImage.packageName).toBitmap(context)
+        is RpcImage.ApplicationIcon -> context.getAppInfo(rpcImage.packageName)?.toBitmap(context)
         is RpcImage.BitmapImage -> rpcImage.bitmap
         is RpcImage.DiscordImage -> "https://cdn.discordapp.com/${rpcImage.image}"
         is RpcImage.ExternalImage -> rpcImage.image
@@ -44,15 +40,8 @@ internal suspend fun Notification.Builder.setLargeIcon(
         is Bitmap -> data
         is String -> {
             try {
-                val url = URL(data)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.doInput = true
-                connection.connect()
-                val input = connection.inputStream
-                val decoded = BitmapFactory.decodeStream(input)
-                input.close()
-                connection.disconnect()
-                decoded
+                val bytes = httpClient.get(data).bodyAsBytes()
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             } catch (e: Exception) {
                 null
             }
@@ -61,8 +50,7 @@ internal suspend fun Notification.Builder.setLargeIcon(
     }
 
     if (bitmap != null) {
-        continuation.resume(this@setLargeIcon.setLargeIcon(bitmap))
-    } else {
-        continuation.resume(this@setLargeIcon)
+        this.setLargeIcon(bitmap)
     }
+    return this
 }

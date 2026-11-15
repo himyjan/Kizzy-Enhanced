@@ -40,6 +40,10 @@ dependencies {
     implementation(projects.gateway)
     implementation(projects.domain)
     implementation(projects.data)
+    implementation(libs.ktor.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.kotlinx.serialization)
+    implementation(libs.ktor.content.negotiation)
 
     // Hilt annotation processor
     ksp(libs.hilt.compiler)

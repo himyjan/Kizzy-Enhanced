@@ -40,6 +40,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.my.kizzy.feature_rpc_base.R as FeatureRpcR
 
+import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
+
 @AndroidEntryPoint
 class MediaRpcService : Service() {
 
@@ -65,6 +67,13 @@ class MediaRpcService : Service() {
     lateinit var kizzyRepository: com.my.kizzy.domain.repository.KizzyRepository
 
     private var wakeLock: WakeLock? = null
+
+    // Last.fm scrobbling state
+    var lastfmSessionKey: String = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
+    var isLastfmEnabled: Boolean = Prefs[Prefs.LASTFM_ENABLED, false]
+    var lastfmScrobbledTrack: String? = null
+    var lastfmScrobbledArtist: String? = null
+    var lastfmScrobbledTimestamp: Long = 0
 
     private var isPaused = false
 

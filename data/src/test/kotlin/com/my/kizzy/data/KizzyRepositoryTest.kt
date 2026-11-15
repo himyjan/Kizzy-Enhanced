@@ -19,7 +19,7 @@ import com.my.kizzy.data.repository.KizzyRepositoryImpl
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.repository.KizzyRepository
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -52,7 +52,7 @@ class KizzyRepositoryTest {
         kizzyRepository = KizzyRepositoryImpl(apiService,imgurService)
     }
 
-    private fun setupClient(): HttpClient = HttpClient(CIO) {
+    private fun setupClient(): HttpClient = HttpClient(OkHttp) {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true

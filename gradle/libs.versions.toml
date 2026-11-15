@@ -78,6 +78,8 @@ ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle
 # Ktor (v3.x)
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-okhttp-jvm = { module = "io.ktor:ktor-client-okhttp-jvm", version.ref = "ktor" }
 ktor-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
 ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-kotlinx-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -117,5 +119,5 @@ kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", vers
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 
 [bundles]
-network-ktor = ["ktor-core", "ktor-client-cio", "ktor-kotlinx-serialization"]
+network-ktor = ["ktor-core", "ktor-client-okhttp", "ktor-kotlinx-serialization"]
 secure-storage = ["datastore-preferences", "tink-android"]

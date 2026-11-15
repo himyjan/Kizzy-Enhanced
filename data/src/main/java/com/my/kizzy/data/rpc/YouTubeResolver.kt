@@ -13,6 +13,7 @@
 package com.my.kizzy.data.rpc
 
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
@@ -82,7 +83,7 @@ object YouTubeResolver {
      * endpoint does not need the api of the app.
      */
     private val client by lazy {
-        HttpClient {
+        HttpClient(OkHttp) {
             expectSuccess = false
             followRedirects = true
         }

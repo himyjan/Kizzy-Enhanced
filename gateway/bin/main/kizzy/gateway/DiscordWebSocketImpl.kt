@@ -3,6 +3,7 @@ package kizzy.gateway
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.interfaces.NoOpLogger
 import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.headers
 import io.ktor.http.HttpHeaders
@@ -77,7 +78,7 @@ open class DiscordWebSocketImpl(
     private var deliberateClose = false
     private var reconnectAttempts = 0
     private var awaitingHeartbeatAck = false
-    private var client: HttpClient = HttpClient {
+    private var client: HttpClient = HttpClient(OkHttp) {
         install(WebSockets)
     }
     private val json = Json {
