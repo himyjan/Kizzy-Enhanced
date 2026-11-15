@@ -888,11 +888,11 @@ class KizzyRPC @Inject constructor(
             val finalLargeImage = if (hideCoverArt) null else resolvedLargeImage
             val finalSmallImage = if (hideCoverArt) null else resolvedSmallImage
 
-            // Apply default cover art when notification has no image
+            // Apply default cover art when notification has no image (but only if cover art is enabled)
             val defaultLargeImage = Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""]
             val defaultSmallImage = Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""]
-            val finalLargeImageWithDefault = if (finalLargeImage != null) finalLargeImage else defaultLargeImage.takeIf { it.isNotEmpty() }
-            val finalSmallImageWithDefault = if (finalSmallImage != null) finalSmallImage else defaultSmallImage.takeIf { it.isNotEmpty() }
+            val finalLargeImageWithDefault = if (finalLargeImage != null || hideCoverArt) finalLargeImage else defaultLargeImage.takeIf { it.isNotEmpty() }
+            val finalSmallImageWithDefault = if (finalSmallImage != null || hideCoverArt) finalSmallImage else defaultSmallImage.takeIf { it.isNotEmpty() }
 
             // Discord only accepts a top-level activity `url` for type 1 (Streaming).
             // Media RPC uses type 2/3 (Listening/Watching), so its mediaUrl must NOT
