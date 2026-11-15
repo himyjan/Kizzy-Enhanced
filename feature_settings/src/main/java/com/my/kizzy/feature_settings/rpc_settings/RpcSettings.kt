@@ -67,6 +67,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import android.util.Log
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 
@@ -210,6 +211,38 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                             }
                         }
                     }
+                }
+            }
+            item(key = "rpc_hide_cover_art") {
+                var hideCoverArt by remember { mutableStateOf(Prefs[Prefs.RPC_HIDE_COVER_ART, false]) }
+                PreferenceSwitch(
+                    title = stringResource(id = R.string.rpc_hide_cover_art),
+                    description = stringResource(id = R.string.rpc_hide_cover_art_desc),
+                    icon = Icons.Outlined.RemoveRedEye,
+                    isChecked = hideCoverArt,
+                ) {
+                    hideCoverArt = !hideCoverArt
+                    Prefs[Prefs.RPC_HIDE_COVER_ART] = hideCoverArt
+                }
+            }
+            item(key = "rpc_default_cover_art_large") {
+                var defaultLargeCoverArt by remember { mutableStateOf(Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""]) }
+                RpcField(
+                    value = defaultLargeCoverArt,
+                    label = R.string.rpc_default_cover_art_large,
+                ) {
+                    defaultLargeCoverArt = it
+                    Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE] = defaultLargeCoverArt
+                }
+            }
+            item(key = "rpc_default_cover_art_small") {
+                var defaultSmallCoverArt by remember { mutableStateOf(Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""]) }
+                RpcField(
+                    value = defaultSmallCoverArt,
+                    label = R.string.rpc_default_cover_art_small,
+                ) {
+                    defaultSmallCoverArt = it
+                    Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL] = defaultSmallCoverArt
                 }
             }
             item(key = "use_custom_buttons") {

@@ -875,6 +875,17 @@ class KizzyRPC @Inject constructor(
             val resolvedLargeImage = commonRpc.largeImage?.resolveImage(kizzyRepository)
             val resolvedSmallImage = commonRpc.smallImage?.resolveImage(kizzyRepository)
 
+            // Global switch: hide cover art images entirely (show text only)
+            val hideCoverArt = Prefs[Prefs.RPC_HIDE_COVER_ART, false]
+            val finalLargeImage = if (hideCoverArt) null else resolvedLargeImage
+            val finalSmallImage = if (hideCoverArt) null else resolvedSmallImage
+
+            // Apply default cover art when notification has no image
+            val defaultLargeImage = Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""]
+            val defaultSmallImage = Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""]
+            val finalLargeImageWithDefault = if (finalLargeImage != null) finalLargeImage else defaultLargeImage.takeIf { it.isNotEmpty() }
+            val finalSmallImageWithDefault = if (finalSmallImage != null) finalSmallImage else defaultSmallImage.takeIf { it.isNotEmpty() }
+
             // Discord only accepts a top-level activity `url` for type 1 (Streaming).
             // Media RPC uses type 2/3 (Listening/Watching), so its mediaUrl must NOT
             // be placed here - a non-null url with a non-streaming type makes Discord
@@ -893,11 +904,11 @@ class KizzyRPC @Inject constructor(
                         timestamps = time,
                         url = sanitizeStreamUrl(commonRpc.mediaUrl, activityType),
                         assets = Assets(
-                            largeImage = resolvedLargeImage,
-                            smallImage = resolvedSmallImage,
+                            largeImage = finalLargeImageWithDefault,
+                            smallImage = finalSmallImageWithDefault,
                             largeText = commonRpc.largeText?.sanitize(),
                             smallText = commonRpc.smallText?.sanitize()
-                        ).takeIf { commonRpc.largeImage != null || commonRpc.smallImage != null },
+                        ).takeIf { finalLargeImageWithDefault != null || finalSmallImageWithDefault != null },
                         party = party.takeIf { party != null },
                         // Client-presence format: labels in buttons, urls in metadata.
                         buttons = cleanButtons?.map { it.label },
@@ -932,8 +943,8 @@ class KizzyRPC @Inject constructor(
             // seeked (timeline jump) or the track simply kept playing.
             lastPresenceStart = time?.start
             lastPresenceEnd = time?.end
-            lastResolvedLargeImage = resolvedLargeImage
-            lastResolvedSmallImage = resolvedSmallImage
+            lastResolvedLargeImage = finalLargeImageWithDefault
+            lastResolvedSmallImage = finalSmallImageWithDefault
 
             // Remember the presence for the RPC preview, so it shows what Discord
             // actually displays even when the service is not running anymore.
@@ -941,8 +952,8 @@ class KizzyRPC @Inject constructor(
                 commonRpc = commonRpc,
                 buttonsSnapshot = buttonsSnapshot,
                 time = time,
-                largeImage = resolvedLargeImage,
-                smallImage = resolvedSmallImage,
+                largeImage = finalLargeImageWithDefault,
+                smallImage = finalSmallImageWithDefault,
             )
         }
     }

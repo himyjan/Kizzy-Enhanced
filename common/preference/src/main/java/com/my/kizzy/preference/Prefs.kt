@@ -304,6 +304,14 @@ object Prefs {
     const val DISCORD_OAUTH2_USER_ID = "discord_oauth_user_id"
     const val DISCORD_OAUTH2_USERNAME = "discord_oauth_username"
 
+    // Last.fm scrobbling settings
+    const val LASTFM_API_KEY = "lastfm_api_key"
+    const val LASTFM_SECRET = "lastfm_secret"
+    const val LASTFM_USERNAME = "lastfm_username"
+    const val LASTFM_PASSWORD = "lastfm_password"
+    const val LASTFM_SESSION_KEY = "lastfm_session_key"
+    const val LASTFM_ENABLED = "lastfm_enabled"
+
     const val USE_RPC_BUTTONS = "use_saved_rpc_buttons"
     const val RPC_BUTTONS_DATA = "saved_rpc_buttons_data"
     const val RPC_USE_LOW_RES_ICON = "use_low_res_app_icons"
@@ -312,6 +320,13 @@ object Prefs {
     const val IMGUR_CLIENT_ID = "imgur_client_id"
     const val SAVED_IMAGES = "saved_images"
     const val SAVED_ARTWORK = "saved_artwork"
+
+    // Default cover art for all RPC types when notification has no cover art
+    const val RPC_DEFAULT_COVER_ART_LARGE = "rpc_default_cover_art_large"
+    const val RPC_DEFAULT_COVER_ART_SMALL = "rpc_default_cover_art_small"
+
+    // Global switch to hide cover art images across all RPC types (show text only)
+    const val RPC_HIDE_COVER_ART = "rpc_hide_cover_art"
 
     const val DARK_THEME = "dark_theme_value"
     const val HIGH_CONTRAST = "high_contrast"

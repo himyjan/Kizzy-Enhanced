@@ -402,6 +402,12 @@
     <string name="update_installing">Installing…</string>
     <string name="update_download_error">Download failed. Try again.</string>
     <string name="save_logs_to_file">Save Logs to File</string>
+    <string name="rpc_hide_cover_art">Hide Cover Art Images</string>
+    <string name="rpc_hide_cover_art_desc">Show text only across all RPC types (Media, Custom, Console, Experimental). Covers will not appear on Discord.</string>
+    <string name="rpc_default_cover_art_large">Default Large Cover Art</string>
+    <string name="rpc_default_cover_art_large_desc">Image URL to use as large cover art when the notification has no cover art</string>
+    <string name="rpc_default_cover_art_small">Default Small Cover Art</string>
+    <string name="rpc_default_cover_art_small_desc">Image URL to use as small cover art when the notification has no cover art</string>
     <string name="rpc_connection_method">Connection Method</string>
     <string name="rpc_connection_method_desc">Choose how Kizzy connects to Discord</string>
     <string name="rpc_connection_method_gateway">Gateway (Bot Token)</string>
