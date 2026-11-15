@@ -51,6 +51,11 @@ object Prefs {
         TOKEN,
         DISCORD_OAUTH2_ACCESS_TOKEN,
         DISCORD_OAUTH2_REFRESH_TOKEN,
+        LASTFM_API_KEY,
+        LASTFM_SECRET,
+        LASTFM_USERNAME,
+        LASTFM_PASSWORD,
+        LASTFM_SESSION_KEY,
     )
 
     /**
