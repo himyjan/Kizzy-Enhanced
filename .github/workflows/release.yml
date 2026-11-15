@@ -466,6 +466,24 @@ jobs:
 
             ---
             <details>
+            <summary>🔧 Fix: ConsolePresetEditor Icon Type Mismatch</summary>
+
+            **Bug:** `ConsolePresetEditor.kt` referenced `Icons.Filled.Image` which doesn't exist in the material icons extended dependency, causing build failure in `ConsolePresetEditorDialog`.
+
+            **Fix:** Changed `Icons.Filled.Image` → `Icons.Outlined.Image` for cover art picker icons and added proper import for `androidx.compose.material.icons.outlined.Image`.
+            </details>
+
+            ---
+            <details>
+            <summary>🔧 Fix: Custom RPC Console Tab State References</summary>
+
+            **Bug:** `CustomRpc.kt` `RpcTextFieldsColumn` referenced `state.consoleGames` instead of `uiState.consoleGames` for the Console RPC game list, causing unresolved reference compile error. `CustomScreenViewModel.kt` used `_uiState.update { ... }` which is not available on `MutableStateFlow` in this Kotlin version.
+
+            **Fix:** Changed `state.consoleGames` → `uiState.consoleGames` in `CustomRpc.kt`. Changed `_uiState.update { ... }` → `_uiState.value = _uiState.value.copy(consoleGames = freshGames)` in `CustomScreenViewModel.kt`.
+            </details>
+
+            ---
+            <details>
             <summary>📏 APK Size Reduction</summary>
 
             **Release: 35 MB → 8.2 MB (77% smaller)**  
@@ -488,6 +506,8 @@ jobs:
             **Compose Stack Traces** — Compiler generates readable stack traces for recomposition issues. Check `build/compose_compiler/` metrics for unstable lambda captures.
 
             **R8 Optimization** — `isMinifyEnabled = true`, `isShrinkResources = true`, `optimization.enable = true`. R8 mapping, usage, and configuration analysis reports generated for each release build (`r8-config-analyzer-release.pb`).
+
+            **R8 Keep Rules Cleanup** — Removed 5 redundant `-keep` rules from `app/proguard-rules.pro` that were subsumed by broader existing rules (e.g. `io.ktor.client.plugins.**` covered by `io.ktor.client.**`, `kotlinx.serialization.json.**` covered by `kotlinx.serialization.**`, duplicate Hilt entry points, duplicate serialization field keeps).
 
             **Baseline Profiles** — `StartupBaselineProfileTest` traces app startup, Console RPC, Media RPC, and Custom RPC navigation. Run `./gradlew :app:baselineProfile` on a connected device to generate `src/main/baseline-prof.txt` for faster startup.
 
@@ -523,9 +543,9 @@ jobs:
 
             **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`  
             **Deleted:** `GamesScreen.kt` (merged into Custom RPC)  
-            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix), `ConsoleApps.kt` (games getter)  
+            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix), `ConsoleApps.kt` (games getter), `CustomScreenViewModel.kt` (console games state fix), `ConsolePresetEditor.kt` (icon type fix)  
             **Locale files:** 87 updated  
-            **Build files:** `gradle/libs.versions.toml` (ktor-client-okhttp added), `release.yml`, 30+ module `build.gradle.kts` files
+            **Build files:** `gradle/libs.versions.toml` (ktor-client-okhttp added), `release.yml`, `app/proguard-rules.pro` (R8 keep rules cleanup), 30+ module `build.gradle.kts` files
             </details>
 
             ---
