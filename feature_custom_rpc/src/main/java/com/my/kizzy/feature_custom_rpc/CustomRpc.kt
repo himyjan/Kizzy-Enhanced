@@ -1923,8 +1923,8 @@ private fun RpcTextFieldsColumn(
                     onValueChange = { consoleSearchText = it },
                     label = { Text(text = stringResource(id = R.string.search)) },
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
-                            imageVector = androidx.compose.material.icons.outlined.Search,
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
                             contentDescription = stringResource(id = R.string.search)
                         )
                     },
@@ -2212,8 +2212,8 @@ fun ConsoleGameItem(
                         .background(colorScheme.primary)
                         .size(24.dp)
                 ) {
-                    androidx.compose.material3.Icon(
-                        imageVector = androidx.compose.material.icons.filled.Check,
+                    Icon(
+                        imageVector = Icons.Filled.Check,
                         contentDescription = stringResource(id = R.string.selected),
                         modifier = Modifier
                             .size(16.dp)

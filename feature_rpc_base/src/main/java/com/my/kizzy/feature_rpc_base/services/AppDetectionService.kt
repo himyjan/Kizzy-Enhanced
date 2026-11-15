@@ -365,5 +365,8 @@ class AppDetectionService : Service() {
         private const val EVENT_LOOKBACK_MS = 5000L
 
         val EXCLUDED_APPS = listOf("com.my.kizzy", "com.my.kizzy.enhanced", "com.discord")
+
+        /** Tag used for Logcat output from AppDetectionService. */
+        internal const val TAG = "AppDetectionService"
     }
 }
