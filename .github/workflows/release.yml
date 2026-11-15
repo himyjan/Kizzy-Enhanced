@@ -154,7 +154,8 @@ jobs:
               --key-pass=pass:kizzyfork
             java -jar "$RUNNER_TEMP/bundletool.jar" extract-apks \
               --apks="$RUNNER_TEMP/${ABI}.apks" \
-              --output-dir="$RUNNER_TEMP/out-${ABI}"
+              --output-dir="$RUNNER_TEMP/out-${ABI}" \
+              --device-spec="$RUNNER_TEMP/spec-${ABI}.json"
             APK_FILE=$(find "$RUNNER_TEMP/out-${ABI}" -name "*.apk" | head -1)
             cp "$APK_FILE" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
           done
