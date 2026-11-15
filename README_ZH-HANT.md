@@ -130,5 +130,7 @@ git clone https://github.com/himyjan/Kizzy-Enhanced.git
 
 ✨ [Monet](https://github.com/Kyant0/Monet) — Material3 調色板
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) — OAuth2 RPC 與 Last.fm scrobbling 整合
+
 ## 授權
 **Kizzy** 是一個 GNU GPL 3.0 開放原始碼專案，允許你免費使用、參考和修改原始碼，但不允許將修改後和衍生的程式碼作為閉原始碼商業軟體分發和銷售。

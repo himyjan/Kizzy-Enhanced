@@ -128,5 +128,7 @@ Mở dự án trong Android Studio, nhập (import) dự án, sau đó Build và
 
 ✨ [Monet](https://github.com/Kyant0/Monet) cho bảng màu Material3.
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) cho tích hợp OAuth2 RPC và scrobbling Last.fm.
+
 ## Giấy phép (License)
 **Kizzy** là một dự án mã nguồn mở theo Giấy phép Mã nguồn Mở GNU GPL 3.0, cho phép bạn sử dụng, tham khảo và sửa đổi mã nguồn miễn phí, nhưng không cho phép mã đã sửa đổi và phái sinh được phân phối và bán dưới dạng phần mềm thương mại mã nguồn đóng.

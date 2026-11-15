@@ -128,5 +128,7 @@ Projeyi Android Studio'da açın, içeri aktarın ve derleyip çalıştırın (B
 
 ✨ Material3 paletleri için [Monet](https://github.com/Kyant0/Monet).
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) için OAuth2 RPC ve Last.fm scrobbling entegrasyonu.
+
 ## Lisans
 **Kizzy**, kaynak kodunu ücretsiz olarak kullanmanıza, referans göstermenize ve değiştirmenize izin veren ancak değiştirilmiş ve türetilmiş kodun kapalı kaynaklı ticari yazılım olarak dağıtılmasına ve satılmasına izin vermeyen GNU GPL 3.0 Açık Kaynak Lisansı altında lisanslanmıştır.

@@ -126,7 +126,9 @@ git clone https://github.com/himyjan/Kizzy-Enhanced.git
 
 ✨ Xbox गेम डेटा के लिए [Xbox-Rich-Presence-Discord](https://github.com/MrCoolAndroid/Xbox-Rich-Presence-Discord)।
 
-✨ Material3 पैレット के लिए [Monet](https://github.com/Kyant0/Monet)।
+✨ Material3 पैレット के लिए [Monet](https://github.com/Kyant0/Monet)。
+
+✨ OAuth2 RPC और Last.fm स्क्रॉब्बलिंग के लिए [Metrolist](https://github.com/MetrolistGroup/Metrolist)।
 
 ## लाइसेंस
 **Kizzy** GNU GPL 3.0 ओपन सोर्स लाइसेंस के तहत एक ओपन सोर्स प्रोजेक्ट है, जो आपको मुफ्त में स्रोत कोड का उपयोग करने, संदर्भ देने और संशोधित करने की अनुमति देता है, लेकिन संशोधित और व्युत्पन्न कोड को बंद-सोर्स वाणिज्यिक सॉफ्टवेयर के रूप में वितरित और बेच नहीं सकता है।

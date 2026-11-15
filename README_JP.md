@@ -130,5 +130,7 @@ Android Studio でプロジェクトを開き、インポートしてビルド�
 
 ✨ [Monet](https://github.com/Kyant0/Monet) — Material3 パレット
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) — OAuth2 RPC と Last.fm スキャブリング統合
+
 ## ライセンス
 **Kizzy** は GNU GPL 3.0 オープンソースライセンスの下で公開されているプロジェクトであり、ソースコードの使用、参照、変更を無料で許可しますが、変更および派生コードをクローズドソースの商用ソフトウェアとして配布および販売することは許可されていません。

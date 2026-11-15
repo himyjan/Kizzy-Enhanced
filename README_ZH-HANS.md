@@ -109,7 +109,9 @@ git clone https://github.com/himyjan/Kizzy-Enhanced.git
 ✨ [Rich-Presence-U](https://github.com/ninstar/Rich-Presence-U) — Nintendo 與 Wii U 遊戲資料
 ✨ [Logra](https://github.com/wingio/Logra) — 日誌 UI
 ✨ [Xbox-Rich-Presence-Discord](https://github.com/MrCoolAndroid/Xbox-Rich-Presence-Discord) — Xbox 遊戲資料
-✨ [Monet](https://github.com/Kyant0/Monet) — Material3 調色板
+✨ [Monet](https://github.com/Kyant0/Monet) — Material3 调色板
+
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) — OAuth2 RPC 和 Last.fm scrobbling 集成
 
 ## 授權
 **Kizzy** 是一個 GNU GPL 3.0 開放原始碼專案，允許你免費使用、參考和修改原始碼，但不允許將修改後和衍生的程式碼作為閉原始碼商業軟體分發和銷售。

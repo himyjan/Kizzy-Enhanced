@@ -117,5 +117,7 @@ Ouvrez le projet dans Android Studio, importez-le, puis construisez et exécutez
 ✨ [Xbox-Rich-Presence-Discord](https://github.com/MrCoolAndroid/Xbox-Rich-Presence-Discord) pour les données de jeux Xbox.
 ✨ [Monet](https://github.com/Kyant0/Monet) pour les palettes Material3.
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) pour l'intégration OAuth2 RPC et le scrobbling Last.fm.
+
 ## Licence
 **Kizzy** est un projet open source sous licence GNU GPL 3.0, qui vous permet d'utiliser, de référencer et de modifier le code source gratuitement, mais n'autorise pas la distribution et la vente du code modifié et dérivé en tant que logiciel commercial fermé.

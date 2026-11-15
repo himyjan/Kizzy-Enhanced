@@ -128,5 +128,7 @@ git clone https://github.com/himyjan/Kizzy-Enhanced.git
 
 ✨ [Monet](https://github.com/Kyant0/Monet) لوحات ألوان Material3.
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) لتكامل OAuth2 RPC و Last.fm scrobbling.
+
 ## الترخيص
 **Kizzy** هو مشروع مفتوح المصدر تحت ترخيص GNU GPL 3.0، والذي يتيح لك استخدام الرمز البرمجي والإشارة إليه وتعديله مجانًا، ولكنه لا يسمح بتوزيع أو بيع الكود المعدل والمشتق كبرمجيات تجارية مغلقة المصدر.

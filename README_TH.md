@@ -128,5 +128,7 @@ git clone https://github.com/himyjan/Kizzy-Enhanced.git
 
 ✨ [Monet](https://github.com/Kyant0/Monet) สำหรับชุดสี Material3
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) สำหรับการผสานรวม OAuth2 RPC และการสคัม Last.fm
+
 ## สิทธิ์การใช้งาน (License)
 **Kizzy** เป็นโครงการโอเพน소스ภายใต้สัญญาอนุญาต GNU GPL 3.0 ซึ่งอนุญาตให้คุณใช้งาน อ้างอิง และแก้ไขซอร์สโค้ดได้ฟรี แต่วิพากษ์วิจารณ์ไม่อนุญาตให้นำโค้ดที่แก้ไขและดัดแปลงไปเผยแพร่หรือจำหน่ายเป็นซอฟต์แวร์เชิงพาณิชย์แบบปิดซอร์ส

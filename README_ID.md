@@ -128,5 +128,7 @@ Buka proyek di Android Studio, impor, lalu Build dan Run. Build rilis dihasilkan
 
 ✨ [Monet](https://github.com/Kyant0/Monet) untuk palet Material3.
 
+✨ [Metrolist](https://github.com/MetrolistGroup/Metrolist) untuk integrasi OAuth2 RPC dan Last.fm scrobbling.
+
 ## Lisensi
 **Kizzy** adalah proyek sumber terbuka di bawah Lisensi Sumber Terbuka GNU GPL 3.0, yang memungkinkan Anda menggunakan, mereferensikan, dan memodifikasi kode sumber secara gratis, tetapi tidak mengizinkan kode yang dimodifikasi dan diturunkan untuk didistribusikan dan dijual sebagai perangkat lunak komersial sumber tertutup.
