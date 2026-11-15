@@ -21,8 +21,8 @@ sealed interface UiEvent {
     data class SetTemplateDetails(val value: String) : UiEvent
     data class SetTemplateState(val value: String) : UiEvent
     data class ToggleAppEnabled(val packageName: String) : UiEvent
-    object SelectAllApps : UiEvent
-    object DeselectAllApps : UiEvent
+    data class SelectAllApps(val packageNames: List<String>) : UiEvent
+    data class DeselectAllApps(val packageNames: List<String>) : UiEvent
     /** A null activity type removes the choice, so the detection takes over again. */
     data class SetAppActivityType(val packageName: String, val activityType: Int?) : UiEvent
     data class ToggleShowCoverArt(val enabled: Boolean) : UiEvent

@@ -241,6 +241,7 @@
     <string name="custom_activity_status">Custom Activity Status</string>
     <string name="custom_activity_status_desc">Overrides the default activity status</string>
     <string name="search">Search</string>
+    <string name="selected">Selected</string>
     <string name="clear">Clear</string>
     <string name="search_placeholder">Search…</string>
     <string name="hide_on_pause">Hide RPC on Pause</string>
@@ -439,6 +440,7 @@
     <string name="console_preset_ps5">PlayStation 5</string>
     <string name="console_preset_samsung">Samsung</string>
     <string name="console_presets_title">Presets</string>
+    <string name="console_games_title">Games</string>
     <string name="console_options_title">Console RPC options</string>
     <string name="console_detected_games">Detected Games</string>
     <string name="console_game_selected">%1$s selected for Console RPC</string>

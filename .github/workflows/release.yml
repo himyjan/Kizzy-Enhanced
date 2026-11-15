@@ -87,6 +87,29 @@ jobs:
           mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base.apk
           mv app/build/outputs/bundle/release/app-release.aab app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
 
+      - name: Generate Performance Reports
+        run: |
+          # Generate R8 mapping report
+          find app/build/outputs/mapping/release -name "mapping.txt" -o -name "usage.txt" 2>/dev/null | while read f; do
+            echo "R8 Report: $f"
+            cp "$f" "$GITHUB_WORKSPACE/build/reports/r8-$(basename "$f")" 2>/dev/null || true
+          done
+          
+          # Generate Problems report
+          ./gradlew :app:problemsRelease --no-daemon 2>/dev/null || true
+          if [ -f "build/reports/problems/problems-report.html" ]; then
+            cp build/reports/problems/problems-report.html build/reports/problems-release.html
+          fi
+          
+          # Collect Compose compiler reports
+          find . -path "*/build/compose_compiler/*" -name "*.html" -o -path "*/build/compose_compiler/*" -name "*.csv" 2>/dev/null | while read f; do
+            echo "Compose Report: $f"
+            dir=$(echo "$f" | sed 's|/build/compose_compiler/|_|g' | sed 's|build/_|build_reports_|')
+            cp "$f" "$GITHUB_WORKSPACE/build/reports/$dir" 2>/dev/null || true
+          done
+          
+          echo "Performance reports generated in build/reports/"
+
       - name: Download bundletool
         run: |
           curl -L "https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar" -o "$RUNNER_TEMP/bundletool.jar"
@@ -142,6 +165,16 @@ jobs:
         with:
           name: aab-release
           path: app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
+
+      - name: Upload Performance Reports
+        uses: actions/upload-artifact@v6
+        with:
+          name: performance-reports
+          path: |
+            build/reports/r8-*.txt
+            build/reports/problems-release.html
+            build/reports/build_reports_*/
+        retention-days: 30
 
       - name: Generate categorized git changelog
         id: changelog
@@ -380,6 +413,26 @@ jobs:
             **DEX files:** 29 → 1  
             **R8:** 769 classes removed, 14 app classes, 171 obfuscated, 0 kept names  
             **ABI Filters:** `arm64-v8a`, `x86_64` (32-bit devices excluded)
+            </details>
+
+            ---
+            <details>
+            <summary>⚡ Performance Tuning</summary>
+
+            **Compose Compiler Reports** — Enabled across all modules. Reports output to `build/compose_compiler/` in each module. Use these to identify:
+            - Unstable composables causing unnecessary recomposition
+            - Recomposition hot spots
+            - Skippable vs non-skippable composables
+
+            **Compose Runtime Tracing** — `androidx.compose.runtime:runtime-tracing` added. Captures Perfetto traces for frame timing, recomposition, and layout measurement. Open traces in Android Studio Profiler or Perfetto UI.
+
+            **Compose Stack Traces** — Compiler generates readable stack traces for recomposition issues. Check `build/compose_compiler/` metrics for unstable lambda captures.
+
+            **R8 Optimization** — `isMinifyEnabled = true`, `isShrinkResources = true`, `optimization.enable = true`. R8 mapping and usage reports generated for each release build.
+
+            **Baseline Profiles** — `StartupBaselineProfileTest` traces app startup, Console RPC, Media RPC, and Custom RPC navigation. Run `./gradlew :app:baselineProfile` on a connected device to generate `src/main/baseline-prof.txt` for faster startup.
+
+            **Problems Report** — `build/reports/problems/problems-report.html` generated per release, showing potential API compatibility and performance issues.
             </details>
 
             ---

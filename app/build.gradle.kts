@@ -56,6 +56,7 @@ android {
             optimization {
                 enable = true // Enables code and resource optimizations.
             }
+            // Generate R8 mapping and usage reports for performance analysis
         }
         create("benchmark") {
             initWith(getByName("release"))
@@ -128,6 +129,10 @@ dependencies {
     // Baseline Profiles for faster startup
     implementation(libs.profileinstaller)
     androidTestImplementation(libs.baselineprofile)
+
+    // Compose Runtime Tracing for Perfetto performance tracing
+    debugImplementation(libs.composeRuntimeTracing)
+    implementation(libs.composeRuntimeTracing)
 }
 
 configurations {

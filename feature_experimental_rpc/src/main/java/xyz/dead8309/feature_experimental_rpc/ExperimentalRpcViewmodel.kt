@@ -162,20 +162,31 @@ class ExperimentalRpcViewmodel @Inject constructor(
                 }
 
                 is UiEvent.SelectAllApps -> {
-                    val allApps = _uiState.value.installedApps.map { it.pkg }
-                    Prefs.setExperimentalAppsEnabled(allApps)
+                    val selectedApps = event.packageNames
+                    val currentEnabled = _uiState.value.enabledApps.toMutableMap()
+                    selectedApps.forEach { pkg ->
+                        currentEnabled[pkg] = true
+                    }
+                    // Update prefs with all currently enabled apps
+                    val enabledList = currentEnabled.filterValues { it }.keys.toList()
+                    Prefs.setExperimentalAppsEnabled(enabledList)
                     _uiState.update { state ->
-                        state.copy(
-                            enabledApps = allApps.associate { it to true }
-                        )
+                        state.copy(enabledApps = currentEnabled)
                     }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.DeselectAllApps -> {
-                    Prefs.setExperimentalAppsEnabled(emptyList())
+                    val deselectedApps = event.packageNames
+                    val currentEnabled = _uiState.value.enabledApps.toMutableMap()
+                    deselectedApps.forEach { pkg ->
+                        currentEnabled[pkg] = false
+                    }
+                    // Only keep enabled apps in prefs
+                    val enabledList = currentEnabled.filterValues { it }.keys.toList()
+                    Prefs.setExperimentalAppsEnabled(enabledList)
                     _uiState.update { state ->
-                        state.copy(enabledApps = emptyMap())
+                        state.copy(enabledApps = currentEnabled)
                     }
                     restartServiceIfRunning()
                 }

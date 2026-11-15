@@ -188,8 +188,16 @@ class KizzyRPC @Inject constructor(
         // Determine which token to use based on connection method
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
         val newToken = when (connectionMethod) {
-            Prefs.RPC_CONNECTION_METHOD_OAUTH2 -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
-            else -> Prefs[Prefs.TOKEN, ""]
+            Prefs.RPC_CONNECTION_METHOD_OAUTH2 -> {
+                val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+                logger.d("KizzyRPC", "Using OAuth2 token, len=${oauthToken.length}")
+                oauthToken
+            }
+            else -> {
+                val gatewayToken = Prefs[Prefs.TOKEN, ""]
+                logger.d("KizzyRPC", "Using Gateway token, len=${gatewayToken.length}")
+                gatewayToken
+            }
         }
 
         logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod newToken=${newToken.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"} currentToken=${token.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"}")

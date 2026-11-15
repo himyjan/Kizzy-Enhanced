@@ -157,17 +157,14 @@ fun LogScreenContent(
             }
         }
     ) { paddingValues ->
-        LaunchedEffect(autoScroll, visibleLogs.size) {
+        // Auto-scroll effect: scroll to bottom when autoScroll is enabled and logs change
+        // Only scroll if we're already near the bottom to avoid interrupting manual scrolling
+        LaunchedEffect(autoScroll, visibleLogs) {
             if (autoScroll && visibleLogs.isNotEmpty()) {
-                // Use scrollToItem for instant, lag-free scrolling instead of animateScrollToItem
-                // This prevents the scroll from being cancelled by rapid updates
-                lazyListState.scrollToItem(visibleLogs.lastIndex)
-            }
-        }
-        // Additional effect to handle rapid log arrivals - scroll immediately on each new log
-        LaunchedEffect(visibleLogs) {
-            if (autoScroll && visibleLogs.isNotEmpty()) {
-                lazyListState.scrollToItem(visibleLogs.lastIndex)
+                val isNearBottom = lazyListState.firstVisibleItemIndex >= (visibleLogs.size - 2)
+                if (isNearBottom || lazyListState.firstVisibleItemIndex == 0) {
+                    lazyListState.scrollToItem(visibleLogs.lastIndex)
+                }
             }
         }
         LazyColumn(

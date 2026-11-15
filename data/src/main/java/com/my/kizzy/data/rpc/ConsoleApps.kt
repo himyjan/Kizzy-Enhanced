@@ -97,6 +97,8 @@ object ConsoleGameCatalog {
         games = newGames
     }
 
+    fun games(): List<Game> = games
+
     fun size(): Int = games.size
 
     /**

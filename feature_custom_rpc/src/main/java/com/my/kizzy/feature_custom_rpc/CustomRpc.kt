@@ -53,12 +53,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 
 import androidx.compose.foundation.lazy.LazyColumn
-
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 
 import androidx.compose.material.icons.Icons
 
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Search
 
 import androidx.compose.material.icons.filled.DesktopWindows
 
@@ -120,6 +121,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -128,8 +130,17 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import coil3.compose.AsyncImage
 
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+
+import androidx.compose.foundation.layout.height
+
+import androidx.compose.animation.AnimatedVisibility
+
+import androidx.compose.foundation.layout.padding
+
+import androidx.compose.foundation.layout.size
 
 import androidx.compose.ui.platform.LocalContext
 
@@ -137,9 +148,9 @@ import androidx.compose.ui.res.stringResource
 
 import androidx.compose.ui.text.input.KeyboardType
 
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 
 import com.my.kizzy.data.rpc.Constants
 
@@ -595,6 +606,12 @@ private fun RpcTextFieldsColumn(
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false])
     }
 
+    // Console RPC game list state
+    var consoleSearchText by remember { mutableStateOf("") }
+    var consoleSelectedGameTitle by remember { mutableStateOf("") }
+    // Load games from the ConsoleGameCatalog using the use case directly
+    val consoleGames = com.my.kizzy.data.rpc.ConsoleGameCatalog.games()
+
     /** Writes the console values to the preferences so they survive a restart. */
     fun persistConsoleSettings() {
         Prefs[Prefs.CONSOLE_RPC_PLATFORM] = consolePlatform
@@ -665,6 +682,22 @@ private fun RpcTextFieldsColumn(
             button2link = "",
         )))
 
+        persistConsoleSettings()
+        applyConsoleSettingsIfRunning()
+    }
+
+    /** Applies a game to the console values and, when running, to Discord. */
+    fun applyConsoleGame(game: com.my.kizzy.domain.model.Game, startTs: String, endTs: String) {
+        consolePlatform = game.platform
+        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(
+            name = game.platform,
+            details = game.game_title,
+            timestampsStart = startTs,
+            timestampsStop = endTs,
+            platform = game.platform,
+            largeImg = if (consoleShowCoverArt) game.large_image ?: "" else "",
+            smallImg = if (consoleShowCoverArt) game.small_image ?: "" else "",
+        )))
         persistConsoleSettings()
         applyConsoleSettingsIfRunning()
     }
@@ -1873,6 +1906,74 @@ private fun RpcTextFieldsColumn(
                 )
             }
 
+            // ===== Console RPC Game List with Search =====
+            item {
+                Text(
+                    text = stringResource(id = R.string.console_games_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+
+            item {
+                androidx.compose.material3.OutlinedTextField(
+                    value = consoleSearchText,
+                    onValueChange = { consoleSearchText = it },
+                    label = { Text(text = stringResource(id = R.string.search)) },
+                    leadingIcon = {
+                        androidx.compose.material3.Icon(
+                            imageVector = androidx.compose.material.icons.outlined.Search,
+                            contentDescription = stringResource(id = R.string.search)
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            item {
+                val games = if (consoleSearchText.isBlank()) {
+                    consoleGames
+                } else {
+                    consoleGames.filter { it.game_title.contains(consoleSearchText, ignoreCase = true) }
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(games, key = { it.game_title }) { game ->
+                        ConsoleGameItem(
+                            game = game,
+                            selected = consoleSelectedGameTitle == game.game_title,
+                            onClick = {
+                                consoleSelectedGameTitle = game.game_title
+                                val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
+                                val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(
+                                        context.getString(
+                                            R.string.console_game_selected,
+                                            game.game_title
+                                        )
+                                    )
+                                }
+                                applyConsoleGame(
+                                    game = game,
+                                    startTs = startTs,
+                                    endTs = endTs
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+
+            // ===== Console RPC Presets =====
             item {
                 Text(
                     text = stringResource(id = R.string.console_presets_title),
@@ -2060,6 +2161,88 @@ fun CustomRpcPreview() {
 
     CustomRPC(onBackPressed = {})
 
+}
+
+/**
+ * A row in the Console RPC game list.
+ *
+ * Shows the game title and platform, marks the selected game, and displays cover art.
+ */
+@Composable
+
+fun ConsoleGameItem(
+    game: com.my.kizzy.domain.model.Game,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val contentColor = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurface
+
+    androidx.compose.material3.ElevatedCard(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+            ) {
+                coil3.compose.AsyncImage(
+                    model = game.large_image,
+                    contentDescription = game.game_title,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                )
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = selected,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .clip(androidx.compose.foundation.shape.CircleShape)
+                        .background(colorScheme.primary)
+                        .size(24.dp)
+                ) {
+                    androidx.compose.material3.Icon(
+                        imageVector = androidx.compose.material.icons.filled.Check,
+                        contentDescription = stringResource(id = R.string.selected),
+                        modifier = Modifier
+                            .size(16.dp)
+                            .padding(2.dp),
+                        tint = colorScheme.onPrimary
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                androidx.compose.material3.Text(
+                    text = game.game_title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = contentColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                androidx.compose.material3.Text(
+                    text = game.platform,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
 }
 
 /**
