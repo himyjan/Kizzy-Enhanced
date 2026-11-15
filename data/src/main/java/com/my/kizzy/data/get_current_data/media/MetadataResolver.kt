@@ -134,7 +134,7 @@ class MetadataResolver @Inject constructor(
         if (!MediaServiceResolver.isYouTube(packageName)) return null
         val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
-            val id = if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/")) {
+            val id = if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/") || mediaId.contains("ymusicapp.com/watch?v=")) {
                 YouTubeResolver.extractVideoId(mediaId)
             } else {
                 mediaId.substringAfterLast(":").substringAfterLast("/")
@@ -154,7 +154,7 @@ class MetadataResolver @Inject constructor(
 
     suspend fun resolveYouTubeVideo(metadata: MediaMetadata): YouTubeResolver.Video? {
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
-        if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be"))) {
+        if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be") || sourceUrl.contains("ymusicapp.com"))) {
             YouTubeResolver.lookup(sourceUrl)?.let { return it }
         }
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
@@ -193,7 +193,8 @@ class MetadataResolver @Inject constructor(
         val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
             // Full watch url or youtu.be — extract just the video id
-            if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/")) {
+            // Also handle ymusicapp.com/watch?v=ID (YMusic app publishes full URLs)
+            if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/") || mediaId.contains("ymusicapp.com/watch?v=")) {
                 return YouTubeResolver.extractVideoId(mediaId)?.let { "https://youtu.be/$it" }
             }
             // yt:video:VIDEO_ID or t:VIDEO_ID
