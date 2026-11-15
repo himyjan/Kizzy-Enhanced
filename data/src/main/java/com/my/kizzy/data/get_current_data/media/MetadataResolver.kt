@@ -164,13 +164,16 @@ class MetadataResolver @Inject constructor(
         // https://youtu.be/VIDEO_ID instead of a search page. sourceUrl often
         // contains a search page URL which would be returned as-is.
         if (MediaServiceResolver.isYouTube(packageName)) {
-            extractYouTubeUrl(metadata)?.let { return normalizeMediaUrl(it, packageName) }
+            extractYouTubeUrl(metadata)?.let { url ->
+                normalizeMediaUrl(url, packageName)?.let { return it }
+            }
         }
 
         // Try standard source URL key first
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
-            return normalizeMediaUrl(sourceUrl, packageName)
+            val normalized = normalizeMediaUrl(sourceUrl, packageName)
+            if (normalized != null) return normalized
         }
 
         // Try common custom keys used by various players
@@ -188,19 +191,24 @@ class MetadataResolver @Inject constructor(
         for (key in customKeys) {
             val value = metadata.getString(key)
             if (value != null && value.isValidMediaUrl()) {
-                return normalizeMediaUrl(value, packageName)
+                val normalized = normalizeMediaUrl(value, packageName)
+                if (normalized != null) return normalized
             }
         }
 
         // Some players publish the url under a key nobody knows. The whole
         // metadata is scanned for a url, so the real link of the track is found
         // even when the player uses its own key.
-        scanAllMetadataForUrl(metadata)?.let { return normalizeMediaUrl(it, packageName) }
+        scanAllMetadataForUrl(metadata)?.let { url ->
+            normalizeMediaUrl(url, packageName)?.let { return it }
+        }
 
         // YouTube apps publish the real watch url, so it is preferred over a
         // search page.
         if (MediaServiceResolver.isYouTube(packageName)) {
-            extractYouTubeUrl(metadata)?.let { return normalizeMediaUrl(it, packageName) }
+            extractYouTubeUrl(metadata)?.let { url ->
+                normalizeMediaUrl(url, packageName)?.let { return it }
+            }
         }
 
         // Fall back to the page of the service that lists the track.
@@ -303,8 +311,12 @@ class MetadataResolver @Inject constructor(
      *
      * Every YouTube url becomes the short "youtu.be/<video id>" form, so the
      * button links to the video itself instead of a long query url.
+     *
+     * Returns null when the URL is a YouTube search page or other URL that
+     * doesn't point to a specific video, so callers can fall back to other
+     * sources.
      */
-    private fun normalizeMediaUrl(url: String, packageName: String?): String {
+    private fun normalizeMediaUrl(url: String, packageName: String?): String? {
         val trimmed = url.trim()
         // Do not alter browse links or playlist links into single-video short links
         if (trimmed.contains("/browse/") || trimmed.contains("list=")) {
@@ -315,7 +327,7 @@ class MetadataResolver @Inject constructor(
         ) {
             return trimmed
         }
-        val videoId = YouTubeResolver.extractVideoId(trimmed) ?: return trimmed
+        val videoId = YouTubeResolver.extractVideoId(trimmed) ?: return null
         return "https://youtu.be/$videoId"
     }
 

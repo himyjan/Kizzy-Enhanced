@@ -2,7 +2,6 @@ package com.my.kizzy.feature_rpc_base.services.lastfm
 
 import com.my.kizzy.preference.Prefs
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -18,7 +17,6 @@ object LastFM {
 
     const val API_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
 
-    // These will be set via init() from the app's configuration
     private var apiKey: String = ""
     private var secret: String = ""
 
@@ -39,10 +37,6 @@ object LastFM {
         }
     }
 
-    /**
-     * Initialize Last.fm with API credentials.
-     * Called once during app initialization.
-     */
     fun init(apiKey: String, secret: String) {
         this.apiKey = apiKey
         this.secret = secret
@@ -81,9 +75,6 @@ object LastFM {
         }))
     }
 
-    /**
-     * Get an OAuth token from Last.fm (first step of authentication).
-     */
     suspend fun getToken(): LastFmTokenResponse? = runCatching {
         client.post {
             lastfmParams(
@@ -94,9 +85,6 @@ object LastFM {
         }.body<LastFmTokenResponse>()
     }.getOrNull()
 
-    /**
-     * Get a session key from a token (second step of authentication).
-     */
     suspend fun getSession(token: String): LastFmSession? = runCatching {
         client.post {
             lastfmParams(
@@ -108,9 +96,6 @@ object LastFM {
         }.body<LastFmSession>()
     }.getOrNull()
 
-    /**
-     * Authenticate using username and password (mobile auth).
-     */
     suspend fun getMobileSession(username: String, password: String): LastFmSession? = runCatching {
         val response = client.post {
             lastfmParams(
@@ -130,16 +115,6 @@ object LastFM {
         json.decodeFromString<LastFmSession>(responseText)
     }
 
-    /**
-     * Scrobble a track to Last.fm.
-     *
-     * @param artist The artist name
-     * @param track The track name
-     * @param timestamp Unix timestamp when the track started playing
-     * @param album Optional album name
-     * @param trackNumber Optional track number
-     * @param duration Optional track duration in seconds
-     */
     suspend fun scrobble(
         artist: String,
         track: String,
@@ -168,9 +143,6 @@ object LastFM {
         true
     }.getOrDefault(false)
 
-    /**
-     * Update now playing status for a track.
-     */
     suspend fun updateNowPlaying(
         artist: String,
         track: String,
@@ -197,9 +169,6 @@ object LastFM {
         true
     }.getOrDefault(false)
 
-    /**
-     * Set love status for a track.
-     */
     suspend fun setLoveStatus(
         artist: String,
         track: String,
@@ -222,15 +191,10 @@ object LastFM {
         true
     }.getOrDefault(false)
 
-    /** Current session key, set after successful authentication */
     var sessionKey: String? = null
 
-    /** Whether the user is logged in to Last.fm */
     val isAuthenticated: Boolean
         get() = sessionKey.isNotEmpty()
 }
 
-/**
- * Exception thrown when Last.fm API returns an error.
- */
-class LastFmException(val code: Int, val message: String) : Exception("Last.fm error $code: $message")
+class LastFmException(val code: Int, val errorMessage: String) : Exception("Last.fm error $code: $errorMessage")

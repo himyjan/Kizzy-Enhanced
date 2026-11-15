@@ -731,7 +731,7 @@ class ExperimentalRpc : Service() {
                 .setSmallIcon(R.drawable.ic_dev_rpc)
                 .setContentTitle(notifTitle)
                 .setContentText(notifText)
-                .setLargeIcon(rpcImage = finalLargeImage, context = this@ExperimentalRpc)
+                .setLargeIcon(finalLargeImage, this@ExperimentalRpc)
                 .addAction(R.drawable.ic_dev_rpc, getString(R.string.restart), restartPendingIntent)
                 .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), stopPendingIntent)
                 .apply {

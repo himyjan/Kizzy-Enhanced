@@ -11,6 +11,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
+import kotlin.coroutines.resume
 
 // Reuse a single HttpClient instance across requests for optimal connection pooling
 private val httpClient = HttpClient(OkHttp) {
@@ -30,7 +31,7 @@ internal suspend fun Notification.Builder.setLargeIcon(
     }
 
     val data = when (rpcImage) {
-        is RpcImage.ApplicationIcon -> context.getAppInfo(rpcImage.packageName)?.toBitmap(context)
+        is RpcImage.ApplicationIcon -> context.getAppInfo(rpcImage.packageName).toBitmap(context)
         is RpcImage.BitmapImage -> rpcImage.bitmap
         is RpcImage.DiscordImage -> "https://cdn.discordapp.com/${rpcImage.image}"
         is RpcImage.ExternalImage -> rpcImage.image
@@ -52,5 +53,13 @@ internal suspend fun Notification.Builder.setLargeIcon(
     if (bitmap != null) {
         this.setLargeIcon(bitmap)
     }
+    return this
+}
+
+/**
+ * Sets the large icon from a Bitmap directly (no network download needed).
+ */
+internal fun Notification.Builder.setLargeIcon(bitmap: Bitmap): Notification.Builder {
+    this.setLargeIcon(bitmap)
     return this
 }

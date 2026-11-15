@@ -316,10 +316,7 @@ class AppDetectionService : Service() {
         notificationManager.notify(
             Constants.NOTIFICATION_ID, notificationBuilder
                 .setContentText(displayName ?: packageName)
-                .setLargeIcon(
-                    rpcImage = largeImage,
-                    context = this@AppDetectionService
-                )
+                .setLargeIcon(largeImage, this@AppDetectionService)
                 .build()
         )
     }

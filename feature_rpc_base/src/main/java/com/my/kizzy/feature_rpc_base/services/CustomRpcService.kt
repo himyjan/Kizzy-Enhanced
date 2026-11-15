@@ -255,10 +255,7 @@ class CustomRpcService : Service() {
                         pendingIntent
                     ).build()
                 )
-                .setLargeIcon(
-                    rpcImage = rpcData?.largeImg?.toRpcImage(),
-                    context = this@CustomRpcService
-                )
+                .setLargeIcon(rpcData?.largeImg?.toRpcImage(), this@CustomRpcService)
                 .build()
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {

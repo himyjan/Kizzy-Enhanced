@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.coil.network)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.okhttp)
 
     implementation(projects.color)
     implementation(projects.theme)

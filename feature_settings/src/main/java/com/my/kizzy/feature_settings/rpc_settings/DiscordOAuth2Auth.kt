@@ -10,9 +10,12 @@ import androidx.core.net.toUri
 import com.my.kizzy.preference.Prefs
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -139,10 +142,13 @@ class DiscordOAuth2Auth(
     private suspend fun performTokenExchange(params: Map<String, String>): DiscordOAuth2Result {
         return withContext(Dispatchers.IO) {
             val client = HttpClient(OkHttp) {
+                install(HttpTimeout) {
+                    connectTimeoutMillis = 15_000
+                    requestTimeoutMillis = 15_000
+                    socketTimeoutMillis = 10_000
+                }
                 defaultRequest {
                     url(DISCORD_OAUTH2_TOKEN)
-                    connectTimeout = 15_000
-                    readTimeout = 10_000
                 }
             }
             val postData = params.entries.joinToString("&") { (key, value) ->
@@ -181,7 +187,6 @@ class DiscordOAuth2Auth(
                 throw DiscordOAuth2Exception.NetworkFailure(java.io.IOException("HTTP $responseCode:$responseBody"))
             }
         }
-    }
     }
 
     private fun buildAuthorizeUrl(
@@ -232,19 +237,11 @@ class DiscordOAuth2Auth(
         return token.isNotEmpty() && !isTokenExpired()
     }
 
-    /**
-     * Returns true when the stored access token has passed its expiry time.
-     * When no expiry is stored we assume the token is still valid.
-     */
     fun isTokenExpired(): Boolean {
         val expiresAt = Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT, 0L]
         return expiresAt > 0L && System.currentTimeMillis() >= expiresAt
     }
 
-    /**
-     * Returns a usable access token, refreshing it first if it has expired and a
-     * refresh token is available.
-     */
     suspend fun getValidAccessToken(): String? {
         val token = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
         if (token.isEmpty()) return null
