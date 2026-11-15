@@ -409,13 +409,13 @@ fun MediaRPCContent(
                             onClick = { selectAllMediaApps() },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text(text = stringResource(id = R.string.select_all))
+                            Text(text = stringResource(id = R.string.turn_on_all_apps))
                         }
                         TextButton(
                             onClick = { deselectAllMediaApps() },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text(text = stringResource(id = R.string.deselect_all))
+                            Text(text = stringResource(id = R.string.turn_off_all_apps))
                         }
                     }
                 }

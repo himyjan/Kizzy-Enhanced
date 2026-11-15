@@ -291,13 +291,13 @@ fun ExperimentalRpcAppsScreen(
                         onClick = { onEvent(UiEvent.SelectAllApps) },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(text = stringResource(id = R.string.select_all))
+                        Text(text = stringResource(id = R.string.turn_on_all_apps))
                     }
                     TextButton(
                         onClick = { onEvent(UiEvent.DeselectAllApps) },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(text = stringResource(id = R.string.deselect_all))
+                        Text(text = stringResource(id = R.string.turn_off_all_apps))
                     }
                 }
                 LazyColumn(

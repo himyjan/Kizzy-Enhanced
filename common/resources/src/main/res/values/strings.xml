@@ -410,9 +410,9 @@
     <string name="discord_oauth_client_id_desc">Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications</string>
     <string name="logs_saved_toast">Logs saved to %1$s</string>
     <string name="logs_save_error">Failed to save logs</string>
-    <string name="select_all">Select All</string>
-    <string name="select_all_desc">Enable all apps for Media RPC</string>
-    <string name="deselect_all">Deselect All</string>
-    <string name="deselect_all_desc">Disable all apps for Media RPC</string>
+    <string name="turn_on_all_apps">Turn on all apps</string>
+    <string name="turn_on_all_apps_desc">Turn on Media RPC for all apps</string>
+    <string name="turn_off_all_apps">Turn off all apps</string>
+    <string name="turn_off_all_apps_desc">Turn off Media RPC for all apps</string>
 
 </resources>
