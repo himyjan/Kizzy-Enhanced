@@ -361,6 +361,32 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
+        // Qishui Music (汽水音樂): music.douyin.com/qishui/(track|album|artist|playlist)?{type}_id={id}
+        if (lower.contains("music.douyin.com") || lower.contains("douyin.com/qishui")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val query = uri.query ?: ""
+                // qishui/track?track_id=12345
+                val trackIdParam = query.split("&").find { it.startsWith("track_id=") }?.substringAfter("track_id=")
+                if (trackIdParam != null && trackIdParam.isNotBlank()) {
+                    return "https://music.douyin.com/qishui/track?track_id=${trackIdParam}"
+                }
+                val albumIdParam = query.split("&").find { it.startsWith("album_id=") }?.substringAfter("album_id=")
+                if (albumIdParam != null && albumIdParam.isNotBlank()) {
+                    return "https://music.douyin.com/qishui/album?album_id=${albumIdParam}"
+                }
+                val artistIdParam = query.split("&").find { it.startsWith("artist_id=") }?.substringAfter("artist_id=")
+                if (artistIdParam != null && artistIdParam.isNotBlank()) {
+                    return "https://music.douyin.com/qishui/artist?artist_id=${artistIdParam}"
+                }
+                val playlistIdParam = query.split("&").find { it.startsWith("playlist_id=") }?.substringAfter("playlist_id=")
+                if (playlistIdParam != null && playlistIdParam.isNotBlank()) {
+                    return "https://music.douyin.com/qishui/playlist?playlist_id=${playlistIdParam}"
+                }
+            } catch (_: Exception) {}
+        }
+
         // Douyin Music track: douyin.com{share_code}/
         if (lower.contains("douyin.com")) {
             try {
@@ -411,6 +437,169 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
+        // JioSaavn track: jiosaavn.com{slug}/{token}
+        if (lower.contains("jiosaavn.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val token = segments.lastOrNull() ?: ""
+                    if (token.isNotBlank()) return "https://www.jiosaavn.com/${token}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Gaana track: gaana.com{slug}
+        if (lower.contains("gaana.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val slug = segments.lastOrNull() ?: ""
+                    if (slug.isNotBlank()) return "https://gaana.com/${slug}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Wynk Music track: wynk.in/music/song/{slug}/{id}
+        if (lower.contains("wynk.in")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val songIndex = segments.indexOf("song")
+                if (songIndex != -1 && segments.size > songIndex + 2) {
+                    return "https://wynk.in/music/song/${segments[songIndex + 1]}/${segments[songIndex + 2]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Boomplay track: boomplay.com{id}
+        if (lower.contains("boomplay.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val id = segments.lastOrNull() ?: ""
+                    if (id.isNotBlank()) return "https://www.boomplay.com/${id}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Audiomack track: audiomack.com{artist-slug}/song/{song-slug}
+        if (lower.contains("audiomack.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val songIndex = segments.indexOf("song")
+                if (songIndex != -1 && segments.size > songIndex + 1) {
+                    val artistSlug = if (songIndex > 0) segments[songIndex - 1] else ""
+                    if (artistSlug.isNotBlank()) return "https://www.audiomack.com/${artistSlug}/song/${segments[songIndex + 1]}"
+                    return "https://www.audiomack.com/song/${segments[songIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Yandex Music track: music.yandex.ru/album/{album-id}/track/{track-id}
+        if (lower.contains("music.yandex.ru") || lower.contains("music.yandex.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val trackIndex = segments.indexOf("track")
+                if (trackIndex != -1 && segments.size > trackIndex + 1) {
+                    val albumId = if (trackIndex > 0) segments[trackIndex - 1] else ""
+                    return "https://music.yandex.ru/album/${albumId}/track/${segments[trackIndex + 1]}"
+                }
+                // music.yandex.ru/artist/{artist-id}
+                val artistIndex = segments.indexOf("artist")
+                if (artistIndex != -1 && segments.size > artistIndex + 1) {
+                    return "https://music.yandex.ru/artist/${segments[artistIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // VK Music: vk.com/audio?section=search&q=...
+        if (lower.contains("vk.com") || lower.contains("vk.me")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val query = uri.query ?: ""
+                if (query.contains("audio")) {
+                    return trimmed
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Anghami track: anghami.com{id}
+        if (lower.contains("anghami.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val id = segments.lastOrNull() ?: ""
+                    if (id.isNotBlank()) return "https://anghami.com/${id}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // AWA track: s.awa.fm/track/{id}
+        if (lower.contains("awa.fm")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val trackIndex = segments.indexOf("track")
+                if (trackIndex != -1 && segments.size > trackIndex + 1) {
+                    return "https://s.awa.fm/track/${segments[trackIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Recochoku track: recochoku.jp - search by title fallback
+        if (lower.contains("recochoku.jp")) return trimmed
+
+        // Melon track: melon.com{id}
+        if (lower.contains("melon.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val query = uri.query ?: ""
+                val songIdParam = query.split("&").find { it.startsWith("songId=") }?.substringAfter("songId=")
+                if (songIdParam != null && songIdParam.isNotBlank()) {
+                    return "https://www.melon.com/song/detail.htm?songId=${songIdParam}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Genie Music track: genie.co.kr/detail/songInfo?xgnm={id}
+        if (lower.contains("genie.co.kr")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val query = uri.query ?: ""
+                val songIdParam = query.split("&").find { it.startsWith("xgnm=") }?.substringAfter("xgnm=")
+                if (songIdParam != null && songIdParam.isNotBlank()) {
+                    return "https://www.genie.co.kr/detail/songInfo?xgnm=${songIdParam}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Beatport track: beatport.com{slug}/{id}
+        if (lower.contains("beatport.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val id = segments.lastOrNull() ?: ""
+                    if (id.isNotBlank()) return "https://www.beatport.com/${id}"
+                }
+            } catch (_: Exception) {}
+        }
+
         // SoundCloud track: soundcloud.com/{user}/{track}
         if (lower.contains("soundcloud.com")) {
             try {
@@ -418,6 +607,23 @@ class MetadataResolver @Inject constructor(
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 if (segments.size >= 2) {
                     return "https://soundcloud.com/${segments[0]}/${segments[1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Bandcamp track: {artist-subdomain}.bandcamp.com/track/{track-slug}
+        if (lower.contains("bandcamp.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val trackIndex = segments.indexOf("track")
+                if (trackIndex != -1 && segments.size > trackIndex + 1) {
+                    return trimmed
+                }
+                // Also handle direct track URLs: /track/{slug}
+                if (segments.size >= 2 && segments[0] == "track") {
+                    return trimmed
                 }
             } catch (_: Exception) {}
         }
@@ -600,6 +806,176 @@ class MetadataResolver @Inject constructor(
                 val albumIndex = segments.indexOf("album_detail")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
                     return "https://kuwo.cn/album_detail/${segments[albumIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // JioSaavn album: jiosaavn.com{slug}/{token}
+        if (lower.contains("jiosaavn.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val token = segments.lastOrNull() ?: ""
+                    if (token.isNotBlank()) return "https://www.jiosaavn.com/${token}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Gaana album: gaana.com{slug}
+        if (lower.contains("gaana.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val slug = segments.lastOrNull() ?: ""
+                    if (slug.isNotBlank()) return "https://gaana.com/${slug}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Wynk Music album: wynk.in/music/album/{slug}/{id}
+        if (lower.contains("wynk.in")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 2) {
+                    return "https://wynk.in/music/album/${segments[albumIndex + 1]}/${segments[albumIndex + 2]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Boomplay album: boomplay.com{id}
+        if (lower.contains("boomplay.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val id = segments.lastOrNull() ?: ""
+                    if (id.isNotBlank()) return "https://www.boomplay.com/${id}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Audiomack album: audiomack.com{artist-slug}/album/{album-slug}
+        if (lower.contains("audiomack.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    val artistSlug = if (albumIndex > 0) segments[albumIndex - 1] else ""
+                    if (artistSlug.isNotBlank()) return "https://www.audiomack.com/${artistSlug}/album/${segments[albumIndex + 1]}"
+                    return "https://www.audiomack.com/album/${segments[albumIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Yandex Music album: music.yandex.ru/album/{album-id}
+        if (lower.contains("music.yandex.ru") || lower.contains("music.yandex.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    return "https://music.yandex.ru/album/${segments[albumIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // VK Music playlist/album: vk.com/audio
+        if (lower.contains("vk.com") || lower.contains("vk.me")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val query = uri.query ?: ""
+                if (query.contains("audio")) {
+                    return trimmed
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Anghami album: anghami.com{id}
+        if (lower.contains("anghami.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val id = segments.lastOrNull() ?: ""
+                    if (id.isNotBlank()) return "https://anghami.com/${id}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // AWA album: s.awa.fm/album/{id}
+        if (lower.contains("awa.fm")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    return "https://s.awa.fm/album/${segments[albumIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Recochoku album: recochoku.jp - search by title fallback
+        if (lower.contains("recochoku.jp")) return trimmed
+
+        // Melon album: melon.com{id}
+        if (lower.contains("melon.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val query = uri.query ?: ""
+                val albumIdParam = query.split("&").find { it.startsWith("albumId=") }?.substringAfter("albumId=")
+                if (albumIdParam != null && albumIdParam.isNotBlank()) {
+                    return "https://www.melon.com/album/detail.htm?albumId=${albumIdParam}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Genie Music album: genie.co.kr/detail/albumInfo?axnm={id}
+        if (lower.contains("genie.co.kr")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val query = uri.query ?: ""
+                val albumIdParam = query.split("&").find { it.startsWith("axnm=") }?.substringAfter("axnm=")
+                if (albumIdParam != null && albumIdParam.isNotBlank()) {
+                    return "https://www.genie.co.kr/detail/albumInfo?axnm=${albumIdParam}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Beatport album: beatport.com{slug}/{id}
+        if (lower.contains("beatport.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val id = segments.lastOrNull() ?: ""
+                    if (id.isNotBlank()) return "https://www.beatport.com/${id}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Bandcamp album: {artist-subdomain}.bandcamp.com/album/{album-slug}
+        if (lower.contains("bandcamp.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    return trimmed
                 }
             } catch (_: Exception) {}
         }

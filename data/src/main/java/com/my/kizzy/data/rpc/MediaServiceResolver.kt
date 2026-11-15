@@ -70,6 +70,19 @@ object MediaServiceResolver {
     private const val DOUYIN_SEARCH = "https://www.douyin.com/search/%s"
     private const val NETEASE_SEARCH = "https://music.163.com/#/search/m/?s=%s&type=1"
     private const val KUWO_SEARCH = "https://kuwo.cn/search/list?key=%s"
+    private const val JIOSAAVN_SEARCH = "https://www.jiosaavn.com/search/%s"
+    private const val GAANA_SEARCH = "https://gaana.com/search/%s"
+    private const val WYNK_SEARCH = "https://wynk.in/music/search/%s"
+    private const val BOOMPLAY_SEARCH = "https://www.boomplay.com/search/songs/%s"
+    private const val AUDIOMACK_SEARCH = "https://www.audiomack.com/search?q=%s"
+    private const val YANDEX_SEARCH = "https://music.yandex.ru/search?text=%s"
+    private const val VK_SEARCH = "https://vk.com/audio?section=search&q=%s"
+    private const val ANGHAMI_SEARCH = "https://anghami.com/search/%s"
+    private const val AWA_SEARCH = "https://awa.fm/search?q=%s"
+    private const val RECOCHOKU_SEARCH = "https://recochoku.jp/search?q=%s"
+    private const val MELON_SEARCH = "https://www.melon.com/search/tab/index.htm?q=%s"
+    private const val GENIE_SEARCH = "https://www.genie.co.kr/search/searchMain?kwd=%s"
+    private const val BEATPORT_SEARCH = "https://www.beatport.com/search?q=%s"
 
     /**
      * Package signatures of apps that play YouTube / YouTube Music content but
@@ -189,6 +202,58 @@ object MediaServiceResolver {
         Entry(
             listOf("kuwo"),
             Service("Kuwo Music", Kind.MUSIC, KUWO_SEARCH, KUWO_SEARCH)
+        ),
+        Entry(
+            listOf("jiosaavn"),
+            Service("JioSaavn", Kind.MUSIC, JIOSAAVN_SEARCH, JIOSAAVN_SEARCH)
+        ),
+        Entry(
+            listOf("gaana"),
+            Service("Gaana", Kind.MUSIC, GAANA_SEARCH, GAANA_SEARCH)
+        ),
+        Entry(
+            listOf("wynk"),
+            Service("Wynk Music", Kind.MUSIC, WYNK_SEARCH, WYNK_SEARCH)
+        ),
+        Entry(
+            listOf("boomplay"),
+            Service("Boomplay", Kind.MUSIC, BOOMPLAY_SEARCH, BOOMPLAY_SEARCH)
+        ),
+        Entry(
+            listOf("audiomack"),
+            Service("Audiomack", Kind.MUSIC, AUDIOMACK_SEARCH, AUDIOMACK_SEARCH)
+        ),
+        Entry(
+            listOf("yandex"),
+            Service("Yandex Music", Kind.MUSIC, YANDEX_SEARCH, YANDEX_SEARCH)
+        ),
+        Entry(
+            listOf("vk.com", "vkontakte"),
+            Service("VK Music", Kind.MUSIC, VK_SEARCH, VK_SEARCH)
+        ),
+        Entry(
+            listOf("anghami"),
+            Service("Anghami", Kind.MUSIC, ANGHAMI_SEARCH, ANGHAMI_SEARCH)
+        ),
+        Entry(
+            listOf("awa"),
+            Service("AWA", Kind.MUSIC, AWA_SEARCH, AWA_SEARCH)
+        ),
+        Entry(
+            listOf("recochoku"),
+            Service("Recochoku", Kind.MUSIC, RECOCHOKU_SEARCH, RECOCHOKU_SEARCH)
+        ),
+        Entry(
+            listOf("melon"),
+            Service("Melon", Kind.MUSIC, MELON_SEARCH, MELON_SEARCH)
+        ),
+        Entry(
+            listOf("genie"),
+            Service("Genie Music", Kind.MUSIC, GENIE_SEARCH, GENIE_SEARCH)
+        ),
+        Entry(
+            listOf("beatport"),
+            Service("Beatport", Kind.MUSIC, BEATPORT_SEARCH, BEATPORT_SEARCH)
         ),
         Entry(
             listOf("bandcamp"),
