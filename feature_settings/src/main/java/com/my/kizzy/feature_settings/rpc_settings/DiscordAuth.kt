@@ -34,7 +34,8 @@ class DiscordAuth(
         private const val DISCORD_OAUTH_TOKEN = "https://discord.com/api/v10/oauth2/token"
         private const val DISCORD_SCOPES = "identify guilds"
         private const val REDIRECT_URI = "kizzy://oauth/callback"
-        private const val DEFAULT_CLIENT_ID = ""
+        
+        private const val DEFAULT_DISCORD_OAUTH_APPLICATION_CLIENT_ID = "1571063796418744412"
     }
 
     data class DiscordAuthResult(
@@ -56,7 +57,7 @@ class DiscordAuth(
     }
 
     suspend fun authorize(activity: Activity): DiscordAuthResult {
-        val clientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, DEFAULT_CLIENT_ID]
+        val clientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH_APPLICATION_CLIENT_ID]
         if (clientId.isBlank()) {
             throw DiscordAuthException.InvalidClientId()
         }
@@ -126,7 +127,7 @@ class DiscordAuth(
     }
 
     suspend fun refresh(refreshToken: String): DiscordAuthResult {
-        val clientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, DEFAULT_CLIENT_ID]
+        val clientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH_APPLICATION_CLIENT_ID]
         val params = mapOf(
             "client_id" to clientId,
             "grant_type" to "refresh_token",
