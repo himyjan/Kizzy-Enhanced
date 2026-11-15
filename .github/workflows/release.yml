@@ -178,6 +178,7 @@ jobs:
             build/reports/problems-release.html
             build/reports/build_reports_*/
             app/build/reports/r8/**
+            app/build/reports/r8/r8-config-analyzer-release.pb
         retention-days: 30
 
       - name: Generate categorized git changelog
@@ -486,7 +487,7 @@ jobs:
 
             **Compose Stack Traces** — Compiler generates readable stack traces for recomposition issues. Check `build/compose_compiler/` metrics for unstable lambda captures.
 
-            **R8 Optimization** — `isMinifyEnabled = true`, `isShrinkResources = true`, `optimization.enable = true`. R8 mapping and usage reports generated for each release build.
+            **R8 Optimization** — `isMinifyEnabled = true`, `isShrinkResources = true`, `optimization.enable = true`. R8 mapping, usage, and configuration analysis reports generated for each release build (`r8-config-analyzer-release.pb`).
 
             **Baseline Profiles** — `StartupBaselineProfileTest` traces app startup, Console RPC, Media RPC, and Custom RPC navigation. Run `./gradlew :app:baselineProfile` on a connected device to generate `src/main/baseline-prof.txt` for faster startup.
 
