@@ -136,28 +136,16 @@ jobs:
 
           # 2. Extract standalone APKs per ABI (arm64-v8a, x86_64 only - app excludes 32-bit)
           for ABI in arm64-v8a x86_64; do
-            cat > "$RUNNER_TEMP/spec-${ABI}.json" <<EOF
-          {
-            "supportedAbis": ["${ABI}"],
-            "supportedLocales": ["en"],
-            "screenDensity": 480,
-            "sdkVersion": 37
-          }
-          EOF
             java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
               --bundle="$AAB" \
               --output="$RUNNER_TEMP/${ABI}.apks" \
-              --device-spec="$RUNNER_TEMP/spec-${ABI}.json" \
               --ks="$RUNNER_TEMP/release.keystore" \
               --ks-pass=pass:kizzyfork \
               --ks-key-alias=kizzyfork \
-              --key-pass=pass:kizzyfork
-            java -jar "$RUNNER_TEMP/bundletool.jar" extract-apks \
-              --apks="$RUNNER_TEMP/${ABI}.apks" \
-              --output-dir="$RUNNER_TEMP/out-${ABI}" \
-              --device-spec="$RUNNER_TEMP/spec-${ABI}.json"
-            APK_FILE=$(find "$RUNNER_TEMP/out-${ABI}" -name "*.apk" | head -1)
-            cp "$APK_FILE" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+              --key-pass=pass:kizzyfork \
+              --mode=universal
+            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "universal.apk" -d "$RUNNER_TEMP/out-${ABI}"
+            cp "$RUNNER_TEMP/out-${ABI}/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
           done
 
       - name: Upload All Release APKs
@@ -312,7 +300,7 @@ jobs:
             | AGP | 8.13.2 | 9.6.0-alpha03 | Major upgrade |
             | Kotlin | 2.1.20 | 2.4.21 | Major upgrade |
             | KSP | 2.1.20-1.0.31 | 2.3.13 | Major upgrade |
-            | Compose BOM | 2025.06.01 | 2026.09.00-alpha01 | ~1.5 years newer |
+            | Compose BOM | 2025.06.01 | 2026.09.00 | ~1.5 years newer |
             | Ktor | 2.3.0 | 3.6.1 | Major upgrade |
             | Coil | 2.1.0 | 3.6.3 (Coil3) | Major rewrite |
             | Hilt | 2.56.2 | 2.60.1 | Minor upgrade |
