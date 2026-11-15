@@ -28,7 +28,7 @@ import android.os.Build
 import android.os.IBinder
 import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMediaAll
-import com.my.kizzy.data.get_current_data.media.MetadataResolver
+import com.my.kizzy.data.get_current_data.media.MediaResolver
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.work.WorkManagerHelper
@@ -60,7 +60,7 @@ class ExperimentalRpc : Service() {
     lateinit var getCurrentPlayingMediaAll: GetCurrentPlayingMediaAll
 
     @Inject
-    lateinit var metadataResolver: MetadataResolver
+    lateinit var MediaResolver: MediaResolver
 
     @Inject
     lateinit var getCurrentlyRunningApp: GetCurrentlyRunningApp
@@ -602,7 +602,7 @@ class ExperimentalRpc : Service() {
             packageName = effectivePackageName ?: "",
             playbackState = richMediaInfo?.playbackState,
             mediaUrl = rawMediaMetadata?.let {
-                metadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
+                MediaResolver.getMediaUrl(it, richMediaInfo?.packageName)
             },
         )
 
@@ -650,7 +650,7 @@ class ExperimentalRpc : Service() {
             // playing, the link of the track and of the artist are used instead,
             // so the presence links to the music like the Media RPC does.
             val mediaUrl = rawMediaMetadata?.let {
-                metadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
+                MediaResolver.getMediaUrl(it, richMediaInfo?.packageName)
             }
             mediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
                 kizzyRPC.setButton1(
@@ -662,7 +662,7 @@ class ExperimentalRpc : Service() {
                 )
             }
             rawMediaMetadata?.let { metadata ->
-                metadataResolver.getArtistUrl(metadata, richMediaInfo?.packageName)?.let { url ->
+                MediaResolver.getArtistUrl(metadata, richMediaInfo?.packageName)?.let { url ->
                     kizzyRPC.setButton2(
                         MediaServiceResolver.artistButtonLabel(effectivePackageName),
                         url,

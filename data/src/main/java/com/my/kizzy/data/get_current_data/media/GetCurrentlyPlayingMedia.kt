@@ -20,7 +20,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 
 class GetCurrentPlayingMedia @Inject constructor(
-    private val metadataResolver: MetadataResolver,
+    private val MediaResolver: MediaResolver,
     private val componentName: ComponentName,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
@@ -93,8 +93,8 @@ class GetCurrentPlayingMedia @Inject constructor(
                 .takeIf { it.isNotBlank() }
                 ?: ActivityTypeResolver.knownAppName(mediaController.packageName)
                 ?: mediaController.packageName
-            val author = metadata.let { metadataResolver.formatArtists(it) }
-            val album = metadata.let { metadataResolver.getAlbum(it) }
+            val author = metadata.let { MediaResolver.formatArtists(it) }
+            val album = metadata.let { MediaResolver.getAlbum(it) }
 
             // The artist / album / song-as-title switches were written by the
             // Media RPC screen but never read, so they had no effect at all.
@@ -109,7 +109,7 @@ class GetCurrentPlayingMedia @Inject constructor(
             // Build state with multi-artist and multi-channel info.
             val stateParts = buildList {
                 if (artistEnabled) author.takeIf { it.isNotBlank() }?.let { add(it) }
-                metadata.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
+                metadata.let { MediaResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
             }
             val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() }
 
@@ -157,17 +157,17 @@ class GetCurrentPlayingMedia @Inject constructor(
 
             var coverArt: RpcImage? = null
             if (showCoverArt) {
-                val bitmap = metadata.let { metadataResolver.getCoverArt(it) }
+                val bitmap = metadata.let { MediaResolver.getCoverArt(it) }
                 if (bitmap != null) {
                     coverArt = RpcImage.BitmapImage(
                         context = context,
                         bitmap = bitmap,
                         packageName = mediaController.packageName,
-                        title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title}"
+                        title = "${metadata.let { MediaResolver.getAlbumArtists(it) }}|${metadata.let { MediaResolver.getAlbum(it) }?: "unknown"}|${title}"
                     )
                     logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from ALBUM_ART/ART/DISPLAY_ICON)")
                 } else {
-                    val artworkUri = metadata.let { metadataResolver.getArtworkUri(it) }
+                    val artworkUri = metadata.let { MediaResolver.getArtworkUri(it) }
                     if (artworkUri != null) {
                         val parsedUri = Uri.parse(artworkUri)
                         if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
@@ -179,7 +179,7 @@ class GetCurrentPlayingMedia @Inject constructor(
                                     context = context,
                                     bitmap = bmp,
                                     packageName = mediaController.packageName,
-                                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title}"
+                                    title = "${metadata.let { MediaResolver.getAlbumArtists(it) }}|${metadata.let { MediaResolver.getAlbum(it) }?: "unknown"}|${title}"
                                 )
                                 logger.d("MediaImage", "YT '$title': coverBitmap=decodedBitmap(from artworkUri=$artworkUri), chosenCover=BitmapImage(decoded)")
                             } else {
@@ -205,8 +205,8 @@ class GetCurrentPlayingMedia @Inject constructor(
             // The direct url of the track. The session of YouTube Music does not
             // publish it, so it is looked up by the id or the title of the
             // track. Without it the button linked to a search page.
-            val mediaUrl = metadataResolver.getDirectMediaUrl(metadata, mediaController.packageName)
-                ?: metadataResolver.getMediaUrl(metadata, mediaController.packageName)
+            val mediaUrl = MediaResolver.getDirectMediaUrl(metadata, mediaController.packageName)
+                ?: MediaResolver.getMediaUrl(metadata, mediaController.packageName)
 
             return CommonRpc(
                 name = rpcName,
