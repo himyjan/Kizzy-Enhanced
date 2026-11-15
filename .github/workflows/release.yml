@@ -273,6 +273,8 @@ jobs:
             **Removed:** MMKV, Accompanist, BlankJ UtilCodex, CrashX, AndroidSVG, javax.inject  
             **Added:** Jetpack DataStore 1.3.0, Tink Android 1.24.0, Jetpack BaselineProfile 1.6.0-alpha01, Jetpack MacroBenchmark 1.6.0-alpha01, Coil 3.6.3, WorkManager 2.12.0, Hilt Work 1.4.0, Material3 Adaptive 1.4.0-alpha03  
             **Critical:** Coil 3 splits the HTTP fetcher — `coil-network-ktor3` was added; without it, remote images fail to load.
+
+            **HTTP Client:** CIO client replaced with OkHttp client via `ktor-client-okhttp` across all RPC services for better mobile reliability (connection pooling, HTTP/2 multiplexing, Wi-Fi/cellular handoff, robust SSL/TLS).
             </details>
 
             ---
@@ -335,6 +337,25 @@ jobs:
 
             ---
             <details>
+            <summary>🎨 Cover Art Settings (New Feature)</summary>
+
+            **Global Toggle:** Hide Cover Art Images — when enabled, hides cover art from ALL RPC types (Media, Custom, Console, Experimental); Discord shows text only.
+
+            **Default Cover Art URLs:** Set default large and small cover art image URLs. When a notification has no cover art, the default image is used as fallback instead of Discord's default app icon.
+
+            **Applied to:** Media RPC, Custom RPC (Console tab), Experimental RPC.
+            </details>
+
+            ---
+            <details>
+            <summary>🔗 YouTube Music Link Fix</summary>
+
+            **Bug:** YouTube Music activity link pointed to a search page URL (e.g. `youtube.com/results?search_query=...`) instead of the actual video.  
+            **Fix:** `getMediaUrl()` now returns `null` when `extractYouTubeUrl()` returns null for YouTube apps, instead of falling back to `mediaSearchUrl()` which returns another search page. Discord now shows the direct `youtu.be/VIDEO_ID` link instead of a broken search page.
+            </details>
+
+            ---
+            <details>
             <summary>🎮 Experimental RPC: Select All / Deselect All</summary>
 
             Two buttons added above the app list for bulk enabling/disabling all apps at once.
@@ -389,9 +410,9 @@ jobs:
 
             **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`  
             **Deleted:** `GamesScreen.kt` (merged into Custom RPC)  
-            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336)  
+            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix)  
             **Locale files:** 87 updated  
-            **Build files:** `gradle/libs.versions.toml`, `release.yml`, 30+ module `build.gradle.kts` files
+            **Build files:** `gradle/libs.versions.toml` (ktor-client-okhttp added), `release.yml`, 30+ module `build.gradle.kts` files
             </details>
 
             ---
