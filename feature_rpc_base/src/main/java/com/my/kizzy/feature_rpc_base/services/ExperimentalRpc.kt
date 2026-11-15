@@ -496,10 +496,12 @@ class ExperimentalRpc : Service() {
             }
 
             finalLargeImage = when {
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_COVER_ART, true] ->
+                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_COVER_ART, true] &&
+                Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false ->
                     // Fall back to the player's app icon when cover art is unavailable
                     richMediaInfo.coverArt ?: richMediaInfo.appIcon
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] -> richMediaInfo.appIcon
+                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] &&
+                Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false -> richMediaInfo.appIcon
                 else -> null
             }
 

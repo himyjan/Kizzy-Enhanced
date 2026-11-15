@@ -279,7 +279,7 @@ class CustomRpcService : Service() {
                     setButton1(it.button1.ifEmpty { null }, it.button1link.ifEmpty { null })
                     setButton2(it.button2.ifEmpty { null }, it.button2link.ifEmpty { null })
                     setLargeImage(
-                        if (consoleShowCoverArt && Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false) {
+                        if (Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART, true] && Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false) {
                             it.largeImg.toRpcImage()
                         } else {
                             Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""].takeIf { it.isNotEmpty() }?.let { RpcImage.ExternalImage(it) }
@@ -287,7 +287,7 @@ class CustomRpcService : Service() {
                         it.largeText
                     )
                     setSmallImage(
-                        if (consoleShowCoverArt && Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false) {
+                        if (Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART, true] && Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false) {
                             it.smallImg.toRpcImage()
                         } else {
                             Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""].takeIf { it.isNotEmpty() }?.let { RpcImage.ExternalImage(it) }
