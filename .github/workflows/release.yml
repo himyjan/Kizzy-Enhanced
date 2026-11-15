@@ -151,10 +151,9 @@ jobs:
               --ks="$RUNNER_TEMP/release.keystore" \
               --ks-pass=pass:kizzyfork \
               --ks-key-alias=kizzyfork \
-              --key-pass=pass:kizzyfork \
-              --mode=universal
-            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "universal.apk" -d "$RUNNER_TEMP/out-${ABI}"
-            cp "$RUNNER_TEMP/out-${ABI}/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+              --key-pass=pass:kizzyfork
+            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "standalone.apk" -d "$RUNNER_TEMP/out-${ABI}"
+            cp "$RUNNER_TEMP/out-${ABI}/standalone.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
           done
 
       - name: Upload All Release APKs
