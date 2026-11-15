@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Abre a aplicação Discord → toca no ícone "Tu" (foto de perfil) → toca em Definições (⚙️) → desliza para baixo e toca em "Conteúdo e social" (ou "Privacidade da atividade" em versões mais antigas da aplicação).</string>
     <string name="activity_type_fallback_desc">É usado para as aplicações não reconhecidas e para qualquer aplicação quando a deteção automática está desativada.</string>
     <string name="discord_step3_title">Passo 3: Verifica o teu estado online</string>
+
+    <string name="console_preset_games">Jogos predefinidos</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Área de trabalho</string>
 </resources>

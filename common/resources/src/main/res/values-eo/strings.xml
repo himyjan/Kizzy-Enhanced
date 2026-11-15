@@ -73,4 +73,14 @@
     <string name="discord_step1_content">Malfermu la aplikaĵon Discord → klaku vian „Vi“-piktogramon (profilfoto) → klaku Agordoj (⚙️) → ruluĝu malsupren kaj klaku „Enhavo kaj sociaj retoj“ (aŭ „Privateco de agado“ en pli malnovaj versioj de la aplikaĵo).</string>
     <string name="activity_type_fallback_desc">Uzata por aplikaĵoj ne rekonataj kaj por ĉiu aplikaĵo kiam aŭtomata detekto estas malŝaltita.</string>
     <string name="discord_step3_title">Paŝo 3: Kontroli vian retan staton</string>
+
+    <string name="console_preset_games">Antaŭagorditaj ludoj</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

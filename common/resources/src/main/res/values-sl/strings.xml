@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Odprite aplikacijo Discord → tapnite svojo ikono »Ti« (profilna fotografija) → tapnite Nastavitve (⚙️) → pomaknite se navzdol in tapnite »Vsebina in socialna omrežja« (ali »Zasebnost dejavnosti« v starejših različicah aplikacije).</string>
     <string name="activity_type_fallback_desc">Uporablja se za aplikacije, ki niso prepoznane, in za vsako aplikacijo, ko je samodejno zaznavanje izklopljeno.</string>
     <string name="discord_step3_title">3. korak: Preverite svoje omrežno stanje</string>
+
+    <string name="console_preset_games">Prednastavljene igre</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Namizje</string>
 </resources>

@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord အက်ပ်ကို ဖွင့်ပါ → သင့် "သင်" (ပရိုဖိုင်ပုံ) အိုကောက်ကို နှိပ်ပါ → ဆက်တင်များ (⚙️) ကို နှိပ်ပါ → အောက်သို့ လှိမ့်ပြီး "အကြောင်းအရာနှင့် လူမှုဆက်ဆံရေး" (သို့မဟုတ် အက်ပ်ဗားဟောင်းများတွင် "Activity Privacy") ကို နှိပ်ပါ။</string>
     <string name="activity_type_fallback_desc">မသိမ်းနိုင်သော အက်ပ်များအတွက်နှင့် အလိုအလျောက်ရှာဖွေခြင်း ပိတ်ထားသည့်အခါ လှုပ်ရှားမှုအမျိုးအစားပြောင်း အက်ပ်တိုင်းအတွက် အသုံးပြုသည်။</string>
     <string name="discord_step3_title">အဆင့် ၃ - အွန်လိုင်အခြေအနေကို စစ်ဆေးပါ</string>
+
+    <string name="console_preset_games">ကြိုတင်သတ်မှုရှိ ဂိမ်းများ</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

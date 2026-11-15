@@ -276,4 +276,14 @@
     <string name="discord_step1_content">Discord பயன்பாட்டைத் திற → உங்கள் "நீங்கள்" (சுயவிவரப் படம்) சின்னத்தைத் தொடுக்கவும் → அமைப்புகள் (⚙️) தொடுக்கவும் → கீழே செல்லவும், "உள்ளடக்கம் &amp; சமூகம்" (அல்லது பழைய பயன்பாட்டுப் பதிப்புகளில் "செயல்பாட்டு தனியுரிமை") என்பதைத் தொடுக்கவும்.</string>
     <string name="activity_type_fallback_desc">அறியப்படாத பயன்பாடுகளுக்கும், தானியங்கி கண்டறிதல் முடக்கப்பட்ட போது ஒவ்வொரு பயன்பாட்டிற்கும் பயன்படுகிறது.</string>
     <string name="discord_step3_title">படி 3: உங்கள் இணைய நிலையைச் சரிபார்க்கவும்</string>
+
+    <string name="console_preset_games">முன்னர்ப்புக் கேம்கள்</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

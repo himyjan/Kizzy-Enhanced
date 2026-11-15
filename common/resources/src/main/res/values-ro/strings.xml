@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Deschide aplicația Discord → atinge pictograma Tu (poza de profil) → atinge Setări (⚙️) → derulează în jos și atinge Conținut și social (sau Confidențialitatea activității în versiunile mai vechi).</string>
     <string name="activity_type_fallback_desc">Se folosește pentru aplicațiile care nu sunt recunoscute și pentru fiecare aplicație când detectarea automată este oprită.</string>
     <string name="discord_step3_title">Pasul 3: Verifică-ți starea online</string>
+
+    <string name="console_preset_games">Jocuri predefinite</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Spațiu de lucru</string>
 </resources>

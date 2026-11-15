@@ -284,4 +284,14 @@
     <string name="discord_step1_content">Discord એપ ખોલો → તમારો "તમે" (પ્રોફાઇલ ફોટો) આઇકન ટેપ કરો → સેટિંગ્સ (⚙️) ટેપ કરો → નીચે સ્ક્રોલ કરો અને "કન્ટેન્ટ અને સોશિયલ" (કે જૂની એપ વર્ઝનમાં "એક્ટિવિટી ગોપનીયતા") ટેપ કરો.</string>
     <string name="activity_type_fallback_desc">ઓળખાતા ન આવેલી એપ્સ માટે અને ઓટોમેટિક શોધ બંધ હોય ત્યારે દરેક એપ માટે વપરાય છે.</string>
     <string name="discord_step3_title">પગલું 3: તમારી ઓનલાઇન સ્ટેટસ તપાસો</string>
+
+    <string name="console_preset_games">પૂર્વ-સેટ ગેમ્સ</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

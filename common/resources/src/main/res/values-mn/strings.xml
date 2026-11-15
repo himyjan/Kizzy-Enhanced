@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord апп-ийг нээж → өөрийн "Би" (профайлын зураг) дүрсийг даран → Тохиргоо (⚙️) → доош гүйлгээд "Контент ба нийгмийн сүлжээ" (эсвэл хуучин хувилбарт "Үйлдлийн нууцлал") руу орно уу.</string>
     <string name="activity_type_fallback_desc">Танигдаагүй апп-ууд болон автомат илрүүлэлт таалагдсан үед бүх апп-д ашиглагдана.</string>
     <string name="discord_step3_title">3-р алхам: Онлайн төлөвөө шалгах</string>
+
+    <string name="console_preset_games">Урьдчилан тохируулсан тогломууд</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Ажлын ширээ</string>
 </resources>

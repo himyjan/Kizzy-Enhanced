@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Otwórz aplikację Discord → dotknij swojej ikony „Ty” (zdjęcie profilowe) → dotknij Ustawień (⚙️) → przewiń w dół i dotknij „Treść i społeczność” (lub „Prywatność aktywności” w starszych wersjach aplikacji).</string>
     <string name="activity_type_fallback_desc">Używany dla aplikacji nierozpoznanych oraz dla każdej aplikacji, gdy automatyczne wykrywanie jest wyłączone.</string>
     <string name="discord_step3_title">Krok 3: Sprawdź swój status online</string>
+
+    <string name="console_preset_games">Wstępnie ustawione gry</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Pulpit</string>
 </resources>

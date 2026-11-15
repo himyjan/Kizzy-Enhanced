@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Buka aplikasi Discord → ketik ikon Anda (gambar profil) → ketik Tetapan (⚙️) → skrol ke bawah dan ketik Kandungan &amp; Sosial (atau Privasi Aktiviti pada versi aplikasi lama).</string>
     <string name="activity_type_fallback_desc">Digunakan untuk aplikasi yang tidak dikenali, dan untuk setiap aplikasi apabila pengesanan automatik dimatikan.</string>
     <string name="discord_step3_title">Langkah 3: Semak status dalam talian anda</string>
+
+    <string name="console_preset_games">Prasetapan permainan</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

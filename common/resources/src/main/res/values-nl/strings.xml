@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Open de Discord-app → tik op je \'Jij\'-pictogram (profielafbeelding) → tik op Instellingen (⚙️) → scrol omlaag en tik op "Inhoud en sociaal" (of "Activiteitsprivacy" bij oudere appversies).</string>
     <string name="activity_type_fallback_desc">Wordt gebruikt voor apps die niet worden herkend en voor elke app wanneer automatische detectie is uitgeschakeld.</string>
     <string name="discord_step3_title">Stap 3: Controleer je online status</string>
+
+    <string name="console_preset_games">Vooraf ingestelde spellen</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Bureaublad</string>
 </resources>

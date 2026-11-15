@@ -305,4 +305,14 @@
     <string name="discord_step1_content">د Discord اپلیکیشن پرانیزئ → خپل "ته" (د پروفایل انځور) نښه ته ونږۍ → تنظیمات (⚙️) ته ونږۍ → ښکته scroll کړئ او "منځپانګه او ټولنیزې شبکې" (یا په کړنۍو اپلیکیشن نسخو کې "د فعالیت محرمانیت") ته ونږۍ.</string>
     <string name="activity_type_fallback_desc">د ناڅرګند شویو اپلیکیشنونو لپاره، او د هر اپلیکیشن لپاره کله چې خودکار کشف بند وي.</string>
     <string name="discord_step3_title">3 ګام: خپل آنلاین حالت وګورئ</string>
+
+    <string name="console_preset_games">پیش جوړ شوي ګیمونه</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">دسکتاپ</string>
 </resources>

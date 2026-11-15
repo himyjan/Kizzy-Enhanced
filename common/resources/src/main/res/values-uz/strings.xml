@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord ilovasini oching → o\'zingizning (profil rasm) ikonkasini bosing → Sozlamalar (⚙️) ni bosing → pastga aylantiring va "Mazmun va ijtimoiy tarmoqlar" (yoki eski versiyalarda "Faoliyat maxfiyligi") bo\'limini bosing.</string>
     <string name="activity_type_fallback_desc">Aniqlanmagan ilovalar uchun va avtomatik aniqlash o\'chirilganda har bir ilova uchun ishlatiladi.</string>
     <string name="discord_step3_title">3-qadam: Onlayn holatingizni tekshiring</string>
+
+    <string name="console_preset_games">Oldindan belgilangan o\'yinlar</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

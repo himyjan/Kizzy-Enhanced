@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord යෙදුම විවෘත කරන්න → ඔබගේ "ඔබ" (ප්‍රොෆයිල් ඡායාව) නිරූපකය තට්ටු කරන්න → සැකසුම් (⚙️) තට්ටු කරන්න → පහතට ගොස් ලෝරු කර "අන්තර් අත්ථ සහ සමාජික" (හෝ පරණ යෙදුම් අනුවාදවල "Activity Privacy") තට්ටු කරන්න.</string>
     <string name="activity_type_fallback_desc">හඳුනා නොගන්නා යෙදුම් සඳහා, සහ ස්වයංක්‍රිය හඳුනාගැනීම අක්‍රිය කර ඇති විට සෑම යෙදුමකටම භාවිත වේ.</string>
     <string name="discord_step3_title">පියවර 3: ඔබගේ අන්ලයින් තත්ත්වය පරීක්ෂා කරන්න</string>
+
+    <string name="console_preset_games">කලින් සකසා ඇති ගේම්ස</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

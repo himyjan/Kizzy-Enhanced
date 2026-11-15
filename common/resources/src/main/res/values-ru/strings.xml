@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Откройте приложение Discord → нажмите на значок «Вы» (фото профиля) → нажмите «Настройки» (⚙️) → прокрутите вниз и нажмите «Контент и социальные сети» (или «Конфиденциальность активности» в более старых версиях).</string>
     <string name="activity_type_fallback_desc">Используется для нераспознанных приложений и для каждого приложения, когда автоматическое определение отключено.</string>
     <string name="discord_step3_title">Шаг 3: Проверьте свой статус в сети</string>
+
+    <string name="console_preset_games">Предзаданные игры</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Рабочий стол</string>
 </resources>

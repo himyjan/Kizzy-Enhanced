@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Отворете приложението Discord → докоснете иконата „Вие“ (снимка на профила) → докоснете „Настройки“ (⚙️) → превъртете надолу и докоснете „Съдържание и социални мрежи“ (или „Поверителност на активността“ при по-стари версии).</string>
     <string name="activity_type_fallback_desc">Използва се за приложенията, които не са разпознати, и за всяко приложение, когато автоматичното откриване е изключено.</string>
     <string name="discord_step3_title">Стъпка 3: Проверете онлайн състоянието си</string>
+
+    <string name="console_preset_games">Предварително зададени игри</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Работен плот</string>
 </resources>

@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Avaa Discord-sovellus → napauta oma "Sinä"-kuvaketta (profiilikuva) → napauta Asetukset (⚙️) → vieritä alas ja napauta "Sisältö ja sosiaaliset" (tai "Aktiivisuuden yksityisyys" vanhemmissa sovellusversioissa).</string>
     <string name="activity_type_fallback_desc">Käytetään tunnistamattomille sovelluksille ja jokaiselle sovellukselle, kun automaattinen tunnistus on poistettu käytöstä.</string>
     <string name="discord_step3_title">Vaihe 3: Tarkista verkkotilasi</string>
+
+    <string name="console_preset_games">Ennalta määritetyt pelit</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Työpöytä</string>
 </resources>

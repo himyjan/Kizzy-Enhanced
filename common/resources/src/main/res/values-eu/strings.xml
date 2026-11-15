@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Irekiti Discord aplikazioa → sakatu zure Nor (argazkia) ikonoa → sakatu Ezarpenak (⚙️) → joan behera eta sakatu Edukia eta Gizartekoa (edo Jardueren pribatutasuna aplikazioaren bertsio zaharretan).</string>
     <string name="activity_type_fallback_desc">Erabiltzen da aplikazio ezagutuak ez direnentzat, eta aplikazio guztietarako ere detekzio automatikoa itzalita dagoenean.</string>
     <string name="discord_step3_title">3. urratsa: Aztertu zure egoera online</string>
+
+    <string name="console_preset_games">Aurrez definitutako jokalak</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

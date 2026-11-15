@@ -305,4 +305,14 @@
     <string name="discord_step1_content">ເປີດແອັບ Discord → ກົດທີ່ໄອຄອນ "ຂ້ອຍ" (ຮູບໂປໂຟຟານ) → ກົດການຕັ້ງ (⚙️) → ເລື່ອນລົງ ແລະ ກົດ "ເນື້ອຄົນ ແລະ ສັງຄົມ" (ຫຼື "ຄວາມເປັນສ່ວນຕົນຂອງກິດຈະກຳ" ໃນແອັບເວີຊັ່ນເກົາ) .</string>
     <string name="activity_type_fallback_desc">ໃຊ້ກັບແອັບທີ່ບໍ່ໄດ້ຮູ້ຮັບ ແລະ ສຳລັບທຸກໆແອັບໃນເວລາທີ່ການຄົ້ນພົບອັດຕະໂນມັດຖືກປິດໄວ້.</string>
     <string name="discord_step3_title">ຂັ້ນຕອງທີ່ 3: ກວດສະຖານະອອນໄລນຂອງທ່ານ</string>
+
+    <string name="console_preset_games">ຄຳນຶງຕັ້ງລາຍ</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

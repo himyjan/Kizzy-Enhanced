@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Բացեք Discord հավելումը → սեղմեք ձեր «Սեդ» (պրոֆիլի նկարի) պատկերիկը → սեղմեք Արխավորություններ (⚙️) → սահմանեք ցածր և սեղմեք «Բովանդակություն և սոցիալական ցանցեր» (կամ «Գործունեության առանձնիվություն» հավելումի հին տարբերակներում)։</string>
     <string name="activity_type_fallback_desc">Օգտագործվում է այն հավելումների համար, որոնք չեն ճշտվում, և ամբողջ հավելումների համար, երբ ավտոմատիկ հայտնաբերումը անջատված է։</string>
     <string name="discord_step3_title">Քայլ 3. Ստուգեք ձեր անունային կարգին</string>
+
+    <string name="console_preset_games">Նախապայտված խաղեր</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Աշխատանքի մակերին</string>
 </resources>

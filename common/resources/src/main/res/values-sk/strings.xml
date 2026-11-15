@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Otvorte aplikáciu Discord → ťuknite na svoju ikonu „Vy“ (fotografia profilu) → ťuknite na „Nastavenia“ (⚙️) → posuňte sa nadol a ťuknite na „Obsah a sociálne siete“ (alebo „Súkromie aktivity“ v starších verziách aplikácie).</string>
     <string name="activity_type_fallback_desc">Používa sa pre aplikácie, ktoré nie sú rozpoznané, a pre každú aplikáciu, keď je automatická detekcia vypnutá.</string>
     <string name="discord_step3_title">Krok 3: Skontrolujte svoj online stav</string>
+
+    <string name="console_preset_games">Prednastavené hry</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Pracovná plocha</string>
 </resources>

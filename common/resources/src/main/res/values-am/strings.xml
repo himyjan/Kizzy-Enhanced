@@ -285,4 +285,14 @@
     <string name="discord_step1_content">የDiscord መተግበሪያውን ክፈት → የእኔን እንቅስቃሴ ንክክል ክፈት → ንክክል ክፈት → ስርዓት ላይ አስቀምጥ → ይደረስንህና ይህን ክፈት።</string>
     <string name="activity_type_fallback_desc">ያልታወቁ መተግበሪያዎችና ራስ-አርተ መለያ ሲጠፋ ለእያንዳንዱ መተግበሪያ ይጠቀማል።</string>
     <string name="discord_step3_title">ደረጃ 3፦ የመስመር ሁክትዎን ያረጋግጡ</string>
+
+    <string name="console_preset_games">ቅድም የተዘጋጁ ጨዋታዎች</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

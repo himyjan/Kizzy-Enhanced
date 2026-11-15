@@ -73,4 +73,14 @@
     <string name="discord_step1_content">Discord programmasyny açyň → "Sen" belgäniňizi (profil suraty) basyň → Sazlamalar (⚙️) basyň → aşak süýşüň we "Mazmun we jemagat" (ýa-da köne wersiýalarda "Işjeňiň gizligi") basyň.</string>
     <string name="activity_type_fallback_desc">Anyklanylmadyk programmalar üçin we her programma üçin awtomatik anyklama öçürilen ýagdaýynda ulanylýar.</string>
     <string name="discord_step3_title">3-nji ädim: Onlaýn ýagdaýyňyzy barlag</string>
+
+    <string name="console_preset_games">Öňünden kesgitlenen oýunlar</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

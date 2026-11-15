@@ -305,4 +305,14 @@
     <string name="discord_step1_content">برنامه Discord را باز کنید → روی آیکون «شما» (عکس پروفایل) ضربه بزنید → روی تنظیمات (⚙️) ضربه بزنید → تا پایین اسکرول کنید و روی «محتوا و شبکه‌های اجتماعی» (یا «حریم خصوصی فعالیت» در نسخه‌های قدیمی‌تر) ضربه بزنید.</string>
     <string name="activity_type_fallback_desc">برای برنامه‌هایی که شناسایی نمی‌شوند و برای هر برنامه هنگام خاموش بودن تشخیص خودکار استفاده می‌شود.</string>
     <string name="discord_step3_title">گام ۳: بررسی وضعیت آنلاین</string>
+
+    <string name="console_preset_games">بازی‌های از پیش تعیین‌شده</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">دسکتاپ</string>
 </resources>

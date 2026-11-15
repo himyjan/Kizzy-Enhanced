@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Öffne die Discord-App → tippe auf dein „Du“-Symbol (Profilbild) → tippe auf Einstellungen (⚙️) → scrolle nach unten und tippe auf „Inhalt und soziale Kontakte“ (oder „Aktivitätsprivatsphäre“ bei älteren Appversionen).</string>
     <string name="activity_type_fallback_desc">Wird für nicht erkannte Apps und für jede App verwendet, wenn die automatische Erkennung deaktiviert ist.</string>
     <string name="discord_step3_title">Schritt 3: Prüfe deinen Online-Status</string>
+
+    <string name="console_preset_games">Voreingestellte Spiele</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

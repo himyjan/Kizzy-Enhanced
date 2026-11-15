@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord tətbiqini açın → sizəm (profil şəkli) ikonasına toxunun → Parametrlər (⚙️) → aşağı sürüşdürün və Məzmun və Sosial (və ya köhnə versiyalarda Fəaliyyət Məxfiliyyəti) bölməsinə toxunun.</string>
     <string name="activity_type_fallback_desc">Tanınmayan uygulamalar üçün və avtomatik aşkarlama söndürüldüyündə hər uygulama üçün istifadə olunur.</string>
     <string name="discord_step3_title">3-cü addım: Onlayn statusunuzu yoxlayın</string>
+
+    <string name="console_preset_games">Əvvəlcədən təyin olunmuş oyunlar</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

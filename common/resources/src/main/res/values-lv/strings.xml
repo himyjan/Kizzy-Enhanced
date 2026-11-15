@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Atveriet Discord lietojumprogrammu → pieskarieties savai "Jūs" ikonai (profila attēlam) → pieskarieties Iestatījumiem (⚙️) → ritiniet uz leju un pieskarieties "Saturs un sociālie tīkli" (vai "Darbības konfidencialitāte" vecākās lietojumprogrammas versijās).</string>
     <string name="activity_type_fallback_desc">Izmanto neatzināmiem lietojumprogrammām un katrai lietojumprogrammai, ja automātiskā noteikšana ir izslēgta.</string>
     <string name="discord_step3_title">3. solis: Pārbaudiet savu tiešsaistes statusu</string>
+
+    <string name="console_preset_games">Priekšdefinētas spēles</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Darbvirsma</string>
 </resources>

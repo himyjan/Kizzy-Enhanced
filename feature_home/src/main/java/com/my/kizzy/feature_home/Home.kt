@@ -61,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -102,8 +103,8 @@ fun Home(
 ) {
     val ctx = LocalContext.current
     val mediaRpcTitle = stringResource(R.string.main_mediaRpc)
-    val customRpcTitle = stringResource(R.string.main_customRpc)
     val experimentalRpcTitle = stringResource(R.string.main_experimentalRpc)
+    val customRpcTitle = stringResource(R.string.main_customRpc)
     var homeItems by remember {
         mutableStateOf(features)
     }
@@ -131,8 +132,8 @@ fun Home(
             homeItems = features.map { item ->
                 when (item.title) {
                     mediaRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.MediaRpc)
-                    customRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.CustomRpc)
                     experimentalRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ExperimentalRpc)
+                    customRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.CustomRpc)
                     else -> item
                 }
             }
@@ -145,7 +146,7 @@ fun Home(
             ModalDrawerSheet(modifier = Modifier.width(300.dp)) {
                 SettingsDrawer(
                     user = user,
-                    showKizzyQuickieRequestItem = !KizzyTileService.tileAdded.value,
+                    showKizzyQuickieRequestItem = !LocalInspectionMode.current && !KizzyTileService.tileAdded.value,
                     onRequestAddTile = {
                         val cn = ComponentName(ctx, KizzyTileService::class.java)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -368,22 +369,24 @@ val fakeFeatures = listOf(
         icon = R.drawable.ic_media_rpc,
         shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
         tooltipText = ToolTipContent.MEDIA_RPC_DOCS
-    ), HomeFeature(
+    ),
+    HomeFeature(
         title = "App Detection",
         icon = R.drawable.ic_apps,
         shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
         tooltipText = ToolTipContent.APP_DETECTION_DOCS
-    ), HomeFeature(
-        title = "Custom RPC",
-        icon = R.drawable.ic_rpc_placeholder,
-        shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
-        tooltipText = ToolTipContent.CUSTOM_RPC_DOCS
     ),
     HomeFeature(
         title = "Experimental RPC",
         icon = R.drawable.ic_dev_rpc,
         shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
         tooltipText = ToolTipContent.EXPERIMENTAL_RPC_DOCS
+    ),
+    HomeFeature(
+        title = "Custom RPC",
+        icon = R.drawable.ic_rpc_placeholder,
+        shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
+        tooltipText = ToolTipContent.CUSTOM_RPC_DOCS
     ),
     HomeFeature(
         title = "Coming Soon",

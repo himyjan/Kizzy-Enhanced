@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Buksan ang Discord app → pindutin ang iyong You (profile picture) icon → pindutin ang Settings (⚙️) → mag-scroll pababa at pindutin ang Content &amp; Social (o Activity Privacy sa mga lumang bersyon ng app).</string>
     <string name="activity_type_fallback_desc">Ginagamit para sa mga app na hindi natutukoy, at para sa bawat app kapag naka-off ang automatic detection.</string>
     <string name="discord_step3_title">Hakbang 3: Suriin ang iyong online status</string>
+
+    <string name="console_preset_games">Mga laro na nakatakda</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

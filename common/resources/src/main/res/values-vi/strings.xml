@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Mở ứng dụng Discord → nhấn vào biểu tượng "Bạn" (ảnh hồ sơ) → nhấn Cài đặt (⚙️) → cuộn xuống và nhấn "Nội dung và Mạng xã hội" (hoặc "Quyền riêng tư hoạt động" ở các phiên bản ứng dụng cũ).</string>
     <string name="activity_type_fallback_desc">Dùng cho các ứng dụng không được nhận diện và cho mọi ứng dụng khi tắt phát hiện tự động.</string>
     <string name="discord_step3_title">Bước 3: Kiểm tra trạng thái trực tuyến của bạn</string>
+
+    <string name="console_preset_games">Trò chơi đã định sẵn</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Máy tính</string>
 </resources>

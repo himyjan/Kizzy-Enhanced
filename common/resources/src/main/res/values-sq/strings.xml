@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Hapni aplikacionin Discord → prekni ikonin "Ju" (foto e profilit) → prekni Cilësimet (⚙️) → rrisedh poshtë dhe prekni "Përmbajtja dhe Rrjetet sociale" (ose "Privatësia e aktivitetit" në versionet e vjetra të aplikacionit).</string>
     <string name="activity_type_fallback_desc">Përdoret për aplikacionet që nuk njihen dhe për çdo aplikacion kur zbuloja automatike është e fikur.</string>
     <string name="discord_step3_title">Hapi 3: Kontrolloni statusin tuaj online</string>
+
+    <string name="console_preset_games">Loja të paracaktuara</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord एप खोल्नुहोस् → आफ्नो "तपाईं" (प्रोफाइल तस्वीर) चिन्ह थिच्नुहोस् → सेटिङहरू (⚙️) थिच्नुहोस् → तल स्क्रोल गरी "सामग्री र सामाजिक" (वा पुराना संस्करणमा "गतिविधि गोपनीयता") थिच्नुहोस्।</string>
     <string name="activity_type_fallback_desc">पहिचान नभएका एपहरू र स्वतः पहिचान बन्द भएका सबै एपका लागि प्रयोग हुन्छ।</string>
     <string name="discord_step3_title">चरण 3: आफ्नो अनलाइन स्टेटस जाँच्नुहोस्</string>
+
+    <string name="console_preset_games">पूर्वनिर्धारिता खेल</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

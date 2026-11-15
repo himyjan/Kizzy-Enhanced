@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord ଆପ୍ ଖୋଲନ୍ତୁ → ଆପଣଙ୍କ "ଆପଣ" (ପ୍ରୋଫାଇଲ ଫଟୋ) ଆଇକନଟି ଟାପ କରନ୍ତୁ → ସେଟିଙ୍ସ (⚙️) ଟାପ କରନ୍ତୁ → ତଳେ ସ୍କ୍ରୋଲ କରି "କଣ୍ଟେଣ୍ଟ ଓ ସୋସିଆଲ" (କିମ୍ବା ପୁରାଣା ଆପ୍ ସଂସ୍କରଣରେ "Activity Privacy") ଟାପ କରନ୍ତୁ।</string>
     <string name="activity_type_fallback_desc">ଚିହ୍ନଟ ହେବା ନଥିବା ଆପ୍‌ଗୁ ଏବଂ ସ୍ୱତନ୍ତ ଚିହ୍ନଟ ବନ୍ଦ ଥିବା ସମସ୍ତ ଆପ୍ ପାଇଁ ବ୍ୟବହାର ହୁଏ।</string>
     <string name="discord_step3_title">ପଦ 3: ଆପଣଙ୍କ ଅନଲାଇନ ସ୍ଟାଟସ ଯାଞ୍ଚ କରନ୍ତୁ</string>
+
+    <string name="console_preset_games">ପୂର୍ବ-ସେଟ ଗେମ୍</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

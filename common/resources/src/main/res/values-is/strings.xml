@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Opnaðu Discord appið → ýttu á þín tákn (mynd af prófíl) → ýttu á Settings (⚙️) → skrunaðu niður og ýttu á Content &amp; Social (eða Activity Privacy á eldri útgáfum appiðs).</string>
     <string name="activity_type_fallback_desc">Notað fyrir forrit sem eru ekki þekkt, og fyrir hvert forrit þegar sjálfvirk greiningu er slökkt.</string>
     <string name="discord_step3_title">Skref 3: Athugaðu stöðu þína á neti</string>
+
+    <string name="console_preset_games">Fyrirstillt leiki</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

@@ -73,4 +73,14 @@
     <string name="discord_step1_content">Obre l\'aplicació Discord → toca la teva icona Tu (foto de perfil) → toca Configuració (⚙️) → desplaça\'t cap avall i toca Contingut i social (o Privadesa de l\'activitat en versions antigues de l\'app).</string>
     <string name="activity_type_fallback_desc">S\'utilitza per a les aplicacions que no es reconeixen i per a qualsevol aplicació quan la detecció automàtica està desactivada.</string>
     <string name="discord_step3_title">Pas 3: Comprova el teu estat en línia</string>
+
+    <string name="console_preset_games">Jocs predefinits</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

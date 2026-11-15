@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Buka app Discord → ketuk ikon "Sampeyan" (foto profil) → ketuk Setelan (⚙️) → gulung mudhul lan ketuk "Konten lan Sosial" (utawa "Privasi aktivitas" ing versi lawas app).</string>
     <string name="activity_type_fallback_desc">Digunaké kanggo app sing ora dingerténi, lan kanggo saben app nalika deteksi otomatis dimatikan.</string>
     <string name="discord_step3_title">Langkah 3: Priksa status online sampeyan</string>
+
+    <string name="console_preset_games">Game sing wis set</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

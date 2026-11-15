@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Fungua programu ya Discord → gusa aikoni yako "Wewe" (picha ya wasifu) → gusa Mipangilio (⚙️) → sogeza chini na gusa "Maudhui na Mtandao wa Kijamii" (au "Faragha ya Shughuli" kwenye toleo za zamani za programu).</string>
     <string name="activity_type_fallback_desc">Inatumika kwa programu haziotambuliwa, na kwa kila programu wakati utambuzi wa kiotomatiki umeshutwa.</string>
     <string name="discord_step3_title">Hatua ya 3: Angalia hali yako ya Mtandaoni</string>
+
+    <string name="console_preset_games">Michezo iliyosariniwa</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

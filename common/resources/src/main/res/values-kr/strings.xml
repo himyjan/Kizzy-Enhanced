@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord 앱을 열고 → 내(프로필 사진) 아이콘을 탭하고 → 설정(⚙️)을 탭한 뒤 → 아래로 스크롤하여 콘텐츠 및 소셜(구버전에서는 활동 개인정보)을 탭하세요.</string>
     <string name="activity_type_fallback_desc">인식되지 않은 앱과 자동 감지가 꺼져 있을 때의 모든 앱에 사용됩니다.</string>
     <string name="discord_step3_title">3단계: 온라인 상태 확인하기</string>
+
+    <string name="console_preset_games">미리 설정된 게임</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

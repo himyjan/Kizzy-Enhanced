@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Discord ആപ്പ് തുറക്കുക → നിങ്ങളുടെ "നിങ്ങൾ" (പ്രൊഫൈൽ ഫോട്ടോ) ഐക്കൺ അമർത്തുക → ക്രമാങ്ങൾ (⚙️) അമർത്തുക → താഴേക്ക് സ്ക്രോൾ ചെയ്ത് "ഉള്ളടക്കവും സോഷ്യൽ" (അല്ലെങ്കിൽ പഴയ ആപ്പ് പതിപ്പുകളിൽ "ആക്ടിവിറ്റി പ്രൈവസി") അമർത്തുക.</string>
     <string name="activity_type_fallback_desc">തിരിച്ചറിയാത്ത ആപ്പുകൾക്കും, സ്വയമായി കണ്ടെത്തുന്നത് ഓഫ് ചെയ്തിട്ടുള്ള ഓരോ ആപ്പിനും ഉപയോഗിക്കുന്നു.</string>
     <string name="discord_step3_title">ഘട്ടം 3: നിങ്ങളുടെ ഓൺലൈൻ സ്റ്റാറ്റസ് പരിശോധിക്കുക</string>
+
+    <string name="console_preset_games">പ്രീസെറ്റ് ഗെയിസ്</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

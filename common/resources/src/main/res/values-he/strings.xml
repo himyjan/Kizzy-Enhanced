@@ -305,4 +305,14 @@
     <string name="discord_step1_content">פתח את אפליקציית Discord → הקש על הסמל "You" (תמונת הפרופיל) → הקש על Settings (⚙️) → גלול למטה והקש על Content &amp; Social (או Activity Privacy בגרסאות ישנות יותר של האפליקציה).</string>
     <string name="activity_type_fallback_desc">משמש לאפליקציות שאינן מזוהות, ולכל אפליקציה כאשר הזיהוי האוטומטי כבוי.</string>
     <string name="discord_step3_title">שלב 3: בדיקת הסטטוס המקוון שלך</string>
+
+    <string name="console_preset_games">משחקים מוגדרים מראש</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">שולחן עבודה</string>
 </resources>

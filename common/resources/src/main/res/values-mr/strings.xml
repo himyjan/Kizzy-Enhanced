@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Discord अ‍ॅप उघडा → तुमचा "तुम्ही" (प्रोफाइल फोटो) आयकॉन टॅप करा → सेटिंग्ज (⚙️) टॅप करा → खाली स्क्रोल करा आणि "कंटेंट आणि सोशल" (किंवा जुन्या अ‍ॅप आवृत्त्यांतील "ॲक्टिव्हिटी गोपनीयता") टॅप करा.</string>
     <string name="activity_type_fallback_desc">ओळखले न जाणार्या अ‍ॅप्ससाठी आणि आपोआप ओळख बंद केल्यावर प्रत्येक अ‍ॅपसाठी वापरले जाते.</string>
     <string name="discord_step3_title">पायरी 3: तुमची ऑनलाइन स्थिती तपासा</string>
+
+    <string name="console_preset_games">पूर्व सेट केलेले खेळ</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Nyissa meg a Discord alkalmazást → koppintson a „Te” ikonjára (profilkép) → koppintson a Beállításokra (⚙️) → görgessen le, és koppintson a „Tartalom és közösség” elemre (vagy a régebbi alkalmazásverziókban a „Tevékenység adatvédelmére”).</string>
     <string name="activity_type_fallback_desc">A nem felismerhető alkalmazásoknál, valamint minden alkalmazásnál használatos, ha az automatikus felismerés ki van kapcsolva.</string>
     <string name="discord_step3_title">3. lépés: Ellenőrizze az online állapotát</string>
+
+    <string name="console_preset_games">Előre beállított játékok</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Asztali</string>
 </resources>

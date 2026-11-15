@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Buka aplikasi Discord → ketuk ikon Anda (foto profil) → ketuk Pengaturan (⚙️) → gulir ke bawah dan ketuk Konten &amp; Sosial (atau Privasi Aktivitas pada versi aplikasi lama).</string>
     <string name="activity_type_fallback_desc">Digunakan untuk aplikasi yang tidak dikenali, dan untuk setiap aplikasi saat deteksi otomatis dimatikan.</string>
     <string name="discord_step3_title">Langkah 3: Periksa status daring Anda</string>
+
+    <string name="console_preset_games">Game yang telah ditetapkan</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

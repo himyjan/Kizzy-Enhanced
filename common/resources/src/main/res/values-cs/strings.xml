@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Otevřete aplikaci Discord → klepněte na svou ikonu „Vy“ (fotka profilu) → klepněte na „Nastavení“ (⚙️) → poscouvejte dolů a klepněte na „Obsah a sociální sítě“ (nebo „Soukromí aktivity“ ve starších verzích aplikace).</string>
     <string name="activity_type_fallback_desc">Používá se pro aplikace, které nejsou rozpoznány, a pro každou aplikaci, když je automatická detekce vypnutá.</string>
     <string name="discord_step3_title">Krok 3: Zkontrolujte svůj stav online</string>
+
+    <string name="console_preset_games">Přednastavené hry</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Plocha</string>
 </resources>

@@ -42,6 +42,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "ExperimentalRPC"
 
@@ -84,7 +85,7 @@ class ExperimentalRpc : Service() {
         var attempt = 1
         while (richMediaData.appName == null && attempt < maxMediaDetectionAttempts) {
             logger.d(TAG, "fetchPlayingMediaWithRetry attempt $attempt: appName=${richMediaData.appName}, title=${richMediaData.title}, pkg=${richMediaData.packageName} - retrying...")
-            delay(mediaDetectionDelayMs * attempt)
+            delay((mediaDetectionDelayMs * attempt).milliseconds)
             richMediaData = this.getCurrentPlayingMediaAll.invoke()
             attempt++
         }
@@ -130,7 +131,7 @@ class ExperimentalRpc : Service() {
         stopHeartbeat()
         heartbeatJob.value = scope.launch {
             while (isActive) {
-                delay(5000)
+                delay(5000.milliseconds)
                 try {
                     val richMediaData = getCurrentPlayingMediaAll.invoke()
                     if (richMediaData.appName != null) {
@@ -160,7 +161,7 @@ class ExperimentalRpc : Service() {
         mediaRefreshJob?.cancel()
         mediaRefreshJob = scope.launch {
             while (isActive) {
-                delay(mediaRefreshIntervalMs)
+                delay(mediaRefreshIntervalMs.milliseconds)
                 try {
                     // Fetch fresh media data each cycle instead of calling updatePresence() with no args
                     val richMediaData = getCurrentPlayingMediaAll.invoke()
@@ -390,7 +391,7 @@ class ExperimentalRpc : Service() {
                 } catch (e: Exception) {
                     logger.e(TAG, "Detection cycle failed: ${e.message}")
                 }
-                delay(2000)
+                delay(2000.milliseconds)
             }
         }
     }
@@ -469,7 +470,7 @@ class ExperimentalRpc : Service() {
         )
 
         if (currentContextIsMedia) {
-            effectivePackageName = richMediaInfo?.packageName
+            effectivePackageName = richMediaInfo.packageName
 
             currentMediaProgressSec = (richMediaInfo.position / 1000).toInt().coerceIn(0, (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0))
             currentMediaDurationSec = (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0)
@@ -477,56 +478,64 @@ class ExperimentalRpc : Service() {
             logger.d(TAG, "Processing Rich Media Context")
             if (Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE, false]) {
                 val titleSource = Prefs[Prefs.EXPERIMENTAL_RPC_TITLE_SOURCE, "title"]
-                finalName = if (titleSource == "artist") richMediaInfo?.artist else richMediaInfo?.title
-                finalDetails = resolveTemplateValue(processor.process(templateDetails), richMediaInfo?.appName)
-                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo?.state.takeIf { titleSource != "artist" })
+                finalName = if (titleSource == "artist") richMediaInfo.artist else richMediaInfo.title
+                finalDetails = resolveTemplateValue(processor.process(templateDetails),
+                    richMediaInfo.appName
+                )
+                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo.state.takeIf { titleSource != "artist" })
             } else {
-                finalName = resolveTemplateValue(processor.process(templateName), richMediaInfo?.appName)
-                finalDetails = resolveTemplateValue(processor.process(templateDetails), richMediaInfo?.title)
-                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo?.state)
+                finalName = resolveTemplateValue(processor.process(templateName),
+                    richMediaInfo.appName
+                )
+                finalDetails = resolveTemplateValue(processor.process(templateDetails),
+                    richMediaInfo.title
+                )
+                finalState = resolveTemplateValue(processor.process(templateState),
+                    richMediaInfo.state
+                )
             }
 
             finalLargeImage = when {
                 Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_COVER_ART, true] ->
                     // Fall back to the player's app icon when cover art is unavailable
-                    richMediaInfo?.coverArt ?: richMediaInfo?.appIcon
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] -> richMediaInfo?.appIcon
+                    richMediaInfo.coverArt ?: richMediaInfo.appIcon
+                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] -> richMediaInfo.appIcon
                 else -> null
             }
 
             finalSmallImage = when {
                 Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_PLAYBACK_STATE, true] ->
-                    richMediaInfo?.playbackStateIcon
+                    richMediaInfo.playbackStateIcon
 
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] && finalLargeImage != richMediaInfo?.appIcon ->
-                    richMediaInfo?.appIcon
+                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] && finalLargeImage != richMediaInfo.appIcon ->
+                    richMediaInfo.appIcon
                 else -> null
             }
 
-            finalLargeText = richMediaInfo?.album
+            finalLargeText = richMediaInfo.album
             finalSmallText =
-                if (finalSmallImage == richMediaInfo?.appIcon) richMediaInfo?.appName else null
+                if (finalSmallImage == richMediaInfo.appIcon) richMediaInfo.appName else null
 
-            finalTimestamps = if (richMediaInfo?.playbackState == PlaybackState.STATE_PLAYING) {
-                resolveTimestamps(richMediaInfo?.timestamps)
+            finalTimestamps = if (richMediaInfo.playbackState == PlaybackState.STATE_PLAYING) {
+                resolveTimestamps(richMediaInfo.timestamps)
             } else {
                 // Keep timestamps frozen when paused or stopped so Discord
                 // doesn't reset the progress bar.
-                resolveTimestamps(richMediaInfo?.timestamps)
+                resolveTimestamps(richMediaInfo.timestamps)
             }
 
         } else if (currentContextIsApp) {
-            effectivePackageName = appInfo?.packageName
+            effectivePackageName = appInfo.packageName
             logger.d(TAG, "Processing App Context")
-            finalName = resolveTemplateValue(processor.process(templateName), appInfo?.name)
-            finalDetails = resolveTemplateValue(processor.process(templateDetails), appInfo?.details)
-            finalState = resolveTemplateValue(processor.process(templateState), appInfo?.state)
+            finalName = resolveTemplateValue(processor.process(templateName), appInfo.name)
+            finalDetails = resolveTemplateValue(processor.process(templateDetails), appInfo.details)
+            finalState = resolveTemplateValue(processor.process(templateState), appInfo.state)
 
-            finalLargeImage = appInfo?.largeImage
-            finalSmallImage = appInfo?.smallImage
-            finalLargeText = appInfo?.largeText
-            finalSmallText = appInfo?.smallText
-            finalTimestamps = resolveTimestamps(appInfo?.time)
+            finalLargeImage = appInfo.largeImage
+            finalSmallImage = appInfo.smallImage
+            finalLargeText = appInfo.largeText
+            finalSmallText = appInfo.smallText
+            finalTimestamps = resolveTimestamps(appInfo.time)
         } else {
             logger.d(TAG, "No active context (App or Media) — using default template presence")
             // No media/app active: leave presence fields empty so Discord shows nothing
@@ -798,7 +807,7 @@ class ExperimentalRpc : Service() {
             if (!useMediaRpc) return
 
             launchPresenceUpdate {
-                delay(200)
+                delay(200.milliseconds)
                 val richMediaData = this@ExperimentalRpc.getCurrentPlayingMediaAll.invoke()
                 val hasMediaData = richMediaData.appName != null
 

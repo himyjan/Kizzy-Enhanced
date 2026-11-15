@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Öppna Discord-appen → tryck på din "Du"-ikon (profilbild) → tryck på Inställningar (⚙️) → rulla ned och tryck på "Innehåll och sociala" (eller "Aktivitetsintegritet" i äldre appversioner).</string>
     <string name="activity_type_fallback_desc">Används för appar som inte känns igen och för varje app när automatisk identifiering är avstängd.</string>
     <string name="discord_step3_title">Steg 3: Kontrollera din onlinestatus</string>
+
+    <string name="console_preset_games">Förinställda spel</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Skrivbord</string>
 </resources>

@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Vula i-app ye-Discord → cindisha isithombe sakho ("Wena") → cindisha Izilungiselelo (⚙️) → skroliya phansi bese ucindisha "Umsayezo kanye Nezokuxhumana" (noma "Ubucwaningi bemsebenzi" emVERSIONS ezindala).</string>
     <string name="activity_type_fallback_desc">Isetshenziselwa izinhlelo ezingaziwayo, kanye nazo zonke izinhlelo uma ukuthola ngokuzenzakalayo kukhutshiwe.</string>
     <string name="discord_step3_title">Isinyathelo 3: Bheka isimo sakho se-inthanethi</string>
+
+    <string name="console_preset_games">Imidlalo ehhleliwe</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

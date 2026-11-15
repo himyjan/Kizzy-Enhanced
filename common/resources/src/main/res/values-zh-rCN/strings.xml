@@ -285,4 +285,14 @@
     <string name="discord_step1_content">打开 Discord 应用 → 点击你的“你”图标（头像）→ 点击“设置”(⚙️) → 向下滚动并点击“内容与社交”（旧版应用中为“活动隐私”）。</string>
     <string name="activity_type_fallback_desc">用于无法识别的应用，以及关闭自动检测后的所有应用。</string>
     <string name="discord_step3_title">第 3 步：检查你的在线状态</string>
+
+    <string name="console_preset_games">预设游戏</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">桌面</string>
 </resources>

@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Avage Discord\'i rakendus → puuduta oma „Sina“ ikooni (profiilipilt) → puuduta Seaded (⚙️) → kerige alla ja puuduta „Sisu ja sotsiaalne“ (või „Tegevuse privaatsus“ vanemates rakenduse versioonides).</string>
     <string name="activity_type_fallback_desc">Kasutatakse äratundmatute rakenduste ja iga rakendi puhul, kui automaatne tuvastamine on välja lülitatud.</string>
     <string name="discord_step3_title">3. samm: Kontrollige oma võrguolekut</string>
+
+    <string name="console_preset_games">Eeldefineeritud mängud</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Töölaud</string>
 </resources>

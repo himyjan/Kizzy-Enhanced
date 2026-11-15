@@ -462,19 +462,29 @@ class MediaRpcService : Service() {
      * included - was reported as "Playing", which Discord draws as a game. The
      * type is now resolved per app: the choice of the user wins, then the
      * built-in detection and finally the global fallback of the Media RPC.
+     *
+     * When the user explicitly sets a global activity type (not "Auto"), it
+     * takes precedence over the built-in catalog but not over per-app overrides.
      */
     private fun resolveActivityType(playingMedia: CommonRpc): Int {
         val configured = Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, ActivityTypeResolver.DEFAULT_TYPE]
-        val fallback = if (configured == Prefs.ACTIVITY_TYPE_AUTO) {
-            ActivityTypeResolver.DEFAULT_TYPE
-        } else {
-            configured
-        }
+        val useAuto = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true]
+
+        // Per-app override always wins (checked inside the resolver).
+        // When the user explicitly sets a global type (not Auto), skip the
+        // built-in catalog and metadata detection so the global choice takes
+        // effect for all apps.
+        val detectionEnabled = useAuto && configured == Prefs.ACTIVITY_TYPE_AUTO
+
         return ActivityTypeResolver.resolve(
             packageName = playingMedia.appPackage,
             isMusicMetadata = playingMedia.isMusicMetadata,
-            fallback = fallback,
-            useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+            fallback = if (configured == Prefs.ACTIVITY_TYPE_AUTO) {
+                ActivityTypeResolver.DEFAULT_TYPE
+            } else {
+                configured
+            },
+            useAutomaticDetection = detectionEnabled,
         )
     }
 

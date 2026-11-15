@@ -305,4 +305,14 @@
     <string name="discord_step1_content">เปิดแอป Discord → แตะไอคอน "คุณ" (รูปโปรไฟล์) → แตะ การตั้งค่า (⚙️) → เลื่อนลงแล้วแตะ "เนื้อหาและโซเชียล" (หรือ "Activity Privacy" ในแอปเวอร์ชันเก่า)</string>
     <string name="activity_type_fallback_desc">ใช้สำหรับแอปที่ไม่รู้จัก และสำหรับทุกแอปเมื่อปิดการตรวจจับอัตโนมัติ</string>
     <string name="discord_step3_title">ขั้นตอนที่ 3: ตรวจสอบสถานะออนไลน์ของคุณ</string>
+
+    <string name="console_preset_games">เกมที่ตั้งค่าไว้ล่วงหน้า</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">เดสก์ท็อป</string>
 </resources>

@@ -282,4 +282,14 @@
     <string name="discord_step1_content">Отворите апликацију Discord → додирните своју иконицу „Ви“ (фотографија профила) → додирните Подешавања (⚙️) → скролујте надоле и додирните „Садржај и друштвене мреже“ (или „Приватност активности“ код старијих верзија).</string>
     <string name="activity_type_fallback_desc">Користи се за апликације које нису препознате и за сваку апликацију када је аутоматско откривање искључено.</string>
     <string name="discord_step3_title">Корак 3: Проверите своје мрежно стање</string>
+
+    <string name="console_preset_games">Унапред подешене игре</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Радна површина</string>
 </resources>

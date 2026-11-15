@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Ouvrez l\'application Discord → touchez votre icône « Vous » (photo de profil) → touchez Paramètres (⚙️) → faites défiler vers le bas et touchez « Contenu et social » (ou « Confidentialité de l\'activité » sur les anciennes versions).</string>
     <string name="activity_type_fallback_desc">Sert pour les applications non reconnues et pour chaque application lorsque la détection automatique est désactivée.</string>
     <string name="discord_step3_title">Étape 3 : Vérifiez votre statut en ligne</string>
+
+    <string name="console_preset_games">Jeux prédéfinis</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Bureau</string>
 </resources>

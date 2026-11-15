@@ -278,4 +278,14 @@
     <string name="discord_step1_content">Discord ਐਪ ਖੋਲ੍ਹੋ → ਆਪਣੀ "ਤੁਸੀਂ" (ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ) ਆਈਕਨ \'ਤੇ ਟੈਪ ਕਰੋ → ਸੈਟਿੰਗਾਂ (⚙️) \'ਤੇ ਟੈਪ ਕਰੋ → ਹੇਠਾਂ ਸਕਰੋਲ ਕਰੋ ਅਤੇ "ਸਮੱਗਰੀ ਤੇ ਸੋਸ਼ਲ" (ਜਾਂ ਪੁਰਾਣੀਆਂ ਐਪ ਵਰਜਨਾਂ ਵਿੱਚ "ਸਰਗਰਮੀ ਗੋਪਨੀਯਤਾ") \'ਤੇ ਟੈਪ ਕਰੋ।</string>
     <string name="activity_type_fallback_desc">ਨਹੀਂ ਪਛਾਣੇ ਗਏ ਐਪਾਂ ਲਈ ਅਤੇ ਆਪਣੇ ਆਪ ਪਛਾਣ ਬੰਦ ਹੋਣ ਵਾਲੇ ਹਰ ਐਪ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ।</string>
     <string name="discord_step3_title">ਕਦਮ 3: ਆਪਣੀ ਆਨਲਾਈਨ ਹਾਲਤ ਜਾਂਚੋ</string>
+
+    <string name="console_preset_games">ਪ੍ਰੀ-ਸੈੱਟ ਖੇਡ</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

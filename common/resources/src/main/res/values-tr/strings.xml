@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord uygulamasını açın → "Siz" simgenize (profil fotoğrafı) dokunun → Ayarlar (⚙️) üzerine dokunun → aşağı kaydırın ve "İçerik ve Sosyal" (veya eski sürümlerde "Etkinlik Gizliliği") bölümüne dokunun.</string>
     <string name="activity_type_fallback_desc">Tanınmayan uygulamalar için ve otomatik algılama kapalıyken her uygulama için kullanılır.</string>
     <string name="discord_step3_title">3. Adım: Çevrimiçi durumunuzu kontrol edin</string>
+
+    <string name="console_preset_games">Önceden belirlenmiş oyunlar</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Masaüstü</string>
 </resources>

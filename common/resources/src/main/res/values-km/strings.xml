@@ -305,4 +305,14 @@
     <string name="discord_step1_content">បើកកម្មវិធី Discord → ចុចលើរូបតំណាង «អ្នក» (រូបភាពប្រវត្តិ) → ចុចលើការកំណត់ (⚙️) → រំលោទចុះក្រោម ហើយចុចលើ «មាតិកា និងបណ្ដាញសង្គម» (ឬ «Activity Privacy» លើកំណែកម្មវិធីចាស់)។</string>
     <string name="activity_type_fallback_desc">ប្រើសម្រាប់កម្មវិធីដែលមិនត្រូវបានស្គាល់ ហើយក៏សម្រាប់គ្រប់កម្មវិធីពេលបិទការរកឃើញស្វត្រការត្រូវបានបិទ។</string>
     <string name="discord_step3_title">ជំហានទី ៣៖ ពិនិត្យស្ថានភាព Online របស់អ្នក</string>
+
+    <string name="console_preset_games">កំណត់ទុកតាមមុននៃហ្គេម</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

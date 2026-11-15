@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord қолданбасын ашыңыз → «Сіз» белгісін (профиль суреті) басыңыз → Параметрлер (⚙️) → төмен сырғытып, «Мазмұн және әлеуметтік желілер» (немесе ескі нұсқалардағы «Белсендік құпиялылығы») бөлімін басыңыз.</string>
     <string name="activity_type_fallback_desc">Танылмаған қолданбалар үшін, сондай-ақ автоматты анықтау өшірілген кезде әрбір қолданба үшін қолданылады.</string>
     <string name="discord_step3_title">3-қадам: Желідегі күйіңізді тексеріңіз</string>
+
+    <string name="console_preset_games">Алдын ала белгіленген ойындар</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Жұмыс үстелі</string>
 </resources>

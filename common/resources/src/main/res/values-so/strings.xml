@@ -73,4 +73,14 @@
     <string name="discord_step1_content">Samee codsiga Discord → sii astaanta "Adiga" (sawirka profilka) → sii Dejinta (⚙️) → sii hoos u wareeg oo sii "Isku dhafan iyo bulshada" (ama "Asturnaanta waxa aan qabto" noocyada hore uu codsiga).</string>
     <string name="activity_type_fallback_desc">Waxaa lagu isticmaalaa codsiyada aan la aqoonsan karin, iyo codsi kasta marka oo sii oto ah oo ogaanshaha la damiyo.</string>
     <string name="discord_step3_title">Talla 3: Hubi xaaladaadaada on-leey</string>
+
+    <string name="console_preset_games">Ciyaaraha hore uu diyaar garay</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

@@ -93,8 +93,8 @@ class GetCurrentPlayingMedia @Inject constructor(
                 .takeIf { it.isNotBlank() }
                 ?: ActivityTypeResolver.knownAppName(mediaController.packageName)
                 ?: mediaController.packageName
-            val author = metadata?.let { metadataResolver.formatArtists(it) }
-            val album = metadata?.let { metadataResolver.getAlbum(it) }
+            val author = metadata.let { metadataResolver.formatArtists(it) }
+            val album = metadata.let { metadataResolver.getAlbum(it) }
 
             // The artist / album / song-as-title switches were written by the
             // Media RPC screen but never read, so they had no effect at all.
@@ -108,10 +108,10 @@ class GetCurrentPlayingMedia @Inject constructor(
 
             // Build state with multi-artist and multi-channel info.
             val stateParts = buildList {
-                if (artistEnabled) author?.takeIf { it.isNotBlank() }?.let { add(it) }
-                metadata?.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
+                if (artistEnabled) author.takeIf { it.isNotBlank() }?.let { add(it) }
+                metadata.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
             }
-            val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() } ?: null
+            val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() }
 
             // "name" and "details" used to both carry the track title, so Discord
             // showed the title twice and the app name was lost. The app name now
@@ -126,7 +126,7 @@ class GetCurrentPlayingMedia @Inject constructor(
             // (not just STATE_PLAYING), so the bar keeps showing during buffering/connecting.
             // YouTube freezes position at lastPositionUpdateTime, so extrapolate by speed.
             val position = mediaController.playbackState?.position?.coerceAtLeast(0L) ?: 0L
-            val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L
+            val duration = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
             // A track that just started reports position 0. It still has a timeline, so
             // it is computed too - otherwise the very first presence of every track had
             // no progress bar and a second presence had to follow a rate-limit wait later.
@@ -157,17 +157,17 @@ class GetCurrentPlayingMedia @Inject constructor(
 
             var coverArt: RpcImage? = null
             if (showCoverArt) {
-                val bitmap = metadata?.let { metadataResolver.getCoverArt(it) }
+                val bitmap = metadata.let { metadataResolver.getCoverArt(it) }
                 if (bitmap != null) {
                     coverArt = RpcImage.BitmapImage(
                         context = context,
                         bitmap = bitmap,
                         packageName = mediaController.packageName,
-                        title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                        title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title}"
                     )
                     logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from ALBUM_ART/ART/DISPLAY_ICON)")
                 } else {
-                    val artworkUri = metadata?.let { metadataResolver.getArtworkUri(it) }
+                    val artworkUri = metadata.let { metadataResolver.getArtworkUri(it) }
                     if (artworkUri != null) {
                         val parsedUri = Uri.parse(artworkUri)
                         if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
@@ -179,7 +179,7 @@ class GetCurrentPlayingMedia @Inject constructor(
                                     context = context,
                                     bitmap = bmp,
                                     packageName = mediaController.packageName,
-                                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title}"
                                 )
                                 logger.d("MediaImage", "YT '$title': coverBitmap=decodedBitmap(from artworkUri=$artworkUri), chosenCover=BitmapImage(decoded)")
                             } else {

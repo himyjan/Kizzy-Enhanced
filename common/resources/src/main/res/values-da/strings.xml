@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Åbn Discord-appen → tryk på dit "Du"-ikon (profilbillede) → tryk på Indstillinger (⚙️) → rul ned og tryk på "Indhold og sociale medier" (eller "Aktivitetsprivatliv" på ældre appversioner).</string>
     <string name="activity_type_fallback_desc">Bruges til apps, der ikke genkendes, og til alle apps, når automatisk registrering er slået fra.</string>
     <string name="discord_step3_title">Trin 3: Kontrollér din online-status</string>
+
+    <string name="console_preset_games">Forudindstillede spil</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Skrivebord</string>
 </resources>

@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Адкрыйце праграму Discord → націсніце на сваю іконку «Вы» (фота профілю) → націсніце «Налады» (⚙️) → пракруціце ўніз і націсніце «Змест і сацыяльныя сеткі» (або «Прыватнасць актыўнасці» ў старыяў версіях).</string>
     <string name="activity_type_fallback_desc">Выкарыстоўваецца для праграм, якія не распазнаюцца, і для ўсіх праграм, калі аўтавызначэнне адключана.</string>
     <string name="discord_step3_title">Крок 3: праверце свой статус у сетцы</string>
+
+    <string name="console_preset_games">Папярэджа ўстаноўленыя гульні</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

@@ -280,4 +280,14 @@
     <string name="discord_step1_content">Отворете ја апликацијата Discord → допрете ја вашата иконика „Вие“ (фотографија на профилот) → допрете Поставки (⚙️) → скролувајте надолу и допрете „Содржина и социјални мрежи“ (или „Приватност на активноста“ кај постарите верзии).</string>
     <string name="activity_type_fallback_desc">Се користи за апликациите што не се препознаени и за секоја апликација кога автоматското откривање е исклучено.</string>
     <string name="discord_step3_title">Чекор 3: Проверете ја вашата состојба онлајн</string>
+
+    <string name="console_preset_games">Предназначени игри</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Работна површина</string>
 </resources>

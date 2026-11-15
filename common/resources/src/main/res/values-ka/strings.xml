@@ -282,4 +282,14 @@
     <string name="discord_step1_content">გახსენით Discord აპი → დააჭირეთ თქვენს „თქვენ“ ხატულას (პროფილის ფოტო) → დააჭირეთ პარამეტრებს (⚙️) → ჩასვლით გადაახრეთ და დააჭირეთ „შიგთავსება და სოციალური“ (ან აპის ძველი ვერსიებში „აქტივობის კონფიდენციალობა“).</string>
     <string name="activity_type_fallback_desc">გამოიყენება არადაჭერიგი აპებისთვის და ყოველი აპისთვის, როცა ავტომატური აღმოჩენა გამორთულია.</string>
     <string name="discord_step3_title">ნაბიჯი 3: შეამოწმეთ თქვენი ონლაინ სტატუსი</string>
+
+    <string name="console_preset_games">წინასწარ განსაზღვული თამარები</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

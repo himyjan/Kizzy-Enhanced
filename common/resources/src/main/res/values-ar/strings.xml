@@ -285,4 +285,14 @@
     <string name="discord_step1_content">افتح تطبيق Discord → اضغط على أيقونة «أنت» (صورة الملف الشخصي) → اضغط على «الإعدادات» (⚙️) → مرّر إلى الأسفل واضغط على «المحتوى والشبكات الاجتماعية» (أو «خصوصية النشاط» في الإصدارات الأقدم).</string>
     <string name="activity_type_fallback_desc">يُستخدم للتطبيقات التي لم يتم التعرف عليها، ولكل تطبيق عند إيقاف الكشف التلقائي.</string>
     <string name="discord_step3_title">الخطوة 3: تحقق من حالة اتصالك</string>
+
+    <string name="console_preset_games">ألعاب مُعدَّة مسبقًا</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">سطح المكتب</string>
 </resources>

@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Discord ऐप खोलें → अपने "You" (प्रोफ़ाइल फ़ोटो) आइकन पर टैप करें → सेटिंग्स (⚙️) पर टैप करें → नीचे स्क्रॉल करें और "कंटेंट और सोशल" (या पुराने ऐप संस्करणों में "गतिविधि गोपनीयता") पर टैप करें।</string>
     <string name="activity_type_fallback_desc">जिन ऐप्स को पहचाना नहीं जाता उनके लिए और स्वचालित पहचान बंद होने पर हर ऐप के लिए उपयोग होता है।</string>
     <string name="discord_step3_title">चरण 3: अपनी ऑनलाइन स्थिति जाँचें</string>
+
+    <string name="console_preset_games">पूर्व-निर्धारित गेम</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">डेस्कटॉप</string>
 </resources>

@@ -279,4 +279,14 @@
     <string name="discord_step1_content">Discord ایپ کھولیں → اپنے "آپ" (پروفائل تصویر) آئیکن پر ٹیپ کریں → ترتیبات (⚙️) پر ٹیپ کریں → نیچے اسکرول کریں اور "مواد اور سوشل" (یا پرانی ایپ ورژن میں "سرگرمی پرائیویسی") پر ٹیپ کریں۔</string>
     <string name="activity_type_fallback_desc">ان ایپس کے لیے استعمال ہوتا ہے جو پہچانے نہیں جاتیں، اور ہر ایپ کے لیے جب خودکار پہچان بند ہو۔</string>
     <string name="discord_step3_title">مرحلہ 3: اپنی آن لائن حالت چیک کریں</string>
+
+    <string name="console_preset_games">پری سیٹ گیمز</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

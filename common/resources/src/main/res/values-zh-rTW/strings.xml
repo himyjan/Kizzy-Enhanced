@@ -285,4 +285,14 @@
     <string name="discord_step1_content">開啟 Discord 應用程式 → 點擊你的「你」圖示（大頭貼）→ 點擊「設定」(⚙️) → 向下捲動並點擊「內容與社群」（舊版應用程式為「活動隱私」）。</string>
     <string name="activity_type_fallback_desc">用於無法辨識的應用程式，以及關閉自動偵測後的所有應用程式。</string>
     <string name="discord_step3_title">步驟 3：檢查你的上線狀態</string>
+
+    <string name="console_preset_games">預設遊戲</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">桌面</string>
 </resources>

@@ -73,4 +73,14 @@
     <string name="discord_step1_content">Барномаи Discord-ро кушод → ба нишонаи «Ту» (сурати профил) клик кунед → Танзимот (⚙️) клик кунед → ба поён ҳарф бозгаред ва ба «Мундаво ва шабароти иҷтимоӣ» (ё «Приватӣи фаъолият» дар версияҳои кӯҳни) клик кунед.</string>
     <string name="activity_type_fallback_desc">Барои барномаҳои шинохтанашуда ва барои ҳар як барнома, вақте ки муайяни худкорӣ хомӯш аст, истифода мешавад.</string>
     <string name="discord_step3_title">Қадами 3: Ҳолати онлайни худро тафтиш кунед</string>
+
+    <string name="console_preset_games">Бозонҳои пешмуҳай</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

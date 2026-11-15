@@ -161,6 +161,25 @@ class ExperimentalRpcViewmodel @Inject constructor(
                     restartServiceIfRunning()
                 }
 
+                is UiEvent.SelectAllApps -> {
+                    val allApps = _uiState.value.installedApps.map { it.pkg }
+                    Prefs.setExperimentalAppsEnabled(allApps)
+                    _uiState.update { state ->
+                        state.copy(
+                            enabledApps = allApps.associate { it to true }
+                        )
+                    }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.DeselectAllApps -> {
+                    Prefs.setExperimentalAppsEnabled(emptyList())
+                    _uiState.update { state ->
+                        state.copy(enabledApps = emptyMap())
+                    }
+                    restartServiceIfRunning()
+                }
+
                 is UiEvent.SetAppActivityType -> {
                     val typeInt = event.activityType
                     if (typeInt == null) {

@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Åpne Discord-appen → trykk på «Du»-ikonet (profilbilde) → trykk på Innstillinger (⚙️) → rull ned og trykk på «Innhold og sosiale nettverk» (eller «Aktivitetspersonvern» på eldre apper).</string>
     <string name="activity_type_fallback_desc">Brukes for apper som ikke gjenkjennes, og for alle apper når automatisk gjenkjenning er slått av.</string>
     <string name="discord_step3_title">Trinn 3: Sjekk statusen din på nett</string>
+
+    <string name="console_preset_games">Forhåndsinnstilte spill</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Skrivebord</string>
 </resources>

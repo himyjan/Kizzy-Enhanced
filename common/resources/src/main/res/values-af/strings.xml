@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Maak die Discord-app oop → tik jou Jy (profielprent) ikoon → tik Instellings (⚙️) → skuur af en tik Inhoud &amp; Sosiaal (of Aktiviteitsprivaatheid in ouer appweergawes).</string>
     <string name="activity_type_fallback_desc">Gebruik vir die apps wat nie herken word nie, en vir elke app wanneer outomatiese opsporing afgeskakel is.</string>
     <string name="discord_step3_title">Stap 3: Kyk jou aanlynstatus</string>
+
+    <string name="console_preset_games">Voorafgestelde spele</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

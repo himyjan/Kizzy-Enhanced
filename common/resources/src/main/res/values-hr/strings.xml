@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Otvorite aplikaciju Discord → dodirnite svoju ikonu Vi (slika profila) → dodirnite Postavke (⚙️) → skrolajte dolje i dodirnite Sadržaj i socijalne mreže (ili Privatnost aktivnosti na starijim verzijama aplikacije).</string>
     <string name="activity_type_fallback_desc">Koristi se za aplikacije koje nisu prepoznate i za svaku aplikaciju kada je automatsko otkrivanje isključeno.</string>
     <string name="discord_step3_title">Korak 3: Provjerite svoju mrežnu prisutnost</string>
+
+    <string name="console_preset_games">Prethodno postavljene igre</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Radna površina</string>
 </resources>

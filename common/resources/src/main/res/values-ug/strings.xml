@@ -84,4 +84,14 @@
     <string name="discord_step1_content">Discord ئەپىنى ئېچىڭ → «سىز» (پروفىل رەسىمى) بەلگىسىنى بېسىڭ → تەڭشەكلەر (⚙️) نى بېسىڭ → تۆۋەلگە سۈرۈپ «مەزمۇن ۋە ئىجتىمائىي» (ياكى كونا نەشرلىرىدىكى «پائالىيەت مەخپىيىتى») نى بېسىڭ.</string>
     <string name="activity_type_fallback_desc">تېپىلمىغان ئەپلەر ئۈچۈن ھەم ئاپتوماتىك تېپىش تاقالغاندا ھەر بىر ئەپ ئۈچۈن ئىشلىتىلىدۇ.</string>
     <string name="discord_step3_title">3-قەدەم: ئونلايـن ھالىتىڭىزنى تەكشۈرۈڭ</string>
+
+    <string name="console_preset_games">ئالدىن بەلگىلەنگەن ئويۇنلار</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

@@ -73,4 +73,14 @@
     <string name="discord_step1_content">Opens d\'Discord-App → klickt op Ären "Dir"-Symbol (Profilbild) → klickt op Astellungen (⚙️) → scrollt erof an klickt op "Inhalt a sozial Netzwierken" (oder "Privatspa vun der Aktivité" bei kengere Versioune).</string>
     <string name="activity_type_fallback_desc">Gëtt fir Apps benotzt, déi net erkannt ginn, a fir all App, wann d\'automatesch Erkennen ausgeschalt ass.</string>
     <string name="discord_step3_title">Schritt 3: Ären Online-Status kontrolléieren</string>
+
+    <string name="console_preset_games">Voreingestellte Spiller</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

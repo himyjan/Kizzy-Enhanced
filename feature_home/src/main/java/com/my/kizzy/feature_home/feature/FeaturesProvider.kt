@@ -84,8 +84,8 @@ fun homeFeaturesProvider(
     val appDetectionRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.AppDetectionRpc) }
     LaunchedEffect(rpcManager.activeRpc) {
         mediaRpcRunning.value = rpcManager.activeRpc.value == RpcType.MediaRpc
-        customRpcRunning.value = rpcManager.activeRpc.value == RpcType.CustomRpc
         experimentalRpcRunning.value = rpcManager.activeRpc.value == RpcType.ExperimentalRpc
+        customRpcRunning.value = rpcManager.activeRpc.value == RpcType.CustomRpc
         appDetectionRunning.value = rpcManager.activeRpc.value == RpcType.AppDetectionRpc
     }
 
@@ -115,7 +115,30 @@ fun homeFeaturesProvider(
 
             featureDocsLink = ToolTipContent.MEDIA_RPC_DOCS_LINK
 
-        ), HomeFeature(
+        ),
+        HomeFeature(
+            title = stringResource(id = R.string.main_experimentalRpc),
+            icon = R.drawable.ic_dev_rpc,
+            route = Routes.EXPERIMENTAL_RPC,
+            onClick = { navigateTo(it) },
+            isChecked = experimentalRpcRunning.value,
+
+            onCheckedChange = {
+                scope.launch {
+                    rpcManager.switchTo(if (it) RpcType.ExperimentalRpc else RpcType.None)
+                }
+            },
+
+            shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
+
+            showSwitch = true,
+
+            tooltipText = stringResource(id = R.string.main_experimentalRpc_details),
+
+            featureDocsLink = ToolTipContent.EXPERIMENTAL_RPC_DOCS_LINK
+
+        ),
+        HomeFeature(
             title = stringResource(id = R.string.main_customRpc),
             icon = R.drawable.ic_rpc_placeholder,
             route = Routes.CUSTOM_RPC,
@@ -145,29 +168,6 @@ fun homeFeaturesProvider(
             tooltipText = stringResource(id = R.string.main_customRpc_details),
 
             featureDocsLink = ToolTipContent.CUSTOM_RPC_DOCS_LINK
-
-        ),
-
-        HomeFeature(
-            title = stringResource(id = R.string.main_experimentalRpc),
-            icon = R.drawable.ic_dev_rpc,
-            route = Routes.EXPERIMENTAL_RPC,
-            onClick = { navigateTo(it) },
-            isChecked = experimentalRpcRunning.value,
-
-            onCheckedChange = {
-                scope.launch {
-                    rpcManager.switchTo(if (it) RpcType.ExperimentalRpc else RpcType.None)
-                }
-            },
-
-            shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-
-            showSwitch = true,
-
-            tooltipText = stringResource(id = R.string.main_experimentalRpc_details),
-
-            featureDocsLink = ToolTipContent.EXPERIMENTAL_RPC_DOCS_LINK
 
         )
 

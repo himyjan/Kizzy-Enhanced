@@ -285,4 +285,14 @@
     <string name="discord_step1_content">Відкрийте застосунок Discord → натисніть на піктограму «Ви» (фото профілю) → натисніть «Налаштування» (⚙️) → прокрутіть донизу та натисніть «Вміст і соціальні мережі» (або «Конфіденційність активності» у старіших версіях).</string>
     <string name="activity_type_fallback_desc">Використовується для нерозпізнаних застосунків і для кожного застосунку, коли автоматичне визначення вимкнено.</string>
     <string name="discord_step3_title">Крок 3: Перевірте свій статус у мережі</string>
+
+    <string name="console_preset_games">Попередньо налаштовані ігри</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Робочий стіл</string>
 </resources>

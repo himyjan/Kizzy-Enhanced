@@ -54,6 +54,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
+
+import androidx.compose.material3.TextButton
+
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -278,6 +281,25 @@ fun ExperimentalRpcAppsScreen(
                     CircularProgressIndicator()
                 }
             } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TextButton(
+                        onClick = { onEvent(UiEvent.SelectAllApps) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(id = R.string.select_all))
+                    }
+                    TextButton(
+                        onClick = { onEvent(UiEvent.DeselectAllApps) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(id = R.string.deselect_all))
+                    }
+                }
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(12.dp),

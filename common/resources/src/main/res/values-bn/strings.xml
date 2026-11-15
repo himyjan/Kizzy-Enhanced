@@ -278,4 +278,14 @@
     <string name="discord_step1_content">Discord অ্যাপ খুলুন → আপনার “আপনি” (প্রোফাইল ছবি) আইকনে ট্যাপ করুন → সেটিংস (⚙️) ট্যাপ করুন → নিচে স্ক্রল করে “কনটেন্ট ও সোশ্যাল” (বা পুরোনো অ্যাপ ভার্সনে “অ্যাক্টিভিটি প্রাইভেসি”) ট্যাপ করুন।</string>
     <string name="activity_type_fallback_desc">শনাক্ত না হওয়া অ্যাপগুলোর জন্য এবং স্বয়ংক্রিয় শনাক্তকরণ বন্ধ থাকলে প্রতিটি অ্যাপের জন্য ব্যবহৃত হয়।</string>
     <string name="discord_step3_title">ধাপ ৩: আপনার অনলাইন স্ট্যাটাস যাচাই করুন</string>
+
+    <string name="console_preset_games">প্রি-সেট গেম</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

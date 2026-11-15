@@ -284,4 +284,14 @@
     <string name="discord_step1_content">Ανοίξτε την εφαρμογή Discord → πατήστε το εικονίδιο «Εσείς» (φωτογραφία προφίλ) → πατήστε Ρυθμίσεις (⚙️) → κάντε κύλιση προς τα κάτω και πατήστε «Περιεχόμενο και κοινωνικά δίκτυα» (ή «Απόρρητο δραστηριότητας» σε παλαιότερες εκδόσεις).</string>
     <string name="activity_type_fallback_desc">Χρησιμοποιείται για εφαρμογές που δεν αναγνωρίζονται και για κάθε εφαρμογή όταν η αυτόματη ανίχνευση είναι απενεργοποιημένη.</string>
     <string name="discord_step3_title">Βήμα 3: Ελέγξτε την κατάστασή σας στο δίκτυο</string>
+
+    <string name="console_preset_games">Προκαθορισμένα παιχνίδια</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Επιφάνεια εργασίας</string>
 </resources>

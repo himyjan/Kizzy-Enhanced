@@ -282,4 +282,14 @@
     <string name="discord_step1_content">Discord యాప్‌ను తెరవండి → మీ "మీరు" (ప్రొఫైల్ ఫోటో) చిహ్నాన్ని ట్యాప్ చేయి → సెట్టింగ్‌లను (⚙️) ట్యాప్ చేయి → కిందికి స్క్రోల్ చేసి, "కంటెంట్ &amp; సోషల్" (లేదా పాత యాప్ వెర్షన్లలో "యాక్టివిటీ ప్రైవసీ") ట్యాప్ చేయి.</string>
     <string name="activity_type_fallback_desc">గుర్తించబడని యాప్‌ల కోసం, అలాగే స్వయంచాలక గుర్తింపు ఆఫ్ చేసినప్పుడు ప్రతి యాప్‌కు ఉపయోగపడుతుంది.</string>
     <string name="discord_step3_title">దశ 3: మీ ఆన్‌లైన్ స్టేటస్‌ను తనిఖీ చేయి</string>
+
+    <string name="console_preset_games">ముందుపటి సెట్ గేమ్స్</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

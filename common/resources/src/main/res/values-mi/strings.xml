@@ -73,4 +73,14 @@
     <string name="discord_step1_content">Whakatuwherahia te taiao Discord → pēhi ki tō tohu "Koe" (whakaahua o tō kaupapa) → pēhi ki Tītara (⚙️) → rero ki raro ka pēhi ki te "Ihirangi me te Whatunga Pāpāho" (rānei te "Privateness o te mahi" i ngā putanga tawhito).</string>
     <string name="activity_type_fallback_desc">Ka whakamahia mō ngā taiao kāore i tautohuhia, mō ia taiao katoa ina ritea te tautohu aunoa.</string>
     <string name="discord_step3_title">Hipanga 3: Tirohia tō koutua Pēwhārangi</string>
+
+    <string name="console_preset_games">Kāorei raro whakatakaro</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

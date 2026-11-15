@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Discord ཁ་དྲག་རྒྱན་བཀོད་པའི་ནས་→ ཁྱེད་ཀྱི་ངང་ (ནང་ཁུག་པའི་མདོན) མཚོན་སྟེང་ལ་བཤད་པའི་ནས་→ སྒྲུབ་སྒྲིག (⚙️) ལ་བཤད་ནས་→ གྲོལ་དུ་ཉལ་ནས་དངོས་གྲོགས་དང་སྤྱོད་ཚོགས (ཡང་ན་གནས་ཚིག་ཟད་པའི་ཁ་དྲག་རྒྱན་ནས་ལས་སྤྱོད་ཀྱི་མངོན་བཏང་སྤྲོད) ལ་བཤད།</string>
     <string name="activity_type_fallback_desc">ངོས་མི་འཛིན་པའི་ཁ་དྲག་རྒྱན་ལ་དེ་བཞིན་འོས། དེ་མིན་རང་འདོད་ངོས་འཛིན་སྟོང་བའི་སྐབས་སུ་ཁ་དྲག་རྒྱན་ཡོད་མི་ཚང་བའི་ཆ་སོང་ལ་བྱེད།</string>
     <string name="discord_step3_title">གནས་ཚིག་ 3: ཁྱེད་ཀྱི་གནས་ཡིག་སྟོང་དུ་བལྟས</string>
+
+    <string name="console_preset_games">སྔོན་འགྲོའི་རྩེད་པའི་རྩེད་གཏོང་།</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>

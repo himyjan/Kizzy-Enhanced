@@ -305,4 +305,14 @@
     <string name="discord_step1_content">Agorwch yr ap Discord → tapio eich icon Chi (llun proffil) → tapio Gosodiadau (⚙️) → llusgo i lawr a tapio Cynwys a Chymdeithas (neu Weli Preifatwydd Gweithrediad ar fersiynau hŷn).</string>
     <string name="activity_type_fallback_desc">Yn cael ei ddefnyddio ar gyfer yr apiau nad ydynt yn cael eu adnabod, ac ar gyfer pob ap pan gaethpwyd y synhudd awtomatig.</string>
     <string name="discord_step3_title">Cam 3: Gwirio eich statws ar-lein</string>
+
+    <string name="console_preset_games">Gemau rhagos</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
 </resources>
