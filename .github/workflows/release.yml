@@ -89,7 +89,7 @@ jobs:
 
       - name: Download bundletool
         run: |
-          curl -L https://github.com -o "$RUNNER_TEMP/bundletool.jar"
+          curl -L "https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar" -o "$RUNNER_TEMP/bundletool.jar"
 
       - name: Extract Universal & Per-ABI APKs from App Bundle
         run: |
