@@ -609,8 +609,6 @@ private fun RpcTextFieldsColumn(
     // Console RPC game list state
     var consoleSearchText by remember { mutableStateOf("") }
     var consoleSelectedGameTitle by remember { mutableStateOf("") }
-    // Load games from the ConsoleGameCatalog using the use case directly
-    val consoleGames = com.my.kizzy.data.rpc.ConsoleGameCatalog.games()
 
     /** Writes the console values to the preferences so they survive a restart. */
     fun persistConsoleSettings() {
@@ -1906,69 +1904,6 @@ private fun RpcTextFieldsColumn(
                 )
             }
 
-            // ===== Console RPC Game List with Search =====
-            item {
-                Text(
-                    text = stringResource(id = R.string.console_games_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-            }
-
-            item {
-                androidx.compose.material3.OutlinedTextField(
-                    value = consoleSearchText,
-                    onValueChange = { consoleSearchText = it },
-                    label = { Text(text = stringResource(id = R.string.search)) },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = stringResource(id = R.string.search)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            item {
-                val games = if (consoleSearchText.isBlank()) {
-                    consoleGames
-                } else {
-                    consoleGames.filter { it.game_title.contains(consoleSearchText, ignoreCase = true) }
-                }
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(games, key = { it.game_title }) { game ->
-                        val gameSelectedText = stringResource(R.string.console_game_selected, game.game_title)
-                        ConsoleGameItem(
-                            game = game,
-                            selected = consoleSelectedGameTitle == game.game_title,
-                            onClick = {
-                                consoleSelectedGameTitle = game.game_title
-                                val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
-                                val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
-                                scope.launch {
-                                    snackBarHostState.showSnackbar(gameSelectedText)
-                                }
-                                applyConsoleGame(
-                                    game = game,
-                                    startTs = startTs,
-                                    endTs = endTs
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-
             // ===== Console RPC Presets =====
             item {
                 Text(
@@ -2111,6 +2046,73 @@ private fun RpcTextFieldsColumn(
 
             item {
                 Spacer(modifier = Modifier.size(100.dp))
+            }
+
+            // ===== Console RPC Game List with Search (Bottom Priority) =====
+            item {
+                Text(
+                    text = stringResource(id = R.string.console_games_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+
+            item {
+                androidx.compose.material3.OutlinedTextField(
+                    value = consoleSearchText,
+                    onValueChange = { consoleSearchText = it },
+                    label = { Text(text = stringResource(id = R.string.search)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = stringResource(id = R.string.search)
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            item {
+                val games = if (consoleSearchText.isBlank()) {
+                    state.consoleGames
+                } else {
+                    state.consoleGames.filter { it.game_title.contains(consoleSearchText, ignoreCase = true) }
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(games, key = { it.game_title }) { game ->
+                        val gameSelectedText = stringResource(R.string.console_game_selected, game.game_title)
+                        ConsoleGameItem(
+                            game = game,
+                            selected = consoleSelectedGameTitle == game.game_title,
+                            onClick = {
+                                consoleSelectedGameTitle = game.game_title
+                                val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
+                                val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(gameSelectedText)
+                                }
+                                applyConsoleGame(
+                                    game = game,
+                                    startTs = startTs,
+                                    endTs = endTs
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.size(24.dp))
             }
 
         }

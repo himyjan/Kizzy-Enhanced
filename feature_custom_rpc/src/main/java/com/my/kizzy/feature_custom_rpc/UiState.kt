@@ -13,6 +13,7 @@
 package com.my.kizzy.feature_custom_rpc
 
 import androidx.compose.runtime.Immutable
+import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.rpc.RpcConfig
 
 @Immutable
@@ -31,5 +32,6 @@ data class UiState(
     val platformIsExpanded: Boolean = false,
     val showLargeCoverArt: Boolean = true,
     val showSmallCoverArt: Boolean = true,
+    val consoleGames: List<Game> = emptyList(),
     val rpcConfig: RpcConfig = RpcConfig()
 )

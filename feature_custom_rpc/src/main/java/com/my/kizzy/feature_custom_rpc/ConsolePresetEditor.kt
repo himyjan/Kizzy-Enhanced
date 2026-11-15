@@ -136,7 +136,7 @@ fun ConsolePresetEditorDialog(
                         pickLargeImage?.let { launcher ->
                             IconButton(onClick = { launcher(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Image,
+                                    imageVector = Image,
                                     contentDescription = "Pick large cover art"
                                 )
                             }
@@ -155,7 +155,7 @@ fun ConsolePresetEditorDialog(
                         pickSmallImage?.let { launcher ->
                             IconButton(onClick = { launcher(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Image,
+                                    imageVector = Image,
                                     contentDescription = "Pick small cover art"
                                 )
                             }

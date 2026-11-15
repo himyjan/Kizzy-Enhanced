@@ -16,7 +16,10 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.domain.model.rpc.RpcConfig
+import com.my.kizzy.domain.model.Game
+import com.my.kizzy.domain.use_case.get_games.GetGamesUseCase
 import com.my.kizzy.domain.use_case.upload_galleryImage.UploadGalleryImageUseCase
+import com.my.kizzy.data.rpc.ConsoleGameCatalog
 import com.my.kizzy.feature_custom_rpc.components.sheet.stringToData
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +36,8 @@ import java.io.File
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class CustomScreenViewModel @Inject constructor(
-    private val uploadGalleryImageUseCase: UploadGalleryImageUseCase
+    private val uploadGalleryImageUseCase: UploadGalleryImageUseCase,
+    private val getGamesUseCase: GetGamesUseCase,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
@@ -44,6 +48,16 @@ class CustomScreenViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 rpcConfig = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].stringToData()
             )
+        }
+        // Load console games so the game list shows in Custom RPC tab
+        viewModelScope.launch {
+            getGamesUseCase().collect { result ->
+                if (result is com.my.kizzy.domain.model.Resource.Success) {
+                    val freshGames = result.data ?: emptyList()
+                    ConsoleGameCatalog.update(freshGames)
+                    _uiState.update { it.copy(consoleGames = freshGames) }
+                }
+            }
         }
         viewModelScope.launch {
             uiEventChannel.consumeAsFlow()
