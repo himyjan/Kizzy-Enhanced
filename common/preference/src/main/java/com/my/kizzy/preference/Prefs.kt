@@ -285,7 +285,7 @@ object Prefs {
     const val RPC_CONNECTION_METHOD_GATEWAY = "gateway"
     const val RPC_CONNECTION_METHOD_OAUTH = "oauth"
 
-    const val DISCORD_OAUTH_CLIENT_ID = "discord_oauth_client_id"
+    const val DISCORD_OAUTH_APPLICATION_CLIENT_ID = "discord_oauth_client_id"
 
     // Discord OAuth token storage (encrypted via SecurePrefs)
     const val DISCORD_OAUTH_ACCESS_TOKEN = "discord_oauth_access_token"

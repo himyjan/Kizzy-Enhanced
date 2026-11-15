@@ -83,7 +83,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var showConnectionMethodDialog by remember { mutableStateOf(false) }
     var oauthError by remember { mutableStateOf("") }
     var discordOAuthClientId by remember {
-        mutableStateOf(Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, ""])
+        mutableStateOf(Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, ""])
     }
     var showClientIdDialog by remember { mutableStateOf(false) }
     var editingClientId by remember { mutableStateOf("") }
@@ -162,7 +162,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                         + if (discordOAuthClientId.isNotEmpty()) "  •  $discordOAuthClientId" else "",
                     icon = Icons.Outlined.Person,
                 ) {
-                    discordOAuthClientId = Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, ""]
+                    discordOAuthClientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, ""]
                     editingClientId = discordOAuthClientId
                     showClientIdDialog = true
                 }

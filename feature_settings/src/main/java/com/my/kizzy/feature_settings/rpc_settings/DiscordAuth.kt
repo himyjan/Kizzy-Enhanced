@@ -56,7 +56,7 @@ class DiscordAuth(
     }
 
     suspend fun authorize(activity: Activity): DiscordAuthResult {
-        val clientId = Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, DEFAULT_CLIENT_ID]
+        val clientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, DEFAULT_CLIENT_ID]
         if (clientId.isBlank()) {
             throw DiscordAuthException.InvalidClientId()
         }
@@ -126,7 +126,7 @@ class DiscordAuth(
     }
 
     suspend fun refresh(refreshToken: String): DiscordAuthResult {
-        val clientId = Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, DEFAULT_CLIENT_ID]
+        val clientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, DEFAULT_CLIENT_ID]
         val params = mapOf(
             "client_id" to clientId,
             "grant_type" to "refresh_token",
