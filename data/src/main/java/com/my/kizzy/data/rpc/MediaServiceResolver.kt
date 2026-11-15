@@ -80,7 +80,7 @@ object MediaServiceResolver {
         "innertune", "outertune", "mist", "meld", "bitchord",
 
         // ViMusic / RiMusic ecosystem & YT Music clients
-        "kreate", "vitune", "simpmusic", "ymusic", "harmony", "harmonymusic",
+        "kreate", "vitune", "simpmusic", "ymusic", "ymusicapp", "harmony", "harmonymusic",
         "gyawun", "musify", "namida", "bloomee", "vimusic", "spotube",
 
         // Full YouTube video / extractor clients

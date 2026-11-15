@@ -183,7 +183,7 @@ class MetadataResolver @Inject constructor(
         // Do not return early for list= (playlist parameter) — extract just the video id
         // so Discord opens the single video, not a playlist that may auto-play a different track.
         if (!MediaServiceResolver.isYouTube(packageName) &&
-            !trimmed.contains("youtube.com") && !trimmed.contains("youtu.be")) return trimmed
+            !trimmed.contains("youtube.com") && !trimmed.contains("youtu.be") && !trimmed.contains("ymusicapp.com")) return trimmed
         val videoId = YouTubeResolver.extractVideoId(trimmed) ?: return null
         return "https://youtu.be/$videoId"
     }
@@ -209,7 +209,7 @@ class MetadataResolver @Inject constructor(
         // Check METADATA_KEY_SOURCE_URL for any YouTube URL, but skip search
         // pages - they don't link to a specific video.
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
-        if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be"))) {
+        if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be") || sourceUrl.contains("ymusicapp.com"))) {
             if (!sourceUrl.contains("/results?search_query")) {
                 return YouTubeResolver.extractVideoId(sourceUrl)?.let { "https://youtu.be/$it" }
             }
@@ -219,7 +219,7 @@ class MetadataResolver @Inject constructor(
             "yt_url", "youtube_video_url", "youtube_watch_url")
         for (key in youtubeKeys) {
             val value = metadata.getString(key)
-            if (!value.isNullOrEmpty() && (value.contains("youtube.com") || value.contains("youtu.be"))) {
+            if (!value.isNullOrEmpty() && (value.contains("youtube.com") || value.contains("youtu.be") || value.contains("ymusicapp.com"))) {
                 if (!value.contains("/results?search_query")) {
                     return YouTubeResolver.extractVideoId(value)?.let { "https://youtu.be/$it" }
                 }

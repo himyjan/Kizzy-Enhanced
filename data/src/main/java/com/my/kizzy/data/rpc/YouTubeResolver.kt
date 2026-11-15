@@ -109,18 +109,25 @@ object YouTubeResolver {
      * YouTube video url.
      *
      * Handles "youtu.be/ID", "youtube.com/watch?v=ID", "music.youtube.com/watch?v=ID",
-     * "youtube.com/shorts/ID", "youtube.com/live/ID" and "youtube.com/embed/ID".
+     * "youtube.com/shorts/ID", "youtube.com/live/ID", "youtube.com/embed/ID"
+     * and "ymusicapp.com/watch?v=ID".
      */
     fun extractVideoId(url: String): String? {
         val trimmed = url.trim()
         if (trimmed.isEmpty()) return null
         val lower = trimmed.lowercase()
 
-        if (!lower.contains("youtube.com") && !lower.contains("youtu.be")) return null
+        if (!lower.contains("youtube.com") && !lower.contains("youtu.be") && !lower.contains("ymusicapp.com")) return null
 
         // youtu.be/<id>
         if (lower.contains("youtu.be/")) {
             val id = trimmed.substringAfter("youtu.be/").substringBefore('?').substringBefore('&')
+            if (id.isNotBlank() && id.length >= 11) return id.take(11)
+        }
+
+        // ymusicapp.com/watch?v=<id>
+        if (lower.contains("ymusicapp.com") && lower.contains("/watch")) {
+            val id = trimmed.substringAfter("v=").substringBefore('&').substringBefore('#')
             if (id.isNotBlank() && id.length >= 11) return id.take(11)
         }
 
