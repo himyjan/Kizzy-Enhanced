@@ -111,6 +111,9 @@ object YouTubeResolver {
      * Handles "youtu.be/ID", "youtube.com/watch?v=ID", "music.youtube.com/watch?v=ID",
      * "youtube.com/shorts/ID", "youtube.com/live/ID", "youtube.com/embed/ID"
      * and "ymusicapp.com/watch?v=ID".
+     *
+     * Returns null for channel URLs (/channel/) and playlist URLs (/playlist?)
+     * since those are not individual videos.
      */
     fun extractVideoId(url: String): String? {
         val trimmed = url.trim()
@@ -118,6 +121,12 @@ object YouTubeResolver {
         val lower = trimmed.lowercase()
 
         if (!lower.contains("youtube.com") && !lower.contains("youtu.be") && !lower.contains("ymusicapp.com")) return null
+
+        // Channel URLs are not videos
+        if (lower.contains("/channel/")) return null
+
+        // Playlist URLs are not individual videos
+        if (lower.contains("/playlist?") || lower.contains("/playlist/")) return null
 
         // youtu.be/<id>
         if (lower.contains("youtu.be/")) {
@@ -145,6 +154,46 @@ object YouTubeResolver {
             }
         }
 
+        return null
+    }
+
+    /**
+     * Extracts the channel id from a YouTube channel URL.
+     *
+     * Handles "youtube.com/channel/UC...", "music.youtube.com/channel/UC...",
+     * and "ymusicapp.com/channel/UC...".
+     */
+    fun extractChannelId(url: String): String? {
+        val trimmed = url.trim()
+        if (trimmed.isEmpty()) return null
+        val lower = trimmed.lowercase()
+
+        if (!lower.contains("youtube.com") && !lower.contains("youtu.be") && !lower.contains("ymusicapp.com")) return null
+
+        if (!lower.contains("/channel/")) return null
+
+        val id = trimmed.substringAfter("/channel/").substringBefore('?').substringBefore('&').substringBefore('#')
+        if (id.isNotBlank() && id.startsWith("UC") && id.length >= 22) return id
+        return null
+    }
+
+    /**
+     * Extracts the playlist id from a YouTube playlist URL.
+     *
+     * Handles "youtube.com/playlist?list=PL...", "music.youtube.com/playlist?list=PL...",
+     * and "ymusicapp.com/playlist?list=PL...".
+     */
+    fun extractPlaylistId(url: String): String? {
+        val trimmed = url.trim()
+        if (trimmed.isEmpty()) return null
+        val lower = trimmed.lowercase()
+
+        if (!lower.contains("youtube.com") && !lower.contains("youtu.be") && !lower.contains("ymusicapp.com")) return null
+
+        if (!lower.contains("/playlist?")) return null
+
+        val id = trimmed.substringAfter("list=").substringBefore('&').substringBefore('#')
+        if (id.isNotBlank() && id.length >= 10) return id
         return null
     }
 

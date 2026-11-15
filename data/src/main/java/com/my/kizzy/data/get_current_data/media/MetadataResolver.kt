@@ -134,13 +134,22 @@ class MetadataResolver @Inject constructor(
         if (!MediaServiceResolver.isYouTube(packageName)) return null
         val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
-            val id = if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/") || mediaId.contains("ymusicapp.com/watch?v=")) {
-                YouTubeResolver.extractVideoId(mediaId)
-            } else {
-                mediaId.substringAfterLast(":").substringAfterLast("/")
-                    .substringBefore('?').substringBefore('&')
-                    .takeIf { it.isNotBlank() && it.length >= 11 }?.take(11)
+            // Full watch url or youtu.be — extract just the video id
+            // Also handle ymusicapp.com/watch?v=ID (YMusic app publishes full URLs)
+            if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/") || mediaId.contains("ymusicapp.com/watch?v=")) {
+                val id = YouTubeResolver.extractVideoId(mediaId)
+                if (id != null) return "https://youtu.be/$id"
             }
+            // Channel URL — keep as a channel link
+            val channelId = YouTubeResolver.extractChannelId(mediaId)
+            if (channelId != null) return "https://www.youtube.com/channel/$channelId"
+            // Playlist URL — keep as a playlist link
+            val playlistId = YouTubeResolver.extractPlaylistId(mediaId)
+            if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
+            // yt:video:VIDEO_ID or t:VIDEO_ID
+            val id = mediaId.substringAfterLast(":").substringAfterLast("/")
+                .substringBefore('?').substringBefore('&')
+                .takeIf { it.isNotBlank() && it.length >= 11 }?.take(11)
             if (id != null) return "https://youtu.be/$id"
             val rawId = mediaId.trim()
             if (rawId.length == 11 && rawId.matches(Regex("[A-Za-z0-9_-]{11}"))) {
@@ -184,8 +193,16 @@ class MetadataResolver @Inject constructor(
         // so Discord opens the single video, not a playlist that may auto-play a different track.
         if (!MediaServiceResolver.isYouTube(packageName) &&
             !trimmed.contains("youtube.com") && !trimmed.contains("youtu.be") && !trimmed.contains("ymusicapp.com")) return trimmed
-        val videoId = YouTubeResolver.extractVideoId(trimmed) ?: return null
-        return "https://youtu.be/$videoId"
+        // Try video id first
+        val videoId = YouTubeResolver.extractVideoId(trimmed)
+        if (videoId != null) return "https://youtu.be/$videoId"
+        // Try channel id — keep as a channel link, not a video link
+        val channelId = YouTubeResolver.extractChannelId(trimmed)
+        if (channelId != null) return "https://www.youtube.com/channel/$channelId"
+        // Try playlist id — keep as a playlist link
+        val playlistId = YouTubeResolver.extractPlaylistId(trimmed)
+        if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
+        return null
     }
 
     private fun extractYouTubeUrl(metadata: MediaMetadata): String? {
@@ -197,6 +214,12 @@ class MetadataResolver @Inject constructor(
             if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/") || mediaId.contains("ymusicapp.com/watch?v=")) {
                 return YouTubeResolver.extractVideoId(mediaId)?.let { "https://youtu.be/$it" }
             }
+            // Channel URL — keep as a channel link, not a video link
+            val channelId = YouTubeResolver.extractChannelId(mediaId)
+            if (channelId != null) return "https://www.youtube.com/channel/$channelId"
+            // Playlist URL — keep as a playlist link
+            val playlistId = YouTubeResolver.extractPlaylistId(mediaId)
+            if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
             // yt:video:VIDEO_ID or t:VIDEO_ID
             val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
             if (id.isNotBlank() && id.length >= 11) return "https://youtu.be/$id"
@@ -207,12 +230,16 @@ class MetadataResolver @Inject constructor(
             val resolvedId = YouTubeResolver.extractVideoId(mediaId)
             if (resolvedId != null) return "https://youtu.be/$resolvedId"
         }
-        // Check METADATA_KEY_SOURCE_URL for any YouTube URL, but skip search
-        // pages - they don't link to a specific video.
+        // Check METADATA_KEY_SOURCE_URL for any YouTube URL
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be") || sourceUrl.contains("ymusicapp.com"))) {
             if (!sourceUrl.contains("/results?search_query")) {
-                return YouTubeResolver.extractVideoId(sourceUrl)?.let { "https://youtu.be/$it" }
+                // Try video id first
+                YouTubeResolver.extractVideoId(sourceUrl)?.let { return "https://youtu.be/$it" }
+                // Then channel id
+                YouTubeResolver.extractChannelId(sourceUrl)?.let { return "https://www.youtube.com/channel/$it" }
+                // Then playlist id
+                YouTubeResolver.extractPlaylistId(sourceUrl)?.let { return "https://www.youtube.com/playlist?list=$it" }
             }
         }
         // Check custom keys that might contain YouTube URLs
@@ -222,7 +249,12 @@ class MetadataResolver @Inject constructor(
             val value = metadata.getString(key)
             if (!value.isNullOrEmpty() && (value.contains("youtube.com") || value.contains("youtu.be") || value.contains("ymusicapp.com"))) {
                 if (!value.contains("/results?search_query")) {
-                    return YouTubeResolver.extractVideoId(value)?.let { "https://youtu.be/$it" }
+                    // Try video id first
+                    YouTubeResolver.extractVideoId(value)?.let { return "https://youtu.be/$it" }
+                    // Then channel id
+                    YouTubeResolver.extractChannelId(value)?.let { return "https://www.youtube.com/channel/$it" }
+                    // Then playlist id
+                    YouTubeResolver.extractPlaylistId(value)?.let { return "https://www.youtube.com/playlist?list=$it" }
                 }
             }
         }
@@ -418,6 +450,10 @@ class MetadataResolver @Inject constructor(
             val uri = java.net.URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val host = uri.host ?: ""
+            // Watch video URL — return as-is
+            if (segments.size >= 2 && segments[0] == "watch") {
+                return url
+            }
             if (host == "ch.nicovideo.jp" && segments.isNotEmpty()) {
                 return "https://ch.nicovideo.jp/${segments[0]}"
             }
