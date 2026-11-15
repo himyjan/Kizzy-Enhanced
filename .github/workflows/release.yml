@@ -217,25 +217,43 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: enhanced-${{ github.run_number }}
-          name: Kizzy Enhanced build ${{ github.run_number }}
+          name: Kizzy Enhanced ${{ github.run_number }}
           body: |
-            ## What's New
+            ## 🚀 Kizzy Enhanced ${{ github.run_number }}
+
             ${{ github.event.inputs.notes_en != '' && github.event.inputs.notes_en || 'No release notes provided.' }}
+
             ---
-            ## Changelog
-            ${{ steps.changelog.outputs.body }}
-            ---
-            ## Downloads & Checksums
+            ## 📦 Downloads
+
+            | File | Architecture / Type | Size | SHA-256 |
+            | :--- | :--- | :--- | :--- |
             ${{ steps.assets.outputs.table }}
-            ### Installation Guide
-            1. Download KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk (or universal.apk if you are unsure of your device's CPU).
-            2. Open the APK file on your Android device and allow "Install from unknown sources" if prompted.
-            3. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand).
+
             ---
-            - Package: com.my.kizzy.enhanced
-            - Version: 6.2-enhanced-${{ github.run_number }} (Code: ${{ github.run_number }})
-            - Base Project: Kizzy by dead8309
-            - Full Feature List: See the README
+            ## 📋 Changelog
+            ${{ steps.changelog.outputs.body }}
+
+            ---
+            ## 📲 Installation
+
+            1. Download **KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk** (or `universal.apk` if you are unsure of your device's CPU).
+            2. Open the APK file on your Android device.
+            3. If prompted, allow **"Install from unknown sources"**.
+            4. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand).
+
+            ---
+            ## 📄 Release Details
+
+            | Field | Value |
+            | :--- | :--- |
+            | Package | `com.my.kizzy.enhanced` |
+            | Version | `6.2-enhanced-${{ github.run_number }}` |
+            | Version Code | `${{ github.run_number }}` |
+            | Base Project | Kizzy by dead8309 |
+            | Base Commit | \`5e494d94\` |
+            | Full Feature List | See the README |
+
           files: |
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-armeabi-v7a.apk
