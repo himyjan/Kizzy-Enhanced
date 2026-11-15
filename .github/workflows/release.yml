@@ -115,7 +115,7 @@ jobs:
 
       - name: Download bundletool
         run: |
-          curl -L "https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar" -o "$RUNNER_TEMP/bundletool.jar"
+          curl -L "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
 
       - name: Extract Universal & Per-ABI APKs from App Bundle
         run: |
@@ -161,19 +161,19 @@ jobs:
           done
 
       - name: Upload All Release APKs
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: apks-release
           path: app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-*.apk
 
       - name: Upload App Bundle
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: aab-release
           path: app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
 
       - name: Upload Performance Reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: performance-reports
           path: |
@@ -255,7 +255,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Publish to Releases
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: enhanced-${{ github.run_number }}
           name: Kizzy Enhanced ${{ github.run_number }}
