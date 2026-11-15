@@ -641,15 +641,10 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     oauthError = ""
                     Toast.makeText(context, "Discord account connected", Toast.LENGTH_SHORT).show()
                     Log.d("RpcSettings", "Account token saved (len=${token.length}, parts=${token.count { it == '.' } + 1})")
-                    // Apply the new token immediately if the OAuth RPC service is running.
-                    runCatching {
-                        context.startService(
-                            android.content.Intent().setClassName(
-                                context,
-                                "com.my.kizzy.feature_rpc_base.services.DiscordOAuthRpcService",
-                            )
-                        )
-                    }
+                    // Do NOT start DiscordOAuthRpcService here. It builds an empty
+                    // presence (name/state/details = null) that overwrites the real
+                    // Media/Custom presence. The running RPC service already calls
+                    // KizzyRPC.refreshFromPrefs() and picks up the new token.
                 },
             )
         }
