@@ -126,8 +126,8 @@ fun LogScreenContent(
                 onSearchToggle = onSearchToggle,
                 onFilterChange = onFilterChange,
                 onToggleAutoScroll = onToggleAutoScroll,
-                onScrollToTop = { lazyListState.animateScrollToItem(0) },
-                onScrollToBottom = { lazyListState.animateScrollToItem(visibleLogs.lastIndex) },
+                onScrollToTop = { lazyListState.scrollToItem(0) },
+                onScrollToBottom = { lazyListState.scrollToItem(visibleLogs.lastIndex) },
                 onToggleShowCompat = onToggleShowCompat,
                 onSaveLogs = onSaveLogs,
                 onClearLogs = onClearLogs,
@@ -161,7 +161,8 @@ fun LogScreenContent(
     ) { paddingValues ->
         LaunchedEffect(autoScroll, visibleLogs.size) {
             if (autoScroll && visibleLogs.isNotEmpty()) {
-                lazyListState.animateScrollToItem(visibleLogs.lastIndex)
+                // Use scrollToItem for instant, lag-free scrolling instead of animateScrollToItem
+                lazyListState.scrollToItem(visibleLogs.lastIndex)
             }
         }
         LazyColumn(
@@ -598,8 +599,8 @@ fun ToolBar(
         },
         onFilterChange = { viewModel.setFilterStrings(it) },
         onToggleAutoScroll = { viewModel.setAutoScroll(!autoScroll) },
-        onScrollToTop = { lazyListState.animateScrollToItem(0) },
-        onScrollToBottom = { lazyListState.animateScrollToItem(visibleLogs.lastIndex) },
+        onScrollToTop = { lazyListState.scrollToItem(0) },
+        onScrollToBottom = { lazyListState.scrollToItem(visibleLogs.lastIndex) },
         onToggleShowCompat = { viewModel.setShowCompat(!viewModel.showCompat.value) },
         onSaveLogs = {
             val path = viewModel.saveLogsToFile(ctx)
