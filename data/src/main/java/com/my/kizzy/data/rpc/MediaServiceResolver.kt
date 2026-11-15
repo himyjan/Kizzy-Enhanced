@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets
  * A *direct* url is always preferred over a search page: the user wants to land
  * on the track, not on a list of results. When the service publishes the real
  * url of the track in the media session, that url is used (see
- * [MediaResolver.getMediaUrl]). When it does not, the service specific
+ * [MetadataResolver.getMediaUrl]). When it does not, the service specific
  * search page is the fallback - and for YouTube the real watch url is resolved
  * through the oEmbed endpoint, so even a player that does not publish the url
  * ends up on the correct video.

@@ -28,7 +28,7 @@ import android.os.Build
 import android.os.IBinder
 import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMediaAll
-import com.my.kizzy.data.get_current_data.media.MediaResolver
+import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.work.WorkManagerHelper
@@ -60,7 +60,7 @@ class ExperimentalRpc : Service() {
     lateinit var getCurrentPlayingMediaAll: GetCurrentPlayingMediaAll
 
     @Inject
-    lateinit var MediaResolver: MediaResolver
+    lateinit var MetadataResolver: MetadataResolver
 
     @Inject
     lateinit var getCurrentlyRunningApp: GetCurrentlyRunningApp
@@ -509,7 +509,8 @@ class ExperimentalRpc : Service() {
                 Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_PLAYBACK_STATE, true] ->
                     richMediaInfo.playbackStateIcon
 
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] && finalLargeImage != richMediaInfo.appIcon ->
+                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] &&
+                Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false && finalLargeImage != richMediaInfo.appIcon ->
                     richMediaInfo.appIcon
                 else -> null
             }
@@ -604,7 +605,7 @@ class ExperimentalRpc : Service() {
             packageName = effectivePackageName ?: "",
             playbackState = richMediaInfo?.playbackState,
             mediaUrl = rawMediaMetadata?.let {
-                MediaResolver.getMediaUrl(it, richMediaInfo?.packageName)
+                MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
             },
         )
 
@@ -652,7 +653,7 @@ class ExperimentalRpc : Service() {
             // playing, the link of the track and of the artist are used instead,
             // so the presence links to the music like the Media RPC does.
             val mediaUrl = rawMediaMetadata?.let {
-                MediaResolver.getMediaUrl(it, richMediaInfo?.packageName)
+                MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
             }
             mediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
                 kizzyRPC.setButton1(
@@ -664,7 +665,7 @@ class ExperimentalRpc : Service() {
                 )
             }
             rawMediaMetadata?.let { metadata ->
-                MediaResolver.getArtistUrl(metadata, richMediaInfo?.packageName)?.let { url ->
+                MetadataResolver.getArtistUrl(metadata, richMediaInfo?.packageName)?.let { url ->
                     kizzyRPC.setButton2(
                         MediaServiceResolver.artistButtonLabel(effectivePackageName),
                         url,

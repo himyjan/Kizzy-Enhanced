@@ -20,7 +20,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
-import com.my.kizzy.data.get_current_data.media.MediaResolver
+import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.work.RpcRecoveryHiltWorker
 import com.my.kizzy.domain.interfaces.Logger
@@ -61,7 +61,7 @@ class MediaRpcService : Service() {
     lateinit var stateRepository: KizzyStateRepository
 
     @Inject
-    lateinit var MediaResolver: MediaResolver
+    lateinit var MetadataResolver: MetadataResolver
 
     @Inject
     lateinit var kizzyRepository: com.my.kizzy.domain.repository.KizzyRepository
@@ -459,9 +459,9 @@ class MediaRpcService : Service() {
         // oEmbed endpoint. It returns https://youtu.be/ID instead of falling back
         // to a "youtube.com/results?search_query=..." search page.
         if (MediaServiceResolver.isYouTube(packageName)) {
-            MediaResolver.getDirectMediaUrl(metadata, packageName)?.let { return it }
+            MetadataResolver.getDirectMediaUrl(metadata, packageName)?.let { return it }
         }
-        return MediaResolver.getMediaUrl(metadata, packageName)
+        return MetadataResolver.getMediaUrl(metadata, packageName)
     }
 
     /**
@@ -570,7 +570,7 @@ class MediaRpcService : Service() {
                 // The artist url of YouTube is the real channel of the uploader,
                 // which has to be looked up. It is a suspending call, so it is
                 // made here and not inside the listener callback.
-                val artistUrl = MediaResolver.getArtistUrl(metadata, playingMedia.appPackage)
+                val artistUrl = MetadataResolver.getArtistUrl(metadata, playingMedia.appPackage)
                 artistUrl?.let { url ->
                     kizzyRPC.setButton2(
                         MediaServiceResolver.artistButtonLabel(playingMedia.appPackage),

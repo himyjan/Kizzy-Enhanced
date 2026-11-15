@@ -19,7 +19,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 
 class GetCurrentPlayingMediaAll @Inject constructor(
-    private val MediaResolver: MediaResolver,
+    private val metadataResolver: MetadataResolver,
     private val componentName: ComponentName,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
@@ -89,12 +89,12 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 .takeIf { it.isNotBlank() }
                 ?: ActivityTypeResolver.knownAppName(mediaController.packageName)
                 ?: mediaController.packageName
-            val author = metadata?.let { MediaResolver.formatArtists(it) }
-            val album = metadata?.let { MediaResolver.getAlbum(it) }
+            val author = metadata?.let { metadataResolver.formatArtists(it) }
+            val album = metadata?.let { metadataResolver.getAlbum(it) }
 
             val stateParts = buildList {
                 author?.takeIf { it.isNotBlank() }?.let { add(it) }
-                metadata?.let { MediaResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
+                metadata?.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
             }
             val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() } ?: null
 
@@ -122,17 +122,17 @@ class GetCurrentPlayingMediaAll @Inject constructor(
             val appIcon = RpcImage.ApplicationIcon(mediaController.packageName, context)
 
             var coverArt: RpcImage? = null
-            val bitmap = metadata?.let { MediaResolver.getCoverArt(it) }
+            val bitmap = metadata?.let { metadataResolver.getCoverArt(it) }
             if (bitmap != null) {
                 coverArt = RpcImage.BitmapImage(
                     context = context,
                     bitmap = bitmap,
                     packageName = mediaController.packageName,
-                    title = "${metadata.let { MediaResolver.getAlbumArtists(it) }}|${metadata.let { MediaResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
                 )
                 logger.i("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from embedded bitmap)")
             } else {
-                val artworkUri = metadata?.let { MediaResolver.getArtworkUri(it) }
+                val artworkUri = metadata?.let { metadataResolver.getArtworkUri(it) }
                 if (artworkUri != null) {
                     val parsedUri = Uri.parse(artworkUri)
                     if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
@@ -144,7 +144,7 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                                 context = context,
                                 bitmap = bmp,
                                 packageName = mediaController.packageName,
-                                title = "${metadata.let { MediaResolver.getAlbumArtists(it) }}|${metadata.let { MediaResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                                title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
                             )
                             logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(decoded from artworkUri=$artworkUri)")
                         } else {
@@ -179,8 +179,8 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 position = position,
                 isMusicMetadata = album != null || !author.isNullOrBlank(),
                 timestamps = timestamps,
-                audioChannels = metadata?.let { MediaResolver.getAudioChannels(it) },
-                allArtists = metadata?.let { MediaResolver.getAllArtists(it) } ?: emptyList(),
+                audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) },
+                allArtists = metadata?.let { metadataResolver.getAllArtists(it) } ?: emptyList(),
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")

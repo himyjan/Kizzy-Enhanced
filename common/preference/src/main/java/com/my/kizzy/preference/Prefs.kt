@@ -38,8 +38,8 @@ object Prefs {
      * first and is persisted to disk in the background.
      */
     @PublishedApi
-    internal val _prefsState = MutableStateFlow(emptyMap<String, Any?>())
-    val prefsState: Flow<Map<String, Any?>> = _prefsState.asStateFlow()
+    internal val _prefsState: MutableStateFlow<Map<String, Any?>> = MutableStateFlow(emptyMap())
+    val prefsState: StateFlow<Map<String, Any?>> = _prefsState.asStateFlow()
 
     /**
      * The keys that hold secrets and are therefore written to disk encrypted.
@@ -174,7 +174,7 @@ object Prefs {
      * delegate that creates (and caches) the DataStore for the given context.
      */
     private val Context.appPreferencesDataStore: DataStore<Preferences> by
-        preferencesDataStore(name = "app_preferences")
+    preferencesDataStore(name = "app_preferences")
 
     fun isAppEnabled(packageName: String?): Boolean {
         val apps = get(ENABLED_APPS, "[]")
@@ -432,8 +432,8 @@ object Prefs {
         return legacy
     }
 
-    private fun decodeAppActivityTypes(json: String): Map<String, Int> = try {
-        Json.decodeFromString<Map<String, Int>>(json)
+    private fun decodeAppActivityTypes(jsonString: String): Map<String, Int> = try {
+        Json.decodeFromString<Map<String, Int>>(jsonString)
     } catch (_: Exception) {
         emptyMap()
     }

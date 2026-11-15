@@ -9,7 +9,7 @@ import jakarta.inject.Inject
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-class MediaResolver @Inject constructor(
+class MetadataResolver @Inject constructor(
     private val logger: Logger,
 ) {
     companion object {
@@ -159,7 +159,7 @@ class MediaResolver @Inject constructor(
         }
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
         if (title.isNullOrEmpty()) return null
-        val artist = MediaResolverArtistName(metadata)
+        val artist = MetadataResolverArtistName(metadata)
         return YouTubeResolver.lookupByTitle(title, artist)
     }
 
@@ -217,12 +217,12 @@ class MediaResolver @Inject constructor(
         return null
     }
 
-    private fun MediaResolverArtistName(metadata: MediaMetadata): String? {
+    private fun MetadataResolverArtistName(metadata: MediaMetadata): String? {
         return getArtistOrAuthor(metadata)
     }
 
     suspend fun getArtistUrl(metadata: MediaMetadata, packageName: String?): String? {
-        val artist = MediaResolverArtistName(metadata)
+        val artist = MetadataResolverArtistName(metadata)
         if (artist.isNullOrEmpty()) return null
         val artists = getAllArtists(metadata)
         val rawArtistString = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)
