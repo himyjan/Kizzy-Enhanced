@@ -3,6 +3,9 @@ package com.my.kizzy.feature_settings.rpc_settings
 import android.app.Activity
 import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -241,9 +244,27 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
             }
             item(key = "rpc_default_cover_art_large") {
                 var defaultLargeCoverArt by remember { mutableStateOf(Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""]) }
+
+                // Image pickers for default cover art
+                val pickLargeCoverArt = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.PickVisualMedia()
+                ) { uri ->
+                    uri?.let { defaultLargeCoverArt = it.toString(); Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE] = defaultLargeCoverArt }
+                }
+
                 RpcField(
                     value = defaultLargeCoverArt,
                     label = R.string.rpc_default_cover_art_large,
+                    trailingIcon = {
+                        androidx.compose.material3.IconButton(
+                            onClick = { pickLargeCoverArt.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }
+                        ) {
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.Outlined.Image,
+                                contentDescription = "Pick image"
+                            )
+                        }
+                    }
                 ) {
                     defaultLargeCoverArt = it
                     Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE] = defaultLargeCoverArt
@@ -251,9 +272,26 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
             }
             item(key = "rpc_default_cover_art_small") {
                 var defaultSmallCoverArt by remember { mutableStateOf(Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""]) }
+
+                val pickSmallCoverArt = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.PickVisualMedia()
+                ) { uri ->
+                    uri?.let { defaultSmallCoverArt = it.toString(); Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL] = defaultSmallCoverArt }
+                }
+
                 RpcField(
                     value = defaultSmallCoverArt,
                     label = R.string.rpc_default_cover_art_small,
+                    trailingIcon = {
+                        androidx.compose.material3.IconButton(
+                            onClick = { pickSmallCoverArt.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }
+                        ) {
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.Outlined.Image,
+                                contentDescription = "Pick image"
+                            )
+                        }
+                    }
                 ) {
                     defaultSmallCoverArt = it
                     Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL] = defaultSmallCoverArt

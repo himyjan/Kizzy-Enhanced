@@ -444,6 +444,8 @@
     <string name="console_options_title">Console RPC options</string>
     <string name="console_detected_games">Detected Games</string>
     <string name="console_game_selected">%1$s selected for Console RPC</string>
+    <string name="console_large_cover_art">Large Cover Art URL</string>
+    <string name="console_small_cover_art">Small Cover Art URL</string>
 
     <string name="lastfm_settings_title">Last.fm Scrobbling</string>
     <string name="lastfm_enabled">Enable Last.fm</string>

@@ -179,7 +179,9 @@ class MetadataResolver @Inject constructor(
 
     private fun normalizeMediaUrl(url: String, packageName: String?): String? {
         val trimmed = url.trim()
-        if (trimmed.contains("/browse/") || trimmed.contains("list=")) return trimmed
+        if (trimmed.contains("/browse/")) return trimmed
+        // Do not return early for list= (playlist parameter) — extract just the video id
+        // so Discord opens the single video, not a playlist that may auto-play a different track.
         if (!MediaServiceResolver.isYouTube(packageName) &&
             !trimmed.contains("youtube.com") && !trimmed.contains("youtu.be")) return trimmed
         val videoId = YouTubeResolver.extractVideoId(trimmed) ?: return null
@@ -190,25 +192,37 @@ class MetadataResolver @Inject constructor(
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
         val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
-            if (mediaId.contains("youtube.com/watch?v=")) return mediaId
-            if (mediaId.contains("youtu.be/")) return mediaId
+            // Full watch url or youtu.be — extract just the video id
+            if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/")) {
+                return YouTubeResolver.extractVideoId(mediaId)?.let { "https://youtu.be/$it" }
+            }
+            // yt:video:VIDEO_ID or t:VIDEO_ID
             val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
             if (id.isNotBlank() && id.length >= 11) return "https://youtu.be/$id"
+            // Raw video ID (11 chars, alphanumeric/_/-) from modded YouTube apps
             val rawId = mediaId.trim()
             if (rawId.length == 11 && rawId.matches(Regex("[A-Za-z0-9_-]{11}"))) return "https://youtu.be/$rawId"
+            // Fallback: try YouTubeResolver.extractVideoId for any URL format
             val resolvedId = YouTubeResolver.extractVideoId(mediaId)
             if (resolvedId != null) return "https://youtu.be/$resolvedId"
         }
+        // Check METADATA_KEY_SOURCE_URL for any YouTube URL, but skip search
+        // pages - they don't link to a specific video.
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be"))) {
-            if (!sourceUrl.contains("/results?search_query")) return sourceUrl
+            if (!sourceUrl.contains("/results?search_query")) {
+                return YouTubeResolver.extractVideoId(sourceUrl)?.let { "https://youtu.be/$it" }
+            }
         }
+        // Check custom keys that might contain YouTube URLs
         val youtubeKeys = listOf("youtube_url", "video_url", "source_url", "media_url", "content_url",
             "yt_url", "youtube_video_url", "youtube_watch_url")
         for (key in youtubeKeys) {
             val value = metadata.getString(key)
             if (!value.isNullOrEmpty() && (value.contains("youtube.com") || value.contains("youtu.be"))) {
-                if (!value.contains("/results?search_query")) return value
+                if (!value.contains("/results?search_query")) {
+                    return YouTubeResolver.extractVideoId(value)?.let { "https://youtu.be/$it" }
+                }
             }
         }
         if (!title.isNullOrEmpty()) {

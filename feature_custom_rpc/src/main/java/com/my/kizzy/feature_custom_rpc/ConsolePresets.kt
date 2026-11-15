@@ -32,6 +32,8 @@ data class ConsolePreset(
     val status: String,
     val timestamps: Boolean,
     val coverArt: Boolean,
+    val largeCoverArtUrl: String = "",
+    val smallCoverArtUrl: String = "",
     val builtIn: Boolean,
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
@@ -42,6 +44,8 @@ data class ConsolePreset(
         put("status", status)
         put("timestamps", timestamps)
         put("coverArt", coverArt)
+        put("largeCoverArtUrl", largeCoverArtUrl)
+        put("smallCoverArtUrl", smallCoverArtUrl)
     }
 
     companion object {
@@ -54,6 +58,8 @@ data class ConsolePreset(
             status = json.optString("status", "online"),
             timestamps = json.optBoolean("timestamps", false),
             coverArt = json.optBoolean("coverArt", true),
+            largeCoverArtUrl = json.optString("largeCoverArtUrl", ""),
+            smallCoverArtUrl = json.optString("smallCoverArtUrl", ""),
             builtIn = false,
         )
     }
@@ -153,6 +159,8 @@ object ConsolePresetStore {
         status = "online",
         timestamps = false,
         coverArt = true,
+        largeCoverArtUrl = "",
+        smallCoverArtUrl = "",
         builtIn = false,
     )
 }

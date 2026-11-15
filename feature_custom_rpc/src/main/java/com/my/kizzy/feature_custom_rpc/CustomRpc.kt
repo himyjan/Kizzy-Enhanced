@@ -1947,6 +1947,7 @@ private fun RpcTextFieldsColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(games, key = { it.game_title }) { game ->
+                        val gameSelectedText = stringResource(R.string.console_game_selected, game.game_title)
                         ConsoleGameItem(
                             game = game,
                             selected = consoleSelectedGameTitle == game.game_title,
@@ -1955,12 +1956,7 @@ private fun RpcTextFieldsColumn(
                                 val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
                                 val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
                                 scope.launch {
-                                    snackBarHostState.showSnackbar(
-                                        context.getString(
-                                            R.string.console_game_selected,
-                                            game.game_title
-                                        )
-                                    )
+                                    snackBarHostState.showSnackbar(gameSelectedText)
                                 }
                                 applyConsoleGame(
                                     game = game,
@@ -1997,6 +1993,7 @@ private fun RpcTextFieldsColumn(
                 ) {
                     presets.forEach { preset ->
                         val presetName = if (preset.nameRes != 0) stringResource(preset.nameRes) else preset.name
+                        val presetAppliedMessage = stringResource(R.string.console_preset_applied)
                         ConsolePresetChip(
                             preset = preset,
                             selected = consoleSelectedPresetId == preset.id,
@@ -2005,9 +2002,7 @@ private fun RpcTextFieldsColumn(
                                 ConsolePresetStore.select(preset.id)
                                 applyConsolePreset(preset, presetName)
                                 scope.launch {
-                                    snackBarHostState.showSnackbar(
-                                        context.getString(R.string.console_preset_applied)
-                                    )
+                                    snackBarHostState.showSnackbar(presetAppliedMessage)
                                 }
                             },
                             onEdit = if (preset.builtIn) null else ({

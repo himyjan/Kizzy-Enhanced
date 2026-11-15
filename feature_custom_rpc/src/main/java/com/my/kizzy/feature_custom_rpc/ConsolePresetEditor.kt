@@ -1,5 +1,8 @@
 package com.my.kizzy.feature_custom_rpc
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,9 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -19,10 +26,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.SwitchBar
@@ -36,6 +45,8 @@ import com.my.kizzy.ui.components.SwitchBar
  *
  * @param initial preset to edit, or a blank one from [ConsolePresetStore.newPreset]
  * @param onDelete null for built-in presets, which cannot be removed
+ * @param pickLargeImage launcher for picking the large cover art image
+ * @param pickSmallImage launcher for picking the small cover art image
  */
 @Composable
 fun ConsolePresetEditorDialog(
@@ -43,13 +54,17 @@ fun ConsolePresetEditorDialog(
     onDismiss: () -> Unit,
     onSave: (ConsolePreset) -> Unit,
     onDelete: (() -> Unit)? = null,
+    pickLargeImage: ((PickVisualMediaRequest) -> Unit)? = null,
+    pickSmallImage: ((PickVisualMediaRequest) -> Unit)? = null,
 ) {
-    var name by remember(initial.id) { mutableStateOf(initial.name) }
-    var platform by remember(initial.id) { mutableStateOf(initial.platform) }
-    var activityType by remember(initial.id) { mutableStateOf(initial.activityType) }
-    var status by remember(initial.id) { mutableStateOf(initial.status) }
-    var timestamps by remember(initial.id) { mutableStateOf(initial.timestamps) }
-    var coverArt by remember(initial.id) { mutableStateOf(initial.coverArt) }
+    var name by remember(initial.id, initial.name) { mutableStateOf(initial.name) }
+    var platform by remember(initial.id, initial.platform) { mutableStateOf(initial.platform) }
+    var activityType by remember(initial.id, initial.activityType) { mutableStateOf(initial.activityType) }
+    var status by remember(initial.id, initial.status) { mutableStateOf(initial.status) }
+    var timestamps by remember(initial.id, initial.timestamps) { mutableStateOf(initial.timestamps) }
+    var coverArt by remember(initial.id, initial.coverArt) { mutableStateOf(initial.coverArt) }
+    var largeCoverArtUrl by remember(initial.id, initial.largeCoverArtUrl) { mutableStateOf(initial.largeCoverArtUrl) }
+    var smallCoverArtUrl by remember(initial.id, initial.smallCoverArtUrl) { mutableStateOf(initial.smallCoverArtUrl) }
     var confirmDelete by remember(initial.id) { mutableStateOf(false) }
 
     val platformLabel = Constants.ACTIVITY_PLATFORMS.entries
@@ -109,6 +124,44 @@ fun ConsolePresetEditorDialog(
                     title = stringResource(R.string.console_show_cover_art),
                     isChecked = coverArt,
                 ) { coverArt = !coverArt }
+                OutlinedTextField(
+                    value = largeCoverArtUrl,
+                    onValueChange = { largeCoverArtUrl = it },
+                    label = { Text(stringResource(R.string.console_large_cover_art)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp, top = 8.dp),
+                    trailingIcon = {
+                        pickLargeImage?.let { launcher ->
+                            IconButton(onClick = { launcher(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Image,
+                                    contentDescription = "Pick large cover art"
+                                )
+                            }
+                        }
+                    }
+                )
+                OutlinedTextField(
+                    value = smallCoverArtUrl,
+                    onValueChange = { smallCoverArtUrl = it },
+                    label = { Text(stringResource(R.string.console_small_cover_art)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    trailingIcon = {
+                        pickSmallImage?.let { launcher ->
+                            IconButton(onClick = { launcher(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Image,
+                                    contentDescription = "Pick small cover art"
+                                )
+                            }
+                        }
+                    }
+                )
             }
         },
         confirmButton = {
@@ -122,6 +175,8 @@ fun ConsolePresetEditorDialog(
                             status = status,
                             timestamps = timestamps,
                             coverArt = coverArt,
+                            largeCoverArtUrl = largeCoverArtUrl,
+                            smallCoverArtUrl = smallCoverArtUrl,
                         )
                     )
                 },
