@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -136,7 +135,7 @@ fun ConsolePresetEditorDialog(
                         pickLargeImage?.let { launcher ->
                             IconButton(onClick = { launcher(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }) {
                                 Icon(
-                                    imageVector = Image,
+                                    imageVector = Icons.Filled.Image,
                                     contentDescription = "Pick large cover art"
                                 )
                             }
@@ -155,7 +154,7 @@ fun ConsolePresetEditorDialog(
                         pickSmallImage?.let { launcher ->
                             IconButton(onClick = { launcher(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }) {
                                 Icon(
-                                    imageVector = Image,
+                                    imageVector = Icons.Filled.Image,
                                     contentDescription = "Pick small cover art"
                                 )
                             }
