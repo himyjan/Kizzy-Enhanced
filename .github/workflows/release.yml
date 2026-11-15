@@ -97,20 +97,20 @@ jobs:
             echo "R8 Report: $f"
             cp "$f" "$GITHUB_WORKSPACE/build/reports/r8-$(basename "$f")" 2>/dev/null || true
           done
-          
+
           # Generate Problems report
           ./gradlew :app:problemsRelease --no-daemon 2>/dev/null || true
           if [ -f "build/reports/problems/problems-report.html" ]; then
             cp build/reports/problems/problems-report.html build/reports/problems-release.html
           fi
-          
+
           # Collect Compose compiler reports
           find . -path "*/build/compose_compiler/*" -name "*.html" -o -path "*/build/compose_compiler/*" -name "*.csv" 2>/dev/null | while read f; do
             echo "Compose Report: $f"
             dir=$(echo "$f" | sed 's|/build/compose_compiler/|_|g' | sed 's|build/_|build_reports_|')
             cp "$f" "$GITHUB_WORKSPACE/build/reports/$dir" 2>/dev/null || true
           done
-          
+
           echo "Performance reports generated in build/reports/"
 
       - name: Download bundletool
@@ -179,7 +179,7 @@ jobs:
             build/reports/build_reports_*/
             app/build/reports/r8/**
             app/build/reports/r8/r8-config-analyzer-release.pb
-        retention-days: 30
+          retention-days: 30
 
       - name: Generate categorized git changelog
         id: changelog
