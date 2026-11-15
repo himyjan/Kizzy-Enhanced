@@ -16,11 +16,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v7
 
-      - name: Setup JDK 26
+      - name: Setup JDK 27
         uses: actions/setup-java@v6
         with:
-          java-version: '26'
-          distribution: 'temurin' # 'adopt' is deprecated; temurin natively supports JDK 26
+          java-version: '27'
+          distribution: 'temurin' # 'adopt' is deprecated; temurin natively supports JDK 27
           cache: gradle
 
       - name: Grant execute permission for gradlew
