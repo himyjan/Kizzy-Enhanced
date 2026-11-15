@@ -616,5 +616,39 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 },
             )
         }
+
+        if (showClientIdDialog) {
+            AlertDialog(
+                onDismissRequest = { showClientIdDialog = false },
+                title = { Text(stringResource(R.string.discord_oauth_client_id)) },
+                text = {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        RpcField(
+                            value = discordOAuthClientId,
+                            label = R.string.discord_oauth_client_id,
+                            onValueChange = { newText ->
+                                discordOAuthClientId = newText
+                            }
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            if (discordOAuthClientId.isBlank()) {
+                                // Keep existing value if empty
+                                discordOAuthClientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, ""]
+                            } else {
+                                Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID] = discordOAuthClientId
+                            }
+                            showClientIdDialog = false
+                        }
+                    ) {
+                        Text(stringResource(R.string.save))
+                    }
+                },
+            )
+        }
     }
 }
