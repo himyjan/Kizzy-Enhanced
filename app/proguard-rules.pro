@@ -34,9 +34,6 @@
 -keep class io.ktor.client.engine.cio.** { *; }
 -dontwarn io.ktor.client.engine.cio.**
 
--keep class io.ktor.client.plugins.** { *; }
--dontwarn io.ktor.client.plugins.**
-
 -keep class io.ktor.websocket.** { *; }
 -dontwarn io.ktor.websocket.**
 
@@ -45,7 +42,6 @@
 
 # kotlinx.serialization
 -keep class kotlinx.serialization.** { *; }
--keep class kotlinx.serialization.json.** { *; }
 -dontwarn kotlinx.serialization.**
 
 # kotlinx.coroutines
@@ -76,13 +72,10 @@
 # Keep Hilt entry points and generated service subclasses
 -keep class com.my.kizzy.Hilt_* { *; }
 -keep class com.my.kizzy.feature_**.Hilt_* { *; }
--keep class com.my.kizzy.feature_**.services.Hilt_* { *; }
 -keep class xyz.dead8309.**.Hilt_* { *; }
 
 # Keep Dagger/Hilt annotation markers
 -keep @dagger.hilt.EntryPoint class * { *; }
--keep @dagger.hilt.android.HiltAndroidApp class * { *; }
--keep @dagger.hilt.android.AndroidEntryPoint class * { *; }
 -keepnames class * { @dagger.hilt.android.lifecycle.HiltViewModel *; }
 -keepnames class * extends androidx.lifecycle.ViewModel { *; }
 
@@ -117,11 +110,6 @@
 -printmapping build/outputs/mapping/release/mapping.txt
 -printseeds build/outputs/mapping/release/seeds.txt
 -printusage build/outputs/mapping/release/usage.txt
-
-# Keep classes referenced via reflection by Kotlin serialization
--keepclassmembers class kotlinx.serialization.** {
-    <fields>;
-}
 
 # Keep descriptor classes needed for reflection-based serialization
 -keepnames class kotlinx.serialization.internal.** { *; }
