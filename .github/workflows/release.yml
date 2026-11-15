@@ -82,6 +82,9 @@ jobs:
           KEY_PASSWORD: kizzyfork
         run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
 
+      - name: Analyze R8 Configuration
+        run: ./gradlew :app:analyzeReleaseR8Config
+
       - name: Rename Base APK and App Bundle
         run: |
           mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base.apk
@@ -174,6 +177,7 @@ jobs:
             build/reports/r8-*.txt
             build/reports/problems-release.html
             build/reports/build_reports_*/
+            app/build/reports/r8/**
         retention-days: 30
 
       - name: Generate categorized git changelog
@@ -262,6 +266,12 @@ jobs:
             | File | Architecture / Type | Size | SHA-256 |
             | :--- | :--- | :--- | :--- |
             ${{ steps.assets.outputs.table }}
+
+            ---
+            ## 📊 R8 Configuration Analysis Report
+
+            The R8 optimization analysis report has been generated and is available as a release asset below.
+            Download the HTML report to review R8 configuration analysis results including kept/removed classes, obfuscation stats, and optimization recommendations.
 
             ---
             ## 📋 Changelog
@@ -407,6 +417,54 @@ jobs:
 
             ---
             <details>
+            <summary>🎮 Console RPC Game List with Search (New Feature)</summary>
+
+            **Added to Custom RPC tab:** Console RPC now includes a preset game list with search functionality for quick console presence setup.
+
+            - **Game List:** Displays games from `ConsoleGameCatalog` with cover art and platform info
+            - **Search:** Real-time filtering by game title (case-insensitive)
+            - **Selection:** Tap a game to select it; check mark indicates selected game
+            - **Quick Apply:** Selecting a game auto-applies Console RPC settings (platform, activity type, status, timestamps, cover art)
+            - **Integration:** Works alongside existing Console Presets (built-in + custom) chips
+            - **Files:** `ConsoleGameItem` composable + `applyConsoleGame()` in `CustomRpc.kt`, `games()` getter in `ConsoleGameCatalog`
+            </details>
+
+            ---
+            <details>
+            <summary>🔧 Fix: MetadataResolver Class Name Mismatch</summary>
+
+            **Bug:** `MediaResolver` class name did not match file name `MetadataResolver.kt`, causing build errors.
+
+            **Fix:** Renamed class `MediaResolver` → `MetadataResolver` in `MetadataResolver.kt`. Updated all references in `GetCurrentlyPlayingMedia.kt` and `GetCurrentPlayingMediaAll.kt` to use `metadataResolver: MetadataResolver`.
+
+            **Impact:** `:app:assembleDebug` compiles successfully.
+            </details>
+
+            ---
+            <details>
+            <summary>📋 Fix: Last.fm Settings Relocation</summary>
+
+            **Before:** Last.fm Scrobbling settings were on the Custom RPC screen.
+            **After:** Moved to Settings page (`RpcSettings.kt`) with a popup dialog for API credentials (API Key, API Secret) and enable/disable toggle.
+
+            **Details:**
+            - Last.fm settings now live in the main Settings page instead of Custom RPC
+            - Popup dialog for entering API Key and API Secret credentials
+            - Enable/Disable Last.fm Scrobbling toggle
+            - Added 10 Last.fm string resources across all 87 locale files
+            </details>
+
+            ---
+            <details>
+            <summary>🎨 Fix: "Hide Cover Art Images" Reactivity</summary>
+
+            **Bug:** "Hide Cover Art Images" toggle did not react to DataStore preference changes.
+
+            **Fix:** Updated to use `collectAsState` pattern with `prefsMap` key for proper DataStore reactivity. The setting now correctly updates UI when the DataStore value changes.
+            </details>
+
+            ---
+            <details>
             <summary>📏 APK Size Reduction</summary>
 
             **Release: 35 MB → 8.2 MB (77% smaller)**  
@@ -464,7 +522,7 @@ jobs:
 
             **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`  
             **Deleted:** `GamesScreen.kt` (merged into Custom RPC)  
-            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix)  
+            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix), `ConsoleApps.kt` (games getter)  
             **Locale files:** 87 updated  
             **Build files:** `gradle/libs.versions.toml` (ktor-client-okhttp added), `release.yml`, 30+ module `build.gradle.kts` files
             </details>
@@ -481,5 +539,8 @@ jobs:
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk
             app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
+            app/build/reports/r8/**/*.html
+            app/build/reports/r8/**/*.json
+            app/build/reports/r8/**/*.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
