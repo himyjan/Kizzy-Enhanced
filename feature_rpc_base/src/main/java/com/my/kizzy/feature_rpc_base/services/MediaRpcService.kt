@@ -467,7 +467,7 @@ class MediaRpcService : Service() {
      * takes precedence over the built-in catalog but not over per-app overrides.
      */
     private fun resolveActivityType(playingMedia: CommonRpc): Int {
-        val configured = Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, ActivityTypeResolver.DEFAULT_TYPE]
+        val configured = Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, Prefs.ACTIVITY_TYPE_AUTO]
         val useAuto = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true]
 
         // Per-app override always wins (checked inside the resolver).

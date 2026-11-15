@@ -141,7 +141,7 @@ fun MediaRPC(
         mutableStateOf(Prefs[Prefs.AUTO_ACTIVITY_TYPE, true])
     }
     var activityType by remember {
-        mutableStateOf(Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, ActivityTypeResolver.DEFAULT_TYPE])
+        mutableStateOf(Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, Prefs.ACTIVITY_TYPE_AUTO])
     }
 
     MediaRPCContent(

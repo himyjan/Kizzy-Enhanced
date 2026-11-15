@@ -64,6 +64,9 @@ object ActivityType {
     const val WATCHING = 3
     const val COMPETING = 5
 
+    /** Sentinel meaning "let the automatic detection decide". Mirrors Prefs.ACTIVITY_TYPE_AUTO. */
+    const val AUTO = -1
+
     /** Every type in the order Discord shows them. */
     val ALL = listOf(PLAYING, STREAMING, LISTENING, WATCHING, COMPETING)
 
@@ -115,7 +118,10 @@ fun ActivityTypeChip(
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val effectiveType = selectedTypeId ?: detectedTypeId
+    // AUTO (-1) behaves like "no explicit choice": the detected type is displayed
+    // and the "Auto" entry in the menu is checked.
+    val isAuto = selectedTypeId == null || selectedTypeId == ActivityType.AUTO
+    val effectiveType = if (isAuto) detectedTypeId else selectedTypeId!!
     val typeColor = ActivityType.color(effectiveType)
 
     Box(modifier) {
@@ -158,7 +164,7 @@ fun ActivityTypeChip(
                     )
                 },
                 trailingIcon = {
-                    if (selectedTypeId == null) {
+                    if (isAuto) {
                         Icon(
                             imageVector = Icons.Outlined.Check,
                             contentDescription = null,
@@ -191,7 +197,7 @@ fun ActivityTypeChip(
                         )
                     },
                     trailingIcon = {
-                        if (selectedTypeId == type) {
+                        if (!isAuto && selectedTypeId == type) {
                             Icon(
                                 imageVector = Icons.Outlined.Check,
                                 contentDescription = null,
@@ -248,7 +254,10 @@ fun ActivityTypePreference(
             ActivityTypeChip(
                 selectedTypeId = selectedTypeId,
                 detectedTypeId = selectedTypeId,
-                onSelect = { onSelect(it ?: selectedTypeId) },
+                // "Auto" in the menu means "no explicit choice". It used to be
+                // mapped back to the current type, so the Auto entry did nothing
+                // and the automatic detection could never be re-enabled.
+                onSelect = { onSelect(it ?: ActivityType.AUTO) },
             )
         }
     }
