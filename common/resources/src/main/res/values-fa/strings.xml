@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">دسکتاپ</string>
+
+    <string name="rpc_tab_custom_settings">RPC سفارشی</string>
+    <string name="rpc_tab_console_presets">RPC کنسول</string>
+    <string name="rpc_tab_console_presets_desc">یک پیش‌تنظیم انتخاب کنید تا Console RPC به‌سرعت راه‌اندازی شود. سپس می‌توانید هر مقدار را در زبانه Custom RPC تنظیم کنید.</string>
+    <string name="rpc_tab_back_to_settings">بازگشت به تنظیمات Custom RPC</string>
 </resources>

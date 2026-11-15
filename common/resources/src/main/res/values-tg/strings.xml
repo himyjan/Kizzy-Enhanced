@@ -83,4 +83,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">RPC-и фард</string>
+    <string name="rpc_tab_console_presets">RPC-и консол</string>
+    <string name="rpc_tab_console_presets_desc">Як якыли як таърихи пешмуҳайро интихоб кунед, то Console RPC зуд бурда соз шавед. Баъд дар Custom RPC ҷадда ҳар якро тағйир додан мумкин аст.</string>
+    <string name="rpc_tab_back_to_settings">Бозгашт ба Custom RPC танзимҳо</string>
 </resources>

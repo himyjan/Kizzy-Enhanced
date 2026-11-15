@@ -83,4 +83,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Propra RPC</string>
+    <string name="rpc_tab_console_presets">Konzola RPC</string>
+    <string name="rpc_tab_console_presets_desc">Elektu antaŭkontrolon por rapide agordi Console RPC. Vi povas fikti ĉiun valoron poste en la langeto Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Reen al al agordoj de Custom RPC</string>
 </resources>

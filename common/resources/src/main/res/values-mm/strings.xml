@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC ကို အမြန်ဆုံး သတ်မှတ်ရန် preset တစ်ခု ရွေးပါ။ နောက်ပိုင်းမှာ Custom RPC tab တွင် တန်ဖိုးတိုင်းကို ချိန်ညှိနိုင်သည်။</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC ဆက်တင်ချက်များသို့ ပြန်သွားပါ</string>
 </resources>

@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">سطح المكتب</string>
+
+    <string name="rpc_tab_custom_settings">RPC مخصص</string>
+    <string name="rpc_tab_console_presets">RPC وحدة التحكم</string>
+    <string name="rpc_tab_console_presets_desc">اختر إعدادًا مسبقًا لإعداد Console RPC بسرعة. يمكنك تعديل كل قيمة لاحقًا في تبويب Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">العودة إلى إعدادات Custom RPC</string>
 </resources>

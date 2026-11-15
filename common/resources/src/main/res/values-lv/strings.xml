@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Darbvirsma</string>
+
+    <string name="rpc_tab_custom_settings">Pielāgoto RPC</string>
+    <string name="rpc_tab_console_presets">Konsoles RPC</string>
+    <string name="rpc_tab_console_presets_desc">Izvēlieties iepriekš noteiktu opciju, lai ātri konfigurētu Console RPC. Vēlāk katru vērtību var precīzēt cilnē Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Atgriezties uz Custom RPC iestatījumiem</string>
 </resources>

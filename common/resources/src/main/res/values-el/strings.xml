@@ -294,4 +294,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Επιφάνεια εργασίας</string>
+
+    <string name="rpc_tab_custom_settings">Προσαρμοσμένο RPC</string>
+    <string name="rpc_tab_console_presets">RPC κονσόλας</string>
+    <string name="rpc_tab_console_presets_desc">Επιλέξτε μια προεπιλογή για γρήγορη ρύθμιση του Console RPC. Μπορείτε να ρυθμίσετε κάθε τιμή αργότερα στην καρτέλα Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Επιστροφή στις ρυθμίσεις Custom RPC</string>
 </resources>

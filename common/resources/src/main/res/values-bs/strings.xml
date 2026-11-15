@@ -83,4 +83,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Prilagođeni RPC</string>
+    <string name="rpc_tab_console_presets">Konzolni RPC</string>
+    <string name="rpc_tab_console_presets_desc">Odaberite preset za brzo postavljanje Console RPC-a. Svaku vrijednost možete kasnije podesiti na kartici Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Nazad na postavke Custom RPC-a</string>
 </resources>

@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Жұмыс үстелі</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC-ді жедел іске қосу үшін дайындықты таңдаңыз. Кейін әрбір мәнді Custom RPC қойыншасында өзгертуге болады.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC параметрлеріне оралу</string>
 </resources>

@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Ажлын ширээ</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC-г хурдан тохируулахын тулд preset сонгоно уу. Дараа нь Custom RPC табд бүх утгыг тохируулж болно.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC тохиргоо руу буцах</string>
 </resources>

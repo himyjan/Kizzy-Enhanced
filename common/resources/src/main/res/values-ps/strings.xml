@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">دسکتاپ</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">د Console RPC چې ړنګې جوړولو لپاره یو preset وټونئ. وروسته Custom RPC ټیب کې هر ارزښت تنظیم کولی شئ.</string>
+    <string name="rpc_tab_back_to_settings">بېرته Custom RPC تنظیماتو ته</string>
 </resources>

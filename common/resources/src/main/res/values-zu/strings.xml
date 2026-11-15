@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Khetha okusethiwe ukuze ulungise i-Console RPC ngokushesha. Ungabhulisa inani ngayinye ngemuva kuthe Custom RPC ithebhu.</string>
+    <string name="rpc_tab_back_to_settings">Buyela kuzilungiseliso ze Custom RPC</string>
 </resources>

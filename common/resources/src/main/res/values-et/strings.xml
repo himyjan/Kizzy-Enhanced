@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Töölaud</string>
+
+    <string name="rpc_tab_custom_settings">Kohandatud RPC</string>
+    <string name="rpc_tab_console_presets">Konsooli RPC</string>
+    <string name="rpc_tab_console_presets_desc">Vali eelneade, et seada Console RPC kiiresti. Iga väärtust saad hiljem vahekaardil Custom RPC täpsustada.</string>
+    <string name="rpc_tab_back_to_settings">Tagasi Custom RPC seadetele</string>
 </resources>

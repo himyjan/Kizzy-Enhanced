@@ -83,4 +83,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Öz RPC</string>
+    <string name="rpc_tab_console_presets">Konsol RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC-y çalt gurmak üçin öňünden kesgitlenen ýerini saýlaň. Soňra her bir bahasyny Custom RPC tabynda sazlap bilersiňiz.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC sazlamalaryna yzyna</string>
 </resources>

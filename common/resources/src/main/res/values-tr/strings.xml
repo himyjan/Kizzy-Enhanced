@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Masaüstü</string>
+
+    <string name="rpc_tab_custom_settings">Özel RPC</string>
+    <string name="rpc_tab_console_presets">Konsol RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC\'yi hızlıca kurmak için bir ön ayar seçin. Her değeri daha sonra Custom RPC sekmesinde ayarlayabilirsiniz.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC ayarlarına dön</string>
 </resources>

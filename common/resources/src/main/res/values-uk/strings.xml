@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Робочий стіл</string>
+
+    <string name="rpc_tab_custom_settings">Власний RPC</string>
+    <string name="rpc_tab_console_presets">Консоль RPC</string>
+    <string name="rpc_tab_console_presets_desc">Виберіть попередню настройку, щоб швидко налаштувати Console RPC. Після цього кожне значення можна змінити на вкладці Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Назад до налаштувань Custom RPC</string>
 </resources>

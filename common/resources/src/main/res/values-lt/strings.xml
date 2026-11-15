@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Darbastalas</string>
+
+    <string name="rpc_tab_custom_settings">Pasirinktinis RPC</string>
+    <string name="rpc_tab_console_presets">Konsolės RPC</string>
+    <string name="rpc_tab_console_presets_desc">Pasirinkite iš anksto nustatytą variantą, kad greitai sukonfigūruotumėte Console RPC. Vėliau kiekvieną reikšmę galite tikslinti skirtuke Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Grįžti į Custom RPC nustatymus</string>
 </resources>

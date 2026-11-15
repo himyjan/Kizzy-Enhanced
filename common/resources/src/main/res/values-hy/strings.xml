@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Աշխատանքի մակերին</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Ընտրեք նախապայտում՝ Console RPC-ն արագ կարգավորելու համար. Ամեն արժեք կարող եք հետո ճշտողել Custom RPC ներթերում։</string>
+    <string name="rpc_tab_back_to_settings">Անդիր վերադառնալ Custom RPC-ի կարգավորումներին</string>
 </resources>

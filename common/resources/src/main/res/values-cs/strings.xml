@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Plocha</string>
+
+    <string name="rpc_tab_custom_settings">Vlastní RPC</string>
+    <string name="rpc_tab_console_presets">Konzolové RPC</string>
+    <string name="rpc_tab_console_presets_desc">Vyberte předvolbu pro rychlé nastavení Console RPC. Každou hodnotu pak můžete upravit na kartě Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Zpět na nastavení Custom RPC</string>
 </resources>

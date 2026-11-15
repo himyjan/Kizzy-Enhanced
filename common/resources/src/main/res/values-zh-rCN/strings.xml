@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">桌面</string>
+
+    <string name="rpc_tab_custom_settings">自定义 RPC</string>
+    <string name="rpc_tab_console_presets">主机 RPC</string>
+    <string name="rpc_tab_console_presets_desc">选择一个预设以快速设置 Console RPC。之后你可以在 Custom RPC 标签页中微调每个值。</string>
+    <string name="rpc_tab_back_to_settings">返回 Custom RPC 设置</string>
 </resources>

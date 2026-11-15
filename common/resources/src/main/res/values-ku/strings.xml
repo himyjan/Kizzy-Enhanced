@@ -83,4 +83,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">RPC bi taybet</string>
+    <string name="rpc_tab_console_presets">RPC ji bo konsolê</string>
+    <string name="rpc_tab_console_presets_desc">Ji bo ku sazî Console RPC yê hatû preset hilbijêre. Pişî tu her dewerekê di hilata Custom RPC de bipîrîn.</string>
+    <string name="rpc_tab_back_to_settings">Vegere ve Custom RPC ayarlanên</string>
 </resources>

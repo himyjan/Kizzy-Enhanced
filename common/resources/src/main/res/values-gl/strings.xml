@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">RPC personalizado</string>
+    <string name="rpc_tab_console_presets">RPC de consola</string>
+    <string name="rpc_tab_console_presets_desc">Escolle unha configuración predeterminada para configurar rapidamente o Console RPC. Despois poderá axustar cada valor na lapela Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Volver á configuración de Custom RPC</string>
 </resources>

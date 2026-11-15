@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC ඉක්මනින් සකසා ගැනීමට preset එකක් තෝරන්න. පසුව Custom RPC ටැබ් එකේ හැම අගයක්ම වෙනස් කළ හැක.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC සැකසුම් වෙත ආපසු යන්න</string>
 </resources>

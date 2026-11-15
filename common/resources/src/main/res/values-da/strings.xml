@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Skrivebord</string>
+
+    <string name="rpc_tab_custom_settings">Brugerdefineret RPC</string>
+    <string name="rpc_tab_console_presets">Konsol-RPC</string>
+    <string name="rpc_tab_console_presets_desc">Vælg en forudindstilling for hurtigt at opsætte Console RPC. Du kan finjustere hver værdi i Custom RPC-fanen senere.</string>
+    <string name="rpc_tab_back_to_settings">Tilbage til Custom RPC-indstillinger</string>
 </resources>

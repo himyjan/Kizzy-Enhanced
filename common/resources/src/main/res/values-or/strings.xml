@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">ଏକ ପ୍ରିସେଟ ବାଛନ୍ତୁ Console RPC ଶ୍ରୁଗମ ସେଟ୍ କରିବାକୁ। ପରେ Custom RPC ଟ୍ୟାବରେ ପ୍ରତ୍ୟେକ ମୂଲ୍ୟ ସାଧିକରିପାରିବେ।</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC ସେଟିଙ୍ଗକୁ ଫେରନ୍ତୁ</string>
 </resources>

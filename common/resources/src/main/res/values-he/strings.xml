@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">שולחן עבודה</string>
+
+    <string name="rpc_tab_custom_settings">RPC מותאם אישית</string>
+    <string name="rpc_tab_console_presets">קונסולה RPC</string>
+    <string name="rpc_tab_console_presets_desc">בחרו preset כדי להגדיר את Console RPC במהירות. ניתן לעדן כל ערך אחר כך בלשונית Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">חזרה להגדרות Custom RPC</string>
 </resources>

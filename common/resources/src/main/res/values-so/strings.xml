@@ -83,4 +83,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">RPC gaar ah</string>
+    <string name="rpc_tab_console_presets">RPC console</string>
+    <string name="rpc_tab_console_presets_desc">Dooroor wax ka doorasho preset si degdeg ah ina loo diyaariyo Console RPC. Waxaad dambe ku hagaaji kartaa qiyasta kasta tabka Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">U laabo tabayada Custom RPC</string>
 </resources>

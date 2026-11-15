@@ -94,4 +94,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">ئۆز RPC</string>
+    <string name="rpc_tab_console_presets">كونسول RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC نى تېز تەڭشەش ئۈچۈن بىر تەڭشەك تاللاڭ. كېيىن Custom RPC تابىدىكى ھەر بىر قىممەتنى ئۆزگەرتەلەيسىز.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC تەڭشەلىرىگە قايتىش</string>
 </resources>

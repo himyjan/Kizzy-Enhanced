@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Kies \'n preset om Console RPC vinnig op te stel. Jy kan elke waarde later in die Custom RPC-oortjie fynstuur.</string>
+    <string name="rpc_tab_back_to_settings">Terug na Custom RPC-instellings</string>
 </resources>

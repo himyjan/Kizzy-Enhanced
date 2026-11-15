@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Työpöytä</string>
+
+    <string name="rpc_tab_custom_settings">Mukautettu RPC</string>
+    <string name="rpc_tab_console_presets">Konsoli-RPC</string>
+    <string name="rpc_tab_console_presets_desc">Valitse esiasetus, jotta Console RPC käynnistyy nopeasti. Voit hienosäätää jokaisen arvon myöhemmin Custom RPC -välilehdellä.</string>
+    <string name="rpc_tab_back_to_settings">Takaisin Custom RPC-asetuksiin</string>
 </resources>

@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">ብጁ RPC</string>
+    <string name="rpc_tab_console_presets">ኮንሶል RPC</string>
+    <string name="rpc_tab_console_presets_desc">አንድን ቅንብ ይምረጡ የConsole RPCን በፈጣን ለማስተካከል። እዛሬ ሁሉንም የራሱን መረጃ በCustom RPC ትሮት ውስጥ ማሻሰር ይችላሉ።</string>
+    <string name="rpc_tab_back_to_settings">ወደ Custom RPC ቅንብናት መለስ</string>
 </resources>

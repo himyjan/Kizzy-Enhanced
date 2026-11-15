@@ -290,4 +290,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Работна површина</string>
+
+    <string name="rpc_tab_custom_settings">Прилагоден RPC</string>
+    <string name="rpc_tab_console_presets">Консола RPC</string>
+    <string name="rpc_tab_console_presets_desc">Изберете предготово поставка за брзо поставување на Console RPC. Секоја вредност може подоцна да ја прилагодите во јазичето Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Назад кон поставките на Custom RPC</string>
 </resources>

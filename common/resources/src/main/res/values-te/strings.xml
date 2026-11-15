@@ -292,4 +292,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">కస్టమ్ RPC</string>
+    <string name="rpc_tab_console_presets">కాన్సోల్ RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPCను వేగంగా సెట్ చేయడానికి ఒక preset‌ను ఎంచుకోండి. తర్వాత Custom RPC ట్యాబ్‌లో ప్రతి విలువను మార్చవచ్చు.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC సెట్టింగ్‌లకు తిరిగి వెళ్ళండి</string>
 </resources>

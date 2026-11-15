@@ -95,6 +95,10 @@
     <string name="console_preset_playstation">PlayStation</string>
     <string name="console_preset_nintendo">Nintendo</string>
     <string name="console_preset_desktop">Desktop</string>
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Pick a preset to set up Console RPC quickly. You can fine tune every value in the Custom RPC tab afterwards.</string>
+    <string name="rpc_tab_back_to_settings">Back to Custom RPC settings</string>
     <string name="console_buttons">Buttons</string>
     <string name="console_buttons_desc">Configure custom buttons</string>
     <string name="rpc_settings_button_configs">Button configuration for Media and AppDetection RPC</string>

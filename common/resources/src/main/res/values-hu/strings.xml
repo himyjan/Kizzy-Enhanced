@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Asztali</string>
+
+    <string name="rpc_tab_custom_settings">Egyedi RPC</string>
+    <string name="rpc_tab_console_presets">Konzol RPC</string>
+    <string name="rpc_tab_console_presets_desc">Válassz előbeállítást a Console RPC gyors beállításához. Minden értéket később a Custom RPC fülön finomhangolhat.</string>
+    <string name="rpc_tab_back_to_settings">Vissza a Custom RPC beállításokhoz</string>
 </resources>

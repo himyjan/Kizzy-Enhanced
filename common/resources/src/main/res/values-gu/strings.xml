@@ -294,4 +294,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">કસ્ટમ રિક્વિઅર્સ્ટ સેટિંગ</string>
+    <string name="rpc_tab_console_presets">console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC ઝડપથી સેટ કરવા માટે એક પ્રીસેટ પસંદ કરો. પછી તમે Custom RPC ટેબમાં દરેક મૂલ્ય સુધારી શકો છો.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC સેટિંગ્સ પર પાછા જાઓ</string>
 </resources>

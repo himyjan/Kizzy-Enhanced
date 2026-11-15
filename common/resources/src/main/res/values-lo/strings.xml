@@ -315,4 +315,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">ເລືອກ Preset ເພື່ອຕັ້ງ Console RPC ໄດ້ວຽກ. ຫຼັງຕາງທ້າຍຄ່າໄດ້ປັບໃນແທບ Custom RPC ໄດ້.</string>
+    <string name="rpc_tab_back_to_settings">ກັບໄປທີ່ການຕັ້ງຄ່າ Custom RPC</string>
 </resources>

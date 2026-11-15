@@ -83,4 +83,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">RPC whakaritea</string>
+    <string name="rpc_tab_console_presets">RPC tūhoko</string>
+    <string name="rpc_tab_console_presets_desc">Kōwhiri te taupū, kia tūtoa te Console RPC. Ka taea e koe te whakatau ia ia uara i te tab Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Hoki mai ki te Custom RPC tautuhinga</string>
 </resources>

@@ -58,6 +58,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 
 import androidx.compose.material.icons.Icons
 
+import androidx.compose.material.icons.filled.Check
+
 import androidx.compose.material.icons.filled.DesktopWindows
 
 import androidx.compose.material.icons.filled.EditCalendar
@@ -89,6 +91,10 @@ import androidx.compose.material3.MaterialTheme
 
 import androidx.compose.material3.Scaffold
 
+import androidx.compose.material3.Tab
+
+import androidx.compose.material3.TabRow
+
 import androidx.compose.material3.SnackbarHost
 
 import androidx.compose.material3.SnackbarHostState
@@ -108,6 +114,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Alignment
+
+import androidx.compose.ui.draw.clip
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -428,7 +436,28 @@ fun CustomRpcScreen(
 
         }) { padding ->
 
+        // Two tabs: the regular Custom RPC settings and the quick select for the
+        // Console RPC presets. Picking a preset jumps back to the settings tab so
+        // the user can fine tune every value there.
+        var selectedTab by remember { mutableStateOf(0) }
+
         Column(modifier = Modifier.padding(padding)) {
+
+            TabRow(
+                selectedTabIndex = selectedTab,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Tab(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    text = { Text(text = stringResource(id = R.string.rpc_tab_custom_settings)) }
+                )
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    text = { Text(text = stringResource(id = R.string.rpc_tab_console_presets)) }
+                )
+            }
 
             RpcTextFieldsColumn(
 
@@ -436,7 +465,11 @@ fun CustomRpcScreen(
 
                 uiState = state,
 
-                onEvent = onEvent
+                onEvent = onEvent,
+
+                selectedTab = selectedTab,
+
+                onPresetSelected = { selectedTab = 0 }
 
             )
 
@@ -457,6 +490,10 @@ private fun RpcTextFieldsColumn(
     uiState: UiState,
 
     snackBarHostState: SnackbarHostState,
+
+    selectedTab: Int = 0,
+
+    onPresetSelected: () -> Unit = {},
 
 ) {
 
@@ -556,6 +593,8 @@ private fun RpcTextFieldsColumn(
             }
 
         }
+
+        if (selectedTab == 0) {
 
         with(uiState.rpcConfig) {
 
@@ -1563,70 +1602,6 @@ private fun RpcTextFieldsColumn(
                 }
             }
 
-            // ===== Console RPC Preset Games (Quick Select) =====
-
-            item {
-                Text(
-                    text = stringResource(id = R.string.console_preset_games),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
-
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val presetGames = listOf(
-                        PresetConsoleGame(
-                            name = stringResource(id = R.string.console_preset_xbox),
-                            platform = "xbox",
-                            activityType = "0",
-                            status = "online",
-                            icon = Icons.Filled.SportsEsports
-                        ),
-                        PresetConsoleGame(
-                            name = stringResource(id = R.string.console_preset_playstation),
-                            platform = "ps5",
-                            activityType = "0",
-                            status = "online",
-                            icon = Icons.Filled.SportsEsports
-                        ),
-                        PresetConsoleGame(
-                            name = stringResource(id = R.string.console_preset_nintendo),
-                            platform = "nintendo",
-                            activityType = "0",
-                            status = "online",
-                            icon = Icons.Filled.SportsEsports
-                        ),
-                        PresetConsoleGame(
-                            name = stringResource(id = R.string.console_preset_desktop),
-                            platform = "desktop",
-                            activityType = "0",
-                            status = "online",
-                            icon = Icons.Filled.DesktopWindows
-                        )
-                    )
-
-                    presetGames.forEach { preset ->
-                        ConsolePresetChip(
-                            preset = preset,
-                            selected = consolePlatform == preset.platform,
-                            onClick = {
-                                consolePlatform = preset.platform
-                                consoleActivityType = preset.activityType
-                                consoleStatus = preset.status
-                                consoleEnableTimestamps = false
-                                consoleShowCoverArt = true
-                            }
-                        )
-                    }
-                }
-            }
-
             item {
 
                 AnimatedVisibility(visible = type == "1") {
@@ -1677,6 +1652,97 @@ private fun RpcTextFieldsColumn(
 
         }
 
+        // ===== Console RPC Presets (Quick Select) =====
+
+        } else {
+
+            item {
+                Text(
+                    text = stringResource(id = R.string.rpc_tab_console_presets_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                )
+            }
+
+            item {
+                val presetGames = listOf(
+                    PresetConsoleGame(
+                        name = stringResource(id = R.string.console_preset_xbox),
+                        platform = "xbox",
+                        activityType = "0",
+                        status = "online",
+                        icon = Icons.Filled.SportsEsports
+                    ),
+                    PresetConsoleGame(
+                        name = stringResource(id = R.string.console_preset_playstation),
+                        platform = "ps5",
+                        activityType = "0",
+                        status = "online",
+                        icon = Icons.Filled.SportsEsports
+                    ),
+                    PresetConsoleGame(
+                        name = stringResource(id = R.string.console_preset_nintendo),
+                        platform = "nintendo",
+                        activityType = "0",
+                        status = "online",
+                        icon = Icons.Filled.SportsEsports
+                    ),
+                    PresetConsoleGame(
+                        name = stringResource(id = R.string.console_preset_desktop),
+                        platform = "desktop",
+                        activityType = "0",
+                        status = "online",
+                        icon = Icons.Filled.DesktopWindows
+                    )
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    presetGames.forEach { preset ->
+                        ConsolePresetChip(
+                            preset = preset,
+                            selected = consolePlatform == preset.platform,
+                            onClick = {
+                                consolePlatform = preset.platform
+                                consoleActivityType = preset.activityType
+                                consoleStatus = preset.status
+                                consoleEnableTimestamps = false
+                                consoleShowCoverArt = true
+                                // Jump back to the settings tab so the user can
+                                // customise every value of the chosen preset.
+                                onPresetSelected()
+                            }
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+
+            item {
+                androidx.compose.material3.OutlinedButton(
+                    onClick = onPresetSelected,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(text = stringResource(id = R.string.rpc_tab_back_to_settings))
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.size(100.dp))
+            }
+
+        }
+
     }
 
 }
@@ -1711,32 +1777,38 @@ fun ConsolePresetChip(
 ) {
 
     val colorScheme = MaterialTheme.colorScheme
+    val contentColor = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurface
 
-    Box(
+    Row(
         modifier = Modifier
-            .clickable(onClick = onClick)
+            .fillMaxWidth()
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
             .background(
-                if (selected) colorScheme.primaryContainer else colorScheme.surfaceVariant,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+                if (selected) colorScheme.primaryContainer else colorScheme.surfaceVariant
             )
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
+        Icon(
+            imageVector = preset.icon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            tint = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = preset.name,
+            style = MaterialTheme.typography.titleMedium,
+            color = contentColor,
+            modifier = Modifier.weight(1f)
+        )
+        if (selected) {
             Icon(
-                imageVector = preset.icon,
+                imageVector = Icons.Filled.Check,
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = preset.name,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant
+                modifier = Modifier.size(20.dp),
+                tint = colorScheme.onPrimaryContainer
             )
         }
     }

@@ -295,4 +295,9 @@
     <string name="console_preset_nintendo">Nintendo</string>
 
     <string name="console_preset_desktop">Máy tính</string>
+
+    <string name="rpc_tab_custom_settings">RPC tùy chỉnh</string>
+    <string name="rpc_tab_console_presets">RPC bảng điều khiển</string>
+    <string name="rpc_tab_console_presets_desc">Chọn một cài đặt trước để thiết lập Console RPC nhanh chóng. Bạn có thể tinh chỉnh từng giá trị sau trong tab Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Quay lại cài đặt Custom RPC</string>
 </resources>
