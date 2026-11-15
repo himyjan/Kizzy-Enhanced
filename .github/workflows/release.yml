@@ -152,8 +152,11 @@ jobs:
               --ks-pass=pass:kizzyfork \
               --ks-key-alias=kizzyfork \
               --key-pass=pass:kizzyfork
-            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "standalone.apk" -d "$RUNNER_TEMP/out-${ABI}"
-            cp "$RUNNER_TEMP/out-${ABI}/standalone.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+            java -jar "$RUNNER_TEMP/bundletool.jar" extract-apks \
+              --apks="$RUNNER_TEMP/${ABI}.apks" \
+              --output-dir="$RUNNER_TEMP/out-${ABI}"
+            APK_FILE=$(find "$RUNNER_TEMP/out-${ABI}" -name "*.apk" | head -1)
+            cp "$APK_FILE" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
           done
 
       - name: Upload All Release APKs
