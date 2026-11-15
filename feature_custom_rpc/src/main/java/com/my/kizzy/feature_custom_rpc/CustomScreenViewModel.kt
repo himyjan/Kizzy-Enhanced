@@ -55,7 +55,7 @@ class CustomScreenViewModel @Inject constructor(
                 if (result is com.my.kizzy.domain.model.Resource.Success) {
                     val freshGames = result.data ?: emptyList()
                     ConsoleGameCatalog.update(freshGames)
-                    _uiState.update { it.copy(consoleGames = freshGames) }
+                    _uiState.value = _uiState.value.copy(consoleGames = freshGames)
                 }
             }
         }

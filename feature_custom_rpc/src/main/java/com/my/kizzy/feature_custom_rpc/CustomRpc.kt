@@ -2076,9 +2076,9 @@ private fun RpcTextFieldsColumn(
 
             item {
                 val games = if (consoleSearchText.isBlank()) {
-                    state.consoleGames
+                    uiState.consoleGames
                 } else {
-                    state.consoleGames.filter { it.game_title.contains(consoleSearchText, ignoreCase = true) }
+                    uiState.consoleGames.filter { it.game_title.contains(consoleSearchText, ignoreCase = true) }
                 }
 
                 LazyColumn(
