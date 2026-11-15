@@ -48,9 +48,12 @@ class DiscordOAuthRpcService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand")
 
-        // Start the RPC presence loop safely inside the injected coroutine scope
+        // Only refresh the gateway token. Do NOT call build(): it creates a presence
+        // with empty name/state/details (the service has no activity data) and that
+        // empty presence overwrites the real Media/Custom presence on Discord.
+        // The active RPC service sends the actual presence.
         scope.launch {
-            kizzyRPC.build(forceRefresh = true)
+            kizzyRPC.refreshFromPrefs()
         }
 
         return Service.START_STICKY
