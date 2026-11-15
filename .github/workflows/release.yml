@@ -235,6 +235,18 @@ jobs:
             ${{ steps.changelog.outputs.body }}
 
             ---
+            ## 📊 Release Summary
+
+            | Field | Value |
+            | :--- | :--- |
+            | Package | `com.my.kizzy.enhanced` |
+            | Version | `6.2-enhanced-${{ github.run_number }}` |
+            | Version Code | `${{ github.run_number }}` |
+            | Base Project | Kizzy by dead8309 |
+            | Base Commit | \`5e494d94a2c05e4d56b75ac80aae51dba4436905\` |
+            | Full Feature List | See the README |
+
+            ---
             ## 📲 Installation
 
             1. Download **KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk** (or `universal.apk` if you are unsure of your device's CPU).
@@ -243,17 +255,151 @@ jobs:
             4. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand).
 
             ---
-            ## 📄 Release Details
+            <details>
+            <summary>🔧 Build & Dependency Changes (Click to expand)</summary>
 
-            | Field | Value |
-            | :--- | :--- |
-            | Package | `com.my.kizzy.enhanced` |
-            | Version | `6.2-enhanced-${{ github.run_number }}` |
-            | Version Code | `${{ github.run_number }}` |
-            | Base Project | Kizzy by dead8309 |
-            | Base Commit | \`5e494d94\` |
-            | Full Feature List | See the README |
+            | Component | Base Commit | This Fork | Change Type |
+            | :--- | :--- | :--- | :--- |
+            | Gradle | 8.13.2 | 9.9.1 | Major upgrade |
+            | AGP | 8.13.2 | 9.6.0-alpha03 | Major upgrade |
+            | Kotlin | 2.1.20 | 2.4.21 | Major upgrade |
+            | KSP | 2.1.20-1.0.31 | 2.3.13 | Major upgrade |
+            | Compose BOM | 2025.06.01 | 2026.09.00-alpha01 | ~1.5 years newer |
+            | Ktor | 2.3.0 | 3.6.1 | Major upgrade |
+            | Coil | 2.1.0 | 3.6.3 (Coil3) | Major rewrite |
+            | Hilt | 2.56.2 | 2.60.1 | Minor upgrade |
+            | Material | 1.12.0 | 1.14.0 | Minor upgrade |
 
+            **Removed:** MMKV, Accompanist, BlankJ UtilCodex, CrashX, AndroidSVG, javax.inject  
+            **Added:** Jetpack DataStore 1.3.0, Tink Android 1.24.0, Jetpack BaselineProfile 1.6.0-alpha01, Jetpack MacroBenchmark 1.6.0-alpha01, Coil 3.6.3, WorkManager 2.12.0, Hilt Work 1.4.0, Material3 Adaptive 1.4.0-alpha03  
+            **Critical:** Coil 3 splits the HTTP fetcher — `coil-network-ktor3` was added; without it, remote images fail to load.
+            </details>
+
+            ---
+            <details>
+            <summary>🎮 Console RPC → Custom RPC Merge</summary>
+
+            **Before:** Separate Console RPC screen, home entry, and navigation route  
+            **After:** Single Custom RPC screen with two tabs
+
+            **Console RPC Tab:**
+            - Platform: Desktop, Web, Android, iOS, Xbox, PlayStation, VR
+            - Activity Type: Playing, Streaming, Listening, Watching, Competing
+            - Status: Online, Idle, DND, Offline, Invisible
+            - Enable Timestamps / Show Cover Art toggles
+            - Button 1/2: Text + URL
+            - Preset Games: Xbox, PlayStation, Nintendo, Desktop quick-select chips
+
+            **Features:** Console presets with custom preset creation and deletion support
+            </details>
+
+            ---
+            <details>
+            <summary>🔐 DataStore Migration (MMKV → Jetpack DataStore)</summary>
+
+            **Before:** MMKV (C++ based, synchronous, no coroutine integration)  
+            **After:** Jetpack DataStore Preferences 1.3.0
+
+            **Architecture:** `MutableStateFlow<Map<String, Any?>>` mirror for synchronous reads; async writes on `Dispatchers.IO`.  
+            **Typed Keys:** `stringPreferencesKey`, `intPreferencesKey`, `booleanPreferencesKey`, `floatPreferencesKey`, `longPreferencesKey`  
+            **Remove:** Deletes key under all five typed keys  
+            **Edit:** `MutablePreferences` receiver (`Preferences.() -> Unit`)
+            </details>
+
+            ---
+            <details>
+            <summary>🔒 Tink AES-256-GCM Token Encryption</summary>
+
+            **Sensitive keys encrypted:** `TOKEN`, `DISCORD_OAUTH_ACCESS_TOKEN`, `DISCORD_OAUTH_REFRESH_TOKEN`  
+            **Key storage:** Android Keystore via `AndroidKeysetManager`  
+            **Ciphertext:** `enc:` + Base64(NO_WRAP) — pre-existing plaintext tokens remain readable  
+            **Fallback:** If keystore unavailable, falls back to plain text (user never locked out)
+            </details>
+
+            ---
+            <details>
+            <summary>🔐 Discord OAuth2 Integration (New Feature)</summary>
+
+            **Files added:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`  
+            **OAuth2 flow:** User authorizes via Discord → app exchanges code for token → stored encrypted via Tink  
+            **Per-user OAuth:** Users can use their own Discord account instead of bot token
+            </details>
+
+            ---
+            <details>
+            <summary>📱 Media RPC Activity Type Fix</summary>
+
+            **Bug:** Global activity type setting did not take effect for known apps (YouTube Music, Spotify, etc.) because built-in catalog was checked before global fallback.  
+            **Fix:** When user explicitly sets a global activity type (not "Auto"), built-in catalog and metadata detection are skipped; per-app overrides still win.
+            </details>
+
+            ---
+            <details>
+            <summary>🎮 Experimental RPC: Select All / Deselect All</summary>
+
+            Two buttons added above the app list for bulk enabling/disabling all apps at once.
+            </details>
+
+            ---
+            <details>
+            <summary>🌍 i18n — All 87 Locale Files</summary>
+
+            **0 English leftovers** across all locales  
+            **0 cross-script contamination**  
+            All 88 strings.xml files valid XML; `:app:mergeDebugResources` verified BUILD SUCCESSFUL  
+            Brand names (Xbox, PlayStation, Nintendo, iOS, VR) intentionally identical across locales
+            </details>
+
+            ---
+            <details>
+            <summary>📏 APK Size Reduction</summary>
+
+            **Release: 35 MB → 8.2 MB (77% smaller)**  
+            **DEX files:** 29 → 1  
+            **R8:** 769 classes removed, 14 app classes, 171 obfuscated, 0 kept names  
+            **ABI Filters:** `arm64-v8a`, `x86_64` (32-bit devices excluded)
+            </details>
+
+            ---
+            <details>
+            <summary>⚖️ Pros & Cons</summary>
+
+            **✅ Pros:**
+            - Tink AES-256-GCM + Android Keystore for token encryption at rest
+            - Jetpack DataStore replaces MMKV (Jetpack-first, coroutine-friendly)
+            - Console RPC merged into Custom RPC (single screen, less navigation)
+            - Discord OAuth2 support (use your own Discord account)
+            - Modern toolchain (Kotlin 2.4.21, Gradle 9.9.1)
+            - Release APK only 8.2 MB
+            - All 87 locales fully translated (0 English leftovers)
+            - Proper AAB CI/CD workflow via bundletool
+
+            **❌ Cons / Limitations:**
+            - Kotlin 2.4.21 and Compose BOM 2026.09-alpha are pre-release channels
+            - ABI filtering excludes 32-bit ARM/x86 devices
+            - Console RPC merged into Custom RPC (extra tap to access console settings)
+            - OAuth2 requires user's own Discord Application ID
+            - No OAuth2 token refresh logic implemented yet
+            - Client ID stored in plaintext (not encrypted)
+            </details>
+
+            ---
+            <details>
+            <summary>📁 Key Files Changed</summary>
+
+            **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`  
+            **Deleted:** `GamesScreen.kt` (merged into Custom RPC)  
+            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336)  
+            **Locale files:** 87 updated  
+            **Build files:** `gradle/libs.versions.toml`, `release.yml`, 30+ module `build.gradle.kts` files
+            </details>
+
+            ---
+            <details>
+            <summary>🚀 Gateway / WebSocket</summary>
+
+            New gateway module with Discord gateway entities: `Activity.kt`, `Assets.kt`, `Identify.kt`, `HeartBeat.kt`, `Payload.kt`, `Ready.kt`, `Resume.kt`, `OpCode.kt`, `Presence.kt`, `Timestamps.kt`
+            </details>
           files: |
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-armeabi-v7a.apk
