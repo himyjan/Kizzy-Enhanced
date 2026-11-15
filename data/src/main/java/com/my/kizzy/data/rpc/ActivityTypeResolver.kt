@@ -44,7 +44,7 @@ object ActivityTypeResolver {
      * sessions are far more often video than audio on Android, so "Watching" is
      * the better guess than "Playing" (which Discord draws as a game).
      */
-    const val DEFAULT_TYPE = WATCHING
+    const val DEFAULT_TYPE = ActivityType.AUTO
 
     /**
      * Music streaming services and music players. They all report a track, so
