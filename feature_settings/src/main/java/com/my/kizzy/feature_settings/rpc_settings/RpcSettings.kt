@@ -85,6 +85,8 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var discordOAuthClientId by remember {
         mutableStateOf(Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, ""])
     }
+    var showClientIdDialog by remember { mutableStateOf(false) }
+    var editingClientId by remember { mutableStateOf("") }
 
     // Collect from DataStore state flow so OAuth2 selection persists across cold boots.
     // DataStore priming is async (Dispatchers.IO), so Prefs[...] may return the default
@@ -156,11 +158,13 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
             item(key = "oauth_client_id") {
                 SettingItem(
                     title = stringResource(id = R.string.discord_oauth_client_id),
-                    description = stringResource(id = R.string.discord_oauth_client_id_desc),
+                    description = stringResource(id = R.string.discord_oauth_client_id_desc)
+                        + if (discordOAuthClientId.isNotEmpty()) "  •  $discordOAuthClientId" else "",
                     icon = Icons.Outlined.Person,
                 ) {
                     discordOAuthClientId = Prefs[Prefs.DISCORD_OAUTH_CLIENT_ID, ""]
-                    // TODO: open dialog to edit client ID
+                    editingClientId = discordOAuthClientId
+                    showClientIdDialog = true
                 }
             }
             item(key = "oauth_authorize") {
