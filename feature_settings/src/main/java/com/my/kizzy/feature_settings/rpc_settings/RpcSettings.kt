@@ -159,8 +159,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
             item(key = "oauth_client_id") {
                 SettingItem(
                     title = stringResource(id = R.string.discord_oauth_client_id),
-                    description = stringResource(id = R.string.discord_oauth_client_id_desc)
-                        + if (discordOAuthClientId.isNotEmpty()) "  •  $discordOAuthClientId" else "",
+                    description = stringResource(id = R.string.discord_oauth_client_id_desc) + (if (discordOAuthClientId.isNotEmpty()) "  •  $discordOAuthClientId" else "  •  (optional)"),
                     icon = Icons.Outlined.Person,
                 ) {
                     discordOAuthClientId = Prefs[Prefs.DISCORD_OAUTH_APPLICATION_CLIENT_ID, ""]
