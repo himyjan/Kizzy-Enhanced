@@ -261,6 +261,12 @@ object Prefs {
     const val CONSOLE_RPC_BUTTON1_URL = "console_rpc_button1_url"
     const val CONSOLE_RPC_BUTTON2_TEXT = "console_rpc_button2_text"
     const val CONSOLE_RPC_BUTTON2_URL = "console_rpc_button2_url"
+
+    /** Id of the Console RPC preset that is currently selected. */
+    const val CONSOLE_RPC_PRESET = "console_rpc_preset"
+
+    /** JSON array with the presets the user created in the Console RPC tab. */
+    const val CONSOLE_RPC_PRESETS = "console_rpc_presets"
     const val LANGUAGE = "language"
     const val ENABLED_APPS = "enabled_apps"
     const val ENABLED_MEDIA_APPS = "enabled_media_apps"

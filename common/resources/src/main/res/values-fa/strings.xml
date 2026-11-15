@@ -320,4 +320,21 @@
     <string name="rpc_tab_console_presets">RPC کنسول</string>
     <string name="rpc_tab_console_presets_desc">یک پیش‌تنظیم انتخاب کنید تا Console RPC به‌سرعت راه‌اندازی شود. سپس می‌توانید هر مقدار را در زبانه Custom RPC تنظیم کنید.</string>
     <string name="rpc_tab_back_to_settings">بازگشت به تنظیمات Custom RPC</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">Preset applied</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Presets</string>
+    <string name="console_options_title">Console RPC options</string>
 </resources>

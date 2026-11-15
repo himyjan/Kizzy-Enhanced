@@ -62,6 +62,8 @@ import androidx.compose.material.icons.filled.Check
 
 import androidx.compose.material.icons.filled.DesktopWindows
 
+import androidx.compose.material.icons.filled.Edit
+
 import androidx.compose.material.icons.filled.EditCalendar
 
 import androidx.compose.material.icons.filled.Image
@@ -187,6 +189,7 @@ import com.my.kizzy.ui.components.RpcField
 import com.my.kizzy.ui.components.SwitchBar
 
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 import kotlinx.serialization.json.Json
 
@@ -542,6 +545,103 @@ private fun RpcTextFieldsColumn(
     var showConsoleStatusDialog by remember { mutableStateOf(false) }
     var showConsoleButtonsDialog by remember { mutableStateOf(false) }
 
+    // Console RPC presets. The user presets are kept in a state so a preset
+    // created or edited in the dialog shows up in the list immediately.
+    var consoleCustomPresets by remember { mutableStateOf(ConsolePresetStore.custom()) }
+    var consoleSelectedPresetId by remember {
+        // Restore the last selected preset. When there is none (first run after
+        // the update), highlight the preset that matches the saved platform so
+        // the list reflects the current Console RPC configuration.
+        mutableStateOf(
+            ConsolePresetStore.selectedId().ifBlank {
+                val platform = Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"]
+                ConsolePresetStore.builtIns().firstOrNull { it.platform == platform }?.id ?: ""
+            }
+        )
+    }
+    var consolePresetEditorOpen by remember { mutableStateOf(false) }
+    var consolePresetBeingEdited by remember { mutableStateOf<ConsolePreset?>(null) }
+    var consoleAutoDetect by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_AUTO_DETECT, true])
+    }
+    var consoleIncludeSpoofed by remember {
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false])
+    }
+
+    /** Writes the console values to the preferences so they survive a restart. */
+    fun persistConsoleSettings() {
+        Prefs[Prefs.CONSOLE_RPC_PLATFORM] = consolePlatform
+        Prefs[Prefs.CONSOLE_RPC_ACTIVITY_TYPE] = consoleActivityType
+        Prefs[Prefs.CONSOLE_RPC_STATUS] = consoleStatus
+        Prefs[Prefs.CONSOLE_RPC_ENABLE_TIMESTAMPS] = consoleEnableTimestamps
+        Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART] = consoleShowCoverArt
+    }
+
+    /** The presence that Console RPC sends with the current values. */
+    fun buildConsoleConfig(): RpcConfig {
+        val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
+        val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
+        return RpcConfig(
+            name = "Console RPC",
+            details = "Console RPC running",
+            type = consoleActivityType,
+            status = consoleStatus,
+            timestampsStart = startTs,
+            timestampsStop = endTs,
+            platform = consolePlatform,
+            largeImg = "",
+            smallImg = "",
+            button1 = consoleButton1Text,
+            button1link = consoleButton1Url,
+            button2 = consoleButton2Text,
+            button2link = consoleButton2Url,
+        )
+    }
+
+    /** Re-sends the presence when Console RPC is already running. */
+    fun applyConsoleSettingsIfRunning() {
+        if (rpcManager.activeRpc.value != RpcType.ConsoleRpc) return
+        scope.launch {
+            rpcManager.switchTo(
+                RpcType.ConsoleRpc,
+                rpcConfigString = Json.encodeToString(buildConsoleConfig()),
+                isConsoleRpc = true
+            )
+        }
+    }
+
+    /** Applies a preset to the console values and, when running, to Discord.
+     *  Also updates the Custom RPC tab text fields so the user can see and edit them. */
+    fun applyConsolePreset(preset: ConsolePreset, presetName: String) {
+        consolePlatform = preset.platform
+        consoleActivityType = preset.activityType
+        consoleStatus = preset.status
+        consoleEnableTimestamps = preset.timestamps
+        consoleShowCoverArt = preset.coverArt
+
+        // Also update Custom RPC tab fields so the user sees and can edit them
+        val startTs = if (preset.timestamps) System.currentTimeMillis().toString() else ""
+        val endTs = if (preset.timestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
+        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(
+            name = presetName,
+            details = presetName,
+            type = preset.activityType,
+            status = preset.status,
+            timestampsStart = startTs,
+            timestampsStop = endTs,
+            platform = preset.platform,
+            largeImg = if (preset.coverArt) "" else "",
+            smallImg = if (preset.coverArt) "" else "",
+            button1 = "",
+            button1link = "",
+            button2 = "",
+            button2link = "",
+        )))
+
+        persistConsoleSettings()
+        applyConsoleSettingsIfRunning()
+    }
+
     LazyColumn(
 
         modifier = Modifier.fillMaxSize()
@@ -561,23 +661,8 @@ private fun RpcTextFieldsColumn(
                 isCustomRpcEnabled = newValue
                 when (newValue) {
                     true -> {
-                        val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
-                        val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
-                        val consoleConfig = RpcConfig(
-                            name = "Console RPC",
-                            details = "Console RPC running",
-                            type = consoleActivityType,
-                            status = consoleStatus,
-                            timestampsStart = startTs,
-                            timestampsStop = endTs,
-                            platform = consolePlatform,
-                            largeImg = if (consoleShowCoverArt) "" else "",
-                            smallImg = if (consoleShowCoverArt) "" else "",
-                            button1 = consoleButton1Text,
-                            button1link = consoleButton1Url,
-                            button2 = consoleButton2Text,
-                            button2link = consoleButton2Url,
-                        )
+                        persistConsoleSettings()
+                        val consoleConfig = buildConsoleConfig()
                         scope.launch {
                             rpcManager.switchTo(
                                 RpcType.ConsoleRpc,
@@ -1652,7 +1737,7 @@ private fun RpcTextFieldsColumn(
 
         }
 
-        // ===== Console RPC Presets (Quick Select) =====
+        // ===== Console RPC Presets =====
 
         } else {
 
@@ -1666,59 +1751,127 @@ private fun RpcTextFieldsColumn(
             }
 
             item {
-                val presetGames = listOf(
-                    PresetConsoleGame(
-                        name = stringResource(id = R.string.console_preset_xbox),
-                        platform = "xbox",
-                        activityType = "0",
-                        status = "online",
-                        icon = Icons.Filled.SportsEsports
-                    ),
-                    PresetConsoleGame(
-                        name = stringResource(id = R.string.console_preset_playstation),
-                        platform = "ps5",
-                        activityType = "0",
-                        status = "online",
-                        icon = Icons.Filled.SportsEsports
-                    ),
-                    PresetConsoleGame(
-                        name = stringResource(id = R.string.console_preset_nintendo),
-                        platform = "nintendo",
-                        activityType = "0",
-                        status = "online",
-                        icon = Icons.Filled.SportsEsports
-                    ),
-                    PresetConsoleGame(
-                        name = stringResource(id = R.string.console_preset_desktop),
-                        platform = "desktop",
-                        activityType = "0",
-                        status = "online",
-                        icon = Icons.Filled.DesktopWindows
-                    )
+                Text(
+                    text = stringResource(id = R.string.console_presets_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
                 )
+            }
 
+            item {
+                // Built-in presets first, then the ones the user created. The
+                // list is rebuilt from the state so a new preset appears here
+                // without leaving the tab.
+                val presets = ConsolePresetStore.builtIns() + consoleCustomPresets
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    presetGames.forEach { preset ->
+                    presets.forEach { preset ->
+                        val presetName = if (preset.nameRes != 0) stringResource(preset.nameRes) else preset.name
                         ConsolePresetChip(
                             preset = preset,
-                            selected = consolePlatform == preset.platform,
+                            selected = consoleSelectedPresetId == preset.id,
                             onClick = {
-                                consolePlatform = preset.platform
-                                consoleActivityType = preset.activityType
-                                consoleStatus = preset.status
-                                consoleEnableTimestamps = false
-                                consoleShowCoverArt = true
-                                // Jump back to the settings tab so the user can
-                                // customise every value of the chosen preset.
-                                onPresetSelected()
-                            }
+                                consoleSelectedPresetId = preset.id
+                                ConsolePresetStore.select(preset.id)
+                                applyConsolePreset(preset, presetName)
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(
+                                        context.getString(R.string.console_preset_applied)
+                                    )
+                                }
+                            },
+                            onEdit = if (preset.builtIn) null else ({
+                                consolePresetBeingEdited = preset
+                                consolePresetEditorOpen = true
+                            })
                         )
                     }
+                }
+            }
+
+            item {
+                androidx.compose.material3.OutlinedButton(
+                    onClick = {
+                        consolePresetBeingEdited = ConsolePresetStore.newPreset()
+                        consolePresetEditorOpen = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(text = stringResource(id = R.string.console_preset_new))
+                }
+            }
+
+            item {
+                androidx.compose.material3.OutlinedButton(
+                    onClick = {
+                        consolePresetBeingEdited = ConsolePresetStore.newPreset()
+                        consolePresetEditorOpen = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(text = stringResource(id = R.string.console_preset_new))
+                }
+            }
+
+            item {
+                Text(
+                    text = stringResource(id = R.string.console_options_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.console_enable_timestamps),
+                    isChecked = consoleEnableTimestamps,
+                ) {
+                    consoleEnableTimestamps = !consoleEnableTimestamps
+                    persistConsoleSettings()
+                    applyConsoleSettingsIfRunning()
+                }
+            }
+
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.console_show_cover_art),
+                    isChecked = consoleShowCoverArt,
+                ) {
+                    consoleShowCoverArt = !consoleShowCoverArt
+                    persistConsoleSettings()
+                    applyConsoleSettingsIfRunning()
+                }
+            }
+
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.console_auto_detect),
+                    isChecked = consoleAutoDetect,
+                ) {
+                    consoleAutoDetect = !consoleAutoDetect
+                    Prefs[Prefs.CONSOLE_RPC_AUTO_DETECT] = consoleAutoDetect
+                }
+            }
+
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.console_include_spoofed),
+                    isChecked = consoleIncludeSpoofed,
+                ) {
+                    consoleIncludeSpoofed = !consoleIncludeSpoofed
+                    Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED] = consoleIncludeSpoofed
                 }
             }
 
@@ -1745,6 +1898,33 @@ private fun RpcTextFieldsColumn(
 
     }
 
+    // Editor dialog for the presets. It lives outside the LazyColumn so it stays
+    // open while the list scrolls underneath it.
+    val presetToEdit = consolePresetBeingEdited
+    if (consolePresetEditorOpen && presetToEdit != null) {
+        // A preset can only be deleted once it has been saved. A brand new one
+        // is simply dismissed with Cancel.
+        val isSavedCustomPreset =
+            !presetToEdit.builtIn && consoleCustomPresets.any { it.id == presetToEdit.id }
+        ConsolePresetEditorDialog(
+            initial = presetToEdit,
+            onDismiss = { consolePresetEditorOpen = false },
+            onSave = { saved ->
+                ConsolePresetStore.upsert(saved)
+                consoleCustomPresets = ConsolePresetStore.custom()
+                consolePresetEditorOpen = false
+                if (consoleSelectedPresetId == saved.id) {
+                    applyConsolePreset(saved, saved.name)
+                }
+            },
+            onDelete = if (!isSavedCustomPreset) null else ({
+                ConsolePresetStore.delete(presetToEdit.id)
+                consoleCustomPresets = ConsolePresetStore.custom()
+                consolePresetEditorOpen = false
+            })
+        )
+    }
+
 }
 
 
@@ -1759,25 +1939,24 @@ fun CustomRpcPreview() {
 
 }
 
-/** Preset console game for quick Console RPC setup. */
-data class PresetConsoleGame(
-    val name: String,
-    val platform: String,
-    val activityType: String,
-    val status: String,
-    val icon: ImageVector
-)
-
+/**
+ * A row in the Console RPC preset list.
+ *
+ * Shows the platform name and the Discord platform it reports, marks the
+ * selected preset, and offers an edit action for the presets the user created.
+ */
 @Composable
 
 fun ConsolePresetChip(
-    preset: PresetConsoleGame,
+    preset: ConsolePreset,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onEdit: (() -> Unit)? = null,
 ) {
 
     val colorScheme = MaterialTheme.colorScheme
     val contentColor = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurface
+    val name = if (preset.nameRes != 0) stringResource(preset.nameRes) else preset.name
 
     Row(
         modifier = Modifier
@@ -1792,17 +1971,37 @@ fun ConsolePresetChip(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Icon(
-            imageVector = preset.icon,
+            imageVector = consolePresetIcon(preset),
             contentDescription = null,
             modifier = Modifier.size(24.dp),
             tint = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant
         )
-        Text(
-            text = preset.name,
-            style = MaterialTheme.typography.titleMedium,
-            color = contentColor,
-            modifier = Modifier.weight(1f)
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.titleMedium,
+                color = contentColor
+            )
+            Text(
+                text = preset.platform,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (selected) {
+                    colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                } else {
+                    colorScheme.onSurfaceVariant
+                }
+            )
+        }
+        if (onEdit != null) {
+            IconButton(onClick = onEdit) {
+                Icon(
+                    imageVector = Icons.Filled.Edit,
+                    contentDescription = stringResource(id = R.string.console_preset_edit),
+                    modifier = Modifier.size(20.dp),
+                    tint = contentColor
+                )
+            }
+        }
         if (selected) {
             Icon(
                 imageVector = Icons.Filled.Check,

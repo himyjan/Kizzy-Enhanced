@@ -300,4 +300,21 @@
     <string name="rpc_tab_console_presets">RPC console</string>
     <string name="rpc_tab_console_presets_desc">Scegli una preimpostazione per configurare rapidamente Console RPC. Potrai regolare ogni valore in seguito nella scheda Custom RPC.</string>
     <string name="rpc_tab_back_to_settings">Torna alle impostazioni di Custom RPC</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">Preimpostazione applicata</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Preimpostazioni</string>
+    <string name="console_options_title">Opzioni Console RPC</string>
 </resources>

@@ -300,4 +300,21 @@
     <string name="rpc_tab_console_presets">RPC وحدة التحكم</string>
     <string name="rpc_tab_console_presets_desc">اختر إعدادًا مسبقًا لإعداد Console RPC بسرعة. يمكنك تعديل كل قيمة لاحقًا في تبويب Custom RPC.</string>
     <string name="rpc_tab_back_to_settings">العودة إلى إعدادات Custom RPC</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">تم تطبيق الضبط المسبق</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">الإعدادات المسبقة</string>
+    <string name="console_options_title">خيارات Console RPC</string>
 </resources>

@@ -13,11 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Cached
-import androidx.compose.material.icons.filled.Login
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Code
@@ -69,6 +66,9 @@ import androidx.compose.runtime.collectAsState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,7 +151,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 SettingItem(
                     title = stringResource(id = R.string.rpc_connection_method),
                     description = stringResource(id = R.string.rpc_connection_method_desc) + "  •  Currently using: $currentMethod",
-                    icon = Icons.Default.OpenInNew,
+                    icon = Icons.AutoMirrored.Filled.OpenInNew,
                 ) {
                     showConnectionMethodDialog = true
                 }
@@ -175,7 +175,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                         title = stringResource(id = R.string.discord_oauth_authorize),
                         description = stringResource(id = R.string.discord_oauth_authorize_desc)
                             + if (oauthError.isNotEmpty()) "  •  Error: $oauthError" else "  •  $oauthStatus",
-                        icon = Icons.Default.Login,
+                        icon = Icons.AutoMirrored.Filled.Login,
                     ) {
                         oauthError = ""
                         // Discord rejects OAuth2 bearer tokens on the gateway (close code
