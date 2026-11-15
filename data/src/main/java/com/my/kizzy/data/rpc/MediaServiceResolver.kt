@@ -65,6 +65,11 @@ object MediaServiceResolver {
     private const val QOBUZ_SEARCH = "https://www.qobuz.com/us-en/search?q=%s"
     private const val MIXCLOUD_SEARCH = "https://www.mixcloud.com/search/?q=%s"
     private const val JOOX_SEARCH = "https://www.joox.com/search?q=%s"
+    private const val KUGOU_SEARCH = "https://www.kugou.com/search.html?keyword=%s"
+    private const val QQ_SEARCH = "https://y.qq.com/n/ryqq/search?searchword=%s"
+    private const val DOUYIN_SEARCH = "https://www.douyin.com/search/%s"
+    private const val NETEASE_SEARCH = "https://music.163.com/#/search/m/?s=%s&type=1"
+    private const val KUWO_SEARCH = "https://kuwo.cn/search/list?key=%s"
 
     /**
      * Package signatures of apps that play YouTube / YouTube Music content but
@@ -164,6 +169,26 @@ object MediaServiceResolver {
         Entry(
             listOf("joox"),
             Service("Joox", Kind.MUSIC, JOOX_SEARCH, JOOX_SEARCH)
+        ),
+        Entry(
+            listOf("kugou", "kugoumusic"),
+            Service("Kugou Music", Kind.MUSIC, KUGOU_SEARCH, KUGOU_SEARCH)
+        ),
+        Entry(
+            listOf("qqmusic", "qq.com", "y.qq.com"),
+            Service("QQ Music", Kind.MUSIC, QQ_SEARCH, QQ_SEARCH)
+        ),
+        Entry(
+            listOf("douyin", "snapvideo"),
+            Service("Douyin Music", Kind.MUSIC, DOUYIN_SEARCH, DOUYIN_SEARCH)
+        ),
+        Entry(
+            listOf("163", "netease", "cloudmusic"),
+            Service("NetEase Cloud Music", Kind.MUSIC, NETEASE_SEARCH, NETEASE_SEARCH)
+        ),
+        Entry(
+            listOf("kuwo"),
+            Service("Kuwo Music", Kind.MUSIC, KUWO_SEARCH, KUWO_SEARCH)
         ),
         Entry(
             listOf("bandcamp"),

@@ -321,6 +321,96 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
+        // Kugou Music track: kugou.com/{encode_id}.html
+        if (lower.contains("kugou.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val lastSegment = segments.lastOrNull() ?: ""
+                // kugou.com/mixsong/{encode_id}.html or kugou.com/{encode_id}.html
+                if (lastSegment.endsWith(".html")) {
+                    val id = lastSegment.substringBefore(".html")
+                    if (id.isNotBlank()) return "https://www.kugou.com/${id}.html"
+                }
+                // kugou.com/{hash} (32-char MD5)
+                if (lastSegment.length == 32 && lastSegment.matches(Regex("[0-9a-fA-F]{32}"))) {
+                    return "https://www.kugou.com/${lastSegment}.html"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // QQ Music track: qq.com{nmid} or y.qq.com/n/yqq/song/{mid}.html
+        if (lower.contains("qq.com") || lower.contains("y.qq.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                // y.qq.com/n/yqq/song/{mid}.html
+                val songIndex = segments.indexOf("song")
+                if (songIndex != -1 && segments.size > songIndex + 1) {
+                    val songSegment = segments[songIndex + 1]
+                    val mid = songSegment.substringBefore(".html")
+                    if (mid.isNotBlank()) return "https://y.qq.com/n/yqq/song/${mid}.html"
+                }
+                // qq.com{nmid} — 14-char mid
+                val lastSegment = segments.lastOrNull() ?: ""
+                if (lastSegment.length >= 10 && lastSegment.matches(Regex("[0-9A-Za-z]{10,}"))) {
+                    return "https://y.qq.com/n/yqq/song/${lastSegment}.html"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Douyin Music track: douyin.com{share_code}/
+        if (lower.contains("douyin.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val code = segments.lastOrNull() ?: ""
+                    if (code.isNotBlank()) return "https://www.douyin.com/${code}/"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // NetEase Cloud Music track: 163.com{id}
+        if (lower.contains("163.com") || lower.contains("163cn.tv")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val query = uri.query ?: ""
+                // music.163.com/song?id=123456
+                val songIdParam = query.split("&").find { it.startsWith("id=") }?.substringAfter("id=")
+                if (songIdParam != null && songIdParam.isNotBlank()) {
+                    return "https://music.163.com/song?id=${songIdParam}"
+                }
+                // 163.com/{id} or 163cn.tv/{code}
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val lastSegment = segments.lastOrNull() ?: ""
+                if (lastSegment.isNotBlank() && lastSegment.matches(Regex("[0-9A-Za-z]{5,}"))) {
+                    return "https://music.163.com/song?id=${lastSegment}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Kuwo Music track: kuwo.cn/play_detail/{id}
+        if (lower.contains("kuwo.cn")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val playIndex = segments.indexOf("play_detail")
+                if (playIndex != -1 && segments.size > playIndex + 1) {
+                    return "https://kuwo.cn/play_detail/${segments[playIndex + 1]}"
+                }
+                // m.kuwo.cn/yinyue/{id}
+                val yinyueIndex = segments.indexOf("yinyue")
+                if (yinyueIndex != -1 && segments.size > yinyueIndex + 1) {
+                    return "https://m.kuwo.cn/yinyue/${segments[yinyueIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
         // SoundCloud track: soundcloud.com/{user}/{track}
         if (lower.contains("soundcloud.com")) {
             try {
@@ -437,6 +527,83 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
+        // Kugou Music album: kugou.com/{album_id}/
+        if (lower.contains("kugou.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                // kugou.com/album/{id}/ or kugou.com/{id}/
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    return "https://www.kugou.com/album/${segments[albumIndex + 1]}/"
+                }
+                // Last segment could be album id
+                val lastSegment = segments.lastOrNull() ?: ""
+                if (lastSegment.endsWith("/") || lastSegment.isBlank()) {
+                    val secondLast = segments.getOrNull(segments.size - 2) ?: ""
+                    if (secondLast.isNotBlank()) return "https://www.kugou.com/${secondLast}/"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // QQ Music album: qq.com{album_mid}
+        if (lower.contains("qq.com") || lower.contains("y.qq.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    val mid = segments[albumIndex + 1].substringBefore(".html")
+                    if (mid.isNotBlank()) return "https://y.qq.com/n/yqq/album/${mid}.html"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Douyin Music album: douyin.com{share_code}/
+        if (lower.contains("douyin.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val code = segments.lastOrNull() ?: ""
+                    if (code.isNotBlank()) return "https://www.douyin.com/${code}/"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // NetEase Cloud Music album: 163.com{id}
+        if (lower.contains("163.com") || lower.contains("163cn.tv")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val query = uri.query ?: ""
+                val albumIdParam = query.split("&").find { it.startsWith("id=") }?.substringAfter("id=")
+                if (albumIdParam != null && albumIdParam.isNotBlank()) {
+                    return "https://music.163.com/album?id=${albumIdParam}"
+                }
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val lastSegment = segments.lastOrNull() ?: ""
+                if (lastSegment.isNotBlank() && lastSegment.matches(Regex("[0-9A-Za-z]{5,}"))) {
+                    return "https://music.163.com/album?id=${lastSegment}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Kuwo Music album: kuwo.cn/album_detail/{id}
+        if (lower.contains("kuwo.cn")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album_detail")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    return "https://kuwo.cn/album_detail/${segments[albumIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
         return null
     }
 
@@ -538,6 +705,77 @@ class MetadataResolver @Inject constructor(
                 val playlistIndex = segments.indexOf("playlist")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
                     return "https://www.joox.com/playlist/${segments[playlistIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Kugou Music playlist: kugou.com/{id}.html
+        if (lower.contains("kugou.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val lastSegment = segments.lastOrNull() ?: ""
+                if (lastSegment.endsWith(".html")) {
+                    val id = lastSegment.substringBefore(".html")
+                    if (id.isNotBlank()) return "https://www.kugou.com/${id}.html"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // QQ Music playlist: qq.com{id}
+        if (lower.contains("qq.com") || lower.contains("y.qq.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val playlistIndex = segments.indexOf("playlist")
+                if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
+                    val id = segments[playlistIndex + 1].substringBefore(".html")
+                    if (id.isNotBlank()) return "https://y.qq.com/n/yqq/playsquare/${id}.html"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Douyin Music playlist: douyin.com{share_code}/
+        if (lower.contains("douyin.com")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                if (segments.isNotEmpty()) {
+                    val code = segments.lastOrNull() ?: ""
+                    if (code.isNotBlank()) return "https://www.douyin.com/${code}/"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // NetEase Cloud Music playlist: 163.com{id}
+        if (lower.contains("163.com") || lower.contains("163cn.tv")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val query = uri.query ?: ""
+                val playlistIdParam = query.split("&").find { it.startsWith("id=") }?.substringAfter("id=")
+                if (playlistIdParam != null && playlistIdParam.isNotBlank()) {
+                    return "https://music.163.com/#/playlist?id=${playlistIdParam}"
+                }
+                val path = uri.path ?: ""
+                val segments = path.split("/").filter { it.isNotEmpty() }
+                val lastSegment = segments.lastOrNull() ?: ""
+                if (lastSegment.isNotBlank() && lastSegment.matches(Regex("[0-9A-Za-z]{5,}"))) {
+                    return "https://music.163.com/#/playlist?id=${lastSegment}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Kuwo Music playlist: kuwo.cn/playlist_detail/{id}
+        if (lower.contains("kuwo.cn")) {
+            try {
+                val uri = java.net.URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val playlistIndex = segments.indexOf("playlist_detail")
+                if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
+                    return "https://kuwo.cn/playlist_detail/${segments[playlistIndex + 1]}"
                 }
             } catch (_: Exception) {}
         }
@@ -718,6 +956,11 @@ class MetadataResolver @Inject constructor(
             "linemusic" in pkg || "linecorp.linemusic" in pkg -> lineMusicArtistUrl(sourceUrl)
             "tidal" in pkg -> tidalArtistUrl(sourceUrl)
             "joox" in pkg -> jooxArtistUrl(sourceUrl)
+            "kugou" in pkg || "kugoumusic" in pkg -> kugouArtistUrl(sourceUrl)
+            "qqmusic" in pkg || "qq.com" in pkg || "y.qq.com" in pkg -> qqMusicArtistUrl(sourceUrl)
+            "douyin" in pkg || "snapvideo" in pkg -> douyinMusicArtistUrl(sourceUrl)
+            "163" in pkg || "netease" in pkg || "cloudmusic" in pkg -> neteaseArtistUrl(sourceUrl)
+            "kuwo" in pkg -> kuwoArtistUrl(sourceUrl)
             "archivetune" in pkg || "archive.org" in pkg -> archiveTuneArtistUrl(sourceUrl)
             "lxmusic" in pkg || "yesplaymusic" in pkg -> null
             else -> null
@@ -928,6 +1171,92 @@ class MetadataResolver @Inject constructor(
             val artistIndex = segments.indexOf("artist")
             if (artistIndex != -1 && segments.size > artistIndex + 1) {
                 return "https://www.joox.com/artist/${segments[artistIndex + 1]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    private fun kugouArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("kugou.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val path = uri.path ?: ""
+            val segments = path.split("/").filter { it.isNotEmpty() }
+            // kugou.com/singer/{id}/ or kugou.com/{id}/
+            val singerIndex = segments.indexOf("singer")
+            if (singerIndex != -1 && segments.size > singerIndex + 1) {
+                return "https://www.kugou.com/singer/${segments[singerIndex + 1]}/"
+            }
+            val lastSegment = segments.lastOrNull() ?: ""
+            if (lastSegment.endsWith("/") && lastSegment.length > 1) {
+                val id = lastSegment.substringBefore("/")
+                if (id.isNotBlank()) return "https://www.kugou.com/${id}/"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    private fun qqMusicArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("qq.com") && !url.contains("y.qq.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val path = uri.path ?: ""
+            val segments = path.split("/").filter { it.isNotEmpty() }
+            val singerIndex = segments.indexOf("singer")
+            if (singerIndex != -1 && segments.size > singerIndex + 1) {
+                val mid = segments[singerIndex + 1].substringBefore(".html")
+                if (mid.isNotBlank()) return "https://y.qq.com/n/yqq/singer/${mid}.html"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    private fun douyinMusicArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("douyin.com")) return null
+        try {
+            val uri = java.net.URI(url)
+            val path = uri.path ?: ""
+            val segments = path.split("/").filter { it.isNotEmpty() }
+            if (segments.isNotEmpty()) {
+                val code = segments.lastOrNull() ?: ""
+                if (code.isNotBlank()) return "https://www.douyin.com/${code}/"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    private fun neteaseArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("163.com") && !url.contains("163cn.tv")) return null
+        try {
+            val uri = java.net.URI(url)
+            val query = uri.query ?: ""
+            val artistIdParam = query.split("&").find { it.startsWith("id=") }?.substringAfter("id=")
+            if (artistIdParam != null && artistIdParam.isNotBlank()) {
+                return "https://music.163.com/#/artist?id=${artistIdParam}"
+            }
+            val path = uri.path ?: ""
+            val segments = path.split("/").filter { it.isNotEmpty() }
+            val lastSegment = segments.lastOrNull() ?: ""
+            if (lastSegment.isNotBlank() && lastSegment.matches(Regex("[0-9A-Za-z]{5,}"))) {
+                return "https://music.163.com/#/artist?id=${lastSegment}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    private fun kuwoArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("kuwo.cn")) return null
+        try {
+            val uri = java.net.URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            val singerIndex = segments.indexOf("singer_detail")
+            if (singerIndex != -1 && segments.size > singerIndex + 1) {
+                return "https://kuwo.cn/singer_detail/${segments[singerIndex + 1]}"
             }
         } catch (_: Exception) {}
         return null
