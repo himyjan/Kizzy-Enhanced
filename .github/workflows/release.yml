@@ -555,6 +555,67 @@ jobs:
 
             New gateway module with Discord gateway entities: `Activity.kt`, `Assets.kt`, `Identify.kt`, `HeartBeat.kt`, `Payload.kt`, `Ready.kt`, `Resume.kt`, `OpCode.kt`, `Presence.kt`, `Timestamps.kt`
             </details>
+
+            ---
+            <details>
+            <summary>🎵 Streaming Platform URL Resolution (New Feature)</summary>
+
+            Added comprehensive track/album/playlist/artist URL resolution for 30+ streaming platforms across media session metadata and custom keys.
+
+            **Global Platforms:**
+            - Spotify: `/track/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
+            - Apple Music: `/album/{slug}/{id}?i={track-id}`, `/playlist/{slug}/{id}`
+            - Amazon Music: `/{asin}/{slug}` (track/album/playlist)
+            - YouTube Music: `/watch?v={ID}` → `youtu.be/{ID}`, `/channel/{ID}`, `/playlist?list={ID}`
+            - Deezer: `/track/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
+            - TIDAL: `/track/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
+            - KKBOX: `/song/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
+            - LINE MUSIC (JP/TW): `/track/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
+            - JOOX: `/single/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
+            - SoundCloud: `/{user}/{track}`, `/track/{slug}`, `/album/{slug}`
+            - Beatport: `/{slug}/{id}` (track/album)
+
+            **Chinese Platforms:**
+            - Kugou Music: `/{encode_id}.html`, `/{id}/` (track/album/artist/playlist)
+            - QQ Music: `n/yqq/song/{mid}.html`, `n/yqq/album/{mid}.html`, `n/yqq/singer/{mid}.html`
+            - Douyin Music (汽水音樂): `qishui/track?track_id={id}`, `/album?album_id={id}`
+            - NetEase Cloud Music: `music.163.com/#/song?id={id}`, `/#/album?id={id}`, `/#/artist?id={id}`, `/#/playlist?id={id}`
+            - Kuwo Music: `/play_detail/{id}`, `/album_detail/{id}`, `/singer_detail/{id}`, `/playlist_detail/{id}`
+
+            **Indian Platforms:**
+            - JioSaavn: `/{slug}/{token}` (track/album/artist/playlist)
+            - Gaana: `/{slug}` (track/album/artist/playlist)
+            - Wynk Music: `/music/song/{slug}/{id}`, `/music/album/{slug}/{id}`, `/music/artist/{slug}/{id}`, `/music/playlist/{slug}/{id}`
+
+            **Regional Platforms:**
+            - Boomplay: `/{id}` (track/album/artist/playlist)
+            - Audiomack: `/{artist-slug}/song/{song-slug}`, `/{artist-slug}/album/{album-slug}`
+            - Yandex Music: `music.yandex.ru/album/{id}/track/{id}`, `/artist/{id}`
+            - VK Music: `vk.com/audio` (search results)
+            - Anghami: `/{id}` (track/album/artist/playlist)
+            - AWA: `s.awa.fm/track/{id}`, `/album/{id}`, `/artist/{id}`
+            - Melon: `song/detail.htm?songId={id}`, `album/detail.htm?albumId={id}`
+            - Genie Music: `detail/songInfo?xgnm={id}`, `detail/albumInfo?axnm={id}`
+            - Recochoku: Search by title fallback
+
+            **New MetadataResolver methods:** `getTrackUrl()`, `getAlbumUrl()`, `getPlaylistUrl()`
+            </details>
+
+            ---
+            <details>
+            <summary>📊 Console RPC Games Loading Fix</summary>
+
+            **Bug:** Console RPC game list showed empty in Custom RPC tab because `ConsoleGameCatalog` was only populated when visiting the standalone Console RPC screen.
+
+            **Fix:** `CustomScreenViewModel` now injects `GetGamesUseCase` and loads games on init, calling `ConsoleGameCatalog.update()` so games appear immediately in the Custom RPC tab.
+            </details>
+
+            ---
+            <details>
+            <summary>🖼️ Console Preset Editor Cover Art Image Picker</summary>
+
+            Added image picker support to Console RPC preset editor dialog for large and small cover art URLs.
+            </details>
           files: |
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-armeabi-v7a.apk
