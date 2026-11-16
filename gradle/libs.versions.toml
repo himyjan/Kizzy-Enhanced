@@ -34,7 +34,7 @@ profileinstaller = "1.4.1"
 baselineprofile = "1.6.0-alpha01"
 hilt-navigation-compose = "1.4.0"
 workmanager = "2.12.0"
-leakcanary = "2.15.1"
+leakcanary = "2.14"
 
 [libraries]
 # Jakarta
