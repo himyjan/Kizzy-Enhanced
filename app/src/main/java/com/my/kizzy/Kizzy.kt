@@ -198,6 +198,9 @@ internal fun ComponentActivity.Kizzy(
                             Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
                             loggedIn = false
                         },
+                        onNavigateToLogin = {
+                            navController.navigate(Routes.LOGIN)
+                        },
                         onNavigateToRpcPreview = {
                             val currentState = state
                             val user = when (currentState) {
@@ -272,6 +275,14 @@ internal fun ComponentActivity.Kizzy(
             }
             composable(Routes.RPC_SETTINGS) {
                 RpcSettings { navController.popBackStack() }
+            }
+            composable(Routes.LOGIN) { navBackStackEntry ->
+                LoginScreen(
+                    onBackPressed = { navController.popBackStack() },
+                    onCompleted = {
+                        navController.popBackStack()
+                    },
+                )
             }
             composable(Routes.LOGS_SCREEN) { navBackStackEntry ->
                 val viewModel = hiltViewModel<LogsViewModel>(navBackStackEntry)
