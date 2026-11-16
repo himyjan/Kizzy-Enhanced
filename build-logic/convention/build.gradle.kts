@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     `kotlin-dsl`
 }
@@ -10,10 +7,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_26
 }
 
-tasks.withType<KotlinCompile> {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_26)
-    }
+kotlin {
+    jvmToolchain(26)
 }
 
 dependencies {

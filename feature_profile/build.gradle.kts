@@ -10,21 +10,21 @@ android {
 }
 
 dependencies {
-    implementation (projects.theme)
-    implementation (projects.gateway)
-    implementation (projects.common.navigation)
-    implementation (projects.featureRpcBase)
-    implementation (projects.featureLogs)
-    implementation (projects.featureSettings)
-    implementation (projects.data)
-    implementation (libs.coil)
+    implementation(projects.theme)
+    implementation(projects.gateway)
+    implementation(projects.common.navigation)
+    implementation(projects.featureRpcBase)
+    implementation(projects.featureLogs)
+    implementation(projects.featureSettings)
+    implementation(projects.data)
+    implementation(libs.coil)
     implementation(libs.coil.network)
 
-    implementation (libs.activity.compose)
-    implementation (libs.compose.navigation)
-    implementation (libs.kotlinx.serialization.json)
-    implementation (libs.androidx.browser)
-    implementation (libs.material.icons.extended)
+    implementation(libs.activity.compose)
+    implementation(libs.compose.navigation)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.browser)
+    implementation(libs.material.icons.extended)
 
     // Hilt annotation processor required for @HiltViewModel
     ksp(libs.hilt.compiler)

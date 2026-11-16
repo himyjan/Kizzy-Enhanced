@@ -9,7 +9,8 @@ android {
     namespace = "com.my.kizzy.feature_settings"
 
     defaultConfig {
-        buildConfigField("String","VERSION_NAME", "\"${libs.versions.version.name.get()}\"")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 }
 

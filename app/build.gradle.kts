@@ -7,13 +7,18 @@ plugins {
     alias(libs.plugins.baselineprofile)
 }
 
+// Fetch the libs version catalog instance safely
+val libsCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+
 android {
     namespace = "com.my.kizzy"
 
     defaultConfig {
         applicationId = "com.my.kizzy.enhanced"
-        versionCode = libs.versions.version.code.get().toInt()
-        versionName = libs.versions.version.name.get()
+        versionCode = libsCatalog.findVersion("version-code")
+            .orElse(null)?.requiredVersion?.toInt() ?: 1
+        versionName = libsCatalog.findVersion("version-name")
+            .orElse(null)?.requiredVersion ?: "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -56,7 +61,6 @@ android {
             optimization {
                 enable = true // Enables code and resource optimizations.
             }
-            // Generate R8 mapping and usage reports for performance analysis
         }
         create("benchmark") {
             initWith(getByName("release"))
@@ -83,45 +87,45 @@ android {
         includeInBundle = true
     }
 }
+
 dependencies {
-    implementation (projects.domain)
-    implementation (projects.data)
-    implementation (projects.theme)
-    implementation (projects.featureStartup)
-    implementation (projects.featureCrashHandler)
-    implementation (projects.featureProfile)
-    implementation (projects.featureAbout)
-    implementation (projects.featureSettings)
-    implementation (projects.featureLogs)
-    implementation (projects.featureRpcBase)
-    implementation (projects.featureAppsRpc)
-    implementation (projects.featureMediaRpc)
-    implementation (projects.featureConsoleRpc)
-    implementation (projects.featureCustomRpc)
-    implementation (projects.featureExperimentalRpc)
-    implementation (projects.featureHome)
-    implementation (projects.common.preference)
-    implementation (projects.common.navigation)
-    implementation (projects.common.components)
-    implementation (projects.common.resources)
+    implementation(projects.domain)
+    implementation(projects.data)
+    implementation(projects.theme)
+    implementation(projects.featureStartup)
+    implementation(projects.featureCrashHandler)
+    implementation(projects.featureProfile)
+    implementation(projects.featureAbout)
+    implementation(projects.featureSettings)
+    implementation(projects.featureLogs)
+    implementation(projects.featureRpcBase)
+    implementation(projects.featureAppsRpc)
+    implementation(projects.featureMediaRpc)
+    implementation(projects.featureConsoleRpc)
+    implementation(projects.featureCustomRpc)
+    implementation(projects.featureExperimentalRpc)
+    implementation(projects.featureHome)
+    implementation(projects.common.preference)
+    implementation(projects.common.navigation)
+    implementation(projects.common.components)
+    implementation(projects.common.resources)
 
     // Extras
-    implementation (libs.app.compat)
-    implementation (libs.compose.navigation)
-    implementation (libs.kotlinx.serialization.json)
-
+    implementation(libs.app.compat)
+    implementation(libs.compose.navigation)
+    implementation(libs.kotlinx.serialization.json)
 
     // Material
-    implementation (libs.material3)
-    implementation (libs.androidx.material)
-    implementation (libs.material3.windows.size)
+    implementation(libs.material3)
+    implementation(libs.androidx.material)
+    implementation(libs.material3.windows.size)
 
     // WorkManager + Hilt Work
-    implementation (libs.work.runtime.ktx)
-    implementation (libs.hilt.work)
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
 
     // Hilt Navigation Compose for shared ViewModels across routes
-    implementation (libs.hilt.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
 
     // Hilt annotation processor
     ksp(libs.hilt.compiler)

@@ -9,9 +9,9 @@ android {
 }
 
 dependencies {
-    implementation (libs.activity.compose)
+    implementation(libs.activity.compose)
     
-    implementation (projects.theme)
-    implementation (projects.data)
-    implementation (projects.common.resources)
+    implementation(projects.theme)
+    implementation(projects.data)
+    implementation(projects.common.resources)
 }

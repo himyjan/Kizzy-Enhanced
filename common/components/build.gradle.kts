@@ -8,13 +8,13 @@ android {
 }
 
 dependencies {
-    implementation (projects.theme)
-    implementation (libs.material3)
-    implementation (libs.material3.windows.size)
-    implementation (projects.color)
-    implementation (libs.coil)
+    implementation(projects.theme)
+    implementation(libs.material3)
+    implementation(libs.material3.windows.size)
+    implementation(projects.color)
+    implementation(libs.coil)
     implementation(libs.coil.network)
 
-    implementation (projects.common.resources)
-    implementation (libs.material.icons.extended)
+    implementation(projects.common.resources)
+    implementation(libs.material.icons.extended)
 }

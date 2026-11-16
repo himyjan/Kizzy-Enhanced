@@ -10,14 +10,14 @@ android {
 }
 
 dependencies {
-    implementation (projects.featureRpcBase)
-    implementation (projects.data)
-    implementation (libs.material.icons.extended)
-    implementation (libs.coil)
+    implementation(projects.featureRpcBase)
+    implementation(projects.data)
+    implementation(libs.material.icons.extended)
+    implementation(libs.coil)
     implementation(libs.coil.network)
 
-    implementation (libs.activity.compose)
-    implementation (libs.kotlinx.serialization.json)
+    implementation(libs.activity.compose)
+    implementation(libs.kotlinx.serialization.json)
 
     // Hilt annotation processor required for @HiltViewModel
     ksp(libs.hilt.compiler)

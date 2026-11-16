@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-    implementation (projects.domain)
-    implementation (libs.kotlinx.coroutine)
-    implementation (libs.bundles.network.ktor)
-    testImplementation (libs.junit)
+    implementation(projects.domain)
+    implementation(libs.kotlinx.coroutine)
+    implementation(libs.bundles.network.ktor)
+    testImplementation(libs.junit)
 }

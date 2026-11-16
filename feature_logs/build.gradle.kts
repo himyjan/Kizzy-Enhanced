@@ -10,7 +10,7 @@ android {
 }
 
 dependencies {
-    implementation (projects.theme)
+    implementation(projects.theme)
     implementation(projects.featureRpcBase)
     implementation(projects.domain)
     implementation(libs.activity.compose)

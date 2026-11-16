@@ -1,26 +1,27 @@
 plugins {
-    id ("kizzy.android.library")
-    id ("kizzy.android.library.compose")
-    id ("kizzy.android.feature")
-    id ("kizzy.android.hilt")
+    id("kizzy.android.library")
+    id("kizzy.android.library.compose")
+    id("kizzy.android.feature")
+    id("kizzy.android.hilt")
 }
 
 android {
     namespace = "com.my.kizzy.feature_home"
+
     defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
         buildConfigField("String","VERSION_NAME", "\"${libs.versions.version.name.get()}\"")
     }
 }
 
 dependencies {
-    implementation (libs.material.icons.extended)
-    implementation (projects.featureRpcBase)
-    implementation (projects.featureSettings)
-    implementation (projects.common.navigation)
-    implementation (libs.coil)
+    implementation(libs.material.icons.extended)
+    implementation(projects.featureRpcBase)
+    implementation(projects.featureSettings)
+    implementation(projects.common.navigation)
+    implementation(libs.coil)
     implementation(libs.coil.network)
-
-    implementation (libs.activity.compose)
 
     // Hilt annotation processor required for @HiltViewModel
     ksp(libs.hilt.compiler)

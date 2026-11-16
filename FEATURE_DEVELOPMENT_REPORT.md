@@ -246,7 +246,7 @@ class RpcViewModel @Inject constructor(
 
 **File:** `feature_rpc_base/.../security/SecureTokenStorage.kt`
 
-### Implementation (Updated with Tink Encryption)
+### implementation(Updated with Tink Encryption)
 
 ```kotlin
 @Singleton
@@ -432,8 +432,8 @@ But `feature_crash_handler/build.gradle.kts` only declared `projects.theme`, cau
 Added the missing implementation dependencies:
 
 ```kotlin
-implementation (projects.data)
-implementation (projects.common.resources)
+implementation(projects.data)
+implementation(projects.common.resources)
 ```
 
 ### Verification

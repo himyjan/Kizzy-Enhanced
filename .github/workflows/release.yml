@@ -62,7 +62,7 @@ jobs:
           convert "$SRC" -resize 162x162 app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png
           convert "$SRC" -resize 216x216 app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png
           convert "$SRC" -resize 324x324 app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png
-          convert "$SRC" -resize 432x432 app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png
+          convert "$SRC" -resize 432x432 app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           convert -size 108x108 xc:"#BF1527" app/src/main/res/mipmap-mdpi/ic_launcher_background.png
           convert -size 162x162 xc:"#BF1527" app/src/main/res/mipmap-hdpi/ic_launcher_background.png
           convert -size 216x216 xc:"#BF1527" app/src/main/res/mipmap-xhdpi/ic_launcher_background.png
@@ -289,7 +289,7 @@ jobs:
             echo ""
             echo "1. Download **KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk** (or `universal.apk` if you are unsure of your device's CPU)."
             echo "2. Open the APK file on your Android device."
-            echo "3. If prompted, allow "Install from unknown sources"."
+            echo "3. If prompted, allow \"Install from unknown sources\"."
             echo "4. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand)."
             echo ""
             echo "---"
@@ -375,7 +375,7 @@ jobs:
             echo "<summary>📱 Media RPC Activity Type Fix</summary>"
             echo ""
             echo "**Bug:** Global activity type setting did not take effect for known apps (YouTube Music, Spotify, etc.) because built-in catalog was checked before global fallback.  "
-            echo "**Fix:** When user explicitly sets a global activity type (not "Auto"), built-in catalog and metadata detection are skipped; per-app overrides still win."
+            echo "**Fix:** When user explicitly sets a global activity type (not \"Auto\"), built-in catalog and metadata detection are skipped; per-app overrides still win."
             echo "</details>"
             echo ""
             echo "---"
@@ -481,9 +481,9 @@ jobs:
             echo "---"
             echo ""
             echo "<details>"
-            echo "<summary>🎨 Fix: "Hide Cover Art Images" Reactivity</summary>"
+            echo "<summary>🎨 Fix: \"Hide Cover Art Images\" Reactivity</summary>"
             echo ""
-            echo "**Bug:** "Hide Cover Art Images" toggle did not react to DataStore preference changes."
+            echo "**Bug:** \"Hide Cover Art Images\" toggle did not react to DataStore preference changes."
             echo ""
             echo "**Fix:** Updated to use `collectAsState` pattern with `prefsMap` key for proper DataStore reactivity. The setting now correctly updates UI when the DataStore value changes."
             echo "</details>"
@@ -565,7 +565,7 @@ jobs:
             echo "- Custom RPC tab → starts `RpcType.CustomRpc`"
             echo "- Console RPC tab → starts `RpcType.ConsoleRpc`"
             echo ""
-            echo "Added `isConsoleRpcEnabled` state variable synced with `rpcManager.activeRpc`. Switch label now shows "Enable Custom RPC" or "Enable Console RPC" based on active tab."
+            echo "Added `isConsoleRpcEnabled` state variable synced with `rpcManager.activeRpc`. Switch label now shows \"Enable Custom RPC\" or \"Enable Console RPC\" based on active tab."
             echo ""
             echo "**Files:** `CustomRpc.kt` — SwitchBar, `isConsoleRpcEnabled`."
             echo "</details>"
@@ -587,12 +587,13 @@ jobs:
             echo "<details>"
             echo "<summary>🚪 Discord Logout: Clear All Auth State & Stop RPC Services</summary>"
             echo ""
-            echo "**Bug:** Discord logout did not clear all authentication credentials and background RPC services continued running after logout, sending stale presence to Discord."
+            echo "**Bug:** Logout did not clear all authentication credentials and background RPC services continued running after logout, sending stale presence to Discord."
             echo ""
             echo "**Fix:** Logout handler now:"
             echo "- Stops `MediaRpcService`, `CustomRpcService`, and `ExperimentalRpc` services so no presence is sent after logout"
             echo "- Clears Discord OAuth2 tokens: `ACCESS_TOKEN`, `REFRESH_TOKEN`, `EXPIRES_AT`, `USER_ID`, `USERNAME`, `APPLICATION_CLIENT_ID`"
             echo "- Clears Last.fm scrobbling credentials: `API_KEY`, `SECRET`, `USERNAME`, `PASSWORD`, `SESSION_KEY`, `ENABLED`, `ENABLE_TIMESTAMPS`, `SHOW_COVER_ART`, `SHOW_PARTY_CURRENT`, `SHOW_PARTY_MAX`"
+            echo "- Clears ListenBrainz scrobbling credentials: `USER_TOKEN`, `ENABLED`, `ENABLE_TIMESTAMPS`, `SHOW_COVER_ART`, `SHOW_PARTY_CURRENT`, `SHOW_PARTY_MAX`"
             echo "- Clears user profile data: `TOKEN`, `USER_ID`, `USER_DATA`, `USER_BIO`, `USER_NITRO`"
             echo "- Resets `RPC_CONNECTION_METHOD` to Gateway default"
             echo "- Sets `loggedIn = false` to show LoginScreen on next profile visit"

@@ -27,10 +27,8 @@ private fun Project.configureCommonAndroidBody(commonExtension: CommonExtension)
     commonExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_26
 
     // Configures all Kotlin tasks inside this module to target Java 26 bytecode
-    tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_26)
-        }
+    kotlin {
+        jvmToolchain(26)
     }
 }
 

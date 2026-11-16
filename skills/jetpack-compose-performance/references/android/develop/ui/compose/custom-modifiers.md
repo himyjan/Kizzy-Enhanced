@@ -185,7 +185,7 @@ custom modifier to draw a circle.
 
 #### `Modifier.Node`
 
-The `Modifier.Node` implementation (in this example, `CircleNode`) implements
+The `Modifier.Node` implementation(in this example, `CircleNode`) implements
 the functionality of your custom modifier.
 
 

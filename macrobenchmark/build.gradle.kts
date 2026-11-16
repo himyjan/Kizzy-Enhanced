@@ -44,8 +44,6 @@ dependencies {
 }
 
 // Match project-wide Kotlin JVM target (VERSION_26 per build-logic convention)
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_26)
-    }
+kotlin {
+    jvmToolchain(26)
 }

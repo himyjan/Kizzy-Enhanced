@@ -1,5 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import nl.littlerobots.vcu.plugin.versionSelector
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -11,62 +10,20 @@ plugins {
     alias(libs.plugins.kotlinx.serialization) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.baselineprofile) apply false
+    id("io.github.ben-manes.versions") version "0.67.0"
+    id("nl.littlerobots.version-catalog-update") version "1.1.2"
 }
 
-subprojects {
-    tasks.withType<JavaCompile> {
-        sourceCompatibility = JavaVersion.VERSION_26.toString()
-        targetCompatibility = JavaVersion.VERSION_26.toString()
+versionCatalogUpdate {
+    versionSelector { candidate ->
+        !candidate.candidate.version.isBlank()
     }
-    tasks.withType<KotlinCompile> {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_26)
-            // Force Kotlin 2.4 compiler to emit metadata blobs in 2.2 format
-            // so Hilt 2.60.1's shaded kotlin-metadata-jvm engine can read them
-            freeCompilerArgs.add("-Xmetadata-version=2.2.0")
-        }
-    }
-    tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions {
-            // Compose compiler reports and metrics are always enabled for
-            // performance tuning. Reports go to build/compose_compiler/ in each
-            // module; use them to find recomposition hot spots and unstable
-            // composables that cause wasted work (and battery drain).
-            freeCompilerArgs.addAll(listOf(
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.layout.buildDirectory.asFile.get().absolutePath}/compose_compiler"
-            ))
-            freeCompilerArgs.addAll(listOf(
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.layout.buildDirectory.asFile.get().absolutePath}/compose_compiler"
-            ))
-        }
-    }
-    // The runtime bundle of a library (the jar/dir the app actually dexes) did not
-    // see the classes that KSP generated: the task stayed up to date with an
-    // outdated snapshot. The APK was then built without the Hilt modules, so the
-    // screen crashed with "Cannot create an instance of class ...ViewModel" as soon
-    // as it was opened. The bundle is cheap to create, so it is always rebuilt.
-    tasks.matching {
-        it.name.startsWith("bundleLibRuntimeToJar") ||
-            it.name.startsWith("bundleLibRuntimeToDir")
-    }.configureEach {
-        outputs.upToDateWhen { false }
-    }
+}
 
+allprojects {
     configurations.all {
-        resolutionStrategy.eachDependency {
-            if (requested.group == "org.jetbrains.kotlinx" && requested.name == "kotlinx-metadata-jvm") {
-                useVersion("0.10.0")
-            }
-            // Tink pulls in error_prone_annotations, a compile-time only
-            // annotations artifact. The version Tink asks for is not always
-            // available in the local cache, so it is pinned to one that is.
-            // The artifact only carries annotations and has no runtime
-            // behaviour, so the exact version does not matter.
-            if (requested.group == "com.google.errorprone" && requested.name == "error_prone_annotations") {
-                useVersion("2.47.0")
-            }
+        resolutionStrategy {
+            force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.5.0-RC")
         }
     }
 }
