@@ -192,6 +192,15 @@ internal fun ComponentActivity.Kizzy(
                         Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
                         Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
                         Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
+                        Prefs.remove(Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID)
+                        // Clear Last.fm scrobbling credentials so the next login
+                        // starts fresh with no stored scrobbling session.
+                        Prefs.remove(Prefs.LASTFM_API_KEY)
+                        Prefs.remove(Prefs.LASTFM_SECRET)
+                        Prefs.remove(Prefs.LASTFM_USERNAME)
+                        Prefs.remove(Prefs.LASTFM_PASSWORD)
+                        Prefs.remove(Prefs.LASTFM_SESSION_KEY)
+                        Prefs.remove(Prefs.LASTFM_ENABLED)
                     },
                     onNavigateToLogin = {
                         navController.navigate(Routes.LOGIN)
