@@ -32,6 +32,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@Suppress("LocaleGetDefault")
+private val LogFileNameFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+@Suppress("LocaleGetDefault")
+private val LogEntryTimeFormat = SimpleDateFormat("h:mm:ss a", Locale.getDefault())
+
 @HiltViewModel
 class LogsViewModel @Inject constructor(
     @Suppress("UNUSED_PARAMETER")
@@ -90,12 +95,11 @@ class LogsViewModel @Inject constructor(
 
     fun saveLogsToFile(context: Context): String? {
         val dir = context.cacheDir
-        val fileName = "kizzy_logs_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.txt"
+        val fileName = "kizzy_logs_${LogFileNameFormat.format(Date())}.txt"
         val file = File(dir, fileName)
         return try {
-            val sdf = SimpleDateFormat("h:mm:ss a", Locale.getDefault())
             val allLogs = visibleLogs.joinToString("\n") { log ->
-                "[${sdf.format(Date(log.createdAt))}] ${log.level.name} ${log.tag}: ${log.text}"
+                "[${LogEntryTimeFormat.format(Date(log.createdAt))}] ${log.level.name} ${log.tag}: ${log.text}"
             }
             file.writeText(allLogs)
             file.absolutePath

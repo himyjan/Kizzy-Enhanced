@@ -262,7 +262,7 @@ class DiscordOAuth2Auth(
         return Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].takeIf { it.isNotEmpty() }
     }
 
-    fun clearTokens() {
+    suspend fun clearTokens() {
         Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
         Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
         Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)

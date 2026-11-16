@@ -431,8 +431,8 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     description = stringResource(id = R.string.delete_saved_icon_urls_desc),
                     icon = Icons.Outlined.DeleteForever
                 ) {
-                    Prefs.remove(Prefs.SAVED_IMAGES)
-                    Prefs.remove(Prefs.SAVED_ARTWORK)
+                    Prefs.removeAsync(Prefs.SAVED_IMAGES)
+                    Prefs.removeAsync(Prefs.SAVED_ARTWORK)
                     Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
                 }
             }

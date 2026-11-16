@@ -19,7 +19,10 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.my.kizzy.domain.model.release.Release
 import com.my.kizzy.domain.model.user.User
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -84,30 +87,35 @@ object Prefs {
                 if (value == null) this.remove(stringPreferencesKey(key))
                 else this[stringPreferencesKey(key)] = encodeForStorage(key, value)
             }
+            Unit
         }
         is Int -> {
             _prefsState.update { it + (key to value) }
             launchDataStoreEdit {
                 this[intPreferencesKey(key)] = value
             }
+            Unit
         }
         is Boolean -> {
             _prefsState.update { it + (key to value) }
             launchDataStoreEdit {
                 this[booleanPreferencesKey(key)] = value
             }
+            Unit
         }
         is Float -> {
             _prefsState.update { it + (key to value) }
             launchDataStoreEdit {
                 this[floatPreferencesKey(key)] = value
             }
+            Unit
         }
         is Long -> {
             _prefsState.update { it + (key to value) }
             launchDataStoreEdit {
                 this[longPreferencesKey(key)] = value
             }
+            Unit
         }
         else -> throw UnsupportedOperationException("Not yet implemented")
     }
@@ -128,11 +136,29 @@ object Prefs {
         return result as T
     }
 
-    fun remove(key: String) {
+    suspend fun remove(key: String) {
         _prefsState.update { it - key }
+        // Wait for the DataStore write to complete so that a cold reboot
+        // does not resurrect a deleted key (e.g. TOKEN after logout).
         launchDataStoreEdit {
             // The value could have been stored under any of the typed keys, so
             // every one of them is removed.
+            this.remove(stringPreferencesKey(key))
+            this.remove(intPreferencesKey(key))
+            this.remove(booleanPreferencesKey(key))
+            this.remove(floatPreferencesKey(key))
+            this.remove(longPreferencesKey(key))
+        }.await()
+    }
+
+    /**
+     * Fire-and-forget removal for non-coroutine contexts (e.g. UI click handlers).
+     * Updates the in-memory state immediately and launches the DataStore write
+     * without waiting for it to complete.
+     */
+    fun removeAsync(key: String) {
+        _prefsState.update { it - key }
+        launchDataStoreEdit {
             this.remove(stringPreferencesKey(key))
             this.remove(intPreferencesKey(key))
             this.remove(booleanPreferencesKey(key))
@@ -149,11 +175,13 @@ object Prefs {
      * Runs [block] against the mutable preferences on a background thread.
      *
      * `edit` hands out a `MutablePreferences` receiver, so the block can both
-     * write values and remove keys.
+     * write values and remove keys. Returns a deferred that completes when the
+     * write has been persisted to disk.
      */
-    private fun launchDataStoreEdit(block: suspend MutablePreferences.() -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
+    private fun launchDataStoreEdit(block: suspend MutablePreferences.() -> Unit): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
             dataStore?.edit(transform = block)
+            Unit
         }
     }
 
@@ -247,8 +275,11 @@ object Prefs {
         )
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastDeleted > 24.hours.inWholeMilliseconds) {
-            remove(SAVED_IMAGES)
-            remove(SAVED_ARTWORK)
+            _prefsState.update { it - SAVED_IMAGES - SAVED_ARTWORK }
+            launchDataStoreEdit {
+                this.remove(stringPreferencesKey(SAVED_IMAGES))
+                this.remove(stringPreferencesKey(SAVED_ARTWORK))
+            }
             set(LAST_DELETED, currentTime)
         }
     }
