@@ -12,6 +12,7 @@
 
 package com.my.kizzy.feature_profile.ui.user
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -38,7 +39,7 @@ import kotlinx.coroutines.launch
 fun UserScreen(
     state: UserState,
     onBackPressed: () -> Unit,
-    onLogout: () -> Unit,
+    onLogout: (Context) -> Unit,
     onNavigateToLogin: () -> Unit = {},
     onNavigateToRpcPreview: () -> Unit = {}
 ) {
@@ -106,7 +107,7 @@ fun UserScreen(
                             ).run {
                                 when (this) {
                                     SnackbarResult.ActionPerformed -> {
-                                        onLogout()
+                                        onLogout(ctx)
                                     }
 
                                     SnackbarResult.Dismissed -> Unit
@@ -143,7 +144,7 @@ fun UserScreenPreview() {
     UserScreen(
         state = UserState.Loading,
         onBackPressed = {},
-        onLogout = {}
+        onLogout = { ctx -> }
     )
 }
 @Preview
@@ -169,7 +170,7 @@ fun UserScreenPreview2() {
             )
         ),
         onBackPressed = {},
-        onLogout = {},
+        onLogout = { ctx -> },
         onNavigateToLogin = {}
     )
 }
@@ -182,6 +183,6 @@ fun UserScreenPreview3() {
             rpcConfig = RpcConfig(name = "Kizzy", details = "Using Kizzy")
         ),
         onBackPressed = {},
-        onLogout = {}
+        onLogout = { ctx -> }
     )
 }
