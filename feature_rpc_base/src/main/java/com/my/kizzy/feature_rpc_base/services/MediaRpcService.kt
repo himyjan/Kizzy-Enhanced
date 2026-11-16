@@ -109,6 +109,11 @@ class MediaRpcService : Service() {
     private var lastPresenceUpdateTime: Long = 0L
     private val PRESENCE_UPDATE_MIN_INTERVAL_MS = 1500L
 
+    // Notification throttling: only update notification at most once per second
+    // while media is playing, to avoid constant UI redraws and battery drain.
+    private var lastNotificationUpdateTime: Long = 0L
+    private val NOTIFICATION_UPDATE_MIN_INTERVAL_MS = 1000L
+
     /**
      * The last playback state and metadata that were reported to Discord.
      *
@@ -237,11 +242,11 @@ class MediaRpcService : Service() {
         stopTimelineUpdates()
         timelineJob.value = scope.launch {
             while (isActive) {
-                // 2-second tick instead of 1 second: the CPU wakes half as often
+                // 3-second tick instead of 1 second: the CPU wakes 3x less often
                 // while media is playing, saving battery. Discord's progress bar
                 // does not need 1-second precision, and the presence update is
                 // deduplicated anyway - only a real seek is sent to the gateway.
-                delay(2000)
+                delay(3000)
                 if (!isPaused && kizzyRPC.isRpcRunning()) {
                     withWakeLock {
                         updatePresence()
@@ -260,7 +265,7 @@ class MediaRpcService : Service() {
         stopHeartbeat()
         heartbeatJob.value = scope.launch {
             while (isActive) {
-                delay(10000)
+                delay(30000)
                 withWakeLock {
                     scope.launch { updatePresence(forceRefresh = true) }
                 }
@@ -389,9 +394,13 @@ class MediaRpcService : Service() {
         }
 
         // Update notification with current playback progress before skip check
-        updateNotificationPauseButton()
-
+        // Throttled: only update UI at most once per second while playing
         val now = System.currentTimeMillis()
+        if (now - lastNotificationUpdateTime >= NOTIFICATION_UPDATE_MIN_INTERVAL_MS) {
+            lastNotificationUpdateTime = now
+            updateNotificationPauseButton()
+        }
+
         val packageChanged = playingPkg != null && playingPkg != lastSentPackageName
 
         // The start timestamp is "now - position", so it stays constant while the track
@@ -919,7 +928,11 @@ class MediaRpcService : Service() {
      * sends the presence again, so a restart is visible on Discord right away.
      */
     private fun restartInPlace() {
-        Prefs[Prefs.MEDIA_RPC_ENABLED] = true
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                Prefs[Prefs.MEDIA_RPC_ENABLED] = true
+            }
+        }
 
         // Forget what was sent, so the next update is not dropped as
         // "content unchanged".

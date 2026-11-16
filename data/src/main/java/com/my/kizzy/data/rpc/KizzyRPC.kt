@@ -63,7 +63,9 @@ class KizzyRPC @Inject constructor(
     // (rapid SESSIONS_REPLACE events used to cause connection closures / INVALID_SESSION)
     companion object {
         private const val PRESENCE_MIN_INTERVAL_MS = 1500L
-        private const val POST_CONNECT_DELAY_MS = 1000L
+        private const val POST_CONNECT_DELAY_MS = 2000L
+        // Max consecutive connection failures before backing off
+        private const val MAX_CONNECTION_FAILURES = 5
 
         /**
          * How far the start/end timestamps have to move before it counts as a seek.
@@ -151,6 +153,11 @@ class KizzyRPC @Inject constructor(
     private var lastPresenceHash: Int = -1
     // Timestamp of the last presence re-apply, used to break the SESSIONS_REPLACE loop.
     private var lastReapplyTimeMs: Long = 0L
+    // Connection state tracking for reliable RPC
+    @Volatile
+    private var isConnected = false
+    // Connection failure count for exponential backoff
+    private var connectionFailures = 0
     // Image urls resolved for the presence that was sent last. The RPC preview uses
     // them so it can show the same cover art as Discord.
     @Volatile
@@ -744,6 +751,32 @@ class KizzyRPC @Inject constructor(
         lastPresence = presence
         connectToWebSocket(forceRefresh = forceRefresh)
     }
+
+    /**
+     * Returns whether the Discord WebSocket is currently connected.
+     * Used by MediaRpcService to skip presence updates when disconnected.
+     */
+    suspend fun ensureConnected(timeoutMs: Long = 10_000L): Boolean {
+        if (discordWebSocket.isWebSocketConnected()) {
+            isConnected = true
+            connectionFailures = 0
+            return true
+        }
+        // Wait for connection with timeout
+        val startTime = System.currentTimeMillis()
+        while (!discordWebSocket.isWebSocketConnected() && System.currentTimeMillis() - startTime < timeoutMs) {
+            delay(300)
+        }
+        if (discordWebSocket.isWebSocketConnected()) {
+            isConnected = true
+            connectionFailures = 0
+            return true
+        }
+        isConnected = false
+        connectionFailures++
+        logger.w("KizzyRPC", "WebSocket not connected after ${timeoutMs}ms (failures: $connectionFailures)")
+        return false
+    }
     private suspend fun connectToWebSocket(forceRefresh: Boolean = false) {
         // Refresh token and identify properties from prefs before connecting, so a
         // login that happened after DI (e.g. service auto-started before login) takes effect.
@@ -808,9 +841,22 @@ class KizzyRPC @Inject constructor(
 
         val wasConnected = discordWebSocket.isWebSocketConnected()
 
-        // Delay first presence update after connect/resume to avoid Discord 4003 (Not authenticated)
-        // when presence is sent immediately after RESUME/READY.
+        // Wait for WebSocket to actually connect before sending presence.
+        // connect() returns immediately after launching the connection coroutine;
+        // we poll isWebSocketConnected() until the socket is ready or timeout.
         if (!wasConnected) {
+            val connectStart = System.currentTimeMillis()
+            val connectTimeoutMs = 15_000L
+            while (!discordWebSocket.isWebSocketConnected() && System.currentTimeMillis() - connectStart < connectTimeoutMs) {
+                delay(500)
+            }
+            if (!discordWebSocket.isWebSocketConnected()) {
+                logger.w("KizzyRPC", "WebSocket did not connect within ${connectTimeoutMs}ms; presence may not be sent")
+            } else {
+                logger.d("KizzyRPC", "WebSocket connected after ${System.currentTimeMillis() - connectStart}ms")
+            }
+            // Delay first presence update after connect/resume to avoid Discord 4003 (Not authenticated)
+            // when presence is sent immediately after RESUME/READY.
             lastConnectedTimeMs = System.currentTimeMillis()
             val timeSinceConnect = System.currentTimeMillis() - lastConnectedTimeMs
             if (timeSinceConnect > 0L && timeSinceConnect < POST_CONNECT_DELAY_MS) {

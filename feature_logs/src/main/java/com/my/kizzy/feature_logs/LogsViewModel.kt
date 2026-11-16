@@ -14,14 +14,17 @@ package com.my.kizzy.feature_logs
 
 import android.content.Context
 import androidx.compose.runtime.Stable
+import dagger.hilt.android.qualifiers.ApplicationContext
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.my.kizzy.domain.model.logs.LogEvent
-import com.my.kizzy.feature_logs.LoggerProvider.logger
+import com.my.kizzy.feature_logs.KLogger
 import com.my.kizzy.preference.Prefs
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -29,16 +32,21 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@Stable
-class LogsViewModel: ViewModel() {
+@HiltViewModel
+class LogsViewModel @Inject constructor(
+    @Suppress("UNUSED_PARAMETER")
+    @ApplicationContext private val context: Context,
+    private val kLogger: KLogger
+) : ViewModel() {
     // Expose MutableState directly - Compose tracks reads inside composables
     val filterStrings = mutableStateOf("")
     val showCompat = mutableStateOf(Prefs[Prefs.SHOW_LOGS_IN_COMPACT_MODE, false])
     val autoScroll = mutableStateOf(Prefs[Prefs.LOGS_AUTO_SCROLL, false])
+    val developerMode = mutableStateOf(Prefs[Prefs.LOGS_DEVELOPER_MODE, false])
     val isSearchBarVisible = mutableStateOf(false)
 
     // Underlying snapshot list from KLogger (observable by Compose)
-    val logsSnapshot: SnapshotStateList<LogEvent> = logger.getLogs()
+    val logsSnapshot: SnapshotStateList<LogEvent> = kLogger.getLogs()
 
     // Cached filtered results using derivedStateOf - only recomputes when logs or filter changes
     private val _visibleLogs = derivedStateOf {
@@ -71,8 +79,13 @@ class LogsViewModel: ViewModel() {
         Prefs[Prefs.LOGS_AUTO_SCROLL] = value
     }
 
+    fun setDeveloperMode(value: Boolean) {
+        developerMode.value = value
+        Prefs[Prefs.LOGS_DEVELOPER_MODE] = value
+    }
+
     fun clearLogs() {
-        logger.clear()
+        kLogger.clear()
     }
 
     fun saveLogsToFile(context: Context): String? {

@@ -355,6 +355,7 @@ object Prefs {
     const val CUSTOM_ACTIVITY_TYPE = "custom_activity_type"
     const val SHOW_LOGS_IN_COMPACT_MODE = "logs_compact_mode"
     const val LOGS_AUTO_SCROLL = "logs_auto_scroll"
+    const val LOGS_DEVELOPER_MODE = "logs_developer_mode"
     const val PALETTE_STYLE = "palette_style"
     const val APPLY_FIELDS_FROM_LAST_RUN_RPC = "enable_setting_from_last_config"
     const val CUSTOM_ACTIVITY_STATUS = "custom_activity_status"

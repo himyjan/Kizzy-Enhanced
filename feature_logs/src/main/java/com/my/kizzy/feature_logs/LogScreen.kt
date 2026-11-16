@@ -92,14 +92,17 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LocalContextGetResourceValueCall")
 @Composable
 fun LogScreenContent(
     visibleLogs: List<LogEvent>,
     autoScroll: Boolean,
     showCompat: Boolean,
+    developerMode: Boolean,
     onBackPressed: () -> Unit = {},
     onToggleAutoScroll: () -> Unit = {},
     onToggleShowCompat: () -> Unit = {},
+    onToggleDeveloperMode: () -> Unit = {},
     onSaveLogs: () -> Unit = {},
     onClearLogs: () -> Unit = {},
     onSearchToggle: () -> Unit = {},
@@ -111,6 +114,9 @@ fun LogScreenContent(
     val lazyListState = rememberLazyListState()
     val clipboardManager: ClipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
+    // Extract string resources at composable level for configuration-aware recomposition
+    val copiedToClipboard = stringResource(R.string.copied_to_clipboard)
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -119,6 +125,7 @@ fun LogScreenContent(
                 filterText = filterText,
                 autoScroll = autoScroll,
                 showCompat = showCompat,
+                developerMode = developerMode,
                 visibleLogs = visibleLogs,
                 onBackPressed = onBackPressed,
                 onSearchToggle = onSearchToggle,
@@ -127,6 +134,7 @@ fun LogScreenContent(
                 onScrollToTop = { lazyListState.scrollToItem(0) },
                 onScrollToBottom = { lazyListState.scrollToItem(visibleLogs.lastIndex) },
                 onToggleShowCompat = onToggleShowCompat,
+                onToggleDeveloperMode = onToggleDeveloperMode,
                 onSaveLogs = onSaveLogs,
                 onClearLogs = onClearLogs,
                 ctx = ctx,
@@ -144,7 +152,7 @@ fun LogScreenContent(
                     clipboardManager.setPrimaryClip(ClipData.newPlainText("kizzy_logs", truncated))
                     Toast.makeText(
                         ctx,
-                        ctx.getString(R.string.copied_to_clipboard),
+                        copiedToClipboard,
                         Toast.LENGTH_SHORT
                     ).show()
                 },
@@ -181,25 +189,31 @@ fun LogScreenContent(
                 }
             ) { logEvent ->
                 if (showCompat) {
-                    LogEntryCompat(logEvent, clipboardManager, ctx)
+                    LogEntryCompat(logEvent, clipboardManager, ctx, copiedToClipboard)
                 } else {
-                    LogsCard(logEvent, clipboardManager, ctx)
+                    LogsCard(logEvent, clipboardManager, ctx, copiedToClipboard)
                 }
             }
         }
     }
 }
 
+@Suppress("LocalContextGetResourceValueCall")
 @Composable
 fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
     val ctx = LocalContext.current
+    // Extract non-parameterized string resources at composable level
+    val logsSaveError = stringResource(R.string.logs_save_error)
+
     LogScreenContent(
         visibleLogs = viewModel.visibleLogs,
         autoScroll = viewModel.autoScroll.value,
         showCompat = viewModel.showCompat.value,
+        developerMode = viewModel.developerMode.value,
         onBackPressed = onBackPressed,
         onToggleAutoScroll = { viewModel.setAutoScroll(!viewModel.autoScroll.value) },
         onToggleShowCompat = { viewModel.setShowCompat(!viewModel.showCompat.value) },
+        onToggleDeveloperMode = { viewModel.setDeveloperMode(!viewModel.developerMode.value) },
         onSaveLogs = {
             val path = viewModel.saveLogsToFile(ctx)
             if (path != null) {
@@ -211,7 +225,7 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
             } else {
                 Toast.makeText(
                     ctx,
-                    ctx.getString(R.string.logs_save_error),
+                    logsSaveError,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -228,11 +242,13 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
     )
 }
 
+@Suppress("LocalContextGetResourceValueCall")
 @Composable
 fun LogEntryCompat(
     logEvent: LogEvent,
     clipboardManager: ClipboardManager,
-    ctx: Context
+    ctx: Context,
+    copiedToClipboard: String
 ) {
     val isExpanded = remember(logEvent) { mutableStateOf(false) }
     val colorScheme = MaterialTheme.colorScheme
@@ -267,7 +283,7 @@ fun LogEntryCompat(
                             clipboardManager.setPrimaryClip(ClipData.newPlainText("", "[" + sdf.format(Date(logEvent.createdAt)) + "] " + logEvent.level.name + " " + logEvent.tag + ": " + logEvent.text))
                             Toast.makeText(
                                 ctx,
-                                ctx.getString(R.string.copied_to_clipboard),
+                                copiedToClipboard,
                                 Toast.LENGTH_SHORT
                             ).show()
                         },
@@ -280,12 +296,14 @@ fun LogEntryCompat(
     }
 }
 
+@Suppress("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogsCard(
     logEvent: LogEvent,
     clipboardManager: ClipboardManager,
-    ctx: Context
+    ctx: Context,
+    copiedToClipboard: String
 ) {
     val isExpanded = remember(logEvent) { mutableStateOf(false) }
     val colorScheme = MaterialTheme.colorScheme
@@ -422,11 +440,13 @@ fun ToolBarContent(
     filterText: String,
     autoScroll: Boolean,
     showCompat: Boolean,
+    developerMode: Boolean,
     visibleLogs: List<LogEvent>,
     onBackPressed: () -> Unit,
     onSearchToggle: () -> Unit,
     onFilterChange: (String) -> Unit,
     onToggleAutoScroll: () -> Unit,
+    onToggleDeveloperMode: () -> Unit,
     onScrollToTop: suspend () -> Unit,
     onScrollToBottom: suspend () -> Unit,
     onToggleShowCompat: () -> Unit,
@@ -514,6 +534,53 @@ fun ToolBarContent(
                             }
                         )
                         DropdownMenuItem(
+                            onClick = {
+                                menuClicked = false
+                                scope.launch {
+                                    onScrollToTop()
+                                }
+                            },
+                            text = {
+                                Text(
+                                    text = "📍 Jump to Top",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        )
+                        DropdownMenuItem(
+                            onClick = {
+                                menuClicked = false
+                                scope.launch {
+                                    onScrollToBottom()
+                                }
+                            },
+                            text = {
+                                Text(
+                                    text = "📍 Jump to Bottom",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        )
+                        DropdownMenuItem(
+                            onClick = onToggleDeveloperMode,
+                            text = {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "Developer Mode",
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    KSwitch(
+                                        checked = developerMode,
+                                        onClick = onToggleDeveloperMode,
+                                        modifier = Modifier.padding(start = 20.dp)
+                                    )
+                                }
+                            }
+                        )
+                        DropdownMenuItem(
                             onClick = onToggleShowCompat,
                             text = {
                                 Row(
@@ -577,6 +644,7 @@ fun ToolBarContent(
     }
 }
 
+@Suppress("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolBar(
@@ -592,6 +660,7 @@ fun ToolBar(
         filterText = viewModel.filterStrings.value,
         autoScroll = autoScroll,
         showCompat = viewModel.showCompat.value,
+        developerMode = viewModel.developerMode.value,
         visibleLogs = visibleLogs,
         onBackPressed = onBackPressed,
         onSearchToggle = {
@@ -601,6 +670,7 @@ fun ToolBar(
         },
         onFilterChange = { viewModel.setFilterStrings(it) },
         onToggleAutoScroll = { viewModel.setAutoScroll(!autoScroll) },
+        onToggleDeveloperMode = { viewModel.setDeveloperMode(!viewModel.developerMode.value) },
         onScrollToTop = { lazyListState.scrollToItem(0) },
         onScrollToBottom = { lazyListState.scrollToItem(visibleLogs.lastIndex) },
         onToggleShowCompat = { viewModel.setShowCompat(!viewModel.showCompat.value) },
@@ -667,6 +737,7 @@ fun LogScreenPreviewLight() {
             visibleLogs = sampleLogs,
             autoScroll = false,
             showCompat = false,
+            developerMode = false,
             onBackPressed = {},
         )
     }
@@ -690,6 +761,7 @@ fun LogScreenPreviewDark() {
             visibleLogs = sampleLogs,
             autoScroll = true,
             showCompat = true,
+            developerMode = true,
             onBackPressed = {},
         )
     }

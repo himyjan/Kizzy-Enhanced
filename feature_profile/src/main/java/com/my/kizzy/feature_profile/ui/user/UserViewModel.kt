@@ -1,5 +1,6 @@
 package com.my.kizzy.feature_profile.ui.user
 
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.data.rpc.LastPresence
@@ -17,6 +18,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import com.my.kizzy.feature_rpc_base.services.MediaRpcService
+import com.my.kizzy.feature_rpc_base.services.CustomRpcService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -25,12 +30,63 @@ class UserViewModel @Inject constructor(
     private val stateRepository: KizzyStateRepository
 ) : ViewModel() {
 
+    private val logger: Logger = LoggerFactory.getLogger("UserViewModel")
+
     private val _state = MutableStateFlow<UserState>(UserState.Loading)
     val state: StateFlow<UserState> = _state.asStateFlow()
 
     init {
         getUser()
         observeRpcState()
+    }
+
+    /**
+     * Logs the user out: clears all preferences, stops RPC services, and resets
+     * state to show the Discord Signin button.
+     *
+     * This must be called from a coroutine scope.
+     */
+    fun logout(ctx: android.content.Context, scope: kotlinx.coroutines.CoroutineScope) {
+        scope.launch {
+            logger.info("Logging out user")
+
+            // Stop all running RPC services
+            ctx.stopService(Intent(ctx, MediaRpcService::class.java))
+            ctx.stopService(Intent(ctx, CustomRpcService::class.java))
+
+            // Clear all user preferences
+            Prefs.remove(Prefs.TOKEN)
+            Prefs.remove(Prefs.USER_ID)
+            Prefs.remove(Prefs.USER_DATA)
+            Prefs.remove(Prefs.USER_BIO)
+            Prefs.remove(Prefs.USER_NITRO)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
+            Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID)
+            Prefs.remove(Prefs.LASTFM_API_KEY)
+            Prefs.remove(Prefs.LASTFM_SECRET)
+            Prefs.remove(Prefs.LASTFM_USERNAME)
+            Prefs.remove(Prefs.LASTFM_PASSWORD)
+            Prefs.remove(Prefs.LASTFM_SESSION_KEY)
+            Prefs.remove(Prefs.LASTFM_ENABLED)
+            Prefs.remove(Prefs.LASTFM_ENABLE_TIMESTAMPS)
+            Prefs.remove(Prefs.LASTFM_SHOW_COVER_ART)
+            Prefs.remove(Prefs.LASTFM_SHOW_PARTY_CURRENT)
+            Prefs.remove(Prefs.LASTFM_SHOW_PARTY_MAX)
+
+            // Reset state to show not-logged-in UI immediately
+            _state.value = UserState.Error(
+                error = "Not logged in",
+                user = User(),
+                rpcConfig = currentRpcConfig()
+            )
+
+            logger.info("User logged out successfully")
+        }
     }
 
     private fun getUser() {

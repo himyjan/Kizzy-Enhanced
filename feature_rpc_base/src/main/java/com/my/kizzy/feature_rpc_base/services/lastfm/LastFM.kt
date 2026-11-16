@@ -14,7 +14,12 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.serialization.json.Json
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 import java.security.MessageDigest
 
@@ -44,9 +49,48 @@ object LastFM {
             }
             defaultRequest {
                 url(API_BASE_URL)
+                header(HttpHeaders.UserAgent, "Kizzy/1.0")
             }
             expectSuccess = false
         }
+    }
+
+    private val logger: Logger = LoggerFactory.getLogger("LastFM")
+
+    /**
+     * Maximum number of retry attempts for failed Last.fm API calls.
+     * Exponential backoff: 1s, 2s, 4s
+     */
+    private const val MAX_API_RETRIES = 3
+
+    /**
+     * Execute a Last.fm API call with retry logic and exponential backoff.
+     * Returns null if all retries fail.
+     */
+    private suspend fun <T> apiCallWithRetry(call: suspend () -> T): T? {
+        var delayMs = 1000L
+        var lastError: String? = null
+        for (attempt in 1..MAX_API_RETRIES) {
+            val result = try {
+                call()
+            } catch (e: LastFmException) {
+                lastError = e.errorMessage
+                // Don't retry on auth errors (4xx)
+                if (e.code in 400..499) throw e
+                null
+            } catch (e: Exception) {
+                lastError = e.message
+                null
+            }
+            if (result != null) return result
+            if (attempt < MAX_API_RETRIES) {
+                logger.debug("LastFM API call attempt $attempt failed, retrying in ${delayMs}ms")
+                delay(delayMs.milliseconds)
+                delayMs *= 2L
+            }
+        }
+        logger.warn("LastFM API call failed after $MAX_API_RETRIES attempts: $lastError")
+        return null
     }
 
     /**
@@ -89,7 +133,7 @@ object LastFM {
     /**
      * Get an OAuth token from Last.fm (first step of authentication).
      */
-    suspend fun getToken(): LastFmTokenResponse? = runCatching {
+    suspend fun getToken(): LastFmTokenResponse? = apiCallWithRetry {
         val postData = buildPostData("auth.getToken")
         val response = client.post {
             url(API_BASE_URL)
@@ -103,12 +147,12 @@ object LastFM {
         } else {
             throw LastFmException(responseCode, responseBody)
         }
-    }.getOrNull()
+    }
 
     /**
      * Get a session key from a token (second step of authentication).
      */
-    suspend fun getSession(token: String): LastFmSession? = runCatching {
+    suspend fun getSession(token: String): LastFmSession? = apiCallWithRetry {
         val response = client.post {
             url(API_BASE_URL)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
@@ -125,12 +169,12 @@ object LastFM {
             throw LastFmException(error.error, error.message)
         }
         json.decodeFromString<LastFmSession>(responseText)
-    }.getOrNull()
+    }
 
     /**
      * Authenticate using username and password (mobile auth).
      */
-    suspend fun getMobileSession(username: String, password: String): LastFmSession? = runCatching {
+    suspend fun getMobileSession(username: String, password: String): LastFmSession? = apiCallWithRetry {
         val response = client.post {
             url(API_BASE_URL)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
@@ -149,7 +193,7 @@ object LastFM {
             throw LastFmException(error.error, error.message)
         }
         json.decodeFromString<LastFmSession>(responseText)
-    }.getOrNull()
+    }
 
     /**
      * Scrobble a track to Last.fm.
@@ -161,8 +205,8 @@ object LastFM {
         album: String? = null,
         trackNumber: Int? = null,
         duration: Int? = null
-    ): Boolean = runCatching {
-        val currentSession = sessionKey ?: return@runCatching false
+    ): Boolean = apiCallWithRetry {
+        val currentSession = sessionKey ?: return@apiCallWithRetry false
         client.post {
             url(API_BASE_URL)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
@@ -183,7 +227,7 @@ object LastFM {
             parameter("format", "json")
         }
         true
-    }.getOrDefault(false)
+    } != null
 
     /**
      * Update now playing status for a track.
@@ -194,8 +238,8 @@ object LastFM {
         album: String? = null,
         trackNumber: Int? = null,
         duration: Int? = null
-    ): Boolean = runCatching {
-        val currentSession = sessionKey ?: return@runCatching false
+    ): Boolean = apiCallWithRetry {
+        val currentSession = sessionKey ?: return@apiCallWithRetry false
         client.post {
             url(API_BASE_URL)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
@@ -215,7 +259,7 @@ object LastFM {
             parameter("format", "json")
         }
         true
-    }.getOrDefault(false)
+    } != null
 
     /**
      * Set love status for a track.
@@ -224,8 +268,8 @@ object LastFM {
         artist: String,
         track: String,
         love: Boolean
-    ): Boolean = runCatching {
-        val currentSession = sessionKey ?: return@runCatching false
+    ): Boolean = apiCallWithRetry {
+        val currentSession = sessionKey ?: return@apiCallWithRetry false
         val method = if (love) "track.love" else "track.unlove"
         client.post {
             url(API_BASE_URL)
@@ -243,7 +287,7 @@ object LastFM {
             parameter("format", "json")
         }
         true
-    }.getOrDefault(false)
+    } != null
 }
 
 /**
