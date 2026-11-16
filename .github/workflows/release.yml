@@ -222,7 +222,6 @@ jobs:
             echo "| :--- | :--- | :--- | :--- |"
             for FILE in \
               "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk" \
-              "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-armeabi-v7a.apk" \
               "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk" \
               "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk" \
               "app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
@@ -232,7 +231,6 @@ jobs:
               HASH=$(sha256sum "$FILE" | cut -d' ' -f1)
               case "$NAME" in
                 *arm64-v8a*) ARCH="ARM64 (Recommended for modern phones)" ;;
-                *armeabi-v7a*) ARCH="ARM32 (Older Android devices)" ;;
                 *x86_64*) ARCH="x86_64 (Emulators & Chromebooks)" ;;
                 *universal*) ARCH="Universal (All architectures)" ;;
                 *.aab*) ARCH="Android App Bundle (Play Store / bundletool)" ;;
@@ -507,6 +505,58 @@ jobs:
 
             ---
             <details>
+            <summary>🎮 Console RPC Preset Loading Fix</summary>
+
+            **Bug:** Loading a Console RPC preset (built-in or custom) saved settings to DataStore but did not start Console RPC if it wasn't already running. The preset had no effect on Discord until the user manually toggled Console RPC on.
+
+            **Fix:** `applyConsolePreset()` and `applyConsoleGame()` now start Console RPC automatically when `rpcManager.activeRpc.value != RpcType.ConsoleRpc`. The preset takes effect immediately on Discord without requiring a manual toggle.
+
+            **Files:** `CustomRpc.kt` — `applyConsolePreset()`, `applyConsoleGame()`.
+            </details>
+
+            ---
+            <details>
+            <summary>🎮 Custom RPC Console Tab Switch Fix</summary>
+
+            **Bug:** The Enable/Disable switch on the Custom RPC screen always started Console RPC regardless of which tab was active. The Custom RPC tab had no way to start Custom RPC from the switch.
+
+            **Fix:** SwitchBar now starts the correct RPC type based on the selected tab:
+            - Custom RPC tab → starts `RpcType.CustomRpc`
+            - Console RPC tab → starts `RpcType.ConsoleRpc`
+
+            Added `isConsoleRpcEnabled` state variable synced with `rpcManager.activeRpc`. Switch label now shows "Enable Custom RPC" or "Enable Console RPC" based on active tab.
+
+            **Files:** `CustomRpc.kt` — SwitchBar, `isConsoleRpcEnabled`.
+            </details>
+
+            ---
+            <details>
+            <summary>🔐 Discord Signin Button on User Profile After Logout</summary>
+
+            **Bug:** After Discord logout, the User Profile page showed no way to sign back in. Users had to navigate away from the profile page to access the Login screen.
+
+            **Fix:** UserScreen now always renders regardless of login state. When logged out (`UserState.Error`), the page shows ProfileCard with fallback user data plus a Discord Signin button (`DiscordLoginButton`). Added `onNavigateToLogin` callback to navigate to the Login screen. Added `LOGIN` route constant and route registration in `Kizzy.kt` navigation graph.
+
+            **Files:** `UserScreen.kt`, `Kizzy.kt`, `Routes.kt` (added `LOGIN` constant).
+            </details>
+
+            ---
+            <details>
+            <summary>🔗 YouTube Music Video URL Link Fix (Enhanced)</summary>
+
+            **Bug:** YouTube Music activity link pointed to wrong video ID or search page URL instead of the actual video. `extractYouTubeUrl()` returned raw YouTube URLs (e.g., `youtube.com/watch?v=ID&list=PLAYLIST`) instead of extracting just the video ID. `normalizeMediaUrl()` returned URLs with `list=` parameter as-is, causing Discord to open the wrong video in a playlist.
+
+            **Fix:**
+            - `extractYouTubeUrl()` now extracts just the 11-character video ID from all URL forms (`youtube.com/watch?v=ID`, `youtu.be/ID`, `yt:video:ID`, `t:ID`)
+            - `normalizeMediaUrl()` ignores `list=` parameter and extracts video ID
+            - Returns `https://youtu.be/ID` instead of full YouTube URLs
+            - Skips search page URLs (`/results?search_query`) to avoid broken links
+
+            **Files:** `MetadataResolver.kt` — `extractYouTubeUrl()`, `normalizeMediaUrl()`.
+            </details>
+
+            ---
+            <details>
             <summary>⚖️ Pros & Cons</summary>
 
             **✅ Pros:**
@@ -532,9 +582,9 @@ jobs:
             <details>
             <summary>📁 Key Files Changed</summary>
 
-            **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`, `RpcConfigRepository.kt`, `RpcConfigRepositoryImpl.kt`  
+            **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`, `RpcConfigRepository.kt`, `RpcConfigRepositoryImpl.kt`, `UserScreen.kt` (Discord Signin after logout)  
             **Deleted:** `GamesScreen.kt` (merged into Custom RPC)  
-            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix), `ConsoleApps.kt` (games getter), `CustomScreenViewModel.kt` (console games state fix), `ConsolePresetEditor.kt` (icon type fix), `App.kt` (StrictMode + Coil config + CoroutineExceptionHandler), `MetadataResolver.kt` (YouTube/Chinese platform URLs), `KizzyStateRepository.kt` (StateFlow conflation), `ServiceModule.kt` (CoroutineExceptionHandler)  
+            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix), `ConsoleApps.kt` (games getter), `CustomScreenViewModel.kt` (console games state fix), `ConsolePresetEditor.kt` (icon type fix), `App.kt` (StrictMode + Coil config + CoroutineExceptionHandler), `MetadataResolver.kt` (YouTube/Chinese platform URLs), `KizzyStateRepository.kt` (StateFlow conflation), `ServiceModule.kt` (CoroutineExceptionHandler), `Kizzy.kt` (Login route, UserScreen always shows), `Routes.kt` (added LOGIN constant)  
             **Locale files:** 87 updated  
             **Build files:** `gradle/libs.versions.toml` (ktor-client-okhttp added), `release.yml`, `app/proguard-rules.pro` (R8 keep rules cleanup), `settings.gradle.kts` (removed foojay plugin), 30+ module `build.gradle.kts` files
             </details>
@@ -650,7 +700,6 @@ jobs:
             </details>
           files: |
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
-            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-armeabi-v7a.apk
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk
             app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
