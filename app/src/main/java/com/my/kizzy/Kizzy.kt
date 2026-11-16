@@ -172,80 +172,67 @@ internal fun ComponentActivity.Kizzy(
                 )
             }
             composable(Routes.PROFILE) { navBackStackEntry ->
-                var loggedIn by remember {
-                    mutableStateOf(Prefs[Prefs.TOKEN, ""].isNotEmpty())
-                }
-                if (loggedIn) {
-                    val viewModel = hiltViewModel<UserViewModel>(navBackStackEntry)
-                    val state by viewModel.state.collectAsState()
-                    UserScreen(
-                        state = state,
-                        onBackPressed = navController::popBackStack,
-                        onLogout = {
-                            Prefs.remove(Prefs.TOKEN)
-                            Prefs.remove(Prefs.USER_ID)
-                            Prefs.remove(Prefs.USER_DATA)
-                            Prefs.remove(Prefs.USER_BIO)
-                            Prefs.remove(Prefs.USER_NITRO)
-                            // Clear OAuth2 tokens and reset connection method so
-                            // Discord OAuth2 is fully logged out and the next login
-                            // starts fresh with the Gateway default.
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
-                            Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
-                            loggedIn = false
-                        },
-                        onNavigateToLogin = {
-                            navController.navigate(Routes.LOGIN)
-                        },
-                        onNavigateToRpcPreview = {
-                            val currentState = state
-                            val user = when (currentState) {
-                                is UserState.LoadingCompleted -> currentState.user
-                                is UserState.Error -> currentState.user
-                                UserState.Loading -> null
-                            }
-                            val userId = user?.id ?: ""
-                            val avatarUrl = user?.getAvatarImage() ?: ""
-                            // Uri.encode (not URLEncoder): URLEncoder turns a space into
-                            // "+", which the navigation route does not decode back, so
-                            // "Penthouse Rules" was shown as "Penthouse+Rules".
-                            val encodedAvatarUrl = android.net.Uri.encode(avatarUrl)
-                            val rpcConfig = when (currentState) {
-                                is UserState.LoadingCompleted -> currentState.rpcConfig
-                                is UserState.Error -> currentState.rpcConfig
-                                UserState.Loading -> null
-                            }
-                            // The config is serialized with the real serializer and
-                            // then encoded once. Building the json by hand broke on
-                            // every name that contained a quote or a backslash, and
-                            // the hand written json did not match the model, so
-                            // the preview showed nothing.
-                            val encodedRpcConfig = if (rpcConfig != null) {
-                                android.net.Uri.encode(
-                                    kotlinx.serialization.json.Json {
-                                        ignoreUnknownKeys = true
-                                        encodeDefaults = true
-                                    }.encodeToString(
-                                        com.my.kizzy.domain.model.rpc.RpcConfig.serializer(),
-                                        rpcConfig
-                                    )
-                                )
-                            } else ""
-                            navController.navigate("${Routes.RPC_PREVIEW}/$userId/$encodedAvatarUrl/$encodedRpcConfig")
+                val viewModel = hiltViewModel<UserViewModel>(navBackStackEntry)
+                val state by viewModel.state.collectAsState()
+                UserScreen(
+                    state = state,
+                    onBackPressed = navController::popBackStack,
+                    onLogout = {
+                        Prefs.remove(Prefs.TOKEN)
+                        Prefs.remove(Prefs.USER_ID)
+                        Prefs.remove(Prefs.USER_DATA)
+                        Prefs.remove(Prefs.USER_BIO)
+                        Prefs.remove(Prefs.USER_NITRO)
+                        // Clear OAuth2 tokens and reset connection method so
+                        // Discord OAuth2 is fully logged out and the next login
+                        // starts fresh with the Gateway default.
+                        Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
+                        Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
+                        Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)
+                        Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
+                        Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
+                        Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
+                    },
+                    onNavigateToLogin = {
+                        navController.navigate(Routes.LOGIN)
+                    },
+                    onNavigateToRpcPreview = {
+                        val currentState = state
+                        val user = when (currentState) {
+                            is UserState.LoadingCompleted -> currentState.user
+                            is UserState.Error -> currentState.user
+                            UserState.Loading -> null
                         }
-                    )
-                } else {
-                    LoginScreen(
-                        onBackPressed = navController::popBackStack,
-                        onCompleted = {
-                            loggedIn = true
-                        },
-                    )
-                }
+                        val userId = user?.id ?: ""
+                        val avatarUrl = user?.getAvatarImage() ?: ""
+                        // Uri.encode (not URLEncoder): URLEncoder turns a space into
+                        // "+", which the navigation route does not decode back, so
+                        // "Penthouse Rules" was shown as "Penthouse+Rules".
+                        val encodedAvatarUrl = android.net.Uri.encode(avatarUrl)
+                        val rpcConfig = when (currentState) {
+                            is UserState.LoadingCompleted -> currentState.rpcConfig
+                            is UserState.Error -> currentState.rpcConfig
+                            UserState.Loading -> null
+                        }
+                        // The config is serialized with the real serializer and
+                        // then encoded once. Building the json by hand broke on
+                        // every name that contained a quote or a backslash, and
+                        // the hand written json did not match the model, so
+                        // the preview showed nothing.
+                        val encodedRpcConfig = if (rpcConfig != null) {
+                            android.net.Uri.encode(
+                                kotlinx.serialization.json.Json {
+                                    ignoreUnknownKeys = true
+                                    encodeDefaults = true
+                                }.encodeToString(
+                                    com.my.kizzy.domain.model.rpc.RpcConfig.serializer(),
+                                    rpcConfig
+                                )
+                            )
+                        } else ""
+                        navController.navigate("${Routes.RPC_PREVIEW}/$userId/$encodedAvatarUrl/$encodedRpcConfig")
+                    }
+                )
             }
             composable(Routes.CONSOLE_RPC) { navBackStackEntry ->
                 val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)

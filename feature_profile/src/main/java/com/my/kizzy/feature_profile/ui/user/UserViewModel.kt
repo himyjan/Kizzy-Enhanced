@@ -34,7 +34,18 @@ class UserViewModel @Inject constructor(
     }
 
     private fun getUser() {
-        getUserUseCase(Prefs[Prefs.USER_ID, ""]).onEach { result ->
+        val userId = Prefs[Prefs.USER_ID, ""]
+        if (userId.isBlank()) {
+            // Not logged in on cold start - show Error state with empty user
+            // so UserScreen displays Discord Signin button immediately
+            _state.value = UserState.Error(
+                error = "Not logged in",
+                user = User(),
+                rpcConfig = currentRpcConfig()
+            )
+            return
+        }
+        getUserUseCase(userId).onEach { result ->
             // The ViewModel is created from inside the profile composition. A flow that
             // emits eagerly would otherwise run this code synchronously during that
             // composition. Posting to the main queue moves it to after the frame.
