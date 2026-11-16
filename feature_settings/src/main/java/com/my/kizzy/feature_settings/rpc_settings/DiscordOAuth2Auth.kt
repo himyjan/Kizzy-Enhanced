@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.util.Base64
 import android.util.Log
+import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import com.my.kizzy.preference.Prefs
@@ -79,6 +80,7 @@ class DiscordOAuth2Auth(
 
             val customTabsIntent = CustomTabsIntent.Builder()
                 .setShowTitle(true)
+                .setEphemeralBrowsingEnabled(true)
                 .build()
 
             try {
