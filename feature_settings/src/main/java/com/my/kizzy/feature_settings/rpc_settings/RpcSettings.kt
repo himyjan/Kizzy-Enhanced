@@ -139,6 +139,15 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var lastfmShowPartyMax by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_PARTY_MAX, false]) }
     var isLastFmEnabled by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLED, false]) }
 
+    // ListenBrainz scrobbling settings
+    var showListenBrainzDialog by remember { mutableStateOf(false) }
+    var listenbrainzUserToken by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""]) }
+    var listenbrainzEnabled by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_ENABLED, false]) }
+    var listenbrainzShowTimestamps by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_ENABLE_TIMESTAMPS, true]) }
+    var listenbrainzShowCoverArt by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_SHOW_COVER_ART, true]) }
+    var listenbrainzShowPartyCurrent by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_SHOW_PARTY_CURRENT, true]) }
+    var listenbrainzShowPartyMax by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_SHOW_PARTY_MAX, false]) }
+
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         LargeTopAppBar(title = {
             Text(
@@ -446,6 +455,24 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     lastfmShowPartyMax = Prefs[Prefs.LASTFM_SHOW_PARTY_MAX, false]
                     isLastFmEnabled = Prefs[Prefs.LASTFM_ENABLED, false]
                     showLastFmDialog = true
+                }
+            }
+            item(key = "listenbrainz_settings") {
+                val listenbrainzStatus = when {
+                    listenbrainzEnabled -> "Enabled"
+                    else -> "Disabled"
+                }
+                SettingItem(
+                    title = stringResource(id = R.string.listenbrainz_settings_title),
+                    description = stringResource(id = R.string.listenbrainz_enabled) + "  •  $listenbrainzStatus",
+                ) {
+                    listenbrainzUserToken = Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""]
+                    listenbrainzEnabled = Prefs[Prefs.LISTENBRAINZ_ENABLED, false]
+                    listenbrainzShowTimestamps = Prefs[Prefs.LISTENBRAINZ_ENABLE_TIMESTAMPS, true]
+                    listenbrainzShowCoverArt = Prefs[Prefs.LISTENBRAINZ_SHOW_COVER_ART, true]
+                    listenbrainzShowPartyCurrent = Prefs[Prefs.LISTENBRAINZ_SHOW_PARTY_CURRENT, true]
+                    listenbrainzShowPartyMax = Prefs[Prefs.LISTENBRAINZ_SHOW_PARTY_MAX, false]
+                    showListenBrainzDialog = true
                 }
             }
         }
@@ -866,6 +893,80 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                             isChecked = lastfmShowPartyMax,
                         ) {
                             lastfmShowPartyMax = !lastfmShowPartyMax
+                        }
+                    }
+                },
+            )
+        }
+
+        if (showListenBrainzDialog) {
+            AlertDialog(
+                onDismissRequest = { showListenBrainzDialog = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        Prefs[Prefs.LISTENBRAINZ_USER_TOKEN] = listenbrainzUserToken
+                        Prefs[Prefs.LISTENBRAINZ_ENABLED] = listenbrainzEnabled
+                        Prefs[Prefs.LISTENBRAINZ_ENABLE_TIMESTAMPS] = listenbrainzShowTimestamps
+                        Prefs[Prefs.LISTENBRAINZ_SHOW_COVER_ART] = listenbrainzShowCoverArt
+                        Prefs[Prefs.LISTENBRAINZ_SHOW_PARTY_CURRENT] = listenbrainzShowPartyCurrent
+                        Prefs[Prefs.LISTENBRAINZ_SHOW_PARTY_MAX] = listenbrainzShowPartyMax
+                        showListenBrainzDialog = false
+                    }) {
+                        Text(stringResource(R.string.save))
+                    }
+                },
+                title = { Text(stringResource(R.string.listenbrainz_settings_title)) },
+                text = {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.listenbrainz_enabled),
+                            isChecked = listenbrainzEnabled,
+                        ) {
+                            listenbrainzEnabled = !listenbrainzEnabled
+                        }
+
+                        RpcField(
+                            value = listenbrainzUserToken,
+                            label = R.string.listenbrainz_user_token,
+                        ) {
+                            listenbrainzUserToken = it
+                        }
+
+                        Text(
+                            text = stringResource(R.string.listenbrainz_user_token_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.listenbrainz_show_timestamps),
+                            isChecked = listenbrainzShowTimestamps,
+                        ) {
+                            listenbrainzShowTimestamps = !listenbrainzShowTimestamps
+                        }
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.listenbrainz_show_cover_art),
+                            isChecked = listenbrainzShowCoverArt,
+                        ) {
+                            listenbrainzShowCoverArt = !listenbrainzShowCoverArt
+                        }
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.listenbrainz_show_party_current),
+                            isChecked = listenbrainzShowPartyCurrent,
+                        ) {
+                            listenbrainzShowPartyCurrent = !listenbrainzShowPartyCurrent
+                        }
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.listenbrainz_show_party_max),
+                            isChecked = listenbrainzShowPartyMax,
+                        ) {
+                            listenbrainzShowPartyMax = !listenbrainzShowPartyMax
                         }
                     }
                 },

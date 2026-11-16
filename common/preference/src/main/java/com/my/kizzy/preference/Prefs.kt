@@ -56,6 +56,7 @@ object Prefs {
         LASTFM_USERNAME,
         LASTFM_PASSWORD,
         LASTFM_SESSION_KEY,
+        LISTENBRAINZ_USER_TOKEN,
     )
 
     /**
@@ -320,6 +321,14 @@ object Prefs {
     const val LASTFM_SHOW_COVER_ART = "lastfm_show_cover_art"
     const val LASTFM_SHOW_PARTY_CURRENT = "lastfm_show_party_current"
     const val LASTFM_SHOW_PARTY_MAX = "lastfm_show_party_max"
+
+    // ListenBrainz scrobbling settings
+    const val LISTENBRAINZ_USER_TOKEN = "listenbrainz_user_token"
+    const val LISTENBRAINZ_ENABLED = "listenbrainz_enabled"
+    const val LISTENBRAINZ_ENABLE_TIMESTAMPS = "listenbrainz_enable_timestamps"
+    const val LISTENBRAINZ_SHOW_COVER_ART = "listenbrainz_show_cover_art"
+    const val LISTENBRAINZ_SHOW_PARTY_CURRENT = "listenbrainz_show_party_current"
+    const val LISTENBRAINZ_SHOW_PARTY_MAX = "listenbrainz_show_party_max"
 
     const val USE_RPC_BUTTONS = "use_saved_rpc_buttons"
     const val RPC_BUTTONS_DATA = "saved_rpc_buttons_data"

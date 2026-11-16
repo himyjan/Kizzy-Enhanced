@@ -457,4 +457,13 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="listenbrainz_settings_title">ListenBrainz Scrobbling</string>
+    <string name="listenbrainz_enabled">Enable ListenBrainz</string>
+    <string name="listenbrainz_user_token">User Token</string>
+    <string name="listenbrainz_user_token_desc">Get your token from https://listenbrainz.org/profile/</string>
+    <string name="listenbrainz_show_timestamps">Show Timestamps</string>
+    <string name="listenbrainz_show_cover_art">Show Cover Art</string>
+    <string name="listenbrainz_show_party_current">Show Party Current Size</string>
+    <string name="listenbrainz_show_party_max">Show Party Max Size</string>
 </resources>

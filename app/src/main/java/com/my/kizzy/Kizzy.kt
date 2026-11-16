@@ -13,7 +13,6 @@
 package com.my.kizzy
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -57,7 +56,6 @@ import com.my.kizzy.feature_settings.style.DarkThemePreferences
 import com.my.kizzy.feature_startup.StartUp
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
-import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
 import com.my.kizzy.navigation.Routes
 import com.my.kizzy.preference.Prefs
 import xyz.dead8309.feature_experimental_rpc.ExperimentalRpcScreen
@@ -182,41 +180,7 @@ internal fun Kizzy(
                     state = state,
                     onBackPressed = navController::popBackStack,
                     onLogout = { ctx ->
-                        scope.launch {
-                            // Stop all running RPC services so no presence is sent
-                            // after logout.
-                            ctx.stopService(Intent(ctx, MediaRpcService::class.java))
-                            ctx.stopService(Intent(ctx, CustomRpcService::class.java))
-                            ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
-
-                            Prefs.remove(Prefs.TOKEN)
-                            Prefs.remove(Prefs.USER_ID)
-                            Prefs.remove(Prefs.USER_DATA)
-                            Prefs.remove(Prefs.USER_BIO)
-                            Prefs.remove(Prefs.USER_NITRO)
-                            // Clear OAuth2 tokens and reset connection method so
-                            // Discord OAuth2 is fully logged out and the next login
-                            // starts fresh with the Gateway default.
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
-                            Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
-                            Prefs.remove(Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID)
-                            // Clear Last.fm scrobbling credentials so the next login
-                            // starts fresh with no stored scrobbling session.
-                            Prefs.remove(Prefs.LASTFM_API_KEY)
-                            Prefs.remove(Prefs.LASTFM_SECRET)
-                            Prefs.remove(Prefs.LASTFM_USERNAME)
-                            Prefs.remove(Prefs.LASTFM_PASSWORD)
-                            Prefs.remove(Prefs.LASTFM_SESSION_KEY)
-                            Prefs.remove(Prefs.LASTFM_ENABLED)
-                            Prefs.remove(Prefs.LASTFM_ENABLE_TIMESTAMPS)
-                            Prefs.remove(Prefs.LASTFM_SHOW_COVER_ART)
-                            Prefs.remove(Prefs.LASTFM_SHOW_PARTY_CURRENT)
-                            Prefs.remove(Prefs.LASTFM_SHOW_PARTY_MAX)
-                        }
+                        viewModel.logout(ctx, scope)
                     },
                     onNavigateToLogin = {
                         navController.navigate(Routes.LOGIN)
