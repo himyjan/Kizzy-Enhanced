@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+      Discord gateway / API endpoints. Enforces HTTPS only (no cleartext).
+      Certificate pinning SPKI hashes should be added here once Discord's
+      live certificate SPKI SHA-256 hashes are verified.
+    -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">discord.com</domain>
+        <domain includeSubdomains="true">discord.gg</domain>
+        <domain includeSubdomains="true">discordapp.com</domain>
+        <domain includeSubdomains="true">media.discordapp.net</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+        <!--
+          <pin-set expiration="2027-12-31">
+              <pin digest="SHA-256">VERIFIED_DISCORD_SPKI_HASH</pin>
+          </pin-set>
+        -->
+    </domain-config>
+
+    <!-- Default config: block cleartext for all other domains. -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

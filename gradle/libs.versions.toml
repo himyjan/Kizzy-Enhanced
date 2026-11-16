@@ -34,6 +34,7 @@ profileinstaller = "1.4.1"
 baselineprofile = "1.6.0-alpha01"
 hilt-navigation-compose = "1.4.0"
 workmanager = "2.12.0"
+leakcanary = "2.15.1"
 
 [libraries]
 # Jakarta
@@ -91,6 +92,8 @@ coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 # ImageLoader has no way to load an image from a URL, so every remote image
 # (the Discord avatar, the banner, the RPC cover art) silently failed to load.
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
+leakcanary-instrumentation = { module = "com.squareup.leakcanary:leakcanary-android-instrumentation", version.ref = "leakcanary" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 # KotlinX

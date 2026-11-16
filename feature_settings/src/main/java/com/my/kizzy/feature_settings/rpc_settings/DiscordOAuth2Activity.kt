@@ -3,6 +3,7 @@ package com.my.kizzy.feature_settings.rpc_settings
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,9 @@ class DiscordOAuth2Activity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Prevent screenshots and screen recording on OAuth screen
+        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
         val result = when {
             intent?.data?.scheme != "kizzy" ->

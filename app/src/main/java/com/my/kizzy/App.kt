@@ -3,6 +3,7 @@ package com.my.kizzy
 import android.app.Application
 import android.content.Intent
 import android.os.Build
+import android.os.StrictMode
 import androidx.compose.runtime.Composer
 import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.hilt.work.HiltWorkerFactory
@@ -32,6 +33,23 @@ class App : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+
+        // StrictMode - catch main thread violations in debug builds
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .penaltyDialog()
+                    .build()
+            )
+            StrictMode.setVmPolicy(
+                StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build()
+            )
+        }
 
         // Initialize components with error handling to prevent startup crashes
         // on emulators and OEM devices with restricted background access

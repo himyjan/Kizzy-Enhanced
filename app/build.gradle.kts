@@ -133,6 +133,10 @@ dependencies {
     // Compose Runtime Tracing for Perfetto performance tracing
     debugImplementation(libs.composeRuntimeTracing)
     implementation(libs.composeRuntimeTracing)
+
+    // LeakCanary - memory leak detection (debug builds only)
+    debugImplementation(libs.leakcanary.android)
+    debugImplementation(libs.leakcanary.instrumentation)
 }
 
 configurations {
