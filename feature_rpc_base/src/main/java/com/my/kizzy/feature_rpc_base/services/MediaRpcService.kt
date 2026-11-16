@@ -864,9 +864,12 @@ class MediaRpcService : Service() {
         val ac = intent?.action
         when (ac) {
             Constants.ACTION_STOP_SERVICE -> {
-                // The user switched the Media RPC off, so the watchdog must
-                // not bring the service back up.
-                Prefs[Prefs.MEDIA_RPC_ENABLED] = false
+                // Move DataStore write off main thread to avoid StrictMode DiskReadViolation
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        Prefs[Prefs.MEDIA_RPC_ENABLED] = false
+                    }
+                }
                 stopSelf()
             }
             Constants.ACTION_RESTART_SERVICE -> {
@@ -893,7 +896,11 @@ class MediaRpcService : Service() {
             null -> {
                 // Normal start (no action): the user wants the Media RPC running.
                 // Mark it as enabled so the watchdog knows it should stay alive.
-                Prefs[Prefs.MEDIA_RPC_ENABLED] = true
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        Prefs[Prefs.MEDIA_RPC_ENABLED] = true
+                    }
+                }
             }
         }
         return START_REDELIVER_INTENT

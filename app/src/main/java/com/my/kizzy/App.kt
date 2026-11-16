@@ -19,12 +19,15 @@ import jakarta.inject.Inject
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.system.exitProcess
+import kotlinx.coroutines.*
 
 @HiltAndroidApp
 class App : Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
@@ -111,11 +114,16 @@ class App : Application(), Configuration.Provider {
 
         // 7. Auto-start RPC service if it was previously enabled
         try {
-            val rpcEnabled = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, false] || Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, false] || Prefs[Prefs.USE_RPC_BUTTONS, false]
-            if (rpcEnabled) {
-                val intent = Intent(this, com.my.kizzy.feature_rpc_base.services.MediaRpcService::class.java)
-                startService(intent)
-                android.util.Log.d("App", "Auto-started MediaRpcService - RPC was previously enabled")
+            // Read prefs off main thread to avoid StrictMode DiskReadViolation
+            scope.launch {
+                withContext(Dispatchers.IO) {
+                    val rpcEnabled = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, false] || Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, false] || Prefs[Prefs.USE_RPC_BUTTONS, false]
+                    if (rpcEnabled) {
+                        val intent = Intent(this, com.my.kizzy.feature_rpc_base.services.MediaRpcService::class.java)
+                        startService(intent)
+                        android.util.Log.d("App", "Auto-started MediaRpcService - RPC was previously enabled")
+                    }
+                }
             }
         } catch (e: Exception) {
             // RPC auto-start failed - non-critical
