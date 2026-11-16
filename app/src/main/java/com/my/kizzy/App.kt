@@ -34,13 +34,13 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        // StrictMode - catch main thread violations in debug builds
+        // StrictMode - catch main thread violations in debug builds (log only,
+        // no dialog to avoid interrupting the user during development)
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyDialog()
                     .build()
             )
             StrictMode.setVmPolicy(
