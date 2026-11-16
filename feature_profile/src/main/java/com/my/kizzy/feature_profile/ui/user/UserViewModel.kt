@@ -77,6 +77,14 @@ class UserViewModel @Inject constructor(
             Prefs.remove(Prefs.LASTFM_SHOW_COVER_ART)
             Prefs.remove(Prefs.LASTFM_SHOW_PARTY_CURRENT)
             Prefs.remove(Prefs.LASTFM_SHOW_PARTY_MAX)
+                            // Clear ListenBrainz scrobbling credentials so the next login
+                            // starts fresh with no stored scrobbling session.
+                            Prefs.remove(Prefs.LISTENBRAINZ_USER_TOKEN)
+                            Prefs.remove(Prefs.LISTENBRAINZ_ENABLED)
+                            Prefs.remove(Prefs.LISTENBRAINZ_ENABLE_TIMESTAMPS)
+                            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_COVER_ART)
+                            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_PARTY_CURRENT)
+                            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_PARTY_MAX)
 
             // Reset state to show not-logged-in UI immediately
             _state.value = UserState.Error(

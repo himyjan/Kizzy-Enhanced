@@ -203,6 +203,8 @@ class DiscordOAuth2Auth(
             append("&state=").append(state)
             append("&code_challenge_method=S256")
             append("&code_challenge=").append(challenge)
+            // Force login screen so user can switch accounts after logout
+            append("&prompt=login")
         }
     }
 
