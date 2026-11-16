@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.os.Build
 import android.os.StrictMode
+import android.util.Log
 import androidx.compose.runtime.Composer
 import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.hilt.work.HiltWorkerFactory
@@ -27,7 +28,13 @@ class App : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val scope = CoroutineScope(
+        SupervisorJob() +
+            CoroutineExceptionHandler { _, exception ->
+                Log.e("AppCoroutineScope", "Uncaught coroutine exception", exception)
+            } +
+            Dispatchers.Main.immediate
+    )
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
@@ -114,12 +121,16 @@ class App : Application(), Configuration.Provider {
 
         // 7. Auto-start RPC service if it was previously enabled
         try {
-            // Read prefs off main thread to avoid StrictMode DiskReadViolation
+            // Read prefs off main thread to avoid StrictMode DiskReadViolation,
+            // then start the service on the main thread
+            val appContext = this@App
             scope.launch {
-                withContext(Dispatchers.IO) {
-                    val rpcEnabled = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, false] || Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, false] || Prefs[Prefs.USE_RPC_BUTTONS, false]
-                    if (rpcEnabled) {
-                        val intent = Intent(this, com.my.kizzy.feature_rpc_base.services.MediaRpcService::class.java)
+                val rpcEnabled = withContext(Dispatchers.IO) {
+                    Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, false] || Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, false] || Prefs[Prefs.USE_RPC_BUTTONS, false]
+                }
+                if (rpcEnabled) {
+                    withContext(Dispatchers.Main) {
+                        val intent = Intent(appContext, com.my.kizzy.feature_rpc_base.services.MediaRpcService::class.java)
                         startService(intent)
                         android.util.Log.d("App", "Auto-started MediaRpcService - RPC was previously enabled")
                     }

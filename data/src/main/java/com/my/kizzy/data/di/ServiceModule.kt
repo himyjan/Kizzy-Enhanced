@@ -12,10 +12,12 @@
 
 package com.my.kizzy.data.di
 
+import android.util.Log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ServiceComponent
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -35,6 +37,10 @@ object ServiceModule {
      */
     @Provides
     fun providesCoroutineScope(): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        val handler = CoroutineExceptionHandler { _, exception ->
+            // Log uncaught coroutine exceptions instead of crashing the app
+            android.util.Log.e("CoroutineExceptionHandler", "Uncaught coroutine exception", exception)
+        }
+        return CoroutineScope(SupervisorJob() + handler + Dispatchers.IO)
     }
 }

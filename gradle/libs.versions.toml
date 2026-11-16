@@ -40,8 +40,8 @@ jakarta-inject = { module = "jakarta.inject:jakarta.inject-api", version.ref = "
 
 # Androidx
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
-baselineprofile = { module = "androidx.baselineprofile:baselineprofile", version.ref = "baselineprofile" }
+profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileinstaller" }
+baselineprofile = { module = "androidx.baselineprofile:baselineprofile", version.ref = "androidx-baselineprofile" }
 app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
 androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
@@ -117,7 +117,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidx-baselineprofile" }
 
 [bundles]
 network-ktor = ["ktor-core", "ktor-client-okhttp", "ktor-kotlinx-serialization"]

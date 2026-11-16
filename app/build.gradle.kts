@@ -137,6 +137,10 @@ dependencies {
     // LeakCanary - memory leak detection (debug builds only)
     debugImplementation(libs.leakcanary.android)
     debugImplementation(libs.leakcanary.instrumentation)
+
+    // Coil image loading - configured in App.onCreate()
+    implementation(libs.coil)
+    implementation(libs.coil.network)
 }
 
 configurations {

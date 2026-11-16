@@ -18,7 +18,9 @@ import com.my.kizzy.data.remote.Discord
 import com.my.kizzy.data.remote.Github
 import com.my.kizzy.data.remote.Imgur
 import com.my.kizzy.data.repository.KizzyRepositoryImpl
+import com.my.kizzy.data.repository.RpcConfigRepositoryImpl
 import com.my.kizzy.domain.repository.KizzyRepository
+import com.my.kizzy.domain.repository.RpcConfigRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -65,6 +67,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provideKizzyRepository(impl: KizzyRepositoryImpl): KizzyRepository {
+        return impl
+    }
+
+    @Provides
+    @Singleton
+    fun provideRpcConfigRepository(impl: RpcConfigRepositoryImpl): RpcConfigRepository {
         return impl
     }
 
