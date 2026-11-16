@@ -1,0 +1,781 @@
+Optimization Score: 75.57%
+Obfuscation Score:  75.76%
+Shrinking Score:    82.38%
+
+{
+  "scores": {
+    "optimization": "75.57%",
+    "obfuscation": "75.76%",
+    "shrinking": "82.38%"
+  },
+  "globals": [],
+  "top_impact_rules": [
+    {
+      "id": 151,
+      "source": "-keepnames class * { @dagger.hilt.android.lifecycle.HiltViewModel *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 79,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 12917,
+      "impact_pct": "8.24%",
+      "classes": 12917,
+      "fields": 0,
+      "methods": 0,
+      "example_classes": [
+        "L_COROUTINE/ArtificialStackFrames;",
+        "L_COROUTINE/CoroutineDebuggingKt;",
+        "L_COROUTINE/_BOUNDARY;",
+        "L_COROUTINE/_CREATION;",
+        "Landroid/support/v4/app/RemoteActionCompatParcelizer;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 53,
+      "source": "-keep class kotlinx.coroutines.** { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 48,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 8475,
+      "impact_pct": "5.41%",
+      "classes": 873,
+      "fields": 2733,
+      "methods": 4869,
+      "example_classes": [
+        "Lkotlinx/coroutines/AbstractCoroutine;",
+        "Lkotlinx/coroutines/AbstractTimeSource;",
+        "Lkotlinx/coroutines/AbstractTimeSourceKt;",
+        "Lkotlinx/coroutines/Active;",
+        "Lkotlinx/coroutines/AwaitAll$AwaitAllNode;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 47,
+      "source": "-keep class io.ktor.client.** { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 31,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 5892,
+      "impact_pct": "3.76%",
+      "classes": 608,
+      "fields": 1976,
+      "methods": 3308,
+      "example_classes": [
+        "Lio/ktor/client/HttpClient$2;",
+        "Lio/ktor/client/HttpClient$4;",
+        "Lio/ktor/client/HttpClient$execute$1;",
+        "Lio/ktor/client/HttpClient;",
+        "Lio/ktor/client/HttpClientConfig;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 54,
+      "source": "-keep class kotlinx.serialization.** { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 44,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 3674,
+      "impact_pct": "2.34%",
+      "classes": 372,
+      "fields": 589,
+      "methods": 2713,
+      "example_classes": [
+        "Lkotlinx/serialization/BinaryFormat;",
+        "Lkotlinx/serialization/Contextual;",
+        "Lkotlinx/serialization/ContextualSerializer;",
+        "Lkotlinx/serialization/DeserializationStrategy;",
+        "Lkotlinx/serialization/EncodeDefault$Mode;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 50,
+      "source": "-keep class io.ktor.http.** { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 40,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 3588,
+      "impact_pct": "2.29%",
+      "classes": 309,
+      "fields": 995,
+      "methods": 2284,
+      "example_classes": [
+        "Lio/ktor/http/ApplicationResponsePropertiesKt;",
+        "Lio/ktor/http/AsciiBitSet$Companion;",
+        "Lio/ktor/http/AsciiBitSet;",
+        "Lio/ktor/http/BadContentTypeFormatException;",
+        "Lio/ktor/http/CacheControl$MaxAge;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 153,
+      "source": "-keepnames class kotlinx.serialization.internal.** { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 115,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 1345,
+      "impact_pct": "0.86%",
+      "classes": 126,
+      "fields": 174,
+      "methods": 1045,
+      "example_classes": [
+        "Lkotlinx/serialization/internal/AbstractCollectionSerializer;",
+        "Lkotlinx/serialization/internal/AbstractPolymorphicSerializer;",
+        "Lkotlinx/serialization/internal/AbstractPolymorphicSerializerKt;",
+        "Lkotlinx/serialization/internal/ArrayClassDesc;",
+        "Lkotlinx/serialization/internal/ArrayListClassDesc;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 51,
+      "source": "-keep class io.ktor.websocket.** { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 37,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 1051,
+      "impact_pct": "0.67%",
+      "classes": 98,
+      "fields": 381,
+      "methods": 572,
+      "example_classes": [
+        "Lio/ktor/websocket/BoundedChannel$Companion;",
+        "Lio/ktor/websocket/BoundedChannel;",
+        "Lio/ktor/websocket/ChannelConfig$Companion;",
+        "Lio/ktor/websocket/ChannelConfig;",
+        "Lio/ktor/websocket/ChannelOverflow;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 39,
+      "source": "-keep class com.my.kizzy.domain.model.** { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 59,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 787,
+      "impact_pct": "0.50%",
+      "classes": 37,
+      "fields": 162,
+      "methods": 588,
+      "example_classes": [
+        "Lcom/my/kizzy/domain/model/Contributor$$serializer;",
+        "Lcom/my/kizzy/domain/model/Contributor$Companion;",
+        "Lcom/my/kizzy/domain/model/Contributor;",
+        "Lcom/my/kizzy/domain/model/Game;",
+        "Lcom/my/kizzy/domain/model/Resource$Error;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 24,
+      "source": "-keep class * extends dagger.hilt.internal.** { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 70,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 781,
+      "impact_pct": "0.50%",
+      "classes": 39,
+      "fields": 243,
+      "methods": 499,
+      "example_classes": [
+        "Lcom/my/kizzy/App;",
+        "Lcom/my/kizzy/App_HiltComponents$ActivityC;",
+        "Lcom/my/kizzy/App_HiltComponents$ActivityRetainedC;",
+        "Lcom/my/kizzy/App_HiltComponents$FragmentC;",
+        "Lcom/my/kizzy/App_HiltComponents$ServiceC;"
+      ],
+      "subsumed_by": []
+    },
+    {
+      "id": 132,
+      "source": "-keepclassmembers public class * extends android.view.View {\n    void set*(***);\n    *** get*();\n}",
+      "origin": {
+        "file": "Android Gradle plugin 9.6.0-alpha03 (extracted file: /Users/user/Downloads/Kizzy-Enhanced/app/build/intermediates/default_proguard_files/global/proguard-android-optimize.txt-9.6.0-alpha03)",
+        "line": 34,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "AGP defaults",
+      "impact": 757,
+      "impact_pct": "0.48%",
+      "classes": 0,
+      "fields": 0,
+      "methods": 757,
+      "example_classes": [],
+      "subsumed_by": []
+    }
+  ],
+  "subsumed_rules": [
+    {
+      "id": 127,
+      "source": "-keepclassmembers class kotlinx.coroutines.** {\n    volatile <fields>;\n}",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/72b155e0156d7e7601f771a4c8abf52c/transformed/shrink-rules/lib/META-INF/com.android.tools/r8/coroutines.pro",
+        "line": 6,
+        "maven_coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0",
+      "impact": 74,
+      "impact_pct": "0.05%",
+      "classes": 0,
+      "fields": 74,
+      "methods": 0,
+      "example_classes": [],
+      "subsumed_by": [
+        53
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keep class kotlinx.coroutines.** { *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 48,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "source": "-keep class com.my.kizzy.feature_**.Hilt_* { *; }",
+      "origin": {
+        "file": "app/proguard-rules.pro",
+        "line": 74,
+        "maven_coordinate": null,
+        "provided_by_build_system": false
+      },
+      "in_app_files": true,
+      "from": null,
+      "impact": 55,
+      "impact_pct": "0.04%",
+      "classes": 5,
+      "fields": 15,
+      "methods": 35,
+      "example_classes": [
+        "Lcom/my/kizzy/feature_rpc_base/services/Hilt_AppDetectionService;",
+        "Lcom/my/kizzy/feature_rpc_base/services/Hilt_CustomRpcService;",
+        "Lcom/my/kizzy/feature_rpc_base/services/Hilt_DiscordOAuth2RpcService;",
+        "Lcom/my/kizzy/feature_rpc_base/services/Hilt_ExperimentalRpc;",
+        "Lcom/my/kizzy/feature_rpc_base/services/Hilt_MediaRpcService;"
+      ],
+      "subsumed_by": [
+        24
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keep class * extends dagger.hilt.internal.** { *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 70,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 144,
+      "source": "-keepclassmembers,allowshrinking,allowobfuscation class androidx.compose.**.* {\n    static void throw*Exception(...);\n    static void throw*ExceptionForNullCheck(...);\n    # For methods returning Nothing\n    static java.lang.Void throw*Exception(...);\n    static java.lang.Void throw*ExceptionForNullCheck(...);\n}",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/9d395d0d2a0a49d6a749fda2594508aa/transformed/proguard.txt",
+        "line": 18,
+        "maven_coordinate": "androidx.compose.foundation:foundation-layout-android:1.13.0-alpha03",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "androidx.compose.foundation:foundation-layout-android:1.13.0-alpha03",
+      "impact": 34,
+      "impact_pct": "0.02%",
+      "classes": 0,
+      "fields": 0,
+      "methods": 34,
+      "example_classes": [],
+      "subsumed_by": [
+        143
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keepclassmembers,allowshrinking,allowobfuscation class androidx.compose.**.* {\n    static void throw*Exception(...);\n    static void throw*ExceptionForNullCheck(...);\n    # For methods returning Nothing\n    static java.lang.Void throw*Exception(...);\n    static java.lang.Void throw*ExceptionForNullCheck(...);\n    # For functions generating error messages\n    static java.lang.String exceptionMessage*(...);\n    java.lang.String exceptionMessage*(...);\n}",
+          "origin": {
+            "file": "/Users/user/.gradle/caches/9.9.1/transforms/3e768d1a445590ab669480c8f749984a/transformed/proguard.txt",
+            "line": 38,
+            "maven_coordinate": "androidx.compose.ui:ui-android:1.13.0-alpha03",
+            "provided_by_build_system": false
+          },
+          "in_app_files": false,
+          "from": "androidx.compose.ui:ui-android:1.13.0-alpha03"
+        }
+      ]
+    },
+    {
+      "id": 142,
+      "source": "-keepclassmembers,allowshrinking,allowobfuscation class androidx.compose.**.* {\n    static void throw*Exception(...);\n    # For methods returning Nothing\n    static java.lang.Void throw*Exception(...);\n}",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/99c66f1ae2f7c8dcdf74064167b45a6f/transformed/proguard.txt",
+        "line": 18,
+        "maven_coordinate": "androidx.compose.foundation:foundation-android:1.13.0-alpha03",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "androidx.compose.foundation:foundation-android:1.13.0-alpha03",
+      "impact": 29,
+      "impact_pct": "0.02%",
+      "classes": 0,
+      "fields": 0,
+      "methods": 29,
+      "example_classes": [],
+      "subsumed_by": [
+        143,
+        144
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keepclassmembers,allowshrinking,allowobfuscation class androidx.compose.**.* {\n    static void throw*Exception(...);\n    static void throw*ExceptionForNullCheck(...);\n    # For methods returning Nothing\n    static java.lang.Void throw*Exception(...);\n    static java.lang.Void throw*ExceptionForNullCheck(...);\n    # For functions generating error messages\n    static java.lang.String exceptionMessage*(...);\n    java.lang.String exceptionMessage*(...);\n}",
+          "origin": {
+            "file": "/Users/user/.gradle/caches/9.9.1/transforms/3e768d1a445590ab669480c8f749984a/transformed/proguard.txt",
+            "line": 38,
+            "maven_coordinate": "androidx.compose.ui:ui-android:1.13.0-alpha03",
+            "provided_by_build_system": false
+          },
+          "in_app_files": false,
+          "from": "androidx.compose.ui:ui-android:1.13.0-alpha03"
+        },
+        {
+          "source": "-keepclassmembers,allowshrinking,allowobfuscation class androidx.compose.**.* {\n    static void throw*Exception(...);\n    static void throw*ExceptionForNullCheck(...);\n    # For methods returning Nothing\n    static java.lang.Void throw*Exception(...);\n    static java.lang.Void throw*ExceptionForNullCheck(...);\n}",
+          "origin": {
+            "file": "/Users/user/.gradle/caches/9.9.1/transforms/9d395d0d2a0a49d6a749fda2594508aa/transformed/proguard.txt",
+            "line": 18,
+            "maven_coordinate": "androidx.compose.foundation:foundation-layout-android:1.13.0-alpha03",
+            "provided_by_build_system": false
+          },
+          "in_app_files": false,
+          "from": "androidx.compose.foundation:foundation-layout-android:1.13.0-alpha03"
+        }
+      ]
+    },
+    {
+      "id": 148,
+      "source": "-keepnames class * extends androidx.startup.Initializer",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/ac3412cbb2fd9e732a7525b2bad64935/transformed/proguard.txt",
+        "line": 2,
+        "maven_coordinate": "androidx.startup:startup-runtime:1.2.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "androidx.startup:startup-runtime:1.2.0",
+      "impact": 7,
+      "impact_pct": "0.00%",
+      "classes": 7,
+      "fields": 0,
+      "methods": 0,
+      "example_classes": [
+        "Landroidx/compose/runtime/tracing/ComposeTracingInitializer;",
+        "Landroidx/emoji2/text/EmojiCompatInitializer;",
+        "Landroidx/lifecycle/ProcessLifecycleInitializer;",
+        "Landroidx/profileinstaller/ProfileInstallerInitializer;",
+        "Landroidx/tracing/profiler/ConnectedProfilerTracingInitializer;"
+      ],
+      "subsumed_by": [
+        151
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keepnames class * { @dagger.hilt.android.lifecycle.HiltViewModel *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 79,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 150,
+      "source": "-keepnames class * extends androidx.work.ListenableWorker",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/0d895faf6de37580cf07be38d58dc12e/transformed/proguard.txt",
+        "line": 2,
+        "maven_coordinate": "androidx.work:work-runtime:2.12.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "androidx.work:work-runtime:2.12.0",
+      "impact": 7,
+      "impact_pct": "0.00%",
+      "classes": 7,
+      "fields": 0,
+      "methods": 0,
+      "example_classes": [
+        "Landroidx/work/CoroutineWorker;",
+        "Landroidx/work/Worker;",
+        "Landroidx/work/impl/workers/DiagnosticsWorker;",
+        "Lcom/my/kizzy/data/work/AppDetectionHiltWorker;",
+        "Lcom/my/kizzy/data/work/CleanupHiltWorker;"
+      ],
+      "subsumed_by": [
+        151
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keepnames class * { @dagger.hilt.android.lifecycle.HiltViewModel *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 79,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 146,
+      "source": "-keepnames @androidx.hilt.work.HiltWorker class * extends androidx.work.ListenableWorker",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/051c60777b8e317d6f80466579c3874a/transformed/proguard.txt",
+        "line": 2,
+        "maven_coordinate": "androidx.hilt:hilt-work:1.4.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "androidx.hilt:hilt-work:1.4.0",
+      "impact": 4,
+      "impact_pct": "0.00%",
+      "classes": 4,
+      "fields": 0,
+      "methods": 0,
+      "example_classes": [
+        "Lcom/my/kizzy/data/work/AppDetectionHiltWorker;",
+        "Lcom/my/kizzy/data/work/CleanupHiltWorker;",
+        "Lcom/my/kizzy/data/work/RpcRecoveryHiltWorker;",
+        "Lcom/my/kizzy/data/work/RpcSyncHiltWorker;"
+      ],
+      "subsumed_by": [
+        150,
+        151
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keepnames class * extends androidx.work.ListenableWorker",
+          "origin": {
+            "file": "/Users/user/.gradle/caches/9.9.1/transforms/0d895faf6de37580cf07be38d58dc12e/transformed/proguard.txt",
+            "line": 2,
+            "maven_coordinate": "androidx.work:work-runtime:2.12.0",
+            "provided_by_build_system": false
+          },
+          "in_app_files": false,
+          "from": "androidx.work:work-runtime:2.12.0"
+        },
+        {
+          "source": "-keepnames class * { @dagger.hilt.android.lifecycle.HiltViewModel *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 79,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "source": "-if @kotlinx.serialization.Serializable class ** {\n    public static ** INSTANCE;\n}\n-keepclassmembers class <1> {\n    public static <1> INSTANCE;\n    kotlinx.serialization.KSerializer serializer(...);\n}",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/e5b7614022be29a8cb075da700b95a60/transformed/shrink-rules/lib/META-INF/com.android.tools/r8/kotlinx-serialization-common.pro",
+        "line": 23,
+        "maven_coordinate": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.13.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.13.0",
+      "impact": 2,
+      "impact_pct": "0.00%",
+      "classes": 0,
+      "fields": 1,
+      "methods": 1,
+      "example_classes": [],
+      "subsumed_by": [
+        54
+      ],
+      "identical_to": [
+        {
+          "source": "-keepclassmembers @kotlinx.serialization.Serializable class ** {\n    public static ** INSTANCE;\n    kotlinx.serialization.KSerializer serializer(...);\n}",
+          "origin": {
+            "file": "/Users/user/.gradle/caches/9.9.1/transforms/e5b7614022be29a8cb075da700b95a60/transformed/shrink-rules/lib/META-INF/com.android.tools/r8/kotlinx-serialization-r8.pro",
+            "line": 26,
+            "maven_coordinate": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.13.0",
+            "provided_by_build_system": false
+          },
+          "in_app_files": false,
+          "from": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.13.0"
+        }
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keep class kotlinx.serialization.** { *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 44,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "source": "-keep class io.ktor.client.engine.** implements io.ktor.client.HttpClientEngineContainer",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/d685d43460f7319a40a35e66d27e44fb/transformed/shrink-rules/lib/META-INF/proguard/ktor.pro",
+        "line": 11,
+        "maven_coordinate": "io.ktor:ktor-utils-jvm:3.6.1",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "io.ktor:ktor-utils-jvm:3.6.1",
+      "impact": 1,
+      "impact_pct": "0.00%",
+      "classes": 1,
+      "fields": 0,
+      "methods": 0,
+      "example_classes": [
+        "Lio/ktor/client/engine/okhttp/OkHttpEngineContainer;"
+      ],
+      "subsumed_by": [
+        47
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keep class io.ktor.client.** { *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 31,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 128,
+      "source": "-keepclassmembers class kotlinx.coroutines.flow.ReadonlySharedFlow {\n    kotlinx.coroutines.Job job;\n}",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/72b155e0156d7e7601f771a4c8abf52c/transformed/shrink-rules/lib/META-INF/com.android.tools/r8/coroutines.pro",
+        "line": 30,
+        "maven_coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0",
+      "impact": 1,
+      "impact_pct": "0.00%",
+      "classes": 0,
+      "fields": 1,
+      "methods": 0,
+      "example_classes": [],
+      "subsumed_by": [
+        53
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keep class kotlinx.coroutines.** { *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 48,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 129,
+      "source": "-keepclassmembers class kotlinx.coroutines.flow.ReadonlyStateFlow {\n    kotlinx.coroutines.Job job;\n}",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/72b155e0156d7e7601f771a4c8abf52c/transformed/shrink-rules/lib/META-INF/com.android.tools/r8/coroutines.pro",
+        "line": 33,
+        "maven_coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0",
+      "impact": 1,
+      "impact_pct": "0.00%",
+      "classes": 0,
+      "fields": 1,
+      "methods": 0,
+      "example_classes": [],
+      "subsumed_by": [
+        53
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keep class kotlinx.coroutines.** { *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 48,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    },
+    {
+      "id": 149,
+      "source": "-keepnames class * extends androidx.work.InputMerger",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/0d895faf6de37580cf07be38d58dc12e/transformed/proguard.txt",
+        "line": 13,
+        "maven_coordinate": "androidx.work:work-runtime:2.12.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "androidx.work:work-runtime:2.12.0",
+      "impact": 1,
+      "impact_pct": "0.00%",
+      "classes": 1,
+      "fields": 0,
+      "methods": 0,
+      "example_classes": [
+        "Landroidx/work/OverwritingInputMerger;"
+      ],
+      "subsumed_by": [
+        151
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keepnames class * { @dagger.hilt.android.lifecycle.HiltViewModel *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 79,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    }
+  ],
+  "identical_rules": [
+    {
+      "id": 103,
+      "source": "-keepclassmembers @kotlinx.serialization.Serializable class ** {\n    public static ** INSTANCE;\n    kotlinx.serialization.KSerializer serializer(...);\n}",
+      "origin": {
+        "file": "/Users/user/.gradle/caches/9.9.1/transforms/e5b7614022be29a8cb075da700b95a60/transformed/shrink-rules/lib/META-INF/com.android.tools/r8/kotlinx-serialization-r8.pro",
+        "line": 26,
+        "maven_coordinate": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.13.0",
+        "provided_by_build_system": false
+      },
+      "in_app_files": false,
+      "from": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.13.0",
+      "impact": 2,
+      "impact_pct": "0.00%",
+      "classes": 0,
+      "fields": 1,
+      "methods": 1,
+      "example_classes": [],
+      "subsumed_by": [
+        54
+      ],
+      "identical_to": [
+        {
+          "source": "-if @kotlinx.serialization.Serializable class ** {\n    public static ** INSTANCE;\n}\n-keepclassmembers class <1> {\n    public static <1> INSTANCE;\n    kotlinx.serialization.KSerializer serializer(...);\n}",
+          "origin": {
+            "file": "/Users/user/.gradle/caches/9.9.1/transforms/e5b7614022be29a8cb075da700b95a60/transformed/shrink-rules/lib/META-INF/com.android.tools/r8/kotlinx-serialization-common.pro",
+            "line": 23,
+            "maven_coordinate": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.13.0",
+            "provided_by_build_system": false
+          },
+          "in_app_files": false,
+          "from": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.13.0"
+        }
+      ],
+      "subsumed_by_rules": [
+        {
+          "source": "-keep class kotlinx.serialization.** { *; }",
+          "origin": {
+            "file": "app/proguard-rules.pro",
+            "line": 44,
+            "maven_coordinate": null,
+            "provided_by_build_system": false
+          },
+          "in_app_files": true,
+          "from": null
+        }
+      ]
+    }
+  ]
+}
