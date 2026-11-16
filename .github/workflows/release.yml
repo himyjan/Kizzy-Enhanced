@@ -358,7 +358,39 @@ jobs:
 
             **Files added:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`  
             **OAuth2 flow:** User authorizes via Discord → app exchanges code for token → stored encrypted via Tink  
-            **Per-user OAuth:** Users can use their own Discord account instead of bot token
+            **Per-user OAuth:** Users can use their own Discord account instead of bot token  
+            **Connection Method Switching:** `KizzyRPC.refreshFromPrefs()` reads `RPC_CONNECTION_METHOD` preference and switches between bot token (`Prefs.TOKEN`) and OAuth2 access token (`Prefs.DISCORD_OAUTH2_ACCESS_TOKEN`) automatically. Token change triggers WebSocket reconnect.
+            </details>
+
+            ---
+            <details>
+            <summary>🔔 Notification Exit/Restart Button Fix</summary>
+
+            **Bug:** Notification exit button did not stop RPC properly; refresh button did not refresh RPC settings due to `stopSelf() + startService()` race condition.
+
+            **Fix:** Changed `stopSelf() + startService()` to in-place restart:
+            - **Exit button:** `stopSelf()` triggers `onDestroy()` → `kizzyRPC.closeRPC()` properly stops RPC
+            - **Refresh button:** Re-reads settings from Prefs and calls `kizzyRPC.closeRPC()` to clear presence. Service instance is reused; detection loop re-reads settings every cycle automatically.
+
+            **Files:** `AppDetectionService.kt`, `ExperimentalRpc.kt`
+            </details>
+
+            ---
+            <details>
+            <summary>🖼️ Default Cover Art Image Picker</summary>
+
+            **Bug:** Default large/small cover art fields in Settings had no image picker; users had to manually type image URLs.
+
+            **Fix:** Added image picker buttons (trailing icons) to default large/small cover art fields in Settings. Users can pick images from gallery directly.
+            </details>
+
+            ---
+            <details>
+            <summary>🖼️ Console RPC Cover Art Image Picker</summary>
+
+            **Bug:** Console RPC preset editor had no image picker for cover art URLs; users had to manually type image URLs.
+
+            **Fix:** Added image picker buttons to Console Preset Editor dialog for large/small cover art URLs. Added `largeCoverArtUrl` and `smallCoverArtUrl` fields to `ConsolePreset` data class.
             </details>
 
             ---
