@@ -83,14 +83,18 @@ class DiscordOAuth2Auth(
                 .setEphemeralBrowsingEnabled(true)
                 .build()
 
+            // 1. Start listening for the deferred callback FIRST before firing the intent
+            val deferred = DiscordOAuth2Activity.startAuthorization()
+
             try {
+                // 2. Launch the Custom Tab second
                 customTabsIntent.launchUrl(activity, authUrl.toUri())
             } catch (e: Exception) {
                 Log.e(TAG, "authorize: Custom Tabs failed", e)
                 throw DiscordOAuth2Exception.NetworkFailure(e)
             }
 
-            val deferred = DiscordOAuth2Activity.startAuthorization()
+            // 3. Await the callback result
             val callback = deferred.await()
 
             if (callback.state != state) {

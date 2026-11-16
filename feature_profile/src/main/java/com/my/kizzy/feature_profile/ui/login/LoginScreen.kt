@@ -12,7 +12,10 @@
 
 package com.my.kizzy.feature_profile.ui.login
 
-import android.annotation.SuppressLint
+import android.app.Activity
+import android.net.Uri
+import android.util.Log
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,17 +23,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.my.kizzy.feature_profile.getUserInfo
 import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
-import com.my.kizzy.feature_profile.ui.component.DiscordLoginWebView
-import com.my.kizzy.preference.Prefs
-import com.my.kizzy.preference.Prefs.TOKEN
 import com.my.kizzy.ui.components.BackButton
-import kotlinx.coroutines.launch
+
+private const val TAG = "LoginScreen"
+private const val DISCORD_LOGIN_URL = "https://discord.com/login"
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun LoginScreen(
     onCompleted: () -> Unit,
@@ -38,16 +39,15 @@ fun LoginScreen(
 ) {
     var buttonEnabledState by remember { mutableStateOf(true) }
     var uiState: LoginUiState by remember { mutableStateOf(LoginUiState.InitialState) }
-    val scope = rememberCoroutineScope()
-    // Fixed: rememberModalBottomSheetState() takes no parameters by default in current M3
-    val modalBottomSheetState = rememberModalBottomSheetState()
+    val activityContext = LocalContext.current as Activity
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { },
-                navigationIcon = { BackButton { onBackPressed() } })
+            TopAppBar(
+                title = { },
+                navigationIcon = { BackButton { onBackPressed() } }
+            )
         }
     ) { paddingValues ->
         Box(
@@ -59,24 +59,17 @@ fun LoginScreen(
             when (uiState) {
                 LoginUiState.InitialState -> {}
                 LoginUiState.OnLoginClicked -> {
-                    ModalBottomSheet(
-                        onDismissRequest = {
+                    LaunchedEffect(Unit) {
+                        try {
+                            val customTabsIntent = CustomTabsIntent.Builder()
+                                .setShowTitle(true)
+                                .setEphemeralBrowsingEnabled(true)
+                                .build()
+
+                            customTabsIntent.launchUrl(activityContext, Uri.parse(DISCORD_LOGIN_URL))
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Failed to open Ephemeral Custom Tab", e)
                             uiState = LoginUiState.InitialState
-                        },
-                        sheetState = modalBottomSheetState,
-                        dragHandle = {
-                            BottomSheetDefaults.DragHandle()
-                        },
-                    ) {
-                        DiscordLoginWebView {
-                            Prefs[TOKEN] = it
-                            scope.launch {
-                                modalBottomSheetState.hide()
-                                uiState = LoginUiState.OnLoginCompleted
-                                getUserInfo(it, onInfoSaved = {
-                                    onCompleted()
-                                })
-                            }
                         }
                     }
                 }

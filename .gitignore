@@ -7,6 +7,7 @@
 /app/Kizzy.keystore
 /app/debug/
 /buildSrc/build/
+/tmp
 
 # built application files
 *.apk
