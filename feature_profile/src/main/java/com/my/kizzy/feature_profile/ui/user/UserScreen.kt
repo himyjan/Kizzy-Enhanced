@@ -7,8 +7,8 @@
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
  *
- *
  */
+
 
 package com.my.kizzy.feature_profile.ui.user
 
@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
+import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
 import com.my.kizzy.feature_profile.ui.component.Logout
 import com.my.kizzy.feature_profile.ui.component.ProfileCard
 import com.my.kizzy.feature_profile.ui.component.ProfileNetworkError
@@ -38,6 +39,7 @@ fun UserScreen(
     state: UserState,
     onBackPressed: () -> Unit,
     onLogout: () -> Unit,
+    onNavigateToLogin: () -> Unit = {},
     onNavigateToRpcPreview: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -61,19 +63,17 @@ fun UserScreen(
         ) {
             when (state) {
                 is UserState.Error -> {
-                    ProfileNetworkError(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .align(Alignment.TopCenter),
-                        error = (state.error)
-                    )
+                    // Not logged in - show ProfileCard with fallback user and Discord Signin button
                     ProfileCard(
                         state.user,
                         rpcConfig = state.rpcConfig,
                         onAvatarClick = {
                             onNavigateToRpcPreview()
                         }
+                    )
+                    DiscordLoginButton(
+                        onClick = { onNavigateToLogin() },
+                        enabled = true
                     )
                 }
 
@@ -114,7 +114,6 @@ fun UserScreen(
                             }
 
                         }
-
                     }
                 }
             }
@@ -170,7 +169,8 @@ fun UserScreenPreview2() {
             )
         ),
         onBackPressed = {},
-        onLogout = {}
+        onLogout = {},
+        onNavigateToLogin = {}
     )
 }
 @Preview

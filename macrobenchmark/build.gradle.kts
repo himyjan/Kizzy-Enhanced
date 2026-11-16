@@ -21,12 +21,6 @@ android {
     targetProjectPath = ":app"
     experimentalProperties["android.experimental.self-instrumenting"] = true
 
-    macrobenchmark {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // Enable clock locking for consistent benchmark results (requires root)
-        lockClocks = true
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_26
         targetCompatibility = JavaVersion.VERSION_26

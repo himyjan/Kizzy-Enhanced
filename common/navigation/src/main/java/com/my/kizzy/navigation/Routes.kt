@@ -23,6 +23,9 @@ class Routes {
         /* Profile Screen*/
         const val PROFILE = "profile"
 
+        /* Login Screen */
+        const val LOGIN = "login"
+
         /* Rpc Screens */
         const val APPS_DETECTION = "apps_rpc"
         const val MEDIA_RPC = "media_rpc"

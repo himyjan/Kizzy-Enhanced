@@ -14,9 +14,11 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
+import android.os.Trace
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.work.ExistingWorkPolicy
+import com.my.kizzy.feature_rpc_base.BuildConfig
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
@@ -286,6 +288,7 @@ class MediaRpcService : Service() {
     }
 
     private suspend fun updatePresenceLocked(forceRefresh: Boolean = false) {
+        if (BuildConfig.DEBUG) Trace.beginSection("MediaRpc.updatePresence")
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
         val showCoverArt = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true]
         val playingMedia = getCurrentPlayingMedia()
@@ -349,6 +352,7 @@ class MediaRpcService : Service() {
                 stateRepository.clearTrackInfo()
                 stopTimelineUpdates()
                 scope.launch { kizzyRPC.clearPresence() }
+                Trace.endSection()
                 return
             }
         }
@@ -407,6 +411,7 @@ class MediaRpcService : Service() {
         // Nothing worth sending: skip early to avoid the (costly) image resolution below.
         if (!forceRefresh && !packageChanged && !contentChanged && !timelineJumped) {
             logger.d("MediaRPC", "Presence unchanged, skipping redundant update")
+            if (BuildConfig.DEBUG) Trace.endSection()
             return
         }
 
@@ -441,6 +446,7 @@ class MediaRpcService : Service() {
         lastSentPackageName = playingPkg
         lastSentProgressSec = currentMediaProgressSec
         lastPresenceUpdateTime = now
+        if (BuildConfig.DEBUG) Trace.endSection()
     }
 
     /**
