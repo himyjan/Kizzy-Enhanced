@@ -532,11 +532,11 @@ jobs:
             <details>
             <summary>📁 Key Files Changed</summary>
 
-            **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`  
+            **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`, `RpcConfigRepository.kt`, `RpcConfigRepositoryImpl.kt`  
             **Deleted:** `GamesScreen.kt` (merged into Custom RPC)  
-            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix), `ConsoleApps.kt` (games getter), `CustomScreenViewModel.kt` (console games state fix), `ConsolePresetEditor.kt` (icon type fix)  
+            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix), `ConsoleApps.kt` (games getter), `CustomScreenViewModel.kt` (console games state fix), `ConsolePresetEditor.kt` (icon type fix), `App.kt` (StrictMode + Coil config + CoroutineExceptionHandler), `MetadataResolver.kt` (YouTube/Chinese platform URLs), `KizzyStateRepository.kt` (StateFlow conflation), `ServiceModule.kt` (CoroutineExceptionHandler)  
             **Locale files:** 87 updated  
-            **Build files:** `gradle/libs.versions.toml` (ktor-client-okhttp added), `release.yml`, `app/proguard-rules.pro` (R8 keep rules cleanup), 30+ module `build.gradle.kts` files
+            **Build files:** `gradle/libs.versions.toml` (ktor-client-okhttp added), `release.yml`, `app/proguard-rules.pro` (R8 keep rules cleanup), `settings.gradle.kts` (removed foojay plugin), 30+ module `build.gradle.kts` files
             </details>
 
             ---
@@ -593,18 +593,60 @@ jobs:
 
             ---
             <details>
-            <summary>📊 Console RPC Games Loading Fix</summary>
+            <summary>𓂀 ANR Fix: BOOT_COMPLETED Broadcast (Critical Fix)</summary>
 
-            **Bug:** Console RPC game list showed empty in Custom RPC tab because `ConsoleGameCatalog` was only populated when visiting the standalone Console RPC screen.
+            **Bug:** App crashed with ANR (Application Not Responding) on boot because `WorkManager RescheduleReceiver` ran DataStore reads on the main thread, blocking the `BOOT_COMPLETED` broadcast for 60 seconds.
 
-            **Fix:** `CustomScreenViewModel` now injects `GetGamesUseCase` and loads games on init, calling `ConsoleGameCatalog.update()` so games appear immediately in the Custom RPC tab.
+            **Root Cause:** `Prefs[...]` reads happened directly on the main thread in `MediaRpcService.onStartCommand()`, `ExperimentalRpc.onStartCommand()`, and `App.kt.onCreate()`. StrictMode detected the DiskReadViolation and blocked the main thread waiting for system_server Binder IPC.
+
+            **Fix:** Moved all DataStore reads/writes off the main thread using `scope.launch { withContext(Dispatchers.IO) { ... } }` in:
+            - `MediaRpcService.onStartCommand()` - `MEDIA_RPC_ENABLED` pref
+            - `ExperimentalRpc.onStartCommand()` - template settings and enabled experimental apps
+            - `App.kt.onCreate()` - RPC auto-start check
+
+            **Result:** No more ANR on boot. App starts cleanly on Android 16.
             </details>
 
             ---
             <details>
-            <summary>🖼️ Console Preset Editor Cover Art Image Picker</summary>
+            <summary>🛡️ Coroutine Exception Handler</summary>
 
-            Added image picker support to Console RPC preset editor dialog for large and small cover art URLs.
+            Added `CoroutineExceptionHandler` to both coroutine scopes to prevent uncaught coroutine exceptions from crashing the app:
+
+            - **`ServiceModule.providesCoroutineScope()`** - Added `CoroutineExceptionHandler` that logs exceptions instead of crashing
+            - **`App.kt scope`** - Added `CoroutineExceptionHandler` that logs uncaught coroutine exceptions
+
+            All RPC service coroutines now fail gracefully instead of taking down the entire process.
+            </details>
+
+            ---
+            <details>
+            <summary>📦 RpcConfigRepository (Repository Pattern)</summary>
+
+            Added `RpcConfigRepository` interface and `RpcConfigRepositoryImpl` implementation to centralize all RPC configuration persistence:
+
+            - `getLastRunCustomRpc()` / `setLastRunCustomRpc()`
+            - `getLastRunConsoleRpc()` / `setLastRunConsoleRpc()`
+            - `getRpcButtons()` / `setRpcButtons()`
+            - `getApplyFieldsFromLastRunRpc()` / `setApplyFieldsFromLastRunRpc()`
+            - `getMediaRpcEnabled()` / `setMediaRpcEnabled()`
+            - `getCustomActivityType()` / `setCustomActivityType()`
+            - `getCustomActivityStatus()` / `setCustomActivityStatus()`
+
+            All reads/writes happen on `Dispatchers.IO` to prevent blocking the main thread. Replaces direct `Prefs[...]` access in ViewModels and services.
+            </details>
+
+            ---
+            <details>
+            <summary>📊 Baseline Profiles: COLD / WARM / HOT</summary>
+
+            Split `BaselineProfileGenerator` into three separate tests covering all startup modes:
+
+            - **`baselineProfileCold()`** - App process is dead (fresh install scenario)
+            - **`baselineProfileWarm()`** - App is in background, activity is recreated
+            - **`baselineProfileHot()`** - App is already in foreground, activity resumes immediately
+
+            Each mode profiles the same 5 user flows: cold start, Media RPC screen, Console RPC screen, Profile screen, and Settings screen. This ensures optimal code compilation for all app launch scenarios.
             </details>
           files: |
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
