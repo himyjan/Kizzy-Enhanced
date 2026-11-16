@@ -240,496 +240,354 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Generate Release Notes Body
+        id: release_notes
+        run: |
+          {
+            echo "## 🚀 Kizzy Enhanced ${{ github.run_number }}"
+            echo ""
+            echo "${{ github.event.inputs.notes_en != '' && github.event.inputs.notes_en || 'No release notes provided.' }}"
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 📦 Downloads"
+            echo ""
+            echo "| File | Architecture / Type | Size | SHA-256 |"
+            echo "| :--- | :--- | :--- | :--- |"
+            echo "${{ steps.assets.outputs.table }}"
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 📊 R8 Configuration Analysis Report"
+            echo ""
+            echo "The R8 optimization analysis report has been generated and is available as a release asset below."
+            echo "Download the HTML report to review R8 configuration analysis results including kept/removed classes, obfuscation stats, and optimization recommendations."
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 📋 Changelog"
+            echo ""
+            echo "${{ steps.changelog.outputs.body }}"
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 📊 Release Summary"
+            echo ""
+            echo "| Field | Value |"
+            echo "| :--- | :--- |"
+            echo "| Package | `com.my.kizzy.enhanced` |"
+            echo "| Version | `6.2-enhanced-${{ github.run_number }}` |"
+            echo "| Version Code | `${{ github.run_number }}` |"
+            echo "| Base Project | Kizzy by dead8309 |"
+            echo "| Base Commit | `5e494d94a2c05e4d56b75ac80aae51dba4436905` |"
+            echo "| Full Feature List | See the README |"
+            echo "| Compare to Base | [himyjan/Kizzy-Enhanced → master](https://github.com/himyjan/Kizzy-Enhanced/compare/ac7338da99ba2f4b95fa588d9b1cfd0ecfc4b919...master) |"
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 📲 Installation"
+            echo ""
+            echo "1. Download **KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk** (or `universal.apk` if you are unsure of your device's CPU)."
+            echo "2. Open the APK file on your Android device."
+            echo "3. If prompted, allow "Install from unknown sources"."
+            echo "4. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand)."
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔧 Build & Dependency Changes (Click to expand)</summary>"
+            echo ""
+            echo "| Component | Base Commit | This Fork | Change Type |"
+            echo "| :--- | :--- | :--- | :--- |"
+            echo "| Gradle | 8.13.2 | 9.9.1 | Major upgrade |"
+            echo "| AGP | 8.13.2 | 9.6.0-alpha03 | Major upgrade |"
+            echo "| Kotlin | 2.1.20 | 2.4.21 | Major upgrade |"
+            echo "| KSP | 2.1.20-1.0.31 | 2.3.13 | Major upgrade |"
+            echo "| Compose BOM | 2025.06.01 | 2026.09.00 | ~1.5 years newer |"
+            echo "| Ktor | 2.3.0 | 3.6.1 | Major upgrade |"
+            echo "| Coil | 2.1.0 | 3.6.3 (Coil3) | Major rewrite |"
+            echo "| Hilt | 2.56.2 | 2.60.1 | Minor upgrade |"
+            echo "| Material | 1.12.0 | 1.14.0 | Minor upgrade |"
+            echo ""
+            echo "**Removed:** MMKV, Accompanist, BlankJ UtilCodex, CrashX, AndroidSVG, javax.inject  "
+            echo "**Added:** Jetpack DataStore 1.3.0, Tink Android 1.24.0, Jetpack BaselineProfile 1.6.0-alpha01, Jetpack MacroBenchmark 1.6.0-alpha01, Coil 3.6.3, WorkManager 2.12.0, Hilt Work 1.4.0, Material3 Adaptive 1.4.0-alpha03  "
+            echo "**Critical:** Coil 3 splits the HTTP fetcher — `coil-network-ktor3` was added; without it, remote images fail to load."
+            echo "**HTTP Client:** CIO client replaced with OkHttp client via `ktor-client-okhttp` across all RPC services for better mobile reliability (connection pooling, HTTP/2 multiplexing, Wi-Fi/cellular handoff, robust SSL/TLS)."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🎮 Console RPC → Custom RPC Merge</summary>"
+            echo ""
+            echo "**Before:** Separate Console RPC screen, home entry, and navigation route  "
+            echo "**After:** Single Custom RPC screen with two tabs"
+            echo ""
+            echo "**Console RPC Tab:**"
+            echo "- Platform: Desktop, Web, Android, iOS, Xbox, PlayStation, VR"
+            echo "- Activity Type: Playing, Streaming, Listening, Watching, Competing"
+            echo "- Status: Online, Idle, DND, Offline, Invisible"
+            echo "- Enable Timestamps / Show Cover Art toggles"
+            echo "- Button 1/2: Text + URL"
+            echo "- Preset Games: Xbox, PlayStation, Nintendo, Desktop quick-select chips"
+            echo ""
+            echo "**Features:** Console presets with custom preset creation and deletion support"
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔐 DataStore Migration (MMKV → Jetpack DataStore)</summary>"
+            echo ""
+            echo "**Before:** MMKV (C++ based, synchronous, no coroutine integration)  "
+            echo "**After:** Jetpack DataStore Preferences 1.3.0"
+            echo ""
+            echo "**Architecture:** `MutableStateFlow<Map<String, Any?>>` mirror for synchronous reads; async writes on `Dispatchers.IO`.  "
+            echo "**Typed Keys:** `stringPreferencesKey`, `intPreferencesKey`, `booleanPreferencesKey`, `floatPreferencesKey`, `longPreferencesKey`  "
+            echo "**Remove:** Deletes key under all five typed keys  "
+            echo "**Edit:** `MutablePreferences` receiver (`Preferences.() -> Unit`)"
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔒 Tink AES-256-GCM Token Encryption</summary>"
+            echo ""
+            echo "**Sensitive keys encrypted:** `TOKEN`, `DISCORD_OAUTH_ACCESS_TOKEN`, `DISCORD_OAUTH_REFRESH_TOKEN`  "
+            echo "**Key storage:** Android Keystore via `AndroidKeysetManager`  "
+            echo "**Ciphertext:** `enc:` + Base64(NO_WRAP) — pre-existing plaintext tokens remain readable  "
+            echo "**Fallback:** If keystore unavailable, falls back to plain text (user never locked out)"
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔐 Discord OAuth2 Integration (New Feature)</summary>"
+            echo ""
+            echo "**Files added:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`  "
+            echo "**OAuth2 flow:** User authorizes via Discord → app exchanges code for token → stored encrypted via Tink  "
+            echo "**Per-user OAuth:** Users can use their own Discord account instead of bot token"
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>📱 Media RPC Activity Type Fix</summary>"
+            echo ""
+            echo "**Bug:** Global activity type setting did not take effect for known apps (YouTube Music, Spotify, etc.) because built-in catalog was checked before global fallback.  "
+            echo "**Fix:** When user explicitly sets a global activity type (not "Auto"), built-in catalog and metadata detection are skipped; per-app overrides still win."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🎨 Cover Art Settings (New Feature)</summary>"
+            echo ""
+            echo "**Global Toggle:** Hide Cover Art Images — when enabled, hides cover art from ALL RPC types (Media, Custom, Console, Experimental); Discord shows text only."
+            echo ""
+            echo "**Default Cover Art URLs:** Set default large and small cover art image URLs. When a notification has no cover art, the default image is used as fallback instead of Discord's default app icon."
+            echo ""
+            echo "**Applied to:** Media RPC, Custom RPC (Console tab), Experimental RPC."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔗 YouTube Music Link Fix</summary>"
+            echo ""
+            echo "**Bug:** YouTube Music activity link pointed to a search page URL (e.g. `youtube.com/results?search_query=...`) instead of the actual video.  "
+            echo "**Fix:** `getMediaUrl()` now returns `null` when `extractYouTubeUrl()` returns null for YouTube apps, instead of falling back to `mediaSearchUrl()` which returns another search page. Discord now shows the direct `youtu.be/VIDEO_ID` link instead of a broken search page."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🎮 Experimental RPC: Select All / Deselect All</summary>"
+            echo ""
+            echo "Two buttons added above the app list for bulk enabling/disabling all apps at once."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🌍 i18n — All 87 Locale Files</summary>"
+            echo ""
+            echo "**0 English leftovers** across all locales  "
+            echo "**0 cross-script contamination**  "
+            echo "All 88 strings.xml files valid XML; `:app:mergeDebugResources` verified BUILD SUCCESSFUL  "
+            echo "Brand names (Xbox, PlayStation, Nintendo, iOS, VR) intentionally identical across locales"
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🎮 Console RPC Game List with Search (New Feature)</summary>"
+            echo ""
+            echo "**Added to Custom RPC tab:** Console RPC now includes a preset game list with search functionality for quick console presence setup."
+            echo ""
+            echo "- **Game List:** Displays games from `ConsoleGameCatalog` with cover art and platform info"
+            echo "- **Search:** Real-time filtering by game title (case-insensitive)"
+            echo "- **Selection:** Tap a game to select it; check mark indicates selected game"
+            echo "- **Quick Apply:** Selecting a game auto-applies Console RPC settings (platform, activity type, status, timestamps, cover art)"
+            echo "- **Integration:** Works alongside existing Console Presets (built-in + custom) chips"
+            echo "- **Files:** `ConsoleGameItem` composable + `applyConsoleGame()` in `CustomRpc.kt`, `games()` getter in `ConsoleGameCatalog`"
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔧 Fix: MetadataResolver Class Name Mismatch</summary>"
+            echo ""
+            echo "**Bug:** `MediaResolver` class name did not match file name `MetadataResolver.kt`, causing build errors."
+            echo ""
+            echo "**Fix:** Renamed class `MediaResolver` → `MetadataResolver` in `MetadataResolver.kt`. Updated all references in `GetCurrentlyPlayingMedia.kt` and `GetCurrentPlayingMediaAll.kt` to use `metadataResolver: MetadataResolver`."
+            echo ""
+            echo "**Impact:** `:app:assembleDebug` compiles successfully."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>📋 Fix: Last.fm Settings Relocation</summary>"
+            echo ""
+            echo "**Before:** Last.fm Scrobbling settings were on the Custom RPC screen."
+            echo "**After:** Moved to Settings page (`RpcSettings.kt`) with a popup dialog for API credentials (API Key, API Secret) and enable/disable toggle."
+            echo ""
+            echo "**Details:**"
+            echo "- Last.fm settings now live in the main Settings page instead of Custom RPC"
+            echo "- Popup dialog for entering API Key and API Secret credentials"
+            echo "- Enable/Disable Last.fm Scrobbling toggle"
+            echo "- Added 10 Last.fm string resources across all 87 locale files"
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🎨 Fix: "Hide Cover Art Images" Reactivity</summary>"
+            echo ""
+            echo "**Bug:** "Hide Cover Art Images" toggle did not react to DataStore preference changes."
+            echo ""
+            echo "**Fix:** Updated to use `collectAsState` pattern with `prefsMap` key for proper DataStore reactivity. The setting now correctly updates UI when the DataStore value changes."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔧 Fix: ConsolePresetEditor Icon Type Mismatch</summary>"
+            echo ""
+            echo "**Bug:** `ConsolePresetEditor.kt` referenced `Icons.Filled.Image` which doesn't exist in the material icons extended dependency, causing build failure in `ConsolePresetEditorDialog`."
+            echo ""
+            echo "**Fix:** Changed `Icons.Filled.Image` → `Icons.Outlined.Image` for cover art picker icons and added proper import for `androidx.compose.material.icons.outlined.Image`."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔧 Fix: Custom RPC Console Tab State References</summary>"
+            echo ""
+            echo "**Bug:** `CustomRpc.kt` `RpcTextFieldsColumn` referenced `state.consoleGames` instead of `uiState.consoleGames` for the Console RPC game list, causing unresolved reference compile error. `CustomScreenViewModel.kt` used `_uiState.update { ... }` which is not available on `MutableStateFlow` in this Kotlin version."
+            echo ""
+            echo "**Fix:** Changed `state.consoleGames` → `uiState.consoleGames` in `CustomRpc.kt`. Changed `_uiState.update { ... }` → `_uiState.value = _uiState.value.copy(consoleGames = freshGames)` in `CustomScreenViewModel.kt`."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>📏 APK Size Reduction</summary>"
+            echo ""
+            echo "**Release:** 35 MB → 8.2 MB (77% smaller)  "
+            echo "**DEX files:** 29 → 1  "
+            echo "**R8:** 769 classes removed, 14 app classes, 171 obfuscated, 0 kept names  "
+            echo "**ABI Filters:** `arm64-v8a`, `x86_64` (32-bit devices excluded)"
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>⚡ Performance Tuning</summary>"
+            echo ""
+            echo "**Compose Compiler Reports** — Enabled across all modules. Reports output to `build/compose_compiler/` in each module. Use these to identify:"
+            echo "- Unstable composables causing unnecessary recomposition"
+            echo "- Recomposition hot spots"
+            echo "- Skippable vs non-skippable composables"
+            echo ""
+            echo "**Compose Runtime Tracing** — `androidx.compose.runtime:runtime-tracing` added. Captures Perfetto traces for frame timing, recomposition, and layout measurement. Open traces in Android Studio Profiler or Perfetto UI."
+            echo ""
+            echo "**Compose Stack Traces** — Compiler generates readable stack traces for recomposition issues. Check `build/compose_compiler/` metrics for unstable lambda captures."
+            echo ""
+            echo "**R8 Optimization** — `isMinifyEnabled = true`, `isShrinkResources = true`, `optimization.enable = true`. R8 mapping, usage, and configuration analysis reports generated for each release build (`r8-config-analyzer-release.pb`)."
+            echo ""
+            echo "**R8 Keep Rules Cleanup** — Removed 5 redundant `-keep` rules from `app/proguard-rules.pro` that were subsumed by broader existing rules (e.g. `io.ktor.client.plugins.**` covered by `io.ktor.client.**`, `kotlinx.serialization.json.**` covered by `kotlinx.serialization.**`, duplicate Hilt entry points, duplicate serialization field keeps)."
+            echo ""
+            echo "**Baseline Profiles** — `StartupBaselineProfileTest` traces app startup, Console RPC, Media RPC, and Custom RPC navigation. Run `./gradlew :app:baselineProfile` on a connected device to generate `src/main/baseline-prof.txt` for faster startup."
+            echo ""
+            echo "**Problems Report** — `build/reports/problems/problems-report.html` generated per release, showing potential API compatibility and performance issues."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🎮 Console RPC Preset Loading Fix</summary>"
+            echo ""
+            echo "**Bug:** Loading a Console RPC preset (built-in or custom) saved settings to DataStore but did not start Console RPC if it wasn't already running. The preset had no effect on Discord until the user manually toggled Console RPC on."
+            echo ""
+            echo "**Fix:** `applyConsolePreset()` and `applyConsoleGame()` now start Console RPC automatically when `rpcManager.activeRpc.value != RpcType.ConsoleRpc`. The preset takes effect immediately on Discord without requiring a manual toggle."
+            echo ""
+            echo "**Files:** `CustomRpc.kt` — `applyConsolePreset()`, `applyConsoleGame()`."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🎮 Custom RPC Console Tab Switch Fix</summary>"
+            echo ""
+            echo "**Bug:** The Enable/Disable switch on the Custom RPC screen always started Console RPC regardless of which tab was active. The Custom RPC tab had no way to start Custom RPC from the switch."
+            echo ""
+            echo "**Fix:** SwitchBar now starts the correct RPC type based on the selected tab:"
+            echo "- Custom RPC tab → starts `RpcType.CustomRpc`"
+            echo "- Console RPC tab → starts `RpcType.ConsoleRpc`"
+            echo ""
+            echo "Added `isConsoleRpcEnabled` state variable synced with `rpcManager.activeRpc`. Switch label now shows "Enable Custom RPC" or "Enable Console RPC" based on active tab."
+            echo ""
+            echo "**Files:** `CustomRpc.kt` — SwitchBar, `isConsoleRpcEnabled`."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔐 Discord Signin Button on User Profile After Logout</summary>"
+            echo ""
+            echo "**Bug:** After Discord logout, the User Profile page showed no way to sign back in. Users had to navigate away from the profile page to access the Login screen."
+            echo ""
+            echo "**Fix:** UserScreen now always renders regardless of login state. When logged out (`UserState.Error`), the page shows ProfileCard with fallback user data plus a Discord Signin button (`DiscordLoginButton`). Added `onNavigateToLogin` callback to navigate to the Login screen. Added `LOGIN` route constant and route registration in `Kizzy.kt` navigation graph."
+            echo ""
+            echo "**Files:** `UserScreen.kt`, `Kizzy.kt`, `Routes.kt` (added `LOGIN` constant)."
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo ""
+            echo "<details>"
+            echo "<summary>🔗 YouTube Music Video URL Link Fix (Enhanced)</summary>"
+            echo ""
+            echo "**Bug:** YouTube Music activity link pointed to wrong video ID or search page URL instead of the actual video. `extractYouTubeUrl()` returned raw YouTube URLs (e.g., `youtube.com/watch?v=ID&list=PLAYLIST`) instead of extracting just the video ID. `normalizeMediaUrl()` returned URLs with `list=` parameter as-is, causing Discord to open the wrong video in a playlist."
+            echo ""
+            echo "**Fix:**"
+            echo "- `extractYouTubeUrl()` now extracts just the 11-character video ID from all URL forms (`youtube.com/watch?v=ID`, `youtu.be/ID`, `yt:video:ID`, `t:ID`)"
+            echo "- `normalizeMediaUrl()` ignores `list=` parameter and extracts video ID"
+            echo "- Returns `https://youtu.be/ID` instead of full YouTube URLs"
+            echo "- Skips search page URLs (`/results?search_query`) to avoid broken links"
+            echo ""
+            echo "**Files:** `MetadataResolver.kt` — `extractYouTubeUrl()`, `normalizeMediaUrl()`."
+            echo "</details>"
+            echo ""
+          } > release-notes.md
+
       - name: Publish to Releases
         uses: softprops/action-gh-release@v3
         with:
           tag_name: enhanced-${{ github.run_number }}
           name: Kizzy Enhanced ${{ github.run_number }}
-          body: |
-            ## 🚀 Kizzy Enhanced ${{ github.run_number }}
-
-            ${{ github.event.inputs.notes_en != '' && github.event.inputs.notes_en || 'No release notes provided.' }}
-
-            ---
-            ## 📦 Downloads
-
-            | File | Architecture / Type | Size | SHA-256 |
-            | :--- | :--- | :--- | :--- |
-            ${{ steps.assets.outputs.table }}
-
-            ---
-            ## 📊 R8 Configuration Analysis Report
-
-            The R8 optimization analysis report has been generated and is available as a release asset below.
-            Download the HTML report to review R8 configuration analysis results including kept/removed classes, obfuscation stats, and optimization recommendations.
-
-            ---
-            ## 📋 Changelog
-            ${{ steps.changelog.outputs.body }}
-
-            ---
-            ## 📊 Release Summary
-
-            | Field | Value |
-            | :--- | :--- |
-            | Package | `com.my.kizzy.enhanced` |
-            | Version | `6.2-enhanced-${{ github.run_number }}` |
-            | Version Code | `${{ github.run_number }}` |
-            | Base Project | Kizzy by dead8309 |
-            | Base Commit | \`5e494d94a2c05e4d56b75ac80aae51dba4436905\` |
-            | Full Feature List | See the README |
-            | Compare to Base | [himyjan/Kizzy-Enhanced → master](https://github.com/himyjan/Kizzy-Enhanced/compare/ac7338da99ba2f4b95fa588d9b1cfd0ecfc4b919...master) |
-
-            ---
-            ## 📲 Installation
-
-            1. Download **KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk** (or `universal.apk` if you are unsure of your device's CPU).
-            2. Open the APK file on your Android device.
-            3. If prompted, allow **"Install from unknown sources"**.
-            4. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand).
-
-            ---
-            <details>
-            <summary>🔧 Build & Dependency Changes (Click to expand)</summary>
-
-            | Component | Base Commit | This Fork | Change Type |
-            | :--- | :--- | :--- | :--- |
-            | Gradle | 8.13.2 | 9.9.1 | Major upgrade |
-            | AGP | 8.13.2 | 9.6.0-alpha03 | Major upgrade |
-            | Kotlin | 2.1.20 | 2.4.21 | Major upgrade |
-            | KSP | 2.1.20-1.0.31 | 2.3.13 | Major upgrade |
-            | Compose BOM | 2025.06.01 | 2026.09.00 | ~1.5 years newer |
-            | Ktor | 2.3.0 | 3.6.1 | Major upgrade |
-            | Coil | 2.1.0 | 3.6.3 (Coil3) | Major rewrite |
-            | Hilt | 2.56.2 | 2.60.1 | Minor upgrade |
-            | Material | 1.12.0 | 1.14.0 | Minor upgrade |
-
-            **Removed:** MMKV, Accompanist, BlankJ UtilCodex, CrashX, AndroidSVG, javax.inject  
-            **Added:** Jetpack DataStore 1.3.0, Tink Android 1.24.0, Jetpack BaselineProfile 1.6.0-alpha01, Jetpack MacroBenchmark 1.6.0-alpha01, Coil 3.6.3, WorkManager 2.12.0, Hilt Work 1.4.0, Material3 Adaptive 1.4.0-alpha03  
-            **Critical:** Coil 3 splits the HTTP fetcher — `coil-network-ktor3` was added; without it, remote images fail to load.
-
-            **HTTP Client:** CIO client replaced with OkHttp client via `ktor-client-okhttp` across all RPC services for better mobile reliability (connection pooling, HTTP/2 multiplexing, Wi-Fi/cellular handoff, robust SSL/TLS).
-            </details>
-
-            ---
-            <details>
-            <summary>🎮 Console RPC → Custom RPC Merge</summary>
-
-            **Before:** Separate Console RPC screen, home entry, and navigation route  
-            **After:** Single Custom RPC screen with two tabs
-
-            **Console RPC Tab:**
-            - Platform: Desktop, Web, Android, iOS, Xbox, PlayStation, VR
-            - Activity Type: Playing, Streaming, Listening, Watching, Competing
-            - Status: Online, Idle, DND, Offline, Invisible
-            - Enable Timestamps / Show Cover Art toggles
-            - Button 1/2: Text + URL
-            - Preset Games: Xbox, PlayStation, Nintendo, Desktop quick-select chips
-
-            **Features:** Console presets with custom preset creation and deletion support
-            </details>
-
-            ---
-            <details>
-            <summary>🔐 DataStore Migration (MMKV → Jetpack DataStore)</summary>
-
-            **Before:** MMKV (C++ based, synchronous, no coroutine integration)  
-            **After:** Jetpack DataStore Preferences 1.3.0
-
-            **Architecture:** `MutableStateFlow<Map<String, Any?>>` mirror for synchronous reads; async writes on `Dispatchers.IO`.  
-            **Typed Keys:** `stringPreferencesKey`, `intPreferencesKey`, `booleanPreferencesKey`, `floatPreferencesKey`, `longPreferencesKey`  
-            **Remove:** Deletes key under all five typed keys  
-            **Edit:** `MutablePreferences` receiver (`Preferences.() -> Unit`)
-            </details>
-
-            ---
-            <details>
-            <summary>🔒 Tink AES-256-GCM Token Encryption</summary>
-
-            **Sensitive keys encrypted:** `TOKEN`, `DISCORD_OAUTH_ACCESS_TOKEN`, `DISCORD_OAUTH_REFRESH_TOKEN`  
-            **Key storage:** Android Keystore via `AndroidKeysetManager`  
-            **Ciphertext:** `enc:` + Base64(NO_WRAP) — pre-existing plaintext tokens remain readable  
-            **Fallback:** If keystore unavailable, falls back to plain text (user never locked out)
-            </details>
-
-            ---
-            <details>
-            <summary>🔐 Discord OAuth2 Integration (New Feature)</summary>
-
-            **Files added:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`  
-            **OAuth2 flow:** User authorizes via Discord → app exchanges code for token → stored encrypted via Tink  
-            **Per-user OAuth:** Users can use their own Discord account instead of bot token  
-            **Connection Method Switching:** `KizzyRPC.refreshFromPrefs()` reads `RPC_CONNECTION_METHOD` preference and switches between bot token (`Prefs.TOKEN`) and OAuth2 access token (`Prefs.DISCORD_OAUTH2_ACCESS_TOKEN`) automatically. Token change triggers WebSocket reconnect.
-            </details>
-
-            ---
-            <details>
-            <summary>🔔 Notification Exit/Restart Button Fix</summary>
-
-            **Bug:** Notification exit button did not stop RPC properly; refresh button did not refresh RPC settings due to `stopSelf() + startService()` race condition.
-
-            **Fix:** Changed `stopSelf() + startService()` to in-place restart:
-            - **Exit button:** `stopSelf()` triggers `onDestroy()` → `kizzyRPC.closeRPC()` properly stops RPC
-            - **Refresh button:** Re-reads settings from Prefs and calls `kizzyRPC.closeRPC()` to clear presence. Service instance is reused; detection loop re-reads settings every cycle automatically.
-
-            **Files:** `AppDetectionService.kt`, `ExperimentalRpc.kt`
-            </details>
-
-            ---
-            <details>
-            <summary>🖼️ Default Cover Art Image Picker</summary>
-
-            **Bug:** Default large/small cover art fields in Settings had no image picker; users had to manually type image URLs.
-
-            **Fix:** Added image picker buttons (trailing icons) to default large/small cover art fields in Settings. Users can pick images from gallery directly.
-            </details>
-
-            ---
-            <details>
-            <summary>🖼️ Console RPC Cover Art Image Picker</summary>
-
-            **Bug:** Console RPC preset editor had no image picker for cover art URLs; users had to manually type image URLs.
-
-            **Fix:** Added image picker buttons to Console Preset Editor dialog for large/small cover art URLs. Added `largeCoverArtUrl` and `smallCoverArtUrl` fields to `ConsolePreset` data class.
-            </details>
-
-            ---
-            <details>
-            <summary>📱 Media RPC Activity Type Fix</summary>
-
-            **Bug:** Global activity type setting did not take effect for known apps (YouTube Music, Spotify, etc.) because built-in catalog was checked before global fallback.  
-            **Fix:** When user explicitly sets a global activity type (not "Auto"), built-in catalog and metadata detection are skipped; per-app overrides still win.
-            </details>
-
-            ---
-            <details>
-            <summary>🎨 Cover Art Settings (New Feature)</summary>
-
-            **Global Toggle:** Hide Cover Art Images — when enabled, hides cover art from ALL RPC types (Media, Custom, Console, Experimental); Discord shows text only.
-
-            **Default Cover Art URLs:** Set default large and small cover art image URLs. When a notification has no cover art, the default image is used as fallback instead of Discord's default app icon.
-
-            **Applied to:** Media RPC, Custom RPC (Console tab), Experimental RPC.
-            </details>
-
-            ---
-            <details>
-            <summary>🔗 YouTube Music Link Fix</summary>
-
-            **Bug:** YouTube Music activity link pointed to a search page URL (e.g. `youtube.com/results?search_query=...`) instead of the actual video.  
-            **Fix:** `getMediaUrl()` now returns `null` when `extractYouTubeUrl()` returns null for YouTube apps, instead of falling back to `mediaSearchUrl()` which returns another search page. Discord now shows the direct `youtu.be/VIDEO_ID` link instead of a broken search page.
-            </details>
-
-            ---
-            <details>
-            <summary>🎮 Experimental RPC: Select All / Deselect All</summary>
-
-            Two buttons added above the app list for bulk enabling/disabling all apps at once.
-            </details>
-
-            ---
-            <details>
-            <summary>🌍 i18n — All 87 Locale Files</summary>
-
-            **0 English leftovers** across all locales  
-            **0 cross-script contamination**  
-            All 88 strings.xml files valid XML; `:app:mergeDebugResources` verified BUILD SUCCESSFUL  
-            Brand names (Xbox, PlayStation, Nintendo, iOS, VR) intentionally identical across locales
-            </details>
-
-            ---
-            <details>
-            <summary>🎮 Console RPC Game List with Search (New Feature)</summary>
-
-            **Added to Custom RPC tab:** Console RPC now includes a preset game list with search functionality for quick console presence setup.
-
-            - **Game List:** Displays games from `ConsoleGameCatalog` with cover art and platform info
-            - **Search:** Real-time filtering by game title (case-insensitive)
-            - **Selection:** Tap a game to select it; check mark indicates selected game
-            - **Quick Apply:** Selecting a game auto-applies Console RPC settings (platform, activity type, status, timestamps, cover art)
-            - **Integration:** Works alongside existing Console Presets (built-in + custom) chips
-            - **Files:** `ConsoleGameItem` composable + `applyConsoleGame()` in `CustomRpc.kt`, `games()` getter in `ConsoleGameCatalog`
-            </details>
-
-            ---
-            <details>
-            <summary>🔧 Fix: MetadataResolver Class Name Mismatch</summary>
-
-            **Bug:** `MediaResolver` class name did not match file name `MetadataResolver.kt`, causing build errors.
-
-            **Fix:** Renamed class `MediaResolver` → `MetadataResolver` in `MetadataResolver.kt`. Updated all references in `GetCurrentlyPlayingMedia.kt` and `GetCurrentPlayingMediaAll.kt` to use `metadataResolver: MetadataResolver`.
-
-            **Impact:** `:app:assembleDebug` compiles successfully.
-            </details>
-
-            ---
-            <details>
-            <summary>📋 Fix: Last.fm Settings Relocation</summary>
-
-            **Before:** Last.fm Scrobbling settings were on the Custom RPC screen.
-            **After:** Moved to Settings page (`RpcSettings.kt`) with a popup dialog for API credentials (API Key, API Secret) and enable/disable toggle.
-
-            **Details:**
-            - Last.fm settings now live in the main Settings page instead of Custom RPC
-            - Popup dialog for entering API Key and API Secret credentials
-            - Enable/Disable Last.fm Scrobbling toggle
-            - Added 10 Last.fm string resources across all 87 locale files
-            </details>
-
-            ---
-            <details>
-            <summary>🎨 Fix: "Hide Cover Art Images" Reactivity</summary>
-
-            **Bug:** "Hide Cover Art Images" toggle did not react to DataStore preference changes.
-
-            **Fix:** Updated to use `collectAsState` pattern with `prefsMap` key for proper DataStore reactivity. The setting now correctly updates UI when the DataStore value changes.
-            </details>
-
-            ---
-            <details>
-            <summary>🔧 Fix: ConsolePresetEditor Icon Type Mismatch</summary>
-
-            **Bug:** `ConsolePresetEditor.kt` referenced `Icons.Filled.Image` which doesn't exist in the material icons extended dependency, causing build failure in `ConsolePresetEditorDialog`.
-
-            **Fix:** Changed `Icons.Filled.Image` → `Icons.Outlined.Image` for cover art picker icons and added proper import for `androidx.compose.material.icons.outlined.Image`.
-            </details>
-
-            ---
-            <details>
-            <summary>🔧 Fix: Custom RPC Console Tab State References</summary>
-
-            **Bug:** `CustomRpc.kt` `RpcTextFieldsColumn` referenced `state.consoleGames` instead of `uiState.consoleGames` for the Console RPC game list, causing unresolved reference compile error. `CustomScreenViewModel.kt` used `_uiState.update { ... }` which is not available on `MutableStateFlow` in this Kotlin version.
-
-            **Fix:** Changed `state.consoleGames` → `uiState.consoleGames` in `CustomRpc.kt`. Changed `_uiState.update { ... }` → `_uiState.value = _uiState.value.copy(consoleGames = freshGames)` in `CustomScreenViewModel.kt`.
-            </details>
-
-            ---
-            <details>
-            <summary>📏 APK Size Reduction</summary>
-
-            **Release: 35 MB → 8.2 MB (77% smaller)**  
-            **DEX files:** 29 → 1  
-            **R8:** 769 classes removed, 14 app classes, 171 obfuscated, 0 kept names  
-            **ABI Filters:** `arm64-v8a`, `x86_64` (32-bit devices excluded)
-            </details>
-
-            ---
-            <details>
-            <summary>⚡ Performance Tuning</summary>
-
-            **Compose Compiler Reports** — Enabled across all modules. Reports output to `build/compose_compiler/` in each module. Use these to identify:
-            - Unstable composables causing unnecessary recomposition
-            - Recomposition hot spots
-            - Skippable vs non-skippable composables
-
-            **Compose Runtime Tracing** — `androidx.compose.runtime:runtime-tracing` added. Captures Perfetto traces for frame timing, recomposition, and layout measurement. Open traces in Android Studio Profiler or Perfetto UI.
-
-            **Compose Stack Traces** — Compiler generates readable stack traces for recomposition issues. Check `build/compose_compiler/` metrics for unstable lambda captures.
-
-            **R8 Optimization** — `isMinifyEnabled = true`, `isShrinkResources = true`, `optimization.enable = true`. R8 mapping, usage, and configuration analysis reports generated for each release build (`r8-config-analyzer-release.pb`).
-
-            **R8 Keep Rules Cleanup** — Removed 5 redundant `-keep` rules from `app/proguard-rules.pro` that were subsumed by broader existing rules (e.g. `io.ktor.client.plugins.**` covered by `io.ktor.client.**`, `kotlinx.serialization.json.**` covered by `kotlinx.serialization.**`, duplicate Hilt entry points, duplicate serialization field keeps).
-
-            **Baseline Profiles** — `StartupBaselineProfileTest` traces app startup, Console RPC, Media RPC, and Custom RPC navigation. Run `./gradlew :app:baselineProfile` on a connected device to generate `src/main/baseline-prof.txt` for faster startup.
-
-            **Problems Report** — `build/reports/problems/problems-report.html` generated per release, showing potential API compatibility and performance issues.
-            </details>
-
-            ---
-            <details>
-            <summary>🎮 Console RPC Preset Loading Fix</summary>
-
-            **Bug:** Loading a Console RPC preset (built-in or custom) saved settings to DataStore but did not start Console RPC if it wasn't already running. The preset had no effect on Discord until the user manually toggled Console RPC on.
-
-            **Fix:** `applyConsolePreset()` and `applyConsoleGame()` now start Console RPC automatically when `rpcManager.activeRpc.value != RpcType.ConsoleRpc`. The preset takes effect immediately on Discord without requiring a manual toggle.
-
-            **Files:** `CustomRpc.kt` — `applyConsolePreset()`, `applyConsoleGame()`.
-            </details>
-
-            ---
-            <details>
-            <summary>🎮 Custom RPC Console Tab Switch Fix</summary>
-
-            **Bug:** The Enable/Disable switch on the Custom RPC screen always started Console RPC regardless of which tab was active. The Custom RPC tab had no way to start Custom RPC from the switch.
-
-            **Fix:** SwitchBar now starts the correct RPC type based on the selected tab:
-            - Custom RPC tab → starts `RpcType.CustomRpc`
-            - Console RPC tab → starts `RpcType.ConsoleRpc`
-
-            Added `isConsoleRpcEnabled` state variable synced with `rpcManager.activeRpc`. Switch label now shows "Enable Custom RPC" or "Enable Console RPC" based on active tab.
-
-            **Files:** `CustomRpc.kt` — SwitchBar, `isConsoleRpcEnabled`.
-            </details>
-
-            ---
-            <details>
-            <summary>🔐 Discord Signin Button on User Profile After Logout</summary>
-
-            **Bug:** After Discord logout, the User Profile page showed no way to sign back in. Users had to navigate away from the profile page to access the Login screen.
-
-            **Fix:** UserScreen now always renders regardless of login state. When logged out (`UserState.Error`), the page shows ProfileCard with fallback user data plus a Discord Signin button (`DiscordLoginButton`). Added `onNavigateToLogin` callback to navigate to the Login screen. Added `LOGIN` route constant and route registration in `Kizzy.kt` navigation graph.
-
-            **Files:** `UserScreen.kt`, `Kizzy.kt`, `Routes.kt` (added `LOGIN` constant).
-            </details>
-
-            ---
-            <details>
-            <summary>🔗 YouTube Music Video URL Link Fix (Enhanced)</summary>
-
-            **Bug:** YouTube Music activity link pointed to wrong video ID or search page URL instead of the actual video. `extractYouTubeUrl()` returned raw YouTube URLs (e.g., `youtube.com/watch?v=ID&list=PLAYLIST`) instead of extracting just the video ID. `normalizeMediaUrl()` returned URLs with `list=` parameter as-is, causing Discord to open the wrong video in a playlist.
-
-            **Fix:**
-            - `extractYouTubeUrl()` now extracts just the 11-character video ID from all URL forms (`youtube.com/watch?v=ID`, `youtu.be/ID`, `yt:video:ID`, `t:ID`)
-            - `normalizeMediaUrl()` ignores `list=` parameter and extracts video ID
-            - Returns `https://youtu.be/ID` instead of full YouTube URLs
-            - Skips search page URLs (`/results?search_query`) to avoid broken links
-
-            **Files:** `MetadataResolver.kt` — `extractYouTubeUrl()`, `normalizeMediaUrl()`.
-            </details>
-
-            ---
-            <details>
-            <summary>⚖️ Pros & Cons</summary>
-
-            **✅ Pros:**
-            - Tink AES-256-GCM + Android Keystore for token encryption at rest
-            - Jetpack DataStore replaces MMKV (Jetpack-first, coroutine-friendly)
-            - Console RPC merged into Custom RPC (single screen, less navigation)
-            - Discord OAuth2 support (use your own Discord account)
-            - Modern toolchain (Kotlin 2.4.21, Gradle 9.9.1)
-            - Release APK only 8.2 MB
-            - All 87 locales fully translated (0 English leftovers)
-            - Proper AAB CI/CD workflow via bundletool
-
-            **❌ Cons / Limitations:**
-            - Kotlin 2.4.21 and Compose BOM 2026.09-alpha are pre-release channels
-            - ABI filtering excludes 32-bit ARM/x86 devices
-            - Console RPC merged into Custom RPC (extra tap to access console settings)
-            - OAuth2 requires user's own Discord Application ID
-            - No OAuth2 token refresh logic implemented yet
-            - Client ID stored in plaintext (not encrypted)
-            </details>
-
-            ---
-            <details>
-            <summary>📁 Key Files Changed</summary>
-
-            **New:** `DiscordAuth.kt`, `DiscordOAuthActivity.kt`, `DiscordUserLoginDialog.kt`, `DiscordOAuthRpcService.kt`, `ConsolePresetEditor.kt`, `ConsolePresets.kt`, `RpcConfigRepository.kt`, `RpcConfigRepositoryImpl.kt`, `UserScreen.kt` (Discord Signin after logout)  
-            **Deleted:** `GamesScreen.kt` (merged into Custom RPC)  
-            **Major changes:** `CustomRpc.kt` (+1,398 lines), `MediaRpcService.kt` (+945), `ExperimentalRpc.kt` (+669), `RpcSettings.kt` (+336), `MetadataResolver.kt` (cover art URLs + YouTube link fix), `ConsoleApps.kt` (games getter), `CustomScreenViewModel.kt` (console games state fix), `ConsolePresetEditor.kt` (icon type fix), `App.kt` (StrictMode + Coil config + CoroutineExceptionHandler), `MetadataResolver.kt` (YouTube/Chinese platform URLs), `KizzyStateRepository.kt` (StateFlow conflation), `ServiceModule.kt` (CoroutineExceptionHandler), `Kizzy.kt` (Login route, UserScreen always shows), `Routes.kt` (added LOGIN constant)  
-            **Locale files:** 87 updated  
-            **Build files:** `gradle/libs.versions.toml` (ktor-client-okhttp added), `release.yml`, `app/proguard-rules.pro` (R8 keep rules cleanup), `settings.gradle.kts` (removed foojay plugin), 30+ module `build.gradle.kts` files
-            </details>
-
-            ---
-            <details>
-            <summary>🚀 Gateway / WebSocket</summary>
-
-            New gateway module with Discord gateway entities: `Activity.kt`, `Assets.kt`, `Identify.kt`, `HeartBeat.kt`, `Payload.kt`, `Ready.kt`, `Resume.kt`, `OpCode.kt`, `Presence.kt`, `Timestamps.kt`
-            </details>
-
-            ---
-            <details>
-            <summary>🎵 Streaming Platform URL Resolution (New Feature)</summary>
-
-            Added comprehensive track/album/playlist/artist URL resolution for 30+ streaming platforms across media session metadata and custom keys.
-
-            **Global Platforms:**
-            - Spotify: `/track/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
-            - Apple Music: `/album/{slug}/{id}?i={track-id}`, `/playlist/{slug}/{id}`
-            - Amazon Music: `/{asin}/{slug}` (track/album/playlist)
-            - YouTube Music: `/watch?v={ID}` → `youtu.be/{ID}`, `/channel/{ID}`, `/playlist?list={ID}`
-            - Deezer: `/track/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
-            - TIDAL: `/track/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
-            - KKBOX: `/song/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
-            - LINE MUSIC (JP/TW): `/track/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
-            - JOOX: `/single/{id}`, `/album/{id}`, `/playlist/{id}`, `/artist/{id}`
-            - SoundCloud: `/{user}/{track}`, `/track/{slug}`, `/album/{slug}`
-            - Beatport: `/{slug}/{id}` (track/album)
-
-            **Chinese Platforms:**
-            - Kugou Music: `/{encode_id}.html`, `/{id}/` (track/album/artist/playlist)
-            - QQ Music: `n/yqq/song/{mid}.html`, `n/yqq/album/{mid}.html`, `n/yqq/singer/{mid}.html`
-            - Douyin Music (汽水音樂): `qishui/track?track_id={id}`, `/album?album_id={id}`
-            - NetEase Cloud Music: `music.163.com/#/song?id={id}`, `/#/album?id={id}`, `/#/artist?id={id}`, `/#/playlist?id={id}`
-            - Kuwo Music: `/play_detail/{id}`, `/album_detail/{id}`, `/singer_detail/{id}`, `/playlist_detail/{id}`
-
-            **Indian Platforms:**
-            - JioSaavn: `/{slug}/{token}` (track/album/artist/playlist)
-            - Gaana: `/{slug}` (track/album/artist/playlist)
-            - Wynk Music: `/music/song/{slug}/{id}`, `/music/album/{slug}/{id}`, `/music/artist/{slug}/{id}`, `/music/playlist/{slug}/{id}`
-
-            **Regional Platforms:**
-            - Boomplay: `/{id}` (track/album/artist/playlist)
-            - Audiomack: `/{artist-slug}/song/{song-slug}`, `/{artist-slug}/album/{album-slug}`
-            - Yandex Music: `music.yandex.ru/album/{id}/track/{id}`, `/artist/{id}`
-            - VK Music: `vk.com/audio` (search results)
-            - Anghami: `/{id}` (track/album/artist/playlist)
-            - AWA: `s.awa.fm/track/{id}`, `/album/{id}`, `/artist/{id}`
-            - Melon: `song/detail.htm?songId={id}`, `album/detail.htm?albumId={id}`
-            - Genie Music: `detail/songInfo?xgnm={id}`, `detail/albumInfo?axnm={id}`
-            - Recochoku: Search by title fallback
-
-            **New MetadataResolver methods:** `getTrackUrl()`, `getAlbumUrl()`, `getPlaylistUrl()`
-            </details>
-
-            ---
-            <details>
-            <summary>𓂀 ANR Fix: BOOT_COMPLETED Broadcast (Critical Fix)</summary>
-
-            **Bug:** App crashed with ANR (Application Not Responding) on boot because `WorkManager RescheduleReceiver` ran DataStore reads on the main thread, blocking the `BOOT_COMPLETED` broadcast for 60 seconds.
-
-            **Root Cause:** `Prefs[...]` reads happened directly on the main thread in `MediaRpcService.onStartCommand()`, `ExperimentalRpc.onStartCommand()`, and `App.kt.onCreate()`. StrictMode detected the DiskReadViolation and blocked the main thread waiting for system_server Binder IPC.
-
-            **Fix:** Moved all DataStore reads/writes off the main thread using `scope.launch { withContext(Dispatchers.IO) { ... } }` in:
-            - `MediaRpcService.onStartCommand()` - `MEDIA_RPC_ENABLED` pref
-            - `ExperimentalRpc.onStartCommand()` - template settings and enabled experimental apps
-            - `App.kt.onCreate()` - RPC auto-start check
-
-            **Result:** No more ANR on boot. App starts cleanly on Android 16.
-            </details>
-
-            ---
-            <details>
-            <summary>🛡️ Coroutine Exception Handler</summary>
-
-            Added `CoroutineExceptionHandler` to both coroutine scopes to prevent uncaught coroutine exceptions from crashing the app:
-
-            - **`ServiceModule.providesCoroutineScope()`** - Added `CoroutineExceptionHandler` that logs exceptions instead of crashing
-            - **`App.kt scope`** - Added `CoroutineExceptionHandler` that logs uncaught coroutine exceptions
-
-            All RPC service coroutines now fail gracefully instead of taking down the entire process.
-            </details>
-
-            ---
-            <details>
-            <summary>📦 RpcConfigRepository (Repository Pattern)</summary>
-
-            Added `RpcConfigRepository` interface and `RpcConfigRepositoryImpl` implementation to centralize all RPC configuration persistence:
-
-            - `getLastRunCustomRpc()` / `setLastRunCustomRpc()`
-            - `getLastRunConsoleRpc()` / `setLastRunConsoleRpc()`
-            - `getRpcButtons()` / `setRpcButtons()`
-            - `getApplyFieldsFromLastRunRpc()` / `setApplyFieldsFromLastRunRpc()`
-            - `getMediaRpcEnabled()` / `setMediaRpcEnabled()`
-            - `getCustomActivityType()` / `setCustomActivityType()`
-            - `getCustomActivityStatus()` / `setCustomActivityStatus()`
-
-            All reads/writes happen on `Dispatchers.IO` to prevent blocking the main thread. Replaces direct `Prefs[...]` access in ViewModels and services.
-            </details>
-
-            ---
-            <details>
-            <summary>📊 Baseline Profiles: COLD / WARM / HOT</summary>
-
-            Split `BaselineProfileGenerator` into three separate tests covering all startup modes:
-
-            - **`baselineProfileCold()`** - App process is dead (fresh install scenario)
-            - **`baselineProfileWarm()`** - App is in background, activity is recreated
-            - **`baselineProfileHot()`** - App is already in foreground, activity resumes immediately
-
-            Each mode profiles the same 5 user flows: cold start, Media RPC screen, Console RPC screen, Profile screen, and Settings screen. This ensures optimal code compilation for all app launch scenarios.
-            </details>
+          body_path: release-notes.md
           files: |
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk
