@@ -25,6 +25,11 @@ import java.util.concurrent.TimeUnit
  *
  * Run with: ./gradlew :macrobenchmark:generateBaselineProfile
  *
+ * The test runs each user flow under three startup modes:
+ *   COLD   — app process is dead (fresh install scenario)
+ *   WARM   — app is in background, activity is recreated
+ *   HOT    — app is already in foreground, activity resumes immediately
+ *
  * Blocks are executed in order. Each block runs against a fresh UI state
  * where possible so the profile covers distinct code paths:
  *   1. Cold start (app launch to home screen)
@@ -39,79 +44,78 @@ class BaselineProfileGenerator {
     @get:Rule
     val baselineProfileRule = androidx.benchmark.junit.macro.BaselineProfileRule()
 
+    /** User flows exercised during baseline profile generation. */
+    private val flowBlocks = listOf(
+        // Block 1: Cold start - launch app and wait for home screen
+        { startupBlock() },
+        // Block 2: Open Media RPC screen (triggers media RPC service + presence composition)
+        { openScreen("Media RPC", "Enable Media RPC") },
+        // Block 3: Open Console RPC screen (game catalog + auto-detect UI)
+        { openScreen("Console RPC", "Console Auto-Detect") },
+        // Block 4: Open Profile screen (RPC preview + user profile composition)
+        { openScreenByDesc("Person", "RPC Preview") },
+        // Block 5: Open Settings screen (preference composition)
+        { openScreen("Settings", null) }
+    )
+
     @Test
-    fun baselineProfile() = baselineProfileRule.collect(
+    fun baselineProfileCold() = runProfile(StartupMode.COLD)
+
+    @Test
+    fun baselineProfileWarm() = runProfile(StartupMode.WARM)
+
+    @Test
+    fun baselineProfileHot() = runProfile(StartupMode.HOT)
+
+    private fun runProfile(startupMode: StartupMode) = baselineProfileRule.collect(
         packageName = "com.my.kizzy.enhanced",
-        profileId = "BaselineProfile",
+        profileId = "BaselineProfile_${startupMode.name.lowercase()}",
         mode = BaselineProfileMode.XCompilation,
         samplingMode = SamplingMode.Sampling,
         repeatMode = RepeatMode.RepeatMultiple,
         iterations = 5,
-        startupMode = StartupMode.COLD,
+        startupMode = startupMode,
         setupBlock = {
             val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
             device.pressHome()
             device.waitForIdle()
         },
-        blocks = listOf(
-            // Block 1: Cold start - launch app and wait for home screen
-            {
-                val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-                val context = InstrumentationRegistry.getInstrumentation().targetContext
-                val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)!!
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-                device.waitForIdle()
-                // Wait for the home screen "Features" heading to appear
-                device.wait(Until.hasObject(By.text("Features")), 15_000)
-            },
-            // Block 2: Open Media RPC screen (triggers media RPC service + presence composition)
-            {
-                val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-                val mediaRpcCard = device.findObject(By.text("Media RPC"))
-                if (mediaRpcCard != null) {
-                    mediaRpcCard.click()
-                    device.waitForIdle()
-                    device.wait(Until.hasObject(By.text("Enable Media RPC")), 10_000)
-                }
-            },
-            // Block 3: Open Console RPC screen (game catalog + auto-detect UI)
-            {
-                val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-                device.pressHome()
-                device.waitForIdle()
-                val consoleRpcCard = device.findObject(By.text("Console RPC"))
-                if (consoleRpcCard != null) {
-                    consoleRpcCard.click()
-                    device.waitForIdle()
-                    device.wait(Until.hasObject(By.text("Console Auto-Detect")), 10_000)
-                }
-            },
-            // Block 4: Open Profile screen (RPC preview + user profile composition)
-            {
-                val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-                device.pressHome()
-                device.waitForIdle()
-                val profileButton = device.findObject(By.desc("Person"))
-                if (profileButton != null) {
-                    profileButton.click()
-                    device.waitForIdle()
-                    device.wait(Until.hasObject(By.text("RPC Preview")), 10_000)
-                }
-            },
-            // Block 5: Open Settings screen (preference composition)
-            {
-                val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-                device.pressHome()
-                device.waitForIdle()
-                val settingsCard = device.findObject(By.text("Settings"))
-                if (settingsCard != null) {
-                    settingsCard.click()
-                    device.waitForIdle()
-                }
-            }
-        ),
-        // Collect profile for up to 60 seconds per block
+        blocks = flowBlocks,
         blockDurationMs = TimeUnit.SECONDS.toMillis(60)
     )
+
+    private fun startupBlock() {
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)!!
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+        device.waitForIdle()
+        // Wait for the home screen "Features" heading to appear
+        device.wait(Until.hasObject(By.text("Features")), 15_000)
+    }
+
+    private fun openScreen(title: String, waitForText: String?) {
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val card = device.findObject(By.text(title))
+        if (card != null) {
+            card.click()
+            device.waitForIdle()
+            if (waitForText != null) {
+                device.wait(Until.hasObject(By.text(waitForText)), 10_000)
+            }
+        }
+    }
+
+    private fun openScreenByDesc(desc: String, waitForText: String?) {
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val button = device.findObject(By.desc(desc))
+        if (button != null) {
+            button.click()
+            device.waitForIdle()
+            if (waitForText != null) {
+                device.wait(Until.hasObject(By.text(waitForText)), 10_000)
+            }
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.my.kizzy.feature_rpc_base.security
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.conflate
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
@@ -10,31 +11,31 @@ import jakarta.inject.Singleton
 class KizzyStateRepository @Inject constructor() {
 
     private val _isPaused = MutableStateFlow(false)
-    val isPaused: StateFlow<Boolean> = _isPaused.asStateFlow()
+    val isPaused: StateFlow<Boolean> = _isPaused.asStateFlow().conflate()
 
     private val _isConnected = MutableStateFlow(false)
-    val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
+    val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow().conflate()
 
     private val _currentTrackTitle = MutableStateFlow<String?>(null)
-    val currentTrackTitle: StateFlow<String?> = _currentTrackTitle.asStateFlow()
+    val currentTrackTitle: StateFlow<String?> = _currentTrackTitle.asStateFlow().conflate()
 
     private val _currentArtist = MutableStateFlow<String?>(null)
-    val currentArtist: StateFlow<String?> = _currentArtist.asStateFlow()
+    val currentArtist: StateFlow<String?> = _currentArtist.asStateFlow().conflate()
 
     private val _currentAlbum = MutableStateFlow<String?>(null)
-    val currentAlbum: StateFlow<String?> = _currentAlbum.asStateFlow()
+    val currentAlbum: StateFlow<String?> = _currentAlbum.asStateFlow().conflate()
 
     private val _currentTimestampStart = MutableStateFlow<Long?>(null)
-    val currentTimestampStart: StateFlow<Long?> = _currentTimestampStart.asStateFlow()
+    val currentTimestampStart: StateFlow<Long?> = _currentTimestampStart.asStateFlow().conflate()
 
     private val _currentTimestampStop = MutableStateFlow<Long?>(null)
-    val currentTimestampStop: StateFlow<Long?> = _currentTimestampStop.asStateFlow()
+    val currentTimestampStop: StateFlow<Long?> = _currentTimestampStop.asStateFlow().conflate()
 
     private val _currentLargeImageUrl = MutableStateFlow<String?>(null)
-    val currentLargeImageUrl: StateFlow<String?> = _currentLargeImageUrl.asStateFlow()
+    val currentLargeImageUrl: StateFlow<String?> = _currentLargeImageUrl.asStateFlow().conflate()
 
     private val _currentSmallImageUrl = MutableStateFlow<String?>(null)
-    val currentSmallImageUrl: StateFlow<String?> = _currentSmallImageUrl.asStateFlow()
+    val currentSmallImageUrl: StateFlow<String?> = _currentSmallImageUrl.asStateFlow().conflate()
 
     /**
      * The position (in milliseconds) at which playback was paused.
@@ -44,7 +45,7 @@ class KizzyStateRepository @Inject constructor() {
      * position lets the UI stop the timer exactly where the track stopped.
      */
     private val _pausedPositionMs = MutableStateFlow<Long?>(null)
-    val pausedPositionMs: StateFlow<Long?> = _pausedPositionMs.asStateFlow()
+    val pausedPositionMs: StateFlow<Long?> = _pausedPositionMs.asStateFlow().conflate()
 
     fun setPaused(paused: Boolean) {
         _isPaused.value = paused
