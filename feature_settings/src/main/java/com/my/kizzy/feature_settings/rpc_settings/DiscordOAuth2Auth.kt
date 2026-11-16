@@ -1,11 +1,10 @@
 package com.my.kizzy.feature_settings.rpc_settings
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
 import android.util.Base64
 import android.util.Log
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import com.my.kizzy.preference.Prefs
 import io.ktor.client.HttpClient
@@ -76,19 +75,17 @@ class DiscordOAuth2Auth(
                 challenge = pkce.challenge,
             )
 
-            Log.d(TAG, "authorize: launching OAuth2 URL")
+            Log.d(TAG, "authorize: launching OAuth2 URL via Custom Tabs")
 
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = authUrl.toUri()
-                addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+            val customTabsIntent = CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
 
             try {
-                activity.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                Log.w(TAG, "authorize: no browser available", e)
-                throw DiscordOAuth2Exception.NoBrowser()
+                customTabsIntent.launchUrl(activity, authUrl.toUri())
+            } catch (e: Exception) {
+                Log.e(TAG, "authorize: Custom Tabs failed", e)
+                throw DiscordOAuth2Exception.NetworkFailure(e)
             }
 
             val deferred = DiscordOAuth2Activity.startAuthorization()

@@ -13,6 +13,7 @@ androidx-material = "1.14.0"
 androidx-profileinstaller = "1.4.1"
 androidx-baselineprofile = "1.5.0"
 androidxMacroBenchmark = "1.6.0-alpha01"
+androidx-browser = "1.10.0"
 app-compat = "1.8.0"
 coil = "3.6.3"
 compose-bom = "2026.09.00"
@@ -43,6 +44,7 @@ core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileinstaller" }
 baselineprofile = { module = "androidx.baselineprofile:baselineprofile", version.ref = "androidx-baselineprofile" }
 app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
+androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
 androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 kotlinx-coroutine = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine" }

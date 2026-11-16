@@ -21,6 +21,7 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.androidx.browser)
 
     implementation(projects.color)
     implementation(projects.theme)
