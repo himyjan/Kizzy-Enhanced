@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy माथी</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- क्रियाकलाप -->
     <string name="activity_name">क्रियाकलापको नाम</string>
@@ -191,13 +191,13 @@
     <string name="use_imgur">इम्युरलाई चित्र प्रक्सीको रूपमा प्रयोग गर्नुहोस्</string>
     <string name="use_imgurDesc">इम्युरलाई पर्यायी चित्र प्रक्सीको रूपमा प्रयोग गर्नुहोस्.</string>
     <string name="start_appDetection">ऍप डिटेक्शन सुरु गर्नुहोस्</string>
-    <string name="start_mediaRpc">मीडिया RPC सुरु गर्नुहोस्</string>
-    <string name="start_ManualRpc">एक्सपेरिमेंटल RPC सुरु गर्नुहोस्</string>
+    <string name="start_media_rpc">मीडिया RPC सुरु गर्नुहोस्</string>
+    <string name="start_manual_rpc">एक्सपेरिमेंटल RPC सुरु गर्नुहोस्</string>
     <string name="stop_rpc">RPC रोक्नुहोस्</string>
     <string name="stop">रोक्नुहोस्</string>
     <string name="start_appDetectionToast">ऍप डिटेक्शन सुरु गरियो</string>
-    <string name="start_mediaRpcToast">मीडिया RPC सुरु गरियो</string>
-    <string name="start_ManualRpcToast">एक्सपेरिमेंटल RPC सुरु गरियो</string>
+    <string name="start_media_rpc_toast">मीडिया RPC सुरु गरियो</string>
+    <string name="start_manual_rpc_toast">एक्सपेरिमेंटल RPC सुरु गरियो</string>
     <string name="stop_rpcToast">सबै सेवा रोकियो</string>
     <string name="show_playbackState">प्लेब्याक अवस्था देखाउनुहोस्</string>
     <string name="copied_toClipboard">क्लिपबोर्डमा कपी गरियो</string>
@@ -206,8 +206,8 @@
     <string name="custom_application_idDesc">डिफॉल्ट डिस्कॉर्ड ऍप्लिकेशन आयडी ओभरराइड गर्छ</string>
     <string name="use_a_vpnDesc">डिस्कर्ड लग इन तपाईंको देशमा VPN/DPI बिनै चाल्न सक्दैन। कृपया VPN/DPI प्रयोग गर्नुहोस्.</string>
     <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; जस्ता टेम्प्लेट प्रयोग गर्नुहोस्। खाली फिल्ड डिफॉल्ट व्यवहार प्रयोग गर्छन् वा छोडिन्छन्.&quot;</string>
-    <string name="experimental_rpc_detectApps">एक्सपेरिमेंटल RPC ला चालू भएको ऍप्स डिटेक्ट गर्न अनुमति दिनुहोस्</string>
-    <string name="experimental_rpc_detectMedia">एक्सपेरिमेंटल RPC ला मीडिया प्लेब्याक डिटेक्ट गर्न अनुमति दिनुहोस्</string>
+    <string name="manual_rpc_detect_apps">एक्सपेरिमेंटल RPC ला चालू भएको ऍप्स डिटेक्ट गर्न अनुमति दिनुहोस्</string>
+    <string name="manual_rpc_detect_media">एक्सपेरिमेंटल RPC ला मीडिया प्लेब्याक डिटेक्ट गर्न अनुमति दिनुहोस्</string>
     <string name="app_preferences">ऍप प्रेफरेन्सेस</string>
     <string name="app_preferencesDesc">एक्सपेरिमेंटल RPC साठी कुन ऍप एनेबल छन् त्यो छनौट गर्नुहोस्</string>
     <string name="completion_media_title">गीत/भिडियो शीर्षक</string>
@@ -215,7 +215,7 @@
     <string name="completion_appName">डिटेक्ट गरिएको ऍपको नाम</string>
     <string name="show_coverArt">एल्बम कभर देखाउनुहोस्</string>
     <string name="show_coverArtDesc">एल्बम कभर ठूलो चित्रको रूपमा देखाउनुहोस्</string>
-    <string name="enable_ManualRpc">एक्सपेरिमेंटल RPC सक्षम गर्नुहोस्</string>
+    <string name="enable_manualRpc">एक्सपेरिमेंटल RPC सक्षम गर्नुहोस्</string>
     <string name="completion_media_author">मुख्य लेखक</string>
     <string name="completion_media_album">एल्बमको नाम</string>
     <string name="completion_media_albumArtist">एल्बम कलाकार</string>
@@ -232,8 +232,8 @@
     <string name="use_youtubeButtonDesc">मीडिया प्ले गर्दा क्लिक गर्न सकिने बटन (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) स्वतः थप्नुहोस्</string>
     <string name="link_toArtistChannel">कलाकार च्यानलमा लिङ्क गर्नुहोस्</string>
     <string name="link_toArtistChannelDesc">बटनले गीत/भिडियोको सट्टा कलाकार च्यानलमा लिङ्क गर्छ</string>
-    <string name="experimental_rpcTitleToggle">शीर्षक</string>
-    <string name="experimental_rpcTitleToggleDesc">ऍप नामको सट्टा क्रियाकलाप शीर्षकमा गीतको जानकारी देखाउनुहोस्</string>
+    <string name="manual_rpc_title_toggle">शीर्षक</string>
+    <string name="manual_rpc_title_toggle_desc">ऍप नामको सट्टा क्रियाकलाप शीर्षकमा गीतको जानकारी देखाउनुहोस्</string>
     <string name="title_source_song">गीतको नाम</string>
     <string name="title_source_artist">कलाकार</string>
     <string name="type_toInsertVariable">भेरिएबल राख्नको लागि &apos;{{&apos; टाइप गर्नुहोस्</string>

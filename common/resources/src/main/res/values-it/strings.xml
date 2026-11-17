@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Migliorato</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Attività -->
     <string name="activity_name">Nome attività</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Imgur come proxy immagine</string>
     <string name="use_imgur_desc">Usa Imgur come proxy immagine alternativo.</string>
     <string name="start_appDetection">Avvia rilevamento app</string>
-    <string name="start_mediaRpc">Avvia Media RPC</string>
-    <string name="start_ManualRpc">Avvia Experimental RPC</string>
+    <string name="start_media_rpc">Avvia Media RPC</string>
+    <string name="start_manual_rpc">Avvia Experimental RPC</string>
     <string name="stop_rpc">Ferma RPC</string>
     <string name="stop">Ferma</string>
     <string name="start_appDetectionToast">Rilevamento app avviato</string>
-    <string name="start_mediaRpcToast">Media RPC avviato</string>
-    <string name="start_ManualRpcToast">Experimental RPC avviato</string>
+    <string name="start_media_rpc_toast">Media RPC avviato</string>
+    <string name="start_manual_rpc_toast">Experimental RPC avviato</string>
     <string name="stop_rpcToast">Tutti i servizi fermati</string>
     <string name="show_playbackState">Mostra stato riproduzione</string>
     <string name="copied_toClipboard">Copiato negli appunti</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Sovrascrive lapos;ID applicazione Discord predefinito</string>
     <string name="use_a_vpnDesc">Il login Discord potrebbe non funzionare nel tuo paese senza una VPN/DPI. Per favore usa una VPN/DPI per continuare.</string>
     <string name="rpc_templates_note">&quot;Usa placeholder come &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; ecc. I campi vuoti useranno il comportamento predefinito o saranno omessi.&quot;</string>
-    <string name="experimental_rpc_detectApps">Consenti a Experimental RPC di rilevare app in esecuzione</string>
-    <string name="experimental_rpc_detect_media">Consenti a Experimental RPC di rilevare riproduzione media</string>
+    <string name="manual_rpc_detect_apps">Consenti a Experimental RPC di rilevare app in esecuzione</string>
+    <string name="manual_rpc_detect_media">Consenti a Experimental RPC di rilevare riproduzione media</string>
     <string name="app_preferences">Preferenze app</string>
     <string name="app_preferences_desc">Seleziona quali app sono abilitate per Experimental RPC</string>
     <string name="completion_media_title">Titolo canzone/video</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Nome app rilevato</string>
     <string name="show_coverArt">Mostra copertina album</string>
     <string name="show_coverArt_desc">Mostra copertina album come immagine grande</string>
-    <string name="enable_ManualRpc">Abilita Experimental RPC</string>
+    <string name="enable_manualRpc">Abilita Experimental RPC</string>
     <string name="completion_media_author">Autore principale</string>
     <string name="completion_media_album">Nome album</string>
     <string name="completion_media_albumArtist">Artista album</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButton_desc">Aggiunge automaticamente un pulsante cliccabile (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) durante la riproduzione di media</string>
     <string name="link_toArtistChannel">Link al canale artista</string>
     <string name="link_to_artist_channel_desc">Il pulsante si collega al canale dellapos;artista invece che alla traccia/video</string>
-    <string name="experimental_rpcTitleToggle">Titolo</string>
-    <string name="experimental_rpcTitleToggle_desc">Mostra informazioni canzone nel titolo attività invece del nome app</string>
+    <string name="manual_rpc_title_toggle">Titolo</string>
+    <string name="manual_rpc_title_toggle_desc">Mostra informazioni canzone nel titolo attività invece del nome app</string>
     <string name="title_source_song">Titolo canzone</string>
     <string name="title_source_artist">Artista</string>
     <string name="type_to_insert_variable">Scrivi &apos;{{&apos; per inserire una variabile</string>

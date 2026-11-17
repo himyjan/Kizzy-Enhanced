@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">ឈ្មោះសកម្មភាព</string>
     <string name="activity_details">ព័ត៌មាត្រនៃសកម្មភាព</string>
     <string name="activity_state">ស្ថានសកម្មភាព</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur ជាប់គ្នារូបភាព</string>
     <string name="use_imgur_desc">ប្រើ Imgur ជាប់គ្នារូបភាពជំនាល្បង។</string>
     <string name="start_appDetection">ចាប់ផ្ដើមការរកឃើញកម្មវិធី</string>
-    <string name="start_mediaRPC">ចាប់ផ្ដើម Media RPC</string>
-    <string name="start_ManualRpc">ចាប់ផ្ដើម Experimental RPC</string>
+    <string name="start_media_rpc">ចាប់ផ្ដើម Media RPC</string>
+    <string name="start_manual_rpc">ចាប់ផ្ដើម Experimental RPC</string>
     <string name="stop_rpc">ឈប់ RPC</string>
     <string name="stop">ឈប់</string>
     <string name="start_appDetection_toast">ការរកឃើញកម្មវិធីបានចាប់ផ្ដើម</string>
-    <string name="start_mediaRPC_toast">Media RPC បានចាប់ផ្ដើម</string>
-    <string name="start_ManualRpc_toast">Experimental RPC បានចាប់ផ្ដើម</string>
+    <string name="start_media_rpc_toast">Media RPC បានចាប់ផ្ដើម</string>
+    <string name="start_manual_rpc_toast">Experimental RPC បានចាប់ផ្ដើម</string>
     <string name="stop_rpc_toast">សេវាទាំងអស់ត្រូវបានឈប់</string>
     <string name="show_playback_state">បង្ហាញស្ថាន្នកចារ</string>
     <string name="copied_to_clipboard">បានចម្លងទៅកន្លោមស្មែន</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">អនុញ្ញាតឲ្យ Experimental RPC រកឃើញកម្មវិធីដែលកំពុងដំណើរការ</string>
-    <string name="experimental_rpc_detect_media">អនុញ្ញាតឲ្យ Experimental RPC រកឃើញការចម្រោជមានស៊ី</string>
+    <string name="manual_rpc_detect_apps">អនុញ្ញាតឲ្យ Experimental RPC រកឃើញកម្មវិធីដែលកំពុងដំណើរការ</string>
+    <string name="manual_rpc_detect_media">អនុញ្ញាតឲ្យ Experimental RPC រកឃើញការចម្រោជមានស៊ី</string>
     <string name="app_preferences">ការកំណត់កម្មវិធី</string>
     <string name="app_preferences_desc">ជ្រើសរើសថាកម្មវិធីណាដែលត្រូវបើកសម្រាប់ Experimental RPC</string>
     <string name="completion_media_title">ចំណត់ចម្រើស/វីដីអូ</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">ឈ្មោះកម្មវិធីដែលបានរកឃើញ</string>
     <string name="show_cover_art">បង្ហាញគម្របសកល</string>
     <string name="show_cover_art_desc">បង្ហាញគម្របសអាលុមជារូបភាពធំ</string>
-    <string name="enable_experimental_rpc">បើក Experimental RPC</string>
+    <string name="enable_manualRpc">បើក Experimental RPC</string>
     <string name="completion_media_author">អ្នកនិពន្ធចម្បង</string>
     <string name="completion_media_album">ឈ្មោះអាលុម</string>
     <string name="completion_media_album_artist">អ្នកបង្កើតអាលុម</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">តំណភ្ជាប់ទៅឆ្នាលអ្នកបង្កើត</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">ចំណតិ</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">ចំណតិ</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">ចំណតិបទគ្នាង</string>
     <string name="title_source_artist">អ្នកបង្កើត</string>

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Киззи надградено</string>
-    <string name="qs_tile_label" translatable="false">Киззи Брзо</string>
+    <string name="qs_tile_label">Киззи Брзо</string>
 
     <!-- Дејности -->
     <string name="activity_name">Име на активност</string>
@@ -189,13 +189,13 @@
     <string name="use_imgur">Imgur као прози</string>
     <string name="use_imgurDesc">Использување Imgur као резервног аeters</string>
     <string name="start_appDetection">Поčni Ап датец</string>
-    <string name="start_mediaRpc">Почни Media RPC</string>
-    <string name="start_ManualRpc">Покрени Experimental RPC</string>
+    <string name="start_media_rpc">Почни Media RPC</string>
+    <string name="start_manual_rpc">Покрени Experimental RPC</string>
     <string name="stop_rpc">Скини RPC</string>
     <string name="stop">Стоп</string>
     <string name="start_appDetectionToast">Ап детекција покrenuta</string>
-    <string name="start_mediaRpcToast">Медија РПЦ покренут</string>
-    <string name="start_ManualRpcToast">Експериментални РПЦ покренут</string>
+    <string name="start_media_rpc_toast">Медија РПЦ покренут</string>
+    <string name="start_manual_rpc_toast">Експериментални РПЦ покренут</string>
     <string name="stop_rpcToast">Све сервиси spent</string>
     <string name="show_playbackState">Покажи стат.</string>
     <string name="copied_toClipboard">Копирано у буфер</string>
@@ -204,8 +204,8 @@
     <string name="custom_application_id_desc">Преопределите код DFT Киззи апликације</string>
     <string name="use_a_vpnDesc">Опиши го користеньето на VPN</string>
     <string name="rpc_templates_note">&quot;Визуализујте網集: apos;@app_nameapos; и apos;&amp;stateapos; и т.н. Како се mairesse ирони, две исти falsnе حديци겠습니다 &quot;</string>
-    <string name="experimental_rpc_detectApps">Experimental RPC да детектира апликације</string>
-    <string name="experimental_rpc_detectMedia">Eкспериментални RPC детектиране multimediji</string>
+    <string name="manual_rpc_detect_apps">Experimental RPC да детектира апликације</string>
+    <string name="manual_rpc_detect_media">Eкспериментални RPC детектиране multimediji</string>
     <string name="app_preferences">Апп приоритети</string>
     <string name="app_preferences_desc">Изберете текућа подржана апликације Experimental RPC</string>
     <string name="completion_media_title">Наслов песме</string>
@@ -213,7 +213,7 @@
     <string name="completion_appName">Изведени име апликације</string>
     <string name="show_coverArt">Покажи албума</string>
     <string name="show_coverArt_desc">Покажи албум као слику</string>
-    <string name="enable_ManualRpc">Оствари Experimental RPC</string>
+    <string name="enable_manualRpc">Оствари Experimental RPC</string>
     <string name="completion_media_author">Автор</string>
     <string name="completion_media_album">Назив альбома</string>
     <string name="completion_media_albumArtist">Артист albuma</string>
@@ -230,8 +230,8 @@
     <string name="use_youtubeButtonDesc">Додајте YouTube dugmе</string>
     <string name="link_toArtistChannel">Слово на ниво</string>
     <string name="link_toArtistChannel_desc">Ова дугме линкује да функционира</string>
-    <string name="experimental_rpcTitleToggle">Организује MS JS</string>
-    <string name="experimental_rpcTitleToggle_desc">То committing Server API</string>
+    <string name="manual_rpc_title_toggle">Организује MS JS</string>
+    <string name="manual_rpc_title_toggle_desc">То committing Server API</string>
     <string name="title_source_song">Наслов песме</string>
     <string name="title_source_artist">Име UMU</string>
     <string name="type_toInsertVariable">Напишете "{{" да вставите променљиву</string>

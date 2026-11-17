@@ -76,6 +76,20 @@ class ManualRpc : Service() {
 
     private lateinit var mediaSessionManager: MediaSessionManager
 
+    /**
+     * Single listener instance shared by the add and remove calls.
+     *
+     * A bound method reference to activeSessionsListener allocates a new
+     * wrapper on every evaluation, so the remove call never matches the
+     * listener registered by the add call. The framework then retains the
+     * binder stub — and this destroyed service through it — leaking the
+     * whole service instance after onDestroy().
+     */
+    private val activeSessionsChangedListener =
+        MediaSessionManager.OnActiveSessionsChangedListener { sessions ->
+            activeSessionsListener(sessions)
+        }
+
     private var currentMediaController: MediaController? = null
 
     private val mediaControllerCallback = MediaControllerCallback()
@@ -202,7 +216,7 @@ class ManualRpc : Service() {
 
     private var enabledExperimentalApps: List<String> = readEnabledExperimentalApps()
 
-    /** Reads the list of apps enabled for the Experimental RPC from the preferences. */
+    /** Reads the list of apps enabled for the Manual RPC from the preferences. */
     private fun readEnabledExperimentalApps(): List<String> = try {
         Json.decodeFromString(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
     } catch (_: Exception) {
@@ -264,7 +278,7 @@ class ManualRpc : Service() {
             // Without it this throws SecurityException, so guard to avoid crashing.
             try {
                 mediaSessionManager.addOnActiveSessionsChangedListener(
-                    ::activeSessionsListener,
+                    activeSessionsChangedListener,
                     ComponentName(this, NotificationListener::class.java)
                 )
             } catch (e: SecurityException) {
@@ -638,7 +652,7 @@ class ManualRpc : Service() {
         lastSentPresenceKey = presenceKey
 
         // Apply the buttons and the custom application id that the user configured in the
-        // Experimental RPC screen. They were stored in the preferences but never actually
+        // Manual RPC screen. They were stored in the preferences but never actually
         // applied to the presence.
         kizzyRPC.clearButtons()
         if (Prefs[Prefs.MANUAL_RPC_USE_BUTTONS, false]) {
@@ -653,7 +667,7 @@ class ManualRpc : Service() {
                 kizzyRPC.setButton2(button2Text, button2Url)
             }
         } else {
-            // The Experimental RPC did not have any link at all when the user did
+            // The Manual RPC did not have any link at all when the user did
             // not configure the buttons by hand. When a media session is
             // playing, the link of the track and of the artist are used instead,
             // so the presence links to the music like the Media RPC does.
@@ -690,7 +704,7 @@ class ManualRpc : Service() {
 
         // Remember the presence for the RPC preview.
         // The image urls are the ones that were actually resolved (and uploaded) for the
-        // presence above. Without them the preview of the Experimental RPC had no cover
+        // presence above. Without them the preview of the Manual RPC had no cover
         // art, even though Discord showed it.
         val (resolvedLargeImage, resolvedSmallImage) = kizzyRPC.currentImageUrls()
         LastPresence.rememberExperimental(
@@ -756,7 +770,7 @@ class ManualRpc : Service() {
         isEvent: Boolean = true,
     ) {
         if (!useMediaRpc) {
-            logger.i(TAG, "Media part of Experimental RPC is disabled.")
+            logger.i(TAG, "Media part of Manual RPC is disabled.")
             if (useAppsRpc && !isMediaSessionActive) {
                 startAppDetectionCoroutine()
             } else if (!useAppsRpc) {
@@ -931,7 +945,7 @@ class ManualRpc : Service() {
         // guard so destroying an un-started/permission-less service never crashes.
         if (::mediaSessionManager.isInitialized) {
             try {
-                mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
+                mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
             } catch (e: Exception) {
                 logger.e(TAG, "removeOnActiveSessionsChangedListener failed: ${e.message}")
             }

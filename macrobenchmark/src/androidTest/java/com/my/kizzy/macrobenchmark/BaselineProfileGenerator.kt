@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit
  *   2. Media RPC — media service binding + presence composition
  *   3. Console RPC — game catalog + auto-detect UI
  *   4. Custom RPC — template editing + presence configuration
- *   5. Experimental RPC — apps detection + media detection
+ *   5. Manual RPC — apps detection + media detection
  *   6. Profile screen — Discord OAuth2 + RPC preview
  *   7. Logs screen — log viewing + search
  *   8. Settings — RPC preferences + cover art config
@@ -61,8 +61,8 @@ class BaselineProfileGenerator {
         { openScreen("Console RPC", "Console Auto-Detect") },
         // Block 4: Custom RPC - template editing + presence configuration
         { openScreen("Custom RPC", null) },
-        // Block 5: Experimental RPC - apps detection + media detection
-        { openScreen("Experimental RPC", null) },
+        // Block 5: Manual RPC - apps detection + media detection
+        { openScreen("Manual RPC", null) },
         // Block 6: Profile - Discord OAuth2 + RPC preview
         { openProfile() },
         // Block 7: Logs screen - log viewing + search
@@ -178,8 +178,8 @@ class BaselineProfileGenerator {
     /** Open app selection - covers enabling/disabling apps for RPC */
     private fun openAppSelection() {
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        // Open Experimental RPC first, then navigate to apps
-        openScreen("Experimental RPC", null)
+        // Open Manual RPC first, then navigate to apps
+        openScreen("Manual RPC", null)
         device.waitForIdle()
         // Look for apps list or app selection button
         val appsBtn = device.findObject(By.text("Apps"))

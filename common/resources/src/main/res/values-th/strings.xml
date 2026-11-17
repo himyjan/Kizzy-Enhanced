@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">ชื่อของกิจกรรมที่คุณต้องการตามใจนึก!</string>
     <string name="activity_details">ข้อความกิจกรรมเพิ่มเติมที่คุณอยากเฉิดฉาย!</string>
     <string name="activity_state">สถานะกิจกรรมที่ตั้งไปเขาก็ไม่รักคุณอยู่ดี!</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">ใช้ Imgur เป็นพร็อกซี่รูปภาพแทน</string>
     <string name="use_imgur_desc">จะใช้ Imgur เป็นพร็อกซี่ของภาพที่จะใช้แทน</string>
     <string name="start_appDetection">เริ่มการใช้ App Detection แล้ว</string>
-    <string name="start_mediaRPC">เริ่มการใช้ Media RPC แล้ว</string>
-    <string name="start_ManualRpc">เริ่มการใช้ Experimental RPC แล้ว</string>
+    <string name="start_media_rpc">เริ่มการใช้ Media RPC แล้ว</string>
+    <string name="start_manual_rpc">เริ่มการใช้ Experimental RPC แล้ว</string>
     <string name="stop_rpc">หยุดการใช้ RPC แล้ว</string>
     <string name="stop">หยุด</string>
     <string name="start_appDetection_toast">App Detection เริ่มใช้งานไปแล้ว</string>
-    <string name="start_mediaRPC_toast">Media RPC เริ่มใช้งานไปแล้ว</string>
-    <string name="start_ManualRpc_toast">Experimental RPC เริ่มใช้งานไปแล้ว</string>
+    <string name="start_media_rpc_toast">Media RPC เริ่มใช้งานไปแล้ว</string>
+    <string name="start_manual_rpc_toast">Experimental RPC เริ่มใช้งานไปแล้ว</string>
     <string name="stop_rpc_toast">services ทั้งหมดหยุดการทำงานแล้ว</string>
     <string name="show_playback_state">แสดงสถานะการเล่น</string>
     <string name="copied_to_clipboard">ก็อปไปยังคลิปบอร์ดแล้ว</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">อนุญาตให้ Experimental RPC ตรวจจับแอปที่กำลังทำงานอยู่</string>
-    <string name="experimental_rpc_detect_media">อนุญาตให้ Experimental RPC ตรวจจับสื่อที่กำลังเล่นอยู่</string>
+    <string name="manual_rpc_detect_apps">อนุญาตให้ Experimental RPC ตรวจจับแอปที่กำลังทำงานอยู่</string>
+    <string name="manual_rpc_detect_media">อนุญาตให้ Experimental RPC ตรวจจับสื่อที่กำลังเล่นอยู่</string>
     <string name="app_preferences">การตั้งค่าแอป</string>
     <string name="app_preferences_desc">เลือกแอปที่จะเปิดใช้งาน Experimental RPC</string>
     <string name="completion_media_title">ชื่อเพลง/วิดีโอ</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">ชื่อแอปที่ตรวจพบ</string>
     <string name="show_cover_art">แสดงภาพปกอัลบั้ม</string>
     <string name="show_cover_art_desc">แสดงภาพปกอัลบั้มเป็นภาพขนาดใหญ่</string>
-    <string name="enable_experimental_rpc">เปิดใช้งาน Experimental RPC</string>
+    <string name="enable_manualRpc">เปิดใช้งาน Experimental RPC</string>
     <string name="completion_media_author">ผู้แต่งหลัก</string>
     <string name="completion_media_album">ชื่ออัลบั้ม</string>
     <string name="completion_media_album_artist">ศิลปินอัลบั้ม</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">ลิงก์ไปช่องศิลปิน</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">ชื่อ</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">ชื่อ</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">ชื่อเพลง</string>
     <string name="title_source_artist">ศิลปิน</string>

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Parannettu</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Toiminnot -->
     <string name="activity_name">Toiminnon nimi</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Imgur kuvapalvelimena</string>
     <string name="use_imgurDesc">Käytä Imguria vaihtoehtoisena kuvapalvelimena.</string>
     <string name="start_appDetection">Käynnistä sovelluksen tunnistus</string>
-    <string name="start_mediaRpc">Käynnistä Media RPC</string>
-    <string name="start_ManualRpc">Käynnistä Experimental RPC</string>
+    <string name="start_media_rpc">Käynnistä Media RPC</string>
+    <string name="start_manual_rpc">Käynnistä Experimental RPC</string>
     <string name="stop_rpc">Pysäytä RPC</string>
     <string name="stop">Pysäytä</string>
     <string name="start_appDetectionToast">Sovelluksen tunnistus käynnistetty</string>
-    <string name="start_mediaRpcToast">Media RPC käynnistetty</string>
-    <string name="start_ManualRpcToast">Experimental RPC käynnistetty</string>
+    <string name="start_media_rpc_toast">Media RPC käynnistetty</string>
+    <string name="start_manual_rpc_toast">Experimental RPC käynnistetty</string>
     <string name="stop_rpcToast">Kaikki palvelut pysäytetty</string>
     <string name="show_playbackState">Näytä toistotila</string>
     <string name="copied_toClipboard">Kopioitu leikepöydälle</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Ohittaa oletus-Discordin sovelluksen tunnuksen</string>
     <string name="use_a_vpnDesc">Discord-kirjautuminen ei välttämättä toimi maassasi ilman VPN/DPI:tä. Käytä VPN/DPI:tä jatkaaksesi.</string>
     <string name="rpc_templates_note">&quot;Käytä malleja, kuten &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; jne. Tyhjät kentät käyttävät oletuskäyttäytymistä tai jätetään huomiotta.&quot;</string>
-    <string name="experimental_rpc_detectApps">Salli kokeellinen RPC havaitsemaan käynnissä olevat sovellukset</string>
-    <string name="experimental_rpc_detectMedia">Salli kokeellinen RPC havaitsemaan median toiston</string>
+    <string name="manual_rpc_detect_apps">Salli kokeellinen RPC havaitsemaan käynnissä olevat sovellukset</string>
+    <string name="manual_rpc_detect_media">Salli kokeellinen RPC havaitsemaan median toiston</string>
     <string name="app_preferences">Sovellusasetukset</string>
     <string name="app_preferences_desc">Valitse, mitkä sovellukset on otettu käyttöön kokeellisessa RPC:ssä</string>
     <string name="completion_media_title">Kappaleen/ videon nimi</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Tunnistettu sovelluksen nimi</string>
     <string name="show_coverArt">Näytä albumin kansi</string>
     <string name="show_coverArt_desc">Näytä albumin kansi isona kuvana</string>
-    <string name="enable_ManualRpc">Ota kokeellinen RPC käyttöön</string>
+    <string name="enable_manualRpc">Ota kokeellinen RPC käyttöön</string>
     <string name="completion_media_author">Päätekijä</string>
     <string name="completion_media_album">Albumin nimi</string>
     <string name="completion_media_albumArtist">Albumitaiteilija</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButtonDesc">Lisää automaattisesti klikattava painike (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) kun median toisto on käynnissä</string>
     <string name="link_toArtistChannel">Linkitä taiteilijakanavaan</string>
     <string name="link_toArtistChannel_desc">Painike linkittää taiteilijakanavaan kappaleen/videon sijasta</string>
-    <string name="experimental_rpcTitleToggle">Otsikko</string>
-    <string name="experimental_rpcTitleToggle_desc">Näytä kappaleen tiedot aktiviteetin otsikkona sovelluksen nimen sijaan</string>
+    <string name="manual_rpc_title_toggle">Otsikko</string>
+    <string name="manual_rpc_title_toggle_desc">Näytä kappaleen tiedot aktiviteetin otsikkona sovelluksen nimen sijaan</string>
     <string name="title_source_song">Kappaleen nimi</string>
     <string name="title_source_artist">Taiteilija</string>
     <string name="type_toInsertVariable">Kirjoita &apos;{{&apos; lisätäksesi muuttujan</string>

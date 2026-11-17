@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">Nama aktiviti</string>
     <string name="activity_details">Butiran aktiviti</string>
     <string name="activity_state">Keadaan aktiviti</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur sebagai proksi imej</string>
     <string name="use_imgur_desc">Guna Imgur sebagai proksi imej alternatif.</string>
     <string name="start_appDetection">Mulakan pengesanan aplikasi</string>
-    <string name="start_mediaRPC">Mulakan Media RPC</string>
-    <string name="start_ManualRpc">Mulakan Experimental RPC</string>
+    <string name="start_media_rpc">Mulakan Media RPC</string>
+    <string name="start_manual_rpc">Mulakan Experimental RPC</string>
     <string name="stop_rpc">Henti RPC</string>
     <string name="stop">Henti</string>
     <string name="start_appDetection_toast">Pengesanan aplikasi bermula</string>
-    <string name="start_mediaRPC_toast">Media RPC bermula</string>
-    <string name="start_ManualRpc_toast">Experimental RPC bermula</string>
+    <string name="start_media_rpc_toast">Media RPC bermula</string>
+    <string name="start_manual_rpc_toast">Experimental RPC bermula</string>
     <string name="stop_rpc_toast">Semua perkhidmatan dihentikan</string>
     <string name="show_playback_state">Papar keadaan main semula</string>
     <string name="copied_to_clipboard">Disalin ke papan klip</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Benarkan Experimental RPC mengesan aplikasi yang berjalan</string>
-    <string name="experimental_rpc_detect_media">Benarkan Experimental RPC mengesan main semula media</string>
+    <string name="manual_rpc_detect_apps">Benarkan Experimental RPC mengesan aplikasi yang berjalan</string>
+    <string name="manual_rpc_detect_media">Benarkan Experimental RPC mengesan main semula media</string>
     <string name="app_preferences">Tetapan aplikasi</string>
     <string name="app_preferences_desc">Pilih aplikasi yang didayakan untuk Experimental RPC</string>
     <string name="completion_media_title">Tajuk lagu/video</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">Nama aplikasi dikesan</string>
     <string name="show_cover_art">Papar muka surat</string>
     <string name="show_cover_art_desc">Papar muka surat album sebagai imej besar</string>
-    <string name="enable_experimental_rpc">Dayakan Experimental RPC</string>
+    <string name="enable_manualRpc">Dayakan Experimental RPC</string>
     <string name="completion_media_author">Penulis utama</string>
     <string name="completion_media_album">Nama album</string>
     <string name="completion_media_album_artist">Seniman album</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Pautan ke saluran seniman</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Tajuk</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">Tajuk</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">Nama lagu</string>
     <string name="title_source_artist">Seniman</string>

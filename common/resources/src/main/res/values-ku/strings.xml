@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Pêşvekirî</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <string name="activity_name">Navê Çalakiyê</string>
     <string name="activity_details">Hûrguliyên Çalakiyê</string>

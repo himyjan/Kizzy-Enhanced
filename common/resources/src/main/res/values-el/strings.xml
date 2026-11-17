@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Advanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Δραστηριότητες -->
     <string name="activity_name">Όνομα δραστηριότητας</string>
@@ -193,13 +193,13 @@
     <string name="use_imgur">Χρήση Imgur ως προ-acte</string>
     <string name="use_imgurDesc">Χρησιμοποιήστε το Imgur ως εναρτιστού προacte.</string>
     <string name="start_appDetection">Έναρξη ανίχνευσης εφαρμογών</string>
-    <string name="start_mediaRpc">Έναρξη Media RPC</string>
-    <string name="start_ManualRpc">Έναρξη Experimental RPC</string>
+    <string name="start_media_rpc">Έναρξη Media RPC</string>
+    <string name="start_manual_rpc">Έναρξη Experimental RPC</string>
     <string name="stop_rpc">Σταμάτηση RPC</string>
     <string name="stop">Σταμάτησέ</string>
     <string name="start_appDetectionToast">Ανίχνευση εφαρμογών ξεκίνησε</string>
-    <string name="start_mediaRpcToast">Media RPC ξεκίνησε</string>
-    <string name="start_ManualRpcToast">Experimental RPC ξεκίνησε</string>
+    <string name="start_media_rpc_toast">Media RPC ξεκίνησε</string>
+    <string name="start_manual_rpc_toast">Experimental RPC ξεκίνησε</string>
     <string name="stop_rpcToast">Όλες οι υπηρεσίες σταμάτησαν</string>
     <string name="show_playbackState">Προβολή κατάστασης αναπαραγωγής</string>
     <string name="copied_toClipboard">Αντιγράφηκε στο πάπiro</string>
@@ -208,8 +208,8 @@
     <string name="custom_application_id_desc">Παράβιαση του πρε δείκτης της εφαρμογής Discord</string>
     <string name="use_a_vpnDesc">Η σύνδεση στο Discord μπορεί να μην λειτουργεί στην χώρα σας χωρίς VPN/DPI. Παρακαλούμε να χρησιμοποιήσετε VPN/DPI για να συνεχίσετε.</string>
     <string name="rpc_templates_note">&quot;Χρησιμοποιήστε πρότυπα όπως &quot;{{apos;app_name}}apos;apos;, &apos;{{&apos;media_title}}apos;apos;, ε천원. Τα κενά πεδία θα χρησιμοποιηθούν το προκαθορισμένο σκέλος ή θα παραβληθούν.&quot;</string>
-    <string name="experimental_rpc_detectApps">Επιτρέψτε στο Experimental RPC να εντοπίζει τρέχουσες εφαρμογές</string>
-    <string name="experimental_rpc_detectMedia">Επιτρέψτε στο Experimental RPC να εντοπίζει την αναπαραγωγή μέσων</string>
+    <string name="manual_rpc_detect_apps">Επιτρέψτε στο Experimental RPC να εντοπίζει τρέχουσες εφαρμογές</string>
+    <string name="manual_rpc_detect_media">Επιτρέψτε στο Experimental RPC να εντοπίζει την αναπαραγωγή μέσων</string>
     <string name="app_preferences">Προτιμήσεις εφαρμογών</string>
     <string name="app_preferences_desc">Επιλέξτε ποιες εφαρμογές είναι ενεργοποιημένες για το Experimental RPC</string>
     <string name="completion_media_title">Τίτλος τραγουδιού/βίντεο</string>
@@ -217,7 +217,7 @@
     <string name="completion_appName">Το όνομα της εντοπισμένης εφαρμογής</string>
     <string name="show_coverArt">Εμφάνιση καλμαρίου</string>
     <string name="show_coverArt_desc">Προβολή καλυμπότιδας albaς ως μεγάλο χρώμα</string>
-    <string name="enable_ManualRpc">Ενεργοποίηση Experimental RPC</string>
+    <string name="enable_manualRpc">Ενεργοποίηση Experimental RPC</string>
     <string name="completion_media_author">Αρχός</string>
     <string name="completion_media_album">Όνομα albumu</string>
     <string name="completion_media_albumArtist">Καλλιτέχνης albums</string>
@@ -234,8 +234,8 @@
     <string name="use_youtubeButtonDesc">Προσθέτει αυτόματα ένα κλικ susceptible κουμπί (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) κατά την αναπαραγωγή μέσων</string>
     <string name="link_toArtistChannel">Σύνδεση με τον κανάλι του καλλιτέχνη</string>
     <string name="link_toArtistChannel_desc">Το κουμπί συνδέεται στον κανάλι του καλλιτέχνη αντί για το τραγούδι/βίντεο</string>
-    <string name="experimental_rpcTitleToggle">Τίτλος</string>
-    <string name="experimental_rpcTitleToggle_desc">Προβολή πληροφοριών τραγουδιού στον τίτλο δραστηριότητας αντί για το όνομα της εφαρμογής</string>
+    <string name="manual_rpc_title_toggle">Τίτλος</string>
+    <string name="manual_rpc_title_toggle_desc">Προβολή πληροφοριών τραγουδιού στον τίτλο δραστηριότητας αντί για το όνομα της εφαρμογής</string>
     <string name="title_source_song">Ονομασίες τραγουδιού</string>
     <string name="title_source_artist">Καλλιτέχνης</string>
     <string name="type_toInsertVariable">Πληκτρολογήστε &apos;{{&apos; για να εισαγάγετε μια μεταβλητή</string>

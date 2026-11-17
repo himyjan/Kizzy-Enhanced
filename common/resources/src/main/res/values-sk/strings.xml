@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">Názov aktivity</string>
     <string name="activity_details">Podrobnosti aktivity</string>
     <string name="activity_state">Stav aktivity</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur ako proxy obrázkov</string>
     <string name="use_imgur_desc">Použiť Imgur ako alternatívny proxy obrázkov.</string>
     <string name="start_appDetection">Spustiť detekciu aplikácií</string>
-    <string name="start_mediaRPC">Spustiť Media RPC</string>
-    <string name="start_ManualRpc">Spustiť Experimental RPC</string>
+    <string name="start_media_rpc">Spustiť Media RPC</string>
+    <string name="start_manual_rpc">Spustiť Experimental RPC</string>
     <string name="stop_rpc">Zastaviť RPC</string>
     <string name="stop">Zastaviť</string>
     <string name="start_appDetection_toast">Detekcia aplikácií sa spustila</string>
-    <string name="start_mediaRPC_toast">Media RPC sa spustil</string>
-    <string name="start_ManualRpc_toast">Experimental RPC sa spustil</string>
+    <string name="start_media_rpc_toast">Media RPC sa spustil</string>
+    <string name="start_manual_rpc_toast">Experimental RPC sa spustil</string>
     <string name="stop_rpc_toast">Všetky služby boli zastavené</string>
     <string name="show_playback_state">Zobraziť stav prehrávania</string>
     <string name="copied_to_clipboard">Skopírované do schránky</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Povoľte Experimental RPC detegovať bežiace aplikácie</string>
-    <string name="experimental_rpc_detect_media">Povoľte Experimental RPC detegovať prehrávanie médií</string>
+    <string name="manual_rpc_detect_apps">Povoľte Experimental RPC detegovať bežiace aplikácie</string>
+    <string name="manual_rpc_detect_media">Povoľte Experimental RPC detegovať prehrávanie médií</string>
     <string name="app_preferences">Predvoľby aplikácie</string>
     <string name="app_preferences_desc">Vyberte, ktoré aplikácie sú povolené pre Experimental RPC</string>
     <string name="completion_media_title">Názov skladby/videa</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">Názov zistenej aplikácie</string>
     <string name="show_cover_art">Zobraziť obal</string>
     <string name="show_cover_art_desc">Zobraziť obal albumu ako veľký obrázok</string>
-    <string name="enable_experimental_rpc">Povoliť Experimental RPC</string>
+    <string name="enable_manualRpc">Povoliť Experimental RPC</string>
     <string name="completion_media_author">Hlavný autor</string>
     <string name="completion_media_album">Názov albumu</string>
     <string name="completion_media_album_artist">Interpret albumu</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Odkaz na kanál interpreta</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Názov</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">Názov</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">Názov skladby</string>
     <string name="title_source_artist">Interpret</string>

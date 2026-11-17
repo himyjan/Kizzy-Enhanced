@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">활동 이름</string>
     <string name="activity_details">활동 세부 정보</string>
     <string name="activity_state">활동 상태</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">이미지 프록시로 Imgur 사용</string>
     <string name="use_imgur_desc">Imgur를 대체 이미지 프록시로 사용합니다.</string>
     <string name="start_appDetection">앱 감지 시작</string>
-    <string name="start_mediaRPC">미디어 RPC 시작</string>
-    <string name="start_ManualRpc">실험적 RPC 시작</string>
+    <string name="start_media_rpc">미디어 RPC 시작</string>
+    <string name="start_manual_rpc">실험적 RPC 시작</string>
     <string name="stop_rpc">RPC 중지</string>
     <string name="stop">중지</string>
     <string name="start_appDetection_toast">앱 감지가 시작되었습니다</string>
-    <string name="start_mediaRPC_toast">미디어 RPC가 시작되었습니다</string>
-    <string name="start_ManualRpc_toast">실험적 RPC가 시작되었습니다</string>
+    <string name="start_media_rpc_toast">미디어 RPC가 시작되었습니다</string>
+    <string name="start_manual_rpc_toast">실험적 RPC가 시작되었습니다</string>
     <string name="stop_rpc_toast">모든 서비스가 중지되었습니다</string>
     <string name="show_playback_state">재생 상태 표시</string>
     <string name="copied_to_clipboard">클립보드에 복사됨</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">실험적 RPC가 실행 중인 앱을 감지하도록 허용</string>
-    <string name="experimental_rpc_detect_media">실험적 RPC가 미디어 재생을 감지하도록 허용</string>
+    <string name="manual_rpc_detect_apps">실험적 RPC가 실행 중인 앱을 감지하도록 허용</string>
+    <string name="manual_rpc_detect_media">실험적 RPC가 미디어 재생을 감지하도록 허용</string>
     <string name="app_preferences">앱 환경설정</string>
     <string name="app_preferences_desc">실험적 RPC에서 사용할 앱을 선택하세요</string>
     <string name="completion_media_title">노래/동영상 제목</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">감지된 앱 이름</string>
     <string name="show_cover_art">커버 아트 표시</string>
     <string name="show_cover_art_desc">앨범 커버 아트를 큰 이미지로 표시</string>
-    <string name="enable_experimental_rpc">실험적 RPC 활성화</string>
+    <string name="enable_manualRpc">실험적 RPC 활성화</string>
     <string name="completion_media_author">메인 저자</string>
     <string name="completion_media_album">앨범명</string>
     <string name="completion_media_album_artist">앨범 아티스트</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">아티스트 채널로 이동</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">제목</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">제목</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">노래 제목</string>
     <string name="title_source_artist">아티스트</string>

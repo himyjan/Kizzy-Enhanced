@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">Ակտիվության անուն</string>
     <string name="activity_details">Ակտիվության մանրամբներ</string>
     <string name="activity_state">Ակտիվության վիճակ</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur-ը որպես պատկերի պրոքսի</string>
     <string name="use_imgur_desc">Օգտագործել Imgur-ը որպես այլընտրելի պրոքսի։</string>
     <string name="start_appDetection">Սկսել հավելերի հայտնաբերումը</string>
-    <string name="start_mediaRPC">Սկսել Media RPC</string>
-    <string name="start_ManualRpc">Սկսել Experimental RPC</string>
+    <string name="start_media_rpc">Սկսել Media RPC</string>
+    <string name="start_manual_rpc">Սկսել Experimental RPC</string>
     <string name="stop_rpc">Կանգնեցնել RPC-ն</string>
     <string name="stop">Կանգնեցնել</string>
     <string name="start_appDetection_toast">Հավելերի հայտնաբերումը սկսվել է</string>
-    <string name="start_mediaRPC_toast">Media RPC-ն սկսվել է</string>
-    <string name="start_ManualRpc_toast">Experimental RPC-ն սկսվել է</string>
+    <string name="start_media_rpc_toast">Media RPC-ն սկսվել է</string>
+    <string name="start_manual_rpc_toast">Experimental RPC-ն սկսվել է</string>
     <string name="stop_rpc_toast">Բոլոր ծառայությունները կանգնվել են</string>
     <string name="show_playback_state">Ցույց տալ ներիշնառման վիճակը</string>
     <string name="copied_to_clipboard">Պատճենված է սեփնաթերթին</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Թույլ տեղ տալ Experimental RPC-ին հայտնաբերել աշխատող հավելերը</string>
-    <string name="experimental_rpc_detect_media">Թույլ տեղ տալ Experimental RPC-ին հայտնաբերել մեդիա ներիշնառումը</string>
+    <string name="manual_rpc_detect_apps">Թույլ տեղ տալ Experimental RPC-ին հայտնաբերել աշխատող հավելերը</string>
+    <string name="manual_rpc_detect_media">Թույլ տեղ տալ Experimental RPC-ին հայտնաբերել մեդիա ներիշնառումը</string>
     <string name="app_preferences">Հավելի նախապեսներ</string>
     <string name="app_preferences_desc">Ընտրեք, թե որ հավելներն են միացված Experimental RPC-ի համար</string>
     <string name="completion_media_title">Երաժշտի/տեսանության վերնագիր</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">Նշված հավելի անուն</string>
     <string name="show_cover_art">Ցույց տալ մասնաշերը</string>
     <string name="show_cover_art_desc">Ցույց տալ ալբոմի մասնաշերը որպես մեծ պատկեր</string>
-    <string name="enable_experimental_rpc">Միացնել Experimental RPC</string>
+    <string name="enable_manualRpc">Միացնել Experimental RPC</string>
     <string name="completion_media_author">Գլխավոր հեղինակ</string>
     <string name="completion_media_album">Ալբոմի անուն</string>
     <string name="completion_media_album_artist">Ալբոմի կատարող</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Հղորդել կատարողի ալուխին</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Վերնագիր</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">Վերնագիր</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">Երաժշտի անուն</string>
     <string name="title_source_artist">Կատարող</string>

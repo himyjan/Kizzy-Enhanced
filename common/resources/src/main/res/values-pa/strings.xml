@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy ਅਧਿਕਾਰੀ</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- ਕਾਰਵਾਈ -->
     <string name="activity_name">ਕਾਰਵਾਈ ਦਾ ਨਾਮ</string>
@@ -187,13 +187,13 @@
     <string name="use_imgur">ਇਮੁਆਰ ਚਿੱਤਰ ਪ੍ਰੋਕਸੀ ਵਜੋਂ ਵਰਤੋ</string>
     <string name="use_imgurDesc">Imgur ਦੀ ਵਰਤੋਂ ਬਾਰੇ ਵੇਵਰਾ</string>
     <string name="start_appDetection">ਐਪ ਡਿਟੈਕਸ਼ਨ ਸ਼ੁਰੂ ਕਰੋ</string>
-    <string name="start_mediaRpc">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
-    <string name="start_ManualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
+    <string name="start_media_rpc">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
+    <string name="start_manual_rpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
     <string name="stop_rpc">RPC ਰੋਕੋ</string>
     <string name="stop">ਰੋਕੋ</string>
     <string name="start_appDetectionToast">ਐਪ ਡਿਟੈਕਸ਼ਨ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
-    <string name="start_mediaRpcToast">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
-    <string name="start_ManualRpcToast">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
+    <string name="start_media_rpc_toast">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
+    <string name="start_manual_rpc_toast">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
     <string name="stop_rpcToast">ਸਾਰੀਆਂ ਸੇਵਾਵਾਂ ਰੋਕ ਦਿੱਤੀਆਂ ਗਈਆਂ ਹਨ</string>
     <string name="show_playbackState">ਪਲੇਬੈਕ ਸਥਿਤੀ ਦਿਖਾਓ</string>
     <string name="copied_toClipboard">ਕਲਿੱਪਬੋਰਡ apos;ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ ਹੈ</string>
@@ -202,8 +202,8 @@
     <string name="custom_application_idDesc">ਡਿਫੌਲਟ ਡਿਸਕਾਰਡ ਐਪਲੀਕੇਸ਼ਨ ਆਈਡੀ ਓਵਰਰਾਈਡ ਕਰੋ</string>
     <string name="use_a_vpnDesc">VPN ਦੀ ਵਰਤੋਂ ਬਾਰੇ ਵੇਵਰਾ</string>
     <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; ਠੇਕ ਕਿਹਾਅ ਰਾਹੀਂ ਵਰਤੋ। ਖਾਲੀ ਫੀਲਡ ਡਿਫੌਲਟ ਵਰਤਾਅ ਵਰਤੇਗਾ ਜਾਂ ਛੱਡ ਦਿੱਤਾ ਜਾਵੇਗਾ।&quot;</string>
-    <string name="experimental_rpc_detectApps">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC-ਕੇ ਚੱਲ ਰਹੇ ਐਪ ਡਿਟੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
-    <string name="experimental_rpc_detectMedia">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC-ਕੇ ਮੀਡੀਆ ਪਲੇਬੈਕ ਡਿਟੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
+    <string name="manual_rpc_detect_apps">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC-ਕੇ ਚੱਲ ਰਹੇ ਐਪ ਡਿਟੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
+    <string name="manual_rpc_detect_media">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC-ਕੇ ਮੀਡੀਆ ਪਲੇਬੈਕ ਡਿਟੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
     <string name="app_preferences">ਐਪ ਪ੍ਰੈਫਰੈਂਸ</string>
     <string name="app_preferencesDesc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਲਈ ਕਿਸ ਐਪ ਇਨੇਬਲ ਹੈ ਚੁਣੋ</string>
     <string name="completion_media_title">ਗਾਣਾ/ਵੀਡੀਓ ਸਿਰਲੇਖ</string>
@@ -211,7 +211,7 @@
     <string name="completion_appName">ਡਿਟੈਕਟ ਕੀਤਾ ਗਿਆ ਐਪ ਨਾਮ</string>
     <string name="show_coverArt">ਐਲਬਮ ਕਵਰ ਦਿਖਾਓ</string>
     <string name="show_coverArtDesc">ਐਲਬਮ ਕਵਰ ਵੱਡੀ ਤਸਵੀਰ ਵਜੋਂ ਦਿਖਾਓ</string>
-    <string name="enable_ManualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸਕਰੀਏਲ ਕਰੋ</string>
+    <string name="enable_manualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸਕਰੀਏਲ ਕਰੋ</string>
     <string name="completion_media_author">ਮੁੱਖ ਲੇਖਕ</string>
     <string name="completion_media_album">ਐਲਬਮ ਦਾ ਨਾਮ</string>
     <string name="completion_media_albumArtist">ਐਲਬਮ ਕਲਾਕਾਰ</string>
@@ -228,8 +228,8 @@
     <string name="use_youtubeButtonDesc">ਮੀਡੀਆ ਪਲੇ ਕਰਨ ਤੇ ਆਟੋਮੈਟਿਕ ਕਲਿਕ ਕਰਨ ਯੋਗ ਬਟਣ (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) ਜੋੜੋ</string>
     <string name="link_toArtistChannel">ਕਲਾਕਾਰ ਚੈਨਲ ਨਾਲ ਲਿੰਕ ਕਰੋ</string>
     <string name="link_toArtistChannelDesc">ਬਟਣ ਗਾਣੇ/ਵੀਡੀਓ ਦੀ ਸਟਰ ਕਲਾਕਾਰ ਚੈਨਲ ਨਾਲ ਲਿੰਕ ਕਰੇਗਾ</string>
-    <string name="experimental_rpcTitleToggle">ਸੀਰਲ</string>
-    <string name="experimental_rpcTitleToggleDesc">ਕਾਰਵਾਈ ਸੀਰਲ ਵਿੱਚ ਐਪ ਨਾਮ ਦੀ ਸਟਰ ਗਾਣੇ ਦੀ ਜਾਣਕਾਰੀ ਦਿਖਾਓ</string>
+    <string name="manual_rpc_title_toggle">ਸੀਰਲ</string>
+    <string name="manual_rpc_title_toggle_desc">ਕਾਰਵਾਈ ਸੀਰਲ ਵਿੱਚ ਐਪ ਨਾਮ ਦੀ ਸਟਰ ਗਾਣੇ ਦੀ ਜਾਣਕਾਰੀ ਦਿਖਾਓ</string>
     <string name="title_source_song">ਗਾਣੇ ਦਾ ਨਾਮ</string>
     <string name="title_source_artist">ਕਲਾਕਾਰ</string>
     <string name="type_toInsertVariable">ਵੇਰੀਏਬਲ ਪਾਉਣ ਲਈ &apos;{{&apos; ਟਾਈਪ ਕਰੋ</string>

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Advanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Aktiviteter -->
     <string name="activity_name">Aktivitetsnavn</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Imgur som billedproxy</string>
     <string name="use_imgurDesc">Brug Imgur som alternativ billedproxy.</string>
     <string name="start_appDetection">Start app-detektion</string>
-    <string name="start_mediaRpc">Start Medie-RPC</string>
-    <string name="start_ManualRpc">Start Eksperimentel RPC</string>
+    <string name="start_media_rpc">Start Medie-RPC</string>
+    <string name="start_manual_rpc">Start Eksperimentel RPC</string>
     <string name="stop_rpc">Afbryd RPC</string>
     <string name="stop">Stop</string>
     <string name="start_appDetectionToast">App-detektion startet</string>
-    <string name="start_mediaRpcToast">Media RPC startet</string>
-    <string name="start_ManualRpcToast">Experimental RPC startet</string>
+    <string name="start_media_rpc_toast">Media RPC startet</string>
+    <string name="start_manual_rpc_toast">Experimental RPC startet</string>
     <string name="stop_rpcToast">Alle tjenester stoppet</string>
     <string name="show_playbackState">Vis afspilningsstatus</string>
     <string name="copied_toClipboard">Kopieret til udklipsholder</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Overskriver standard Discord-applikations-ID</string>
     <string name="use_a_vpnDesc">Discord-login virker måske ikke i dit land uden VPN/DPI. Brug venligst VPN/DPI for at fortsætte.</string>
     <string name="rpc_templates_note">&quot;Brug skabeloner som &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; osv. Tomme felter vil bruge standardadfærd eller blive udeladt.&quot;</string>
-    <string name="experimental_rpc_detectApps">Tillad Experimental RPC at opdage kørende apps</string>
-    <string name="experimental_rpc_detectMedia">Tillad Experimental RPC at opdage medieafspilning</string>
+    <string name="manual_rpc_detect_apps">Tillad Experimental RPC at opdage kørende apps</string>
+    <string name="manual_rpc_detect_media">Tillad Experimental RPC at opdage medieafspilning</string>
     <string name="app_preferences">App-præferencer</string>
     <string name="app_preferences_desc">Vælg hvilke apps der er aktiveret for Experimental RPC</string>
     <string name="completion_media_title">Sangtitel/videotitel</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Opdaget app-navn</string>
     <string name="show_coverArt">Vis albumomslag</string>
     <string name="show_coverArt_desc">Vis albumomslag som stort billede</string>
-    <string name="enable_ManualRpc">Aktiver Experimental RPC</string>
+    <string name="enable_manualRpc">Aktiver Experimental RPC</string>
     <string name="completion_media_author">Hovedforfatter</string>
     <string name="completion_media_album">Albumnavn</string>
     <string name="completion_media_albumArtist">Albumkunstner</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButtonDesc">Tilføj automatisk en klikbar knap (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) når medier afspilles</string>
     <string name="link_toArtistChannel">Link til kunstnerkanal</string>
     <string name="link_toArtistChannel_desc">Knap linker til kunstnerkanal i stedet for sang/video</string>
-    <string name="experimental_rpcTitleToggle">Titel</string>
-    <string name="experimental_rpcTitleToggle_desc">Vis sanginformation i aktivitetstitel i stedet for appnavn</string>
+    <string name="manual_rpc_title_toggle">Titel</string>
+    <string name="manual_rpc_title_toggle_desc">Vis sanginformation i aktivitetstitel i stedet for appnavn</string>
     <string name="title_source_song">Sangtitel</string>
     <string name="title_source_artist">Kunstner</string>
     <string name="type_toInsertVariable">Skriv &apos;{{&apos; for at indsætte en variabel</string>

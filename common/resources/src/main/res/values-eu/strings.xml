@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">Ekintzaren izena</string>
     <string name="activity_details">Ekintzaren xehetasunak</string>
     <string name="activity_state">Ekintzaren egoera</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur irudi-proxy bezala</string>
     <string name="use_imgur_desc">Erabili Imgur irudi-proxy alternatibo bezala.</string>
     <string name="start_appDetection">Hasi aplikazioen detekzioa</string>
-    <string name="start_mediaRPC">Hasi Media RPC</string>
-    <string name="start_ManualRpc">Hasi Experimental RPC</string>
+    <string name="start_media_rpc">Hasi Media RPC</string>
+    <string name="start_manual_rpc">Hasi Experimental RPC</string>
     <string name="stop_rpc">Gelditu RPC</string>
     <string name="stop">Gelditu</string>
     <string name="start_appDetection_toast">Aplikazioen detekzioa hasi da</string>
-    <string name="start_mediaRPC_toast">Media RPC hasi da</string>
-    <string name="start_ManualRpc_toast">Experimental RPC hasi da</string>
+    <string name="start_media_rpc_toast">Media RPC hasi da</string>
+    <string name="start_manual_rpc_toast">Experimental RPC hasi da</string>
     <string name="stop_rpc_toast">Zerbitzu guztiak geldituta</string>
     <string name="show_playback_state">Erakutsi erreprodukzioaren egoera</string>
     <string name="copied_to_clipboard">Arbelera kopiatuta</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Baimendu Experimental RPC-ek exekutatzen ari diren aplikazioak detektatzea</string>
-    <string name="experimental_rpc_detect_media">Baimendu Experimental RPC-ek multimedia erreprodukzioa detektatzea</string>
+    <string name="manual_rpc_detect_apps">Baimendu Experimental RPC-ek exekutatzen ari diren aplikazioak detektatzea</string>
+    <string name="manual_rpc_detect_media">Baimendu Experimental RPC-ek multimedia erreprodukzioa detektatzea</string>
     <string name="app_preferences">Aplikazioaren ezarpenak</string>
     <string name="app_preferences_desc">Aukeratu zein aplikazio gaituta dauden Experimental RPC-rentzat</string>
     <string name="completion_media_title">Kantuaren/bidearen izenburua</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">Detektatutako aplikazioaren izena</string>
     <string name="show_cover_art">Erakutsi estalkia</string>
     <string name="show_cover_art_desc">Erakutsi albumaren estalkia irudi handi gisa</string>
-    <string name="enable_experimental_rpc">Gaitu Experimental RPC</string>
+    <string name="enable_manualRpc">Gaitu Experimental RPC</string>
     <string name="completion_media_author">Egile nagusia</string>
     <string name="completion_media_album">Albumaren izena</string>
     <string name="completion_media_album_artist">Albumaren artista</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Estekatu artistaren kanalera</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Izenburua</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">Izenburua</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">Kantuaren izena</string>
     <string name="title_source_artist">Artista</string>

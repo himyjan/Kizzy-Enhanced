@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy بہتر بنایا ہوا</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- سرگرمیاں -->
     <string name="activity_name">سرگرمی کا نام</string>
@@ -193,13 +193,13 @@
     <string name="use_imgur">Imgur بطور امیج پراکسی</string>
     <string name="use_imgurDesc">ایمThese proxy استعمال کریں۔</string>
     <string name="start_appDetection">ایپ ڈیٹیکشن شروع کریں</string>
-    <string name="start_mediaRpc">میڈیا RPC شروع کریں</string>
-    <string name="start_ManualRpc">ایکسپیرمنٹل RPC شروع کریں</string>
+    <string name="start_media_rpc">میڈیا RPC شروع کریں</string>
+    <string name="start_manual_rpc">ایکسپیرمنٹل RPC شروع کریں</string>
     <string name="stop_rpc">RPC روک دیں</string>
     <string name="stop">روک دیں</string>
     <string name="start_appDetectionToast">ایپ ڈیٹیکشن شروع ہو گیا</string>
-    <string name="start_mediaRpcToast">میڈیا RPC شروع ہو گیا</string>
-    <string name="start_ManualRpcToast">ایکسپیرمنٹل RPC شروع ہو گیا</string>
+    <string name="start_media_rpc_toast">میڈیا RPC شروع ہو گیا</string>
+    <string name="start_manual_rpc_toast">ایکسپیرمنٹل RPC شروع ہو گیا</string>
     <string name="stop_rpcToast">تمام خدمات روک دی گئیں</string>
     <string name="show_playbackState">پلے بیک کا حالت دکھائیں</string>
     <string name="copied_toClipboard">کلپ بورڈ میں کاپی ہو گیا</string>
@@ -215,7 +215,7 @@
     <string name="completion_appName">ایپ کا نام</string>
     <string name="show_coverArt">البم کا کورٹ دکھائیں</string>
     <string name="show_coverArt_desc">البم کا کورٹ بڑی تصویر کے طور پر دکھائیں</string>
-    <string name="enable_ManualRpc">ایکسپیرمنٹل RPC فعال کریں</string>
+    <string name="enable_manualRpc">ایکسپیرمنٹل RPC فعال کریں</string>
     <string name="completion_media_author">مرکزی مصنف</string>
     <string name="completion_media_album">البم کا نام</string>
     <string name="completion_media_albumArtist">البم کلاکار</string>
@@ -230,7 +230,7 @@
     <string name="show_songAsTitle">گیت کو śīrShīqKe جگہ دکھائیں</string>
     <string name="use_youtubeButton">میڈیا بٹن شامل کریں</string>
     <string name="use_youtubeButtonDesc">میڈیا پلے کرتے وقت کلک کی جانے والی بٹن (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) شامل کریں</string>
-    <string name="experimental_rpcTitleToggle">شیرٹہ</string>
+    <string name="manual_rpc_title_toggle">شیرٹہ</string>
     <string name="title_source_song">گیت ka نام</string>
     <string name="title_source_artist">کلر Urdu</string>
     <string name="type_toInsertVariable">ویر ایبل ڈالنے کے لیے &apos;{{&apos; ٹائپ کریں</string>

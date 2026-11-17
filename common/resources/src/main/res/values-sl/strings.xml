@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Advanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Seje -->
     <string name="activity_name">Ime dejavnosti</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Uporabi Imgur kot slikovni strežnik</string>
     <string name="use_imgurDesc">Uporabi Imgur kot alternativni slikovni strežnik.</string>
     <string name="start_appDetection">Začni detekcijo aplikacij</string>
-    <string name="start_mediaRpc">Zaženi Media RPC</string>
-    <string name="start_ManualRpc">Zaženi Experimental RPC</string>
+    <string name="start_media_rpc">Zaženi Media RPC</string>
+    <string name="start_manual_rpc">Zaženi Experimental RPC</string>
     <string name="stop_rpc">Prekini RPC</string>
     <string name="stop">Prekini</string>
     <string name="start_appDetectionToast">Detekcija aplikacij je začeta</string>
-    <string name="start_mediaRpcToast">Media RPC je začet</string>
-    <string name="start_ManualRpcToast">Experimental RPC je začet</string>
+    <string name="start_media_rpc_toast">Media RPC je začet</string>
+    <string name="start_manual_rpc_toast">Experimental RPC je začet</string>
     <string name="stop_rpcToast">Vse storitve so ustavljene</string>
     <string name="show_playbackState">Prikaži stanje predvajanja</string>
     <string name="copied_toClipboard">Kopirano v odložilno mesto</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Prepiše standardni Discord ID aplikacije</string>
     <string name="use_a_vpnDesc">Prijava na Discord možda ne deluje v vaši državi brez VPN/DPI. Uporabite VPN/DPI, da nadaljujete.</string>
     <string name="rpc_templates_note">&quot;Uporabljajte prototipe, kot so &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; itd. Prazna polja bodo uporabljala osnovno obdelavo ali bodo izpuščena.&quot;</string>
-    <string name="experimental_rpc_detectApps">Dovoli Experimental RPC, da zazna tečajoče aplikacije</string>
-    <string name="experimental_rpc_detect_media">Dovoli Experimental RPC, da zazna predvajanje medijev</string>
+    <string name="manual_rpc_detect_apps">Dovoli Experimental RPC, da zazna tečajoče aplikacije</string>
+    <string name="manual_rpc_detect_media">Dovoli Experimental RPC, da zazna predvajanje medijev</string>
     <string name="app_preferences">Nastavitve aplikacij</string>
     <string name="app_preferences_desc">Izberite, kateri aplikaciji so omogočeni za Experimental RPC</string>
     <string name="completion_media_title">Naziv pesni/videja</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Zaznano ime aplikacije</string>
     <string name="show_coverArt">Prikaži albumsko sliko</string>
     <string name="show_coverArt_desc">Prikaži albuma sliko kot veliko sliko</string>
-    <string name="enable_ManualRpc">Omogoči Experimental RPC</string>
+    <string name="enable_manualRpc">Omogoči Experimental RPC</string>
     <string name="completion_media_author">Glavni avtor</string>
     <string name="completion_media_album">Naziv albuma</string>
     <string name="completion_media_albumArtist">Avtor albuma</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButtonDesc">Samodejno doda klikljivi gumbe (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) med predvajanjem medijev</string>
     <string name="link_toArtistChannel">Povezi s umetniškim kanalom</string>
     <string name="link_toArtistChannel_desc">Povodi povezavo do umetniškega kanala, ne glede na pesnjo/video</string>
-    <string name="experimental_rpcTitleToggle">Naslov</string>
-    <string name="experimental_rpcTitleToggle_desc">Pokaži pesniško informacijo v naslovu aktivnosti namesto imena aplikacije</string>
+    <string name="manual_rpc_title_toggle">Naslov</string>
+    <string name="manual_rpc_title_toggle_desc">Pokaži pesniško informacijo v naslovu aktivnosti namesto imena aplikacije</string>
     <string name="title_source_song">Ime pesme</string>
     <string name="title_source_artist">Avtor</string>
     <string name="type_to_insert_variable">Vpišite &apos;{{&apos; da vstavi spremenljivko</string>

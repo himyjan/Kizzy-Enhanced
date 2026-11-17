@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- মিডিয়া সেশন -->
     <string name="activity_name">অ্যাক্টিভিটির নাম</string>
@@ -188,13 +188,13 @@
     <string name="use_imgur">ইমুওয়ারchaası ব্যবহার করুন</string>
     <string name="use_imgur_desc">বিকল্প ইমেজ প্রক্সি হিসেবে Imgur ব্যবহার করুন।</string>
     <string name="start_appDetection">অ্যাপ ডিটেকশন চালু করুন</string>
-    <string name="start_mediaRpc">মিডিয়া আরপিসি শুরু করুন</string>
-    <string name="start_ManualRpc">এক্সপেরিমেন্টাল আরপিসি শুরু করুন</string>
+    <string name="start_media_rpc">মিডিয়া আরপিসি শুরু করুন</string>
+    <string name="start_manual_rpc">এক্সপেরিমেন্টাল আরপিসি শুরু করুন</string>
     <string name="stop_rpc">RPC বন্ধ করুন</string>
     <string name="stop">বন্ধ করুন</string>
     <string name="start_appDetectionToast">অ্যাপ ডিটেকশন শুরু হয়েছে</string>
-    <string name="start_mediaRpcToast">মিডিয়া আরপিসি শুরু হয়েছে</string>
-    <string name="start_ManualRpcToast">এক্সপেরিমেন্টাল আরপিসি শুরু হয়েছে</string>
+    <string name="start_media_rpc_toast">মিডিয়া আরপিসি শুরু হয়েছে</string>
+    <string name="start_manual_rpc_toast">এক্সপেরিমেন্টাল আরপিসি শুরু হয়েছে</string>
     <string name="stop_rpcToast">সব সার্ভিস বন্ধ করা হলো</string>
     <string name="show_playbackState">প্লেব্যাক স্টেটস শো করুন</string>
     <string name="copied_to_clipboard">ক্লিপবোর্ডে কপি করা হয়েছে</string>
@@ -203,8 +203,8 @@
     <string name="custom_application_id_desc">ডিফল্ট ডিসকর্ড আইডি পরিবর্তন করুন</string>
     <string name="use_a_vpn_desc">ডিস্কর্ড লগিন আপনার দেশে নাও work করতে পারে। নম্বরসা ব্যবহার করুন</string>
     <string name="rpc_templates_note">&quot;টেমপ্লেট ব্যবহার করুন যেমন &quot;{app_name}}apos;apos;, &apos;{{&apos;media_title}}apos;apos; ইত্যাদি। খালি ফিল্ডকে ডিফল্টভাবে গোপন করা হবে।&quot;</string>
-    <string name="experimental_rpc_detect_apps">এক্সপেরিমেন্টাল RPC-কে চলমান অ্যাপ্লিকেশন খুঁজে বের করার অনুমতি দিন</string>
-    <string name="experimental_rpc_detect_media">এক্সপেরিমেন্টাল RPC-কে মিডিয়া প্লেব্যাক শনাক্ত করতে দিন</string>
+    <string name="manual_rpc_detect_apps">এক্সপেরিমেন্টাল RPC-কে চলমান অ্যাপ্লিকেশন খুঁজে বের করার অনুমতি দিন</string>
+    <string name="manual_rpc_detect_media">এক্সপেরিমেন্টাল RPC-কে মিডিয়া প্লেব্যাক শনাক্ত করতে দিন</string>
     <string name="app_preferences">অ্যাপ পছন্দ</string>
     <string name="app_preferences_desc">Experimental RPC-এর জন্য কোন অ্যাপগুলো সক্রিয় রাখবেন তা নির্বাচন করুন</string>
     <string name="completion_media_title">গান / ভিডিও টাইটেল</string>
@@ -212,7 +212,7 @@
     <string name="completion_app_name">নাম Sussex</string>
     <string name="show_cover_art">অ্যালবামের কভার শো করুন</string>
     <string name="show_cover_art_desc">আলবাম কভার বড় ছবি হিসেবে দেখান</string>
-    <string name="enable_experimental_rpc">Experimental RPC সক্রিয় করুন</string>
+    <string name="enable_manualRpc">Experimental RPC সক্রিয় করুন</string>
     <string name="completion_media_author">প্রধান লেখক</string>
     <string name="completion_media_album">অলবামের নাম</string>
     <string name="completion_media_album_artist">অ্যালবাম শিল্পী</string>
@@ -229,8 +229,8 @@
     <string name="use_youtubeButtonDesc">YouTube বোতাম ব্যবহারের বিবরণ</string>
     <string name="link_to_artist_channel">শিল্পীর চ্যানেলে লিঙ্ক</string>
     <string name="link_to_artist_channel_desc">চলতে থাকা মিডিয়ার শিল্পীর দিকে যায় এমন একটি অতিরিক্ত বোতাম যোগ করে</string>
-    <string name="experimental_rpc_title_toggle">শিরোনাম</string>
-    <string name="experimental_rpc_title_toggle_desc">গান টাইটেলে বাঁজন গান টাইটেল দিবে</string>
+    <string name="manual_rpc_title_toggle">শিরোনাম</string>
+    <string name="manual_rpc_title_toggle_desc">গান টাইটেলে বাঁজন গান টাইটেল দিবে</string>
     <string name="title_source_song">গানের নাম</string>
     <string name="title_source_artist">শিল্পী</string>
     <string name="type_to_insert_variable">একটি ভ্যারিয়েবল ঢোকাতে &amp;apos;{{&amp;apos; টাইপ করুন</string>

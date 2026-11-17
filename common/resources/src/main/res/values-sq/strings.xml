@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">Emri i aktivitetit</string>
     <string name="activity_details">Detajet e aktivitetit</string>
     <string name="activity_state">Gjendja e aktivitetit</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur si proxy për imazhet</string>
     <string name="use_imgur_desc">Përdor Imgur si proxy alternativ për imazhet.</string>
     <string name="start_appDetection">Nis zbulimin e aplikacioneve</string>
-    <string name="start_mediaRPC">Nis Media RPC</string>
-    <string name="start_ManualRpc">Nis Experimental RPC</string>
+    <string name="start_media_rpc">Nis Media RPC</string>
+    <string name="start_manual_rpc">Nis Experimental RPC</string>
     <string name="stop_rpc">Ndalo RPC</string>
     <string name="stop">Ndalo</string>
     <string name="start_appDetection_toast">Zbulimi i aplikacioneve filloi</string>
-    <string name="start_mediaRPC_toast">Media RPC filloi</string>
-    <string name="start_ManualRpc_toast">Experimental RPC filloi</string>
+    <string name="start_media_rpc_toast">Media RPC filloi</string>
+    <string name="start_manual_rpc_toast">Experimental RPC filloi</string>
     <string name="stop_rpc_toast">Të gjitha shërbimet u ndaluan</string>
     <string name="show_playback_state">Shfaq gjendjen e luajtjes</string>
     <string name="copied_to_clipboard">Kopjuar në clipboard</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Lejo Experimental RPC të zbulojë aplikacionet në ekzekutim</string>
-    <string name="experimental_rpc_detect_media">Lejo Experimental RPC të zbulojë luajtjen e medias</string>
+    <string name="manual_rpc_detect_apps">Lejo Experimental RPC të zbulojë aplikacionet në ekzekutim</string>
+    <string name="manual_rpc_detect_media">Lejo Experimental RPC të zbulojë luajtjen e medias</string>
     <string name="app_preferences">Preferencat e aplikacionit</string>
     <string name="app_preferences_desc">Zgjidhni cilat aplikacione të aktivizohen për Experimental RPC</string>
     <string name="completion_media_title">Titulli i këngës/video</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">Emri i aplikacionit të detektuar</string>
     <string name="show_cover_art">Shfaq kopertinën</string>
     <string name="show_cover_art_desc">Shfaq kopertinën e albumit si imazh të madh</string>
-    <string name="enable_experimental_rpc">Aktivizo Experimental RPC</string>
+    <string name="enable_manualRpc">Aktivizo Experimental RPC</string>
     <string name="completion_media_author">Autori kryesor</string>
     <string name="completion_media_album">Emri i albumit</string>
     <string name="completion_media_album_artist">Artisti i albumit</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Lidhje te kanali i artistit</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Titulli</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">Titulli</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">Emri i këngës</string>
     <string name="title_source_artist">Artisti</string>

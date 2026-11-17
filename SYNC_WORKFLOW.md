@@ -114,7 +114,7 @@ Useful upstream commits to consider:
 | Commit | Fix |
 |--------|-----|
 | `583c4eca` | fix: logout clearing the whole app data via `pm clear` |
-| `a054ae9b` | fix: experimental rpc not forwarding type |
+| `a054ae9b` | fix: manual rpc not forwarding type |
 | `e9bbfaa3` | fix: timezone offset issue in custom RPC timestamp picker |
 | `78c613c9` | fix: comply with fgs type on versions above `33` |
 | `67503ca4` | fix: JSON parsing memory issue |

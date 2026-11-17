@@ -95,7 +95,7 @@ class ManualRpcViewmodel @Inject constructor(
     }
 
     /**
-     * Restarts the Experimental RPC service (if running) so settings that are only
+     * Restarts the Manual RPC service (if running) so settings that are only
      * read on service start — the spoofed platform and RPC buttons — apply live
      * without the user having to toggle the service off and on manually.
      */

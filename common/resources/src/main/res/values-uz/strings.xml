@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">Faoliyat nomi</string>
     <string name="activity_details">Faoliyat tafsilotlari</string>
     <string name="activity_state">Faoliyat holati</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur rasm proksi sifatida</string>
     <string name="use_imgur_desc">Imgur\'dan muqobil rasm proksi sifatida foydalaning.</string>
     <string name="start_appDetection">Ilova aniqlashni boshlash</string>
-    <string name="start_mediaRPC">Media RPC boshlash</string>
-    <string name="start_ManualRpc">Experimental RPC boshlash</string>
+    <string name="start_media_rpc">Media RPC boshlash</string>
+    <string name="start_manual_rpc">Experimental RPC boshlash</string>
     <string name="stop_rpc">RPC to\'xtatish</string>
     <string name="stop">To\'xtatish</string>
     <string name="start_appDetection_toast">Ilova aniqlash boshlandi</string>
-    <string name="start_mediaRPC_toast">Media RPC boshlandi</string>
-    <string name="start_ManualRpc_toast">Experimental RPC boshlandi</string>
+    <string name="start_media_rpc_toast">Media RPC boshlandi</string>
+    <string name="start_manual_rpc_toast">Experimental RPC boshlandi</string>
     <string name="stop_rpc_toast">Barcha xizmatlar to\'xtatildi</string>
     <string name="show_playback_state">Ijro holatini ko\'rsatish</string>
     <string name="copied_to_clipboard">Buferga nusxalandi</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Experimental RPC ishlayotgan ilovalarni aniqlashga ruxsat bering</string>
-    <string name="experimental_rpc_detect_media">Experimental RPC media ijrosini aniqlashga ruxsat bering</string>
+    <string name="manual_rpc_detect_apps">Experimental RPC ishlayotgan ilovalarni aniqlashga ruxsat bering</string>
+    <string name="manual_rpc_detect_media">Experimental RPC media ijrosini aniqlashga ruxsat bering</string>
     <string name="app_preferences">Ilova sozlamalari</string>
     <string name="app_preferences_desc">Experimental RPC uchun qaysi ilovalar yoqilganini tanlang</string>
     <string name="completion_media_title">Qo\'shiq/video nomi</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">Aniqlangan ilova nomi</string>
     <string name="show_cover_art">Muqova ko\'rsatish</string>
     <string name="show_cover_art_desc">Albom muqovasini katta rasm sifatida ko\'rsatish</string>
-    <string name="enable_experimental_rpc">Experimental RPC yoqish</string>
+    <string name="enable_manualRpc">Experimental RPC yoqish</string>
     <string name="completion_media_author">Asosiy muallif</string>
     <string name="completion_media_album">Albom nomi</string>
     <string name="completion_media_album_artist">Albom ijrochisi</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Ijrochi kanaliga havola</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Sarlavha</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">Sarlavha</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">Qo\'shiq nomi</string>
     <string name="title_source_artist">Ijrochi</string>

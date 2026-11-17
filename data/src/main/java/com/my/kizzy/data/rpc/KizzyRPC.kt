@@ -591,7 +591,7 @@ class KizzyRPC @Inject constructor(
      * The large/small image urls that were resolved for the presence sent last.
      *
      * The RPC preview needs them to show the same cover art as Discord. A caller
-     * that builds its own preview config (Experimental RPC) would otherwise have
+     * that builds its own preview config (Manual RPC) would otherwise have
      * to upload the artwork a second time.
      */
     fun currentImageUrls(): Pair<String?, String?> =
@@ -799,6 +799,11 @@ class KizzyRPC @Inject constructor(
         if (!discordWebSocket.isWebSocketConnected()) {
             discordWebSocket.connect()
             markConnected()
+            // Wait for WebSocket to connect before sending presence
+            val start = System.currentTimeMillis()
+            while (!discordWebSocket.isWebSocketConnected() && System.currentTimeMillis() - start < 15000) {
+                delay(500)
+            }
         }
         discordWebSocket.sendActivity(presence)
     }
@@ -824,7 +829,7 @@ class KizzyRPC @Inject constructor(
         //
         // Refresh the token and identify properties from prefs before connecting,
         // so a login that happened after DI takes effect even when build() was
-        // never called (e.g. Media RPC running without Experimental RPC).
+        // never called (e.g. Media RPC running without Manual RPC).
         refreshFromPrefs()
 
         if (!isUserTokenValid()) {

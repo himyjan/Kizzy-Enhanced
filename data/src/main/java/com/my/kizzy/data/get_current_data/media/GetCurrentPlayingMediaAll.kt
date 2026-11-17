@@ -66,7 +66,7 @@ class GetCurrentPlayingMediaAll @Inject constructor(
         val skipped = mutableListOf<String>()
 
         for (mediaController in sorted) {
-            // Respect the app selections. The Experimental RPC list is the explicit
+            // Respect the app selections. The Manual RPC list is the explicit
             // user selection; the Media RPC list allows every app until the user edits it.
             // An app is broadcast when it is enabled in EITHER list.
             val isEnabled = Prefs.isExperimentalAppEnabled(mediaController.packageName) ||

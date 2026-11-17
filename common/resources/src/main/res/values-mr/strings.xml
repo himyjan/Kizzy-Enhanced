@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy अधिक</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- क्रियाकलाप -->
     <string name="activity_name">क्रियाकलापाचे नाव</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">इम्युअर प्रतिमा प्रॉक्सीसारखा वापरा</string>
     <string name="use_imgurDesc">इम्युअर पर्यायी प्रतिमा प्रॉक्सीसारखा वापरा.</string>
     <string name="start_appDetection">ऍप डिटेक्शन सुरू करा</string>
-    <string name="start_mediaRpc">मीडिया RPC सुरू करा</string>
-    <string name="start_ManualRpc">एक्सपेरिमेंटल RPC सुरू करा</string>
+    <string name="start_media_rpc">मीडिया RPC सुरू करा</string>
+    <string name="start_manual_rpc">एक्सपेरिमेंटल RPC सुरू करा</string>
     <string name="stop_rpc">RPC थांबवा</string>
     <string name="stop">थांबवा</string>
     <string name="start_appDetectionToast">ऍप डिटेक्शन सुरू झाले</string>
-    <string name="start_mediaRpcToast">मीडिया RPC सुरू झाले</string>
-    <string name="start_ManualRpcToast">एक्सपेरिमेंटल RPC सुरू झाले</string>
+    <string name="start_media_rpc_toast">मीडिया RPC सुरू झाले</string>
+    <string name="start_manual_rpc_toast">एक्सपेरिमेंटल RPC सुरू झाले</string>
     <string name="stop_rpcToast">सर्व्हिसेस थांबवले</string>
     <string name="show_playbackState">प्लेबॅक अवस्था दाखवा</string>
     <string name="copied_toClipboard">क्लिपबोर्डला कॉपी केले</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_idDesc">डिफॉल्ट डिस्कॉर्ड ऍप्लिकेशन आयडी ओव्हरराईड करतो</string>
     <string name="use_a_vpnDesc">डिस्कॉर्ड लॉगिन तुमच्या देशात VPN/DPI विना चालत नाही. कृपया VPN/DPI वापरा.</string>
     <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; अशा पॅटर्न्स वापरा. रिक्त फील्ड्स डिफॉल्ट वर्तन वापरतील किंवा वगळतील.&quot;</string>
-    <string name="experimental_rpc_detectApps">एक्सपेरिमेंटल RPC ला चालू असलेले ऍप्स डिटेक्ट करू द्या</string>
-    <string name="experimental_rpc_detectMedia">एक्सपेरिमेंटल RPC ला मीडिया प्लेबॅक डिटेक्ट करू द्या</string>
+    <string name="manual_rpc_detect_apps">एक्सपेरिमेंटल RPC ला चालू असलेले ऍप्स डिटेक्ट करू द्या</string>
+    <string name="manual_rpc_detect_media">एक्सपेरिमेंटल RPC ला मीडिया प्लेबॅक डिटेक्ट करू द्या</string>
     <string name="app_preferences">ऍप प्रेफरेंसेस</string>
     <string name="app_preferencesDesc">एक्सपेरिमेंटल RPC साठी कोणते ऍप एनेबल आहेत ते निवडा</string>
     <string name="completion_media_title">गीत/व्हिडिओ नाव</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">डिटेक्ट केलेले ऍप नाव</string>
     <string name="show_coverArt">ऑल्बम कव्हर दाखवा</string>
     <string name="show_coverArtDesc">ऑल्बम कव्हर मोठ्या प्रतिमेमार्फत दाखवा</string>
-    <string name="enable_ManualRpc">एक्सपेरिमेंटल RPC सक्षम करा</string>
+    <string name="enable_manualRpc">एक्सपेरिमेंटल RPC सक्षम करा</string>
     <string name="completion_media_author">मुख्य लेखक</string>
     <string name="completion_media_album">ऑल्बमचे नाव</string>
     <string name="completion_media_albumArtist">ऑल्बम कलाकार</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButtonDesc">मीडिया प्ले करतांना क्लिक करण्यायोग्य बटण (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) जोडा</string>
     <string name="link_toArtistChannel">गायक चॅनेलसाठी लिंक</string>
     <string name="link_toArtistChannelDesc">बटण गाण्याऐवजी गायक चॅनेलला लिंक करेल</string>
-    <string name="experimental_rpcTitleToggle">शीर्षक</string>
-    <string name="experimental_rpcTitleToggleDesc">ऍप नावाच्या ऐवजी क्रियाकलाप शिरष्ठकात गाण्याची माहिती दाखवा</string>
+    <string name="manual_rpc_title_toggle">शीर्षक</string>
+    <string name="manual_rpc_title_toggle_desc">ऍप नावाच्या ऐवजी क्रियाकलाप शिरष्ठकात गाण्याची माहिती दाखवा</string>
     <string name="title_source_song">गीत नाव</string>
     <string name="title_source_artist">कलाकार</string>
     <string name="type_toInsertVariable">व्हेरिएबल घालवण्यासाठी &apos;{{&apos; टाईप करा</string>

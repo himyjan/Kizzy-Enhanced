@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Aktivitäten -->
     <string name="activity_name">Aktivitätsname</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Imgur als Bildproxy verwenden</string>
     <string name="use_imgurDesc">Imgur als alternativen Bildproxyserver verwenden.</string>
     <string name="start_appDetection">App-Erkennung starten</string>
-    <string name="start_mediaRpc">Media RPC starten</string>
-    <string name="start_ManualRpc">Experimental RPC starten</string>
+    <string name="start_media_rpc">Media RPC starten</string>
+    <string name="start_manual_rpc">Experimental RPC starten</string>
     <string name="stop_rpc">RPC stoppen</string>
     <string name="stop">Stoppen</string>
     <string name="start_appDetectionToast">App-Erkennung gestartet</string>
-    <string name="start_mediaRpcToast">Media RPC gestartet</string>
-    <string name="start_ManualRpcToast">Experimental RPC gestartet</string>
+    <string name="start_media_rpc_toast">Media RPC gestartet</string>
+    <string name="start_manual_rpc_toast">Experimental RPC gestartet</string>
     <string name="stop_rpcToast">Alle Dienste gestoppt</string>
     <string name="show_playbackState">Wiedergabestatus anzeigen</string>
     <string name="copied_toClipboard">In die Zwischenablage kopiert</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Überschreibt die Standard-Discord-Anwendungs-ID</string>
     <string name="use_a_vpnDesc">Der Discord-Login funktioniert möglicherweise nicht in Ihrem Land ohne VPN/DPI. Bitte verwenden Sie ein VPN/DPI, um fortzufahren.</string>
     <string name="rpc_templates_note">&quot;Verwenden Sie Platzhalter wie &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; usw. Leere Felder verwenden das Standardverhalten oder werden ausgelassen.&quot;</string>
-    <string name="experimental_rpc_detectApps">Erlaube Experimental RPC, laufende Apps zu erkennen</string>
-    <string name="experimental_rpc_detectMedia">Erlaube Experimental RPC, Medienwiedergabe zu erkennen</string>
+    <string name="manual_rpc_detect_apps">Erlaube Experimental RPC, laufende Apps zu erkennen</string>
+    <string name="manual_rpc_detect_media">Erlaube Experimental RPC, Medienwiedergabe zu erkennen</string>
     <string name="app_preferences">App-Einstellungen</string>
     <string name="app_preferences_desc">Wählen Sie, welche Apps für Experimental RPC aktiviert sind</string>
     <string name="completion_media_title">Liedtitel</string>
@@ -218,7 +218,7 @@
     <string name="completion_app_name">Erkannter App-Name</string>
     <string name="show_cover_art">Albumcover anzeigen</string>
     <string name="show_cover_art_desc">Albumcover als großes Bild anzeigen</string>
-    <string name="enable_ManualRpc">Experimental RPC aktivieren</string>
+    <string name="enable_manualRpc">Experimental RPC aktivieren</string>
     <string name="completion_media_author">Hauptautor</string>
     <string name="completion_media_album">Albumname</string>
     <string name="completion_media_albumArtist">Albumkünstler</string>
@@ -235,8 +235,8 @@
     <string name="use_youtube_button_desc">Automatisch einen klickbaren Button (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) beim Abspielen von Medien hinzufügen</string>
     <string name="link_to_artist_channel">Link zum Künstlerkanal</string>
     <string name="link_to_artist_channel_desc">Die Schaltfläche verlinkt zum Künstlertitelkanal anstatt zum Track/Videoclip</string>
-    <string name="experimental_rpc_title_toggle">Titel</string>
-    <string name="experimental_rpc_title_toggle_desc">Liedinformationen im Aktivitätstitel anstelle des App-Namens anzeigen</string>
+    <string name="manual_rpc_title_toggle">Titel</string>
+    <string name="manual_rpc_title_toggle_desc">Liedinformationen im Aktivitätstitel anstelle des App-Namens anzeigen</string>
     <string name="title_source_song">Songtitel</string>
     <string name="title_source_artist">Künstler</string>
     <string name="type_to_insert_variable">Geben Sie &apos;{{&apos; ein um eine Variable einzufügen</string>

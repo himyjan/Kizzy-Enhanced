@@ -1986,7 +1986,7 @@
             "id": 79,
             "class_reference_id": 151,
             "type_reference_id": 196,
-            "name": "ManualRpcViewmodelProvider"
+            "name": "experimentalRpcViewmodelProvider"
         },
         {
             "id": 80,

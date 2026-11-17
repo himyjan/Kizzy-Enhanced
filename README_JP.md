@@ -55,7 +55,7 @@
 
 ## このフォークの新機能
 
-すべての追加機能は **Experimental RPC** 画面とホーム画面にあります。
+すべての追加機能は **Manual RPC** 画面とホーム画面にあります。
 
 ### ⭐ プラットフォームスプーファー
 - プレゼンスの接続プラットフォームを選択 — **Desktop, Web, Android, iOS, Xbox, Playstation, VR**（Equicord の platformSpoofer で使用されるプラットフォームから移植）。
@@ -78,7 +78,7 @@
 
 ### ⭐ ホーム画面リデザイン
 - 機能カードがフル幅の垂直スタックになりました。
-- **すべてのカードにオン/オフトグルスイッチ** — Media / Custom / Experimental RPC をホーム画面から直接開始・停止可能。
+- **すべてのカードにオン/オフトグルスイッチ** — Media / Custom / Manual RPC をホーム画面から直接開始・停止可能。
 
 ### ⭐ ゲートウェイの耐久性（[YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy) から移植）
 - 予期しない切断時の指数バックオフによる自動再接続。

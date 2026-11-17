@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">Nume activitate</string>
     <string name="activity_details">Detalii activitate</string>
     <string name="activity_state">Stare activitate</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur ca proxy de imagini</string>
     <string name="use_imgur_desc">Folosește Imgur ca proxy alternativ de imagini.</string>
     <string name="start_appDetection">Pornește detectarea aplicațiilor</string>
-    <string name="start_mediaRPC">Pornește Media RPC</string>
-    <string name="start_ManualRpc">Pornește Experimental RPC</string>
+    <string name="start_media_rpc">Pornește Media RPC</string>
+    <string name="start_manual_rpc">Pornește Experimental RPC</string>
     <string name="stop_rpc">Oprește RPC</string>
     <string name="stop">Oprește</string>
     <string name="start_appDetection_toast">Detectarea aplicațiilor a început</string>
-    <string name="start_mediaRPC_toast">Media RPC a început</string>
-    <string name="start_ManualRpc_toast">Experimental RPC a început</string>
+    <string name="start_media_rpc_toast">Media RPC a început</string>
+    <string name="start_manual_rpc_toast">Experimental RPC a început</string>
     <string name="stop_rpc_toast">Toate serviciile au fost oprite</string>
     <string name="show_playback_state">Afișează starea redării</string>
     <string name="copied_to_clipboard">Copiat în clipboard</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Permiteți Experimental RPC să detecteze aplicațiile în execuție</string>
-    <string name="experimental_rpc_detect_media">Permiteți Experimental RPC să detecteze redarea media</string>
+    <string name="manual_rpc_detect_apps">Permiteți Experimental RPC să detecteze aplicațiile în execuție</string>
+    <string name="manual_rpc_detect_media">Permiteți Experimental RPC să detecteze redarea media</string>
     <string name="app_preferences">Preferințe aplicație</string>
     <string name="app_preferences_desc">Alegeți ce aplicații sunt activate pentru Experimental RPC</string>
     <string name="completion_media_title">Titlu piese/video</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">Nume aplicație detectată</string>
     <string name="show_cover_art">Afișează coperta</string>
     <string name="show_cover_art_desc">Afișează coperta albumului ca imagine mare</string>
-    <string name="enable_experimental_rpc">Activează Experimental RPC</string>
+    <string name="enable_manualRpc">Activează Experimental RPC</string>
     <string name="completion_media_author">Autor principal</string>
     <string name="completion_media_album">Nume album</string>
     <string name="completion_media_album_artist">Artist album</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link către canalul artistului</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Titlu</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">Titlu</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">Numele piesei</string>
     <string name="title_source_artist">Artist</string>

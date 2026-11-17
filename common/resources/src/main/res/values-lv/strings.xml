@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Augstināts</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Aktivitātes -->
     <string name="activity_name">Aktivitātes nosaukums</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Lieto Imgur kā attēla proxy</string>
     <string name="use_imgurDesc">Lieto Imgur kā alternatīvo attēla proxy.</string>
     <string name="start_appDetection">Sākt lietotņu atklāšanu</string>
-    <string name="start_mediaRpc">Sākt Media RPC</string>
-    <string name="start_ManualRpc">Sākt Experimental RPC</string>
+    <string name="start_media_rpc">Sākt Media RPC</string>
+    <string name="start_manual_rpc">Sākt Experimental RPC</string>
     <string name="stop_rpc">Noliet RPC</string>
     <string name="stop">Noliet</string>
     <string name="start_appDetectionToast">Lietotņu atklāšana sāksies</string>
-    <string name="start_mediaRpcToast">Media RPC saņemt</string>
-    <string name="start_ManualRpcToast">Experimental RPC saņemt</string>
+    <string name="start_media_rpc_toast">Media RPC saņemt</string>
+    <string name="start_manual_rpc_toast">Experimental RPC saņemt</string>
     <string name="stop_rpcToast">Visas pakalpojumi uzrakstīti</string>
     <string name="show_playbackState">Rāda atskaite attieksmes stāvokli</string>
     <string name="copied_toClipboard">Kopēts lietotāja datu pāli</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Izmanto standarta discordu ID</string>
     <string name="use_a_vpnDesc">Discord pieslēgšanai nepieciešams VPN/DPI lietot šai valstī. Izmanto VPN/DPI turpmākai darbībai.</string>
     <string name="rpc_templates_note">&quot;Izmanto tekstu un kods cilvēkiem. Tukšiem ievades laukiem tiks parādīts standarta rezultāts vai tiks izslēgts.&quot;</string>
-    <string name="experimental_rpc_detectApps">Pieļauj Experimental RPC noteikt programmās</string>
-    <string name="experimental_rpc_detectMedia">Pielieto Media atpazīšanu Experimental RPC</string>
+    <string name="manual_rpc_detect_apps">Pieļauj Experimental RPC noteikt programmās</string>
+    <string name="manual_rpc_detect_media">Pielieto Media atpazīšanu Experimental RPC</string>
     <string name="app_preferences">Lietotāja iestatījumi</string>
     <string name="app_preferences_desc">Izvēlēties lietotnes, kuriem ir iespējots Experimental RPC</string>
     <string name="completion_media_title">Speletajā dziesma/videoklīps</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Atrastais programmas nosaukums</string>
     <string name="show_coverArt">Rādīdzināts albuma attēls</string>
     <string name="show_coverArt_desc">Rādīt albumu un visu detaļu</string>
-    <string name="enable_ManualRpc">Iespējot Experimental RPC</string>
+    <string name="enable_manualRpc">Iespējot Experimental RPC</string>
     <string name="completion_media_author">Mūzikas veidātājs</string>
     <string name="completion_media_album">Albuma nosaukums</string>
     <string name="completion_media_albumArtist">Albuma kalpi</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButtonDesc">Pievieno automatiski klikšatama pogu (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) mediali</string>
     <string name="link_toArtistChannel">Saite uz kaliedžiem</string>
     <string name="link_toArtistChannel_desc">Poga saistīti ar dziesmēm un videoklipiem</string>
-    <string name="experimental_rpcTitleToggle">Nosaukums</string>
-    <string name="experimental_rpcTitleToggle_desc">Rādījumi aktivitātes nosaukumā, taču neprogrammas nosaukā</string>
+    <string name="manual_rpc_title_toggle">Nosaukums</string>
+    <string name="manual_rpc_title_toggle_desc">Rādījumi aktivitātes nosaukumā, taču neprogrammas nosaukā</string>
     <string name="title_source_song">Dzesmas nosaukums</string>
     <string name="title_source_artist">Mūzikas veidotājs</string>
     <string name="type_toInsertVariable">Ieraksti apos;{ctapos; piemēram, lai pievienotu vērtību</string>

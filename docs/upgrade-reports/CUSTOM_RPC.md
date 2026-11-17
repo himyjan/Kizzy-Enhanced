@@ -38,7 +38,7 @@ A fully configurable, user-defined Rich Presence builder. Users compose their ow
 
 ## UX notes
 
-- Enabling Custom RPC stops Media, Apps, and Experimental RPC services first (mutual exclusion).
+- Enabling Custom RPC stops Media, Apps, and Manual RPC services first (mutual exclusion).
 - The toggle reflects `AppUtils.customRpcRunning()`.
 - Last-run config is persisted to `Prefs.LAST_RUN_CUSTOM_RPC` and can be reapplied in RPC Settings (`APPLY_FIELDS_FROM_LAST_RUN_RPC`).
 - Config persistence directory is configurable in RPC Settings (`APP_DIRECTORY` or `DOWNLOADS_DIRECTORY`).

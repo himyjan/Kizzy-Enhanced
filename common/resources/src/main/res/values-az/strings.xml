@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">Fəaliyyət adı</string>
     <string name="activity_details">Fəaliyyət detalları</string>
     <string name="activity_state">Fəaliyyət vəziyyəti</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Şəkil proksi kimi Imgur</string>
     <string name="use_imgur_desc">Əlavə şəkil proksi kimi Imgur-dan istifadə et.</string>
     <string name="start_appDetection">Tətbiq aşkarlanmasını başlat</string>
-    <string name="start_mediaRPC">Media RPC-ni başlat</string>
-    <string name="start_ManualRpc">Experimental RPC-ni başlat</string>
+    <string name="start_media_rpc">Media RPC-ni başlat</string>
+    <string name="start_manual_rpc">Experimental RPC-ni başlat</string>
     <string name="stop_rpc">RPC-ni dayandır</string>
     <string name="stop">Dayandır</string>
     <string name="start_appDetection_toast">Tətbiq aşkarlanması başladı</string>
-    <string name="start_mediaRPC_toast">Media RPC başladı</string>
-    <string name="start_ManualRpc_toast">Experimental RPC başladı</string>
+    <string name="start_media_rpc_toast">Media RPC başladı</string>
+    <string name="start_manual_rpc_toast">Experimental RPC başladı</string>
     <string name="stop_rpc_toast">Bütün xidmətlər dayandırıldı</string>
     <string name="show_playback_state">Oxıma vəziyyətini göstər</string>
     <string name="copied_to_clipboard">Buferə kopyalandı</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Experimental RPC-yə işləyən tətbiqləri aşkarlamağa icazə ver</string>
-    <string name="experimental_rpc_detect_media">Experimental RPC-yə media oxunuşu aşkarlamağa icazə ver</string>
+    <string name="manual_rpc_detect_apps">Experimental RPC-yə işləyən tətbiqləri aşkarlamağa icazə ver</string>
+    <string name="manual_rpc_detect_media">Experimental RPC-yə media oxunuşu aşkarlamağa icazə ver</string>
     <string name="app_preferences">Tətbiq parametrləri</string>
     <string name="app_preferences_desc">Experimental RPC üçün hansı tətbiqlərin aktiv olacağını seçin</string>
     <string name="completion_media_title">Mahnı/Video başlığı</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">Aşkarlanan tətbiq adı</string>
     <string name="show_cover_art">Kapak şəklini göstər</string>
     <string name="show_cover_art_desc">Albom qapağını böyük şəkil kimi göstər</string>
-    <string name="enable_experimental_rpc">Experimental RPC-ni aktivləşdir</string>
+    <string name="enable_manualRpc">Experimental RPC-ni aktivləşdir</string>
     <string name="completion_media_author">Baş müəllif</string>
     <string name="completion_media_album">Albom adı</string>
     <string name="completion_media_album_artist">Albüm ifaçısı</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">İfaçı kanalına keçid</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Başlıq</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">Başlıq</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">Mahnı adı</string>
     <string name="title_source_artist">İfaçı</string>

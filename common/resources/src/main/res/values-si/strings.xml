@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">ක්‍රියාවලිය නම</string>
     <string name="activity_details">ක්‍රියාවලිය විස්තර</string>
     <string name="activity_state">ක්‍රියාවලිය තත්ත්ව</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">රූප ප්‍රක්සි ලෙස Imgur</string>
     <string name="use_imgur_desc">අන්තර්ජෙට් රූප ප්‍රක්සි ලෙස Imgur භාවිත කරන්න.</string>
     <string name="start_appDetection">යෙදු අනන්තරය ආරමතු කිරීම</string>
-    <string name="start_mediaRPC">Media RPC ආරමතු කිරීම</string>
-    <string name="start_ManualRpc">Experimental RPC ආරමතු කිරීම</string>
+    <string name="start_media_rpc">Media RPC ආරමතු කිරීම</string>
+    <string name="start_manual_rpc">Experimental RPC ආරමතු කිරීම</string>
     <string name="stop_rpc">RPC නවත්වන්න</string>
     <string name="stop">නවත්වන්න</string>
     <string name="start_appDetection_toast">යෙදු අනන්තරය ආරමතු විය</string>
-    <string name="start_mediaRPC_toast">Media RPC ආරමතු විය</string>
-    <string name="start_ManualRpc_toast">Experimental RPC ආරමතු විය</string>
+    <string name="start_media_rpc_toast">Media RPC ආරමතු විය</string>
+    <string name="start_manual_rpc_toast">Experimental RPC ආරමතු විය</string>
     <string name="stop_rpc_toast">සියලුම සේවා නවත්වා ඇත</string>
     <string name="show_playback_state">ප්ලේ බැලීමේ තත්ත්ව පෙන්වීම</string>
     <string name="copied_to_clipboard">පසුරුහි පිටපත් කරන ලදී</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">ධාවන යෙදු අනන්තරය කිරීමට Experimental RPC ට ඉඩ දෙන්න</string>
-    <string name="experimental_rpc_detect_media">මාධ්‍යා ප්ලේ බැලීම අනන්තරය කිරීමට Experimental RPC ට ඉඩ දෙන්න</string>
+    <string name="manual_rpc_detect_apps">ධාවන යෙදු අනන්තරය කිරීමට Experimental RPC ට ඉඩ දෙන්න</string>
+    <string name="manual_rpc_detect_media">මාධ්‍යා ප්ලේ බැලීම අනන්තරය කිරීමට Experimental RPC ට ඉඩ දෙන්න</string>
     <string name="app_preferences">යෙදු අතිරි සැකසුම්</string>
     <string name="app_preferences_desc">Experimental RPC සඳහා කුමක යෙදු සක්‍රිය කළ යුතු බව තෝරන්න</string>
     <string name="completion_media_title">ගීත/වීඩියෝ මාතෘකාව</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">අනන්තරය කරන ලද යෙදු නම</string>
     <string name="show_cover_art">පිටුපස පෙන්වීම</string>
     <string name="show_cover_art_desc">ස්දාන පිටුපස විශාල රූපයක් ලෙස පෙන්වීම</string>
-    <string name="enable_experimental_rpc">Experimental RPC සක්‍රිය කරන්න</string>
+    <string name="enable_manualRpc">Experimental RPC සක්‍රිය කරන්න</string>
     <string name="completion_media_author">ප්‍රධාන කර්තුක</string>
     <string name="completion_media_album">ස්දාන නම</string>
     <string name="completion_media_album_artist">ස්දාන කලිස්තුරුව</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">කලිස්තුරුවගේ චැනල් සඳහා සබැඳිය</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">මාතෘකාව</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">මාතෘකාව</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">ගීතයේ නම</string>
     <string name="title_source_artist">කලිස්තුරුව</string>

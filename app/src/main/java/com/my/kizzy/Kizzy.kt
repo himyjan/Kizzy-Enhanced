@@ -307,10 +307,10 @@ internal fun Kizzy(
                 )
             }
             composable(Routes.MANUAL_RPC) { navBackStackEntry ->
-                val ManualRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
+                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
                 ManualRpcScreen(
-                    state = ManualRpcViewModel.uiState.collectAsState().value,
-                    onEvent = ManualRpcViewModel::onEvent,
+                    state = experimentalRpcViewModel.uiState.collectAsState().value,
+                    onEvent = experimentalRpcViewModel::onEvent,
                     onBackPressed = { navController.popBackStack() },
                     hasUsageAccess = usageAccessStatus.value,
                     hasNotificationAccess = notificationListenerAccess.value,
@@ -320,11 +320,11 @@ internal fun Kizzy(
                 )
             }
             composable(Routes.MANUAL_RPC_APPS) { navBackStackEntry ->
-                val ManualRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
+                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
                 ManualRpcAppsScreen(
                     onBackPressed = { navController.popBackStack() },
-                    state = ManualRpcViewModel.uiState.collectAsState().value,
-                    onEvent = ManualRpcViewModel::onEvent,
+                    state = experimentalRpcViewModel.uiState.collectAsState().value,
+                    onEvent = experimentalRpcViewModel::onEvent,
                 )
             }
         }

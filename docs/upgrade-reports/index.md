@@ -8,7 +8,7 @@ This document summarizes the new Rich Presence (RPC) features implemented across
 - [Custom RPC](CUSTOM_RPC.md) — fully configurable custom presence builder with image picker, timestamps, buttons, save/load/share configs
 - [Media RPC](MEDIA_RPC.md) — media-session-driven presence for the currently playing track/album
 - [Apps RPC / App Detection](APPS_RPC.md) — usage-stats-based detection of the currently running app
-- [Experimental RPC](EXPERIMENTAL_RPC.md) — combined rich-media + app-detection presence with template processing
+- [Manual RPC](MANUAL_RPC.md) — combined rich-media + app-detection presence with template processing
 - [Quick Settings Tile](QUICK_SETTINGS_TILE.md) — tile to start/stop any RPC from the quick-settings panel
 - [RPC Settings](RPC_SETTINGS.md) — global RPC preferences (buttons, activity type/status, application ID, Imgur, low-res icons)
 
@@ -21,7 +21,7 @@ All RPC features are built on a shared foundation in `feature_rpc_base`:
 - **`RpcImage`** — supports application icons and custom URLs (Imgur or local file).
 - **`SecureTokenStorage`** + **`KizzyStateRepository`** — Hilt-injected token storage and connection/pause state.
 - **Hilt** — every RPC service is `@AndroidEntryPoint` and injects `KizzyRPC`, `CoroutineScope`, `Notification.Builder`, and `NotificationManager`.
-- **Mutual exclusion** — enabling one RPC (Custom, Media, Apps, Experimental) stops all others before starting the selected one, so only one presence runs at a time.
+- **Mutual exclusion** — enabling one RPC (Custom, Media, Apps, Manual) stops all others before starting the selected one, so only one presence runs at a time.
 
 ## Quick Reference
 
@@ -31,7 +31,7 @@ All RPC features are built on a shared foundation in `feature_rpc_base`:
 | Custom RPC | `CustomRpcService` | `CustomRPC` | Toggle switch in Custom RPC screen |
 | Media RPC | `MediaRpcService` | `MediaRPC` | Toggle switch in Media RPC screen |
 | Apps RPC | `AppDetectionService` | `AppsRPC` | Toggle switch in Apps RPC screen |
-| Experimental RPC | `ManualRpc` | `ManualRpcScreen` | Toggle switch in Experimental RPC screen |
+| Manual RPC | `ManualRpc` | `ManualRpcScreen` | Toggle switch in Manual RPC screen |
 | Quick Settings Tile | `KizzyTileService` | — | Quick-settings tile tap |
 
 Each individual report details the fields, behaviors, permissions, and user-facing settings for that feature.

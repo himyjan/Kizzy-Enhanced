@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy மேம்படுத்தப்பட்டது</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- പ്രവർത്തനങ്ങൾ -->
     <string name="activity_name">പ്രവർത്തനത്തിന്റെ പേര്</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">ഇമുറെ ചിത്ര പ്രോക്സി ആയി ഉപയോഗിക്കുക</string>
     <string name="use_imgur_desc">ഇമുറെ വികസിപ്പിക്കേണ്ട ചിത്ര പ്രോക്സി ഉപയോഗിക്കുക.</string>
     <string name="start_appDetection">ആപ്പ് ഡിറ്റക്ഷൻ തുടങ്ങുക</string>
-    <string name="start_mediaRPC">മീഡിയ RPC തുടങ്ങുക</string>
-    <string name="start_ManualRpc">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങുക</string>
+    <string name="start_media_rpc">മീഡിയ RPC തുടങ്ങുക</string>
+    <string name="start_manual_rpc">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങുക</string>
     <string name="stop_rpc">RPC നിർത്തുക</string>
     <string name="stop">നിർത്തുക</string>
     <string name="start_appDetection_toast">ആപ്പ് ഡിറ്റക്ഷൻ തുടങ്ങി</string>
-    <string name="start_mediaRPC_toast">മീഡിയ RPC തുടങ്ങി</string>
-    <string name="start_ManualRpc_toast">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങി</string>
+    <string name="start_media_rpc_toast">മീഡിയ RPC തുടങ്ങി</string>
+    <string name="start_manual_rpc_toast">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങി</string>
     <string name="stop_rpc_toast">എല്ലാ സർവീസും നിർത്തി</string>
     <string name="show_playback_state">പ്ലേബാക്ക് അവസ്ഥ പ്രദർശിപ്പിക്കുക</string>
     <string name="copied_to_clipboard">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">ഡിഫോൾട്ട് ഡിസ്കോഡ് ആപ്പ് ഐഡി ഓവർട്ടൈഡ് ചെയ്യും</string>
     <string name="use_a_vpn_desc">ഡിസ്കോഡ് ലോഗിന് നിങ്ങളുടെ നാട്ടിൽ VPN/DPI Keralaകില്ല. ദയവിട്ട് VPN/DPI ഉപയോഗിക്കുക.</string>
     <string name="rpc_templates_note">&quot;പ്ലേഹോൾഡറുകളായ &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; എന്നിവ ഉപയോഗിക്കുക. ശൂന്യമായ ഫീൽഡുകൾ ഡിഫോൾട്ട് ബिहാവിയർ ഉപയോഗിക്കും അല്ലെങ്കിൽ ഒഴിവാക്കാം.&quot;</string>
-    <string name="experimental_rpc_detect_apps">ആക്സ്പിരിമെന്റൽ RPC-ക്ക് പ്രവർത്തിക്കാനുള്ള ആപ്പുകൾ കണ്ടെത്താൻ അനുവദിക്കുക</string>
-    <string name="experimental_rpc_detect_media">ആക്സ്പിരിമെന്റൽ RPC-ക്ക് മീഡിയ പ്ലേബാക്ക് കണ്ടെത്താൻ അനുവദിക്കുക</string>
+    <string name="manual_rpc_detect_apps">ആക്സ്പിരിമെന്റൽ RPC-ക്ക് പ്രവർത്തിക്കാനുള്ള ആപ്പുകൾ കണ്ടെത്താൻ അനുവദിക്കുക</string>
+    <string name="manual_rpc_detect_media">ആക്സ്പിരിമെന്റൽ RPC-ക്ക് മീഡിയ പ്ലേബാക്ക് കണ്ടെത്താൻ അനുവദിക്കുക</string>
     <string name="app_preferences">ആപ്പ് പ്ര/frontendferencias</string>
     <string name="app_preferences_desc">ആക്സ്പിരിമെന്റൽ RPC-യ്ക്ക് ഏത് ആപ്പുകൾ എനേബിൾ ആകുന്നു എന്ന് തിരഞ്ഞെടുക്കുക</string>
     <string name="completion_media_title">പാട്ട്/വീഡിയോ തീം</string>
@@ -218,7 +218,7 @@
     <string name="completion_app_name">കണ്ടെത്തിയ ആപ്പ് പേര്</string>
     <string name="show_cover_art">ആൽബം കവർ പ്രദർശിപ്പിക്കുക</string>
     <string name="show_cover_art_desc">ആൽബം കവർ വലിയ ചിത്രമായി പ്രദർശിപ്പിക്കുക</string>
-    <string name="enable_experimental_rpc">ആക്സ്പിരിമെന്റൽ RPC സജീവമാക്കുക</string>
+    <string name="enable_manualRpc">ആക്സ്പിരിമെന്റൽ RPC സജീവമാക്കുക</string>
     <string name="completion_media_author">പ്രധാന രചയിതാവ്</string>
     <string name="completion_media_album">ആൽബം പേര്</string>
     <string name="completion_media_album_artist">ആൽബം കലാകാരൻ</string>
@@ -235,8 +235,8 @@
     <string name="use_youtube_button_desc">മീഡിയ പ്ലേ ചെയ്യുമ്പോൾ ഓട്ടോമാറ്റിക് ക്ലിക്കബിൾ ബട്ടൺ (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) ചേർക്കുക</string>
     <string name="link_to_artist_channel">കലാകാരൻ ചാനലിലേക്ക് ലിങ്ക് ചെയ്യുക</string>
     <string name="link_to_artist_channel_desc">ബട്ടൺ ട്രാക്ക്/വീഡിയോക്ക് പകരം കലാകാരൻ ചാനലിലേക്ക് ലിങ്ക് ചെയ്യും</string>
-    <string name="experimental_rpc_title_toggle">ശീർഷകം</string>
-    <string name="experimental_rpc_title_toggle_desc">ആപ്പ് പേരിന് പകരം പ്രവർത്തന ശീർഷകത്തിൽ പാട്ട് വിവരങ്ങൾ പ്രദർശിപ്പിക്കുക</string>
+    <string name="manual_rpc_title_toggle">ശീർഷകം</string>
+    <string name="manual_rpc_title_toggle_desc">ആപ്പ് പേരിന് പകരം പ്രവർത്തന ശീർഷകത്തിൽ പാട്ട് വിവരങ്ങൾ പ്രദർശിപ്പിക്കുക</string>
     <string name="title_source_song">പാട്ട് പേര്</string>
     <string name="title_source_artist">കലാകാരൻ</string>
     <string name="type_to_insert_variable">വേരിയബിൾ ഇടാൻ &apos;{{&apos; ടൈപ്പ് ചെയ്യുക</string>

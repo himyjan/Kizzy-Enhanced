@@ -53,7 +53,7 @@
 
 ## Bu Fork'taki Yenilikler Neler?
 
-Tüm eklemeler **Experimental RPC** ekranında ve ana ekranda yer almaktadır.
+Tüm eklemeler **Manual RPC** ekranında ve ana ekranda yer almaktadır.
 
 ### ⭐ Platform Spoofer
 - Varlığınızın hangi platformdan bağlanacağını seçin — **Masaüstü, Web, Android, iOS, Xbox, Playstation, VR** (Equicord'un platformSpoofer'ından port edilmiştir).
@@ -76,7 +76,7 @@ Orijinallere ek olarak, otomatik tamamlama desteğiyle:
 
 ### ⭐ Ana Ekran Yeniden Tasarımı
 - Özellik kartları artık tam genişlikte kartlardan oluşan dikey bir yığın halindedir.
-- **Her kart üzerinde açma/kapama anahtarları**, böylece Medya / Custom / Experimental RPC doğrudan ana ekrandan başlatılabilir ve durdurulabilir.
+- **Her kart üzerinde açma/kapama anahtarları**, böylece Medya / Custom / Manual RPC doğrudan ana ekrandan başlatılabilir ve durdurulabilir.
 
 ### ⭐ Ağ Geçidi Dayanıklılığı ([YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy)'den port edilmiştir)
 - Beklenmeyen bağlantı kopmalarında üstel geri çekilme ile otomatik yeniden bağlanma.

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy محسّن</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- الأنشطة -->
     <string name="activity_name">اسم النشاط</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Imgur كوكيل صورة</string>
     <string name="use_imgur_desc">استخدم Imgur كوكيل صورة بديل.</string>
     <string name="start_appDetection">ابدأ اكتشاف التطبيقات</string>
-    <string name="start_mediaRPC">ابدأ Media RPC</string>
-    <string name="start_ManualRpc">ابدأ Experimental RPC</string>
+    <string name="start_media_rpc">ابدأ Media RPC</string>
+    <string name="start_manual_rpc">ابدأ Experimental RPC</string>
     <string name="stop_rpc">توقف RPC</string>
     <string name="stop">توقف</string>
     <string name="start_appDetection_toast">تم بدء اكتشاف التطبيقات</string>
-    <string name="start_mediaRPC_toast">تم بدء Media RPC</string>
-    <string name="start_ManualRpc_toast">تم بدء Experimental RPC</string>
+    <string name="start_media_rpc_toast">تم بدء Media RPC</string>
+    <string name="start_manual_rpc_toast">تم بدء Experimental RPC</string>
     <string name="stop_rpc_toast">تم إيقاف جميع الخدمات</string>
     <string name="show_playback_state">إظهار حالة التشغيل</string>
     <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">يتجاوز معرف تطبيق Discord الافتراضي</string>
     <string name="use_a_vpn_desc">قد لا يعمل تسجيل الدخول إلى Discord في بلدك بدون VPN/DPI. يرجى استخدام VPN/DPI للمتابعة.</string>
     <string name="rpc_templates_note">&quot;استخدم espaços reservados مثل &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;، إلخ. ستستخدم الحقول الفارغة السلوك الافتراضي أو سيتم تجاهلها.&quot;</string>
-    <string name="experimental_rpc_detect_apps">السماح لـ Experimental باكتشاف التطبيقات قيد التشغيل</string>
-    <string name="experimental_rpc_detect_media">السماح لـ Experimental باكتشاف تشغيل الوسائط</string>
+    <string name="manual_rpc_detect_apps">السماح لـ Experimental باكتشاف التطبيقات قيد التشغيل</string>
+    <string name="manual_rpc_detect_media">السماح لـ Experimental باكتشاف تشغيل الوسائط</string>
     <string name="app_preferences">تفضيلات التطبيق</string>
     <string name="app_preferences_desc">اختر التطبيقات المفعلة لـ Experimental RPC</string>
     <string name="completion_media_title">عنوان الأغنية/الفيديو</string>
@@ -218,7 +218,7 @@
     <string name="completion_app_name">اسم التطبيق المكتشف</string>
     <string name="show_cover_art">إظهار غلاف الألبوم</string>
     <string name="show_cover_art_desc">عرض غلاف الألبوم كصورة كبيرة</string>
-    <string name="enable_experimental_rpc">تفعيل Experimental RPC</string>
+    <string name="enable_manualRpc">تفعيل Experimental RPC</string>
     <string name="completion_media_author">المؤلف الرئيسي</string>
     <string name="completion_media_album">اسم الألبوم</string>
     <string name="completion_media_album_artist">فنان الألبوم</string>
@@ -235,8 +235,8 @@
     <string name="use_youtube_button_desc">إضافة زر قابل للنقر تلقائيًا (YouTube، Spotify، Apple Music، Deezer، SoundCloud، StreetVoice، YMusic) عند تشغيل الوسائط</string>
     <string name="link_to_artist_channel">رابط إلى قناة الفنان</string>
     <string name="link_to_artist_channel_desc">يربط الزر بقناة الفنان بدلاً من المسار/الفيديو</string>
-    <string name="experimental_rpc_title_toggle">العنوان</string>
-    <string name="experimental_rpc_title_toggle_desc">إظهار معلومات الأغنية في عنوان النشاط بدلاً من اسم التطبيق</string>
+    <string name="manual_rpc_title_toggle">العنوان</string>
+    <string name="manual_rpc_title_toggle_desc">إظهار معلومات الأغنية في عنوان النشاط بدلاً من اسم التطبيق</string>
     <string name="title_source_song">اسم الأغنية</string>
     <string name="title_source_artist">الفنان</string>
     <string name="type_to_insert_variable">اكتب &apos;{{&apos; لإدراج متغير</string>

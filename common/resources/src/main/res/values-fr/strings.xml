@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Amélioré</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Activités -->
     <string name="activity_name">Nom de lapos;activité</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Utiliser Imgur comme proxy dapos;image</string>
     <string name="use_imgurDesc">Utiliser Imgur comme proxy dapos;image alternatif.</string>
     <string name="start_appDetection">Démarrer la détection dapos;applications</string>
-    <string name="start_mediaRpc">Démarrer Media RPC</string>
-    <string name="start_ManualRpc">Démarrer Experimental RPC</string>
+    <string name="start_media_rpc">Démarrer Media RPC</string>
+    <string name="start_manual_rpc">Démarrer Experimental RPC</string>
     <string name="stop_rpc">Arrêter RPC</string>
     <string name="stop">Arrêter</string>
     <string name="start_appDetectionToast">Détection dapos;applications démarrée</string>
-    <string name="start_mediaRpcToast">Media RPC démarré</string>
-    <string name="start_ManualRpcToast">Experimental RPC démarré</string>
+    <string name="start_media_rpc_toast">Media RPC démarré</string>
+    <string name="start_manual_rpc_toast">Experimental RPC démarré</string>
     <string name="stop_rpcToast">Tous les services arrêtés</string>
     <string name="show_playbackState">Afficher lapos;état de lecture</string>
     <string name="copied_toClipboard">Copié dans le presse-papiers</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Remplace lapos;ID dapos;application Discord par défaut</string>
     <string name="use_a_vpnDesc">La connexion à Discord peut ne pas fonctionner dans votre pays sans VPN/DPI. Veuillez utiliser un VPN/DPI pour continuer.</string>
     <string name="rpc_templates_note">&quot;Utilisez des espaces réservés tels que &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; etc. Les champs vides utiliseront le comportement par défaut ou seront omis.&quot;</string>
-    <string name="experimental_rpc_detectApps">Autoriser Experimental RPC à détecter les applications en cours dapos;exécution</string>
-    <string name="experimental_rpc_detectMedia">Autoriser Experimental RPC à détecter la lecture de médias</string>
+    <string name="manual_rpc_detect_apps">Autoriser Experimental RPC à détecter les applications en cours dapos;exécution</string>
+    <string name="manual_rpc_detect_media">Autoriser Experimental RPC à détecter la lecture de médias</string>
     <string name="app_preferences">Préférences dapos;application</string>
     <string name="app_preferences_desc">Sélectionner quelles applications sont activées pour Experimental RPC</string>
     <string name="completion_media_title">Titre de la chanson/vidéo</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Nom de lapos;application détectée</string>
     <string name="show_coverArt">Afficher la pochette de lapos;album</string>
     <string name="show_coverArt_desc">Afficher la pochette de lapos;album comme grande image</string>
-    <string name="enable_ManualRpc">Activer Experimental RPC</string>
+    <string name="enable_manualRpc">Activer Experimental RPC</string>
     <string name="completion_media_author">Auteur principal</string>
     <string name="completion_media_album">Nom de lapos;album</string>
     <string name="completion_media_albumArtist">Artiste de lapos;album</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButtonDesc">Ajouter automatiquement un bouton cliquable (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) lors de la lecture des médias</string>
     <string name="link_toArtistChannel">Lien vers la chaîne de lapos;artiste</string>
     <string name="link_toArtistChannel_desc">Le bouton renvoie vers la chaîne de lapos;artiste plutôt que vers la piste/vidéo</string>
-    <string name="experimental_rpcTitleToggle">Titre</string>
-    <string name="experimental_rpcTitleToggle_desc">Afficher les informations de la chanson dans le titre de lapos;activité plutôt que le nom de lapos;application</string>
+    <string name="manual_rpc_title_toggle">Titre</string>
+    <string name="manual_rpc_title_toggle_desc">Afficher les informations de la chanson dans le titre de lapos;activité plutôt que le nom de lapos;application</string>
     <string name="title_source_song">Titre de la chanson</string>
     <string name="title_source_artist">Artiste</string>
     <string name="type_to_insert_variable">Tapez &apos;{{&apos; pour insérer une variable</string>

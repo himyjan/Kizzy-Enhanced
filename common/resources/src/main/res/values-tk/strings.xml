@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Giňeldilen</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <string name="activity_name">Işjeňlik ady</string>
     <string name="activity_details">Işjeňlik jikme-jiklikleri</string>

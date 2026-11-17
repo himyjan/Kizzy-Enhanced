@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name">လုပ်ဆောင်မှု နာမည်</string>
     <string name="activity_details">လုပ်ဆောင်မှု အကြောင်းအရာ</string>
     <string name="activity_state">လုပ်ဆောင်မှု အခြေအနေ</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">ပုံ proxy အဖြစ် Imgur သုံးပါ</string>
     <string name="use_imgur_desc">အခြားပုံ proxy အဖြစ် Imgur ကို သုံးပါ။</string>
     <string name="start_appDetection">အက်ပ်ရှာဖွေ့ခြင်း စတင်ပါ</string>
-    <string name="start_mediaRPC">Media RPC စတင်ပါ</string>
-    <string name="start_ManualRpc">Experimental RPC စတင်ပါ</string>
+    <string name="start_media_rpc">Media RPC စတင်ပါ</string>
+    <string name="start_manual_rpc">Experimental RPC စတင်ပါ</string>
     <string name="stop_rpc">RPC ရပ်ပါ</string>
     <string name="stop">ရပ်ပါ</string>
     <string name="start_appDetection_toast">အက်ပ်ရှာဖွေ့ခြင်း စတင်ပြီးပါပြီ</string>
-    <string name="start_mediaRPC_toast">Media RPC စတင်ပြီးပါပြီ</string>
-    <string name="start_ManualRpc_toast">Experimental RPC စတင်ပြီးပါပြီ</string>
+    <string name="start_media_rpc_toast">Media RPC စတင်ပြီးပါပြီ</string>
+    <string name="start_manual_rpc_toast">Experimental RPC စတင်ပြီးပါပြီ</string>
     <string name="stop_rpc_toast">ဝန်ဆောင်မှုအားလုံး ရပ်ပြီးပါပြီ</string>
     <string name="show_playback_state">ဖွင့်ခြင်းအခြေအနေ ပြပါ</string>
     <string name="copied_to_clipboard">ကလုံးသို့ ကူးယူပြီးပါပြီ</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Experimental RPC က လည်းဆောင်နေသော အက်ပ်များကို ရှာဖွေ့ခွင့်ပေးပါ</string>
-    <string name="experimental_rpc_detect_media">Experimental RPC က မီဒီယာဖွင့်ခြင်းကို ရှာဖွေ့ခွင့်ပေးပါ</string>
+    <string name="manual_rpc_detect_apps">Experimental RPC က လည်းဆောင်နေသော အက်ပ်များကို ရှာဖွေ့ခွင့်ပေးပါ</string>
+    <string name="manual_rpc_detect_media">Experimental RPC က မီဒီယာဖွင့်ခြင်းကို ရှာဖွေ့ခွင့်ပေးပါ</string>
     <string name="app_preferences">အက်ပ် ဆက်တင်များ</string>
     <string name="app_preferences_desc">Experimental RPC အတွက် ဖွင့်ထားရမည့် အက်ပ်များကို ရွေးပါ</string>
     <string name="completion_media_title">သီချင်း/ဗီဒီယို အမည်</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">တွေ့ရှိသော အက်ပ်အမည်</string>
     <string name="show_cover_art">အကျဉ်းပုံပြပါ</string>
     <string name="show_cover_art_desc">အလာ်ဘ်အကျဉ်းပုံကို ကြီးမြတ်ပုံအဖြစ် ပြပါ</string>
-    <string name="enable_experimental_rpc">Experimental RPC ဖွင့်ပါ</string>
+    <string name="enable_manualRpc">Experimental RPC ဖွင့်ပါ</string>
     <string name="completion_media_author">အဓိက စာရေးသူ</string>
     <string name="completion_media_album">အလာ်ဘ်အမည်</string>
     <string name="completion_media_album_artist">အလာ်ဘ်အနုပညာရှင်</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">အနုပညာရှင်၏ channel သို့ လင်းမှီး</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">အမည်</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">အမည်</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">သီချင်းအမည်</string>
     <string name="title_source_artist">အနုပညာရှင်</string>

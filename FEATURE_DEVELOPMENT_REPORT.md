@@ -37,10 +37,10 @@
 24. [Bug Fix: R8 Stripping Hilt ViewModel Factories](#bug-fix-r8-stripping-hilt-viewmodel-factories)
 25. [Bug Fix: Startup Crash on Android 14+ (SecurityException)](#bug-fix-startup-crash-on-android-14-securityexception)
 26. [Bug Fix: Notification Click Not Opening App UI](#bug-fix-notification-click-not-opening-app-ui)
-27. [Bug Fix: Experimental RPC Always Idling](#bug-fix-experimental-rpc-always-idling)
-28. [Bug Fix: Experimental RPC Song Change After Pause](#bug-fix-experimental-rpc-song-change-after-pause)
-29. [Bug Fix: Experimental RPC Text Showing Template Keys](#bug-fix-experimental-rpc-text-showing-template-keys)
-30. [Bug Fix: Experimental RPC Idle Presence](#bug-fix-experimental-rpc-idle-presence)
+27. [Bug Fix: Manual RPC Always Idling](#bug-fix-experimental-rpc-always-idling)
+28. [Bug Fix: Manual RPC Song Change After Pause](#bug-fix-experimental-rpc-song-change-after-pause)
+29. [Bug Fix: Manual RPC Text Showing Template Keys](#bug-fix-experimental-rpc-text-showing-template-keys)
+30. [Bug Fix: Manual RPC Idle Presence](#bug-fix-experimental-rpc-idle-presence)
 31. [Bug Fix: RPC Switches Mutually Exclusive](#bug-fix-rpc-switches-mutually-exclusive)
 32. [Bug Fix: Apps List Scroll Lag](#bug-fix-apps-list-scroll-lag)
 33. [Bug Fix: GamesScreen.kt Issues](#bug-fix-gamescreenkt-issues)
@@ -68,7 +68,7 @@
 55. [Bug Fix: Media RPC — Discord Gateway Stability, Timeline Pause, Cover Art, First Song](#bug-fix-media-rpc--discord-gateway-stability--timeline-pause--cover-art--first-song)
 56. [Bug Fix: Media RPC — SupervisorJob Upload Retry & WorkManager Background Recovery](#bug-fix-media-rpc--supervisorjob-upload-retry--workmanager-background-recovery)
 57. [Bug Fix: Media RPC Notification — Buttons Always Present & Click-to-Open App](#bug-fix-media-rpc-notification--buttons-always-present--click-to-open-app)
-58. [Bug Fix: Experimental RPC — Remove "Using Kizzy RPC" Default Presence Text](#bug-fix-experimental-rpc--remove-using-kizzy-rpc-default-presence-text)
+58. [Bug Fix: Manual RPC — Remove "Using Kizzy RPC" Default Presence Text](#bug-fix-experimental-rpc--remove-using-kizzy-rpc-default-presence-text)
 59. [Bug Fix: Discord WebSocket — Multiple Concurrent Connections Causing 4003 Error](#bug-fix-discord-websocket--multiple-concurrent-connections-causing-4003-error)
 60. [CI/CD: GitHub Actions AAPT2 Override](#cicd-github-actions-aapt2-override)
 61. [Known Non-Breaking Warnings](#known-non-breaking-warnings)
@@ -637,7 +637,7 @@ App starts normally on all API levels. Media RPC features gracefully degrade (em
 
 ---
 
-## 27. Bug Fix: Experimental RPC Always Idling
+## 27. Bug Fix: Manual RPC Always Idling
 
 **Files:** `common/components/src/main/java/com/my/kizzy/ui/components/BrowseFiles.kt`, `feature_startup/src/main/java/com/my/kizzy/feature_startup/SetupCards.kt`, `common/components/src/main/java/com/my/kizzy/ui/components/KTextField.kt`, `feature_crash_handler/src/main/java/com/my/kizzy/feature_crash_handler/CrashScreen.kt`
 
@@ -669,7 +669,7 @@ All extended icon references eliminated. Icons now resolve from either `Icons.Au
 
 ---
 
-## 29. Bug Fix: Experimental RPC Text Showing Template Keys
+## 29. Bug Fix: Manual RPC Text Showing Template Keys
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/MediaRpcService.kt`
 
@@ -693,7 +693,7 @@ All extended icon references eliminated. Icons now resolve from either `Icons.Au
 
 ---
 
-## 30. Bug Fix: Experimental RPC Idle Presence
+## 30. Bug Fix: Manual RPC Idle Presence
 
 **File:** `app/src/main/java/com/my/kizzy/App.kt`
 
@@ -1410,7 +1410,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 2. **Timeline does not stop on pause** — `startTimestamps`/`stopTimestamps` were sent even when `isPaused == true`, so Discord's progress bar kept counting up after pause.
 
-3. **Next song not detected** — Experimental RPC's `activeSessionsListener()` called `getCurrentPlayingMediaAll()` immediately on session change, before YouTube/LX Music metadata populated, so the first song never appeared until switching tracks.
+3. **Next song not detected** — Manual RPC's `activeSessionsListener()` called `getCurrentPlayingMediaAll()` immediately on session change, before YouTube/LX Music metadata populated, so the first song never appeared until switching tracks.
 
 4. **LX Music cover art swapped** — `largeImage` was set to `appIcon` and `smallImage` to `coverArt` (reversed). Large image should show album cover, small image should show app icon.
 
@@ -1501,7 +1501,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 | ----------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
 | Discord gateway stability     | `Connection closed` / `INVALID_SESSION` every few seconds | Stable connection; deduplicated presence updates   |
 | Timeline on pause             | Progress bar kept counting up                             | Progress bar clears on pause                       |
-| First song (Experimental RPC) | Never shown until switching tracks                        | Shows immediately (500ms metadata delay)           |
+| First song (Manual RPC) | Never shown until switching tracks                        | Shows immediately (500ms metadata delay)           |
 | LX Music cover art            | App icon = large, cover art = small (swapped)             | Cover art = large, app icon = small                |
 | YouTube cover art             | Missing (Kizzy default logo)                              | `DISPLAY_ICON` / `ART_URI` / notification fallback |
 | Log copy-all                  | Copied filtered subset                                    | Copies all unfiltered logs                         |
@@ -1573,7 +1573,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 ---
 
-## 58. Bug Fix: Experimental RPC — Remove "Using Kizzy RPC" Default Presence Text
+## 58. Bug Fix: Manual RPC — Remove "Using Kizzy RPC" Default Presence Text
 
 **Files:** `ManualRpc.kt`
 

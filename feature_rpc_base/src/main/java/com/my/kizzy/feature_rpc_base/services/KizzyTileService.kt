@@ -79,11 +79,11 @@ class KizzyTileService : TileService() {
                     }
                     1 -> {
                         ctx.startForegroundService(Intent(ctx, MediaRpcService::class.java))
-                        Toast.makeText(ctx, getString(R.string.start_mediaRPC_toast), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(ctx, getString(R.string.start_media_rpc_toast), Toast.LENGTH_SHORT).show()
                     }
                     2 -> {
                         ctx.startForegroundService(Intent(ctx, ManualRpc::class.java))
-                        Toast.makeText(ctx, getString(R.string.start_ManualRpc_toast), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(ctx, getString(R.string.start_manual_rpc_toast), Toast.LENGTH_SHORT).show()
                     }
                     else -> {}
                 }

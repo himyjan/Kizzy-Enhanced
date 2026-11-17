@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy-förbättrad</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Aktiviteter -->
     <string name="activity_name">Aktivitetsnamn</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Använd Imgur som bildproxy</string>
     <string name="use_imgurDesc">Använd Imgur som en alternativ bildproxy.</string>
     <string name="start_appDetection">Starta appidentifiering</string>
-    <string name="start_mediaRpc">Starta Media RPC</string>
-    <string name="start_ManualRpc">Starta Experimental RPC</string>
+    <string name="start_media_rpc">Starta Media RPC</string>
+    <string name="start_manual_rpc">Starta Experimental RPC</string>
     <string name="stop_rpc">Stoppa RPC</string>
     <string name="stop">Stoppa</string>
     <string name="start_appDetectionToast">Appidentifiering har startats</string>
-    <string name="start_mediaRpcToast">Media RPC har startats</string>
-    <string name="start_ManualRpcToast">Experimental RPC har startats</string>
+    <string name="start_media_rpc_toast">Media RPC har startats</string>
+    <string name="start_manual_rpc_toast">Experimental RPC har startats</string>
     <string name="stop_rpcToast">Alla tjänster har stoppats</string>
     <string name="show_playbackState">Visa uppspelningsstatus</string>
     <string name="copied_toClipboard">Kopierat till urklipp</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Åsidosätter standard Discord-applikations-ID</string>
     <string name="use_a_vpnDesc">Discord-inloggning kan inte fungera i ditt land utan VPN/DPI. Använd VPN/DPI för att fortsätta.</string>
     <string name="rpc_templates_note">&quot;Använd mallar som &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; osv. Tomma fält kommer att använda standardbeteende eller utelämnas.&quot;</string>
-    <string name="experimental_rpc_detectApps">Låt Experimental RPC upptäcka körande appar</string>
-    <string name="experimental_rpc_detect_media">Tillåt Experimental RPC att upptäcka medieuppspelning</string>
+    <string name="manual_rpc_detect_apps">Låt Experimental RPC upptäcka körande appar</string>
+    <string name="manual_rpc_detect_media">Tillåt Experimental RPC att upptäcka medieuppspelning</string>
     <string name="app_preferences">Applikationsinställningar</string>
     <string name="app_preferences_desc">Välj vilka appar som är aktiverade för Experimental RPC</string>
     <string name="completion_media_title">Låt/titel för video</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Identifierat programnamn</string>
     <string name="show_coverArt">Visa albumomslag</string>
     <string name="show_coverArt_desc">Visa albumet som stor bild</string>
-    <string name="enable_ManualRpc">Aktivera Experimental RPC</string>
+    <string name="enable_manualRpc">Aktivera Experimental RPC</string>
     <string name="completion_media_author">Huvudförfattare</string>
     <string name="completion_media_album">Albumnamn</string>
     <string name="completion_media_albumArtist">Albumartist</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButton_desc">Lägg automatiskt till en klickbar knapp (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) när media spelas</string>
     <string name="link_toArtistChannel">Länk till artisterkanal</string>
     <string name="link_toArtistChannel_desc">Knapplänken går till artistkanalen istället för låt/video</string>
-    <string name="experimental_rpcTitleToggle">Titel</string>
-    <string name="experimental_rpcTitleToggle_desc">Visa låteinformation i aktivitetstiteln istället för appnamn</string>
+    <string name="manual_rpc_title_toggle">Titel</string>
+    <string name="manual_rpc_title_toggle_desc">Visa låteinformation i aktivitetstiteln istället för appnamn</string>
     <string name="title_source_song">Låtens titel</string>
     <string name="title_source_artist">Artist</string>
     <string name="type_to_insert_variable">Skriv &apos;{{&apos; för att infoga en variabel</string>

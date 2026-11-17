@@ -29,7 +29,7 @@
         android:icon="@drawable/shortcuts_media_rpc"
         android:shortcutId="mediaRPC"
         android:shortcutLongLabel="@string/main_mediaRpc"
-        android:shortcutShortLabel="@string/start_mediaRPC">
+        android:shortcutShortLabel="@string/start_media_rpc">
         <intent
             android:action="com.my.kizzy.intent.action.START_MEDIA_RPC"
             android:targetClass="com.my.kizzy.feature_rpc_base.services.ShortcutsActivity"
@@ -41,9 +41,9 @@
         android:icon="@drawable/shortcuts_dev_rpc"
         android:shortcutId="ManualRpc"
         android:shortcutLongLabel="@string/main_ManualRpc"
-        android:shortcutShortLabel="@string/start_ManualRpc">
+        android:shortcutShortLabel="@string/start_manual_rpc">
         <intent
-            android:action="com.my.kizzy.intent.action.START_EXPERIMENTAL_RPC"
+            android:action="com.my.kizzy.intent.action.START_MANUAL_RPC"
             android:targetClass="com.my.kizzy.feature_rpc_base.services.ShortcutsActivity"
             android:targetPackage="com.my.kizzy" />
     </shortcut>

@@ -81,7 +81,7 @@ object Constants {
     )
 
     /**
-     * Timestamp source modes for Experimental RPC.
+     * Timestamp source modes for Manual RPC.
      * label -> stored id
      */
     val TIMESTAMP_MODES = linkedMapOf(

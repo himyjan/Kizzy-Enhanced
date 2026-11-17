@@ -8,6 +8,7 @@
 /app/debug/
 /buildSrc/build/
 /tmp
+/.artifacts
 
 # built application files
 *.apk

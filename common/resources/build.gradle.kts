@@ -27,14 +27,8 @@ abstract class NormalizeStringsTask : DefaultTask() {
             val destinationFile = File(destinationFolder, file.name)
 
             var content = file.readText(Charsets.UTF_8)
-            // Do not match the `?>` of the XML declaration, otherwise the
-            // newline between the declaration and <resources> gets wrapped in
-            // CDATA, producing invalid XML (markup before the root element).
-            // Only capture text nodes that contain real content (\\S); pure
-            // whitespace gaps between tags are structural and must be left
-            // untouched so the XML remains well-formed.
-            // [^<>]* keeps the match inside a single tag so it cannot bleed
-            // across element boundaries (\\S matches < and > too).
+
+            // Match tag text content securely without breaking structural whitespace
             val tagContentRegex = Regex("(?<![?])>([^<>]*\\S[^<>]*)<")
 
             // Run safe normalization regex chain on tag content only
@@ -42,18 +36,15 @@ abstract class NormalizeStringsTask : DefaultTask() {
                 val originalText = matchResult.groupValues[1]
                 var updatedText = originalText
 
-                // Rule 4 & 5: Clear pre-existing bad backslash entities
+                // Clear pre-existing bad backslash entities
                 updatedText = updatedText.replace("\\&quot;", "&quot;")
                 updatedText = updatedText.replace("\\&apos;", "&apos;")
 
-                // Rule 7: Clean broken backslash-brace combinations
+                // Clean broken backslash-brace combinations
                 updatedText = updatedText.replace("\\{", "{")
                 updatedText = updatedText.replace("\\}", "}")
 
-                // Rule 3 & 6: Restore the {{ }} placeholders that the translation
-                // pass encoded as &apos;{{&apos; / &apos;}}&apos;. Inside a CDATA
-                // section AAPT2 takes the content literally, so the entities
-                // would end up as visible text instead of plain braces.
+                // Restore placeholders {{ }} encoded during translation passes
                 updatedText = updatedText
                     .replace("&apos;{{&apos;;", "{{")
                     .replace("&apos;{{&apos;", "{{")
@@ -61,22 +52,17 @@ abstract class NormalizeStringsTask : DefaultTask() {
                     .replace("&apos;}}&apos;", "}}")
                     .replace("&apos;&apos;", "")
 
-                // Rule 9: Turn the XML entities back into the backslash escapes
-                // AAPT2 understands. Inside a CDATA section the entities are NOT
-                // decoded, so they would end up as the literal text "&quot;" /
-                // "&apos;" in the UI instead of a real quote / apostrophe.
-                // &amp; is decoded last so that "&amp;quot;" stays "&quot;".
+                // Convert standard XML entities to literal characters inside CDATA.
+                // Do NOT use Java backslash escapes like \" or \' inside CDATA,
+                // as aapt2 will read the literal backslash and throw an escape error.
                 updatedText = updatedText
-                    .replace("&quot;", "\\\"")
-                    .replace("&apos;", "\\'")
+                    .replace("&quot;", "\"")
+                    .replace("&apos;", "'")
                     .replace("&lt;", "<")
                     .replace("&gt;", ">")
                     .replace("&amp;", "&")
 
-                // Rule 8: Wrap ALL text content in CDATA to prevent AAPT2 from
-                // decoding XML entities (like &apos;) and re-escaping them as
-                // backslash escapes (\', \{) in its intermediate format, which
-                // it then rejects as "Invalid unicode escape sequence".
+                // Wrap text in CDATA to protect special characters from aapt2 re-escaping
                 updatedText = "<![CDATA[$updatedText]]>"
 
                 ">" + updatedText + "<"

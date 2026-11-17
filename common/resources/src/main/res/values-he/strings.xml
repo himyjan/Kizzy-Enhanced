@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
     <string name="activity_name"> שם הפעילות</string>
     <string name="activity_details">פרטי פעילות</string>
     <string name="activity_state">מצב פעילות</string>
@@ -209,13 +209,13 @@
     <string name="use_imgur">Imgur כשרת פרוקסי לתמונות</string>
     <string name="use_imgur_desc">השתמש ב-Imgur כשרת פרוקסי חלופי לתמונות.</string>
     <string name="start_appDetection">הפעלת זיהוי אפליקציות</string>
-    <string name="start_mediaRPC">התחל מדיה RPC</string>
-    <string name="start_ManualRpc">הפעל RPC ניסיוני</string>
+    <string name="start_media_rpc">התחל מדיה RPC</string>
+    <string name="start_manual_rpc">הפעל RPC ניסיוני</string>
     <string name="stop_rpc">עצירת RPC</string>
     <string name="stop">לְהַפְסִיק</string>
     <string name="start_appDetection_toast">זיהוי אפליקציות התחיל</string>
-    <string name="start_mediaRPC_toast">RPC של המדיה הופעל</string>
-    <string name="start_ManualRpc_toast">RPC ניסיוני התחיל</string>
+    <string name="start_media_rpc_toast">RPC של המדיה הופעל</string>
+    <string name="start_manual_rpc_toast">RPC ניסיוני התחיל</string>
     <string name="stop_rpc_toast">כל השירותים נעצרו</string>
     <string name="show_playback_state">הצג מצב השמעה</string>
     <string name="copied_to_clipboard">הועתק ללוח</string>
@@ -226,8 +226,8 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">אפשר ל-RPC ניסיוני לזהות אפליקציות פועלות</string>
-    <string name="experimental_rpc_detect_media">אפשר ל-RPC ניסיוני לזהות השמעת מדיה</string>
+    <string name="manual_rpc_detect_apps">אפשר ל-RPC ניסיוני לזהות אפליקציות פועלות</string>
+    <string name="manual_rpc_detect_media">אפשר ל-RPC ניסיוני לזהות השמעת מדיה</string>
     <string name="app_preferences">העדפות אפליקציה</string>
     <string name="app_preferences_desc">בחר אילו אפליקציות מופעלות עבור RPC ניסיוני</string>
     <string name="completion_media_title">שיר / כותרת וידאו</string>
@@ -235,7 +235,7 @@
     <string name="completion_app_name">שם אפליקציה זוהה</string>
     <string name="show_cover_art">הצג תמונת עטיפה</string>
     <string name="show_cover_art_desc">תצוגת עטיפת אלבום כתמונה גדולה</string>
-    <string name="enable_experimental_rpc">הפעל RPC ניסיוני</string>
+    <string name="enable_manualRpc">הפעל RPC ניסיוני</string>
     <string name="completion_media_author">מחבר ראשי</string>
     <string name="completion_media_album">שם האלבום</string>
     <string name="completion_media_album_artist">אמן האלבום</string>
@@ -254,8 +254,8 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">קישור לערוץ האמן</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">כותרת</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
+    <string name="manual_rpc_title_toggle">כותרת</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
         of app name</string>
     <string name="title_source_song">שם השיר</string>
     <string name="title_source_artist">אמן</string>

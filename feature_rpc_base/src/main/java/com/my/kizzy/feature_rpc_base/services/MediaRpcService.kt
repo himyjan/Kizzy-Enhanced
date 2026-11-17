@@ -143,6 +143,20 @@ class MediaRpcService : Service() {
 
     private lateinit var mediaSessionManager: MediaSessionManager
 
+    /**
+     * Single listener instance shared by the add and remove calls.
+     *
+     * A bound method reference to activeSessionsListener allocates a new
+     * wrapper on every evaluation, so the remove call never matches the
+     * listener registered by the add call. The framework then retains the
+     * binder stub — and this destroyed service through it — leaking the
+     * whole service instance after onDestroy().
+     */
+    private val activeSessionsChangedListener =
+        MediaSessionManager.OnActiveSessionsChangedListener { sessions ->
+            activeSessionsListener(sessions)
+        }
+
     private var currentMediaController: MediaController? = null
     private var currentMediaTitle: String? = null
     private var currentMediaArtist: String? = null
@@ -226,7 +240,7 @@ class MediaRpcService : Service() {
         notificationManager.notify(Constants.NOTIFICATION_ID, notification)
 
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
-        mediaSessionManager.addOnActiveSessionsChangedListener(::activeSessionsListener, ComponentName(this, NotificationListener::class.java))
+        mediaSessionManager.addOnActiveSessionsChangedListener(activeSessionsChangedListener, ComponentName(this, NotificationListener::class.java))
 
         val sessions: List<android.media.session.MediaController> = try {
             mediaSessionManager.getActiveSessions(ComponentName(this, NotificationListener::class.java))
@@ -986,7 +1000,7 @@ class MediaRpcService : Service() {
     override fun onDestroy() {
         stopTimelineUpdates()
         stopHeartbeat()
-        mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
+        mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         scope.cancel()
         kizzyRPC.closeRPC()

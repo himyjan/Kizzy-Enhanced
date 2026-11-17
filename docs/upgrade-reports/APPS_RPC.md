@@ -42,5 +42,5 @@ val EXCLUDED_APPS = listOf("com.my.kizzy", "com.discord")
 ## UX notes
 
 - Searchable app list with enable/disable checkboxes (`AppsState.enabledApps`).
-- Enabling Apps RPC stops Media, Custom, and Experimental RPC first (mutual exclusion).
+- Enabling Apps RPC stops Media, Custom, and Manual RPC first (mutual exclusion).
 - Reflects `AppUtils.appDetectionRunning()` in the toggle.

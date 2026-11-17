@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Extended</string>
-    <string name="qs_tile_label" translatable="false">Kizzy Quickie</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
 
     <!-- Activities -->
     <string name="activity_name">Veiklos pavadinimas</string>
@@ -194,13 +194,13 @@
     <string name="use_imgur">Naudokite Imgur vaizdų proxypass</string>
     <string name="use_imgurDesc">Naudokite Imgur kaip alternatyvų vaizdo proxy.</string>
     <string name="start_appDetection">Paleiskite programų aptikimą</string>
-    <string name="start_mediaRpc">Paleiskite Media RPC</string>
-    <string name="start_ManualRpc">Paleiskite Experimental RPC</string>
+    <string name="start_media_rpc">Paleiskite Media RPC</string>
+    <string name="start_manual_rpc">Paleiskite Experimental RPC</string>
     <string name="stop_rpc">Išjunkite RPC</string>
     <string name="stop">Sustabdykite</string>
     <string name="start_appDetectionToast">Aplikacijos aptikimas paleistas</string>
-    <string name="start_mediaRpcToast">Media RPC paleista</string>
-    <string name="start_ManualRpcToast">Experimental RPC startuoja</string>
+    <string name="start_media_rpc_toast">Media RPC paleista</string>
+    <string name="start_manual_rpc_toast">Experimental RPC startuoja</string>
     <string name="stop_rpcToast">Visos paslaugos sustabdytos</string>
     <string name="show_playbackState">Rodykite grojimo būseną</string>
     <string name="copied_toClipboard">Išperkelta į laikinąjį laikrodį</string>
@@ -209,8 +209,8 @@
     <string name="custom_application_id_desc">Nukopijuojamas standartinis Discord aplikacijos ID</string>
     <string name="use_a_vpnDesc">Discord prisijungimas gali neveikti jūsų šalyje be VPN/DPI. Naudokite VPN/DPI, kad tęstumėte.</string>
     <string name="rpc_templates_note">&quot;Naudokite šabloną &quot;„app_name&quot;, „{{’media_title}}apos;apos; ir tt. Tušti laukai bus naudojami standartinio veiksmo arba bus praleisti.&quot;</string>
-    <string name="experimental_rpc_detectApps">Leiskite Experimental RPC aptikti veikiančias programas</string>
-    <string name="experimental_rpc_detectMedia">Leiskite Experimental RPC aptikti medijos grojimo būseną</string>
+    <string name="manual_rpc_detect_apps">Leiskite Experimental RPC aptikti veikiančias programas</string>
+    <string name="manual_rpc_detect_media">Leiskite Experimental RPC aptikti medijos grojimo būseną</string>
     <string name="app_preferences">Aplikacijos nustatymai</string>
     <string name="app_preferences_desc">Pasirinkite, kurios programos yra įgalintos per Experimental RPC</string>
     <string name="completion_media_title">Dainos/vaizdo pavadinimas</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Atrastas programos pavadinimas</string>
     <string name="show_coverArt">Rodyti albumo dekoras</string>
     <string name="show_coverArt_desc">Parodykite albumo deka kaip didelį vaizdą</string>
-    <string name="enable_ManualRpc">Įgalinkite Experimental RPC</string>
+    <string name="enable_manualRpc">Įgalinkite Experimental RPC</string>
     <string name="completion_media_author">Pagrindinis autorius</string>
     <string name="completion_media_album">Albumo pavadinimas</string>
     <string name="completion_media_albumArtist">Albumo autorius</string>
@@ -235,8 +235,8 @@
     <string name="use_youtubeButtonDesc">Pridėkite automatiniu būdu klikiamą mygtuką (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) medijose grojant</string>
     <string name="link_toArtistChannel">Susieti su menoininko kanalu</string>
     <string name="link_toArtistChannel_desc">Mygtukas susieja su kaliedžiu nors dalis, bet ne daina/video</string>
-    <string name="experimental_rpcTitleToggle">Antraštė</string>
-    <string name="experimental_rpcTitleToggle_desc">Parodykite dainos informaciją aktyvumo pavadinime, o ne programos pavadinimą</string>
+    <string name="manual_rpc_title_toggle">Antraštė</string>
+    <string name="manual_rpc_title_toggle_desc">Parodykite dainos informaciją aktyvumo pavadinime, o ne programos pavadinimą</string>
     <string name="title_source_song">Dainos pavadinimas</string>
     <string name="title_source_artist">Autorius</string>
     <string name="type_to_insert_variable">Įveskite &apos;{{&apos; norėdami įdėti kintamąjį</string>
