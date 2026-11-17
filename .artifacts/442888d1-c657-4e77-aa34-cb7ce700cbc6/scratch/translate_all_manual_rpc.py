@@ -3,8 +3,7 @@ import re
 
 res_dir = '/Users/user/Downloads/Kizzy-Enhanced/common/resources/src/main/res'
 
-# Native translations for ALL Manual RPC strings across ALL languages
-# format: {lang_code: {string_name: native_translation}}
+# Native translations for ALL Manual RPC strings across ALL remaining languages
 translations = {
     'af': {
         'enable_manualRpc': 'Aktiveer Handmatige RPC',
@@ -477,7 +476,7 @@ translations = {
     'lo': {
         'enable_manualRpc': 'ເປີດໃຊ້ Manual RPC',
         'main_manualRpc': 'Manual RPC',
-        'main_rpc_details': 'Manual RPC ເປັນຄຸນສົມບັດໃນ Kizzy ທີ່ປ່ຽນແປງລະຫວ່າງ Apps RPC ແລະ Media RPC ຢ່າງຕໍ່ເນື່ອງ.',
+        'main_manualRpc_details': 'Manual RPC ເປັນຄຸນສົມບັດໃນ Kizzy ທີ່ປ່ຽນແປງລະຫວ່າງ Apps RPC ແລະ Media RPC ຢ່າງຕໍ່ເນື່ອງ.',
         'manual_rpc_detect_apps': 'ອະນຸຍາດໃຫ້ Manual RPC ກວດພົບແອັບທີ່ກຳລັງດຳເນີນການ',
         'manual_rpc_detect_media': 'ອະນຸຍາດໃຫ້ Manual RPC ກວດພົບການເລີ່ມຕົ້ນສື່',
         'manual_rpc_title_toggle': 'ຫົວຂໍ້',
@@ -937,7 +936,7 @@ for lang_code, lang_translations in translations.items():
     for name, translation in lang_translations.items():
         pattern = rf'<string name="{name}">.*?</string>'
         replacement = f'<string name="{name}">{translation}</string>'
-        new_content, count = re.subn(pattern, replacement, content, count=1)
+        new_content, count = re.subn(pattern, replacement, content, count=1, flags=re.DOTALL)
         if count > 0:
             content = new_content
             total_fixed += 1

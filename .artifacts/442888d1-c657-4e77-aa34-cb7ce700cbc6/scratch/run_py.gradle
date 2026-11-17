@@ -1,0 +1,33 @@
+/*
+ *
+ *  ******************************************************************
+ *  *  * Copyright (C) 2022
+ *  *  * run_py.gradle is part of Kizzy
+ *  *  *  and can not be copied and/or distributed without the express
+ *  *  * permission of yzziK(Vaibhav)
+ *  *  *****************************************************************
+ *
+ *
+ */
+
+gradle.projectsLoaded { g ->
+    g.rootProject { p ->
+        p.task('runPy') {
+            doLast {
+                def script = p.findProperty('pyScript') ?: '/Users/user/Downloads/Kizzy-Enhanced/.artifacts/442888d1-c657-4e77-aa34-cb7ce700cbc6/scratch/runner.py'
+                def workDir = new File('/Users/user/Downloads/Kizzy-Enhanced')
+                def proc = ['python3', script].execute(null, workDir)
+                def out = new StringBuffer()
+                def err = new StringBuffer()
+                proc.waitForProcessOutput(out, err)
+                print out.toString()
+                if (err.toString().trim()) {
+                    print err.toString()
+                }
+                if (proc.exitValue() != 0) {
+                    throw new GradleException("Python script failed with exit code ${proc.exitValue()}: ${err.toString()}")
+                }
+            }
+        }
+    }
+}
