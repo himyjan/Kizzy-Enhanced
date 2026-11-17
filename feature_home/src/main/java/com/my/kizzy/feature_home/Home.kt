@@ -1,6 +1,6 @@
 /*
  *
- *  ******************************************************************
+ *  ****************-------------------------------------------------
  *  *  * Copyright (C) 2022
  *  *  * Home.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
@@ -102,9 +102,15 @@ fun Home(
     navigateToLogsScreen: () -> Unit,
 ) {
     val ctx = LocalContext.current
+
+    // Configuration-aware string resources
     val mediaRpcTitle = stringResource(R.string.main_mediaRpc)
     val manualRpcTitle = stringResource(R.string.main_manualRpc)
     val customRpcTitle = stringResource(R.string.main_customRpc)
+    val updateCheckText = stringResource(R.string.update_check_for_update)
+    val noUpdatesText = stringResource(R.string.update_no_updates_available)
+    val qsTileLabel = stringResource(R.string.qs_tile_label)
+
     var homeItems by remember {
         mutableStateOf(features)
     }
@@ -112,9 +118,9 @@ fun Home(
         mutableStateOf(false)
     }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val drawerOpen by remember { mutableStateOf(false) }
+    var drawerOpen by remember { mutableStateOf(false) }
+    var isDrawerAnimating by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    var lastDrawerToggleTime by remember { mutableStateOf(0L) }
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState(),
@@ -154,10 +160,10 @@ fun Home(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             val sbm = ctx.getSystemService(android.app.StatusBarManager::class.java)
                             sbm.requestAddTileService(
-                                    cn,
-                                    ctx.getString(R.string.qs_tile_label),
-                                    android.graphics.drawable.Icon.createWithResource(ctx, R.drawable.ic_tile_play),
-                                    {}
+                                cn,
+                                qsTileLabel,
+                                android.graphics.drawable.Icon.createWithResource(ctx, R.drawable.ic_tile_play),
+                                {}
                             ) {}
                         }
                     },
@@ -228,7 +234,7 @@ fun Home(
                                     modifier = Modifier.clickable {
                                         Toast.makeText(
                                             ctx,
-                                            ctx.getString(R.string.update_check_for_update),
+                                            updateCheckText,
                                             Toast.LENGTH_SHORT
                                         ).show()
                                         checkForUpdates()
@@ -243,7 +249,7 @@ fun Home(
                                 modifier = Modifier.clickable {
                                     Toast.makeText(
                                         ctx,
-                                        ctx.getString(R.string.update_check_for_update),
+                                        updateCheckText,
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     checkForUpdates()
@@ -329,7 +335,7 @@ fun Home(
                         } else {
                             Toast.makeText(
                                 ctx,
-                                ctx.getString(R.string.update_no_updates_available),
+                                noUpdatesText,
                                 Toast.LENGTH_SHORT
                             ).show()
                             showUpdateDialog = false
