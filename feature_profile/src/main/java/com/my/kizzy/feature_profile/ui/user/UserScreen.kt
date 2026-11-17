@@ -13,25 +13,43 @@
 package com.my.kizzy.feature_profile.ui.user
 
 import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
-import com.my.kizzy.feature_profile.ui.component.Logout
 import com.my.kizzy.feature_profile.ui.component.ProfileCard
 import com.my.kizzy.feature_profile.ui.component.ProfileNetworkError
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.shimmer.AnimatedShimmer
 import com.my.kizzy.ui.components.shimmer.ShimmerProfileCard
+import com.my.kizzy.ui.theme.DISCORD_BLURPLE
+import com.my.kizzy.ui.theme.DISCORD_BG
+import com.my.kizzy.ui.theme.DISCORD_CARD
+import com.my.kizzy.ui.theme.DISCORD_LOGOUT_RED
+import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
+import com.my.kizzy.ui.theme.DISCORD_TEXT
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,15 +64,56 @@ fun UserScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
+    // Resolved at composition so the snackbar text stays config-aware.
+    val sureMessage = stringResource(R.string.are_you_sure)
+    val yesLabel = stringResource(R.string.yes)
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        // Discord's dark theme background - the dynamic color scheme would
+        // otherwise paint a wallpaper-tinted grey behind the profile.
+        containerColor = DISCORD_BG,
+        snackbarHost = {
+            // Larger than the default snackbar: the logout confirmation is the
+            // primary affordance on this screen, so it needs a bigger tap
+            // target and heavier type.
+            SnackbarHost(snackbarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = DISCORD_CARD,
+                    contentColor = DISCORD_TEXT,
+                    actionContentColor = DISCORD_BLURPLE,
+                ) {
+                    Text(
+                        text = data.visuals.message,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(vertical = 6.dp),
+                    )
+                    data.visuals.actionLabel?.let { label ->
+                        TextButton(
+                            onClick = { data.performAction() },
+                            modifier = Modifier.padding(start = 12.dp),
+                        ) {
+                            Text(
+                                text = label,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+                }
+            }
+        },
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            TopAppBar(title = { },
-                navigationIcon = { BackButton { onBackPressed() } })
-        }
+            TopAppBar(
+                title = { },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DISCORD_BG),
+                navigationIcon = { BackButton { onBackPressed() } },
+            )
+        },
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -64,18 +123,26 @@ fun UserScreen(
         ) {
             when (state) {
                 is UserState.Error -> {
-                    // Not logged in - show ProfileCard with fallback user and Discord Signin button
-                    ProfileCard(
-                        state.user,
-                        rpcConfig = state.rpcConfig,
-                        onAvatarClick = {
-                            onNavigateToRpcPreview()
-                        }
-                    )
-                    DiscordLoginButton(
-                        onClick = { onNavigateToLogin() },
-                        enabled = true
-                    )
+                    // Not logged in - Discord-style card with fallback user
+                    // plus the Discord Signin button.
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        ProfileCard(
+                            state.user,
+                            rpcConfig = state.rpcConfig,
+                            onAvatarClick = { onNavigateToRpcPreview() }
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        DiscordLoginButton(
+                            onClick = { onNavigateToLogin() },
+                            enabled = true
+                        )
+                        Spacer(Modifier.height(24.dp))
+                    }
                 }
 
                 UserState.Loading -> {
@@ -85,40 +152,94 @@ fun UserScreen(
                 }
 
                 is UserState.LoadingCompleted -> {
-                    ProfileCard(
-                        state.user,
-                        rpcConfig = state.rpcConfig,
-                        onAvatarClick = {
-                            onNavigateToRpcPreview()
-                        }
-                    )
-                    Logout(
+                    Column(
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(10.dp),
-                        shape = RoundedCornerShape(12.dp)
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
                     ) {
-                        scope.launch {
-                            snackbarHostState.showSnackbar(
-                                message = ctx.getString(R.string.are_you_sure),
-                                actionLabel = ctx.getString(R.string.yes),
-                                duration = SnackbarDuration.Short,
-                                withDismissAction = true
-                            ).run {
-                                when (this) {
-                                    SnackbarResult.ActionPerformed -> {
-                                        onLogout(ctx)
-                                    }
+                        ProfileCard(
+                            state.user,
+                            rpcConfig = state.rpcConfig,
+                            onAvatarClick = { onNavigateToRpcPreview() }
+                        )
 
-                                    SnackbarResult.Dismissed -> Unit
-                                }
-                            }
-
+                        Spacer(Modifier.height(16.dp))
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(DISCORD_CARD),
+                        ) {
+                            MenuRow(
+                                icon = Icons.Filled.PlayArrow,
+                                label = stringResource(R.string.profile_open_rpc_preview),
+                                onClick = { onNavigateToRpcPreview() },
+                            )
                         }
+
+                        // Log Out is a standalone destructive row, exactly like
+                        // Discord: salmon red icon + label on the bare page,
+                        // outside the menu card and with no divider.
+                        Spacer(Modifier.height(8.dp))
+                        MenuRow(
+                            icon = Icons.AutoMirrored.Filled.Logout,
+                            label = stringResource(R.string.logout),
+                            contentColor = DISCORD_LOGOUT_RED,
+                            onClick = {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = sureMessage,
+                                        actionLabel = yesLabel,
+                                        duration = SnackbarDuration.Short,
+                                        withDismissAction = true
+                                    ).run {
+                                        when (this) {
+                                            SnackbarResult.ActionPerformed -> {
+                                                onLogout(ctx)
+                                            }
+
+                                            SnackbarResult.Dismissed -> Unit
+                                        }
+                                    }
+                                }
+                            },
+                        )
+                        Spacer(Modifier.height(24.dp))
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MenuRow(
+    icon: ImageVector,
+    label: String,
+    modifier: Modifier = Modifier,
+    contentColor: Color = DISCORD_TEXT,
+    onClick: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = contentColor,
+            modifier = Modifier.size(20.dp),
+        )
+        Spacer(Modifier.width(14.dp))
+        Text(
+            text = label,
+            color = contentColor,
+            fontSize = 15.sp,
+        )
     }
 }
 

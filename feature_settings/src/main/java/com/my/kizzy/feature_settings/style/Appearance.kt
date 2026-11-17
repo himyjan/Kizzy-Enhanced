@@ -12,6 +12,8 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -47,16 +49,21 @@ import com.my.kizzy.preference.DEFAULT_SEED_COLOR
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.CUSTOM_THEME_COLOR
 import com.my.kizzy.preference.modifyThemeSeedColor
+import com.my.kizzy.preference.modifyThemeStyle
 import com.my.kizzy.preference.palettesMap
+import com.my.kizzy.preference.ThemeStyle
 import com.my.kizzy.preference.switchDynamicColor
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.SettingItem
+import com.my.kizzy.ui.components.Subtitle
 import com.my.kizzy.ui.components.dialog.TextFieldDialog
+import com.my.kizzy.ui.components.preference.PreferenceSingleChoiceItem
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import com.my.kizzy.ui.theme.LocalDarkTheme
 import com.my.kizzy.ui.theme.LocalDynamicColorSwitch
 import com.my.kizzy.ui.theme.LocalPaletteStyleIndex
 import com.my.kizzy.ui.theme.LocalSeedColor
+import com.my.kizzy.ui.theme.LocalThemeStyle
 import com.my.kizzy.ui.theme.autoDark
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.DarkMode
@@ -92,7 +99,9 @@ fun Appearance(
         })
     }) {
         Column(
-            Modifier.padding(it),
+            Modifier
+                .padding(it)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Column {
@@ -158,6 +167,19 @@ fun Appearance(
                     }
                 }
             }
+            Subtitle(text = stringResource(id = R.string.theme_style))
+            PreferenceSingleChoiceItem(
+                text = stringResource(R.string.theme_style_kizzy),
+                selected = LocalThemeStyle.current == ThemeStyle.KIZZY,
+            ) { modifyThemeStyle(ThemeStyle.KIZZY) }
+            PreferenceSingleChoiceItem(
+                text = stringResource(R.string.theme_style_discord_dark),
+                selected = LocalThemeStyle.current == ThemeStyle.DISCORD_DARK,
+            ) { modifyThemeStyle(ThemeStyle.DISCORD_DARK) }
+            PreferenceSingleChoiceItem(
+                text = stringResource(R.string.theme_style_discord_light),
+                selected = LocalThemeStyle.current == ThemeStyle.DISCORD_LIGHT,
+            ) { modifyThemeStyle(ThemeStyle.DISCORD_LIGHT) }
             if (DynamicColors.isDynamicColorAvailable()) {
                 PreferenceSwitch(title = stringResource(id = R.string.dynamic_color),
                     description = stringResource(

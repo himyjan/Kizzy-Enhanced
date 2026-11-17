@@ -33,6 +33,7 @@ import com.my.kizzy.preference.palettesMap
 val LocalDarkTheme = compositionLocalOf { DarkThemePreference() }
 val LocalSeedColor = compositionLocalOf { DEFAULT_SEED_COLOR }
 val LocalDynamicColorSwitch = compositionLocalOf { false }
+val LocalThemeStyle = compositionLocalOf { com.my.kizzy.preference.ThemeStyle.KIZZY }
 val LocalWindowWidthState = staticCompositionLocalOf { WindowWidthSizeClass.Compact }
 val LocalPaletteStyleIndex = compositionLocalOf { 0 }
 
@@ -48,6 +49,7 @@ fun SettingsProvider(windowWidthSizeClass: WindowWidthSizeClass,content: @Compos
         ),
         LocalWindowWidthState provides windowWidthSizeClass,
         LocalDynamicColorSwitch provides appSettingsState.isDynamicColorEnabled,
+        LocalThemeStyle provides appSettingsState.themeStyle,
         content = content
     )
 }

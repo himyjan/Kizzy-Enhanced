@@ -112,6 +112,11 @@
     <string name="amoled">AMOLED Theme</string>
     <string name="dynamic_color">Dynamic color</string>
     <string name="dynamic_color_desc">Apply colors from wallpapers</string>
+    <string name="theme_style" tools:ignore="MissingTranslation">Theme style</string>
+    <string name="theme_style_desc" tools:ignore="MissingTranslation">Choose the design system used across the app</string>
+    <string name="theme_style_kizzy" tools:ignore="MissingTranslation">Kizzy (Dynamic)</string>
+    <string name="theme_style_discord_dark" tools:ignore="MissingTranslation">Discord Dark</string>
+    <string name="theme_style_discord_light" tools:ignore="MissingTranslation">Discord Light</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="primary_color">Primary Color</string>
@@ -278,6 +283,7 @@
     <string name="user_profile_bio">ABOUT ME</string>
     <string name="profile_view_full_bio" tools:ignore="MissingTranslation">View Full Bio</string>
     <string name="profile_show_less" tools:ignore="MissingTranslation">Show Less</string>
+    <string name="profile_open_rpc_preview" tools:ignore="MissingTranslation">Open RPC Preview</string>
     <string name="user_profile_special_button">Special Button</string>
     <string name="user_profile">User Profile</string>
     <string name="logout">Logout</string>

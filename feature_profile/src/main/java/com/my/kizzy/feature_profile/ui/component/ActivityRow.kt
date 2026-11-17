@@ -1,18 +1,22 @@
 package com.my.kizzy.feature_profile.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,14 +39,87 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.resources.R
-import com.my.kizzy.ui.theme.DISCORD_BLURPLE
 import com.my.kizzy.ui.theme.DISCORD_CARD
+import com.my.kizzy.ui.theme.DISCORD_GREEN
 import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
+import com.my.kizzy.ui.theme.DISCORD_TRACK_COLOR
 import com.my.kizzy.ui.theme.DISCORD_TEXT
 import kotlinx.coroutines.delay
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+// Discord's green "elapsed" marker shown next to the note glyph when a media
+// activity has no seekable timeline.
+private val MEDIA_ELAPSED_GREEN = DISCORD_GREEN
+
+// Guard for the "now - start" fallback: any start timestamp further away than
+// this is not a position (e.g. an epoch value or an absolute end time).
+private const val SEVEN_DAYS_MS = 7L * 24 * 60 * 60 * 1000
+
+/**
+ * Pure computation of the media timeline: returns (progress 0f..1f,
+ * elapsedText).
+ *
+ * Kept as a top-level function so the very first frame can be computed
+ * synchronously during composition instead of waiting for the ticker.
+ */
+private fun computeTimeline(cfg: RpcConfig?, nowMs: Long): Pair<Float, String> {
+    val type = cfg?.type?.toIntOrNull()
+    val isMedia = type == 2 || type == 3
+    val start = cfg?.timestampsStart?.toLongOrNull()
+    val stop = cfg?.timestampsStop?.toLongOrNull()
+
+    if (cfg != null && isMedia && start != null && stop != null) {
+        val difference = stop - start
+        if (cfg.paused) {
+            // Freeze the timeline where the player stopped. `start` is
+            // computed as "read time - position", so it cannot be used with
+            // the wall clock while paused - it would keep counting.
+            val position = (cfg.pausedPositionMs ?: 0L)
+                .coerceIn(0L, difference.coerceAtLeast(0L))
+            val progress = if (difference > 0L) {
+                position.toFloat() / difference.toFloat()
+            } else {
+                0f
+            }
+            return progress to getFormatFromMs(position)
+        }
+        val elapsed = nowMs - start
+        val progress = if (difference > 0L) {
+            (elapsed.toFloat() / difference.toFloat()).coerceIn(0f, 1f)
+        } else {
+            0f
+        }
+        val text = if (elapsed >= 0L && elapsed < difference) {
+            getFormatFromMs(elapsed)
+        } else {
+            getFormatFromMs(difference.coerceAtLeast(0))
+        }
+        return progress to text
+    }
+
+    // Media without a full start/stop range (or non-media): Discord shows
+    // no seekable bar - just an elapsed marker. Prefer the paused position,
+    // then the start timestamp converted to a position, so "stopped" media
+    // does not read as 00:00 or as a multi-year timestamp.
+    val text = when {
+        cfg?.paused == true && cfg.pausedPositionMs != null ->
+            getFormatFromMs((cfg.pausedPositionMs ?: 0L).coerceAtLeast(0L))
+        isMedia && start != null && nowMs - start in 0..SEVEN_DAYS_MS ->
+            getFormatFromMs(nowMs - start)
+        else -> "00:00"
+    }
+    return 0f to text
+}
+
+/**
+ * Discord's "Current activity" card.
+ *
+ * Layout mirrors Discord mobile: header row with the activity verb plus a
+ * "..." affordance, then the large/small artwork next to the title and
+ * subtitle, a single-row media timeline (elapsed — track — total) and the
+ * optional action buttons at the bottom.
+ */
 @Composable
 fun ActivityRow(
     rpcConfig: RpcConfig?,
@@ -71,59 +147,33 @@ fun ActivityRow(
         latestRpcConfig = rpcConfig
     }
 
-    var elapsedText by remember { mutableStateOf("00:00") }
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+    // Computed synchronously for the first frame: LaunchedEffect only runs
+    // after composition, so seeding "00:00" showed a stale value on entry
+    // even when the track was already seconds in.
+    val initialTimeline = remember(rpcConfig) {
+        computeTimeline(rpcConfig, System.currentTimeMillis())
+    }
+    var elapsedText by remember(rpcConfig) { mutableStateOf(initialTimeline.second) }
+    var sliderPosition by remember(rpcConfig) { mutableFloatStateOf(initialTimeline.first) }
 
     LaunchedEffect(Unit) {
         while (true) {
             // 2-second tick instead of 1 second: reduces UI recompositions
             // by 50% while the profile screen is visible and media is playing.
             delay(2000)
-            val now = System.currentTimeMillis()
-            val cfg = latestRpcConfig
-            val type = cfg?.type?.toIntOrNull()
-            val isPlayingMedia = type?.equals(2) == true || type?.equals(3) == true
-            val start = cfg?.timestampsStart?.toLongOrNull()
-            val stop = cfg?.timestampsStop?.toLongOrNull()
-
-            if (isPlayingMedia && start != null && stop != null) {
-                val difference = stop - start
-                val paused = cfg?.paused == true
-                if (paused) {
-                    // Freeze the timeline where the player stopped. `start` is
-                    // computed as "read time - position", so it cannot be used with
-                    // the wall clock while paused - it would keep counting.
-                    val position = (cfg?.pausedPositionMs ?: 0L)
-                        .coerceIn(0L, difference.coerceAtLeast(0L))
-                    sliderPosition = if (difference > 0L) {
-                        position.toFloat() / difference.toFloat()
-                    } else {
-                        0f
-                    }
-                    elapsedText = getFormatFromMs(position)
-                } else {
-                    val elapsed1 = now - start
-                    sliderPosition = if (difference > 0L) {
-                        elapsed1.toFloat() / difference.toFloat()
-                    } else {
-                        0f
-                    }
-                    elapsedText = if (elapsed1 >= 0L && elapsed1 < difference) {
-                        getFormatFromMs(elapsed1)
-                    } else {
-                        getFormatFromMs(difference.coerceAtLeast(0))
-                    }
-                }
-            } else {
-                sliderPosition = 0f
-                elapsedText = "00:00"
-            }
+            val next = computeTimeline(latestRpcConfig, System.currentTimeMillis())
+            sliderPosition = next.first
+            elapsedText = next.second
         }
     }
 
     val activityPrefix = when (rpcConfig?.type?.toIntOrNull()) {
-        2 -> stringResource(R.string.activity_listening_title, rpcConfig?.name.orEmpty().ifEmpty { "music" })
-        3 -> stringResource(R.string.activity_watching_title, rpcConfig?.name.orEmpty().ifEmpty { "video" })
+        2 -> stringResource(
+            R.string.activity_listening_title,
+            rpcConfig?.name.orEmpty().ifEmpty { "music" })
+        3 -> stringResource(
+            R.string.activity_watching_title,
+            rpcConfig?.name.orEmpty().ifEmpty { "video" })
         5 -> stringResource(R.string.activity_competiting_title, rpcConfig?.name.orEmpty())
         else -> rpcConfig?.name?.takeIf { it.isNotEmpty() }
             ?: stringResource(R.string.activity_playing_title)
@@ -136,30 +186,50 @@ fun ActivityRow(
         rpcConfig?.details
     }
     val renderedState = rpcConfig?.state?.takeIf { it.isNotEmpty() }
+    // Local vals so the timeline block can smart-cast below.
+    val cfg = rpcConfig
+    val startMs = cfg?.timestampsStart?.toLongOrNull()
+    val stopMs = cfg?.timestampsStop?.toLongOrNull()
+    val hasTimeline = cfg != null && showTs && isPlayingMedia &&
+            startMs != null && stopMs != null
 
     Surface(
         color = DISCORD_CARD,
         shape = RoundedCornerShape(8.dp),
-        shadowElevation = 6.dp,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(14.dp),
         ) {
-            Text(
-                text = activityPrefix,
-                color = DISCORD_TEXT,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.ExtraBold,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Start,
+            // Header: "Listening to X" with the "..." menu affordance on the
+            // right, exactly like Discord's activity card. The icon is visual
+            // only - Kizzy has no activity menu.
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
-            )
+            ) {
+                Text(
+                    text = activityPrefix,
+                    color = DISCORD_TEXT,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.Filled.MoreHoriz,
+                    contentDescription = null,
+                    tint = DISCORD_SUBTEXT,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(12.dp))
 
             Row(verticalAlignment = Alignment.Top) {
-                Box(Modifier.size(108.dp)) {
+                Box(Modifier.size(88.dp)) {
                     val largeImg = rpcConfig?.largeImg?.removePrefix("mp:")
                     AsyncImage(
                         model = if (isAsset(largeImg)) "https://media.discordapp.net/$largeImg" else
@@ -170,14 +240,14 @@ fun ActivityRow(
                         contentScale = ContentScale.FillHeight,
                         modifier = if (!rpcConfig?.largeImg.isNullOrEmpty())
                             Modifier
-                                .size(96.dp)
-                                .clip(RoundedCornerShape(3.dp))
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(4.dp))
                                 .align(Alignment.TopStart)
                         else
                             Modifier
                                 .size(48.dp)
-                                .background(DISCORD_BLURPLE, RoundedCornerShape(3.dp))
-                        ,
+                                .background(DISCORD_CARD, RoundedCornerShape(4.dp))
+                                .align(Alignment.TopStart),
                     )
                     if (!rpcConfig?.smallImg.isNullOrEmpty()) {
                         val smallImg = rpcConfig?.smallImg?.removePrefix("mp:")
@@ -185,7 +255,7 @@ fun ActivityRow(
                             modifier =
                                 Modifier
                                     .border(
-                                        2.dp,
+                                        3.dp,
                                         DISCORD_CARD,
                                         CircleShape,
                                     ).padding(2.dp)
@@ -198,11 +268,11 @@ fun ActivityRow(
                                 else
                                     rpcConfig?.smallImg,
                                 error = painterResource(id = R.drawable.ic_rpc_placeholder),
-                                placeholder = painterResource(R.drawable.ic_rpc_placeholder),
+                                placeholder = painterResource(id = R.drawable.ic_rpc_placeholder),
                                 contentDescription = null,
                                 contentScale = ContentScale.FillHeight,
                                 modifier = Modifier
-                                    .size(32.dp)
+                                    .size(28.dp)
                                     .clip(CircleShape),
                             )
                         }
@@ -213,32 +283,50 @@ fun ActivityRow(
                     modifier =
                         Modifier
                             .weight(1f)
-                            .padding(horizontal = 6.dp),
+                            .padding(start = 12.dp),
                 ) {
                     Text(
                         text = renderedDetails.orEmpty(),
                         color = DISCORD_TEXT,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Text(
-                        text = renderedState.orEmpty(),
-                        color = DISCORD_SUBTEXT,
                         fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
 
-                    if (
-                        showTs &&
-                        (isPlaying ||
-                                (isPlayingMedia &&
-                                        (rpcConfig?.timestampsStart?.toLongOrNull() == null || rpcConfig?.timestampsStop?.toLongOrNull() == null)))
-                    ) {
+                    if (!renderedState.isNullOrEmpty()) {
                         Text(
+                            text = renderedState,
+                            color = DISCORD_SUBTEXT,
+                            fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+
+                    when {
+                        // Media without a seekable timeline: Discord renders a
+                        // green "♪ 0:21" elapsed marker instead of a bar.
+                        showTs && isPlayingMedia && !hasTimeline -> Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(top = 6.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.MusicNote,
+                                contentDescription = null,
+                                tint = MEDIA_ELAPSED_GREEN,
+                                modifier = Modifier.size(14.dp),
+                            )
+                            Spacer(Modifier.width(2.dp))
+                            Text(
+                                text = elapsedText,
+                                color = MEDIA_ELAPSED_GREEN,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                        // Playing game / non-media: "Time elapsed: 12m 30s".
+                        showTs && isPlaying -> Text(
                             text = stringResource(
                                 id = rpcConfig?.timestampsStop?.toLongOrNull()?.let {
                                     if (it > 0) R.string.time_left else R.string.time_elapsed
@@ -251,55 +339,57 @@ fun ActivityRow(
                             ),
                             color = DISCORD_SUBTEXT,
                             fontSize = 12.sp,
-                            modifier = Modifier.padding(top = 8.dp)
+                            modifier = Modifier.padding(top = 6.dp),
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (showTs && isPlayingMedia && rpcConfig?.timestampsStart?.toLongOrNull() != null && rpcConfig?.timestampsStop?.toLongOrNull() != null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(0.dp, 0.dp, 0.dp, 0.dp)
-                        .height(6.dp)
-                        .background(Color.LightGray.copy(alpha = 0.3f))
-                        .clip(RoundedCornerShape(4.dp)),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .fillMaxWidth(sliderPosition)
-                            .height(6.dp)
-                            .background(DISCORD_BLURPLE)
-                    )
-                }
+            if (hasTimeline) {
+                Spacer(Modifier.height(12.dp))
+                // Discord draws the media timeline as one row:
+                // elapsed ———— track ———— total.
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(0.dp, 8.dp, 0.dp, 0.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = elapsedText,
                         color = DISCORD_SUBTEXT,
                         fontSize = 12.sp,
-                        modifier = Modifier
                     )
+                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(4.dp)
+                            .background(DISCORD_TRACK_COLOR, RoundedCornerShape(2.dp)),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(sliderPosition)
+                                .height(4.dp)
+                                .background(DISCORD_TEXT, RoundedCornerShape(2.dp))
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
                     Text(
-                        text = getFormatFromMs(rpcConfig.timestampsStop.toLong() - rpcConfig.timestampsStart.toLong()),
+                        text = getFormatFromMs(stopMs - startMs),
                         color = DISCORD_SUBTEXT,
                         fontSize = 12.sp,
-                        modifier = Modifier
                     )
                 }
             }
 
-            if (rpcConfig != null) {
+            if (rpcConfig != null &&
+                (rpcConfig.button1.isNotEmpty() || rpcConfig.button2.isNotEmpty())
+            ) {
+                Spacer(Modifier.height(12.dp))
                 ProfileButton(label = rpcConfig.button1, link = rpcConfig.button1link)
+                if (rpcConfig.button1.isNotEmpty() && rpcConfig.button2.isNotEmpty()) {
+                    Spacer(Modifier.height(8.dp))
+                }
                 ProfileButton(label = rpcConfig.button2, link = rpcConfig.button2link)
             }
         }

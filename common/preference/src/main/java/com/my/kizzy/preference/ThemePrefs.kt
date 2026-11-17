@@ -29,8 +29,16 @@ data class AppSettings(
     val darkTheme: DarkThemePreference = DarkThemePreference(),
     val isDynamicColorEnabled: Boolean = false,
     val seedColor: Int = DEFAULT_SEED_COLOR,
-    val paletteStyleIndex: Int = 0
+    val paletteStyleIndex: Int = 0,
+    val themeStyle: Int = ThemeStyle.KIZZY,
 )
+
+/** Which design system the app renders with. */
+object ThemeStyle {
+    const val KIZZY = 0
+    const val DISCORD_DARK = 1
+    const val DISCORD_LIGHT = 2
+}
 val palettesMap = mapOf(
     0 to PaletteStyle.TonalSpot,
     1 to PaletteStyle.Spritz,
@@ -58,7 +66,8 @@ fun initializeThemePrefs() {
                 ),
                 isDynamicColorEnabled = Prefs[Prefs.DYNAMIC_COLOR, false],
                 seedColor = Prefs[Prefs.THEME_COLOR, DEFAULT_SEED_COLOR],
-                paletteStyleIndex = Prefs[Prefs.PALETTE_STYLE, 0]
+                paletteStyleIndex = Prefs[Prefs.PALETTE_STYLE, 0],
+                themeStyle = Prefs[Prefs.THEME_STYLE, ThemeStyle.KIZZY],
             )
         )
     }
@@ -98,6 +107,17 @@ fun switchDynamicColor(enabled: Boolean = !mutableAppSettingsStateFlow.value.isD
             it.copy(isDynamicColorEnabled = enabled)
         }
         Prefs[Prefs.DYNAMIC_COLOR] = enabled
+    }
+}
+
+/**
+ * Switches the design system: Kizzy's seeded Material You theme, Discord's
+ * dark theme or Discord's light theme.
+ */
+fun modifyThemeStyle(style: Int) {
+    PreferenceConfig.applicationScope.launch(Dispatchers.IO) {
+        mutableAppSettingsStateFlow.update { it.copy(themeStyle = style) }
+        Prefs[Prefs.THEME_STYLE] = style
     }
 }
 

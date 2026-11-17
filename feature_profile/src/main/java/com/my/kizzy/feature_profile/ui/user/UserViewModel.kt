@@ -207,6 +207,12 @@ class UserViewModel @Inject constructor(
             // composing.
             viewModelScope.launch(Dispatchers.Main) {
                 val current = _state.value
+                // While still loading, ignore media updates: the branch below
+                // would emit LoadingCompleted with an EMPTY User(), rendering
+                // the profile without name/badges/bio and then jumping again
+                // when getUser() delivers the real account (the "quick UI
+                // change" on open). getUser() seeds rpcConfig itself.
+                if (current is UserState.Loading) return@launch
                 // The media service can publish the same presence again (for example a
                 // duplicate metadata callback). Replacing the state with an equal value
                 // would only trigger another recomposition of the whole profile.
@@ -216,8 +222,9 @@ class UserViewModel @Inject constructor(
                 _state.value = UserState.LoadingCompleted(
                     when (current) {
                         is UserState.LoadingCompleted -> current.user
-                        is UserState.Error -> current.user
-                        else -> User()
+                        // Loading was filtered above; only Error can remain with
+                        // a user object.
+                        else -> (current as UserState.Error).user
                     },
                     newRpcConfig
                 )

@@ -381,6 +381,8 @@ object Prefs {
     const val HIGH_CONTRAST = "high_contrast"
     const val DYNAMIC_COLOR = "dynamic_color"
     const val THEME_COLOR = "theme_color"
+    // Theme style: 0 = Kizzy (Monet seed/palette), 1 = Discord dark, 2 = Discord light
+    const val THEME_STYLE = "theme_style"
     const val CUSTOM_THEME_COLOR = "custom_theme_color"
     const val IS_FIRST_LAUNCHED = "is_first_launched"
     const val CUSTOM_ACTIVITY_TYPE = "custom_activity_type"
