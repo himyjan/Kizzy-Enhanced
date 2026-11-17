@@ -58,3 +58,4 @@ captures/
 
 # Kotlin
 .kotlin
+/.artifacts

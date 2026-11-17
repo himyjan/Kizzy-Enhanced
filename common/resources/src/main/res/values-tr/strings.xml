@@ -11,8 +11,8 @@
     <string name="activity_status_online_idle_dnd">Etkinlik durumu(online, idle, dnd)</string>
     <string name="activity_button1_text">Etkinlik 1.buton metni</string>
     <string name="activity_button2_text">Etkinlik 2.buton metni</string>
-    <string name="activity_button1_url">1.Buton URL\'si</string>
-    <string name="activity_button2_url">2.Buton URL\'si</string>
+    <string name="activity_button1_url">1.Buton URL'si</string>
+    <string name="activity_button2_url">2.Buton URL'si</string>
     <string name="activity_large_image">Etkinlik Büyük Resmi</string>
     <string name="activity_small_image">Etkinlik Küçük Resmi</string>
     <string name="activity_type">Etkinlik Türü</string>
@@ -65,13 +65,13 @@
     <string name="enable_appsRpc">Uyg. Algılamayı Etkinleştir</string>
     <string name="usage_access">Kullanım Erişimi Gerekli</string>
     <string name="usage_access_desc">Mevcut uygulamayı algılamak için kullanım erişimi gereklidir.</string>
-    <string name="enable_mediaRpc">Medya RPC\'sini Etkinleştir</string>
+    <string name="enable_mediaRpc">Medya RPC'sini Etkinleştir</string>
     <string name="permission_required">İzin Gerekli</string>
-    <string name="enable_customRpc">Özel RPC\'yi Etkinleştir</string>
+    <string name="enable_customRpc">Özel RPC'yi Etkinleştir</string>
     <string name="dark_theme">Koyu Tema</string>
     <string name="privacy_policy">Gizlilik Politikası</string>
     <string name="privacy_policy_desc">Gizlilik Politikasını oku</string>
-    <string name="enable_console_rpc">Konsol RPC\'sini Etkinleştir</string>
+    <string name="enable_console_rpc">Konsol RPC'sini Etkinleştir</string>
     <string name="rpc_settings_button_configs">Medya ve Uygulama RPC Buton Ayarları</string>
     <string name="use_custom_buttons">Özel Butonlar Kullan</string>
     <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
@@ -96,7 +96,7 @@
     <string name="activity_large_text">Etkinlik Büyük Metni</string>
     <string name="activity_small_text">Etkinlik Küçük Metni</string>
     <string name="contributors">Emeği Geçenler</string>
-    <string name="stream_url">Yayın URL\'si</string>
+    <string name="stream_url">Yayın URL'si</string>
     <string name="stream_url_info">Yalnızca https://twitch.tv/ ve https://youtube.com/ bağlantıları desteklenir.</string>
     <string name="activity_button_max_character">En fazla 31 karakter kullanılabilir</string>
     <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom RPC
@@ -116,7 +116,7 @@
     <string name="search">Ara</string>
     <string name="clear">Temizle</string>
     <string name="search_placeholder">Ara…</string>
-    <string name="hide_on_pause">Duraklatınca RPC\'yi gizle</string>
+    <string name="hide_on_pause">Duraklatınca RPC'yi gizle</string>
     <string name="idling_notification">Boşta…</string>
     <string name="main_appDetection">Uygulama Algılama</string>
     <string name="main_appDetection_details">Kizzy allows you to share your current activity on
@@ -208,9 +208,9 @@
     <string name="use_imgur">Imgur Görsel Proxy Kullan</string>
     <string name="use_imgur_desc">Görseller için alternatif olarak Imgur kullan</string>
     <string name="start_appDetection">Uygulama Algılamayı Başlat</string>
-    <string name="start_mediaRPC">Medya RPC\'sini başlat</string>
+    <string name="start_mediaRPC">Medya RPC'sini başlat</string>
     <string name="start_manualRpc">Manuel RPC'yi başlat</string>
-    <string name="stop_rpc">RPC\'yi durdur</string>
+    <string name="stop_rpc">RPC'yi durdur</string>
     <string name="stop">Durdur</string>
     <string name="start_appDetection_toast">Uygulama Algılama başlatıldı</string>
     <string name="start_mediaRPC_toast">Medya RPC başlatıldı</string>
@@ -218,9 +218,9 @@
     <string name="stop_rpc_toast">Tüm servisler durduruldu</string>
     <string name="show_playback_state">Oynatma durumunu göster</string>
     <string name="copied_to_clipboard">Panoya kopyalandı</string>
-    <string name="application_id">Uygulama ID\'si</string>
-    <string name="custom_application_id">Özel Uygulama ID\'si</string>
-    <string name="custom_application_id_desc">Varsayılan Discord Uygulama ID\'sini geçersiz kılar</string>
+    <string name="application_id">Uygulama ID'si</string>
+    <string name="custom_application_id">Özel Uygulama ID'si</string>
+    <string name="custom_application_id_desc">Varsayılan Discord Uygulama ID'sini geçersiz kılar</string>
     <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
@@ -269,11 +269,11 @@
     <string name="update_download_error">İndirme başarısız. Tekrar dene.</string>
 
     <string name="rpc_connection_method">Bağlantı yöntemi</string>
-    <string name="rpc_connection_method_desc">Kizzy\'nin Discord\'a nasıl bağlandığını seçin</string>
+    <string name="rpc_connection_method_desc">Kizzy'nin Discord'a nasıl bağlandığını seçin</string>
     <string name="rpc_connection_method_gateway">Gateway (bot belirteci)</string>
     <string name="rpc_connection_method_oauth2">OAuth (Discord hesabınız)</string>
-    <string name="discord_oauth2_authorize">Discord\'a bağlan</string>
-    <string name="discord_oauth2_authorize_desc">Kizzy\'nin etkinliğinizi Discord profilinizde göstermesine izin verin</string>
+    <string name="discord_oauth2_authorize">Discord'a bağlan</string>
+    <string name="discord_oauth2_authorize_desc">Kizzy'nin etkinliğinizi Discord profilinizde göstermesine izin verin</string>
 
     <string name="console_include_spoofed">Sahte derlemeleri dahil et</string>
     <string name="auto_detect">Otomatik · %1$s</string>
@@ -284,8 +284,8 @@
     <string name="console_auto_detect">DroidDeck / Eden otomatik algılama</string>
     <string name="console_detected_hint">Bu oyunu Console RPC için kullanmak üzere dokunun</string>
     <string name="discord_step2_content">"Etkinliğimi paylaş" seçeneğini bulun ve AÇIN. "Etkinliğimi nerede paylaşıyorum" altında "Tüm sunucularda paylaş" seçeneğini seçin. "Sunucularım" bölümüne kaydırın ve durumunuzun görünmesini istediğiniz sunucuları AÇIN.</string>
-    <string name="discord_tip_content">Bazı Discord mobil sürümleri bu anahtarı gizler. Chrome\'da discord.com\'u açın → Masaüstü sitesini etkinleştirin → giriş yapın → Ayarlar (⚙️) → Etkinlik Gizliliği → "Etkinliğimi paylaş" seçeneğini açın.</string>
-    <string name="discord_setup_desc">Discord\'un etkinliğinizin profilinizde görünmesine izin verdiğinden emin olun.</string>
+    <string name="discord_tip_content">Bazı Discord mobil sürümleri bu anahtarı gizler. Chrome'da discord.com'u açın → Masaüstü sitesini etkinleştirin → giriş yapın → Ayarlar (⚙️) → Etkinlik Gizliliği → "Etkinliğimi paylaş" seçeneğini açın.</string>
+    <string name="discord_setup_desc">Discord'un etkinliğinizin profilinizde görünmesine izin verdiğinden emin olun.</string>
     <string name="auto_detect_activity_type_desc">Müzik uygulamaları müzik, video uygulamaları video olarak algılanır; bu nedenle YouTube Music artık bir oyun olarak gösterilmez. Tek bir uygulama için seçilen tür her zaman önceliklidir.</string>
     <string name="auto_detect_activity_type">Etkinlik türünü otomatik algıla</string>
     <string name="logs_save_error">Günlükler kaydedilemedi</string>
@@ -311,7 +311,7 @@
 
     <string name="rpc_tab_custom_settings">Özel RPC</string>
     <string name="rpc_tab_console_presets">Konsol RPC</string>
-    <string name="rpc_tab_console_presets_desc">Console RPC\'yi hızlıca kurmak için bir ön ayar seçin. Her değeri daha sonra Custom RPC sekmesinde ayarlayabilirsiniz.</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC'yi hızlıca kurmak için bir ön ayar seçin. Her değeri daha sonra Custom RPC sekmesinde ayarlayabilirsiniz.</string>
     <string name="rpc_tab_back_to_settings">Custom RPC ayarlarına dön</string>
 
     <string name="console_preset_android">Android</string>

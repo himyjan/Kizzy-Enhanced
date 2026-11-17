@@ -76,6 +76,20 @@ class ManualRpc : Service() {
 
     private lateinit var mediaSessionManager: MediaSessionManager
 
+    /**
+     * Single listener instance shared by the add and remove calls.
+     *
+     * A bound method reference to activeSessionsListener allocates a new
+     * wrapper on every evaluation, so the remove call never matches the
+     * listener registered by the add call. The framework then retains the
+     * binder stub — and this destroyed service through it — leaking the
+     * whole service instance after onDestroy().
+     */
+    private val activeSessionsChangedListener =
+        MediaSessionManager.OnActiveSessionsChangedListener { sessions ->
+            activeSessionsListener(sessions)
+        }
+
     private var currentMediaController: MediaController? = null
 
     private val mediaControllerCallback = MediaControllerCallback()
@@ -264,7 +278,7 @@ class ManualRpc : Service() {
             // Without it this throws SecurityException, so guard to avoid crashing.
             try {
                 mediaSessionManager.addOnActiveSessionsChangedListener(
-                    ::activeSessionsListener,
+                    activeSessionsChangedListener,
                     ComponentName(this, NotificationListener::class.java)
                 )
             } catch (e: SecurityException) {
@@ -931,7 +945,7 @@ class ManualRpc : Service() {
         // guard so destroying an un-started/permission-less service never crashes.
         if (::mediaSessionManager.isInitialized) {
             try {
-                mediaSessionManager.removeOnActiveSessionsChangedListener(::activeSessionsListener)
+                mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
             } catch (e: Exception) {
                 logger.e(TAG, "removeOnActiveSessionsChangedListener failed: ${e.message}")
             }

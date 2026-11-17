@@ -311,7 +311,7 @@
 
     <string name="rpc_tab_custom_settings">Custom RPC</string>
     <string name="rpc_tab_console_presets">Console RPC</string>
-    <string name="rpc_tab_console_presets_desc">Zgjidhni një para-cilim për të konfiguruar shpejt Console RPC. Më pas mund t\'i rregulloni çdo vlerë në skedën Custom RPC.</string>
+    <string name="rpc_tab_console_presets_desc">Zgjidhni një para-cilim për të konfiguruar shpejt Console RPC. Më pas mund t'i rregulloni çdo vlerë në skedën Custom RPC.</string>
     <string name="rpc_tab_back_to_settings">Kthehu te cilësimet e Custom RPC</string>
 
     <string name="console_preset_android">Android</string>

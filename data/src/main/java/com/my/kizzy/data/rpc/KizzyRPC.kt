@@ -799,6 +799,11 @@ class KizzyRPC @Inject constructor(
         if (!discordWebSocket.isWebSocketConnected()) {
             discordWebSocket.connect()
             markConnected()
+            // Wait for WebSocket to connect before sending presence
+            val start = System.currentTimeMillis()
+            while (!discordWebSocket.isWebSocketConnected() && System.currentTimeMillis() - start < 15000) {
+                delay(500)
+            }
         }
         discordWebSocket.sendActivity(presence)
     }

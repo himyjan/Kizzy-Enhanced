@@ -249,7 +249,7 @@
     <string name="rpc_connection_method_gateway">Gateway (ਬੌਟ ਟੋਕਨ)</string>
     <string name="rpc_connection_method_oauth2">OAuth (ਤੁਹਾਡਾ Discord ਖਾਤਾ)</string>
     <string name="discord_oauth2_authorize">Discord ਨਾਲ ਜੋੜੋ</string>
-    <string name="discord_oauth2_authorize_desc">Kizzy ਨੂੰ ਆਪਣੀ Discord ਪ੍ਰੋਫਾਈਲ \'ਤੇ ਆਪਣੀ ਸਰਗਰਮੀ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
+    <string name="discord_oauth2_authorize_desc">Kizzy ਨੂੰ ਆਪਣੀ Discord ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਆਪਣੀ ਸਰਗਰਮੀ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
 
     <string name="console_include_spoofed">ਨਕਲੀ ਬਿਲਡ ਸ਼ਾਮਲ ਕਰੋ</string>
     <string name="auto_detect">ਆਪਣੇ ਆਪ · %1$s</string>
@@ -259,9 +259,9 @@
     <string name="discord_setup_title">ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ</string>
     <string name="console_auto_detect">DroidDeck / Eden ਆਪਣੇ ਆਪ ਪਛਾਣੋ</string>
     <string name="console_detected_hint">Console RPC ਲਈ ਇਹ ਖੇਡ ਵਰਤਣ ਲਈ ਟੈਪ ਕਰੋ</string>
-    <string name="discord_step2_content">"ਮੇਰੀ ਸਰਗਰਮੀ ਸਾਂਝੀ ਕਰੋ" ਲੱਭੋ ਅਤੇ ON ਕਰੋ। "ਮੈਂ ਆਪਣੀ ਸਰਗਰਮੀ ਕਿੱਥੇ ਸਾਂਝੀ ਕਰਦਾ ਹਾਂ" ਹੇਠ ਸਾਰਵਰਾਂ \'ਤੇ "ਸਾਰਵਰਾਂ \'ਤੇ ਸਾਂਝੀ ਕਰੋ" ਚੁਣੋ। "ਮੇਰੇ ਸਾਰਵਰ" ਤੱਕ ਸਕਰੋਲ ਕਰੋ ਅਤੇ ਉਹਨਾਂ ਸਾਰਵਰਾਂ ਨੂੰ ON ਕਰੋ ਜਿੱਥੇ ਤੁਸੀਂ ਆਪਣੀ ਹਾਲਤ ਦਿਸਣੀ ਚਾਹੁੰਦੇ ਹੋ।</string>
+    <string name="discord_step2_content">"ਮੇਰੀ ਸਰਗਰਮੀ ਸਾਂਝੀ ਕਰੋ" ਲੱਭੋ ਅਤੇ ON ਕਰੋ। "ਮੈਂ ਆਪਣੀ ਸਰਗਰਮੀ ਕਿੱਥੇ ਸਾਂਝੀ ਕਰਦਾ ਹਾਂ" ਹੇਠ ਸਾਰਵਰਾਂ 'ਤੇ "ਸਾਰਵਰਾਂ 'ਤੇ ਸਾਂਝੀ ਕਰੋ" ਚੁਣੋ। "ਮੇਰੇ ਸਾਰਵਰ" ਤੱਕ ਸਕਰੋਲ ਕਰੋ ਅਤੇ ਉਹਨਾਂ ਸਾਰਵਰਾਂ ਨੂੰ ON ਕਰੋ ਜਿੱਥੇ ਤੁਸੀਂ ਆਪਣੀ ਹਾਲਤ ਦਿਸਣੀ ਚਾਹੁੰਦੇ ਹੋ।</string>
     <string name="discord_tip_content">Discord ਦੇ ਕੁਝ ਮੋਬਾਈਲ ਵਰਜਨ ਇਹ ਟੌਗਲ ਲੁਕਾ ਲੈਂਦੇ ਹਨ। Chrome ਵਿੱਚ discord.com ਖੋਲ੍ਹੋ → Desktop ਸਾਈਟ ਸਕ੍ਰਿਆ ਕਰੋ → ਲੌਗ ਇਨ ਕਰੋ → ਸੈਟਿੰਗਾਂ (⚙️) → ਸਰਗਰਮੀ ਗੋਪਨੀਯਤਾ → "ਮੇਰੀ ਸਰਗਰਮੀ ਸਾਂਝੀ ਕਰੋ" ON ਕਰੋ।</string>
-    <string name="discord_setup_desc">ਯਕੀਨੀ ਬਣਾਓ ਕਿ Discord ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ \'ਤੇ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿੰਦਾ ਹੈ।</string>
+    <string name="discord_setup_desc">ਯਕੀਨੀ ਬਣਾਓ ਕਿ Discord ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿੰਦਾ ਹੈ।</string>
     <string name="auto_detect_activity_type_desc">ਸੰਗੀਤ ਐਪਾਂ ਨੂੰ ਸੰਗੀਤ ਅਤੇ ਵੀਡੀਓ ਐਪਾਂ ਨੂੰ ਵੀਡੀਓ ਵਜੋਂ ਪਛਾਣਿਆ ਜਾਂਦਾ ਹੈ, ਇਸ ਲਈ YouTube Music ਹੁਣ ਖੇਡ ਵਜੋਂ ਨਹੀਂ ਦਿਖਾਇਆ ਜਾਂਦਾ। ਇੱਕ ਐਪ ਲਈ ਚੁਣੀ ਗਈ ਕਿਸਮ ਹਮੇਸ਼ਾ ਪਹਿਲਾਂ ਰਹਿੰਦੀ ਹੈ।</string>
     <string name="auto_detect_activity_type">ਸਰਗਰਮੀ ਦੀ ਕਿਸਮ ਆਪਣੇ ਆਪ ਪਛਾਣੋ</string>
     <string name="logs_save_error">ਲੌਗ ਸੰਭਾਲੇ ਨਹੀਂ ਜਾ ਸਕੇ</string>
@@ -271,7 +271,7 @@
     <string name="discord_step1_title">ਕਦਮ 1: ਗੋਪਨੀਯਤਾ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</string>
     <string name="console_detected">ਪਛਾਣ ਲਿਆ ਗਿਆ</string>
     <string name="discord_step2_title">ਕਦਮ 2: ਸਰਗਰਮੀ ਸਾਂਝੀ ਕਰਨਾ ਚਾਲੂ ਕਰੋ</string>
-    <string name="discord_step1_content">Discord ਐਪ ਖੋਲ੍ਹੋ → ਆਪਣੀ "ਤੁਸੀਂ" (ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ) ਆਈਕਨ \'ਤੇ ਟੈਪ ਕਰੋ → ਸੈਟਿੰਗਾਂ (⚙️) \'ਤੇ ਟੈਪ ਕਰੋ → ਹੇਠਾਂ ਸਕਰੋਲ ਕਰੋ ਅਤੇ "ਸਮੱਗਰੀ ਤੇ ਸੋਸ਼ਲ" (ਜਾਂ ਪੁਰਾਣੀਆਂ ਐਪ ਵਰਜਨਾਂ ਵਿੱਚ "ਸਰਗਰਮੀ ਗੋਪਨੀਯਤਾ") \'ਤੇ ਟੈਪ ਕਰੋ।</string>
+    <string name="discord_step1_content">Discord ਐਪ ਖੋਲ੍ਹੋ → ਆਪਣੀ "ਤੁਸੀਂ" (ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ) ਆਈਕਨ 'ਤੇ ਟੈਪ ਕਰੋ → ਸੈਟਿੰਗਾਂ (⚙️) 'ਤੇ ਟੈਪ ਕਰੋ → ਹੇਠਾਂ ਸਕਰੋਲ ਕਰੋ ਅਤੇ "ਸਮੱਗਰੀ ਤੇ ਸੋਸ਼ਲ" (ਜਾਂ ਪੁਰਾਣੀਆਂ ਐਪ ਵਰਜਨਾਂ ਵਿੱਚ "ਸਰਗਰਮੀ ਗੋਪਨੀਯਤਾ") 'ਤੇ ਟੈਪ ਕਰੋ।</string>
     <string name="activity_type_fallback_desc">ਨਹੀਂ ਪਛਾਣੇ ਗਏ ਐਪਾਂ ਲਈ ਅਤੇ ਆਪਣੇ ਆਪ ਪਛਾਣ ਬੰਦ ਹੋਣ ਵਾਲੇ ਹਰ ਐਪ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ।</string>
     <string name="discord_step3_title">ਕਦਮ 3: ਆਪਣੀ ਆਨਲਾਈਨ ਹਾਲਤ ਜਾਂਚੋ</string>
 
@@ -288,7 +288,7 @@
     <string name="rpc_tab_custom_settings">ਕਸਟਮ RPC</string>
     <string name="rpc_tab_console_presets">ਕੰਸੋਲ RPC</string>
     <string name="rpc_tab_console_presets_desc">Console RPC ਨੂੰ ਤੁਰੰਤ ਸੈਟ ਕਰਨ ਲਈ ਇੱਕ ਪ੍ਰੀਸੈੱਟ ਚੁਣੋ। ਬਾਅਦ ਵਿੱਚ Custom RPC ਟੈਬ ਵਿੱਚ ਹਰ ਮੁੱਲ ਬਦਲ ਸਕਦੇ ਹੋ।</string>
-    <string name="rpc_tab_back_to_settings">Custom RPC ਸੈਟਿੰਗਾਂ \'ਤੇ ਵਾਪਸ ਜਾਓ</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC ਸੈਟਿੰਗਾਂ 'ਤੇ ਵਾਪਸ ਜਾਓ</string>
 
     <string name="console_preset_android">Android</string>
     <string name="console_preset_applied">Preset applied</string>

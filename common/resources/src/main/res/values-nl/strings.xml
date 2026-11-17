@@ -278,7 +278,7 @@
     <string name="discord_step1_title">Stap 1: Privacy-instellingen openen</string>
     <string name="console_detected">Herkend</string>
     <string name="discord_step2_title">Stap 2: Delen van activiteit inschakelen</string>
-    <string name="discord_step1_content">Open de Discord-app → tik op je \'Jij\'-pictogram (profielafbeelding) → tik op Instellingen (⚙️) → scrol omlaag en tik op "Inhoud en sociaal" (of "Activiteitsprivacy" bij oudere appversies).</string>
+    <string name="discord_step1_content">Open de Discord-app → tik op je 'Jij'-pictogram (profielafbeelding) → tik op Instellingen (⚙️) → scrol omlaag en tik op "Inhoud en sociaal" (of "Activiteitsprivacy" bij oudere appversies).</string>
     <string name="activity_type_fallback_desc">Wordt gebruikt voor apps die niet worden herkend en voor elke app wanneer automatische detectie is uitgeschakeld.</string>
     <string name="discord_step3_title">Stap 3: Controleer je online status</string>
 

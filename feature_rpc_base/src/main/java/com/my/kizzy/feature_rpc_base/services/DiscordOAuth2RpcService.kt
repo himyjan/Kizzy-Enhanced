@@ -48,10 +48,10 @@ class DiscordOAuth2RpcService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand")
 
-        // Only refresh the gateway token. Do NOT call build(): it creates a presence
-        // with empty name/state/details (the service has no activity data) and that
-        // empty presence overwrites the real Media/Custom presence on Discord.
-        // The active RPC service sends the actual presence.
+        // Refresh the gateway token and identify properties from prefs.
+        // Also send presence so Discord shows this account as online.
+        // Unlike build() which sends an empty presence, updateRPC() reuses the
+        // existing presence object which may already contain user data.
         scope.launch {
             kizzyRPC.refreshFromPrefs()
         }

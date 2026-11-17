@@ -18,8 +18,8 @@
     <string name="activity_type">Math gweithredo</string>
     <string name="activity_platform">Platform gweithredo</string>
     <string name="load_config">Llwytho o Ffeiliau</string>
-    <string name="save_config">Cadw\'r ffurfab</string>
-    <string name="delete_configs">Dileu\'r ffurfab</string>
+    <string name="save_config">Cadw'r ffurfab</string>
+    <string name="delete_configs">Dileu'r ffurfab</string>
     <string name="preview_rpc">Rhagor o RPC</string>
     <string name="select_a_config">Dewiswch ffurfab</string>
     <string name="login_with_discord">Mewed â Discord</string>
@@ -28,13 +28,13 @@
     <string name="github_latest_release">"Latest release "</string>
     <string name="github_latest_release_desc">Edrych am fersiwn newydd a hanes newidiadau</string>
     <string name="github_issue">Issue Github</string>
-    <string name="github_issue_desc">Cyflwyno issue ar gyfer adrodd bug neu geiriad o\'r system</string>
+    <string name="github_issue_desc">Cyflwyno issue ar gyfer adrodd bug neu geiriad o'r system</string>
     <string name="credits">Credo</string>
-    <string name="credits_desc">Credo i\'r llyfrgelloedd a\'r cyfrannwyr a ddefnyddiwyd</string>
-    <string name="enable_artist_name">Troi\'r enw artist ymlaen</string>
-    <string name="enable_album_name">Troi\'r enw albwm ymlaen</string>
+    <string name="credits_desc">Credo i'r llyfrgelloedd a'r cyfrannwyr a ddefnyddiwyd</string>
+    <string name="enable_artist_name">Troi'r enw artist ymlaen</string>
+    <string name="enable_album_name">Troi'r enw albwm ymlaen</string>
     <string name="show_app_icon">Dangos icon yr ap</string>
-    <string name="enable_timestamps">Troi\'r stampiau ymlaen</string>
+    <string name="enable_timestamps">Troi'r stampiau ymlaen</string>
     <string name="timestamp_mode">Mod stampiau</string>
     <string name="start_timestamp_ms">Stamp cychwyn (mewnyddiaid)</string>
     <string name="end_timestamp_ms">Stamp diweddf (mewnyddiaid)</string>
@@ -46,11 +46,11 @@
     <string name="use_low_res_icon">Defnyddio delweddau yn ôl gymhwyth</string>
     <string name="use_low_res_icon_desc">Use a lower resolution app icon for displaying on RPC (turn
         this on if the RPC is crashing). This setting will also be applied to Apps.</string>
-    <string name="delete_saved_icon_urls">Dileu\'r dolenni icon wedi\'u harfio</string>
+    <string name="delete_saved_icon_urls">Dileu'r dolenni icon wedi'u harfio</string>
     <string name="delete_saved_icon_urls_desc">Delete app icon URLs saved in local files (Only use
         this as needed as it will send images to Discord servers again, which will consume more
         data)</string>
-    <string name="app_crashed">Mae\'r ap wedi torri</string>
+    <string name="app_crashed">Mae'r ap wedi torri</string>
     <string name="share_crash_logs_desc">Please send the Logs in Discord channel with the following
         stacktrace :</string>
     <string name="share_crash_logs">RHANNU LOGIADAU</string>
@@ -62,9 +62,9 @@
     <string name="settings">Gosodiadau</string>
     <string name="language">Iaith</string>
     <string name="design_credits">Credo dylunio</string>
-    <string name="enable_appsRpc">Troi\'r canfydiad apps ymlaen</string>
+    <string name="enable_appsRpc">Troi'r canfydiad apps ymlaen</string>
     <string name="usage_access">Mae Mynediad Defnydd yn ofyn</string>
-    <string name="usage_access_desc">Mae mynediad defnydd yn angen i\'r ap gael y presennol yn rhedeg</string>
+    <string name="usage_access_desc">Mae mynediad defnydd yn angen i'r ap gael y presennol yn rhedeg</string>
     <string name="enable_mediaRpc">Troi Media RPC ymlaen</string>
     <string name="permission_required">Mae anCaniatáu yn ofyn</string>
     <string name="enable_customRpc">Troi Custom RPC ymlaen</string>
@@ -73,14 +73,14 @@
     <string name="privacy_policy_desc">Edrych y polisi preifatydd</string>
     <string name="enable_console_rpc">Troi Console RPC ymlaen</string>
     <string name="rpc_settings_button_configs">Ffurfabio botwmau ar gyfer Media ac AppDetection RPC</string>
-    <string name="use_custom_buttons">Defnyddio\'ch botwmau</string>
+    <string name="use_custom_buttons">Defnyddio'ch botwmau</string>
     <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
         RPC</string>
     <string name="follow_system">Dilyn y system</string>
     <string name="advance_settings">Gosodiadau uwch</string>
     <string name="amoled">Them AMOLED</string>
     <string name="dynamic_color">Lliw dynamaidd</string>
-    <string name="dynamic_color_desc">Gosod lliwiau o\'r walpapur</string>
+    <string name="dynamic_color_desc">Gosod lliwiau o'r walpapur</string>
     <string name="cancel">Canselu</string>
     <string name="confirm">Cadw</string>
     <string name="primary_color">Lliw sylfaenol</string>
@@ -88,7 +88,7 @@
     <string name="android_on">Yn</string>
     <string name="android_off">Yn ôl</string>
     <string name="setup">Sefydlu</string>
-    <string name="user_data_policy">Nid yw\'r ap yn casg data defnyddwyr</string>
+    <string name="user_data_policy">Nid yw'r ap yn casg data defnyddwyr</string>
     <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions
         to make sure all the features of the app work.</string>
     <string name="permission_granted">Caniatwyd</string>
@@ -104,7 +104,7 @@
     <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom RPC
         from the last run RPC</string>
     <string name="clear_all_fields">Clirio pob maes</string>
-    <string name="share_config">Rhannu\'r ffurfab</string>
+    <string name="share_config">Rhannu'r ffurfab</string>
     <string name="change_log">Hanes newidiadau</string>
     <string name="update">Diweddaru</string>
     <string name="configs_directory">Cyfeiriadau ffurfabiau</string>
@@ -112,11 +112,11 @@
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
         and manual rpc only</string>
     <string name="custom_activity_status">Statws gweithredo ar gyfer</string>
-    <string name="custom_activity_status_desc">Dyma\'n statws gweithredo rhestol</string>
+    <string name="custom_activity_status_desc">Dyma'n statws gweithredo rhestol</string>
     <string name="search">Chwilio</string>
     <string name="clear">Clirio</string>
     <string name="search_placeholder">Chwilio…</string>
-    <string name="hide_on_pause">Cuddio\'r RPC wrth gorsaf</string>
+    <string name="hide_on_pause">Cuddio'r RPC wrth gorsaf</string>
     <string name="idling_notification">Dim yn gwneud…</string>
     <string name="main_appDetection">Canfydiad Apps</string>
     <string name="main_appDetection_details">Kizzy allows you to share your current activity on
@@ -137,7 +137,7 @@
     <string name="logs">Logiadau</string>
     <string name="drawer_subtitle_help">CYFARWE</string>
     <string name="drawer_faq">FAQ</string>
-    <string name="go_to_profile">Mynd i\'r proffil</string>
+    <string name="go_to_profile">Mynd i'r proffil</string>
     <string name="version">Fersiwn</string>
     <string name="try_again">Ceisiw eto</string>
     <string name="request_for_notification_access">Notification Access is needed for app to extract
@@ -147,7 +147,7 @@
     <string name="compact_mode">Modiwr cryno</string>
     <string name="are_you_sure">A ydych yn siôr?</string>
     <string name="yes">Ydy</string>
-    <string name="user_profile_error">Methwyd diweddaru\'r proffil defnyddiwr:</string>
+    <string name="user_profile_error">Methwyd diweddaru'r proffil defnyddiwr:</string>
     <string name="no_internet_user_profile">Dim cyswllt rhyngrwyd. Rhowch ymlaen eto.</string>
     <string name="user_profile_rpc_name">YN DEFNUDDIO KIZZY RICH PRESENCE</string>
     <string name="user_profile_bio">AMDWY</string>
@@ -182,8 +182,8 @@
     <string name="save">Cadw</string>
     <string name="set_timestamps">Gosod stampiau</string>
     <string name="saved_config_toast">Saved "%1$s" successfully</string>
-    <string name="error_saving_config_toast">Gwall wrth gadw\'r ffurfab</string>
-    <string name="config_name">Enw\'r ffurfab</string>
+    <string name="error_saving_config_toast">Gwall wrth gadw'r ffurfab</string>
+    <string name="config_name">Enw'r ffurfab</string>
     <string name="delete">Dileu</string>
     <string name="mandatory">Goforwiadol</string>
     <string name="optional">Dewisol</string>
@@ -194,7 +194,7 @@
     <string name="activity_competiting_title">Yn cystafu â %1$s</string>
     <string name="activity_streaming_title">Yn ffio %1$s</string>
     <string name="delete_config_successfully_toast">Dilwyd %1$s yn llwyddiannus</string>
-    <string name="service_enabled">Gwasanaeth wedi\'i galluogi</string>
+    <string name="service_enabled">Gwasanaeth wedi'i galluogi</string>
     <string name="no_internet_connection">Dim cyswllt rhyngrwyd</string>
     <string name="unknown_error">Bu gwall annwysig</string>
     <string name="rpc_buttons">Botwmau RPC</string>
@@ -202,7 +202,7 @@
     <string name="off">Yn ôl</string>
     <string name="time_elapsed">%1$s wedi mynd</string>
     <string name="time_left">%1$s ar ôl</string>
-    <string name="config_name_empty">Ni allai enw\'r ffurfab fod yn wag</string>
+    <string name="config_name_empty">Ni allai enw'r ffurfab fod yn wag</string>
     <string name="restart">Ailgychwyn</string>
     <string name="custom_rpc_running">Mae Custom RPC yn rhedeg</string>
     <string name="use_imgur">Imgur fel dirprydwr delwedd</string>
@@ -210,26 +210,26 @@
     <string name="start_appDetection">Cychwyn canfydiad Apps</string>
     <string name="start_mediaRPC">Cychwyn Media RPC</string>
     <string name="start_manualRpc">Cychwyn RPC Llaw</string>
-    <string name="stop_rpc">Stopio\'r RPC</string>
+    <string name="stop_rpc">Stopio'r RPC</string>
     <string name="stop">Stopio</string>
     <string name="start_appDetection_toast">Dechrau canfydiad Apps</string>
     <string name="start_mediaRPC_toast">Dechrau Media RPC</string>
     <string name="start_manualRpc_toast">RPC Llaw wedi cychwyn</string>
     <string name="stop_rpc_toast">Mae pob gwasanaeth wedi stopio</string>
     <string name="show_playback_state">Dangos statws chwarae</string>
-    <string name="copied_to_clipboard">Wedi\'i gopio i\'r glannau</string>
+    <string name="copied_to_clipboard">Wedi'i gopio i'r glannau</string>
     <string name="application_id">ID yr ap</string>
     <string name="custom_application_id">ID Dilysiad Discord ar gyfer</string>
-    <string name="custom_application_id_desc">Dyma\'r ID Dilysiad Discord rhestol</string>
+    <string name="custom_application_id_desc">Dyma'r ID Dilysiad Discord rhestol</string>
     <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="app_preferences">Hoffiannau\'r ap</string>
-    <string name="app_preferences_desc">Dewiswch yr apiau i\'w cael eu galluogi ar gyfer Manual RPC</string>
+    <string name="app_preferences">Hoffiannau'r ap</string>
+    <string name="app_preferences_desc">Dewiswch yr apiau i'w cael eu galluogi ar gyfer Manual RPC</string>
     <string name="completion_media_title">Teitl y gân/fideo</string>
     <string name="completion_media_artist">Prif artist</string>
-    <string name="completion_app_name">Enw\'r ap a ganfydwyd</string>
+    <string name="completion_app_name">Enw'r ap a ganfydwyd</string>
     <string name="show_cover_art">Dangos y gorchenn</string>
     <string name="show_cover_art_desc">Dangos gorchenn yr albwm fel delwedd mawr</string>
     <string name="completion_media_author">Prif awdur</string>
@@ -250,7 +250,7 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Dolen i ganal yr artist</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="title_source_song">Enw\'r gân</string>
+    <string name="title_source_song">Enw'r gân</string>
     <string name="title_source_artist">Artist</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">Dewis ap</string>
@@ -263,8 +263,8 @@
     <string name="platform_playstation">Playstation</string>
     <string name="platform_vr">VR</string>
     <string name="timestamp_mode_default">Cyfryngia / Ap (rhagosprwyd)</string>
-    <string name="timestamp_mode_current">Yn union â\'r amser presennol o\'r dydd</string>
-    <string name="timestamp_mode_custom">Wedi\'i gyfartas</string>
+    <string name="timestamp_mode_current">Yn union â'r amser presennol o'r dydd</string>
+    <string name="timestamp_mode_custom">Wedi'i gyfartas</string>
     <string name="update_installing">Yn gosod…</string>
     <string name="update_download_error">Methwyd lawrlennwyd. Ceisiw eto.</string>
 
@@ -273,7 +273,7 @@
     <string name="rpc_connection_method_gateway">Gateway (token bot)</string>
     <string name="rpc_connection_method_oauth2">OAuth (eich cyfrif Discord)</string>
     <string name="discord_oauth2_authorize">Cysylltu â Discord</string>
-    <string name="discord_oauth2_authorize_desc">Canolwch i Kizzy ddangos eich gweithgaredd i\'ch profil Discord</string>
+    <string name="discord_oauth2_authorize_desc">Canolwch i Kizzy ddangos eich gweithgaredd i'ch profil Discord</string>
 
     <string name="console_include_spoofed">Cynnwys adeiladau ffug</string>
     <string name="auto_detect">Awto · %1$s</string>
@@ -282,11 +282,11 @@
     <string name="discord_step3_content">TAPio dy Statws (islaw y dy enw defnyddiwr) a dewis Ar-lein, Dim yn gwneud, neu Peidiwch â chanfyd. ⚠️ Peidiwch â chanfyd — Mae Discord yn cuddio gweithrediad Kizzy pan fyddwch yn anweledig.</string>
     <string name="discord_setup_title">Cyn i ddechrau</string>
     <string name="console_auto_detect">Auto-dodi DroidDeck / Eden</string>
-    <string name="console_detected_hint">TAPio i ddefnyddio\'r gêm hon ar gyfer Console RPC</string>
-    <string name="discord_step2_content">Dod o hyd i "Rhannu fy ngweithrediad" a\'i hwyluso YN. Dan "Ble rwy\'n Rhannu Gweithrediad", dewis "Rhannu yn pob gweinydd". Llusgo i "Fy Ngweinyddion" a hwyluso\'r gweinyddion lle rydwch chi eisiau gwneud eich statws yn welad.</string>
-    <string name="discord_tip_content">Mae rhai fersiynau symudol o Discord yn cuddio\'r newid hwn. Agorwch discord.com yn Chrome → galluogi\'r wefan ddesktop → mewngofio → Gosodiadau (⚙️) → Preifatwydd Gweithrediad → hwyluso "Rhannu fy ngweithrediad".</string>
-    <string name="discord_setup_desc">Gakwn yn siŵr bod Discord yn caniatáu i\'ch gweithrediad ddangosydd ar eich proffil.</string>
-    <string name="auto_detect_activity_type_desc">Mae apiau cerddoriaeth yn cael eu canfod fel cerddoriaeth a gweithrediadau fideo fel fideo, felly mae YouTube Music bellach yn cael ei ddangos fel gêm. Mae\'r math a ddewiswyd ar gyfer un ap bob amser yn ennill.</string>
+    <string name="console_detected_hint">TAPio i ddefnyddio'r gêm hon ar gyfer Console RPC</string>
+    <string name="discord_step2_content">Dod o hyd i "Rhannu fy ngweithrediad" a'i hwyluso YN. Dan "Ble rwy'n Rhannu Gweithrediad", dewis "Rhannu yn pob gweinydd". Llusgo i "Fy Ngweinyddion" a hwyluso'r gweinyddion lle rydwch chi eisiau gwneud eich statws yn welad.</string>
+    <string name="discord_tip_content">Mae rhai fersiynau symudol o Discord yn cuddio'r newid hwn. Agorwch discord.com yn Chrome → galluogi'r wefan ddesktop → mewngofio → Gosodiadau (⚙️) → Preifatwydd Gweithrediad → hwyluso "Rhannu fy ngweithrediad".</string>
+    <string name="discord_setup_desc">Gakwn yn siŵr bod Discord yn caniatáu i'ch gweithrediad ddangosydd ar eich proffil.</string>
+    <string name="auto_detect_activity_type_desc">Mae apiau cerddoriaeth yn cael eu canfod fel cerddoriaeth a gweithrediadau fideo fel fideo, felly mae YouTube Music bellach yn cael ei ddangos fel gêm. Mae'r math a ddewiswyd ar gyfer un ap bob amser yn ennill.</string>
     <string name="auto_detect_activity_type">Auto-dodi math gweithrediad</string>
     <string name="logs_save_error">Methwyd cadw logiau</string>
     <string name="discord_tip_title">Methwch chi ddod o hyd i "Rhannu fy ngweithrediad"?</string>

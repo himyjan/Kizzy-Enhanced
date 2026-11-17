@@ -190,9 +190,9 @@
     <string name="general_settings">Жалпы</string>
     <string name="activity_playing_title">Оюн ойноп жатат</string>
     <string name="activity_listening_title">%1$s угуп жатат</string>
-    <string name="activity_watching_title">%1$s\'ди көрүп жатат</string>
+    <string name="activity_watching_title">%1$s'ди көрүп жатат</string>
     <string name="activity_competiting_title">%1$s менен меришке</string>
-    <string name="activity_streaming_title">%1$s\'ге тартып жатат</string>
+    <string name="activity_streaming_title">%1$s'ге тартып жатат</string>
     <string name="delete_config_successfully_toast">%1$s ийгилик менен өчүрүлдү</string>
     <string name="service_enabled">Кызмат күйгүз</string>
     <string name="no_internet_connection">Интернет байланышы жок</string>
@@ -206,7 +206,7 @@
     <string name="restart">Өчүрүп күйгүзүү</string>
     <string name="custom_rpc_running">Custom RPC иштеп жатат</string>
     <string name="use_imgur">Imgur сүрөт проксиси катарында</string>
-    <string name="use_imgur_desc">Imgur\'ду альтернативдүү сүрөт проксиси катарында колдонуңуз.</string>
+    <string name="use_imgur_desc">Imgur'ду альтернативдүү сүрөт проксиси катарында колдонуңуз.</string>
     <string name="start_appDetection">Колдонмолору аныктоону баштоо</string>
     <string name="start_mediaRPC">Media RPC баштоо</string>
     <string name="start_manualRpc">Кол менен RPC-ти баштоо</string>
@@ -269,10 +269,10 @@
     <string name="update_download_error">Жүктөө ийгиликсиз болду. Кайра кылыңыз.</string>
 
     <string name="rpc_connection_method">Байланыш ыкмасы</string>
-    <string name="rpc_connection_method_desc">Kizzy Discord\'га кандай байланарын тандаңыз</string>
+    <string name="rpc_connection_method_desc">Kizzy Discord'га кандай байланарын тандаңыз</string>
     <string name="rpc_connection_method_gateway">Gateway (бот токени)</string>
     <string name="rpc_connection_method_oauth2">OAuth (сиздин Discord аккаунтуңуз)</string>
-    <string name="discord_oauth2_authorize">Discord\'га байланыңыз</string>
+    <string name="discord_oauth2_authorize">Discord'га байланыңыз</string>
     <string name="discord_oauth2_authorize_desc">Kizzy сиздин аракеттериңизди Discord профилиңизде көрсөтүгө уруксат берүңүз</string>
 
     <string name="console_include_spoofed">Жалган курулуштарды кошуу</string>
@@ -284,7 +284,7 @@
     <string name="console_auto_detect">DroidDeck / Eden автоматтуу аныктоо</string>
     <string name="console_detected_hint">Бул оюнду Console RPC үчүн колдонуу үчүн басыңыз</string>
     <string name="discord_step2_content">«Менин активдүүлүгүмдү бөлүшүү» дегенди тап, аны КЕЙИНКИ кылыңыз. «Активдүүлүгүмдү кайда бөлүшөм» астында «Бардык серверлерге бөлүшүү» дегенди тандаңыз. «Менин серверлерим» дегенге чейин сыдырып, абалыңыз көрүнгөн серверлерди КЕЙИНКИ кылыңыз.</string>
-    <string name="discord_tip_content">Discord\'тун кээ бир мобилдик версиялары бул которуучуну жашырат. Chrome\'до discord.com ачыңыз → Desktop сайтты күйгүзүңүз → кириңиз → Жөндөөлөр (⚙️) → Активдүүлүк купуялыгы → «Менин активдүүлүгүмдү бөлүшүү» КЕЙИНКИ кылыңыз.</string>
+    <string name="discord_tip_content">Discord'тун кээ бир мобилдик версиялары бул которуучуну жашырат. Chrome'до discord.com ачыңыз → Desktop сайтты күйгүзүңүз → кириңиз → Жөндөөлөр (⚙️) → Активдүүлүк купуялыгы → «Менин активдүүлүгүмдү бөлүшүү» КЕЙИНКИ кылыңыз.</string>
     <string name="discord_setup_desc">Discord профилиңизде активдүүлүгүңүздү көрсөтүүгө уруксат бергенине көз жеткозиңиз.</string>
     <string name="auto_detect_activity_type_desc">Музыка колдонмолору музыка, видео колдонмолору видео катарында аныкталат, ошондуктан YouTube Music мындай оюн катарында көрсөтүлбөйт. Бир колдонмо үчүн тандалган түр дайыма артыкча.</string>
     <string name="auto_detect_activity_type">Активдүүлүк түрүн автоматтуу аныктоо</string>
