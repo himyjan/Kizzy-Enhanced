@@ -181,7 +181,7 @@
     <string name="upload_image">Prenesi sliku</string>
     <string name="save">Spremi</string>
     <string name="set_timestamps">Postavi vremenske oznake</string>
-    <string name="saved_config_toast">Saved \"%1$s\" successfully</string>
+    <string name="saved_config_toast">Saved \'%1$s\' successfully</string>
     <string name="error_saving_config_toast">Greška pri spremanju konfiguracije</string>
     <string name="config_name">Naziv konfiguracije</string>
     <string name="delete">Izbriši</string>

@@ -19,21 +19,21 @@
     <string name="activity_platform">Faoliyat platformasi</string>
     <string name="load_config">Fayllardan yuklash</string>
     <string name="save_config">Konfiguratsiyani saqlash</string>
-    <string name="delete_configs">Konfiguratsiyani o'chirish</string>
-    <string name="preview_rpc">RPC ko'rish</string>
+    <string name="delete_configs">Konfiguratsiyani o\'chirish</string>
+    <string name="preview_rpc">RPC ko\'rish</string>
     <string name="select_a_config">Konfiguratsiya tanlang</string>
     <string name="login_with_discord">Discord orqali kirish</string>
     <string name="github_readme">README</string>
-    <string name="github_readme_desc">Github repositoriyasini ko'ring</string>
+    <string name="github_readme_desc">Github repositoriyasini ko\'ring</string>
     <string name="github_latest_release">"Latest release "</string>
-    <string name="github_latest_release_desc">Yangi versiya va o'zgarishlar tarixini qidiring</string>
+    <string name="github_latest_release_desc">Yangi versiya va o\'zgarishlar tarixini qidiring</string>
     <string name="github_issue">Github masalasi</string>
-    <string name="github_issue_desc">Xato hisoboti yoki yangi imkoniyat so'rovi uchun masala yuboring</string>
-    <string name="credits">E'tirof</string>
-    <string name="credits_desc">Foydalanilgan kutubxonalar va hammashtechilarga e'tirof</string>
+    <string name="github_issue_desc">Xato hisoboti yoki yangi imkoniyat so\'rovi uchun masala yuboring</string>
+    <string name="credits">E\'tirof</string>
+    <string name="credits_desc">Foydalanilgan kutubxonalar va hammashtechilarga e\'tirof</string>
     <string name="enable_artist_name">Ijrochi nomini yoqish</string>
     <string name="enable_album_name">Albom nomini yoqish</string>
-    <string name="show_app_icon">Ilova ikonkasini ko'rsatish</string>
+    <string name="show_app_icon">Ilova ikonkasini ko\'rsatish</string>
     <string name="enable_timestamps">Vaqt belgilari yoqish</string>
     <string name="timestamp_mode">Vaqt belgisi rejimi</string>
     <string name="start_timestamp_ms">Boshlanish vaqti (millisekundlarda)</string>
@@ -46,49 +46,49 @@
     <string name="use_low_res_icon">Past aniqlikdagi rasmlardan foydalaning</string>
     <string name="use_low_res_icon_desc">Use a lower resolution app icon for displaying on RPC (turn
         this on if the RPC is crashing). This setting will also be applied to Apps.</string>
-    <string name="delete_saved_icon_urls">Saqlangan ikon havolalarini o'chirish</string>
+    <string name="delete_saved_icon_urls">Saqlangan ikon havolalarini o\'chirish</string>
     <string name="delete_saved_icon_urls_desc">Delete app icon URLs saved in local files (Only use
         this as needed as it will send images to Discord servers again, which will consume more
         data)</string>
-    <string name="app_crashed">Ilova ishdan to'xtadi</string>
+    <string name="app_crashed">Ilova ishdan to\'xtadi</string>
     <string name="share_crash_logs_desc">Please send the Logs in Discord channel with the following
         stacktrace :</string>
     <string name="share_crash_logs">LOGLARNI ULASHING</string>
     <string name="welcome">Xush kelibsiz</string>
     <string name="features">Imkoniyatlar</string>
     <string name="account">Hisob</string>
-    <string name="display">Ko'rsatish</string>
+    <string name="display">Ko\'rsatish</string>
     <string name="about">Haqida</string>
     <string name="settings">Sozlamalar</string>
     <string name="language">Til</string>
-    <string name="design_credits">Dizayn e'tirofi</string>
+    <string name="design_credits">Dizayn e\'tirofi</string>
     <string name="enable_appsRpc">Ilova aniqlashni yoqish</string>
     <string name="usage_access">Foydalanishga kirish talab qilinadi</string>
     <string name="usage_access_desc">Ilova joriy ishlayotgan ilovani olish uchun foydalanishga kirish kerak</string>
     <string name="enable_mediaRpc">Media RPC yoqish</string>
     <string name="permission_required">Ruxsat talab qilinadi</string>
     <string name="enable_customRpc">Custom RPC yoqish</string>
-    <string name="dark_theme">Qorong'i mavzu</string>
+    <string name="dark_theme">Qorong\'i mavzu</string>
     <string name="privacy_policy">Maxfiylik siyosati</string>
-    <string name="privacy_policy_desc">Maxfiylik siyosatini ko'ring</string>
+    <string name="privacy_policy_desc">Maxfiylik siyosatini ko\'ring</string>
     <string name="enable_console_rpc">Console RPC yoqish</string>
     <string name="rpc_settings_button_configs">Media va AppDetection RPC uchun tugma sozlamalari</string>
-    <string name="use_custom_buttons">O'z tugmalaringizdan foydalaning</string>
+    <string name="use_custom_buttons">O\'z tugmalaringizdan foydalaning</string>
     <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
         RPC</string>
     <string name="follow_system">Tizimga moslash</string>
-    <string name="advance_settings">Ilg'or sozlamalar</string>
+    <string name="advance_settings">Ilg\'or sozlamalar</string>
     <string name="amoled">AMOLED mavzu</string>
     <string name="dynamic_color">Dinamik rang</string>
-    <string name="dynamic_color_desc">Fon rangi ranglarini qo'llang</string>
+    <string name="dynamic_color_desc">Fon rangi ranglarini qo\'llang</string>
     <string name="cancel">Bekor qilish</string>
     <string name="confirm">Tasdiqlash</string>
     <string name="primary_color">Asosiy rang</string>
     <string name="primary_color_hint">Masalan #666666 yoki 666666</string>
     <string name="android_on">Yoqilgan</string>
-    <string name="android_off">O'chirilgan</string>
+    <string name="android_off">O\'chirilgan</string>
     <string name="setup">Sozlash</string>
-    <string name="user_data_policy">Bu ilova foydalanuvchi ma'lumotlarini yig'maydi</string>
+    <string name="user_data_policy">Bu ilova foydalanuvchi ma\'lumotlarini yig\'maydi</string>
     <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions
         to make sure all the features of the app work.</string>
     <string name="permission_granted">Berilgan</string>
@@ -97,7 +97,7 @@
     <string name="activity_small_text">Faoliyat kichik matn</string>
     <string name="contributors">Hammashtechilar</string>
     <string name="stream_url">Strim URL</string>
-    <string name="stream_url_info">Faqat https://twitch.tv/ va https://youtube.com/ URL'lari ishlaydi.</string>
+    <string name="stream_url_info">Faqat https://twitch.tv/ va https://youtube.com/ URL\'lari ishlaydi.</string>
     <string name="activity_button_max_character">Belgi chegarasi 31</string>
     <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom RPC
         Fields</string>
@@ -105,7 +105,7 @@
         from the last run RPC</string>
     <string name="clear_all_fields">Barcha maydonlarni tozalash</string>
     <string name="share_config">Konfiguratsiyani ulashish</string>
-    <string name="change_log">O'zgarishlar tarixi</string>
+    <string name="change_log">O\'zgarishlar tarixi</string>
     <string name="update">Yangilash</string>
     <string name="configs_directory">Konfiguratsiyalar katalogi</string>
     <string name="custom_activity_type">Maxsus faoliyat turi</string>
@@ -116,7 +116,7 @@
     <string name="search">Qidirish</string>
     <string name="clear">Tozalash</string>
     <string name="search_placeholder">Qidirish…</string>
-    <string name="hide_on_pause">To'xtatilganda RPC yashirish</string>
+    <string name="hide_on_pause">To\'xtatilganda RPC yashirish</string>
     <string name="idling_notification">Hech nima qilmayapti…</string>
     <string name="main_appDetection">Ilova aniqlash</string>
     <string name="main_appDetection_details">Kizzy allows you to share your current activity on
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">Qo'lda RPC</string>
-    <string name="main_manualRpc_details">Qo'lda RPC Kizzy-dagi Apps RPC va Media RPC orasida doimiy ravishda o'tadigan funksiya.</string>
+    <string name="main_manualRpc">Qo\'lda RPC</string>
+    <string name="main_manualRpc_details">Qo\'lda RPC Kizzy-dagi Apps RPC va Media RPC orasida doimiy ravishda o\'tadigan funksiya.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">Tez orada</string>
@@ -137,9 +137,9 @@
     <string name="logs">Loglar</string>
     <string name="drawer_subtitle_help">YORDAM</string>
     <string name="drawer_faq">FAQ</string>
-    <string name="go_to_profile">Profilga o'tish</string>
+    <string name="go_to_profile">Profilga o\'tish</string>
     <string name="version">Versiya</string>
-    <string name="try_again">Qayta urinib ko'ring</string>
+    <string name="try_again">Qayta urinib ko\'ring</string>
     <string name="request_for_notification_access">Notification Access is needed for app to extract
         media information.</string>
     <string name="update_check_for_update">Yangilanishlar tekshirilmoqda…</string>
@@ -148,7 +148,7 @@
     <string name="are_you_sure">Ishoningiz komilmi?</string>
     <string name="yes">Ha</string>
     <string name="user_profile_error">Foydalanuvchi profili yangilanmadi:</string>
-    <string name="no_internet_user_profile">Internet aloqasi yo'q. Keyinroq urinib ko'ring.</string>
+    <string name="no_internet_user_profile">Internet aloqasi yo\'q. Keyinroq urinib ko\'ring.</string>
     <string name="user_profile_rpc_name">KIZZY RICH PRESENCE ishlatilmoqda</string>
     <string name="user_profile_bio">MEN HAQIMDA</string>
     <string name="user_profile_special_button">Maxsus tugma</string>
@@ -156,82 +156,82 @@
     <string name="logout">Chiqish</string>
     <string name="custom_rpc_directory">Custom RPC konfiguratsiyalarini saqlash katalogi</string>
     <string name="select_directory">Katalog tanlang</string>
-    <string name="enter_details">Ma'lumotlarni kiriting</string>
+    <string name="enter_details">Ma\'lumotlarni kiriting</string>
     <string name="status_online">Online</string>
     <string name="status_idle">Hech nima qilmayapti…</string>
     <string name="status_dnd">Bezovta qiling</string>
-    <string name="status_invisible_offline">Ko'rinmaydi va offline sifatida ko'rsatiladi</string>
+    <string name="status_invisible_offline">Ko\'rinmaydi va offline sifatida ko\'rsatiladi</string>
     <string name="status_offline">Offline</string>
     <string name="notification_access">Bildirishnoma ruxsati</string>
     <string name="post_notification">Bildirishnoma yuborish</string>
-    <string name="request_for_post_notification">Bildirishnoma ko'rsatish uchun ruxsat bering</string>
+    <string name="request_for_post_notification">Bildirishnoma ko\'rsatish uchun ruxsat bering</string>
     <string name="storage_access">Saqlashga kirish</string>
     <string name="start_app_now">Ilovani hozir boshlash</string>
-    <string name="skip">O'tkazib yuborish</string>
+    <string name="skip">O\'tkazib yuborish</string>
     <string name="party_current">Hozirgi guruh hajmi</string>
     <string name="party_max">Maksimal guruh hajmi</string>
     <string name="user_profile_party">(%1$d of %2$d)</string>
     <string name="auto_scroll">Avtomatik skroll</string>
-    <string name="party_invalid_number">Guruh hajmi butun sona bo'lishi kerak</string>
-    <string name="party_less_than_zero">Guruh hajmi noldan katta bo'lishi kerak</string>
+    <string name="party_invalid_number">Guruh hajmi butun sona bo\'lishi kerak</string>
+    <string name="party_less_than_zero">Guruh hajmi noldan katta bo\'lishi kerak</string>
     <string name="party_greater_than_max">Hozirgi guruh hajmi maksimal hajmdan oshmasligi kerak</string>
-    <string name="party_max_cannot_be_empty">Maksimal guruh hajmi bo'sh bo'lmasligi kerak</string>
-    <string name="learn_more">Ko'proq o'rganing</string>
-    <string name="browse_files">Fayllarni ko'rish</string>
+    <string name="party_max_cannot_be_empty">Maksimal guruh hajmi bo\'sh bo\'lmasligi kerak</string>
+    <string name="learn_more">Ko\'proq o\'rganing</string>
+    <string name="browse_files">Fayllarni ko\'rish</string>
     <string name="upload_image">Rasm yuklash</string>
     <string name="save">Saqlash</string>
-    <string name="set_timestamps">Vaqt belgilarini o'rnating</string>
+    <string name="set_timestamps">Vaqt belgilarini o\'rnating</string>
     <string name="saved_config_toast">Saved "%1$s" successfully</string>
     <string name="error_saving_config_toast">Konfiguratsiyani saqlashda xato</string>
     <string name="config_name">Konfiguratsiya nomi</string>
-    <string name="delete">O'chirish</string>
+    <string name="delete">O\'chirish</string>
     <string name="mandatory">Majburiy</string>
     <string name="optional">Ixtiyoriy</string>
     <string name="general_settings">Umumiy</string>
-    <string name="activity_playing_title">O'yin o'ynayapti</string>
+    <string name="activity_playing_title">O\'yin o\'ynayapti</string>
     <string name="activity_listening_title">%1$s tinglayapti</string>
-    <string name="activity_watching_title">%1$s ko'rib turibdi</string>
+    <string name="activity_watching_title">%1$s ko\'rib turibdi</string>
     <string name="activity_competiting_title">%1$s bilan musobaqa olib boradi</string>
     <string name="activity_streaming_title">%1$s da strim qilmoqda</string>
-    <string name="delete_config_successfully_toast">%1$s muvaffaqiyat bilan o'chirildi</string>
+    <string name="delete_config_successfully_toast">%1$s muvaffaqiyat bilan o\'chirildi</string>
     <string name="service_enabled">Xizmat yoqilgan</string>
-    <string name="no_internet_connection">Internet aloqasi yo'q</string>
+    <string name="no_internet_connection">Internet aloqasi yo\'q</string>
     <string name="unknown_error">Kutilmagan xato yuz berdi</string>
     <string name="rpc_buttons">RPC tugmalari</string>
     <string name="choose_rpc">RPC tanlang</string>
-    <string name="off">O'chirilgan</string>
-    <string name="time_elapsed">%1$s o'tdi</string>
+    <string name="off">O\'chirilgan</string>
+    <string name="time_elapsed">%1$s o\'tdi</string>
     <string name="time_left">%1$s qoldi</string>
-    <string name="config_name_empty">Konfiguratsiya nomi bo'sh bo'lmasligi kerak</string>
+    <string name="config_name_empty">Konfiguratsiya nomi bo\'sh bo\'lmasligi kerak</string>
     <string name="restart">Qayta ishga tushirish</string>
     <string name="custom_rpc_running">Custom RPC ishlayapti</string>
     <string name="use_imgur">Imgur rasm proksi sifatida</string>
-    <string name="use_imgur_desc">Imgur'dan muqobil rasm proksi sifatida foydalaning.</string>
+    <string name="use_imgur_desc">Imgur\'dan muqobil rasm proksi sifatida foydalaning.</string>
     <string name="start_appDetection">Ilova aniqlashni boshlash</string>
     <string name="start_mediaRPC">Media RPC boshlash</string>
-    <string name="start_manualRpc">Qo'lda RPC-ni boshlash</string>
-    <string name="stop_rpc">RPC to'xtatish</string>
-    <string name="stop">To'xtatish</string>
+    <string name="start_manualRpc">Qo\'lda RPC-ni boshlash</string>
+    <string name="stop_rpc">RPC to\'xtatish</string>
+    <string name="stop">To\'xtatish</string>
     <string name="start_appDetection_toast">Ilova aniqlash boshlandi</string>
     <string name="start_mediaRPC_toast">Media RPC boshlandi</string>
-    <string name="start_manualRpc_toast">Qo'lda RPC boshlandi</string>
-    <string name="stop_rpc_toast">Barcha xizmatlar to'xtatildi</string>
-    <string name="show_playback_state">Ijro holatini ko'rsatish</string>
+    <string name="start_manualRpc_toast">Qo\'lda RPC boshlandi</string>
+    <string name="stop_rpc_toast">Barcha xizmatlar to\'xtatildi</string>
+    <string name="show_playback_state">Ijro holatini ko\'rsatish</string>
     <string name="copied_to_clipboard">Buferga nusxalandi</string>
     <string name="application_id">Ilova ID</string>
     <string name="custom_application_id">Maxsus Discord ilova ID</string>
-    <string name="custom_application_id_desc">Standart Discord ilova ID'sini almashtiradi</string>
+    <string name="custom_application_id_desc">Standart Discord ilova ID\'sini almashtiradi</string>
     <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
     <string name="app_preferences">Ilova sozlamalari</string>
     <string name="app_preferences_desc">Manual RPC uchun qaysi ilovalar yoqilganini tanlang</string>
-    <string name="completion_media_title">Qo'shiq/video nomi</string>
+    <string name="completion_media_title">Qo\'shiq/video nomi</string>
     <string name="completion_media_artist">Asosiy ijrochi</string>
     <string name="completion_app_name">Aniqlangan ilova nomi</string>
-    <string name="show_cover_art">Muqova ko'rsatish</string>
-    <string name="show_cover_art_desc">Albom muqovasini katta rasm sifatida ko'rsatish</string>
+    <string name="show_cover_art">Muqova ko\'rsatish</string>
+    <string name="show_cover_art_desc">Albom muqovasini katta rasm sifatida ko\'rsatish</string>
     <string name="completion_media_author">Asosiy muallif</string>
     <string name="completion_media_album">Albom nomi</string>
     <string name="completion_media_album_artist">Albom ijrochisi</string>
@@ -241,20 +241,20 @@
     <string name="completion_battery">Batareya darajasi</string>
     <string name="completion_playback">Ijro holati</string>
     <string name="imgur_client_id">Imgur mijoz ID</string>
-    <string name="set_imgur_client_id">Imgur mijoz ID'sini o'rnating</string>
+    <string name="set_imgur_client_id">Imgur mijoz ID\'sini o\'rnating</string>
     <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
         setting your own Client ID</string>
-    <string name="show_song_as_title">Qo'shiqni sarlavha sifatida ko'rsatish</string>
-    <string name="use_youtube_button">Media tugmasini qo'shing</string>
+    <string name="show_song_as_title">Qo\'shiqni sarlavha sifatida ko\'rsatish</string>
+    <string name="use_youtube_button">Media tugmasini qo\'shing</string>
     <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Ijrochi kanaliga havola</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="title_source_song">Qo'shiq nomi</string>
+    <string name="title_source_song">Qo\'shiq nomi</string>
     <string name="title_source_artist">Ijrochi</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">Ilova tanlash</string>
-    <string name="platform_none_desktop">Yo'q (Desktop)</string>
+    <string name="platform_none_desktop">Yo\'q (Desktop)</string>
     <string name="platform_desktop">Desktop</string>
     <string name="platform_web">Veb</string>
     <string name="platform_android">Android</string>
@@ -265,41 +265,41 @@
     <string name="timestamp_mode_default">Media / Ilova (standart)</string>
     <string name="timestamp_mode_current">Kununning hozirgi vaqti bilan bir xil</string>
     <string name="timestamp_mode_custom">Maxsus</string>
-    <string name="update_installing">O'rnatilmoqda…</string>
-    <string name="update_download_error">Yuklab olish amalga oshmadi. Qayta urinib ko'ring.</string>
+    <string name="update_installing">O\'rnatilmoqda…</string>
+    <string name="update_download_error">Yuklab olish amalga oshmadi. Qayta urinib ko\'ring.</string>
 
     <string name="rpc_connection_method">Ulanish usuli</string>
-    <string name="rpc_connection_method_desc">Kizzy Discord'ga qanday ulanishini tanlang</string>
+    <string name="rpc_connection_method_desc">Kizzy Discord\'ga qanday ulanishini tanlang</string>
     <string name="rpc_connection_method_gateway">Gateway (bot tokeni)</string>
     <string name="rpc_connection_method_oauth2">OAuth (sizning Discord hisobingiz)</string>
-    <string name="discord_oauth2_authorize">Discord'ga ulanish</string>
-    <string name="discord_oauth2_authorize_desc">Kizzy'ga Discord profilingizda faolligingizni ko'rsatishga ruxsat bering</string>
+    <string name="discord_oauth2_authorize">Discord\'ga ulanish</string>
+    <string name="discord_oauth2_authorize_desc">Kizzy\'ga Discord profilingizda faolligingizni ko\'rsatishga ruxsat bering</string>
 
-    <string name="console_include_spoofed">Soxta qurilmalarni qo'shish</string>
+    <string name="console_include_spoofed">Soxta qurilmalarni qo\'shish</string>
     <string name="auto_detect">Avtomatik · %1$s</string>
     <string name="save_logs_to_file">Loglarni faylga saqlash</string>
     <string name="logs_saved_toast">Loglar %1$s fayliga saqlandi</string>
-    <string name="discord_step3_content">Holatingizni bosing (foydalanuvchi nomingiz ostida) va Onlayn, Bekor qilmaydi yoki Bezovta qiling' deb tanlang. ⚠️ Ko'rinmaydigan holatdan foydalanmang — ko'rinmaganda Discord Kizzy faolligini yashiradi.</string>
+    <string name="discord_step3_content">Holatingizni bosing (foydalanuvchi nomingiz ostida) va Onlayn, Bekor qilmaydi yoki Bezovta qiling\' deb tanlang. ⚠️ Ko\'rinmaydigan holatdan foydalanmang — ko\'rinmaganda Discord Kizzy faolligini yashiradi.</string>
     <string name="discord_setup_title">Boshlashdan oldin</string>
     <string name="console_auto_detect">DroidDeck / Eden ni avtomatik aniqlash</string>
-    <string name="console_detected_hint">Bu o'yinni Console RPC uchun ishlatish uchun bosing</string>
-    <string name="discord_step2_content">"Faoliyatimni ulashish" ni topib yoqing. "Faoliyatimni qayerda ulashaman" ostidan "Barcha serverlarda ulashish" ni tanlang. "Mening serverlarim" gacha aylantirib, holatingiz ko'rinishini xohlagan serverlarni yoqing.</string>
-    <string name="discord_tip_content">Discordning ba'zi mobil versiyalari bu tugmani yashiradi. Chrome'da discord.com ni oching → Desktop saytni yoqing → tizimga kiring → Sozlamalar (⚙️) → Faoliyat maxfiyligi → "Faoliyatimni ulashish" ni yoqing.</string>
-    <string name="discord_setup_desc">Discord faoliyatingizning profilingizda ko'rinishiga ruxsat berishini tekshiring.</string>
-    <string name="auto_detect_activity_type_desc">Musiqa ilovalari musiqa, video ilovalari video deb aniqlanadi, shuning uchun YouTube Music endi o'yin sifatida ko'rsatilmaydi. Bitta ilova uchun tanlangan tur har doim ustun bo'ladi.</string>
+    <string name="console_detected_hint">Bu o\'yinni Console RPC uchun ishlatish uchun bosing</string>
+    <string name="discord_step2_content">"Faoliyatimni ulashish" ni topib yoqing. "Faoliyatimni qayerda ulashaman" ostidan "Barcha serverlarda ulashish" ni tanlang. "Mening serverlarim" gacha aylantirib, holatingiz ko\'rinishini xohlagan serverlarni yoqing.</string>
+    <string name="discord_tip_content">Discordning ba\'zi mobil versiyalari bu tugmani yashiradi. Chrome\'da discord.com ni oching → Desktop saytni yoqing → tizimga kiring → Sozlamalar (⚙️) → Faoliyat maxfiyligi → "Faoliyatimni ulashish" ni yoqing.</string>
+    <string name="discord_setup_desc">Discord faoliyatingizning profilingizda ko\'rinishiga ruxsat berishini tekshiring.</string>
+    <string name="auto_detect_activity_type_desc">Musiqa ilovalari musiqa, video ilovalari video deb aniqlanadi, shuning uchun YouTube Music endi o\'yin sifatida ko\'rsatilmaydi. Bitta ilova uchun tanlangan tur har doim ustun bo\'ladi.</string>
     <string name="auto_detect_activity_type">Faoliyat turini avtomatik aniqlash</string>
-    <string name="logs_save_error">Loglarni saqlab bo'lmadi</string>
+    <string name="logs_save_error">Loglarni saqlab bo\'lmadi</string>
     <string name="discord_tip_title">"Faoliyatimni ulashish" topilmadimi?</string>
-    <string name="console_detected_in_game">O'yin ichida</string>
+    <string name="console_detected_in_game">O\'yin ichida</string>
     <string name="rich_presence_active">Rich Presence faol</string>
     <string name="discord_step1_title">1-qadam: Maxfiylik sozlamalarini ochish</string>
     <string name="console_detected">Aniqlandi</string>
     <string name="discord_step2_title">2-qadam: Faoliyat ulashishni yoqish</string>
-    <string name="discord_step1_content">Discord ilovasini oching → o'zingizning (profil rasm) ikonkasini bosing → Sozlamalar (⚙️) ni bosing → pastga aylantiring va "Mazmun va ijtimoiy tarmoqlar" (yoki eski versiyalarda "Faoliyat maxfiyligi") bo'limini bosing.</string>
-    <string name="activity_type_fallback_desc">Aniqlanmagan ilovalar uchun va avtomatik aniqlash o'chirilganda har bir ilova uchun ishlatiladi.</string>
+    <string name="discord_step1_content">Discord ilovasini oching → o\'zingizning (profil rasm) ikonkasini bosing → Sozlamalar (⚙️) ni bosing → pastga aylantiring va "Mazmun va ijtimoiy tarmoqlar" (yoki eski versiyalarda "Faoliyat maxfiyligi") bo\'limini bosing.</string>
+    <string name="activity_type_fallback_desc">Aniqlanmagan ilovalar uchun va avtomatik aniqlash o\'chirilganda har bir ilova uchun ishlatiladi.</string>
     <string name="discord_step3_title">3-qadam: Onlayn holatingizni tekshiring</string>
 
-    <string name="console_preset_games">Oldindan belgilangan o'yinlar</string>
+    <string name="console_preset_games">Oldindan belgilangan o\'yinlar</string>
 
     <string name="console_preset_xbox">Xbox</string>
 
@@ -311,7 +311,7 @@
 
     <string name="rpc_tab_custom_settings">Custom RPC</string>
     <string name="rpc_tab_console_presets">Console RPC</string>
-    <string name="rpc_tab_console_presets_desc">Console RPC-ni tez sozlash uchun oldindan belgilangan variantni tanlang. Keyin har bir qiymatni Custom RPC yorlig'ida o'zgartirishingiz mumkin.</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC-ni tez sozlash uchun oldindan belgilangan variantni tanlang. Keyin har bir qiymatni Custom RPC yorlig\'ida o\'zgartirishingiz mumkin.</string>
     <string name="rpc_tab_back_to_settings">Custom RPC sozlamalariga qaytish</string>
 
     <string name="console_preset_android">Android</string>
@@ -345,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Qo'lda RPC-ga media ijrosini aniqlashga ruxsat bering</string>
+    <string name="manual_rpc_detect_media">Qo\'lda RPC-ga media ijrosini aniqlashga ruxsat bering</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Qo'lda RPC-ni yoqish</string>
-    <string name="manual_rpc_detect_apps">Qo'lda RPC-ga ishlayotgan ilovalarni aniqlashga ruxsat bering</string>
+    <string name="enable_manualRpc">Qo\'lda RPC-ni yoqish</string>
+    <string name="manual_rpc_detect_apps">Qo\'lda RPC-ga ishlayotgan ilovalarni aniqlashga ruxsat bering</string>
     <string name="manual_rpc_title_toggle">Sarlavha</string>
-    <string name="manual_rpc_title_toggle_desc">Ilova nomi o'rniga faoliyat sarlavhasida qo'shiqlik ma'lumotini ko'rsating</string>
-    <string name="start_manualRpcToast">Qo'lda RPC boshlandi</string>
+    <string name="manual_rpc_title_toggle_desc">Ilova nomi o\'rniga faoliyat sarlavhasida qo\'shiqlik ma\'lumotini ko\'rsating</string>
+    <string name="start_manualRpcToast">Qo\'lda RPC boshlandi</string>
 </resources>

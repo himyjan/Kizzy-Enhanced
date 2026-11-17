@@ -181,7 +181,7 @@
     <string name="upload_image">ပုံ တင်ပါ</string>
     <string name="save">သိမ်းပါ</string>
     <string name="set_timestamps">အချိန်တိုင်းများ သတ်မှတ်ပါ</string>
-    <string name="saved_config_toast">Saved \"%1$s\" successfully</string>
+    <string name="saved_config_toast">Saved \'%1$s\' successfully</string>
     <string name="error_saving_config_toast">ပုံစံသိမ်းတွင် အမှား</string>
     <string name="config_name">ပုံစံအမည်</string>
     <string name="delete">ဖျက်ပါ</string>

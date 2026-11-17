@@ -20,7 +20,7 @@
     <string name="load_config">Загрузіць з файлаў</string>
     <string name="save_config">Захаваць канфігурацыю</string>
     <string name="delete_configs">Выдаліць канфігурацыю</string>
-    <string name="preview_rpc">Прэв'ю RPC</string>
+    <string name="preview_rpc">Прэв\'ю RPC</string>
     <string name="select_a_config">Выберыце канфігурацыю</string>
     <string name="login_with_discord">Увайсці праз Discord</string>
     <string name="github_readme">README</string>
@@ -254,8 +254,8 @@
     <string name="title_source_artist">Выканаўца</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
     <string name="app_selection">Выбар праграмы</string>
-    <string name="platform_none_desktop">Няма (камп'ютар)</string>
-    <string name="platform_desktop">Камп'ютар</string>
+    <string name="platform_none_desktop">Няма (камп\'ютар)</string>
+    <string name="platform_desktop">Камп\'ютар</string>
     <string name="platform_web">Вэб</string>
     <string name="platform_android">Android</string>
     <string name="platform_ios">iOS</string>

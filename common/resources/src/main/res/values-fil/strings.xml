@@ -181,7 +181,7 @@
     <string name="upload_image">Mag-upload ng Larawan</string>
     <string name="save">I-save</string>
     <string name="set_timestamps">Itakda ang timestamps</string>
-    <string name="saved_config_toast">Saved \"%1$s\" successfully</string>
+    <string name="saved_config_toast">Saved \'%1$s\' successfully</string>
     <string name="error_saving_config_toast">Error sa pag-save ng config</string>
     <string name="config_name">Pangalan ng config</string>
     <string name="delete">Burahin</string>

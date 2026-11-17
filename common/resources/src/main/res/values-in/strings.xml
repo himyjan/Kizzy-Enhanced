@@ -8,7 +8,7 @@
     <string name="activity_state">Status Aktivitas</string>
     <string name="activity_start_timestamps">Waktu Mulai</string>
     <string name="activity_stop_timestamps">Waktu Berhenti</string>
-    <string name="activity_status_online_idle_dnd">Status Aktivitas(\"online\", \"idle\", \"dnd\")</string>
+    <string name="activity_status_online_idle_dnd">Status Aktivitas(\'online\', \'idle\', \'dnd\')</string>
     <string name="activity_button1_text">Teks Tombol 1</string>
     <string name="activity_button2_text">Teks Tombol 2</string>
     <string name="activity_button1_url">URL Tombol 1</string>

@@ -8,7 +8,7 @@
     <string name="activity_state">מצב פעילות</string>
     <string name="activity_start_timestamps">חותמות זמן של התחל</string>
     <string name="activity_stop_timestamps">עצור חותמות זמן</string>
-    <string name="activity_status_online_idle_dnd">מצב פעילות (\"באינטרנט\", \ " סרק\", \ " נא לא להפריע\")</string>
+    <string name="activity_status_online_idle_dnd">מצב פעילות (\'באינטרנט\', \ " סרק\', \ " נא לא להפריע\')</string>
     <string name="activity_button1_text">לחצן הפעילות1 טקסט</string>
     <string name="activity_button2_text">לחצן פעילות2 טקסט</string>
     <string name="activity_button1_url">כתובת URL של כפתור 1</string>

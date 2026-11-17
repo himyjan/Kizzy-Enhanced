@@ -181,7 +181,7 @@
     <string name="upload_image">อัปโหลดรูปภาพ</string>
     <string name="save">ข้าม</string>
     <string name="set_timestamps">ตั้งการนับเวลา</string>
-    <string name="saved_config_toast">บันทึก \"%1$s\" เสร็จเรียบร้อยแล้ว</string>
+    <string name="saved_config_toast">บันทึก \'%1$s\' เสร็จเรียบร้อยแล้ว</string>
     <string name="error_saving_config_toast">เกิดข้อผิดพลาดในระหว่างบันทึกไฟล์ Config</string>
     <string name="config_name">ชื่อไฟล์ Config</string>
     <string name="delete">ลบ</string>

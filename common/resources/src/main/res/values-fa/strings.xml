@@ -181,7 +181,7 @@
     <string name="upload_image">آپلود عکس</string>
     <string name="save">ذخیره</string>
     <string name="set_timestamps">تنظیم timestamp</string>
-    <string name="saved_config_toast">Saved \"%1$s\" successfully</string>
+    <string name="saved_config_toast">Saved \'%1$s\' successfully</string>
     <string name="error_saving_config_toast">خطا در ذخیره کردن کانفیگ</string>
     <string name="config_name">نام کانفیگ</string>
     <string name="delete">حذف</string>
