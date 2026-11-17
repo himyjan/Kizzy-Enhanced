@@ -351,4 +351,10 @@
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
+
+    <string name="enable_manualRpc">Enable Manual RPC</string>
+    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
+    <string name="manual_rpc_title_toggle">Title</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
+    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
 </resources>

@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">将 Imgur 用作替代图片代理。</string>
     <string name="start_appDetection">启动应用程序检测</string>
     <string name="start_mediaRpc">启动 Media RPC</string>
-    <string name="start_manualRpc">启动 Manual RPC</string>
+    <string name="start_manualRpc">启动手动 RPC</string>
     <string name="stop_rpc">停止 RPC</string>
     <string name="stop">停止</string>
     <string name="start_appDetectionToast">应用程序检测已启动</string>
     <string name="start_mediaRpcToast">Media RPC 已启动</string>
-    <string name="start_manualRpcToast">Manual RPC 已启动</string>
+    <string name="start_manualRpcToast">手动 RPC 已启动</string>
     <string name="stop_rpcToast">所有服务已停止</string>
     <string name="show_playbackState">显示播放状态</string>
     <string name="copied_toClipboard">已复制到剪贴板</string>
@@ -216,7 +216,7 @@
     <string name="completion_appName">检测到的应用程序名称</string>
     <string name="show_coverArt">显示专辑封面</string>
     <string name="show_coverArt_desc">将专辑封面显示为大图</string>
-    <string name="enable_manualRpc">启用 Manual RPC</string>
+    <string name="enable_manualRpc">启用手动 RPC</string>
     <string name="completion_media_author">主要作者</string>
     <string name="completion_media_album">专辑名称</string>
     <string name="completion_media_albumArtist">专辑艺术家</string>
@@ -330,9 +330,16 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">允许手动 RPC 检测媒体播放</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
+
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="manual_rpc_detect_apps">允许手动 RPC 检测运行中的应用程序</string>
+    <string name="manual_rpc_title_toggle">标题</string>
+    <string name="manual_rpc_title_toggle_desc">在活动标题中显示歌曲信息而不是应用程序名称</string>
+    <string name="start_manualRpc_toast">手动 RPC 已启动</string>
 </resources>

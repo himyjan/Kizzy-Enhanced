@@ -195,7 +195,7 @@
     <string name="use_imgurDesc">Imgur를 대체 이미지 프록시로 사용하세요.</string>
     <string name="start_appDetection">앱 감지 시작</string>
     <string name="start_mediaRpc">미디어 RPC 시작</string>
-    <string name="start_manualRpc">실험적 RPC 시작</string>
+    <string name="start_manualRpc">수동 RPC 시작</string>
     <string name="stop_rpc">RPC 중지</string>
     <string name="stop">중지</string>
     <string name="start_appDetectionToast">앱 감지 시작됨</string>
@@ -329,9 +329,17 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">수동 RPC가 미디어 재생을 감지하도록 허용</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
+
+    <string name="enable_manualRpc">수동 RPC 활성화</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="manual_rpc_detect_apps">수동 RPC가 실행 중인 앱을 감지하도록 허용</string>
+    <string name="manual_rpc_title_toggle">제목</string>
+    <string name="manual_rpc_title_toggle_desc">앱 이름 대신 활동 제목에 노래 정보 표시</string>
+    <string name="start_manualRpc_toast">수동 RPC 시작됨</string>
 </resources>

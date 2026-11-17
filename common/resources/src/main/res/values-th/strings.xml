@@ -215,7 +215,7 @@
     <string name="stop">หยุด</string>
     <string name="start_appDetection_toast">App Detection เริ่มใช้งานไปแล้ว</string>
     <string name="start_mediaRPC_toast">Media RPC เริ่มใช้งานไปแล้ว</string>
-    <string name="start_manualRpc_toast">Manual RPC เริ่มใช้งาน</string>
+    <string name="start_manualRpc_toast">Manual RPC เริ่มใช้งานแล้ว</string>
     <string name="stop_rpc_toast">services ทั้งหมดหยุดการทำงานแล้ว</string>
     <string name="show_playback_state">แสดงสถานะการเล่น</string>
     <string name="copied_to_clipboard">ก็อปไปยังคลิปบอร์ดแล้ว</string>
@@ -346,9 +346,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">อนุญาตให้ Manual RPC ตรวจจับสื่อที่กำลังเล่นอยู่</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
+
+    <string name="enable_manualRpc">เปิดใช้งาน Manual RPC</string>
+    <string name="manual_rpc_detect_apps">อนุญาตให้ Manual RPC ตรวจจับแอปที่กำลังทำงานอยู่</string>
+    <string name="manual_rpc_title_toggle">ชื่อ</string>
+    <string name="manual_rpc_title_toggle_desc">แสดงข้อมูลเพลงในหัวข้อกิจกรรมแทนชื่อแอป</string>
+    <string name="start_manualRpcToast">Manual RPC เริ่มใช้งานแล้ว</string>
 </resources>

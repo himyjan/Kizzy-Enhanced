@@ -322,9 +322,17 @@
     <string name="enable_mediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">ম্যানুয়াল আরপিসিকে মিডিয়া প্লেব্যাক শনাক্ত করতে দিন</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
+
+    <string name="enable_manualRpc">ম্যানুয়াল আরপিসি সক্ষম করুন</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="manual_rpc_detect_apps">ম্যানুয়াল আরপিসিকে চলমান অ্যাপ্লিকেশন শনাক্ত করার অনুমতি দিন</string>
+    <string name="manual_rpc_title_toggle">শিরোনাম</string>
+    <string name="manual_rpc_title_toggle_desc">গান টাইটেলে বাঁজন গান টাইটেল দিবে</string>
+    <string name="start_manualRpc_toast">ম্যানুয়াল আরপিসি শুরু হয়েছে</string>
 </resources>

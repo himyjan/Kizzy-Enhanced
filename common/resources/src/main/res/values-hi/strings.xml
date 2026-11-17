@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">इमगुर को वैकल्पिक छवि प्रॉक्सी के रूप में उपयोग करें।</string>
     <string name="start_appDetection">ऐप डिटेक्शन शुरू करें</string>
     <string name="start_mediaRpc">मीडिया आरपीसी शुरू करें</string>
-    <string name="start_manualRpc">एक्सपेरिमेंटल आरपीसी शुरू करें</string>
+    <string name="start_manualRpc">मैनुअल RPC शुरू करें</string>
     <string name="stop_rpc">आरपीसी रोकें</string>
     <string name="stop">रोकें</string>
     <string name="start_appDetectionToast">ऐप डिटेक्शन शुरू किया गया</string>
     <string name="start_mediaRpcToast">मीडिया आरपीसी शुरू किया गया</string>
-    <string name="start_manualRpcToast">मैनुअल आरपीसी शुरू किया गया</string>
+    <string name="start_manualRpcToast">मैनुअल RPC शुरू किया गया</string>
     <string name="stop_rpcToast">सभी सेवाएं रोक दी गईं</string>
     <string name="show_playbackState">प्लेबैक स्थिति दिखाएं</string>
     <string name="copied_to_clipboard">क्लिपबोर्ड पर कॉपी किया गया</string>
@@ -329,9 +329,17 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">मैनुअल RPC को मीडिया प्लेबैक का पता लगाने की अनुमति दें</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
+
+    <string name="enable_manualRpc">मैनुअल RPC सक्षम करें</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="manual_rpc_detect_apps">मैनुअल RPC को चल रहे ऐप्स का पता लगाने की अनुमति दें</string>
+    <string name="manual_rpc_title_toggle">शीर्षक</string>
+    <string name="manual_rpc_title_toggle_desc">ऐप नाम के बजाय गतिविधि शीर्षक में गीत जानकारी दिखाएं</string>
+    <string name="start_manualRpc_toast">मैनुअल RPC शुरू किया गया</string>
 </resources>

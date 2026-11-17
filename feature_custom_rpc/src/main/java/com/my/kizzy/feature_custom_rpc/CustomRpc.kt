@@ -2237,14 +2237,14 @@ fun ConsoleGameItem(
                 modifier = Modifier.weight(1f)
             ) {
                 androidx.compose.material3.Text(
-                    text = game.game_title,
+                    text = game.game_title ?: "",
                     style = MaterialTheme.typography.titleMedium,
                     color = contentColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 androidx.compose.material3.Text(
-                    text = game.platform,
+                    text = game.platform ?: "",
                     style = MaterialTheme.typography.bodySmall,
                     color = colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -2253,7 +2253,20 @@ fun ConsoleGameItem(
             }
         }
     }
-}
+
+    if (games.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "No games found",
+                style = MaterialTheme.typography.bodyMedium,
+                color = colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
 
 /**
  * A row in the Console RPC preset list.

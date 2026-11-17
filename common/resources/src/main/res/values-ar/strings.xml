@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">استخدم Imgur كوكيل صورة بديل.</string>
     <string name="start_appDetection">ابدأ اكتشاف التطبيقات</string>
     <string name="start_mediaRPC">ابدأ Media RPC</string>
-    <string name="start_manualRpc">ابدأ Manual RPC</string>
+    <string name="start_manualRpc">ابدأ RPC يدوي</string>
     <string name="stop_rpc">توقف RPC</string>
     <string name="stop">توقف</string>
     <string name="start_appDetection_toast">تم بدء اكتشاف التطبيقات</string>
     <string name="start_mediaRPC_toast">تم بدء Media RPC</string>
-    <string name="start_manualRpc_toast">تم بدء Manual RPC</string>
+    <string name="start_manualRpc_toast">تم بدء RPC يدوي</string>
     <string name="stop_rpc_toast">تم إيقاف جميع الخدمات</string>
     <string name="show_playback_state">إظهار حالة التشغيل</string>
     <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
@@ -327,9 +327,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">السماح لـ RPC يدوي باكتشاف تشغيل الوسائط</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
+
+    <string name="enable_manualRpc">تفعيل RPC يدوي</string>
+    <string name="manual_rpc_detect_apps">السماح لـ RPC يدوي باكتشاف التطبيقات قيد التشغيل</string>
+    <string name="manual_rpc_title_toggle">العنوان</string>
+    <string name="manual_rpc_title_toggle_desc">إظهار معلومات الأغنية في عنوان النشاط بدلاً من اسم التطبيق</string>
+    <string name="start_manualRpcToast">تم بدء RPC يدوي</string>
 </resources>
