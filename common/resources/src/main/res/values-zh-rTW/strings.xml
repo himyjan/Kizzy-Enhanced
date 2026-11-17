@@ -116,8 +116,8 @@
     <string name="main_customRpc">自訂 RPC</string>
     <string name="main_consoleRpc">主機 RPC</string>
     <string name="main_consoleRpc_details">Kizzy 允許你使用一些預設預置來設置你在 Discord 上的狀態。</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC 是 Kizzy 的一項功能，會不斷在 Apps RPC 和 Media RPC 之間切換。</string>
+    <string name="main_manualRpc">手動 RPC</string>
+    <string name="main_manualRpc_details">手動 RPC 是 Kizzy 的一項功能，可在應用程式 RPC 和媒體 RPC 之間不斷切換。</string>
     <string name="main_customRpc_details">Kizzy 允許你為 Discord 創建完全可自定義的豐富存在。</string>
     <string name="main_comingSoon">即將推出</string>
     <string name="exit">退出</string>

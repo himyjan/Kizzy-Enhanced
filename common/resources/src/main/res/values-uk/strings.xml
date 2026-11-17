@@ -116,8 +116,8 @@
     <string name="main_customRpc">Власний RPC</string>
     <string name="main_consoleRpc">Консоль RPC</string>
     <string name="main_consoleRpc_details">Kizzy дозволяє використовувати деякі попередньо налаштовані налаштування, щоб встановити вашу присутність на Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC — це функція Kizzy, яка постійно перемикається між Apps RPC та Media RPC.</string>
+    <string name="main_manualRpc">Ручний RPC</string>
+    <string name="main_manualRpc_details">Ручний RPC — це функція Kizzy, яка постійно перемикається між Apps RPC та Media RPC.</string>
     <string name="main_customRpc_details">Kizzy дозволяє створити повністю налаштовану rich presence для Discord.</string>
     <string name="main_comingSoon">Звільнити</string>
     <string name="exit">Вихід</string>

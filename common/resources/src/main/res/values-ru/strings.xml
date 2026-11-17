@@ -336,8 +336,7 @@
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc_details">Ручной RPC — это функция в Kizzy, которая постоянно переключается между Apps RPC и Media RPC.</string>
     <string name="manual_rpc_detect_apps">Разрешить ручному RPC обнаруживать запущенные приложения</string>
     <string name="manual_rpc_title_toggle">Заголовок</string>
     <string name="manual_rpc_title_toggle_desc">Показывать информацию о песне в заголовке активности вместо названия приложения</string>

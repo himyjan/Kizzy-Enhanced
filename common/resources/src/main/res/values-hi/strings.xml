@@ -116,7 +116,7 @@
     <string name="main_customRpc">कस्टम आरपीसी</string>
     <string name="main_consoleRpc">कंसोल आरपीसी</string>
     <string name="main_consoleRpcDetails">किज़ी आपको डिस्कॉर्ड पर अपनी उपस्थिति सेट करने के लिए पहले से निर्धारित सेटिंग्स का उपयोग करने की अनुमति देता है।</string>
-    <string name="main_manualRpc">एक्सपेरिमेंटल आरपीसी</string>
+    <string name="main_manualRpc">मैनुअल RPC</string>
     <string name="main_manualRpcDetails">एक्सपेरिमेंटल आरपीसी किज़ी की एक विशेषता है जो लगातार ऐप्स आरपीसी और मीडिया आरपीसी के बीच स्विच करता है।</string>
     <string name="main_customRpcDetails">किज़ी आपको डिस्कॉर्ड के लिए पूरी तरह से अनुकूलन योग्य रिच प्रेज़ेंस बनाने की अनुमति देता है।</string>
     <string name="main_comingSoon">जल्द आ रहा है</string>
@@ -336,8 +336,7 @@
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
     <string name="enable_manualRpc">मैनुअल RPC सक्षम करें</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc_details">मैनुअल RPC किज़ी में एक विशेषता है जो ऐप्स RPC और मीडिया RPC के बीच लगातार स्विच करती है।</string>
     <string name="manual_rpc_detect_apps">मैनुअल RPC को चल रहे ऐप्स का पता लगाने की अनुमति दें</string>
     <string name="manual_rpc_title_toggle">शीर्षक</string>
     <string name="manual_rpc_title_toggle_desc">ऐप नाम के बजाय गतिविधि शीर्षक में गीत जानकारी दिखाएं</string>

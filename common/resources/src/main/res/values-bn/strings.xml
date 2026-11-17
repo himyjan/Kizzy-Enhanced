@@ -113,7 +113,7 @@
     <string name="main_mediaRpc">মিডিয়া আরপিসি</string>
     <string name="main_customRpc">কাস্টম আরপিসি</string>
     <string name="main_consoleRpc">কনসোল আরপিসি</string>
-    <string name="main_manualRpc">এক্সপেরিমেন্টাল আরপিসি</string>
+    <string name="main_manualRpc">ম্যানুয়াল আরপিসি</string>
     <string name="main_comingSoon">দ্রুত আসছে</string>
     <string name="exit">এক্সিট</string>
     <string name="logs">লগ</string>
@@ -328,11 +328,10 @@
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">ম্যানুয়াল আরপিসি সক্ষম করুন</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">ম্যানুয়াল আরপিসিকে চলমান অ্যাপ্লিকেশন শনাক্ত করার অনুমতি দিন</string>
+    <string name="enable_manualRpc">ম্যানুয়াল আরপিসি চালু করুন</string>
+    <string name="main_manualRpc_details">ম্যানুয়াল আরপিসি কিজিতে একটি বৈশিষ্ট্য যা ঐপস আরপিসি এবং মিডিয়া আরপিসির মধ্যে ধারাবাহিকভাবে পরিবর্তন করে।</string>
+    <string name="manual_rpc_detect_apps">ম্যানুয়াল আরপিসিকে চলমান অ্যাপ শনাক্ত করার অনুমতি দিন</string>
     <string name="manual_rpc_title_toggle">শিরোনাম</string>
-    <string name="manual_rpc_title_toggle_desc">গান টাইটেলে বাঁজন গান টাইটেল দিবে</string>
+    <string name="manual_rpc_title_toggle_desc">অ্যাপের নামের বদলে কার্যক্রমের শিরোনামে গানের তথ্য দেখান</string>
     <string name="start_manualRpc_toast">ম্যানুয়াল আরপিসি শুরু হয়েছে</string>
 </resources>
