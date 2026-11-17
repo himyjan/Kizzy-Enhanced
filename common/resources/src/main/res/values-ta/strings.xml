@@ -203,7 +203,7 @@
     <string name="custom_application_id">கஸ்டம் செயல்பாடு அப்ளிகேஷன் ஆectomy</string>
     <string name="custom_application_id_desc">டிஃபால்ட் டிஸ்கார்டு அப்ளிகேஷன் ஆemblyதாக வைக்கிறது</string>
     <string name="use_a_vpnDesc">டிஸ்கார்ட் லாக் இன் தங்கள் நாடுகளில் VPN/DPI இல்லாமல் வேலை செய்யாது. VPN/DPI பயன்படுத்தவும்.</string>
-    <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; டெంప்ளேட் வார்ப்புகள்</string>
+    <string name="rpc_templates_note">&quot;\'{{\'app_name}}\'\', \'{{\'media_title}}\'\' டெంప்ளேட் வார்ப்புகள்</string>
     <string name="manual_rpc_detect_media">எக்ஸ்பீரிமெண்டல் RPC மீடியா</string>
     <string name="app_preferences">ஆப் ப்ரெஃப்ரென்ஸ்</string>
     <string name="app_preferences_desc">ஏkreis அறுதி செய்ய</string>
@@ -230,7 +230,7 @@
     <string name="manual_rpc_title_toggle">சீர்திருத்து</string>
     <string name="title_source_song">பாட்டின் பெயர்</string>
     <string name="title_source_artist">கலாச்சாரம்</string>
-    <string name="type_toInsertVariable">&apos;{{&apos; தை எங்கள் vary</string>
+    <string name="type_toInsertVariable">\'{{\' தை எங்கள் vary</string>
     <string name="app_selection">எப் சேallic</string>
     <string name="platform_none_desktop">மேலும்</string>
     <string name="platform_desktop">டெக்ஸ்டெப்த்</string>

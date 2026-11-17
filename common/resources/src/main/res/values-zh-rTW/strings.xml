@@ -208,7 +208,7 @@
     <string name="custom_application_id">自定義活動應用程式 ID</string>
     <string name="custom_application_id_desc">覆蓋預設的 Discord 應用程式 ID</string>
     <string name="use_a_vpn_desc">Discord 登入在您所在的國家可能無法使用，除非使用 VPN/DPI。請使用 VPN/DPI 繼續。</string>
-    <string name="rpc_templates_note">"使用占位符，如 &apos;{{&apos;app_name}}apos;apos;、&apos;{{&apos;media_title}}apos;apos; 等。空字段將使用預設行為或被省略。"</string>
+    <string name="rpc_templates_note">"使用占位符，如 \'{{\'app_name}}apos;apos;、\'{{\'media_title}}apos;apos; 等。空字段將使用預設行為或被省略。"</string>
     <string name="manual_rpc_detect_apps">允許 Experimental RPC 檢測正在運行的應用程式</string>
     <string name="manual_rpc_detect_media">允許 Experimental RPC 檢測媒體播放</string>
     <string name="app_preferences">應用程式偏好設定</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">在活動標題中顯示歌曲資訊，而非應用程式名稱</string>
     <string name="title_source_song">歌曲名稱</string>
     <string name="title_source_artist">藝術家</string>
-    <string name="type_to_insert_variable">輸入 &apos;{{&apos; 以插入變數</string>
+    <string name="type_to_insert_variable">輸入 \'{{\' 以插入變數</string>
     <string name="app_selection">應用程式選擇</string>
     <string name="platform_none_desktop">無（桌面）</string>
     <string name="platform_desktop">桌面</string>

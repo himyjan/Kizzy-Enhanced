@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Tampilkan informasi lagu di judul aktivitas bukan nama aplikasi</string>
     <string name="title_source_song">Judul Lagu</string>
     <string name="title_source_artist">Artis</string>
-    <string name="type_to_insert_variable">Ketik &apos;{{&apos; untuk memasukkan variabel</string>
+    <string name="type_to_insert_variable">Ketik \'{{\' untuk memasukkan variabel</string>
     <string name="app_selection">Pemilihan Aplikasi</string>
     <string name="platform_none_desktop">Tidak ada (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

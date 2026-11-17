@@ -120,10 +120,10 @@
     <string name="idling_notification">Boşta…</string>
     <string name="main_appDetection">Uygulama Algılama</string>
     <string name="main_appDetection_details">Kizzy allows you to share your current activity on
-        Discord by detecting what app you&apos;re using on your device.</string>
+        Discord by detecting what app you\'re using on your device.</string>
     <string name="main_mediaRpc">Medya RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
-        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+        Discord, such as the song or video you\'re currently listening to or watching.</string>
     <string name="main_customRpc">Özel RPC</string>
     <string name="main_consoleRpc">Konsol RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
@@ -224,7 +224,7 @@
     <string name="custom_application_id_desc">Varsayılan Discord Uygulama ID\'sini geçersiz kılar</string>
     <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
         Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
+    <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
     <string name="manual_rpc_detect_apps">Deneysel RPC\'nin çalışan uygulamaları algılamasına izin ver</string>
     <string name="manual_rpc_detect_media">Deneysel RPC\’nin medya oynatımını algılamasına izin ver</string>
@@ -246,7 +246,7 @@
     <string name="completion_playback">Çalma Durumu</string>
     <string name="imgur_client_id">Imgur İstemci Kimliği</string>
     <string name="set_imgur_client_id">Imgur Client ID ayarla</string>
-    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
         setting your own Client ID</string>
     <string name="show_song_as_title">Şarkıyı başlık olarak göster</string>
     <string name="use_youtube_button">Medya Düğmesi Ekle</string>
@@ -259,7 +259,7 @@
         of app name</string>
     <string name="title_source_song">Şarkı Adı</string>
     <string name="title_source_artist">Sanatçı</string>
-    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
+    <string name="type_to_insert_variable">Type \'{{\' to insert a variable</string>
     <string name="app_selection">Uygulama Seçimi</string>
     <string name="platform_none_desktop">Yok (Masaüstü)</string>
     <string name="platform_desktop">Masaüstü</string>

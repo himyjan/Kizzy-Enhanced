@@ -208,7 +208,7 @@
     <string name="custom_application_id">Mukautetun aktiviteetin sovelluksen tunnus</string>
     <string name="custom_application_id_desc">Ohittaa oletus-Discordin sovelluksen tunnuksen</string>
     <string name="use_a_vpnDesc">Discord-kirjautuminen ei välttämättä toimi maassasi ilman VPN/DPI:tä. Käytä VPN/DPI:tä jatkaaksesi.</string>
-    <string name="rpc_templates_note">&quot;Käytä malleja, kuten &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; jne. Tyhjät kentät käyttävät oletuskäyttäytymistä tai jätetään huomiotta.&quot;</string>
+    <string name="rpc_templates_note">&quot;Käytä malleja, kuten \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' jne. Tyhjät kentät käyttävät oletuskäyttäytymistä tai jätetään huomiotta.&quot;</string>
     <string name="manual_rpc_detect_apps">Salli kokeellinen RPC havaitsemaan käynnissä olevat sovellukset</string>
     <string name="manual_rpc_detect_media">Salli kokeellinen RPC havaitsemaan median toiston</string>
     <string name="app_preferences">Sovellusasetukset</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Näytä kappaleen tiedot aktiviteetin otsikkona sovelluksen nimen sijaan</string>
     <string name="title_source_song">Kappaleen nimi</string>
     <string name="title_source_artist">Taiteilija</string>
-    <string name="type_toInsertVariable">Kirjoita &apos;{{&apos; lisätäksesi muuttujan</string>
+    <string name="type_toInsertVariable">Kirjoita \'{{\' lisätäksesi muuttujan</string>
     <string name="app_selection">Sovelluksen valinta</string>
     <string name="platform_none_desktop">Ei mitään (työpöytä)</string>
     <string name="platform_desktop">Työpöytä</string>

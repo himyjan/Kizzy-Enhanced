@@ -208,7 +208,7 @@
     <string name="custom_application_id">Kohandatud rakenduse aktivuse ID</string>
     <string name="custom_application_id_desc">Ülekirjutab standard Discordi rakenduse ID</string>
     <string name="use_a_vpnDesc">Discord-sisselogimine ei pruiki toimida teie maas ilma VPN/DPI-ita. Palun kasutage VPN/DPI-jätkamiseks.</string>
-    <string name="rpc_templates_note">&quot;Kasutage mallina &quot;{{apos;app_name}}apos;apos;, &apos;{{&apos;media_title}}apos;apos; jne. Tühjad väljad kasutavad tavalist käitumist või jäetakse kasutamata.&quot;</string>
+    <string name="rpc_templates_note">&quot;Kasutage mallina &quot;{{apos;app_name}}apos;apos;, \'{{\'media_title}}apos;apos; jne. Tühjad väljad kasutavad tavalist käitumist või jäetakse kasutamata.&quot;</string>
     <string name="manual_rpc_detect_apps">Luba Experimental RPC tuvastada käivatest rakendustest</string>
     <string name="manual_rpc_detect_media">Eesti RPC lubada meedia esitamise tuvastamiseks</string>
     <string name="app_preferences">Rakenduse eelistused</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Näita liidu tegevuse pealkirjas rakenduse nime asemel</string>
     <string name="title_source_song">Laulunimi</string>
     <string name="title_source_artist">Kunstner</string>
-    <string name="type_toInsertVariable">Kirjuta &apos;{{&apos; et sisse panna muutuja</string>
+    <string name="type_toInsertVariable">Kirjuta \'{{\' et sisse panna muutuja</string>
     <string name="app_selection">Rakenduse valik</string>
     <string name="platform_none_desktop">Ei mitte (töölaua)</string>
     <string name="platform_desktop">Työpöytä</string>

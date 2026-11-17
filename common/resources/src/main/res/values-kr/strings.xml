@@ -120,10 +120,10 @@
     <string name="idling_notification">유휴 중…</string>
     <string name="main_appDetection">앱 감지</string>
     <string name="main_appDetection_details">Kizzy allows you to share your current activity on
-        Discord by detecting what app you&apos;re using on your device.</string>
+        Discord by detecting what app you\'re using on your device.</string>
     <string name="main_mediaRpc">미디어 RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
-        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+        Discord, such as the song or video you\'re currently listening to or watching.</string>
     <string name="main_customRpc">사용자 정의 RPC</string>
     <string name="main_consoleRpc">콘솔 RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
@@ -224,7 +224,7 @@
     <string name="custom_application_id_desc">기본 디스코드 애플리케이션 ID를 재정의합니다.</string>
     <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
         Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
+    <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
     <string name="manual_rpc_detect_apps">실험적 RPC가 실행 중인 앱을 감지하도록 허용</string>
     <string name="manual_rpc_detect_media">실험적 RPC가 미디어 재생을 감지하도록 허용</string>
@@ -246,7 +246,7 @@
     <string name="completion_playback">재생 상태</string>
     <string name="imgur_client_id">Imgur 클라이언트 ID</string>
     <string name="set_imgur_client_id">Imgur 클라이언트 ID 설정</string>
-    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
         setting your own Client ID</string>
     <string name="show_song_as_title">노래를 제목으로 표시</string>
     <string name="use_youtube_button">미디어 버튼 추가</string>
@@ -259,7 +259,7 @@
         of app name</string>
     <string name="title_source_song">노래 제목</string>
     <string name="title_source_artist">아티스트</string>
-    <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
+    <string name="type_to_insert_variable">Type \'{{\' to insert a variable</string>
     <string name="app_selection">앱 선택</string>
     <string name="platform_none_desktop">없음(데스크톱)</string>
     <string name="platform_desktop">데스크톱</string>

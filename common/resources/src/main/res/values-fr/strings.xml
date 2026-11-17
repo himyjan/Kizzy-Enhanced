@@ -208,7 +208,7 @@
     <string name="custom_application_id">ID dapos;application dapos;activité personnalisé</string>
     <string name="custom_application_id_desc">Remplace lapos;ID dapos;application Discord par défaut</string>
     <string name="use_a_vpnDesc">La connexion à Discord peut ne pas fonctionner dans votre pays sans VPN/DPI. Veuillez utiliser un VPN/DPI pour continuer.</string>
-    <string name="rpc_templates_note">&quot;Utilisez des espaces réservés tels que &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; etc. Les champs vides utiliseront le comportement par défaut ou seront omis.&quot;</string>
+    <string name="rpc_templates_note">&quot;Utilisez des espaces réservés tels que \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' etc. Les champs vides utiliseront le comportement par défaut ou seront omis.&quot;</string>
     <string name="manual_rpc_detect_apps">Autoriser Experimental RPC à détecter les applications en cours dapos;exécution</string>
     <string name="manual_rpc_detect_media">Autoriser Experimental RPC à détecter la lecture de médias</string>
     <string name="app_preferences">Préférences dapos;application</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Afficher les informations de la chanson dans le titre de lapos;activité plutôt que le nom de lapos;application</string>
     <string name="title_source_song">Titre de la chanson</string>
     <string name="title_source_artist">Artiste</string>
-    <string name="type_to_insert_variable">Tapez &apos;{{&apos; pour insérer une variable</string>
+    <string name="type_to_insert_variable">Tapez \'{{\' pour insérer une variable</string>
     <string name="app_selection">Sélection dapos;application</string>
     <string name="platform_none_desktop">Aucun (ordinateur de bureau)</string>
     <string name="platform_desktop">Ordinateur de bureau</string>

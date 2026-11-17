@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Kizzy</string>
     <string name="app_name_full">Kizzy Enhanced</string>
     <string name="qs_tile_label">Kizzy Quickie</string>
@@ -130,7 +130,7 @@
     <string name="discord_step2_content">Find Share my activity and turn it ON. Under Where I Share Activity, select Share in all servers. Scroll to My Servers and turn ON the servers where you want your status visible.</string>
     <string name="discord_step3_title">Step 3: Check Your Online Status</string>
     <string name="discord_step3_content">Tap your Status (below your username) and select Online, Idle, or Do Not Disturb. ⚠️ Do not use Invisible — Discord hides Kizzy activity when you are Invisible.</string>
-    <string name="discord_tip_title">Can&apos;t find &quot;Share my activity&quot;?</string>
+    <string name="discord_tip_title">Can\'t find &quot;Share my activity&quot;?</string>
     <string name="discord_tip_content">Some Discord mobile versions hide this toggle. Open discord.com in Chrome → enable Desktop site → log in → Settings (⚙️) → Activity Privacy → turn on Share my activity.</string>
     <string name="permission_granted">Granted</string>
     <string name="permission_not_granted">Not Granted, Click to Allow</string>
@@ -244,10 +244,10 @@
     <string name="idling_notification">Idling…</string>
     <string name="main_appDetection">App Detection</string>
     <string name="main_appDetection_details">Kizzy allows you to share your current activity on
-        Discord by detecting what app you&apos;re using on your device.</string>
+        Discord by detecting what app you\'re using on your device.</string>
     <string name="main_mediaRpc">Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
-        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+        Discord, such as the song or video you\'re currently listening to or watching.</string>
     <string name="main_customRpc">Custom RPC</string>
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
@@ -276,6 +276,8 @@
     <string name="no_internet_user_profile">No Internet connection. Try again later.</string>
     <string name="user_profile_rpc_name">USING KIZZY RICH PRESENCE</string>
     <string name="user_profile_bio">ABOUT ME</string>
+    <string name="profile_view_full_bio" tools:ignore="MissingTranslation">View Full Bio</string>
+    <string name="profile_show_less" tools:ignore="MissingTranslation">Show Less</string>
     <string name="user_profile_special_button">Special Button</string>
     <string name="user_profile">User Profile</string>
     <string name="logout">Logout</string>
@@ -344,7 +346,7 @@
     <string name="custom_application_id_desc">Overrides the default Discord Application ID</string>
     <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
         Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
+    <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
     <string name="manual_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
     <string name="manual_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
@@ -366,7 +368,7 @@
     <string name="completion_playback">Playback State</string>
     <string name="imgur_client_id">Imgur Client ID</string>
     <string name="set_imgur_client_id">Set Imgur Client ID</string>
-    <string name="set_imgur_client_id_desc">If images aren&apos;t showing using Imgur, you can try
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
         setting your own Client ID</string>
     <string name="show_song_as_title">Show Song as Title</string>
     <string name="use_youtube_button">Add Media Button</string>
@@ -379,7 +381,7 @@
         of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Type &apos;{{&apos;; to insert a variable</string>
+    <string name="type_to_insert_variable">Type \'{{\' to insert a variable</string>
     <string name="app_selection">App Selection</string>
     <string name="platform_none_desktop">None (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

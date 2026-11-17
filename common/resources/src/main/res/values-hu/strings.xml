@@ -208,7 +208,7 @@
     <string name="custom_application_id">Egyedi tevékenység alkalmazás azonosító</string>
     <string name="custom_application_id_desc">Felülírja az alapértelmezett Discord alkalmazás azonosítót</string>
     <string name="use_a_vpn_desc">A Discord bejelentkezés nem lehet, hogy működik az Ön országában VPN/DPI nélkül. Kérjük, használjon VPN/DPI-t a folytatáshoz.</string>
-    <string name="rpc_templates_note">&quot;Használja a helyőrzőket, mint &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; stb. Az üres mezők az alapértelmezett működést használják vagy kihagyásra kerülnek.&quot;</string>
+    <string name="rpc_templates_note">&quot;Használja a helyőrzőket, mint \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' stb. Az üres mezők az alapértelmezett működést használják vagy kihagyásra kerülnek.&quot;</string>
     <string name="manual_rpc_detect_apps">Engedélyezze a Kísérleti RPC-nek, hogy felismerje a futó alkalmazásokat</string>
     <string name="manual_rpc_detect_media">Engedélyezze a Kísérleti RPC-nek, hogy felismerje a média lejátszást</string>
     <string name="app_preferences">Alkalmazás beállítások</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Dal információ megjelenítése a tevékenység címében az alkalmazás nevé helyett</string>
     <string name="title_source_song">Dal neve</string>
     <string name="title_source_artist">Előadó</string>
-    <string name="type_to_insert_variable">Változó beillesztéséhez írja be &apos;{{&apos; karaktert</string>
+    <string name="type_to_insert_variable">Változó beillesztéséhez írja be \'{{\' karaktert</string>
     <string name="app_selection">Alkalmazás kiválasztása</string>
     <string name="platform_none_desktop">Nincs (Asztali)</string>
     <string name="platform_desktop">Asztali</string>

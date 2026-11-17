@@ -207,7 +207,7 @@
     <string name="custom_application_id">Προσαρμοσμένη εφαρμογή δραστηριότητας κωδικός</string>
     <string name="custom_application_id_desc">Παράβιαση του πρε δείκτης της εφαρμογής Discord</string>
     <string name="use_a_vpnDesc">Η σύνδεση στο Discord μπορεί να μην λειτουργεί στην χώρα σας χωρίς VPN/DPI. Παρακαλούμε να χρησιμοποιήσετε VPN/DPI για να συνεχίσετε.</string>
-    <string name="rpc_templates_note">&quot;Χρησιμοποιήστε πρότυπα όπως &quot;{{apos;app_name}}apos;apos;, &apos;{{&apos;media_title}}apos;apos;, ε천원. Τα κενά πεδία θα χρησιμοποιηθούν το προκαθορισμένο σκέλος ή θα παραβληθούν.&quot;</string>
+    <string name="rpc_templates_note">&quot;Χρησιμοποιήστε πρότυπα όπως &quot;{{apos;app_name}}apos;apos;, \'{{\'media_title}}apos;apos;, ε천원. Τα κενά πεδία θα χρησιμοποιηθούν το προκαθορισμένο σκέλος ή θα παραβληθούν.&quot;</string>
     <string name="manual_rpc_detect_apps">Επιτρέψτε στο Experimental RPC να εντοπίζει τρέχουσες εφαρμογές</string>
     <string name="manual_rpc_detect_media">Επιτρέψτε στο Experimental RPC να εντοπίζει την αναπαραγωγή μέσων</string>
     <string name="app_preferences">Προτιμήσεις εφαρμογών</string>
@@ -238,7 +238,7 @@
     <string name="manual_rpc_title_toggle_desc">Προβολή πληροφοριών τραγουδιού στον τίτλο δραστηριότητας αντί για το όνομα της εφαρμογής</string>
     <string name="title_source_song">Ονομασίες τραγουδιού</string>
     <string name="title_source_artist">Καλλιτέχνης</string>
-    <string name="type_toInsertVariable">Πληκτρολογήστε &apos;{{&apos; για να εισαγάγετε μια μεταβλητή</string>
+    <string name="type_toInsertVariable">Πληκτρολογήστε \'{{\' για να εισαγάγετε μια μεταβλητή</string>
     <string name="app_selection">Επιλογή εφαρμογών</string>
     <string name="platform_none_desktop">Κανένας (προσωπικός υπολογιστής)</string>
     <string name="platform_desktop">Προσωπικός υπολογιστής</string>

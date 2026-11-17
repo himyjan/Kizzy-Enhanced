@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">在活动标题中显示歌曲信息而不是应用程序名称</string>
     <string name="title_source_song">歌曲名称</string>
     <string name="title_source_artist">艺术家</string>
-    <string name="type_toInsertVariable">键入 &apos;{{&apos; 以插入变量</string>
+    <string name="type_toInsertVariable">键入 \'{{\' 以插入变量</string>
     <string name="app_selection">应用程序选择</string>
     <string name="platform_none_desktop">无（桌面）</string>
     <string name="platform_desktop">桌面</string>

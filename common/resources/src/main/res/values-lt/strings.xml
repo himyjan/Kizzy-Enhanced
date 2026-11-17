@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Parodykite dainos informaciją aktyvumo pavadinime, o ne programos pavadinimą</string>
     <string name="title_source_song">Dainos pavadinimas</string>
     <string name="title_source_artist">Autorius</string>
-    <string name="type_to_insert_variable">Įveskite &apos;{{&apos; norėdami įdėti kintamąjį</string>
+    <string name="type_to_insert_variable">Įveskite \'{{\' norėdami įdėti kintamąjį</string>
     <string name="app_selection">Programos pasirinkimas</string>
     <string name="platform_none_desktop">Nėra (darinys)</string>
     <string name="platform_desktop">Darinys</string>

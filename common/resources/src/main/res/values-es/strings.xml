@@ -208,7 +208,7 @@
     <string name="custom_application_id">ID de Aplicación de Actividad Personalizado</string>
     <string name="custom_application_id_desc">Anula el ID de Aplicación Discord predeterminado</string>
     <string name="use_a_vpn_desc">El inicio de sesión de Discord puede no funcionar en tu país sin una VPN/DPI. Por favor, usa una VPN/DPI para continuar.</string>
-    <string name="rpc_templates_note">&quot;Usa marcadores de posición como &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc. Los campos vacíos usarán el comportamiento predeterminado o se omitirán.&quot;</string>
+    <string name="rpc_templates_note">&quot;Usa marcadores de posición como \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc. Los campos vacíos usarán el comportamiento predeterminado o se omitirán.&quot;</string>
     <string name="manual_rpc_detect_apps">Permitir que Experimental RPC detecte aplicaciones en ejecución</string>
     <string name="manual_rpc_detect_media">Permitir que Experimental RPC detecte reproducción de medios</string>
     <string name="app_preferences">Preferencias de la App</string>

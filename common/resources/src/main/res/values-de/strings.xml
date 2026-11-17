@@ -208,7 +208,7 @@
     <string name="custom_application_id">Benutzerdefinierte Aktivitätsanwendungs-ID</string>
     <string name="custom_application_id_desc">Überschreibt die Standard-Discord-Anwendungs-ID</string>
     <string name="use_a_vpnDesc">Der Discord-Login funktioniert möglicherweise nicht in Ihrem Land ohne VPN/DPI. Bitte verwenden Sie ein VPN/DPI, um fortzufahren.</string>
-    <string name="rpc_templates_note">&quot;Verwenden Sie Platzhalter wie &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; usw. Leere Felder verwenden das Standardverhalten oder werden ausgelassen.&quot;</string>
+    <string name="rpc_templates_note">&quot;Verwenden Sie Platzhalter wie \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' usw. Leere Felder verwenden das Standardverhalten oder werden ausgelassen.&quot;</string>
     <string name="manual_rpc_detect_apps">Erlaube Experimental RPC, laufende Apps zu erkennen</string>
     <string name="manual_rpc_detect_media">Erlaube Experimental RPC, Medienwiedergabe zu erkennen</string>
     <string name="app_preferences">App-Einstellungen</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Liedinformationen im Aktivitätstitel anstelle des App-Namens anzeigen</string>
     <string name="title_source_song">Songtitel</string>
     <string name="title_source_artist">Künstler</string>
-    <string name="type_to_insert_variable">Geben Sie &apos;{{&apos; ein um eine Variable einzufügen</string>
+    <string name="type_to_insert_variable">Geben Sie \'{{\' ein um eine Variable einzufügen</string>
     <string name="app_selection">App-Auswahl</string>
     <string name="platform_none_desktop">Keine (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

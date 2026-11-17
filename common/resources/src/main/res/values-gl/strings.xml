@@ -208,7 +208,7 @@
     <string name="custom_application_id">ID de aplicaciÃ³n de actividade personalizada</string>
     <string name="custom_application_id_desc">Sobreescribe o ID da aplicação de Discord por defecto</string>
     <string name="use_a_vpnDesc">O acceso a Discord podería non funcionar no teu país sen VPN/DPI. Por favor, use un VPN/DPI para continuar.</string>
-    <string name="rpc_templates_note">&quot;Usa plantillas como &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; etc. Os campos baleiros usarán o comportamento por defecto ou serán omitidos.&quot;</string>
+    <string name="rpc_templates_note">&quot;Usa plantillas como \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' etc. Os campos baleiros usarán o comportamento por defecto ou serán omitidos.&quot;</string>
     <string name="manual_rpc_detect_apps">Permitir a Experimental RPC detectar aplicacións executándose</string>
     <string name="manual_rpc_detect_media">Permitir a Experimental RPC detectar reprodución de medios</string>
     <string name="app_preferences">Preferencias da aplicación</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Amosar a información da canción no título da actividade no lugar do nome da aplicación</string>
     <string name="title_source_song">Nome da canción</string>
     <string name="title_source_artist">Artista</string>
-    <string name="type_toInsertVariable">Escribe &apos;{{&apos; para inserir unha variable</string>
+    <string name="type_toInsertVariable">Escribe \'{{\' para inserir unha variable</string>
     <string name="app_selection">Selección de aplicación</string>
     <string name="platform_none_desktop">Ningún (escribanía)</string>
     <string name="platform_desktop">Escritorio</string>

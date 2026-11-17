@@ -208,7 +208,7 @@
     <string name="custom_application_id">Aangepast activiteitstoepassings-ID</string>
     <string name="custom_application_id_desc">Standaard Discord-applicatie-ID overschrijven</string>
     <string name="use_a_vpnDesc">Discord-inloggen werkt mogelijk niet in uw land zonder VPN/DPI. Gebruik alstublieft VPN/DPI om verder te gaan.</string>
-    <string name="rpc_templates_note">&quot;Gebruik placeholders zoals &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; enz. Lege velden gebruiken het standaardgedrag of worden overgeslagen.&quot;</string>
+    <string name="rpc_templates_note">&quot;Gebruik placeholders zoals \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' enz. Lege velden gebruiken het standaardgedrag of worden overgeslagen.&quot;</string>
     <string name="manual_rpc_detect_apps">Experimentele RPC toestaan actieve apps te detecteren</string>
     <string name="manual_rpc_detect_media">Experimentele RPC toestaan media-afspeling te detecteren</string>
     <string name="app_preferences">App-voorkeuren</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Liedinformatie in activiteitstitel weergeven in plaats van app-naam</string>
     <string name="title_source_song">Liedtitel</string>
     <string name="title_source_artist">Artiest</string>
-    <string name="type_toInsertVariable">Typ &apos;{{&apos; om een variabele in te voegen</string>
+    <string name="type_toInsertVariable">Typ \'{{\' om een variabele in te voegen</string>
     <string name="app_selection">App-selectie</string>
     <string name="platform_none_desktop">Geen (desktop)</string>
     <string name="platform_desktop">Desktop</string>

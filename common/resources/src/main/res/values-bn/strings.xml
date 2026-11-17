@@ -202,7 +202,7 @@
     <string name="custom_application_id">কাস্টম অ্যাক্টিভিটি আইডি</string>
     <string name="custom_application_id_desc">ডিফল্ট ডিসকর্ড আইডি পরিবর্তন করুন</string>
     <string name="use_a_vpn_desc">ডিস্কর্ড লগিন আপনার দেশে নাও work করতে পারে। নম্বরসা ব্যবহার করুন</string>
-    <string name="rpc_templates_note">&quot;টেমপ্লেট ব্যবহার করুন যেমন &quot;{app_name}}apos;apos;, &apos;{{&apos;media_title}}apos;apos; ইত্যাদি। খালি ফিল্ডকে ডিফল্টভাবে গোপন করা হবে।&quot;</string>
+    <string name="rpc_templates_note">&quot;টেমপ্লেট ব্যবহার করুন যেমন &quot;{app_name}}apos;apos;, \'{{\'media_title}}apos;apos; ইত্যাদি। খালি ফিল্ডকে ডিফল্টভাবে গোপন করা হবে।&quot;</string>
     <string name="manual_rpc_detect_apps">এক্সপেরিমেন্টাল RPC-কে চলমান অ্যাপ্লিকেশন খুঁজে বের করার অনুমতি দিন</string>
     <string name="manual_rpc_detect_media">এক্সপেরিমেন্টাল RPC-কে মিডিয়া প্লেব্যাক শনাক্ত করতে দিন</string>
     <string name="app_preferences">অ্যাপ পছন্দ</string>

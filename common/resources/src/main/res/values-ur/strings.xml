@@ -207,7 +207,7 @@
     <string name="custom_application_id">کسٹم سرگرمی ایپلیکیشن آئی ڈی</string>
     <string name="custom_application_id_desc">طے شدہ ڈسکارڈ ایپلیکیشن آئی ڈی کو بدل دیتا ہے</string>
     <string name="use_a_vpnDesc">ڈسکورڈ لاگ اïn باتھ می VPN/DPI پر})\).</string>
-    <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; ٹیمپلیٹ استعمال کریں۔ خالی فیلڈز ڈیفالٹ رویہ استعمال کریں گے یا چھوڑ دیے جائیں گے۔&quot;</string>
+    <string name="rpc_templates_note">&quot;\'{{\'app_name}}\'\', \'{{\'media_title}}\'\' ٹیمپلیٹ استعمال کریں۔ خالی فیلڈز ڈیفالٹ رویہ استعمال کریں گے یا چھوڑ دیے جائیں گے۔&quot;</string>
     <string name="app_preferences">ایپ پرinciples</string>
     <string name="app_preferences_desc">ایکسپیرمنٹل RPC کے لیے کون سی ایپس این ایبل ہیں select کریں</string>
     <string name="completion_media_title">گیت / ویڈیو کا سرTitle</string>
@@ -233,7 +233,7 @@
     <string name="manual_rpc_title_toggle">شیرٹہ</string>
     <string name="title_source_song">گیت ka نام</string>
     <string name="title_source_artist">کلر Urdu</string>
-    <string name="type_toInsertVariable">ویر ایبل ڈالنے کے لیے &apos;{{&apos; ٹائپ کریں</string>
+    <string name="type_toInsertVariable">ویر ایبل ڈالنے کے لیے \'{{\' ٹائپ کریں</string>
     <string name="app_selection">ایپ {{ éistance</string>
     <string name="platform_none_desktop">کوشنگ (ڈیسکٹاپ)</string>
     <string name="platform_desktop">ڈیسکٹاپ</string>

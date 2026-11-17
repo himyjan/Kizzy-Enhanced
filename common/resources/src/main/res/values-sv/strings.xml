@@ -208,7 +208,7 @@
     <string name="custom_application_id">Custom applikations-ID</string>
     <string name="custom_application_id_desc">Åsidosätter standard Discord-applikations-ID</string>
     <string name="use_a_vpnDesc">Discord-inloggning kan inte fungera i ditt land utan VPN/DPI. Använd VPN/DPI för att fortsätta.</string>
-    <string name="rpc_templates_note">&quot;Använd mallar som &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; osv. Tomma fält kommer att använda standardbeteende eller utelämnas.&quot;</string>
+    <string name="rpc_templates_note">&quot;Använd mallar som \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' osv. Tomma fält kommer att använda standardbeteende eller utelämnas.&quot;</string>
     <string name="manual_rpc_detect_apps">Låt Experimental RPC upptäcka körande appar</string>
     <string name="manual_rpc_detect_media">Tillåt Experimental RPC att upptäcka medieuppspelning</string>
     <string name="app_preferences">Applikationsinställningar</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Visa låteinformation i aktivitetstiteln istället för appnamn</string>
     <string name="title_source_song">Låtens titel</string>
     <string name="title_source_artist">Artist</string>
-    <string name="type_to_insert_variable">Skriv &apos;{{&apos; för att infoga en variabel</string>
+    <string name="type_to_insert_variable">Skriv \'{{\' för att infoga en variabel</string>
     <string name="app_selection">Applikationsval</string>
     <string name="platform_none_desktop">Ingen (Stationär)</string>
     <string name="platform_desktop">Stationär</string>

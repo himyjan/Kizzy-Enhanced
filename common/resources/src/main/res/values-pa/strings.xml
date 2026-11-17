@@ -201,7 +201,7 @@
     <string name="custom_application_id">ਕਸਟਮ ਕਾਰਵਾਈ ਐਪਲੀਕੇਸ਼ਨ ਆਈਡੀ</string>
     <string name="custom_application_idDesc">ਡਿਫੌਲਟ ਡਿਸਕਾਰਡ ਐਪਲੀਕੇਸ਼ਨ ਆਈਡੀ ਓਵਰਰਾਈਡ ਕਰੋ</string>
     <string name="use_a_vpnDesc">VPN ਦੀ ਵਰਤੋਂ ਬਾਰੇ ਵੇਵਰਾ</string>
-    <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; ਠੇਕ ਕਿਹਾਅ ਰਾਹੀਂ ਵਰਤੋ। ਖਾਲੀ ਫੀਲਡ ਡਿਫੌਲਟ ਵਰਤਾਅ ਵਰਤੇਗਾ ਜਾਂ ਛੱਡ ਦਿੱਤਾ ਜਾਵੇਗਾ।&quot;</string>
+    <string name="rpc_templates_note">&quot;\'{{\'app_name}}\'\', \'{{\'media_title}}\'\' ਠੇਕ ਕਿਹਾਅ ਰਾਹੀਂ ਵਰਤੋ। ਖਾਲੀ ਫੀਲਡ ਡਿਫੌਲਟ ਵਰਤਾਅ ਵਰਤੇਗਾ ਜਾਂ ਛੱਡ ਦਿੱਤਾ ਜਾਵੇਗਾ।&quot;</string>
     <string name="manual_rpc_detect_apps">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC-ਕੇ ਚੱਲ ਰਹੇ ਐਪ ਡਿਟੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
     <string name="manual_rpc_detect_media">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC-ਕੇ ਮੀਡੀਆ ਪਲੇਬੈਕ ਡਿਟੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
     <string name="app_preferences">ਐਪ ਪ੍ਰੈਫਰੈਂਸ</string>
@@ -232,7 +232,7 @@
     <string name="manual_rpc_title_toggle_desc">ਕਾਰਵਾਈ ਸੀਰਲ ਵਿੱਚ ਐਪ ਨਾਮ ਦੀ ਸਟਰ ਗਾਣੇ ਦੀ ਜਾਣਕਾਰੀ ਦਿਖਾਓ</string>
     <string name="title_source_song">ਗਾਣੇ ਦਾ ਨਾਮ</string>
     <string name="title_source_artist">ਕਲਾਕਾਰ</string>
-    <string name="type_toInsertVariable">ਵੇਰੀਏਬਲ ਪਾਉਣ ਲਈ &apos;{{&apos; ਟਾਈਪ ਕਰੋ</string>
+    <string name="type_toInsertVariable">ਵੇਰੀਏਬਲ ਪਾਉਣ ਲਈ \'{{\' ਟਾਈਪ ਕਰੋ</string>
     <string name="app_selection">ਐਪ ਚੋਣ</string>
     <string name="platform_none_desktop">ਕੋਈ ਨਹੀਂ (ਡੈਸਕਟਾਪ)</string>
     <string name="platform_desktop">ਡੈਸਕਟਾਪ</string>

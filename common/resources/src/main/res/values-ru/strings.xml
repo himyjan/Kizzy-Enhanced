@@ -208,7 +208,7 @@
     <string name="custom_application_id">Идентификатор кастомного приложения</string>
     <string name="custom_application_id_desc">Переопределяет стандартный идентификатор приложения Discord</string>
     <string name="use_a_vpnDesc">Вход в Discord может не работать в вашей стране без VPN/DPI. Пожалуйста, используйте VPN/DPI для продолжения.</string>
-    <string name="rpc_templates_note">&quot;Используйте шаблоны, такие как &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; и т.д. Пустые поля будут использовать поведение по умолчанию или будут пропущены.&quot;</string>
+    <string name="rpc_templates_note">&quot;Используйте шаблоны, такие как \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' и т.д. Пустые поля будут использовать поведение по умолчанию или будут пропущены.&quot;</string>
     <string name="manual_rpc_detect_apps">Разрешить Experimental RPC обнаруживать запущенные приложения</string>
     <string name="manual_rpc_detect_media">Разрешить Experimental RPC обнаруживать воспроизведение медиа</string>
     <string name="app_preferences">Предпочтения приложений</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Показать информацию о песне в заголовке активности вместо названия приложения</string>
     <string name="title_source_song">Название песни</string>
     <string name="title_source_artist">Исполнитель</string>
-    <string name="type_to_insert_variable">Введите &apos;{{&apos; для вставки переменной</string>
+    <string name="type_to_insert_variable">Введите \'{{\' для вставки переменной</string>
     <string name="app_selection">Выбор приложения</string>
     <string name="platform_none_desktop">Нет (настольный)</string>
     <string name="platform_desktop">Настольный компьютер</string>

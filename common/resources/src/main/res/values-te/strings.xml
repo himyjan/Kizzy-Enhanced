@@ -206,7 +206,7 @@
     <string name="custom_application_id">కస్టమ్Action అప్లికేషన్ ఆది</string>
     <string name="custom_application_id_desc">డిఫాల్ట్ డిస్కార్డ్ అప్లికేషన్ ఆది ఓవేర్రైడ్ చేస్తుంది</string>
     <string name="use_a_vpnDesc">VPN వివరణ</string>
-    <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; టెంప్లేట్ ఉపయోగించండి. ఖాళీ ఫీల్డ్ డిఫాల్ట్ బ rainha అనుసరించవచ్చు లేదా వదిలేయవచ్చు.&quot;</string>
+    <string name="rpc_templates_note">&quot;\'{{\'app_name}}\'\', \'{{\'media_title}}\'\' టెంప్లేట్ ఉపయోగించండి. ఖాళీ ఫీల్డ్ డిఫాల్ట్ బ rainha అనుసరించవచ్చు లేదా వదిలేయవచ్చు.&quot;</string>
     <string name="manual_rpc_detect_apps">ఎక్స్పిరిమెంటల్ RPC యాప్స్ డిటెక్ట్ చేయడానికి అనుమతి ఇవ్వండి</string>
     <string name="manual_rpc_detect_media">ఎక్స్పిరిమెంటల్ RPC మీడియా డిటెక్ట్ చేయడానికి అనుమతి ఇవ్వండి</string>
     <string name="app_preferences">యాప్ ప్రెఫరెన్స్</string>
@@ -236,7 +236,7 @@
     <string name="manual_rpc_title_toggle_desc">క్రియల శీర్షికలో యాప్ పేరు బదులుగా పాట Mahata</string>
     <string name="title_source_song">గీత రాలే</string>
     <string name="title_source_artist">కలాకారుడు</string>
-    <string name="type_toInsertVariable"> వేర్!, కలయిక తప్పాక &apos;{{&apos; టైప్ చేయండి</string>
+    <string name="type_toInsertVariable"> వేర్!, కలయిక తప్పాక \'{{\' టైప్ చేయండి</string>
     <string name="app_selection">యాప్ ఎంచుకోండి</string>
     <string name="platform_none_desktop">ఏదే లేదు (డెస్క్టాప్)</string>
     <string name="platform_desktop">డెస్క్టాప్</string>

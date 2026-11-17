@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Discord でアプリ名の代わりに楽曲情報を表示</string>
     <string name="title_source_song">曲名</string>
     <string name="title_source_artist">アーティスト</string>
-    <string name="type_to_insert_variable">変数を挿入するには &apos;{{&apos; と入力してください</string>
+    <string name="type_to_insert_variable">変数を挿入するには \'{{\' と入力してください</string>
     <string name="app_selection">アプリ選択</string>
     <string name="platform_none_desktop">なし (デスクトップ)</string>
     <string name="platform_desktop">デスクトップ</string>

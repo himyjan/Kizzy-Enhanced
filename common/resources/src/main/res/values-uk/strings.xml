@@ -208,7 +208,7 @@
     <string name="custom_application_id">Користувальничий ідентифікатор додатка активності</string>
     <string name="custom_application_id_desc">Перевизначає стандартний ідентифікатор додатка Discord</string>
     <string name="use_a_vpn_desc">Увійти в Discord може не працювати у вашій країні без VPN/DPI. Будь ласка, використовуйте VPN/DPI, щоб продовжити.</string>
-    <string name="rpc_templates_note">&quot;Використовуйте замісники, такі як &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; тощо. Порожні поля використовуватимуть поведінку за замовчуванням або будуть пропущені.&quot;</string>
+    <string name="rpc_templates_note">&quot;Використовуйте замісники, такі як \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' тощо. Порожні поля використовуватимуть поведінку за замовчуванням або будуть пропущені.&quot;</string>
     <string name="manual_rpc_detect_apps">Дозволити Експериментальному RPC виявляти запущені програми</string>
     <string name="manual_rpc_detect_media">Дозволити Експериментальному RPC виявляти відтворення медіа</string>
     <string name="app_preferences">Параметри програми</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Показувати інформацію про пісню у заголовку активності замість імені програми</string>
     <string name="title_source_song">Назва пісні</string>
     <string name="title_source_artist">Виконавець</string>
-    <string name="type_to_insert_variable">Навведіть &apos;{{&apos; щоб вставити змінну</string>
+    <string name="type_to_insert_variable">Навведіть \'{{\' щоб вставити змінну</string>
     <string name="app_selection">Вибір програми</string>
     <string name="platform_none_desktop">Нічого (Робочий стіл)</string>
     <string name="platform_desktop">Робочий стіл</string>

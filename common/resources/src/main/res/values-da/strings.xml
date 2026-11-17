@@ -208,7 +208,7 @@
     <string name="custom_application_id">Brugerdefineret applikations-ID</string>
     <string name="custom_application_id_desc">Overskriver standard Discord-applikations-ID</string>
     <string name="use_a_vpnDesc">Discord-login virker måske ikke i dit land uden VPN/DPI. Brug venligst VPN/DPI for at fortsætte.</string>
-    <string name="rpc_templates_note">&quot;Brug skabeloner som &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; osv. Tomme felter vil bruge standardadfærd eller blive udeladt.&quot;</string>
+    <string name="rpc_templates_note">&quot;Brug skabeloner som \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' osv. Tomme felter vil bruge standardadfærd eller blive udeladt.&quot;</string>
     <string name="manual_rpc_detect_apps">Tillad Experimental RPC at opdage kørende apps</string>
     <string name="manual_rpc_detect_media">Tillad Experimental RPC at opdage medieafspilning</string>
     <string name="app_preferences">App-præferencer</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Vis sanginformation i aktivitetstitel i stedet for appnavn</string>
     <string name="title_source_song">Sangtitel</string>
     <string name="title_source_artist">Kunstner</string>
-    <string name="type_toInsertVariable">Skriv &apos;{{&apos; for at indsætte en variabel</string>
+    <string name="type_toInsertVariable">Skriv \'{{\' for at indsætte en variabel</string>
     <string name="app_selection">App-valg</string>
     <string name="platform_none_desktop">Ingen (skrivebord)</string>
     <string name="platform_desktop">Skrivebord</string>

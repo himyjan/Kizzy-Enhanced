@@ -208,7 +208,7 @@
     <string name="custom_application_id">ብጁ የእንቅስቃሴ መተግበሪያ መታወቂያ</string>
     <string name="custom_application_id_desc">ነባሪውን የዲስኮርድ መተግበሪያ መታወቂያ ይሽራል።</string>
     <string name="use_a_vpn_desc">ከVPN/DPI ውጭ ባሉበት ሀገር የዲስኮርድ መግቢያ ላይሰራ ይችላል። ለመቀጠል እባክዎ VPN/DPI ይጠቀሙ።</string>
-    <string name="rpc_templates_note">"እንደ &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; ያሉ መያዣዎችን ይጠቀሙ። ባዶ መስኮች ነባሪ ባህሪን ይጠቀማሉ ወይም ይዘለላሉ።"</string>
+    <string name="rpc_templates_note">"እንደ \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' ያሉ መያዣዎችን ይጠቀሙ። ባዶ መስኮች ነባሪ ባህሪን ይጠቀማሉ ወይም ይዘለላሉ።"</string>
     <string name="manual_rpc_detect_apps">የሙከራ RPC የሚሠሩ መተግበሪያዎችን እንዲያገኝ ፍቀድ</string>
     <string name="manual_rpc_detect_media">የሙከራ RPC የሚዲያ መልሶ ማጫወትን እንዲያገኝ ፍቀድ</string>
     <string name="app_preferences">የመተግበሪያ ምርጫዎች</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">የመተግበሪያ ስም ፋንታ በእንቅስቃሴ ርዕስ ውስጥ የዘፈን መረጃን አሳይ</string>
     <string name="title_source_song">የዘፈን ስም</string>
     <string name="title_source_artist">አርቲስት</string>
-    <string name="type_to_insert_variable">ተለዋዋጭ ለማስገባት &apos;{{&apos;; ይተይቡ</string>
+    <string name="type_to_insert_variable">ተለዋዋጭ ለማስገባት \'{{\' ይተይቡ</string>
     <string name="app_selection">የመተግበሪያ ምርጫ</string>
     <string name="platform_none_desktop">ምንም (ዴስክቶፕ)</string>
     <string name="platform_desktop">ዴስክቶፕ</string>

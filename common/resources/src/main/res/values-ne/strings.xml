@@ -205,7 +205,7 @@
     <string name="custom_application_id">कस्टम क्रियाकलाप ऍप्लिकेशन आयडी</string>
     <string name="custom_application_idDesc">डिफॉल्ट डिस्कॉर्ड ऍप्लिकेशन आयडी ओभरराइड गर्छ</string>
     <string name="use_a_vpnDesc">डिस्कर्ड लग इन तपाईंको देशमा VPN/DPI बिनै चाल्न सक्दैन। कृपया VPN/DPI प्रयोग गर्नुहोस्.</string>
-    <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; जस्ता टेम्प्लेट प्रयोग गर्नुहोस्। खाली फिल्ड डिफॉल्ट व्यवहार प्रयोग गर्छन् वा छोडिन्छन्.&quot;</string>
+    <string name="rpc_templates_note">&quot;\'{{\'app_name}}\'\', \'{{\'media_title}}\'\' जस्ता टेम्प्लेट प्रयोग गर्नुहोस्। खाली फिल्ड डिफॉल्ट व्यवहार प्रयोग गर्छन् वा छोडिन्छन्.&quot;</string>
     <string name="manual_rpc_detect_apps">एक्सपेरिमेंटल RPC ला चालू भएको ऍप्स डिटेक्ट गर्न अनुमति दिनुहोस्</string>
     <string name="manual_rpc_detect_media">एक्सपेरिमेंटल RPC ला मीडिया प्लेब्याक डिटेक्ट गर्न अनुमति दिनुहोस्</string>
     <string name="app_preferences">ऍप प्रेफरेन्सेस</string>
@@ -236,7 +236,7 @@
     <string name="manual_rpc_title_toggle_desc">ऍप नामको सट्टा क्रियाकलाप शीर्षकमा गीतको जानकारी देखाउनुहोस्</string>
     <string name="title_source_song">गीतको नाम</string>
     <string name="title_source_artist">कलाकार</string>
-    <string name="type_toInsertVariable">भेरिएबल राख्नको लागि &apos;{{&apos; टाइप गर्नुहोस्</string>
+    <string name="type_toInsertVariable">भेरिएबल राख्नको लागि \'{{\' टाइप गर्नुहोस्</string>
     <string name="app_selection">ऍप छनौट</string>
     <string name="platform_none_desktop">कुनै पनि नही (डेक्स्टप)</string>
     <string name="platform_desktop">डेक्स्टप</string>

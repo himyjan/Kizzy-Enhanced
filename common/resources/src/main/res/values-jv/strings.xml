@@ -208,7 +208,7 @@
     <string name="custom_application_id">ID Aplikasi Aktivitas Khusus</string>
     <string name="custom_application_id_desc">Nglampahi ID Aplikasi Discord default</string>
     <string name="use_a_vpn_desc">Masuk marang Discord mung ora bisa lavor ing negoro sampeyan tanpa VPN/DPI. Silakan gunake VPN/DPI kanggo melanjuti.</string>
-    <string name="rpc_templates_note">&quot;Gunakake placeholder kayata &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; utawa liyane. Kolom kosong bakal nggunakake perilaku default utawa diabaiki.&quot;</string>
+    <string name="rpc_templates_note">&quot;Gunakake placeholder kayata \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' utawa liyane. Kolom kosong bakal nggunakake perilaku default utawa diabaiki.&quot;</string>
     <string name="manual_rpc_detect_apps">Izinin Experimental RPC kanggo nemtokake aplikasi sing curhang</string>
     <string name="manual_rpc_detect_media">Izinin Experimental RPC kanggo nemtokake playmedia media</string>
     <string name="app_preferences">Preferensi Aplikasi</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Tampilake informasi lagu dijudul aktivitas alih-alih nama aplikasi</string>
     <string name="title_source_song">Judul Lagu</string>
     <string name="title_source_artist">Seniman</string>
-    <string name="type_to_insert_variable">Ketik &apos;{{&apos; kanggo ngisorake variabel</string>
+    <string name="type_to_insert_variable">Ketik \'{{\' kanggo ngisorake variabel</string>
     <string name="app_selection">Pilihan Aplikasi</string>
     <string name="platform_none_desktop">Ora Ada (Desktop)</string>
     <string name="platform_desktop">Desktop</string>

@@ -208,7 +208,7 @@
     <string name="custom_application_id">Mã ứng dụng hoạt động tùy chỉnh</string>
     <string name="custom_application_id_desc">Ghi đè mã ứng dụng Discord mặc định</string>
     <string name="use_a_vpnDesc">Đăng nhập Discord có thể không hoạt động ở quốc gia của bạn nếu không có VPN/DPI. Vui lòng sử dụng VPN/DPI để tiếp tục.</string>
-    <string name="rpc_templates_note">&quot;Sử dụng các mẫu khác nhau như &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;... Các trường trống sẽ sử dụng hành động mặc định hoặc bị bỏ qua.&quot;</string>
+    <string name="rpc_templates_note">&quot;Sử dụng các mẫu khác nhau như \'{{\'app_name}}\'\', \'{{\'media_title}}\'\'... Các trường trống sẽ sử dụng hành động mặc định hoặc bị bỏ qua.&quot;</string>
     <string name="manual_rpc_detect_apps">Cho phép Experimental RPC phát hiện các ứng dụng đang chạy</string>
     <string name="manual_rpc_detect_media">Cho phép Experimental RPC phát hiện phương tiện đang phát</string>
     <string name="app_preferences">Tùy chọn ứng dụng</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Hiển thị thông tin bài hát dưới dạng tiêu đề hoạt động thay vì tên ứng dụng</string>
     <string name="title_source_song">Tên bài hát</string>
     <string name="title_source_artist">Nghệ sĩ</string>
-    <string name="type_toInsertVariable">Nhập &apos;{{&apos; để chèn biến</string>
+    <string name="type_toInsertVariable">Nhập \'{{\' để chèn biến</string>
     <string name="app_selection">Chọn ứng dụng</string>
     <string name="platform_none_desktop">Không có (máy tính để bàn)</string>
     <string name="platform_desktop">Máy tính để bàn</string>

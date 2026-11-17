@@ -208,7 +208,7 @@
     <string name="custom_application_id">Lastni ID aplikacije aktivnosti</string>
     <string name="custom_application_id_desc">Prepiše standardni Discord ID aplikacije</string>
     <string name="use_a_vpnDesc">Prijava na Discord možda ne deluje v vaši državi brez VPN/DPI. Uporabite VPN/DPI, da nadaljujete.</string>
-    <string name="rpc_templates_note">&quot;Uporabljajte prototipe, kot so &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; itd. Prazna polja bodo uporabljala osnovno obdelavo ali bodo izpuščena.&quot;</string>
+    <string name="rpc_templates_note">&quot;Uporabljajte prototipe, kot so \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' itd. Prazna polja bodo uporabljala osnovno obdelavo ali bodo izpuščena.&quot;</string>
     <string name="manual_rpc_detect_apps">Dovoli Experimental RPC, da zazna tečajoče aplikacije</string>
     <string name="manual_rpc_detect_media">Dovoli Experimental RPC, da zazna predvajanje medijev</string>
     <string name="app_preferences">Nastavitve aplikacij</string>
@@ -239,7 +239,7 @@
     <string name="manual_rpc_title_toggle_desc">Pokaži pesniško informacijo v naslovu aktivnosti namesto imena aplikacije</string>
     <string name="title_source_song">Ime pesme</string>
     <string name="title_source_artist">Avtor</string>
-    <string name="type_to_insert_variable">Vpišite &apos;{{&apos; da vstavi spremenljivko</string>
+    <string name="type_to_insert_variable">Vpišite \'{{\' da vstavi spremenljivko</string>
     <string name="app_selection">Izbira programov</string>
     <string name="platform_none_desktop">Ni (namizje)</string>
     <string name="platform_desktop">Namizje</string>
