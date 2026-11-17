@@ -132,7 +132,7 @@
     <string name="main_mediaRpc">Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Whakaaetia te RPC Mau Āringa kia kite i te whakatairangi pārongo</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_mediaRpc">Start Media RPC</string>
@@ -140,14 +140,13 @@
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc">Start Manual RPC</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="enable_manualRpc">Whakaraupapatia te RPC Mau Āringa</string>
+    <string name="main_manualRpc">RPC Mau Āringa</string>
+    <string name="main_manualRpc_details">Ko te RPC Mau Āringa he āheinga i Kizzy e huri haere i waenga i te Apps RPC me te Media RPC.</string>
+    <string name="manual_rpc_detect_apps">Whakaaetia te RPC Mau Āringa kia kite i ngā paku e takoto ana</string>
+    <string name="manual_rpc_title_toggle">Upoko</string>
+    <string name="manual_rpc_title_toggle_desc">Whakaatuhia te mōhio waiata i roto i te upoko mahi, kaua i te ingoa paku</string>
+    <string name="start_manualRpc">Tīmata te RPC Mau Āringa</string>
+    <string name="start_manualRpcToast">Kua tīmata te RPC Mau Āringa</string>
+    <string name="start_manualRpc_toast">Kua tīmata te RPC Mau Āringa</string>
 </resources>

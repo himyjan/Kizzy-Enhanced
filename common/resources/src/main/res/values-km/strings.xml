@@ -129,8 +129,7 @@
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
     <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc_details">Manual RPC ជាមុខងារមួយនៅក្នុង Kizzy ដែលប្តូររវាង Apps RPC និង Media RPC ជានិច្ច។</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">មកលឿន</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">ប្រើ Imgur ជាប់គ្នារូបភាពជំនាល្បង។</string>
     <string name="start_appDetection">ចាប់ផ្ដើមការរកឃើញកម្មវិធី</string>
     <string name="start_mediaRPC">ចាប់ផ្ដើម Media RPC</string>
-    <string name="start_manualRpc">ចាប់ផ្ដើម Manual RPC</string>
+    <string name="start_manualRpc">ចាប់ផ្តើម Manual RPC</string>
     <string name="stop_rpc">ឈប់ RPC</string>
     <string name="stop">ឈប់</string>
     <string name="start_appDetection_toast">ការរកឃើញកម្មវិធីបានចាប់ផ្ដើម</string>
     <string name="start_mediaRPC_toast">Media RPC បានចាប់ផ្ដើម</string>
-    <string name="start_manualRpc_toast">Manual RPC បានចាប់ផ្ដើម</string>
+    <string name="start_manualRpc_toast">Manual RPC បានចាប់ផ្តើម</string>
     <string name="stop_rpc_toast">សេវាទាំងអស់ត្រូវបានឈប់</string>
     <string name="show_playback_state">បង្ហាញស្ថាន្នកចារ</string>
     <string name="copied_to_clipboard">បានចម្លងទៅកន្លោមស្មែន</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">អនុញ្ញាតឱ្យ Manual RPC រកឃើញការលេងមេឌៀ</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">បើក Manual RPC</string>
+    <string name="manual_rpc_detect_apps">អនុញ្ញាតឱ្យ Manual RPC រកឃើញកម្មវិធីដែលកំពុងដំណើរការ</string>
+    <string name="manual_rpc_title_toggle">ចំណងជើង</string>
+    <string name="manual_rpc_title_toggle_desc">បង្ហាញព័ត៌មានបទចម្រៀងនៅក្នុងចំណងជើងសកម្មភាពជំនួសឈ្មោះកម្មវិធី</string>
+    <string name="start_manualRpcToast">Manual RPC បានចាប់ផ្តើម</string>
 </resources>

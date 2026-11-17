@@ -21,7 +21,7 @@ All RPC features are built on a shared foundation in `feature_rpc_base`:
 - **`RpcImage`** — supports application icons and custom URLs (Imgur or local file).
 - **`SecureTokenStorage`** + **`KizzyStateRepository`** — Hilt-injected token storage and connection/pause state.
 - **Hilt** — every RPC service is `@AndroidEntryPoint` and injects `KizzyRPC`, `CoroutineScope`, `Notification.Builder`, and `NotificationManager`.
-- **Mutual exclusion** — enabling one RPC (Custom, Media, Apps, Experimental) stops all others before starting the selected one, so only one presence runs at a time.
+- **Mutual exclusion** — enabling one RPC (Custom, Media, Apps, Manual) stops all others before starting the selected one, so only one presence runs at a time.
 
 ## Quick Reference
 

@@ -101,7 +101,7 @@
     <string name="update">更新</string>
     <string name="configs_directory">配置目录</string>
     <string name="custom_activity_type">自定义活动类型</string>
-    <string name="custom_activity_type_desc">覆盖默认活动类型。仅适用于媒体和实验性 RPC</string>
+    <string name="custom_activity_type_desc">覆盖默认活动类型。仅适用于媒体和手动 RPC</string>
     <string name="custom_activity_status">自定义活动状态</string>
     <string name="custom_activity_status_desc">覆盖默认活动状态</string>
     <string name="search">搜索</string>
@@ -116,7 +116,7 @@
     <string name="main_customRpc">自定义 RPC</string>
     <string name="main_consoleRpc">主机 RPC</string>
     <string name="main_consoleRpcDetails">Kizzy 允许您使用一些预设预设来设置您在 Discord 上的状态。</string>
-    <string name="main_manualRpc">实验性 RPC</string>
+    <string name="main_manualRpc">手动 RPC</string>
     <string name="main_manualRpcDetails">Manual RPC 是 Kizzy 的一个功能，它会不断在 Apps RPC 和 Media RPC 之间切换。</string>
     <string name="main_customRpcDetails">Kizzy 允许您为 Discord 创建完全自定义的丰富状态。</string>
     <string name="main_comingSoon">即将推出</string>

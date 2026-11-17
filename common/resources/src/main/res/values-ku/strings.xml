@@ -132,7 +132,7 @@
     <string name="main_mediaRpc">Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Ji bo RPC destekî destûra lêdana media de bipêre</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_mediaRpc">Start Media RPC</string>
@@ -140,14 +140,13 @@
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc">Start Manual RPC</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="enable_manualRpc">RPC destekî çalak bike</string>
+    <string name="main_manualRpc">RPC destekî</string>
+    <string name="main_manualRpc_details">RPC destekî li Kizzy ye ku di Apps RPC û Media RPC de diguherand.</string>
+    <string name="manual_rpc_detect_apps">Ji bo RPC destekî destûra sebara xebatman de bipêre</string>
+    <string name="manual_rpc_title_toggle">Sernav</string>
+    <string name="manual_rpc_title_toggle_desc">Agahiya stranê di sernava çalekiyê de nîşan bide li dora navê panberiyê</string>
+    <string name="start_manualRpc">RPC destekî dest pêke</string>
+    <string name="start_manualRpcToast">RPC destekî dest pêkir</string>
+    <string name="start_manualRpc_toast">RPC destekî dest pêkir</string>
 </resources>

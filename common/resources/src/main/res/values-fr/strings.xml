@@ -116,7 +116,7 @@
     <string name="main_customRpc">RPC personnalisé</string>
     <string name="main_consoleRpc">RPC console</string>
     <string name="main_consoleRpcDetails">Kizzy vous permet dapos;utiliser quelques préréglages prédéfinis pour définir votre présence sur Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc">RPC manuel</string>
     <string name="main_manualRpcDetails">Manual RPC est une fonctionnalité de Kizzy qui alterne constamment entre Apps RPC et Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vous permet de créer votre propre présence riche entièrement personnalisable pour Discord.</string>
     <string name="main_comingSoon">Bientôt disponible</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Utiliser Imgur comme proxy dapos;image alternatif.</string>
     <string name="start_appDetection">Démarrer la détection dapos;applications</string>
     <string name="start_mediaRpc">Démarrer Media RPC</string>
-    <string name="start_manualRpc">Démarrer Manual RPC</string>
+    <string name="start_manualRpc">Démarrer RPC manuel</string>
     <string name="stop_rpc">Arrêter RPC</string>
     <string name="stop">Arrêter</string>
     <string name="start_appDetectionToast">Détection dapos;applications démarrée</string>
     <string name="start_mediaRpcToast">Media RPC démarré</string>
-    <string name="start_manualRpcToast">Manual RPC démarré</string>
+    <string name="start_manualRpcToast">RPC manuel démarré</string>
     <string name="stop_rpcToast">Tous les services arrêtés</string>
     <string name="show_playbackState">Afficher lapos;état de lecture</string>
     <string name="copied_toClipboard">Copié dans le presse-papiers</string>
@@ -216,7 +216,7 @@
     <string name="completion_appName">Nom de lapos;application détectée</string>
     <string name="show_coverArt">Afficher la pochette de lapos;album</string>
     <string name="show_coverArt_desc">Afficher la pochette de lapos;album comme grande image</string>
-    <string name="enable_manualRpc">Activer Manual RPC</string>
+    <string name="enable_manualRpc">Activer RPC manuel</string>
     <string name="completion_media_author">Auteur principal</string>
     <string name="completion_media_album">Nom de lapos;album</string>
     <string name="completion_media_albumArtist">Artiste de lapos;album</string>
@@ -330,16 +330,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Permettre à RPC manuel de détecter la lecture de médias</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">RPC manuel est une fonctionnalité de Kizzy qui alterne constamment entre Apps RPC et Media RPC.</string>
+    <string name="manual_rpc_detect_apps">Permettre à RPC manuel de détecter les applications en cours d'exécution</string>
+    <string name="manual_rpc_title_toggle">Titre</string>
+    <string name="manual_rpc_title_toggle_desc">Afficher les informations de la chanson dans le titre de l'activité au lieu du nom de l'application</string>
+    <string name="start_manualRpc_toast">RPC manuel démarré</string>
 </resources>

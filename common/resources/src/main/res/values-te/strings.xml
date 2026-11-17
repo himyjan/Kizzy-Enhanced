@@ -114,7 +114,7 @@
     <string name="main_customRpc">కస్టమ్ RPC</string>
     <string name="main_consoleRpc">కాన్సోల్ RPC</string>
     <string name="main_consoleRpcDetails">Kizzy ప్రీ-డిఫైన్డ్ ప్రీసెట్ ఉపయోగించి Discord లో మీ ఉనికిని సెట్ చేయడానికి అనుమతిస్తుంది.</string>
-    <string name="main_manualRpc">ఎక్స్‌పెరీమెంటల్ RPC</string>
+    <string name="main_manualRpc">మాన్యువల్ RPC</string>
     <string name="main_manualRpcDetails">ఎక్స్పెరీమెంటల్ RPC Kizzy లో ఒక ఫీచర్, ఇది యాప్స్ RPC మరియు మీడియా RPC ల మధ్య అసలు rotates చేశాడు.</string>
     <string name="main_customRpcDetails">Kizzy డిజిటల్ రించ్ ఫోజూన్స్ సృష్టించడానికి అనుమతిస్తుంది.</string>
     <string name="main_comingSoon">రాజు రాకుండా</string>
@@ -193,12 +193,12 @@
     <string name="use_imgurDesc">ఇమూర్ ప్రతిబింబ ప్రొక్సీ వంటి ఉపయోగించండి.</string>
     <string name="start_appDetection">యాప్ డిటెక్షన్ ప్రారంభించండి</string>
     <string name="start_mediaRpc">మీడియా RPC ప్రారంభించండి</string>
-    <string name="start_manualRpc">ఎక్స్పిరిమెంటల్ RPC ప్రారంభించండి</string>
+    <string name="start_manualRpc">మాన్యువల్ RPCని ప్రారంభించండి</string>
     <string name="stop_rpc">RPC నిలిపించండి</string>
     <string name="stop">నిలిపించండి</string>
     <string name="start_appDetectionToast">యాప్ డిటెక్షన్ ప్రారంభించింది</string>
     <string name="start_mediaRpcToast">మీడియా RPC ప్రారంభించింది</string>
-    <string name="start_manualRpcToast">మాన్యువల్ RPC ప్రారంభించింది</string>
+    <string name="start_manualRpcToast">మాన్యువల్ RPC ప్రారంభించబడింది</string>
     <string name="stop_rpcToast">అన్ని సెవ్య ఉచితం</string>
     <string name="show_playbackState">ప్లేబ్యాక్ స్థితి చూపించండి</string>
     <string name="copied_toClipboard">క్లిప్ బోర్డులో నకిలీ</string>
@@ -214,7 +214,7 @@
     <string name="completion_appName">డిటెక్ట్ చేయబడిన యాప్ పేరు</string>
     <string name="show_coverArt">ఆల్బమ్ కవర్ చూపించండి</string>
     <string name="show_coverArt_desc">ఆల్బమ్ కవర్ పెద్ద చిత్రంగా చూపించండి</string>
-    <string name="enable_manualRpc">ఎక్స్పిరిమెంటల్ RPC ఎనేబుల్ చేయండి</string>
+    <string name="enable_manualRpc">మాన్యువల్ RPCని ప్రారంభించండి</string>
     <string name="completion_media_author">ప్రధాన రచయిత</string>
     <string name="completion_media_album">ఆల్బమ్ పేరు</string>
     <string name="completion_media_albumArtist">ఆల్బం కళాకారుడు</string>
@@ -327,16 +327,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">మీడియా ప్లేబ్యాక్‌ను గుర్తించడానికి మాన్యువల్ RPCకి అనుమతివ్వండి</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">మాన్యువల్ RPC Kizzyలో ఒక ఫీచర్, ఇది Apps RPC మరియు Media RPC మధ్య నిరంతరం మారుతుంది.</string>
+    <string name="manual_rpc_detect_apps">నడుస్తున్న యాప్‌లను గుర్తించడానికి మాన్యువల్ RPCకి అనుమతివ్వండి</string>
+    <string name="manual_rpc_title_toggle">శీర్షిక</string>
+    <string name="manual_rpc_title_toggle_desc">యాప్ పేరు బదులుగా క్రియా శీర్షికలో పాట సమాచారాన్ని చూపించండి</string>
+    <string name="start_manualRpc_toast">మాన్యువల్ RPC ప్రారంభించబడింది</string>
 </resources>

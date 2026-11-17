@@ -55,7 +55,7 @@
 
 ## 此分支的新功能
 
-所有新增功能都位於 **實驗性 RPC** 畫面和主畫面上。
+所有新增功能都位於 **手動 RPC** 畫面和主畫面上。
 
 ### ⭐ 平台偽裝
 - 選擇你的狀態連線的平台 — **桌面、網頁、Android、iOS、Xbox、Playstation、VR** (從 Equicord 的 platformSpoofer 移植而來)。

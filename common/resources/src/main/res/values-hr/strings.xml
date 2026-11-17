@@ -128,9 +128,8 @@
     <string name="main_consoleRpc">Konzolni RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc">Ručni RPC</string>
+    <string name="main_manualRpc_details">Ručni RPC je značajka u Kizzy-ju koja se stalno prebacuje između Apps RPC-a i Media RPC-a.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">Dolazi uskoro</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">Koristi Imgur kao alternativni posrednik za slike.</string>
     <string name="start_appDetection">Pokreni detekciju aplikacija</string>
     <string name="start_mediaRPC">Pokreni Media RPC</string>
-    <string name="start_manualRpc">Pokreni Manual RPC</string>
+    <string name="start_manualRpc">Pokreni ručni RPC</string>
     <string name="stop_rpc">Zaustavi RPC</string>
     <string name="stop">Zaustavi</string>
     <string name="start_appDetection_toast">Detekcija aplikacija je pokrenuta</string>
     <string name="start_mediaRPC_toast">Media RPC je pokrenut</string>
-    <string name="start_manualRpc_toast">Manual RPC je pokrenut</string>
+    <string name="start_manualRpc_toast">Ručni RPC pokrenut</string>
     <string name="stop_rpc_toast">Sve usluge su zaustavljene</string>
     <string name="show_playback_state">Prikaži stanje reprodukcije</string>
     <string name="copied_to_clipboard">Kopirano u međuspremnik</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Dopusti ručnom RPC-u da detektira reprodukciju medija</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">Omogući ručni RPC</string>
+    <string name="manual_rpc_detect_apps">Dopusti ručnom RPC-u da detektira pokrenute aplikacije</string>
+    <string name="manual_rpc_title_toggle">Naslov</string>
+    <string name="manual_rpc_title_toggle_desc">Prikaži informacije o pjesmi u naslovu aktivnosti umjesto imena aplikacije</string>
+    <string name="start_manualRpcToast">Ručni RPC pokrenut</string>
 </resources>

@@ -101,7 +101,7 @@
     <string name="update">Bijwerken</string>
     <string name="configs_directory">Configuratiedirectory</string>
     <string name="custom_activity_type">Aangepast activiteitstype</string>
-    <string name="custom_activity_type_desc">Overschrijft het standaardactiviteitstype. Werkt alleen voor media en experimentele RPC</string>
+    <string name="custom_activity_type_desc">Overschrijft het standaardactiviteitstype. Werkt alleen voor media en handmatige RPC</string>
     <string name="custom_activity_status">Aangepaste activiteitstoestand</string>
     <string name="custom_activity_status_desc">Overschrijft de standaardactiviteitstoestand</string>
     <string name="search">Zoeken</string>
@@ -116,7 +116,7 @@
     <string name="main_customRpc">Aangepaste RPC</string>
     <string name="main_consoleRpc">Console-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy maakt het mogelijk enkele vooraf gedefinieerde instellingen te gebruiken om uw aanwezigheid op Discord in te stellen.</string>
-    <string name="main_manualRpc">Experimentele RPC</string>
+    <string name="main_manualRpc">Handmatige RPC</string>
     <string name="main_manualRpcDetails">Manual RPC is een functie in Kizzy die voortdurend schakelt tussen Apps RPC en Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy maakt het mogelijk een volledig aanpasbare rich presence voor Discord te creëren.</string>
     <string name="main_comingSoon">Binnenkort</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Gebruik Imgur als alternatieve afbeeldingsproxyserver.</string>
     <string name="start_appDetection">App-detectie starten</string>
     <string name="start_mediaRpc">Media RPC starten</string>
-    <string name="start_manualRpc">Manual RPC starten</string>
+    <string name="start_manualRpc">Start handmatige RPC</string>
     <string name="stop_rpc">RPC stoppen</string>
     <string name="stop">Stoppen</string>
     <string name="start_appDetectionToast">App-detectie gestart</string>
     <string name="start_mediaRpcToast">Media RPC gestart</string>
-    <string name="start_manualRpcToast">Manual RPC gestart</string>
+    <string name="start_manualRpcToast">Handmatige RPC gestart</string>
     <string name="stop_rpcToast">Alle services gestopt</string>
     <string name="show_playbackState">Afspeelstatus weergeven</string>
     <string name="copied_toClipboard">Gekopieerd naar klembord</string>
@@ -210,13 +210,13 @@
     <string name="use_a_vpnDesc">Discord-inloggen werkt mogelijk niet in uw land zonder VPN/DPI. Gebruik alstublieft VPN/DPI om verder te gaan.</string>
     <string name="rpc_templates_note">&quot;Gebruik placeholders zoals &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; enz. Lege velden gebruiken het standaardgedrag of worden overgeslagen.&quot;</string>
     <string name="app_preferences">App-voorkeuren</string>
-    <string name="app_preferences_desc">Selecteer welke apps zijn ingeschakeld voor experimentele RPC</string>
+    <string name="app_preferences_desc">Selecteer welke apps zijn ingeschakeld voor handmatige RPC</string>
     <string name="completion_media_title">Liedtitel/videotitel</string>
     <string name="completion_media_artist">Hoofdartiest</string>
     <string name="completion_appName">Gedetecteerde app-naam</string>
     <string name="show_coverArt">Albumomslag tonen</string>
     <string name="show_coverArt_desc">Albumomslag afbeelding als grote afbeelding weergeven</string>
-    <string name="enable_manualRpc">Experimentele RPC inschakelen</string>
+    <string name="enable_manualRpc">Handmatige RPC inschakelen</string>
     <string name="completion_media_author">Hoofdauteur</string>
     <string name="completion_media_album">Albumnaam</string>
     <string name="completion_media_albumArtist">Albumartiest</string>
@@ -330,16 +330,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Sta handmatige RPC toe om mediaweergave te detecteren</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">Handmatige RPC is een functie in Kizzy die constant wisselt tussen Apps RPC en Media RPC.</string>
+    <string name="manual_rpc_detect_apps">Sta handmatige RPC toe om draaiende apps te detecteren</string>
+    <string name="manual_rpc_title_toggle">Titel</string>
+    <string name="manual_rpc_title_toggle_desc">Toon liedje-informatie in de activiteitstitel in plaats van de appnaam</string>
+    <string name="start_manualRpc_toast">Handmatige RPC gestart</string>
 </resources>

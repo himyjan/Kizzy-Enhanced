@@ -1,0 +1,60 @@
+=== Still-English Manual RPC strings per language ===
+values-az: 1
+   main_manualRpc=Manual RPC
+values-bn: 1
+   main_manualRpc_details=Manual RPC is a feature in Kizzy that
+        cons
+values-bo: 1
+   main_manualRpc=Manual RPC
+values-da: 1
+   start_manualRpc=Start manuel RPC
+values-de: 1
+   main_manualRpcDetails=Manual RPC ist eine Funktion in Kizzy, die ständig
+values-fil: 2
+   main_manualRpc=Manual RPC
+   manual_rpc_title_toggle=Title
+values-hi: 1
+   main_manualRpc_details=Manual RPC is a feature in Kizzy that
+        cons
+values-ja: 2
+   main_manualRpc=Manual RPC
+   main_manualRpc_details=Manual RPC is a feature in Kizzy that
+        cons
+values-km: 1
+   main_manualRpc=Manual RPC
+values-ko: 1
+   main_manualRpc_details=Manual RPC is a feature in Kizzy that
+        cons
+values-lo: 1
+   main_manualRpc=Manual RPC
+values-mm: 1
+   main_manualRpc=Manual RPC
+values-nb: 1
+   start_manualRpc=Start manuell RPC
+values-nl: 2
+   main_manualRpcDetails=Manual RPC is een functie in Kizzy die voortdurend
+   start_manualRpc=Start handmatige RPC
+values-ru: 1
+   main_manualRpc_details=Manual RPC is a feature in Kizzy that
+        cons
+values-sv: 1
+   start_manualRpc=Starta manuell RPC
+values-sw: 1
+   main_manualRpc=Manual RPC
+values-th: 1
+   main_manualRpc_details=Manual RPC is a feature in Kizzy that
+        cons
+values-tr: 2
+   main_manualRpc=Manual RPC
+   main_manualRpc_details=Manual RPC is a feature in Kizzy that
+        cons
+values-uk: 1
+   main_manualRpc=Manual RPC
+values-zh-rCN: 1
+   main_manualRpc_details=Manual RPC is a feature in Kizzy that
+        cons
+values-zh-rTW: 1
+   main_manualRpc=Manual RPC
+values-zu: 1
+   main_manualRpc=Manual RPC
+Total English placeholders: 27

@@ -115,7 +115,7 @@
     <string name="main_customRpc">કસ્ટમ રિક્વિઅર્સ્ટ સેટિંગ</string>
     <string name="main_consoleRpc">console RPC</string>
     <string name="main_consoleRpcDetails">જો તમે પ્રામાણિક રીતે પ્રાચીન ડેટાબેઝ એન્ટ્રીઓ સુધી પહોંચી શકો છો, તો તમે સુધારી શકો છો કે આ કોઈ પણ બાબત પરિણામમાં પાર્ટિશન પ્લેટફોર્મમાં ફેરફાર થાય.</string>
-    <string name="main_manualRpc">તાજેતરના પ્રયોગો</string>
+    <string name="main_manualRpc">મૅન્યુઅલ RPC</string>
     <string name="main_manualRpcDetails">અગાઉથી સંગ્રહિત અને પહેલા જ બનાવેલા પેટર્ન ડિઝાઇન કરતાં, એપ્લિકેશન એપ્લિકેશન એક વાર મર્યાદિત અમલ કરી શકે છે.</string>
     <string name="main_customRpcDetails">Kizzy તમે પોતાની વિશેષમૂળ્ય Representative પસંદ કરી શકો છો.</string>
     <string name="main_comingSoon">આજે થઇ રહ્યું છે</string>
@@ -194,7 +194,7 @@
     <string name="use_imgurDesc">આપેલ ઇમેજીઓમાં ગ્રિડ કોલમ નંબર બદલો</string>
     <string name="start_appDetection">એપ ડિટેક્શન શરૂ કરો</string>
     <string name="start_mediaRpc">મીડિયા RPC શરૂ કરો</string>
-    <string name="start_manualRpc">એક્સપેરિમેન્ટલ RPC શરૂ કરો</string>
+    <string name="start_manualRpc">મૅન્યુઅલ RPC શરૂ કરો</string>
     <string name="stop_rpc">RPC બંધ કરો</string>
     <string name="stop">બંધ કરો</string>
     <string name="start_appDetectionToast">મુખ્ય સર્વર સક્રિય કરવામાં આવ્યું</string>
@@ -215,7 +215,7 @@
     <string name="completion_appName">એક્સેસ કરેલું એપ્લિકેશન નામ</string>
     <string name="show_cover_art">કવર આર્ટ બતાવો</string>
     <string name="show_cover_art_desc">અલ્બમ ફોટો સ્ટાર કરો</string>
-    <string name="enable_manualRpc">એક્સપેરિમેન્ટલ મોડ સક્રિય કરો</string>
+    <string name="enable_manualRpc">મૅન્યુઅલ RPC સક્ષમ કરો</string>
     <string name="completion_media_author">આર્ટિસ્ટ નામ</string>
     <string name="completion_media_album">આલ્બમનું નામ</string>
     <string name="completion_media_albumArtist">આલ્બમ કલાકાર</string>
@@ -329,16 +329,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">મૅન્યુઅલ RPCને મીડિયા પ્લેબેક શોધવાની મંજૂરી આપો</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">મૅન્યુઅલ RPC કિઝીમાં એક સુવિધા છે જે Apps RPC અને Media RPC વચ્ચે સતત બદલાય છે.</string>
+    <string name="manual_rpc_detect_apps">મૅન્યુઅલ RPCને ચાલી રહેલી એપ્સ શોધવાની મંજૂરી આપો</string>
+    <string name="manual_rpc_title_toggle">શીર્ષક</string>
+    <string name="manual_rpc_title_toggle_desc">એપ્સનું નામને બદલે ક્રિયા શીર્ષકમાં ગીત માહિતી બતાવો</string>
+    <string name="start_manualRpc_toast">મૅન્યુઅલ RPC કાર્યારંભ થયું</string>
 </resources>

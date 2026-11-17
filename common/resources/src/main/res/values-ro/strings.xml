@@ -128,9 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc">RPC manual</string>
+    <string name="main_manualRpc_details">RPC manual este o caracteristică în Kizzy care comută constant între Apps RPC și Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">În curând</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">Folosește Imgur ca proxy alternativ de imagini.</string>
     <string name="start_appDetection">Pornește detectarea aplicațiilor</string>
     <string name="start_mediaRPC">Pornește Media RPC</string>
-    <string name="start_manualRpc">Pornește Manual RPC</string>
+    <string name="start_manualRpc">Pornește RPC manual</string>
     <string name="stop_rpc">Oprește RPC</string>
     <string name="stop">Oprește</string>
     <string name="start_appDetection_toast">Detectarea aplicațiilor a început</string>
     <string name="start_mediaRPC_toast">Media RPC a început</string>
-    <string name="start_manualRpc_toast">Manual RPC a început</string>
+    <string name="start_manualRpc_toast">RPC manual a început</string>
     <string name="stop_rpc_toast">Toate serviciile au fost oprite</string>
     <string name="show_playback_state">Afișează starea redării</string>
     <string name="copied_to_clipboard">Copiat în clipboard</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Permiteți RPC manual să detecteze redarea media</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">Activează RPC manual</string>
+    <string name="manual_rpc_detect_apps">Permiteți RPC manual să detecteze aplicațiile în execuție</string>
+    <string name="manual_rpc_title_toggle">Titlu</string>
+    <string name="manual_rpc_title_toggle_desc">Afișează informațiile despre melodie în titlul activității în locul numelui aplicației</string>
+    <string name="start_manualRpcToast">RPC manual a început</string>
 </resources>

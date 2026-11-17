@@ -116,7 +116,7 @@
     <string name="main_customRpc">Eigenes RPC</string>
     <string name="main_consoleRpc">Konsolen-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy erlaubt es Ihnen, einige vordefinierte Voreinstellungen zu verwenden, um Ihre Präsenz auf Discord festzulegen.</string>
-    <string name="main_manualRpc">Experimentelles RPC</string>
+    <string name="main_manualRpc">Manuelle RPC</string>
     <string name="main_manualRpcDetails">Manual RPC ist eine Funktion in Kizzy, die ständig zwischen Apps RPC und Media RPC wechselt.</string>
     <string name="main_customRpcDetails">Kizzy erlaubt es Ihnen, Ihre eigene vollständig anpassbare Rich Presence für Discord zu erstellen.</string>
     <string name="main_comingSoon">Demnächst</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Imgur als alternativen Bildproxyserver verwenden.</string>
     <string name="start_appDetection">App-Erkennung starten</string>
     <string name="start_mediaRpc">Media RPC starten</string>
-    <string name="start_manualRpc">Manual RPC starten</string>
+    <string name="start_manualRpc">Manuelle RPC starten</string>
     <string name="stop_rpc">RPC stoppen</string>
     <string name="stop">Stoppen</string>
     <string name="start_appDetectionToast">App-Erkennung gestartet</string>
     <string name="start_mediaRpcToast">Media RPC gestartet</string>
-    <string name="start_manualRpcToast">Manual RPC gestartet</string>
+    <string name="start_manualRpcToast">Manuelle RPC gestartet</string>
     <string name="stop_rpcToast">Alle Dienste gestoppt</string>
     <string name="show_playbackState">Wiedergabestatus anzeigen</string>
     <string name="copied_toClipboard">In die Zwischenablage kopiert</string>
@@ -216,7 +216,7 @@
     <string name="completion_app_name">Erkannter App-Name</string>
     <string name="show_cover_art">Albumcover anzeigen</string>
     <string name="show_cover_art_desc">Albumcover als großes Bild anzeigen</string>
-    <string name="enable_manualRpc">Manual RPC aktivieren</string>
+    <string name="enable_manualRpc">Manuelle RPC aktivieren</string>
     <string name="completion_media_author">Hauptautor</string>
     <string name="completion_media_album">Albumname</string>
     <string name="completion_media_albumArtist">Albumkünstler</string>
@@ -330,16 +330,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Manueller RPC erlauben, Medienwiedergabe zu erkennen</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">Manuelle RPC ist eine Funktion in Kizzy, die ständig zwischen Apps RPC und Media RPC wechselt.</string>
+    <string name="manual_rpc_detect_apps">Manueller RPC erlauben, laufende Apps zu erkennen</string>
+    <string name="manual_rpc_title_toggle">Titel</string>
+    <string name="manual_rpc_title_toggle_desc">Song-Info im Aktivitätstitel statt im App-Namen anzeigen</string>
+    <string name="start_manualRpc_toast">Manuelle RPC gestartet</string>
 </resources>

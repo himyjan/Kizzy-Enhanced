@@ -116,7 +116,7 @@
     <string name="main_customRpc">Brugerdefineret RPC</string>
     <string name="main_consoleRpc">Konsol-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy giver dig mulighed for at bruge nogle foruddefinerede indstillinger for at sætte din tilstedeværelse på Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc">Manuel RPC</string>
     <string name="main_manualRpcDetails">Manual RPC er en funktion i Kizzy der konstant skifter mellem apps RPC og media RPC.</string>
     <string name="main_customRpcDetails">Kizzy giver dig mulighed for at oprette din egen fuldt tilpasselige rich presence til Discord.</string>
     <string name="main_comingSoon">Kommer snart</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Brug Imgur som alternativ billedproxy.</string>
     <string name="start_appDetection">Start app-detektion</string>
     <string name="start_mediaRpc">Start Medie-RPC</string>
-    <string name="start_manualRpc">Start Manual RPC</string>
+    <string name="start_manualRpc">Start manuel RPC</string>
     <string name="stop_rpc">Afbryd RPC</string>
     <string name="stop">Stop</string>
     <string name="start_appDetectionToast">App-detektion startet</string>
     <string name="start_mediaRpcToast">Media RPC startet</string>
-    <string name="start_manualRpcToast">Manual RPC startet</string>
+    <string name="start_manualRpcToast">Manuel RPC startet</string>
     <string name="stop_rpcToast">Alle tjenester stoppet</string>
     <string name="show_playbackState">Vis afspilningsstatus</string>
     <string name="copied_toClipboard">Kopieret til udklipsholder</string>
@@ -216,7 +216,7 @@
     <string name="completion_appName">Opdaget app-navn</string>
     <string name="show_coverArt">Vis albumomslag</string>
     <string name="show_coverArt_desc">Vis albumomslag som stort billede</string>
-    <string name="enable_manualRpc">Aktiver Manual RPC</string>
+    <string name="enable_manualRpc">Aktivér manuel RPC</string>
     <string name="completion_media_author">Hovedforfatter</string>
     <string name="completion_media_album">Albumnavn</string>
     <string name="completion_media_albumArtist">Albumkunstner</string>
@@ -330,16 +330,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Tillad manuel RPC at opdage afspilning af medier</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">Manuel RPC er en funktion i Kizzy, der skifter konstant mellem Apps RPC og Media RPC.</string>
+    <string name="manual_rpc_detect_apps">Tillad manuel RPC at opdage kørende apps</string>
+    <string name="manual_rpc_title_toggle">Titel</string>
+    <string name="manual_rpc_title_toggle_desc">Vis sangoplysninger i aktivitetstitlen i stedet for appnavnet</string>
+    <string name="start_manualRpc_toast">Manuel RPC startet</string>
 </resources>

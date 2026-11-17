@@ -113,7 +113,7 @@
     <string name="main_customRpc">Прилагоден RPC</string>
     <string name="main_consoleRpc">Консола RPC</string>
     <string name="main_consoleRpcDetails">Kizzy се користи за тестову прибаву за обезбеђење успoredоване DC/RPC имплементације.</string>
-    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc">Рачен RPC</string>
     <string name="main_customRpcDetails">Kizzy даје вам могућност да постигнете prilagođeno prisustvo на Discord.</string>
     <string name="main_comingSoon">Ѕе доћи</string>
     <string name="exit">Излез</string>
@@ -190,12 +190,12 @@
     <string name="use_imgurDesc">Использување Imgur као резервног аeters</string>
     <string name="start_appDetection">Поčni Ап датец</string>
     <string name="start_mediaRpc">Почни Media RPC</string>
-    <string name="start_manualRpc">Покрени Manual RPC</string>
+    <string name="start_manualRpc">Започни рачен RPC</string>
     <string name="stop_rpc">Скини RPC</string>
     <string name="stop">Стоп</string>
     <string name="start_appDetectionToast">Ап детекција покrenuta</string>
     <string name="start_mediaRpcToast">Медија РПЦ покренут</string>
-    <string name="start_manualRpcToast">Рачни РПЦ покренути</string>
+    <string name="start_manualRpcToast">Рачен RPC започнат</string>
     <string name="stop_rpcToast">Све сервиси spent</string>
     <string name="show_playbackState">Покажи стат.</string>
     <string name="copied_toClipboard">Копирано у буфер</string>
@@ -211,7 +211,7 @@
     <string name="completion_appName">Изведени име апликације</string>
     <string name="show_coverArt">Покажи албума</string>
     <string name="show_coverArt_desc">Покажи албум као слику</string>
-    <string name="enable_manualRpc">Оствари Manual RPC</string>
+    <string name="enable_manualRpc">Овозможи рачен RPC</string>
     <string name="completion_media_author">Автор</string>
     <string name="completion_media_album">Назив альбома</string>
     <string name="completion_media_albumArtist">Артист albuma</string>
@@ -325,16 +325,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Дозволи рачниот RPC да открива репродукција на медиуми</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">Рачниот RPC е карактеристика во Kizzy што постојано се менува меѓу Apps RPC и Media RPC.</string>
+    <string name="manual_rpc_detect_apps">Дозволи рачниот RPC да открива активни апликации</string>
+    <string name="manual_rpc_title_toggle">Наслов</string>
+    <string name="manual_rpc_title_toggle_desc">Прикажи информации за песната во насловот на активноста наместо името на апликацијата</string>
+    <string name="start_manualRpc_toast">Рачен RPC започнат</string>
 </resources>

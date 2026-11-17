@@ -116,8 +116,8 @@
     <string name="main_customRpc">Egyedi RPC</string>
     <string name="main_consoleRpc">Konzol RPC</string>
     <string name="main_consoleRpc_details">A Kizzy lehetővé teszi, hogy előre meghatározott beállításokkal állítsa jelenlétét a Discordon.</string>
-    <string name="main_manualRpc">Kísérleti RPC</string>
-    <string name="main_manualRpc_details">A Kísérleti RPC a Kizzy funkciója, amely folyamatosan váltakozik az Apps RPC és a Média RPC között.</string>
+    <string name="main_manualRpc">Kézi RPC</string>
+    <string name="main_manualRpc_details">A kézi RPC egy funkció a Kizzy-ben, amely folyamatosan vált az Apps RPC és a Media RPC között.</string>
     <string name="main_customRpc_details">A Kizzy lehetővé teszi, hogy teljesen testreszabható riche-presencét hozzon létre a Discordon.</string>
     <string name="main_comingSoon">Hamarosan</string>
     <string name="exit">Kilépés</string>
@@ -195,7 +195,7 @@
     <string name="use_imgur_desc">Használja az Imgur-t alternatív kép proxyként.</string>
     <string name="start_appDetection">Alkalmazásfelismerés indítása</string>
     <string name="start_mediaRPC">Média RPC indítása</string>
-    <string name="start_manualRpc">Kísérleti RPC indítása</string>
+    <string name="start_manualRpc">Kézi RPC indítása</string>
     <string name="stop_rpc">RPC leállítás</string>
     <string name="stop">Leállítás</string>
     <string name="start_appDetection_toast">Alkalmazásfelismerés elindítva</string>
@@ -327,15 +327,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Engedélyezd a kézi RPC számára a médialejátszás felismerését</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">Kézi RPC engedélyezése</string>
+    <string name="manual_rpc_detect_apps">Engedélyezd a kézi RPC számára a futó alkalmazások felismerését</string>
+    <string name="manual_rpc_title_toggle">Cím</string>
+    <string name="manual_rpc_title_toggle_desc">Dalinformáció megjelenítése a tevékenység címében az alkalmazás neve helyett</string>
+    <string name="start_manualRpcToast">Kézi RPC elindítva</string>
 </resources>

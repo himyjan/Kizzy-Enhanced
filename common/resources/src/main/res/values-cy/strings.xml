@@ -128,9 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc">RPC Llaw</string>
+    <string name="main_manualRpc_details">Mae RPC Llaw yn nodwedd yn Kizzy sy'n newid yn barhaus rhwng Apps RPC a Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">Yn dod yn nes</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">Defnyddio Imgur fel dirprydwr delwedd amgen.</string>
     <string name="start_appDetection">Cychwyn canfydiad Apps</string>
     <string name="start_mediaRPC">Cychwyn Media RPC</string>
-    <string name="start_manualRpc">Cychwyn Manual RPC</string>
+    <string name="start_manualRpc">Cychwyn RPC Llaw</string>
     <string name="stop_rpc">Stopio\'r RPC</string>
     <string name="stop">Stopio</string>
     <string name="start_appDetection_toast">Dechrau canfydiad Apps</string>
     <string name="start_mediaRPC_toast">Dechrau Media RPC</string>
-    <string name="start_manualRpc_toast">Dechrau Manual RPC</string>
+    <string name="start_manualRpc_toast">RPC Llaw wedi cychwyn</string>
     <string name="stop_rpc_toast">Mae pob gwasanaeth wedi stopio</string>
     <string name="show_playback_state">Dangos statws chwarae</string>
     <string name="copied_to_clipboard">Wedi\'i gopio i\'r glannau</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Caniatáu RPC Llaw i ddarganfod chwarae cyfrwng</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">Galluogi RPC Llaw</string>
+    <string name="manual_rpc_detect_apps">Caniatáu RPC Llaw i ddarganfod apiau sy'n rhedeg</string>
+    <string name="manual_rpc_title_toggle">Teitl</string>
+    <string name="manual_rpc_title_toggle_desc">Dangos gwybodaeth cân yn y teitl gweithgarwch yn hytrach na enw'r app</string>
+    <string name="start_manualRpcToast">RPC Llaw wedi cychwyn</string>
 </resources>

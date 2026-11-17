@@ -128,9 +128,8 @@
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc">RPC Manual</string>
+    <string name="main_manualRpc_details">RPC Manual adalah fitur di Kizzy yang terus berpindah antara Apps RPC dan Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">Segera Hadir</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">Pakai Imgur sebagai alternatif proxy gambar.</string>
     <string name="start_appDetection">Mulai Deteksi Aplikasi</string>
     <string name="start_mediaRPC">Mulai Media RPC</string>
-    <string name="start_manualRpc">Mulai Manual RPC</string>
+    <string name="start_manualRpc">Mulai RPC Manual</string>
     <string name="stop_rpc">Hentikan RPC</string>
     <string name="stop">Hentikan</string>
     <string name="start_appDetection_toast">Deteksi aplikasi dimulai</string>
     <string name="start_mediaRPC_toast">Media RPC dimulai</string>
-    <string name="start_manualRpc_toast">Manual RPC dimulai</string>
+    <string name="start_manualRpc_toast">RPC Manual dimulai</string>
     <string name="stop_rpc_toast">Semua layanan dihentikan</string>
     <string name="show_playback_state">Tampilkan Status Pemutaran</string>
     <string name="copied_to_clipboard">Disalin ke clipboard</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Izinkan RPC Manual mendeteksi pemutaran media</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">Aktifkan RPC Manual</string>
+    <string name="manual_rpc_detect_apps">Izinkan RPC Manual mendeteksi aplikasi yang berjalan</string>
+    <string name="manual_rpc_title_toggle">Judul</string>
+    <string name="manual_rpc_title_toggle_desc">Tampilkan info lagu di judul aktivitas alih-alih nama aplikasi</string>
+    <string name="start_manualRpcToast">RPC Manual dimulai</string>
 </resources>

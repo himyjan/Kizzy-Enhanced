@@ -128,9 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc">دوستي RPC</string>
+    <string name="main_manualRpc_details">دوستي RPC په کیزی کې یو ځنه د چې په Apps RPC او Media RPC ترمنځ بدلېږي.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">ژر به راشي</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">د انځور بدیل پروکسي لپاره Imgur وکاروئ.</string>
     <string name="start_appDetection">د اپلیکیشن کشف پیلول</string>
     <string name="start_mediaRPC">Media RPC پیلول</string>
-    <string name="start_manualRpc">Manual RPC پیلول</string>
+    <string name="start_manualRpc">دوستي RPC پیل کړئ</string>
     <string name="stop_rpc">RPC درول</string>
     <string name="stop">درول</string>
     <string name="start_appDetection_toast">د اپلیکیشن کشف پیل شو</string>
     <string name="start_mediaRPC_toast">Media RPC پیل شو</string>
-    <string name="start_manualRpc_toast">Manual RPC پیل شو</string>
+    <string name="start_manualRpc_toast">دوستي RPC پیل شو</string>
     <string name="stop_rpc_toast">ټولې خدمتونه درول شوي</string>
     <string name="show_playback_state">د play back حالت ښودل</string>
     <string name="copied_to_clipboard">کاپي شو</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">دوستي RPC ته اجازه ورکړئ چې میډیا play back کشف کړي</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">دوستي RPC فعال کړئ</string>
+    <string name="manual_rpc_detect_apps">دوستي RPC ته اجازه ورکړئ چې روان اپلیکیشنونه کشف کړي</string>
+    <string name="manual_rpc_title_toggle">سرلیک</string>
+    <string name="manual_rpc_title_toggle_desc">اپلیکیشن نوم پرځای د فعالیت سرلیک کې ترانه معلومات وښیئ</string>
+    <string name="start_manualRpcToast">دوستي RPC پیل شو</string>
 </resources>

@@ -128,9 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc">ମାନୁଆଲ RPC</string>
+    <string name="main_manualRpc_details">ମାନୁଆଲ RPC କିଜିରେ ଏକ ବୈଶିଷ୍ଟ୍ୟ, ଯାହା Apps RPC ଏବଂ Media RPC ମଧ୍ୟରେ ନିରନ୍ତର ବଦଳାଏ।</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">ଶୀଘ୍ରିଆ</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">ଛବି ବିକଳ୍ପ ପ୍ରକ୍ସି ଭାବେ Imgur ବ୍ୟବହାର କରନ୍ତୁ।</string>
     <string name="start_appDetection">ଆପ ଚିହ୍ନଟ ଆରମ୍ଭ କରନ୍ତୁ</string>
     <string name="start_mediaRPC">Media RPC ଆରମ୍ଭ କରନ୍ତୁ</string>
-    <string name="start_manualRpc">Manual RPC ଆରମ୍ଭ କରନ୍ତୁ</string>
+    <string name="start_manualRpc">ମାନୁଆଲ RPC ଆରମ୍ଭ କରନ୍ତୁ</string>
     <string name="stop_rpc">RPC ଥମାଅ</string>
     <string name="stop">ଥମାଅ</string>
     <string name="start_appDetection_toast">ଆପ ଚିହ୍ନଟ ଆରମ୍ଭ ହେଇଛି</string>
     <string name="start_mediaRPC_toast">Media RPC ଆରମ୍ଭ ହେଇଛି</string>
-    <string name="start_manualRpc_toast">Manual RPC ଆରମ୍ଭ ହେଇଛି</string>
+    <string name="start_manualRpc_toast">ମାନୁଆଲ RPC ଆରମ୍ଭ ହେଇଛି</string>
     <string name="stop_rpc_toast">ସବୁ ସେବା ଥମାଇଛନ୍ତି</string>
     <string name="show_playback_state">ପ୍ଲେବ୍ୟ ସ୍ଥିତି ଦେଖାଅ</string>
     <string name="copied_to_clipboard">କ୍ଲିପବୋର୍ଡରେ କପି ହେଇଛି</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">ମିଡିଆ ପ୍ଲେବ୍ୟ ଚିହ୍ନଟ କରିବାକୁ ମାନୁଆଲ RPC କୁ ଅନୁମତି ଦିଅ</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">ମାନୁଆଲ RPC ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="manual_rpc_detect_apps">ଚାଲୁଥିବା ଆପ୍ ଚିହ୍ନଟ କରିବାକୁ ମାନୁଆଲ RPC କୁ ଅନୁମତି ଦିଅ</string>
+    <string name="manual_rpc_title_toggle">ଶୀର୍ଷକ</string>
+    <string name="manual_rpc_title_toggle_desc">ଆପ୍ ନାମ ବଦଳରେ କାର୍ଯ୍ୟ ଶୀର୍ଷକରେ ଗୀତ ସୂଚନା ଦେଖାଅ</string>
+    <string name="start_manualRpcToast">ମାନୁଆଲ RPC ଆରମ୍ଭ ହେଇଛି</string>
 </resources>

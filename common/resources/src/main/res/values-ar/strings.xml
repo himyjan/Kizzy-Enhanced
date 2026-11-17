@@ -116,7 +116,7 @@
     <string name="main_customRpc">RPC مخصص</string>
     <string name="main_consoleRpc">RPC وحدة التحكم</string>
     <string name="main_consoleRpc_details">يسمح لك Kizzy باستخدام بعض الإعدادات المسبقة predefined لتعيين حضورك على Discord.</string>
-    <string name="main_manualRpc">RPC تجريبي</string>
+    <string name="main_manualRpc">RPC يدوي</string>
     <string name="main_manualRpc_details">Manual RPC هي ميزة في Kizzy تقوم بالتبديل باستمرار بين Apps RPC و Media RPC.</string>
     <string name="main_customRpc_details">يسمح لك Kizzy بإنشاء حضور غني مخصص بالكامل لـ Discord.</string>
     <string name="main_comingSoon">قريبًا</string>

@@ -116,7 +116,7 @@
     <string name="main_customRpc">RPC tùy chỉnh</string>
     <string name="main_consoleRpc">RPC bảng điều khiển</string>
     <string name="main_consoleRpcDetails">Kizzy cho phép bạn sử dụng một số cài đặt có sẵn để thiết lập trạng thái hiện diện của bạn trên Discord.</string>
-    <string name="main_manualRpc">RPC thử nghiệm</string>
+    <string name="main_manualRpc">RPC thủ công</string>
     <string name="main_manualRpcDetails">Manual RPC là một tính năng của Kizzy mà nó liên tục chuyển đổi giữa Apps RPC và Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy cho phép bạn tạo một sự hiện diện phong phú hoàn toàn tùy chỉnh cho Discord.</string>
     <string name="main_comingSoon">Sắp ra mắt</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Sử dụng Imgur làm proxy hình ảnh thay thế.</string>
     <string name="start_appDetection">Khởi động Phát hiện ứng dụng</string>
     <string name="start_mediaRpc">Khởi động Media RPC</string>
-    <string name="start_manualRpc">Khởi động Manual RPC</string>
+    <string name="start_manualRpc">Khởi động RPC thủ công</string>
     <string name="stop_rpc">Dừng RPC</string>
     <string name="stop">Dừng</string>
     <string name="start_appDetectionToast">Phát hiện ứng dụng đã khởi động</string>
     <string name="start_mediaRpcToast">Media RPC đã khởi động</string>
-    <string name="start_manualRpcToast">Manual RPC đã khởi động</string>
+    <string name="start_manualRpcToast">RPC thủ công đã khởi động</string>
     <string name="stop_rpcToast">Tất cả các dịch vụ đã được dừng</string>
     <string name="show_playbackState">Hiển thị trạng thái phát lại</string>
     <string name="copied_toClipboard">Đã sao chép vào khay nhớ tạm</string>
@@ -216,7 +216,7 @@
     <string name="completion_appName">Tên ứng dụng đã phát hiện</string>
     <string name="show_coverArt">Hiển thị bìa album</string>
     <string name="show_coverArt_desc">Hiển thị bìa album dưới dạng hình lớn</string>
-    <string name="enable_manualRpc">Kích hoạt Manual RPC</string>
+    <string name="enable_manualRpc">Bật RPC thủ công</string>
     <string name="completion_media_author">Tác giả chính</string>
     <string name="completion_media_album">Tên album</string>
     <string name="completion_media_albumArtist">Nghệ sĩ album</string>
@@ -330,16 +330,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Cho phép RPC thủ công phát hiện phương tiện đang phát</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">RPC thủ công là tính năng trong Kizzy liên tục chuyển đổi giữa Apps RPC và Media RPC.</string>
+    <string name="manual_rpc_detect_apps">Cho phép RPC thủ công phát hiện ứng dụng đang chạy</string>
+    <string name="manual_rpc_title_toggle">Tiêu đề</string>
+    <string name="manual_rpc_title_toggle_desc">Hiển thị thông tin bài hát dưới dạng tiêu đề hoạt động thay vì tên ứng dụng</string>
+    <string name="start_manualRpc_toast">RPC thủ công đã khởi động</string>
 </resources>

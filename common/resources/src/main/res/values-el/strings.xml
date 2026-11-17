@@ -116,7 +116,7 @@
     <string name="main_customRpc">Προσαρμοσμένο RPC</string>
     <string name="main_consoleRpc">RPC κονσόλας</string>
     <string name="main_consoleRpcDetails">Το Kizzy σάς επιτρέπει να χρησιμοποιήσετε ορισμένες καθορισμένες previously-hourly ρυθμίσεις για να ορίσετε την παρουσία σας στο Discord.</string>
-    <string name="main_manualRpc">Πειραματικό RPC</string>
+    <string name="main_manualRpc">Χειροκίνητο RPC</string>
     <string name="main_customRpcDetails">Το Kizzy σας επιτρέπει να δημιουργήσετε το δικό σας πλήρως προσαρμοσιμο Rich Presence για το Discord.</string>
     <string name="main_comingSoon">Εructe σύντομα</string>
     <string name="exit">Έξοδος</string>
@@ -194,12 +194,12 @@
     <string name="use_imgurDesc">Χρησιμοποιήστε το Imgur ως εναρτιστού προacte.</string>
     <string name="start_appDetection">Έναρξη ανίχνευσης εφαρμογών</string>
     <string name="start_mediaRpc">Έναρξη Media RPC</string>
-    <string name="start_manualRpc">Έναρξη Manual RPC</string>
+    <string name="start_manualRpc">Έναρξη χειροκίνητου RPC</string>
     <string name="stop_rpc">Σταμάτηση RPC</string>
     <string name="stop">Σταμάτησέ</string>
     <string name="start_appDetectionToast">Ανίχνευση εφαρμογών ξεκίνησε</string>
     <string name="start_mediaRpcToast">Media RPC ξεκίνησε</string>
-    <string name="start_manualRpcToast">Manual RPC ξεκίνησε</string>
+    <string name="start_manualRpcToast">Το χειροκίνητο RPC ξεκίνησε</string>
     <string name="stop_rpcToast">Όλες οι υπηρεσίες σταμάτησαν</string>
     <string name="show_playbackState">Προβολή κατάστασης αναπαραγωγής</string>
     <string name="copied_toClipboard">Αντιγράφηκε στο πάπiro</string>
@@ -215,7 +215,7 @@
     <string name="completion_appName">Το όνομα της εντοπισμένης εφαρμογής</string>
     <string name="show_coverArt">Εμφάνιση καλμαρίου</string>
     <string name="show_coverArt_desc">Προβολή καλυμπότιδας albaς ως μεγάλο χρώμα</string>
-    <string name="enable_manualRpc">Ενεργοποίηση Manual RPC</string>
+    <string name="enable_manualRpc">Ενεργοποίηση χειροκίνητου RPC</string>
     <string name="completion_media_author">Αρχός</string>
     <string name="completion_media_album">Όνομα albumu</string>
     <string name="completion_media_albumArtist">Καλλιτέχνης albums</string>
@@ -329,16 +329,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Επιτρέψτε στο χειροκίνητο RPC να ανιχνεύει αναπαραγωγή πολυμέσων</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">Το χειροκίνητο RPC είναι μια λειτουργία στο Kizzy που αλλάζει συνεχώς μεταξύ Apps RPC και Media RPC.</string>
+    <string name="manual_rpc_detect_apps">Επιτρέψτε στο χειροκίνητο RPC να ανιχνεύει ενεργές εφαρμογές</string>
+    <string name="manual_rpc_title_toggle">Τίτλος</string>
+    <string name="manual_rpc_title_toggle_desc">Εμφάνιση πληροφοριών τραγουδιού στον τίτλο δραστηριότητας αντί για το όνομα εφαρμογής</string>
+    <string name="start_manualRpc_toast">Το χειροκίνητο RPC ξεκίνησε</string>
 </resources>

@@ -101,7 +101,7 @@
     <string name="update">업데이트</string>
     <string name="configs_directory">구성 디렉터리</string>
     <string name="custom_activity_type">커스텀 활동 유형</string>
-    <string name="custom_activity_type_desc">기본 활동 유형을 재정의합니다. 미디어 및 실험적 RPC에서만 작동합니다</string>
+    <string name="custom_activity_type_desc">기본 활동 유형을 재정의합니다. 미디어 및 수동 RPC에서만 작동합니다</string>
     <string name="custom_activity_status">커스텀 활동 상태</string>
     <string name="custom_activity_status_desc">기본 활동 상태를 재정의합니다</string>
     <string name="search">검색</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">커스텀 RPC</string>
     <string name="main_consoleRpc">콘솔 RPC</string>
     <string name="main_consoleRpcDetails">Kizzy는 미리 정의된 설정을 사용하여 Discord에 존재를 설정할 수 있게 해줍니다.</string>
-    <string name="main_manualRpc">실험적 RPC</string>
-    <string name="main_manualRpcDetails">실험적 RPC는 앱 RPC와 미디어 RPC를 계속 전환하는 Kizzy의 기능입니다.</string>
+    <string name="main_manualRpc">수동 RPC</string>
+    <string name="main_manualRpcDetails">수동 RPC는 앱 RPC와 미디어 RPC를 계속 전환하는 Kizzy의 기능입니다.</string>
     <string name="main_customRpcDetails">Kizzy는 Discord에 완전히 사용자 정의 가능한 리치 프레즌스를 만들 수 있게 해줍니다.</string>
     <string name="main_comingSoon">곧 출시됩니다</string>
     <string name="exit">종료</string>
@@ -210,7 +210,7 @@
     <string name="use_a_vpnDesc">Discord 로그인은 VPN/DPI 없이 귀하의 국가에서 작동하지 않을 수 있습니다. VPN/DPI를 사용하여 진행하세요.</string>
     <string name="rpc_templates_note">&quot;`{{apos;app_name}}apos;apos;, &apos;{{&apos;media_title}}apos;apos;`과 같은 템플릿 사용. 비어 있는 필드는 기본 동작을 사용하거나 생략됩니다.&quot;</string>
     <string name="app_preferences">앱 기본 설정</string>
-    <string name="app_preferences_desc">실험적 RPC에 사용할 앱 선택</string>
+    <string name="app_preferences_desc">수동 RPC에 사용할 앱 선택</string>
     <string name="completion_media_title">노래/동영상 제목</string>
     <string name="completion_media_artist">메인 아티스트</string>
     <string name="completion_app_name">감지된 앱 이름</string>

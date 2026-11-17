@@ -113,7 +113,7 @@
     <string name="main_customRpc">கஸ்டம் RPC</string>
     <string name="main_consoleRpc">கன்சோல் RPC</string>
     <string name="main_consoleRpcDetails">Kizzy ஆப்ஜெக்ட் RAM</string>
-    <string name="main_manualRpc">அக்ஸ்பீரிமெண்டல் RPC</string>
+    <string name="main_manualRpc">கைமுறை RPC</string>
     <string name="main_comingSoon">விரைவில் வருகிறது</string>
     <string name="exit">வெளியேறு</string>
     <string name="logs">லாக்</string>
@@ -190,12 +190,12 @@
     <string name="use_imgurDesc">இமுர் பிம்ப பிராக்சி definition</string>
     <string name="start_appDetection">ஏப் டெகெக்ஷன் தொடங்கு</string>
     <string name="start_mediaRpc">மீடியா RPC தொடங்கு</string>
-    <string name="start_manualRpc">எக்ஸ்பெரிமெண்டல் RPC தொடங்கு</string>
+    <string name="start_manualRpc">கைமுறை RPC-ஐத் தொடங்கு</string>
     <string name="stop_rpc">RPC நிறுத்து</string>
     <string name="stop">நிறுத்து</string>
     <string name="start_appDetectionToast">ஏப் டெகெக்ஷன் தொடங்கியது</string>
     <string name="start_mediaRpcToast">மீடியா RPC தொடங்கியது</string>
-    <string name="start_manualRpcToast">கೈமுறை RPC தொடங்கியது</string>
+    <string name="start_manualRpcToast">கைமுறை RPC தொடங்கியது</string>
     <string name="stop_rpcToast">அனைத்து சேவைகள் நிறுத்தப்பட்டன</string>
     <string name="show_playbackState">பிளேபேக் நிலை காட்ட</string>
     <string name="copied_toClipboard">கிளிப்போர்டில் நகலுடன்</string>
@@ -211,7 +211,7 @@
     <string name="completion_appName">டெகெக்ஷன் செய்யப்பட்ட ஏப் பெயர்</string>
     <string name="show_coverArt">இஸ்மே சுரேஷ்</string>
     <string name="show_coverArt_desc">கவர் ஆர்ட்டைக் காட்டுவது பற்றிய விவரம்</string>
-    <string name="enable_manualRpc">எக்ஸ்பீரிமெண்டல் RPC இயக்க</string>
+    <string name="enable_manualRpc">கைமுறை RPC-ஐ இயக்கு</string>
     <string name="completion_media_author">முதன்மை ஆசிரியர்</string>
     <string name="completion_media_album">அல்பாம் பெயர்</string>
     <string name="completion_media_albumArtist">Album பிரத்யேக கலைஞர்</string>
@@ -323,16 +323,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">மீடியா பிளேபேக்கைக் கண்டறிய கைமுறை RPC-ஐ அனுமதி</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">கைமுறை RPC என்பது Kizzy-இல் Apps RPC மற்றும் Media RPC இடையே தொடர்ந்து மாறும் அம்சமாகும்.</string>
+    <string name="manual_rpc_detect_apps">இயங்கும் பயன்பாடுகளைக் கண்டறிய கைமுறை RPC-ஐ அனுமதி</string>
+    <string name="manual_rpc_title_toggle">தலைப்பு</string>
+    <string name="manual_rpc_title_toggle_desc">பயன்பாட்டுப் பெயருக்குப் பதில் செயல்பாட்டுத் தலைப்பில் பாடல் தகவலைக் காட்டு</string>
+    <string name="start_manualRpc_toast">கைமுறை RPC தொடங்கியது</string>
 </resources>

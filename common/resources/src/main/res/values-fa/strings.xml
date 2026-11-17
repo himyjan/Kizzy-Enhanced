@@ -128,9 +128,8 @@
     <string name="main_consoleRpc">RPC کنسول</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">RPC آزمایشی</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc">RPC دستی</string>
+    <string name="main_manualRpc_details">RPC دستی یک ویژگی در Kizzy است که به طور مداوم بین Apps RPC و Media RPC تغییر می‌کند.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">به‌زودی</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">از Imgur به عنوان Image Proxy جایگزین استفاده کنید.</string>
     <string name="start_appDetection">شروع تشخیص برنامه</string>
     <string name="start_mediaRPC">شروع RPC رسانه</string>
-    <string name="start_manualRpc">شروع RPC آزمایشی</string>
+    <string name="start_manualRpc">شروع RPC دستی</string>
     <string name="stop_rpc">توقف RPC</string>
     <string name="stop">توقف</string>
     <string name="start_appDetection_toast">تشخیص برنامه شروع شد</string>
     <string name="start_mediaRPC_toast">RPC رسانه شروع شد</string>
-    <string name="start_manualRpc_toast">RPC آزمایشی شروع شد</string>
+    <string name="start_manualRpc_toast">RPC دستی شروع شد</string>
     <string name="stop_rpc_toast">تمام سرویس‌ها توقف شد</string>
     <string name="show_playback_state">نمایش وضعیت پخش</string>
     <string name="copied_to_clipboard">در کلیپ بورد کپی شد</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">اجازه به RPC دستی برای تشخیص پخش رسانه</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">فعال‌سازی RPC دستی</string>
+    <string name="manual_rpc_detect_apps">اجازه به RPC دستی برای تشخیص برنامه‌های در حال اجرا</string>
+    <string name="manual_rpc_title_toggle">عنوان</string>
+    <string name="manual_rpc_title_toggle_desc">نمایش اطلاعات آهنگ در عنوان فعالیت به جای نام برنامه</string>
+    <string name="start_manualRpcToast">RPC دستی شروع شد</string>
 </resources>

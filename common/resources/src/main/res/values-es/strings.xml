@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC personalizado</string>
     <string name="main_consoleRpc">RPC de consola</string>
     <string name="main_consoleRpc_details">Kizzy te permite usar algunos ajustes predefinidos para establecer tu presencia en Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC es una característica en Kizzy que cambia constantemente entre Apps RPC y Media RPC.</string>
+    <string name="main_manualRpc">RPC manual</string>
+    <string name="main_manualRpc_details">RPC manual es una función de Kizzy que cambia constantemente entre Apps RPC y Media RPC.</string>
     <string name="main_customRpc_details">Kizzy te permite crear tu propia presencia rica totalmente personalizable para Discord.</string>
     <string name="main_comingSoon">Pronto</string>
     <string name="exit">Salir</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Usar Imgur como un proxy de imagen alternativo.</string>
     <string name="start_appDetection">Iniciar Detección de Apps</string>
     <string name="start_mediaRPC">Iniciar Media RPC</string>
-    <string name="start_manualRpc">Iniciar Manual RPC</string>
+    <string name="start_manualRpc">Iniciar RPC manual</string>
     <string name="stop_rpc">Detener RPC</string>
     <string name="stop">Detener</string>
     <string name="start_appDetection_toast">Detección de Apps iniciada</string>
     <string name="start_mediaRPC_toast">Media RPC iniciado</string>
-    <string name="start_manualRpc_toast">Manual RPC iniciado</string>
+    <string name="start_manualRpc_toast">RPC manual iniciado</string>
     <string name="stop_rpc_toast">Todos los servicios detenidos</string>
     <string name="show_playback_state">Mostrar Estado de Reproducción</string>
     <string name="copied_to_clipboard">Copiado al portapapeles</string>
@@ -327,15 +327,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Permitir que RPC manual detecte reproducción de medios</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">Activar RPC manual</string>
+    <string name="manual_rpc_detect_apps">Permitir que RPC manual detecte aplicaciones en ejecución</string>
+    <string name="manual_rpc_title_toggle">Título</string>
+    <string name="manual_rpc_title_toggle_desc">Mostrar información de la canción en el título de la actividad en lugar del nombre de la aplicación</string>
+    <string name="start_manualRpcToast">RPC manual iniciado</string>
 </resources>

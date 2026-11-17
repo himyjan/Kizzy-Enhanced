@@ -116,8 +116,8 @@
     <string name="main_customRpc">കസ്റ്റം RPC</string>
     <string name="main_consoleRpc">കോൺസോൾ RPC</string>
     <string name="main_consoleRpc_details">Kizzy ചില പ്രീ-ഡിഫൈൻഡ് പ്രീസെറ്റ് ഉപയോഗിച്ച് Discord-ൽ നിങ്ങളുടെ സംഗതി നിശ്ചയിക്കാൻ അനുവദിക്കുന്നു.</string>
-    <string name="main_manualRpc">ആക്സ്പിരിമെന്റൽ RPC</string>
-    <string name="main_manualRpc_details">ആക്സ്പിരിമെന്റൽ RPC കിഴിയിലെ ഒരു ഫീച്ചர் ആണ്, അത് ആപ്പ്‌സ് RPC-യും മീഡിയ RPC-യും തമ്മിൽ perpétuellement മാറിക്കൊണ്ടിരിക്കുന്നു.</string>
+    <string name="main_manualRpc">മാന്യുവൽ RPC</string>
+    <string name="main_manualRpc_details">മാന്യുവൽ RPC Kizzy-യിലെ ഒരു ഫീച്ചറാണ്, ഇത് Apps RPC-യ്ക്കും Media RPC-യ്ക്കും ഇടയിൽ തുടർച്ചയായി മാറുന്നു.</string>
     <string name="main_customRpc_details">Kizzy നിങ്ങളുടെ സ്വന്തം പൂർണ്ണമായി കസ്റ്റമൈസ് ചെയ്യാവുന്ന റിച്ച് പ്രെസൻസ് Discord-ൽ സൃഷ്ടിക്കാൻ അനുവദിക്കുന്നു.</string>
     <string name="main_comingSoon">വientôt വenganും</string>
     <string name="exit">വ saída</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">ഇമുറെ വികസിപ്പിക്കേണ്ട ചിത്ര പ്രോക്സി ഉപയോഗിക്കുക.</string>
     <string name="start_appDetection">ആപ്പ് ഡിറ്റക്ഷൻ തുടങ്ങുക</string>
     <string name="start_mediaRPC">മീഡിയ RPC തുടങ്ങുക</string>
-    <string name="start_manualRpc">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങുക</string>
+    <string name="start_manualRpc">മാന്യുവൽ RPC ആരംഭിക്കുക</string>
     <string name="stop_rpc">RPC നിർത്തുക</string>
     <string name="stop">നിർത്തുക</string>
     <string name="start_appDetection_toast">ആപ്പ് ഡിറ്റക്ഷൻ തുടങ്ങി</string>
     <string name="start_mediaRPC_toast">മീഡിയ RPC തുടങ്ങി</string>
-    <string name="start_manualRpc_toast">മాన్యുവൽ RPC തുടങ്ങി</string>
+    <string name="start_manualRpc_toast">മാന്യുവൽ RPC ആരംഭിച്ചു</string>
     <string name="stop_rpc_toast">എല്ലാ സർവീസും നിർത്തി</string>
     <string name="show_playback_state">പ്ലേബാക്ക് അവസ്ഥ പ്രദർശിപ്പിക്കുക</string>
     <string name="copied_to_clipboard">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
@@ -327,15 +327,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">മീഡിയ പ്ലേബാക്ക് കണ്ടെത്താൻ മാന്യുവൽ RPC-നെ അനുവദിക്കുക</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">മാന്യുവൽ RPC പ്രവർത്തനക്ഷമമാക്കുക</string>
+    <string name="manual_rpc_detect_apps">പ്രവർത്തിക്കുന്ന ആപ്പുകൾ കണ്ടെത്താൻ മാന്യുവൽ RPC-നെ അനുവദിക്കുക</string>
+    <string name="manual_rpc_title_toggle">ശീർഷകം</string>
+    <string name="manual_rpc_title_toggle_desc">ആപ്പിന്റെ പേരിന് പകരം പ്രവർത്തന ശീർഷകത്തിൽ ഗാന വിവരം കാണിക്കുക</string>
+    <string name="start_manualRpcToast">മാന്യുവൽ RPC ആരംഭിച്ചു</string>
 </resources>

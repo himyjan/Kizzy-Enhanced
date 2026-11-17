@@ -116,7 +116,7 @@
     <string name="main_customRpc">RPC Kustom</string>
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpcDetails">Kizzy memungkinkan Anda menggunakan beberapa pengaturan yang telah ditetapkan untuk menentukan kehadiran Anda di Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc">RPC Manual</string>
     <string name="main_manualRpcDetails">Manual RPC adalah fitur di Kizzy yang terus beralih antara Apps RPC dan Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy memungkinkan Anda membuat kustomisasi penuh dari Rich Presence untuk Discord.</string>
     <string name="main_comingSoon">Segera Hadir</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Gunakan Imgur sebagai proxy gambar alternatif.</string>
     <string name="start_appDetection">Mulai Deteksi Aplikasi</string>
     <string name="start_mediaRpc">Mulai Media RPC</string>
-    <string name="start_manualRpc">Mulai Manual RPC</string>
+    <string name="start_manualRpc">Mulai RPC Manual</string>
     <string name="stop_rpc">Hentikan RPC</string>
     <string name="stop">Hentikan</string>
     <string name="start_appDetectionToast">Deteksi Aplikasi Dimulai</string>
     <string name="start_mediaRpcToast">Media RPC Dimulai</string>
-    <string name="start_manualRpcToast">Manual RPC Dimulai</string>
+    <string name="start_manualRpcToast">RPC Manual dimulai</string>
     <string name="stop_rpcToast">Semua layanan dihentikan</string>
     <string name="show_playbackState">Tampilkan Status Pemutaran</string>
     <string name="copied_toClipboard">Disalin ke clipboard</string>
@@ -216,7 +216,7 @@
     <string name="completion_appName">Nama Aplikasi Terdeteksi</string>
     <string name="show_cover_art">Tampilkan Sampul Album</string>
     <string name="show_cover_art_desc">Tampilkan sampul album sebagai gambar besar</string>
-    <string name="enable_manualRpc">Aktifkan Manual RPC</string>
+    <string name="enable_manualRpc">Aktifkan RPC Manual</string>
     <string name="completion_media_author">Penulis Utama</string>
     <string name="completion_media_album">Nama Album</string>
     <string name="completion_media_albumArtist">Artis Album</string>
@@ -330,16 +330,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Izinkan RPC Manual mendeteksi pemutaran media</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">RPC Manual adalah fitur di Kizzy yang terus berpindah antara Apps RPC dan Media RPC.</string>
+    <string name="manual_rpc_detect_apps">Izinkan RPC Manual mendeteksi aplikasi yang berjalan</string>
+    <string name="manual_rpc_title_toggle">Judul</string>
+    <string name="manual_rpc_title_toggle_desc">Tampilkan info lagu di judul aktivitas alih-alih nama aplikasi</string>
+    <string name="start_manualRpc_toast">RPC Manual dimulai</string>
 </resources>

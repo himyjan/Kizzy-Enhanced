@@ -128,9 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_manualRpc">Ručný RPC</string>
+    <string name="main_manualRpc_details">Ručný RPC je funkcia v Kizzy, ktorá sa neustále prepína medzi Apps RPC a Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
     <string name="main_comingSoon">Už čoskoro</string>
@@ -210,12 +209,12 @@
     <string name="use_imgur_desc">Použiť Imgur ako alternatívny proxy obrázkov.</string>
     <string name="start_appDetection">Spustiť detekciu aplikácií</string>
     <string name="start_mediaRPC">Spustiť Media RPC</string>
-    <string name="start_manualRpc">Spustiť Manual RPC</string>
+    <string name="start_manualRpc">Spustiť ručný RPC</string>
     <string name="stop_rpc">Zastaviť RPC</string>
     <string name="stop">Zastaviť</string>
     <string name="start_appDetection_toast">Detekcia aplikácií sa spustila</string>
     <string name="start_mediaRPC_toast">Media RPC sa spustil</string>
-    <string name="start_manualRpc_toast">Manual RPC sa spustil</string>
+    <string name="start_manualRpc_toast">Ručný RPC spustený</string>
     <string name="stop_rpc_toast">Všetky služby boli zastavené</string>
     <string name="show_playback_state">Zobraziť stav prehrávania</string>
     <string name="copied_to_clipboard">Skopírované do schránky</string>
@@ -346,15 +345,15 @@
 
     <string name="completion_media_albumArtist">Album Artist</string>
     <string name="enableMediaRpc">Enable Media RPC</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Povoliť ručnému RPC detegovať prehrávanie médií</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
+    <string name="enable_manualRpc">Povoliť ručný RPC</string>
+    <string name="manual_rpc_detect_apps">Povoliť ručnému RPC detegovať bežiace aplikácie</string>
+    <string name="manual_rpc_title_toggle">Názov</string>
+    <string name="manual_rpc_title_toggle_desc">Zobraziť informácie o skladbe v názve aktivity namiesto názvu aplikácie</string>
+    <string name="start_manualRpcToast">Ručný RPC spustený</string>
 </resources>

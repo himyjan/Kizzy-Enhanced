@@ -132,7 +132,7 @@
     <string name="main_mediaRpc">Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">Manuel RPC-ni media oýnatmagy anyklamaga rugsat bering</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_mediaRpc">Start Media RPC</string>
@@ -140,14 +140,13 @@
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="enable_manualRpc">Enable Manual RPC</string>
-    <string name="main_manualRpc">Manual RPC</string>
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc">Start Manual RPC</string>
-    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="enable_manualRpc">Manuel RPC-ni işe geçir</string>
+    <string name="main_manualRpc">Manuel RPC</string>
+    <string name="main_manualRpc_details">Manuel RPC Kizzy-de Apps RPC ile Media RPC arasynda durup-suzan bir işlevdir.</string>
+    <string name="manual_rpc_detect_apps">Manuel RPC-ni işleýän programlary anyklamaga rugsat bering</string>
+    <string name="manual_rpc_title_toggle">Ady</string>
+    <string name="manual_rpc_title_toggle_desc">Aplikaciýa adynyň ýerine iş-ugur adynda aýdym maglumatyny görkeziň</string>
+    <string name="start_manualRpc">Manuel RPC-ni başlat</string>
+    <string name="start_manualRpcToast">Manuel RPC başlandy</string>
+    <string name="start_manualRpc_toast">Manuel RPC başlandy</string>
 </resources>

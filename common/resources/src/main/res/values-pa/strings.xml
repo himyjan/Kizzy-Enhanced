@@ -112,7 +112,7 @@
     <string name="main_mediaRpc">ਮੀਡੀਆ RPC</string>
     <string name="main_customRpc">ਕਸਟਮ RPC</string>
     <string name="main_consoleRpc">ਕੰਸੋਲ RPC</string>
-    <string name="main_manualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC</string>
+    <string name="main_manualRpc">ਮੈਨੂਅਲ RPC</string>
     <string name="main_comingSoon">ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ</string>
     <string name="exit">ਬਾਹਰ ਨਿਕਲੋ</string>
     <string name="logs">ਲਾਗ</string>
@@ -188,12 +188,12 @@
     <string name="use_imgurDesc">Imgur ਦੀ ਵਰਤੋਂ ਬਾਰੇ ਵੇਵਰਾ</string>
     <string name="start_appDetection">ਐਪ ਡਿਟੈਕਸ਼ਨ ਸ਼ੁਰੂ ਕਰੋ</string>
     <string name="start_mediaRpc">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
-    <string name="start_manualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
+    <string name="start_manualRpc">ਮੈਨੂਅਲ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
     <string name="stop_rpc">RPC ਰੋਕੋ</string>
     <string name="stop">ਰੋਕੋ</string>
     <string name="start_appDetectionToast">ਐਪ ਡਿਟੈਕਸ਼ਨ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
     <string name="start_mediaRpcToast">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
-    <string name="start_manualRpcToast">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
+    <string name="start_manualRpcToast">ਮੈਨੂਅਲ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
     <string name="stop_rpcToast">ਸਾਰੀਆਂ ਸੇਵਾਵਾਂ ਰੋਕ ਦਿੱਤੀਆਂ ਗਈਆਂ ਹਨ</string>
     <string name="show_playbackState">ਪਲੇਬੈਕ ਸਥਿਤੀ ਦਿਖਾਓ</string>
     <string name="copied_toClipboard">ਕਲਿੱਪਬੋਰਡ apos;ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ ਹੈ</string>
@@ -209,7 +209,7 @@
     <string name="completion_appName">ਡਿਟੈਕਟ ਕੀਤਾ ਗਿਆ ਐਪ ਨਾਮ</string>
     <string name="show_coverArt">ਐਲਬਮ ਕਵਰ ਦਿਖਾਓ</string>
     <string name="show_coverArtDesc">ਐਲਬਮ ਕਵਰ ਵੱਡੀ ਤਸਵੀਰ ਵਜੋਂ ਦਿਖਾਓ</string>
-    <string name="enable_manualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸਕਰੀਏਲ ਕਰੋ</string>
+    <string name="enable_manualRpc">ਮੈਨੂਅਲ RPC ਸਮਰੱਥ ਕਰੋ</string>
     <string name="completion_media_author">ਮੁੱਖ ਲੇਖਕ</string>
     <string name="completion_media_album">ਐਲਬਮ ਦਾ ਨਾਮ</string>
     <string name="completion_media_albumArtist">ਐਲਬਮ ਕਲਾਕਾਰ</string>
@@ -323,16 +323,15 @@
     <string name="enableMediaRpc">Enable Media RPC</string>
     <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
         Discord, such as the song or video you&apos;re currently listening to or watching.</string>
-    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_detect_media">ਮੀਡੀਆ ਪਲੇਬੈਕ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਮੈਨੂਅਲ RPC ਨੂੰ ਅਨੁਮਤੀ ਦਿਓ</string>
     <string name="start_mediaRPC">Start Media RPC</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
     <string name="start_media_rpc">Start Media RPC</string>
     <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 
-    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
-    <string name="manual_rpc_title_toggle">Title</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
-    <string name="start_manualRpc_toast">Manual RPC started</string>
+    <string name="main_manualRpc_details">ਮੈਨੂਅਲ RPC ਕਿਜ਼ੀ ਵਿੱਚ ਇੱਕ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ ਜੋ ਐਪਸ RPC ਅਤੇ ਮੀਡੀਆ RPC ਵਿਚਕਾਰ ਲਗਾਤਾਰ ਬਦਲਦੀ ਹੈ।</string>
+    <string name="manual_rpc_detect_apps">ਚੱਲ ਰਹੇ ਐਪਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਮੈਨੂਅਲ RPC ਨੂੰ ਅਨੁਮਤੀ ਦਿਓ</string>
+    <string name="manual_rpc_title_toggle">ਸੀਰਲ</string>
+    <string name="manual_rpc_title_toggle_desc">ਐਪ ਨਾਮ ਦੀ ਬਜਾਏ ਕਾਰਵਾਈ ਸੀਰਲ ਵਿੱਚ ਗਾਣੇ ਦੀ ਜਾਣਕਾਰੀ ਦਿਖਾਓ</string>
+    <string name="start_manualRpc_toast">ਮੈਨੂਅਲ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
 </resources>
