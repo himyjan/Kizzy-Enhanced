@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.compose.navigation)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.browser)
+    implementation(libs.androidx.webkit)
     implementation(libs.material.icons.extended)
 
     // Hilt annotation processor required for @HiltViewModel
