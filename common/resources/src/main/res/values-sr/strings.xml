@@ -101,7 +101,7 @@
     <string name="update">Ажурирај</string>
     <string name="configs_directory">Каталог конфигурација</string>
     <string name="custom_activity_type">Тип корисничке активности</string>
-    <string name="custom_activity_type_desc">Преопређује стандардни тип активности. Ради само за медијске и Experimental RPC</string>
+    <string name="custom_activity_type_desc">Преопређује стандардни тип активности. Ради само за медијске и Manual RPC</string>
     <string name="custom_activity_status">Кориснички статус активности</string>
     <string name="custom_activity_status_desc">Преписује статички стау активности</string>
     <string name="search">Претражи</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">Prilagođen RPC</string>
     <string name="main_consoleRpc">Конзола RPC</string>
     <string name="main_consoleRpcDetails">Kizzy vam omogućava da koristite一些 predefined settings kako bi postavili svoje prisustvo na Discord.</string>
-    <string name="main_experimentalRpc">Eksperimentalan RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC je new feature u Kizzy koji stalno mijenja između Apps RPC i Media RPC.</string>
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC je new feature u Kizzy koji stalno mijenja između Apps RPC i Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vam omogućava da stvorite svoju potpuno prilagodljivu rich presence za Discord.</string>
     <string name="main_comingSoon">Brzo dolazi</string>
     <string name="exit">Излази</string>
@@ -194,12 +194,12 @@
     <string name="use_imgurDesc">Опишите коришћење Imgur-а</string>
     <string name="start_appDetection">Стартуј детекцију апликација</string>
     <string name="start_mediaRpc">Запусти Media RPC</string>
-    <string name="start_experimentalRpc">Почни Experimental RPC</string>
+    <string name="start_manualRpc">Почни Manual RPC</string>
     <string name="stop_rpc">Скини RPC</string>
     <string name="stop">Стоп</string>
     <string name="start_appDetectionToast">Ап детекција покренута</string>
     <string name="start_mediaRpcToast">Media RPC покренуто</string>
-    <string name="start_experimentalRpcToast">Experimental RPC pokrenut</string>
+    <string name="start_manualRpcToast">Manual RPC pokrenut</string>
     <string name="stop_rpcToast">Све услуге су stunning</string>
     <string name="show_playbackState">Покажи стање грејања</string>
     <string name="application_id">Идентификатор апликације</string>
@@ -207,16 +207,14 @@
     <string name="custom_application_id_desc">Замењује подразумевани ID Discord апликације</string>
     <string name="use_a_vpnDesc">Дискорд логин може не радити у вашој земљи без VPN/DPI. Употребљивајте VPN/DPIкаби réussitе да се acara</string>
     <string name="rpc_templates_note">&quot;Изради шаблонској(value): „applicationName”, „media_title“ и сл. ако није постављено иако се користимaktadır.&quot;</string>
-    <string name="experimental_rpc_detectApps">Дозволи Experimentik RPC да иницизује активне апликације</string>
-    <string name="experimental_rpc_detect_media">Дозволи Experimental RPC da doteduje streamiranje</string>
     <string name="app_preferences">Preferenci aplikacija</string>
-    <string name="app_preferences_desc">Изаберите које апликације је омогућивено за Experimental RPC</string>
+    <string name="app_preferences_desc">Изаберите које апликације је омогућивено за Manual RPC</string>
     <string name="completion_media_title">Наслов песне/видеа</string>
     <string name="completion_media_artist">Основни изводитељ</string>
     <string name="completion_appName">Аппликација наименована</string>
     <string name="show_coverArt">Прикажи обложку альбома</string>
     <string name="show_coverArt_desc">Покажи обложку альбома као велику слику</string>
-    <string name="enable_experimentalRpc">Омogući Experimental RPC</string>
+    <string name="enable_manualRpc">Омogući Manual RPC</string>
     <string name="completion_media_author">Основни аутор</string>
     <string name="completion_media_album">Име албума</string>
     <string name="completion_media_albumArtist">Албом автор</string>
@@ -232,8 +230,6 @@
     <string name="use_youtubeButton">Додај медија дугме</string>
     <string name="use_youtubeButtonDesc">Опишите коришћење YouTube дугмета</string>
     <string name="link_toArtistChannel">Повezi са каналом уметника</string>
-    <string name="experimental_rpcTitleToggle">Наслов</string>
-    <string name="experimental_rpcTitleToggle_desc">Покажи информације о песми у заголовку активности под називом aplikacije</string>
     <string name="title_source_song">Наслов песне</string>
     <string name="title_source_artist">Изворник</string>
     <string name="type_to_insert_variable">Упишите &amp;apos;{{&amp;apos; да уметнете променљиву</string>
@@ -326,4 +322,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

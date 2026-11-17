@@ -101,7 +101,7 @@
     <string name="update">Anyarake</string>
     <string name="configs_directory">Direktori Konfigurasi</string>
     <string name="custom_activity_type">Jenis Aktivitas Khusus</string>
-    <string name="custom_activity_type_desc">Nglampahi jenis aktivitas default. Bekerja mung kanggo media lan experimental RPC</string>
+    <string name="custom_activity_type_desc">Nglampahi jenis aktivitas default. Bekerja mung kanggo media lan manual rpc</string>
     <string name="custom_activity_status">Status Aktivitas Khusus</string>
     <string name="custom_activity_status_desc">Nglampahi status aktivitas default</string>
     <string name="search">Cari</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC Kustom</string>
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpc_details">Kizzy nyedhiyakake kesempatan kanggo nggunakake sawijining praetakan sing ditetepake kanggo netepake kehadiran marang Discord.</string>
-    <string name="main_experimentalRpc">RPC Eksperimen</string>
-    <string name="main_experimentalRpc_details">Experimental RPC minangka fitur ing Kizzy sing anyar-anyar ora-nalika mbenteni antarane Apps RPC lan Media RPC.</string>
+    <string name="main_manualRpc">RPC Eksperimen</string>
+    <string name="main_manualRpc_details">Manual RPC minangka fitur ing Kizzy sing anyar-anyar ora-nalika mbenteni antarane Apps RPC lan Media RPC.</string>
     <string name="main_customRpc_details">Kizzy nyedhiyakake kesempatan kanggo nggawe rich presence sing bisa disesuaikan sepenuh kanggo Discord.</string>
     <string name="main_comingSoon">Segera Hadir</string>
     <string name="exit">Keluar</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Gunakake Imgur minangka proxy gambar anyar.</string>
     <string name="start_appDetection">Mulai Deteksi Aplikasi</string>
     <string name="start_mediaRPC">Mulai Media RPC</string>
-    <string name="start_experimentalRPC">Mulai Experimental RPC</string>
+    <string name="start_manualRpc">Mulai Manual RPC</string>
     <string name="stop_rpc">Berhenti RPC</string>
     <string name="stop">Berhenti</string>
     <string name="start_appDetection_toast">Deteksi Aplikasi dimulai</string>
     <string name="start_mediaRPC_toast">Media RPC dimulai</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC dimulai</string>
+    <string name="start_manualRpc_toast">Manual RPC dimulai</string>
     <string name="stop_rpc_toast">Semua layanan berhenti</string>
     <string name="show_playback_state">Tampilan Status Pemutaran</string>
     <string name="copied_to_clipboard">Disalin marang papan klip</string>
@@ -209,16 +209,13 @@
     <string name="custom_application_id_desc">Nglampahi ID Aplikasi Discord default</string>
     <string name="use_a_vpn_desc">Masuk marang Discord mung ora bisa lavor ing negoro sampeyan tanpa VPN/DPI. Silakan gunake VPN/DPI kanggo melanjuti.</string>
     <string name="rpc_templates_note">&quot;Gunakake placeholder kayata &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; utawa liyane. Kolom kosong bakal nggunakake perilaku default utawa diabaiki.&quot;</string>
-    <string name="experimental_rpc_detect_apps">Izinin Experimental RPC kanggo nemtokake aplikasi sing curhang</string>
-    <string name="experimental_rpc_detect_media">Izinin Experimental RPC kanggo nemtokake playmedia media</string>
     <string name="app_preferences">Preferensi Aplikasi</string>
-    <string name="app_preferences_desc">Pilih aplikasi apa sing diaktifake kanggo Experimental RPC</string>
+    <string name="app_preferences_desc">Pilih aplikasi apa sing diaktifake kanggo Manual RPC</string>
     <string name="completion_media_title">Judul Lagu/Video</string>
     <string name="completion_media_artist">Artis Utama</string>
     <string name="completion_app_name">Nama Aplikasi Terdeteksi</string>
     <string name="show_cover_art">Tampilake Sampul Album</string>
     <string name="show_cover_art_desc">Tampilake sampul album minangka gambar dhuwur</string>
-    <string name="enable_experimental_rpc">Naktake Experimental RPC</string>
     <string name="completion_media_author">Penulis Utama</string>
     <string name="completion_media_album">Nama Album</string>
     <string name="completion_media_album_artist">Artis Album</string>
@@ -235,8 +232,6 @@
     <string name="use_youtube_button_desc">Nambahake tombol sing bisa diklik otomatis (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) nalika memutar media</string>
     <string name="link_to_artist_channel">Taut marang Channel Seniman</string>
     <string name="link_to_artist_channel_desc">Tombol nglampahi channel seniman alih-alih lagu/video</string>
-    <string name="experimental_rpc_title_toggle">Judul</string>
-    <string name="experimental_rpc_title_toggle_desc">Tampilake informasi lagu dijudul aktivitas alih-alih nama aplikasi</string>
     <string name="title_source_song">Judul Lagu</string>
     <string name="title_source_artist">Seniman</string>
     <string name="type_to_insert_variable">Ketik &apos;{{&apos; kanggo ngisorake variabel</string>
@@ -329,4 +324,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

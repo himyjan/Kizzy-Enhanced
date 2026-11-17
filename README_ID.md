@@ -53,7 +53,7 @@
 
 ## Apa yang baru di fork ini
 
-Semua penambahan ada di layar **Experimental RPC** dan layar beranda.
+Semua penambahan ada di layar **Manual RPC** dan layar beranda.
 
 ### ⭐ Spoofer Platform
 - Pilih platform tempat kehadiran Anda terhubung — **Desktop, Web, Android, iOS, Xbox, Playstation, VR** (di-porting dari platform yang digunakan platformSpoofer Equicord).
@@ -76,7 +76,7 @@ Selain yang asli, dengan pelengkapan otomatis:
 
 ### ⭐ Desain ulang layar beranda
 - Kartu fitur kini berupa tumpukan vertikal kartu lebar penuh.
-- **Tombol sakelar aktif/nonaktif pada setiap kartu**, sehingga Media / Custom / Experimental RPC dapat dimulai dan dihentikan langsung dari layar beranda.
+- **Tombol sakelar aktif/nonaktif pada setiap kartu**, sehingga Media / Custom / Manual RPC dapat dimulai dan dihentikan langsung dari layar beranda.
 
 ### ⭐ Ketahanan Gateway (di-porting dari [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy))
 - Sambung ulang otomatis dengan backoff eksponensial pada pemutusan tak terduga.

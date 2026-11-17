@@ -78,7 +78,7 @@
 
 ### ⭐ 主畫面重新設計
 - 功能卡片現在是垂直堆疊的全寬卡片。
-- **每張卡片都有開關切換** — Media / Custom / Experimental RPC 可以直接從主畫面啟動和停止。
+- **每張卡片都有開關切換** — Media / Custom / Manual RPC 可以直接從主畫面啟動和停止。
 
 ### ⭐ 閘道復原能力 (從 [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy) 移植)
 - 發生任何非預期斷線時，以指數退避方式自動重新連接。

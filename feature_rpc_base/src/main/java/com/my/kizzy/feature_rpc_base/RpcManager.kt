@@ -76,7 +76,7 @@ class RpcManager @Inject constructor(
             AppUtils.mediaRpcRunning() -> RpcType.MediaRpc
             AppUtils.customRpcRunning() -> RpcType.CustomRpc
             AppUtils.consoleRpcRunning() -> RpcType.ConsoleRpc
-            AppUtils.experimentalRpcRunning() -> RpcType.ManualRpc
+            AppUtils.manualRpcRunning() -> RpcType.ManualRpc
             AppUtils.appDetectionRunning() -> RpcType.AppDetectionRpc
             Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].isNotEmpty() && Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY] == Prefs.RPC_CONNECTION_METHOD_OAUTH2 -> RpcType.DiscordOAuth2Rpc
             else -> RpcType.None

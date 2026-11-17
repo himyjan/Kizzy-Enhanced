@@ -101,7 +101,7 @@
     <string name="update">Posodobi</string>
     <string name="configs_directory">Mapa konfiguracij</string>
     <string name="custom_activity_type">Lastna vrsta aktivnosti</string>
-    <string name="custom_activity_type_desc">Prepiše začetni tip aktivnosti. Deluje samo za Media in Experimental RPC</string>
+    <string name="custom_activity_type_desc">Prepiše začetni tip aktivnosti. Deluje samo za Media in Manual RPC</string>
     <string name="custom_activity_status">Lasten status aktivnosti</string>
     <string name="custom_activity_status_desc">Prepiše začetni status aktivnosti</string>
     <string name="search">Išči</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">Prilagojen RPC</string>
     <string name="main_consoleRpc">Konzolni RPC</string>
     <string name="main_consoleRpcDetails">Kizzy vam omogoča, da uporabljate nekatere predzadane nastavitve, da nastavite svoje prisotnost na Discord.</string>
-    <string name="main_experimentalRpc">Poskusni RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC je funkcija v Kizzy, ki stalno preključa med Apps RPC in Media RPC.</string>
+    <string name="main_manualRpc">Poskusni RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC je funkcija v Kizzy, ki stalno preključa med Apps RPC in Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vam omogoča, da ustvarite svoje popolnoma prilagodljivo Rich Presence za Discord.</string>
     <string name="main_comingSoon">Naslednje</string>
     <string name="exit">Izhod</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Uporabi Imgur kot alternativni slikovni strežnik.</string>
     <string name="start_appDetection">Začni detekcijo aplikacij</string>
     <string name="start_mediaRpc">Zaženi Media RPC</string>
-    <string name="start_experimentalRpc">Zaženi Experimental RPC</string>
+    <string name="start_manualRpc">Zaženi Manual RPC</string>
     <string name="stop_rpc">Prekini RPC</string>
     <string name="stop">Prekini</string>
     <string name="start_appDetectionToast">Detekcija aplikacij je začeta</string>
     <string name="start_mediaRpcToast">Media RPC je začet</string>
-    <string name="start_experimentalRpcToast">Experimental RPC je začet</string>
+    <string name="start_manualRpcToast">Manual RPC je začet</string>
     <string name="stop_rpcToast">Vse storitve so ustavljene</string>
     <string name="show_playbackState">Prikaži stanje predvajanja</string>
     <string name="copied_toClipboard">Kopirano v odložilno mesto</string>
@@ -209,16 +209,14 @@
     <string name="custom_application_id_desc">Prepiše standardni Discord ID aplikacije</string>
     <string name="use_a_vpnDesc">Prijava na Discord možda ne deluje v vaši državi brez VPN/DPI. Uporabite VPN/DPI, da nadaljujete.</string>
     <string name="rpc_templates_note">&quot;Uporabljajte prototipe, kot so &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; itd. Prazna polja bodo uporabljala osnovno obdelavo ali bodo izpuščena.&quot;</string>
-    <string name="experimental_rpc_detectApps">Dovoli Experimental RPC, da zazna tečajoče aplikacije</string>
-    <string name="experimental_rpc_detect_media">Dovoli Experimental RPC, da zazna predvajanje medijev</string>
     <string name="app_preferences">Nastavitve aplikacij</string>
-    <string name="app_preferences_desc">Izberite, kateri aplikaciji so omogočeni za Experimental RPC</string>
+    <string name="app_preferences_desc">Izberite, kateri aplikaciji so omogočeni za Manual RPC</string>
     <string name="completion_media_title">Naziv pesni/videja</string>
     <string name="completion_media_artist">Glavni avtor</string>
     <string name="completion_appName">Zaznano ime aplikacije</string>
     <string name="show_coverArt">Prikaži albumsko sliko</string>
     <string name="show_coverArt_desc">Prikaži albuma sliko kot veliko sliko</string>
-    <string name="enable_experimentalRpc">Omogoči Experimental RPC</string>
+    <string name="enable_manualRpc">Omogoči Manual RPC</string>
     <string name="completion_media_author">Glavni avtor</string>
     <string name="completion_media_album">Naziv albuma</string>
     <string name="completion_media_albumArtist">Avtor albuma</string>
@@ -235,8 +233,6 @@
     <string name="use_youtubeButtonDesc">Samodejno doda klikljivi gumbe (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) med predvajanjem medijev</string>
     <string name="link_toArtistChannel">Povezi s umetniškim kanalom</string>
     <string name="link_toArtistChannel_desc">Povodi povezavo do umetniškega kanala, ne glede na pesnjo/video</string>
-    <string name="experimental_rpcTitleToggle">Naslov</string>
-    <string name="experimental_rpcTitleToggle_desc">Pokaži pesniško informacijo v naslovu aktivnosti namesto imena aplikacije</string>
     <string name="title_source_song">Ime pesme</string>
     <string name="title_source_artist">Avtor</string>
     <string name="type_to_insert_variable">Vpišite &apos;{{&apos; da vstavi spremenljivko</string>
@@ -329,4 +325,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

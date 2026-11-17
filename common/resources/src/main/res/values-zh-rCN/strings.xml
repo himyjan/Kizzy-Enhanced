@@ -116,8 +116,8 @@
     <string name="main_customRpc">自定义 RPC</string>
     <string name="main_consoleRpc">主机 RPC</string>
     <string name="main_consoleRpcDetails">Kizzy 允许您使用一些预设预设来设置您在 Discord 上的状态。</string>
-    <string name="main_experimentalRpc">实验性 RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC 是 Kizzy 的一个功能，它会不断在 Apps RPC 和 Media RPC 之间切换。</string>
+    <string name="main_manualRpc">实验性 RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC 是 Kizzy 的一个功能，它会不断在 Apps RPC 和 Media RPC 之间切换。</string>
     <string name="main_customRpcDetails">Kizzy 允许您为 Discord 创建完全自定义的丰富状态。</string>
     <string name="main_comingSoon">即将推出</string>
     <string name="exit">退出</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">将 Imgur 用作替代图片代理。</string>
     <string name="start_appDetection">启动应用程序检测</string>
     <string name="start_mediaRpc">启动 Media RPC</string>
-    <string name="start_experimentalRpc">启动 Experimental RPC</string>
+    <string name="start_manualRpc">启动 Manual RPC</string>
     <string name="stop_rpc">停止 RPC</string>
     <string name="stop">停止</string>
     <string name="start_appDetectionToast">应用程序检测已启动</string>
     <string name="start_mediaRpcToast">Media RPC 已启动</string>
-    <string name="start_experimentalRpcToast">Experimental RPC 已启动</string>
+    <string name="start_manualRpcToast">Manual RPC 已启动</string>
     <string name="stop_rpcToast">所有服务已停止</string>
     <string name="show_playbackState">显示播放状态</string>
     <string name="copied_toClipboard">已复制到剪贴板</string>
@@ -209,16 +209,14 @@
     <string name="custom_application_id_desc">替换默认 Discord 应用程序 ID</string>
     <string name="use_a_vpnDesc">Discord 登录在您所在的国家可能无法在没有 VPN/DPI 的情况下工作。请使用 VPN/DPI 继续。</string>
     <string name="rpc_templates_note">&quot;使用占位符，如 {{app_name}}、{{media_title}} 等。空白字段将使用默认行为或被省略。&quot;</string>
-    <string name="experimental_rpc_detectApps">允许 Experimental RPC 检测运行中的应用程序</string>
-    <string name="experimental_rpc_detect_media">允许 Experimental RPC 检测媒体播放</string>
     <string name="app_preferences">应用程序偏好设置</string>
-    <string name="app_preferences_desc">选择启用 Experimental RPC 的应用程序</string>
+    <string name="app_preferences_desc">选择启用 Manual RPC 的应用程序</string>
     <string name="completion_media_title">歌曲/视频标题</string>
     <string name="completion_media_artist">主要艺术家</string>
     <string name="completion_appName">检测到的应用程序名称</string>
     <string name="show_coverArt">显示专辑封面</string>
     <string name="show_coverArt_desc">将专辑封面显示为大图</string>
-    <string name="enable_experimentalRpc">启用 Experimental RPC</string>
+    <string name="enable_manualRpc">启用 Manual RPC</string>
     <string name="completion_media_author">主要作者</string>
     <string name="completion_media_album">专辑名称</string>
     <string name="completion_media_albumArtist">专辑艺术家</string>
@@ -235,8 +233,6 @@
     <string name="use_youtubeButtonDesc">播放媒体时自动添加可点击按钮（YouTube、Spotify、Apple Music、Deezer、SoundCloud、StreetVoice、YMusic）</string>
     <string name="link_toArtistChannel">链接到艺术家频道</string>
     <string name="link_toArtistChannel_desc">按钮链接到艺术家频道而不是曲目/视频</string>
-    <string name="experimental_rpcTitleToggle">标题</string>
-    <string name="experimental_rpcTitleToggle_desc">在活动标题中显示歌曲信息而不是应用程序名称</string>
     <string name="title_source_song">歌曲名称</string>
     <string name="title_source_artist">艺术家</string>
     <string name="type_toInsertVariable">键入 &apos;{{&apos; 以插入变量</string>
@@ -329,4 +325,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

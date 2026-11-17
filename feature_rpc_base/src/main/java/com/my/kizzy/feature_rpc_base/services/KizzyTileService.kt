@@ -67,7 +67,7 @@ class KizzyTileService : TileService() {
         val rpc = arrayOf(
             getString(R.string.main_appDetection),
             getString(R.string.main_mediaRpc),
-            getString(R.string.main_experimentalRpc)
+            getString(R.string.main_manualRpc)
         )
         return MaterialAlertDialogBuilder(ContextThemeWrapper(ctx, com.my.kizzy.feature_rpc_base.R.style.MyTileDialogTheme))
             .setTitle(getString(R.string.choose_rpc))
@@ -83,7 +83,7 @@ class KizzyTileService : TileService() {
                     }
                     2 -> {
                         ctx.startForegroundService(Intent(ctx, ManualRpc::class.java))
-                        Toast.makeText(ctx, getString(R.string.start_experimentalRPC_toast), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(ctx, getString(R.string.start_manualRpc_toast), Toast.LENGTH_SHORT).show()
                     }
                     else -> {}
                 }
@@ -98,7 +98,7 @@ class KizzyTileService : TileService() {
             qsTile.updateTile()
             return
         }
-        when (AppUtils.appDetectionRunning() || AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning()) {
+        when (AppUtils.appDetectionRunning() || AppUtils.mediaRpcRunning() || AppUtils.manualRpcRunning()) {
             true -> {
                 qsTile.state = Tile.STATE_ACTIVE
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_stop)
@@ -123,7 +123,7 @@ class KizzyTileService : TileService() {
         else if (AppUtils.mediaRpcRunning())
             getString(R.string.main_mediaRpc)
         else
-            getString(R.string.main_experimentalRpc)
+            getString(R.string.main_manualRpc)
     }
 
     companion object {

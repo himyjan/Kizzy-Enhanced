@@ -1,4 +1,4 @@
-# Experimental RPC — Upgrade Report
+# Manual RPC — Upgrade Report
 
 ## Summary
 
@@ -6,7 +6,7 @@ An advanced, template-driven Rich Presence that combines rich-media detection wi
 
 ## Implementation
 
-- **Service:** `feature_rpc_base/services/ExperimentalRpc.kt` — `@AndroidEntryPoint` foreground service (extends `Service`)
+- **Service:** `feature_rpc_base/services/ManualRpc.kt` — `@AndroidEntryPoint` foreground service (extends `Service`)
 - **UI:** `feature_manual_rpc/ManualRpcScreen.kt` + `ManualRpcViewmodel.kt`
 - **Core logic:** `TemplateProcessor`, `Timestamps`, `CommonRpc`, `RpcImage`
 
@@ -26,7 +26,7 @@ An advanced, template-driven Rich Presence that combines rich-media detection wi
 | `default` | Uses timestamps from the media/app context |
 | `current` | Fixed start anchored to midnight today (elapsed timer keeps counting, no 24h reset) |
 | `custom` | User-specified start/end epoch milliseconds |
-| `disabled` | `EXPERIMENTAL_RPC_ENABLE_TIMESTAPMS` = false → no timestamps |
+| `disabled` | `MANUAL_RPC_ENABLE_TIMESTAPMS` = false → no timestamps |
 
 ### Battery level
 Read via `BatteryManager.BATTERY_PROPERTY_CAPACITY` (0–100), exposed as the `{{battery}}` template placeholder.
@@ -41,23 +41,23 @@ Read via `BatteryManager.BATTERY_PROPERTY_CAPACITY` (0–100), exposed as the `{
 
 | Preference | Default | Effect |
 |---|---|---|
-| `EXPERIMENTAL_RPC_USE_APPS_RPC` | true | Enable app-detection context |
-| `EXPERIMENTAL_RPC_USE_MEDIA_RPC` | true | Enable media-session context |
-| `EXPERIMENTAL_RPC_TEMPLATE_NAME` | `TemplateKeys.APP_NAME` | Template for activity name |
-| `EXPERIMENTAL_RPC_TEMPLATE_DETAILS` | `TemplateKeys.MEDIA_TITLE` | Template for details |
-| `EXPERIMENTAL_RPC_TEMPLATE_STATE` | `TemplateKeys.MEDIA_ARTIST` | Template for state |
-| `EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS` | true | Master toggle for timestamps |
-| `EXPERIMENTAL_RPC_TIMESTAMP_MODE` | `default` | `default` / `current` / `custom` |
-| `EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START/END` | — | Custom epoch ms |
-| `EXPERIMENTAL_RPC_HIDE_ON_PAUSE` | false | Hide media presence on pause |
-| `EXPERIMENTAL_RPC_SHOW_COVER_ART` | true | Show cover art as large image |
-| `EXPERIMENTAL_RPC_SHOW_APP_ICON` | false | Show app icon |
-| `EXPERIMENTAL_RPC_SHOW_PLAYBACK_STATE` | true | Show playback-state icon |
-| `EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE` | false | Use song title as name |
-| `EXPERIMENTAL_RPC_TITLE_SOURCE` | `title` | `title` or `artist` |
-| `EXPERIMENTAL_RPC_USE_BUTTONS` | false | Show RPC buttons |
-| `EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID` | false | Use custom Discord application ID |
-| `EXPERIMENTAL_RPC_APPLICATION_ID` | — | Custom application ID value |
+| `MANUAL_RPC_USE_APPS_RPC` | true | Enable app-detection context |
+| `MANUAL_RPC_USE_MEDIA_RPC` | true | Enable media-session context |
+| `MANUAL_RPC_TEMPLATE_NAME` | `TemplateKeys.APP_NAME` | Template for activity name |
+| `MANUAL_RPC_TEMPLATE_DETAILS` | `TemplateKeys.MEDIA_TITLE` | Template for details |
+| `MANUAL_RPC_TEMPLATE_STATE` | `TemplateKeys.MEDIA_ARTIST` | Template for state |
+| `MANUAL_RPC_ENABLE_TIMESTAMPS` | true | Master toggle for timestamps |
+| `MANUAL_RPC_TIMESTAMP_MODE` | `default` | `default` / `current` / `custom` |
+| `MANUAL_RPC_TIMESTAMP_CUSTOM_START/END` | — | Custom epoch ms |
+| `MANUAL_RPC_HIDE_ON_PAUSE` | false | Hide media presence on pause |
+| `MANUAL_RPC_SHOW_COVER_ART` | true | Show cover art as large image |
+| `MANUAL_RPC_SHOW_APP_ICON` | false | Show app icon |
+| `MANUAL_RPC_SHOW_PLAYBACK_STATE` | true | Show playback-state icon |
+| `MANUAL_RPC_SHOW_SONG_AS_TITLE` | false | Use song title as name |
+| `MANUAL_RPC_TITLE_SOURCE` | `title` | `title` or `artist` |
+| `MANUAL_RPC_USE_BUTTONS` | false | Show RPC buttons |
+| `MANUAL_RPC_USE_CUSTOM_APP_ID` | false | Use custom Discord application ID |
+| `MANUAL_RPC_APPLICATION_ID` | — | Custom application ID value |
 | `MANUAL_RPC_PLATFORM` | — | Spoofed gateway identify platform/os/device |
 | `ENABLED_EXPERIMENTAL_APPS` | `[]` | JSON list of app package names to detect |
 
@@ -72,5 +72,5 @@ Read via `BatteryManager.BATTERY_PROPERTY_CAPACITY` (0–100), exposed as the `{
 
 ## UX notes
 
-- Dedicated Experimental RPC screen with its own ViewModel and UI state.
-- Enabling Experimental RPC stops Media, Custom, and Apps RPC first (mutual exclusion).
+- Dedicated Manual RPC screen with its own ViewModel and UI state.
+- Enabling Manual RPC stops Media, Custom, and Apps RPC first (mutual exclusion).

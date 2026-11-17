@@ -101,7 +101,7 @@
     <string name="update">更新</string>
     <string name="configs_directory">設定ディレクトリ</string>
     <string name="custom_activity_type">カスタムアクティビティタイプ</string>
-    <string name="custom_activity_type_desc">デフォルトのアクティビティタイプをオーバーライドします。メディア RPC と Experimental RPC のみで動作します</string>
+    <string name="custom_activity_type_desc">デフォルトのアクティビティタイプをオーバーライドします。メディア RPC と Manual RPC のみで動作します</string>
     <string name="custom_activity_status">カスタムアクティビティステータス</string>
     <string name="custom_activity_status_desc">デフォルトのアクティビティ状態を上書きします</string>
     <string name="search">検索</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">カスタム RPC</string>
     <string name="main_consoleRpc">コンソール RPC</string>
     <string name="main_consoleRpcDetails">Kizzy は、事前定義済みの設定を使用して Discord でのプレゼンスを設定できるようにします。</string>
-    <string name="main_experimentalRpc">実験的 RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC は、アプリ RPC とメディア RPC の間を常に切り替える Kizzy の機能です。</string>
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC は、アプリ RPC とメディア RPC の間を常に切り替える Kizzy の機能です。</string>
     <string name="main_customRpcDetails">Kizzy は、Discord 用の完全にカスタマイズ可能なリッチプレゼンスを作成できるようにします。</string>
     <string name="main_comingSoon">近日公開</string>
     <string name="exit">終了</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Imgur を代替イメージプロキシとして使用します。</string>
     <string name="start_appDetection">アプリ検出を開始</string>
     <string name="start_mediaRpc">メディア RPC を開始</string>
-    <string name="start_experimentalRpc">Experimental RPC を開始</string>
+    <string name="start_manualRpc">Manual RPC を開始</string>
     <string name="stop_rpc">RPC を停止</string>
     <string name="stop">停止</string>
     <string name="start_appDetectionToast">アプリ検出を開始しました</string>
     <string name="start_mediaRpcToast">Media RPC を開始しました</string>
-    <string name="start_experimentalRpcToast">Experimental RPC を開始しました</string>
+    <string name="start_manualRpcToast">Manual RPC を開始しました</string>
     <string name="stop_rpcToast">すべてのサービスを停止しました</string>
     <string name="show_playbackState">再生状態を表示</string>
     <string name="copied_toClipboard">クリップボードにコピーされました</string>
@@ -209,16 +209,14 @@
     <string name="custom_application_id_desc">デフォルトの Discord アプリケーション ID をオーバーライドします</string>
     <string name="use_a_vpnDesc">Discord ログインは、VPN/DPI なしではお客様の国で動作しない場合があります。VPN/DPI を使用して続行してください。</string>
     <string name="rpc_templates_note">&quot;`{{apos;app_name}}apos;apos;` や `{{apos;media_title}}apos;apos;` などのプレースホルダーを使用してください。空のフィールドはデフォルトの動作を使用するか、省略されます。&quot;</string>
-    <string name="experimental_rpc_detectApps">Experimental RPC で実行中のアプリを検出することを許可</string>
-    <string name="experimental_rpc_detect_media">Experimental RPC にメディア再生を検出させる</string>
     <string name="app_preferences">アプリ設定</string>
-    <string name="app_preferences_desc">Experimental RPC で有効にするアプリを選択します</string>
+    <string name="app_preferences_desc">Manual RPC で有効にするアプリを選択します</string>
     <string name="completion_media_title">楽曲 / 動画タイトル</string>
     <string name="completion_media_artist">メインアーティスト</string>
     <string name="completion_appName">検出されたアプリ名</string>
     <string name="show_coverArt">アルバムジャケットを表示</string>
     <string name="show_coverArt_desc">アルバムジャケットを大きな画像として表示</string>
-    <string name="enable_experimentalRpc">Experimental RPC を有効化</string>
+    <string name="enable_manualRpc">Manual RPC を有効化</string>
     <string name="completion_media_author">主な著者</string>
     <string name="completion_media_album">アルバム名</string>
     <string name="completion_media_albumArtist">アルバムアーティスト</string>
@@ -235,8 +233,6 @@
     <string name="use_youtubeButtonDesc">メディア再生中にクリック可能なボタン (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) を自動的に追加します</string>
     <string name="link_toArtistChannel">アーティストチャンネルにリンク</string>
     <string name="link_toArtistChannel_desc">ボタンは、トラック/動画ではなくアーティストチャンネルにリンクします</string>
-    <string name="experimental_rpcTitle_toggle">タイトル</string>
-    <string name="experimental_rpcTitleToggle_desc">Discord でアプリ名の代わりに楽曲情報を表示</string>
     <string name="title_source_song">曲名</string>
     <string name="title_source_artist">アーティスト</string>
     <string name="type_to_insert_variable">変数を挿入するには &apos;{{&apos; と入力してください</string>
@@ -329,4 +325,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

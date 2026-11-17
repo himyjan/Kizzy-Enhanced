@@ -101,7 +101,7 @@
     <string name="update">Atualizar</string>
     <string name="configs_directory">Diretório de Configurações</string>
     <string name="custom_activity_type">Tipo de Atividade Personalizado</string>
-    <string name="custom_activity_type_desc">Substitui o tipo de atividade padrão. Funciona apenas para media RPC e experimental RPC</string>
+    <string name="custom_activity_type_desc">Substitui o tipo de atividade padrão. Funciona apenas para media RPC e manual rpc</string>
     <string name="custom_activity_status">Estado de Atividade Personalizado</string>
     <string name="custom_activity_status_desc">Substitui o estado de atividade padrão</string>
     <string name="search">Pesquisar</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC personalizado</string>
     <string name="main_consoleRpc">RPC de consola</string>
     <string name="main_consoleRpcDetails">O Kizzy permite que você use algumas pré-configurações para definir sua presença no Discord.</string>
-    <string name="main_experimentalRpc">RPC experimental</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC é um recurso no Kizzy que alterna constantemente entre Apps RPC e Media RPC.</string>
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC é um recurso no Kizzy que alterna constantemente entre Apps RPC e Media RPC.</string>
     <string name="main_customRpcDetails">O Kizzy permite que você crie sua própria presença rica totalmente personalizável para Discord.</string>
     <string name="main_comingSoon">Em Breve</string>
     <string name="exit">Sair</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Usar o Imgur como um proxy de imagem alternativo.</string>
     <string name="start_appDetection">Iniciar Detecção de Apps</string>
     <string name="start_mediaRpc">Iniciar Media RPC</string>
-    <string name="start_experimentalRpc">Iniciar Experimental RPC</string>
+    <string name="start_manualRpc">Iniciar Manual RPC</string>
     <string name="stop_rpc">Parar RPC</string>
     <string name="stop">Parar</string>
     <string name="start_appDetectionToast">Detecção de Apps iniciada</string>
     <string name="start_mediaRpcToast">Media RPC iniciado</string>
-    <string name="start_experimentalRpcToast">Experimental RPC iniciado</string>
+    <string name="start_manualRpcToast">Manual RPC iniciado</string>
     <string name="stop_rpcToast">Todos os serviços parados</string>
     <string name="show_playback_state">Mostrar Estado de Reprodução</string>
     <string name="copied_to_clipboard">Copiado para a área de transferência</string>
@@ -209,16 +209,13 @@
     <string name="custom_application_id_desc">Substitui o ID de Aplicativo Discord padrão</string>
     <string name="use_a_vpn_desc">O login no Discord pode não funcionar no seu país sem uma VPN/DPI. Por favor, use uma VPN/DPI para continuar.</string>
     <string name="rpc_templates_note">&quot;Use placeholders como &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; etc. Campos vazios usarão o comportamento padrão ou serão omitidos.&quot;</string>
-    <string name="experimental_rpc_detect_apps">Permitir que Experimental RPC detecte apps em execução</string>
-    <string name="experimental_rpc_detect_media">Permitir que Experimental RPC detecte reprodução de mídia</string>
     <string name="app_preferences">Preferências do App</string>
-    <string name="app_preferences_desc">Selecionar quais apps estão habilitados para Experimental RPC</string>
+    <string name="app_preferences_desc">Selecionar quais apps estão habilitados para Manual RPC</string>
     <string name="completion_media_title">Título da Música/Vídeo</string>
     <string name="completion_media_artist">Artista Principal</string>
     <string name="completion_app_name">Nome do App Detectado</string>
     <string name="show_cover_art">Mostrar Capa do Álbum</string>
     <string name="show_cover_art_desc">Exibir capa do álbum como imagem grande</string>
-    <string name="enable_experimental_rpc">Habilitar Experimental RPC</string>
     <string name="completion_media_author">Autor Principal</string>
     <string name="completion_media_album">Nome do Álbum</string>
     <string name="completion_media_album_artist">Artista do Álbum</string>
@@ -235,8 +232,6 @@
     <string name="use_youtube_button_desc">Adicionar automaticamente um botão clicável (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) ao reproduzir mídia</string>
     <string name="link_to_artist_channel">Link para o Canal do Artista</string>
     <string name="link_to_artist_channel_desc">O botão linka para o canal do artista em vez da faixa/vídeo</string>
-    <string name="experimental_rpc_title_toggle">Título</string>
-    <string name="experimental_rpc_title_toggle_desc">Mostrar informações da música no título da atividade em vez do nome do app</string>
     <string name="title_source_song">Nome da Canção</string>
     <string name="title_source_artist">Artista</string>
     <string name="type_to_insert_variable">Digite &apos;{{&apos; para inserir uma variável</string>
@@ -329,4 +324,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

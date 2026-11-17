@@ -110,7 +110,7 @@
     <string name="configs_directory">Director configurații</string>
     <string name="custom_activity_type">Tip activitate personalizat</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Stare activitate personalizată</string>
     <string name="custom_activity_status_desc">Suprascrie starea implicită a activității</string>
     <string name="search">Caută</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Folosește Imgur ca proxy alternativ de imagini.</string>
     <string name="start_appDetection">Pornește detectarea aplicațiilor</string>
     <string name="start_mediaRPC">Pornește Media RPC</string>
-    <string name="start_experimentalRPC">Pornește Experimental RPC</string>
+    <string name="start_manualRpc">Pornește Manual RPC</string>
     <string name="stop_rpc">Oprește RPC</string>
     <string name="stop">Oprește</string>
     <string name="start_appDetection_toast">Detectarea aplicațiilor a început</string>
     <string name="start_mediaRPC_toast">Media RPC a început</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC a început</string>
+    <string name="start_manualRpc_toast">Manual RPC a început</string>
     <string name="stop_rpc_toast">Toate serviciile au fost oprite</string>
     <string name="show_playback_state">Afișează starea redării</string>
     <string name="copied_to_clipboard">Copiat în clipboard</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Permiteți Experimental RPC să detecteze aplicațiile în execuție</string>
-    <string name="experimental_rpc_detect_media">Permiteți Experimental RPC să detecteze redarea media</string>
     <string name="app_preferences">Preferințe aplicație</string>
-    <string name="app_preferences_desc">Alegeți ce aplicații sunt activate pentru Experimental RPC</string>
+    <string name="app_preferences_desc">Alegeți ce aplicații sunt activate pentru Manual RPC</string>
     <string name="completion_media_title">Titlu piese/video</string>
     <string name="completion_media_artist">Artist principal</string>
     <string name="completion_app_name">Nume aplicație detectată</string>
     <string name="show_cover_art">Afișează coperta</string>
     <string name="show_cover_art_desc">Afișează coperta albumului ca imagine mare</string>
-    <string name="enable_experimental_rpc">Activează Experimental RPC</string>
     <string name="completion_media_author">Autor principal</string>
     <string name="completion_media_album">Nume album</string>
     <string name="completion_media_album_artist">Artist album</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link către canalul artistului</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Titlu</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Numele piesei</string>
     <string name="title_source_artist">Artist</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

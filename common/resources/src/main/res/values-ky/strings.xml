@@ -110,7 +110,7 @@
     <string name="configs_directory">Конфигурациялар папкасы</string>
     <string name="custom_activity_type">Ар дайын активдүүлүктүн түрү</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Ар дайын активдүүлүк абалы</string>
     <string name="custom_activity_status_desc">Демейткы абалды алмаштырат</string>
     <string name="search">Издөө</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Imgur\'ду альтернативдүү сүрөт проксиси катарында колдонуңуз.</string>
     <string name="start_appDetection">Колдонмолору аныктоону баштоо</string>
     <string name="start_mediaRPC">Media RPC баштоо</string>
-    <string name="start_experimentalRPC">Experimental RPC баштоо</string>
+    <string name="start_manualRpc">Manual RPC баштоо</string>
     <string name="stop_rpc">RPC токтотуу</string>
     <string name="stop">Токтотуу</string>
     <string name="start_appDetection_toast">Колдонмолору аныктоо башталды</string>
     <string name="start_mediaRPC_toast">Media RPC башталды</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC башталды</string>
+    <string name="start_manualRpc_toast">Manual RPC башталды</string>
     <string name="stop_rpc_toast">Бардык кызматтар токтотулду</string>
     <string name="show_playback_state">Ойнотуунун абалын көрсөтүү</string>
     <string name="copied_to_clipboard">Буферге көчүрүлдү</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Experimental RPC иштеп жаткан колдонмолору аныктоосуна уруксат берүү</string>
-    <string name="experimental_rpc_detect_media">Experimental RPC медиа ойнотууну аныктоосуна уруксат берүү</string>
     <string name="app_preferences">Колдонмонун орнотмолору</string>
-    <string name="app_preferences_desc">Experimental RPC үчүн кай колдонмолор күйгүрүлөрүн тандаңыз</string>
+    <string name="app_preferences_desc">Manual RPC үчүн кай колдонмолор күйгүрүлөрүн тандаңыз</string>
     <string name="completion_media_title">Ырдын/видеонун аталышы</string>
     <string name="completion_media_artist">Негизги ырчы</string>
     <string name="completion_app_name">Аныкталган колдонмонун аталышы</string>
     <string name="show_cover_art">Мүүкөрлүүлүгүн көрсөтүү</string>
     <string name="show_cover_art_desc">Альбом мүүкөрлүүлүгүн чоң сүрөт катарында көрсөтүү</string>
-    <string name="enable_experimental_rpc">Experimental RPC күйгүзүү</string>
     <string name="completion_media_author">Негизги автор</string>
     <string name="completion_media_album">Альбомдун аталышы</string>
     <string name="completion_media_album_artist">Альбомдун ырчысы</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Ырчынын каналына шилтеме</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Аталышы</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Ырдын аталышы</string>
     <string name="title_source_artist">Ырчы</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

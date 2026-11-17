@@ -76,6 +76,11 @@
     <string name="enable_mediaRpc">Enable Media RPC</string>
     <string name="permission_required">Permission Required</string>
     <string name="enable_customRpc">Enable Custom RPC</string>
+    <string name="enable_manualRpc">Enable Manual RPC</string>
+    <string name="manual_rpc_detect_apps">Allow Manual RPC to detect running apps</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="manual_rpc_title_toggle">Title</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead of app name</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="privacy_policy_desc">Check the Privacy Policy</string>
@@ -198,10 +203,8 @@
     <string name="start_appNow">Start App Now</string>
     <string name="start_app_detection">Start App Detection</string>
     <string name="start_app_detection_toast">Start App Detection Toast</string>
-    <string name="start_experimentalRpc">Start Experimental RPC</string>
-    <string name="start_experimentalRpcToast">Start Experimental RPC Toast</string>
-    <string name="start_experimental_rpc">Start Experimental RPC</string>
-    <string name="start_experimental_rpc_toast">Start Experimental RPC Toast</string>
+    <string name="start_manualRpc">Start Manual RPC</string>
+    <string name="start_manualRpcToast">Start Manual RPC Toast</string>
     <string name="start_mediaRpc">Start Media RPC</string>
     <string name="start_mediaRpcToast">Start Media RPC Toast</string>
     <string name="start_media_rpc">Start Media RPC</string>
@@ -237,7 +240,7 @@
     <string name="configs_directory">Configs Directory</string>
     <string name="custom_activity_type">Custom Activity Type</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Custom Activity Status</string>
     <string name="custom_activity_status_desc">Overrides the default activity status</string>
     <string name="search">Search</string>
@@ -256,8 +259,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -338,12 +341,11 @@
     <string name="use_imgur_desc">Use Imgur as an alternate image proxy.</string>
     <string name="start_appDetection">Start App Detection</string>
     <string name="start_mediaRPC">Start Media RPC</string>
-    <string name="start_experimentalRPC">Start Experimental RPC</string>
     <string name="stop_rpc">Stop RPC</string>
     <string name="stop">Stop</string>
     <string name="start_appDetection_toast">App Detection started</string>
     <string name="start_mediaRPC_toast">Media RPC started</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC started</string>
+    <string name="start_manualRpc_toast">Manual RPC started</string>
     <string name="stop_rpc_toast">All services stopped</string>
     <string name="show_playback_state">Show Playback State</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
@@ -354,16 +356,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Allow Experimental RPC to detect running apps</string>
-    <string name="experimental_rpc_detect_media">Allow Experimental RPC to detect media playback</string>
     <string name="app_preferences">App Preferences</string>
-    <string name="app_preferences_desc">Select which apps are enabled for Experimental RPC</string>
+    <string name="app_preferences_desc">Select which apps are enabled for Manual RPC</string>
     <string name="completion_media_title">Song/Video Title</string>
     <string name="completion_media_artist">Main Artist</string>
     <string name="completion_app_name">Detected App Name</string>
     <string name="show_cover_art">Show Cover Art</string>
     <string name="show_cover_art_desc">Display album cover art as large image</string>
-    <string name="enable_experimental_rpc">Enable Experimental RPC</string>
     <string name="completion_media_author">Main Author</string>
     <string name="completion_media_album">Album Name</string>
     <string name="completion_media_album_artist">Album Artist</string>
@@ -382,9 +381,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link to Artist Channel</string>
     <string name="link_to_artist_channel_desc">Adds a second button that links to the artist of the playing media</string>
-    <string name="experimental_rpc_title_toggle">Title</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Song Name</string>
     <string name="title_source_artist">Artist</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos;; to insert a variable</string>
@@ -404,7 +400,7 @@
     <string name="update_download_error">Download failed. Try again.</string>
     <string name="save_logs_to_file">Save Logs to File</string>
     <string name="rpc_hide_cover_art">Hide Cover Art Images</string>
-    <string name="rpc_hide_cover_art_desc">Show text only across all RPC types (Media, Custom, Console, Experimental). Covers will not appear on Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Show text only across all RPC types (Media, Custom, Console, Manual). Covers will not appear on Discord.</string>
     <string name="rpc_default_cover_art_large">Default Large Cover Art</string>
     <string name="rpc_default_cover_art_large_desc">Image URL to use as large cover art when the notification has no cover art</string>
     <string name="rpc_default_cover_art_small">Default Small Cover Art</string>

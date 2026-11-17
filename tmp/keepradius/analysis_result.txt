@@ -310,7 +310,7 @@ Shrinking Score:    82.38%
         "Lcom/my/kizzy/feature_rpc_base/services/Hilt_AppDetectionService;",
         "Lcom/my/kizzy/feature_rpc_base/services/Hilt_CustomRpcService;",
         "Lcom/my/kizzy/feature_rpc_base/services/Hilt_DiscordOAuth2RpcService;",
-        "Lcom/my/kizzy/feature_rpc_base/services/Hilt_ExperimentalRpc;",
+        "Lcom/my/kizzy/feature_rpc_base/services/Hilt_ManualRpc;",
         "Lcom/my/kizzy/feature_rpc_base/services/Hilt_MediaRpcService;"
       ],
       "subsumed_by": [

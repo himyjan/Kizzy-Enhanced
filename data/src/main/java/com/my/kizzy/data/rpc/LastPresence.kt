@@ -24,7 +24,7 @@ import kotlinx.serialization.json.Json
  * not running - and the media state repository only knows the title and the
  * artist, not the name, the details and the buttons of the presence.
  *
- * The two features (Media RPC and Experimental RPC) keep their own memory, so
+ * The two features (Media RPC and Manual RPC) keep their own memory, so
  * the preview shows the presence of the feature that is actually running.
  */
 object LastPresence {
@@ -39,10 +39,10 @@ object LastPresence {
     }
 
     /**
-     * Remembers the presence of the Experimental RPC.
+     * Remembers the presence of the Manual RPC.
      */
     fun rememberExperimental(rpcConfig: RpcConfig) {
-        runCatching { Prefs[Prefs.LAST_RUN_EXPERIMENTAL_RPC] = json.encodeToString(RpcConfig.serializer(), rpcConfig) }
+        runCatching { Prefs[Prefs.LAST_RUN_MANUAL_RPC] = json.encodeToString(RpcConfig.serializer(), rpcConfig) }
     }
 
     /**
@@ -51,9 +51,9 @@ object LastPresence {
     fun media(): RpcConfig? = read(Prefs.LAST_RUN_MEDIA_RPC)
 
     /**
-     * The presence of the Experimental RPC that was sent last, or null.
+     * The presence of the Manual RPC that was sent last, or null.
      */
-    fun experimental(): RpcConfig? = read(Prefs.LAST_RUN_EXPERIMENTAL_RPC)
+    fun experimental(): RpcConfig? = read(Prefs.LAST_RUN_MANUAL_RPC)
 
     private fun read(key: String): RpcConfig? {
         val raw = Prefs[key, ""]

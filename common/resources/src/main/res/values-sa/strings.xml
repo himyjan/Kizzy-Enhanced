@@ -110,7 +110,7 @@
     <string name="configs_directory">कन्फिगरेसनहरूको निर्देशिका</string>
     <string name="custom_activity_type">मान्य संरचित क्रियाकलाप प्रकार</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">मान्य संरचित क्रियाकलाप अवस्था</string>
     <string name="custom_activity_status_desc">पहिलेकैको क्रियाकलाप अवस्थालाई प्रतिस्थापन गर्छ</string>
     <string name="search">खोज्नुहोस्</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">वैकल्पिक तस्वीर प्रक्सीका रूपमा Imgur प्रयोग गर्नुहोस्।</string>
     <string name="start_appDetection">एप पहिचान सुरु गर्नुहोस्</string>
     <string name="start_mediaRPC">Media RPC सुरु गर्नुहोस्</string>
-    <string name="start_experimentalRPC">Experimental RPC सुरु गर्नुहोस्</string>
+    <string name="start_manualRpc">ابدأ تشغيل RPC يدويًا</string>
     <string name="stop_rpc">RPC रोक्नुहोस्</string>
     <string name="stop">रोक्नुहोस्</string>
     <string name="start_appDetection_toast">एप पहिचान सुरु भयो</string>
     <string name="start_mediaRPC_toast">Media RPC सुरु भयो</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC सुरु भयो</string>
+    <string name="start_manualRpc_toast">Manual RPC सुरु भयो</string>
     <string name="stop_rpc_toast">सबै सेवाहरू रोकिए</string>
     <string name="show_playback_state">प्लेब्याकको अवस्था देखाउनुहोस्</string>
     <string name="copied_to_clipboard">क्लिपबोर्डमा प्रतिलिपि गरियो</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Experimental RPC लाई चलिरहेका एपहरू पहिचान गर्न अनुमति दिनुहोस्</string>
-    <string name="experimental_rpc_detect_media">Experimental RPC लाई मिडिया प्लेब्याक पहिचान गर्न अनुमति दिनुहोस्</string>
     <string name="app_preferences">एप प्राथमिकताहरू</string>
-    <string name="app_preferences_desc">Experimental RPC का लागि कुन एपहरू सक्रिय हुने भएको छनोट गर्नुहोस्</string>
+    <string name="app_preferences_desc">Manual RPC का लागि कुन एपहरू सक्रिय हुने भएको छनोट गर्नुहोस्</string>
     <string name="completion_media_title">गानो/भिडियोको शीर्षक</string>
     <string name="completion_media_artist">मुख्य कलाकार</string>
     <string name="completion_app_name">पहिचान गरिएको एपको नाम</string>
     <string name="show_cover_art">कभर कलाकart देखाउनुहोस्</string>
     <string name="show_cover_art_desc">एल्बमको कभरलाई ठूलो तस्वीरका रूपमा देखाउनुहोस्</string>
-    <string name="enable_experimental_rpc">Experimental RPC सक्रिय गर्नुहोस्</string>
     <string name="completion_media_author">मुख्य लेखक</string>
     <string name="completion_media_album">एल्बमको नाम</string>
     <string name="completion_media_album_artist">एल्बम कलाकार</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">कलाकारको च्यानलमा लिंक</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">शीर्षक</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">गानोको नाम</string>
     <string name="title_source_artist">कलाकार</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

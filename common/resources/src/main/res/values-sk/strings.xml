@@ -110,7 +110,7 @@
     <string name="configs_directory">Priečinok konfigurácií</string>
     <string name="custom_activity_type">Vlastný typ aktivity</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Vlastný stav aktivity</string>
     <string name="custom_activity_status_desc">Prepíše predvolený stav aktivity</string>
     <string name="search">Hľadať</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Použiť Imgur ako alternatívny proxy obrázkov.</string>
     <string name="start_appDetection">Spustiť detekciu aplikácií</string>
     <string name="start_mediaRPC">Spustiť Media RPC</string>
-    <string name="start_experimentalRPC">Spustiť Experimental RPC</string>
+    <string name="start_manualRpc">Spustiť Manual RPC</string>
     <string name="stop_rpc">Zastaviť RPC</string>
     <string name="stop">Zastaviť</string>
     <string name="start_appDetection_toast">Detekcia aplikácií sa spustila</string>
     <string name="start_mediaRPC_toast">Media RPC sa spustil</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC sa spustil</string>
+    <string name="start_manualRpc_toast">Manual RPC sa spustil</string>
     <string name="stop_rpc_toast">Všetky služby boli zastavené</string>
     <string name="show_playback_state">Zobraziť stav prehrávania</string>
     <string name="copied_to_clipboard">Skopírované do schránky</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Povoľte Experimental RPC detegovať bežiace aplikácie</string>
-    <string name="experimental_rpc_detect_media">Povoľte Experimental RPC detegovať prehrávanie médií</string>
     <string name="app_preferences">Predvoľby aplikácie</string>
-    <string name="app_preferences_desc">Vyberte, ktoré aplikácie sú povolené pre Experimental RPC</string>
+    <string name="app_preferences_desc">Vyberte, ktoré aplikácie sú povolené pre Manual RPC</string>
     <string name="completion_media_title">Názov skladby/videa</string>
     <string name="completion_media_artist">Hlavný interpret</string>
     <string name="completion_app_name">Názov zistenej aplikácie</string>
     <string name="show_cover_art">Zobraziť obal</string>
     <string name="show_cover_art_desc">Zobraziť obal albumu ako veľký obrázok</string>
-    <string name="enable_experimental_rpc">Povoliť Experimental RPC</string>
     <string name="completion_media_author">Hlavný autor</string>
     <string name="completion_media_album">Názov albumu</string>
     <string name="completion_media_album_artist">Interpret albumu</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Odkaz na kanál interpreta</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Názov</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Názov skladby</string>
     <string name="title_source_artist">Interpret</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

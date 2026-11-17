@@ -53,7 +53,7 @@
 
 ## Was ist neu in diesem Fork
 
-Alle Ergänzungen befinden sich im **Experimental RPC**-Bildschirm und auf dem Startbildschirm.
+Alle Ergänzungen befinden sich im **Manual RPC**-Bildschirm und auf dem Startbildschirm.
 
 ### ⭐ Plattform-Spoofer
 - Wählen Sie aus, von welcher Plattform Ihre Präsenz verbunden wird — **Desktop, Web, Android, iOS, Xbox, Playstation, VR** (portiert von den Plattformen von Equicord's platformSpoofer).
@@ -76,7 +76,7 @@ Zusätzlich zu den Originalen, mit Autovervollständigung:
 
 ### ⭐ Startbildschirm-Neugestaltung
 - Funktionskarten sind jetzt ein vertikaler Stapel von Karten in voller Breite.
-- **Ein/Aus-Umschalter auf jeder Karte**, sodass Medien / Custom / Experimental RPC direkt vom Startbildschirm aus gestartet und gestoppt werden können.
+- **Ein/Aus-Umschalter auf jeder Karte**, sodass Medien / Custom / Manual RPC direkt vom Startbildschirm aus gestartet und gestoppt werden können.
 
 ### ⭐ Gateway-Resilienz (portiert von [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy))
 - Automatische Wiederverbindung mit exponentiellem Backoff bei jeder unerwarteten Trennung.

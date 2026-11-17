@@ -53,7 +53,7 @@
 
 ## O que há de novo neste fork
 
-Todas as adições estão na tela **Experimental RPC** e na tela inicial.
+Todas as adições estão na tela **Manual RPC** e na tela inicial.
 
 ### ⭐ Spoofer de plataforma
 - Escolha de qual plataforma sua presença se conecta — **Desktop, Web, Android, iOS, Xbox, Playstation, VR** (portado das plataformas usadas pelo platformSpoofer do Equicord).
@@ -76,7 +76,7 @@ Além dos originais, com preenchimento automático:
 
 ### ⭐ Redesenho da tela inicial
 - Os cartões de recursos agora são uma pilha vertical de cartões de largura total.
-- **Interruptores de ligar/desligar em cada cartão**, para que Mídia / Custom / Experimental RPC possam ser iniciados e parados diretamente da tela inicial.
+- **Interruptores de ligar/desligar em cada cartão**, para que Mídia / Custom / Manual RPC possam ser iniciados e parados diretamente da tela inicial.
 
 ### ⭐ Resiliência do Gateway (portado de [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy))
 - Reconexão automática com backoff exponencial em qualquer desconexão inesperada.

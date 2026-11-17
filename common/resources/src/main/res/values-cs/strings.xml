@@ -101,7 +101,7 @@
     <string name="update">Aktualizovat</string>
     <string name="configs_directory">Složka konfigurací</string>
     <string name="custom_activity_type">Vlastní typ aktivity</string>
-    <string name="custom_activity_type_desc">Přepsává výchozí typ aktivity. Funguje pouze pro Media a Experimental RPC</string>
+    <string name="custom_activity_type_desc">Přepsává výchozí typ aktivity. Funguje pouze pro Media a Manual RPC</string>
     <string name="custom_activity_status">Vlastní stav aktivity</string>
     <string name="custom_activity_status_desc">Přepsává výchozí stav aktivity</string>
     <string name="search">Hledat</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">Vlastní RPC</string>
     <string name="main_consoleRpc">Konzolové RPC</string>
     <string name="main_consoleRpcDetails">Kizzy vám umožňuje použít některé předdefinované nastavení pro nastavení vaší přítomnosti na Discord.</string>
-    <string name="main_experimentalRpc">Experimentální RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC je funkce v Kizzy, která nepřetržitě přepíná mezi Apps RPC a Media RPC.</string>
+    <string name="main_manualRpc">Experimentální RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC je funkce v Kizzy, která nepřetržitě přepíná mezi Apps RPC a Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vám umožňuje vytvořit si vlastní plně přizpůsobitelnou rich presence pro Discord.</string>
     <string name="main_comingSoon">Brzy</string>
     <string name="exit">Ukončit</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Použijte Imgur jako alternativní proxy obrázků.</string>
     <string name="start_appDetection">Spustit detekci aplikací</string>
     <string name="start_mediaRpc">Spustit Media RPC</string>
-    <string name="start_experimentalRpc">Spustit Experimental RPC</string>
+    <string name="start_manualRpc">Spustit Manual RPC</string>
     <string name="stop_rpc">Zastavit RPC</string>
     <string name="stop">Zastavit</string>
     <string name="start_appDetectionToast">Detekce aplikací zahájena</string>
     <string name="start_mediaRpcToast">Media RPC spuštěno</string>
-    <string name="start_experimentalRpcToast">Experimental RPC spuštěno</string>
+    <string name="start_manualRpcToast">Manual RPC spuštěno</string>
     <string name="stop_rpcToast">Všechny služby zastaveny</string>
     <string name="show_playbackState">Zobrazit stav přehrávání</string>
     <string name="copied_toClipboard">Zkopírováno do schránky</string>
@@ -209,16 +209,14 @@
     <string name="custom_application_id_desc">Přepsává výchozí identifikátor aplikace Discord</string>
     <string name="use_a_vpnDesc">Přihlášení k Discordu může ve vaší zemi bez VPN/DPI nefungovat. Pro pokračování použijte prosím VPN/DPI.</string>
     <string name="rpc_templates_note">&quot;Používejte šablony, jako jsou &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; atd. Prázdná pole budou používat výchozí chování nebo budou vynechána.&quot;</string>
-    <string name="experimental_rpc_detectApps">Povolit Experimental RPC detekovat spuštěné aplikace</string>
-    <string name="experimental_rpc_detectMedia">Povolit Experimental RPC detekovat přehrávání médií</string>
     <string name="app_preferences">Předvolby aplikací</string>
-    <string name="app_preferences_desc">Vyberte, jaké aplikace jsou povoleny pro Experimental RPC</string>
+    <string name="app_preferences_desc">Vyberte, jaké aplikace jsou povoleny pro Manual RPC</string>
     <string name="completion_media_title">Název písně/videa</string>
     <string name="completion_media_artist">Hlavní umělec</string>
     <string name="completion_appName">Název detekované aplikace</string>
     <string name="show_coverArt">Zobrazit obal alba</string>
     <string name="show_coverArt_desc">Zobrazit obal alba jako velký obrázek</string>
-    <string name="enable_experimentalRpc">Povolit Experimental RPC</string>
+    <string name="enable_manualRpc">Povolit Manual RPC</string>
     <string name="completion_media_author">Hlavní autor</string>
     <string name="completion_media_album">Název alba</string>
     <string name="completion_media_albumArtist">Umělec alba</string>
@@ -235,8 +233,6 @@
     <string name="use_youtubeButtonDesc">Automaticky přidat kliknutelné tlačítko (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) při přehrávání médií</string>
     <string name="link_toArtistChannel">Odkaz na kanál umělce</string>
     <string name="link_toArtistChannel_desc">Tlačítko odkazuje na kanál umělce místo skladby/videa</string>
-    <string name="experimental_rpcTitleToggle">Titulky</string>
-    <string name="experimental_rpcTitleToggle_desc">Zobrazit informace o písni v titulku aktivity místo názvu aplikace</string>
     <string name="title_source_song">Název písně</string>
     <string name="title_source_artist">Umělec</string>
     <string name="type_toInsertVariable">Napište &apos;{{&apos; pro vložení proměnné</string>
@@ -329,4 +325,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

@@ -113,7 +113,7 @@
     <string name="main_customRpc">கஸ்டம் RPC</string>
     <string name="main_consoleRpc">கன்சோல் RPC</string>
     <string name="main_consoleRpcDetails">Kizzy ஆப்ஜெக்ட் RAM</string>
-    <string name="main_experimentalRpc">அக்ஸ்பீரிமெண்டல் RPC</string>
+    <string name="main_manualRpc">அக்ஸ்பீரிமெண்டல் RPC</string>
     <string name="main_comingSoon">விரைவில் வருகிறது</string>
     <string name="exit">வெளியேறு</string>
     <string name="logs">லாக்</string>
@@ -190,12 +190,12 @@
     <string name="use_imgurDesc">இமுர் பிம்ப பிராக்சி definition</string>
     <string name="start_appDetection">ஏப் டெகெக்ஷன் தொடங்கு</string>
     <string name="start_mediaRpc">மீடியா RPC தொடங்கு</string>
-    <string name="start_experimentalRpc">எக்ஸ்பெரிமெண்டல் RPC தொடங்கு</string>
+    <string name="start_manualRpc">எக்ஸ்பெரிமெண்டல் RPC தொடங்கு</string>
     <string name="stop_rpc">RPC நிறுத்து</string>
     <string name="stop">நிறுத்து</string>
     <string name="start_appDetectionToast">ஏப் டெகெக்ஷன் தொடங்கியது</string>
     <string name="start_mediaRpcToast">மீடியா RPC தொடங்கியது</string>
-    <string name="start_experimentalRpcToast">எக்ஸ்பெரிமெண்டல் RPC தொடங்கியது</string>
+    <string name="start_manualRpcToast">கೈமுறை RPC தொடங்கியது</string>
     <string name="stop_rpcToast">அனைத்து சேவைகள் நிறுத்தப்பட்டன</string>
     <string name="show_playbackState">பிளேபேக் நிலை காட்ட</string>
     <string name="copied_toClipboard">கிளிப்போர்டில் நகலுடன்</string>
@@ -204,7 +204,6 @@
     <string name="custom_application_id_desc">டிஃபால்ட் டிஸ்கார்டு அப்ளிகேஷன் ஆemblyதாக வைக்கிறது</string>
     <string name="use_a_vpnDesc">டிஸ்கார்ட் லாக் இன் தங்கள் நாடுகளில் VPN/DPI இல்லாமல் வேலை செய்யாது. VPN/DPI பயன்படுத்தவும்.</string>
     <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; டெంప்ளேட் வார்ப்புகள்</string>
-    <string name="experimental_rpc_detectMedia">எக்ஸ்பீரிமெண்டல் RPC மீடியா</string>
     <string name="app_preferences">ஆப் ப்ரெஃப்ரென்ஸ்</string>
     <string name="app_preferences_desc">ஏkreis அறுதி செய்ய</string>
     <string name="completion_media_title">பாடல்/வீடியோ தீங்குகள்</string>
@@ -212,7 +211,7 @@
     <string name="completion_appName">டெகெக்ஷன் செய்யப்பட்ட ஏப் பெயர்</string>
     <string name="show_coverArt">இஸ்மே சுரேஷ்</string>
     <string name="show_coverArt_desc">கவர் ஆர்ட்டைக் காட்டுவது பற்றிய விவரம்</string>
-    <string name="enable_experimentalRpc">எக்ஸ்பீரிமெண்டல் RPC இயக்க</string>
+    <string name="enable_manualRpc">எக்ஸ்பீரிமெண்டல் RPC இயக்க</string>
     <string name="completion_media_author">முதன்மை ஆசிரியர்</string>
     <string name="completion_media_album">அல்பாம் பெயர்</string>
     <string name="completion_media_albumArtist">Album பிரத்யேக கலைஞர்</string>
@@ -227,7 +226,6 @@
     <string name="show_songAsTitle">சந்தோஷ&lt;THANJAVUR&gt;</string>
     <string name="use_youtubeButton">மீடியா பட்டன் tensorapos;</string>
     <string name="use_youtubeButtonDesc">YouTube பட்டன் பயன்படுத்துவது பற்றிய விவரம்</string>
-    <string name="experimental_rpcTitleToggle">சீர்திருத்து</string>
     <string name="title_source_song">பாட்டின் பெயர்</string>
     <string name="title_source_artist">கலாச்சாரம்</string>
     <string name="type_toInsertVariable">&apos;{{&apos; தை எங்கள் vary</string>
@@ -320,4 +318,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

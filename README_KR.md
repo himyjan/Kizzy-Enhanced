@@ -55,7 +55,7 @@
 
 ## 이 포크의 새로운 기능
 
-모든 추가 기능은 **Experimental RPC** 화면과 홈 화면에 있습니다.
+모든 추가 기능은 **Manual RPC** 화면과 홈 화면에 있습니다.
 
 ### ⭐ 플랫폼 스푸퍼
 - 존재가 연결될 플랫폼 선택 — **데스크톱, 웹, Android, iOS, Xbox, Playstation, VR** (Equicord의 platformSpoofer에서 사용되는 플랫폼에서 이식).
@@ -78,7 +78,7 @@
 
 ### ⭐ 홈 화면 리디자인
 - 기능 카드가 전체 너비의 수직 스택이 됨.
-- **모든 카드에 온/오프 토글 스위치** — Media / Custom / Experimental RPC를 홈 화면에서 직접 시작/중지 가능.
+- **모든 카드에 온/오프 토글 스위치** — Media / Custom / Manual RPC를 홈 화면에서 직접 시작/중지 가능.
 
 ### ⭐ 게이트웨이 복원력 ([YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy)에서 이식)
 - 예기치 않은 연결 끊김 시 지수 백오프를 사용한 자동 재연결.

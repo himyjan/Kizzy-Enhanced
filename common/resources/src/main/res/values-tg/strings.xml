@@ -117,4 +117,26 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album">Album Name</string>
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="completion_media_artist">Main Artist</string>
+    <string name="completion_media_author">Main Author</string>
+    <string name="completion_media_composer">Composer</string>
+    <string name="completion_media_duration">Track Duration</string>
+    <string name="completion_media_title">Song/Video Title</string>
+    <string name="completion_media_writer">Writer</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="enable_mediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

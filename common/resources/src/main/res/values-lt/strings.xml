@@ -101,7 +101,7 @@
     <string name="update">Atnaujinti</string>
     <string name="configs_directory">Konfiguracijų katalogas</string>
     <string name="custom_activity_type">Pasiruošimo veiklų tipas</string>
-    <string name="custom_activity_type_desc">Pakeičia standartinį veiklą tipą. Veikia tik Media ir Experimental RPC</string>
+    <string name="custom_activity_type_desc">Pakeičia standartinį veiklą tipą. Veikia tik Media ir Manual RPC</string>
     <string name="custom_activity_status">Pasiruošimo veiklų būseną</string>
     <string name="custom_activity_status_desc">Vykdanti pradinė activeitės būsena</string>
     <string name="search">Ieškoti</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">Pasirinktinis RPC</string>
     <string name="main_consoleRpc">Konsolės RPC</string>
     <string name="main_consoleRpcDetails">Kizzy leidžia jums naudoti kai kurias nustatytas nustatymus, kad nustatytų savo būseną Discord.</string>
-    <string name="main_experimentalRpc">Eksperimentinis RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC yra funkcija Kizzy, kuris nuolat keičiasi tarp programų RPC ir media RPC.</string>
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC yra funkcija Kizzy, kuris nuolat keičiasi tarp programų RPC ir media RPC.</string>
     <string name="main_customRpcDetails">Kizzy leidžia jums savo savoką sukurti visiškai pasitelkite įmanoma naudoti Discord.</string>
     <string name="main_comingSoon">Artimiausiu metu</string>
     <string name="exit">Išeiti</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Naudokite Imgur kaip alternatyvų vaizdo proxy.</string>
     <string name="start_appDetection">Paleiskite programų aptikimą</string>
     <string name="start_mediaRpc">Paleiskite Media RPC</string>
-    <string name="start_experimentalRpc">Paleiskite Experimental RPC</string>
+    <string name="start_manualRpc">Paleiskite Manual RPC</string>
     <string name="stop_rpc">Išjunkite RPC</string>
     <string name="stop">Sustabdykite</string>
     <string name="start_appDetectionToast">Aplikacijos aptikimas paleistas</string>
     <string name="start_mediaRpcToast">Media RPC paleista</string>
-    <string name="start_experimentalRpcToast">Experimental RPC startuoja</string>
+    <string name="start_manualRpcToast">Manual RPC startuoja</string>
     <string name="stop_rpcToast">Visos paslaugos sustabdytos</string>
     <string name="show_playbackState">Rodykite grojimo būseną</string>
     <string name="copied_toClipboard">Išperkelta į laikinąjį laikrodį</string>
@@ -209,16 +209,14 @@
     <string name="custom_application_id_desc">Nukopijuojamas standartinis Discord aplikacijos ID</string>
     <string name="use_a_vpnDesc">Discord prisijungimas gali neveikti jūsų šalyje be VPN/DPI. Naudokite VPN/DPI, kad tęstumėte.</string>
     <string name="rpc_templates_note">&quot;Naudokite šabloną &quot;„app_name&quot;, „{{’media_title}}apos;apos; ir tt. Tušti laukai bus naudojami standartinio veiksmo arba bus praleisti.&quot;</string>
-    <string name="experimental_rpc_detectApps">Leiskite Experimental RPC aptikti veikiančias programas</string>
-    <string name="experimental_rpc_detectMedia">Leiskite Experimental RPC aptikti medijos grojimo būseną</string>
     <string name="app_preferences">Aplikacijos nustatymai</string>
-    <string name="app_preferences_desc">Pasirinkite, kurios programos yra įgalintos per Experimental RPC</string>
+    <string name="app_preferences_desc">Pasirinkite, kurios programos yra įgalintos per Manual RPC</string>
     <string name="completion_media_title">Dainos/vaizdo pavadinimas</string>
     <string name="completion_media_artist">Pagrindinis muzikantų</string>
     <string name="completion_appName">Atrastas programos pavadinimas</string>
     <string name="show_coverArt">Rodyti albumo dekoras</string>
     <string name="show_coverArt_desc">Parodykite albumo deka kaip didelį vaizdą</string>
-    <string name="enable_experimentalRpc">Įgalinkite Experimental RPC</string>
+    <string name="enable_manualRpc">Įgalinkite Manual RPC</string>
     <string name="completion_media_author">Pagrindinis autorius</string>
     <string name="completion_media_album">Albumo pavadinimas</string>
     <string name="completion_media_albumArtist">Albumo autorius</string>
@@ -235,8 +233,6 @@
     <string name="use_youtubeButtonDesc">Pridėkite automatiniu būdu klikiamą mygtuką (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) medijose grojant</string>
     <string name="link_toArtistChannel">Susieti su menoininko kanalu</string>
     <string name="link_toArtistChannel_desc">Mygtukas susieja su kaliedžiu nors dalis, bet ne daina/video</string>
-    <string name="experimental_rpcTitleToggle">Antraštė</string>
-    <string name="experimental_rpcTitleToggle_desc">Parodykite dainos informaciją aktyvumo pavadinime, o ne programos pavadinimą</string>
     <string name="title_source_song">Dainos pavadinimas</string>
     <string name="title_source_artist">Autorius</string>
     <string name="type_to_insert_variable">Įveskite &apos;{{&apos; norėdami įdėti kintamąjį</string>
@@ -329,4 +325,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

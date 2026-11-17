@@ -53,7 +53,7 @@
 
 ## Có gì mới trong bản fork này
 
-Tất cả các bổ sung nằm ở màn hình **Experimental RPC** và màn hình chính.
+Tất cả các bổ sung nằm ở màn hình **Manual RPC** và màn hình chính.
 
 ### ⭐ Spoofer nền tảng
 - Chọn nền tảng mà trạng thái hiện diện của bạn kết nối từ — **Desktop, Web, Android, iOS, Xbox, Playstation, VR** (được port từ các nền tảng của platformSpoofer trên Equicord).
@@ -76,7 +76,7 @@ Ngoài các biến ban đầu, có hỗ trợ tự động hoàn thành:
 
 ### ⭐ Thiết kế lại màn hình chính
 - Các thẻ tính năng nay là một chồng thẻ toàn chiều rộng theo chiều dọc.
-- **Công tắc bật/tắt trên mọi thẻ**, giúp Media / Custom / Experimental RPC có thể được bật và tắt ngay từ màn hình chính.
+- **Công tắc bật/tắt trên mọi thẻ**, giúp Media / Custom / Manual RPC có thể được bật và tắt ngay từ màn hình chính.
 
 ### ⭐ Khả năng phục hồi của Gateway (được port từ [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy))
 - Tự động kết nối lại với exponential backoff khi ngắt kết nối bất ngờ.

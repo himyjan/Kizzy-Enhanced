@@ -136,7 +136,7 @@ import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 
-import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
+import com.my.kizzy.feature_rpc_base.services.ManualRpc
 
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 
@@ -238,9 +238,9 @@ fun ManualRpcScreen(
         rpcManager.refreshFromServices()
     }
 
-    var experimentalRpcRunning by remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ExperimentalRpc) }
+    var manualRpcRunning by remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ManualRpc) }
     LaunchedEffect(rpcManager.activeRpc) {
-        experimentalRpcRunning = rpcManager.activeRpc.value == RpcType.ExperimentalRpc
+        manualRpcRunning = rpcManager.activeRpc.value == RpcType.ManualRpc
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -269,7 +269,7 @@ fun ManualRpcScreen(
 
                     Text(
 
-                        text = stringResource(id = R.string.main_experimentalRpc),
+                        text = stringResource(id = R.string.main_manualRpc),
 
                         style = MaterialTheme.typography.headlineMedium,
 
@@ -349,18 +349,18 @@ fun ManualRpcScreen(
 
             SwitchBar(
 
-                title = stringResource(id = R.string.enable_experimental_rpc),
+                title = stringResource(id = R.string.enable_manualRpc),
 
-                isChecked = experimentalRpcRunning,
+                isChecked = manualRpcRunning,
 
                 enabled = hasUsageAccess && hasNotificationAccess,
 
             ) {
 
-                val newValue = !experimentalRpcRunning
-                experimentalRpcRunning = newValue
+                val newValue = !manualRpcRunning
+                manualRpcRunning = newValue
                 scope.launch {
-                    rpcManager.switchTo(if (newValue) RpcType.ExperimentalRpc else RpcType.None)
+                    rpcManager.switchTo(if (newValue) RpcType.ManualRpc else RpcType.None)
                 }
 
             }
@@ -379,7 +379,7 @@ fun ManualRpcScreen(
 
                         title = stringResource(R.string.enable_appsRpc),
 
-                        description = stringResource(R.string.experimental_rpc_detect_apps),
+                        description = stringResource(R.string.manual_rpc_detect_apps),
 
                         isChecked = state.isAppsRpcPartEnabled,
 
@@ -417,7 +417,7 @@ fun ManualRpcScreen(
 
                         title = stringResource(R.string.enable_mediaRpc),
 
-                        description = stringResource(R.string.experimental_rpc_detect_media),
+                        description = stringResource(R.string.manual_rpc_detect_media),
 
                         isChecked = state.isMediaRpcPartEnabled,
 
@@ -523,9 +523,9 @@ fun ManualRpcScreen(
 
                     PreferenceSwitch(
 
-                        title = stringResource(R.string.experimental_rpc_title_toggle),
+                        title = stringResource(R.string.manual_rpc_title_toggle),
 
-                        description = stringResource(R.string.experimental_rpc_title_toggle_desc),
+                        description = stringResource(R.string.manual_rpc_title_toggle_desc),
 
                         isChecked = state.showSongAsTitle,
 
@@ -565,7 +565,7 @@ fun ManualRpcScreen(
 
                             value = titleLabel,
 
-                            label = R.string.experimental_rpc_title_toggle,
+                            label = R.string.manual_rpc_title_toggle,
 
                             trailingIcon = {
 

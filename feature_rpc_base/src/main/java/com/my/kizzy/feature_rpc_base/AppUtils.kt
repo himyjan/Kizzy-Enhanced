@@ -64,7 +64,7 @@ object AppUtils {
         return Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isNotEmpty() && checkForRunningService<CustomRpcService>()
     }
 
-    fun experimentalRpcRunning(): Boolean {
+    fun manualRpcRunning(): Boolean {
         return checkForRunningService<ManualRpc>()
     }
     private fun isActivityManagerInitialized(): Boolean = ::activityManager.isInitialized

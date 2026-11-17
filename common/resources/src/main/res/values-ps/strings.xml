@@ -110,7 +110,7 @@
     <string name="configs_directory">د config پوښۍ</string>
     <string name="custom_activity_type">دېځودل شوی فعالیت ډول</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">دېځودل شوی فعالیت حالت</string>
     <string name="custom_activity_status_desc">اصلي فعالیت حالت ځایږوي</string>
     <string name="search">لټون</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">د انځور بدیل پروکسي لپاره Imgur وکاروئ.</string>
     <string name="start_appDetection">د اپلیکیشن کشف پیلول</string>
     <string name="start_mediaRPC">Media RPC پیلول</string>
-    <string name="start_experimentalRPC">Experimental RPC پیلول</string>
+    <string name="start_manualRpc">Manual RPC پیلول</string>
     <string name="stop_rpc">RPC درول</string>
     <string name="stop">درول</string>
     <string name="start_appDetection_toast">د اپلیکیشن کشف پیل شو</string>
     <string name="start_mediaRPC_toast">Media RPC پیل شو</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC پیل شو</string>
+    <string name="start_manualRpc_toast">Manual RPC پیل شو</string>
     <string name="stop_rpc_toast">ټولې خدمتونه درول شوي</string>
     <string name="show_playback_state">د play back حالت ښودل</string>
     <string name="copied_to_clipboard">کاپي شو</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">اجازه ورکړئ چې Experimental RPC کې روان اپلیکیشنونه کشف کړي</string>
-    <string name="experimental_rpc_detect_media">اجازه ورکړئ چې Experimental RPC مدیا play back کشف کړي</string>
     <string name="app_preferences">د اپلیکیشن ترجیحات</string>
-    <string name="app_preferences_desc">د Experimental RPC لپاره وټاکي چې کوم اپلیکیشنونو فعال وي</string>
+    <string name="app_preferences_desc">د Manual RPC لپاره وټاکي چې کوم اپلیکیشنونو فعال وي</string>
     <string name="completion_media_title">د غږ/ویډیو نوم</string>
     <string name="completion_media_artist">اصلي هنرمن</string>
     <string name="completion_app_name">د کشف شوي اپليکیشن نوم</string>
     <string name="show_cover_art">کاور ښودل</string>
     <string name="show_cover_art_desc">د الېبم کاور د لوړې انځور په توګه ښودل</string>
-    <string name="enable_experimental_rpc">Experimental RPC فعالول</string>
     <string name="completion_media_author">اصلي لیکوال</string>
     <string name="completion_media_album">د الېبم نوم</string>
     <string name="completion_media_album_artist">د الېبم هنرمن</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">د هنرمن چینل ته لینک</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">عنوان</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">د غږ نوم</string>
     <string name="title_source_artist">هنرمن</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

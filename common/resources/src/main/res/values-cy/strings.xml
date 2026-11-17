@@ -110,7 +110,7 @@
     <string name="configs_directory">Cyfeiriadau ffurfabiau</string>
     <string name="custom_activity_type">Math gweithredo ar gyfer</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Statws gweithredo ar gyfer</string>
     <string name="custom_activity_status_desc">Dyma\'n statws gweithredo rhestol</string>
     <string name="search">Chwilio</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Defnyddio Imgur fel dirprydwr delwedd amgen.</string>
     <string name="start_appDetection">Cychwyn canfydiad Apps</string>
     <string name="start_mediaRPC">Cychwyn Media RPC</string>
-    <string name="start_experimentalRPC">Cychwyn Experimental RPC</string>
+    <string name="start_manualRpc">Cychwyn Manual RPC</string>
     <string name="stop_rpc">Stopio\'r RPC</string>
     <string name="stop">Stopio</string>
     <string name="start_appDetection_toast">Dechrau canfydiad Apps</string>
     <string name="start_mediaRPC_toast">Dechrau Media RPC</string>
-    <string name="start_experimentalRPC_toast">Dechrau Experimental RPC</string>
+    <string name="start_manualRpc_toast">Dechrau Manual RPC</string>
     <string name="stop_rpc_toast">Mae pob gwasanaeth wedi stopio</string>
     <string name="show_playback_state">Dangos statws chwarae</string>
     <string name="copied_to_clipboard">Wedi\'i gopio i\'r glannau</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Caniatáu i Experimental RPC ganfod apps sy\'n rhedeg</string>
-    <string name="experimental_rpc_detect_media">Caniatáu i Experimental RPC ganfod cyfarthyddiaeth</string>
     <string name="app_preferences">Hoffiannau\'r ap</string>
-    <string name="app_preferences_desc">Dewiswch yr apiau i\'w cael eu galluogi ar gyfer Experimental RPC</string>
+    <string name="app_preferences_desc">Dewiswch yr apiau i\'w cael eu galluogi ar gyfer Manual RPC</string>
     <string name="completion_media_title">Teitl y gân/fideo</string>
     <string name="completion_media_artist">Prif artist</string>
     <string name="completion_app_name">Enw\'r ap a ganfydwyd</string>
     <string name="show_cover_art">Dangos y gorchenn</string>
     <string name="show_cover_art_desc">Dangos gorchenn yr albwm fel delwedd mawr</string>
-    <string name="enable_experimental_rpc">Troi Experimental RPC ymlaen</string>
     <string name="completion_media_author">Prif awdur</string>
     <string name="completion_media_album">Enw albwm</string>
     <string name="completion_media_album_artist">Artist albwm</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Dolen i ganal yr artist</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Teitl</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Enw\'r gân</string>
     <string name="title_source_artist">Artist</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

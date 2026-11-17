@@ -101,7 +101,7 @@
     <string name="update">Uppdatera</string>
     <string name="configs_directory">Konfigurationsmapp</string>
     <string name="custom_activity_type">Anpassad aktivitetstyp</string>
-    <string name="custom_activity_type_desc">Åsidosätter standardaktivitetstyp. Fungerar endast för Media- och Experimental RPC</string>
+    <string name="custom_activity_type_desc">Åsidosätter standardaktivitetstyp. Fungerar endast för Media- och Manual RPC</string>
     <string name="custom_activity_status">Anpassad aktivitetstillstånd</string>
     <string name="custom_activity_status_desc">Åsidosätter standardaktivitetsstatus</string>
     <string name="search">Sök</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">Anpassad RPC</string>
     <string name="main_consoleRpc">Konsol-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy låter dig använda några fördefinierade inställningar för att ställa in din närvaro på Discord.</string>
-    <string name="main_experimentalRpc">Experimentell RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC är en funktion i Kizzy som ständigt växlar mellan appar-RPC och media-RPC.</string>
+    <string name="main_manualRpc">Experimentell RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC är en funktion i Kizzy som ständigt växlar mellan appar-RPC och media-RPC.</string>
     <string name="main_customRpcDetails">Kizzy låter dig skapa din egen helt anpassningsbara rich presence för Discord.</string>
     <string name="main_comingSoon">Kommer snart</string>
     <string name="exit">Avsluta</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Använd Imgur som en alternativ bildproxy.</string>
     <string name="start_appDetection">Starta appidentifiering</string>
     <string name="start_mediaRpc">Starta Media RPC</string>
-    <string name="start_experimentalRpc">Starta Experimental RPC</string>
+    <string name="start_manualRpc">Starta Manual RPC</string>
     <string name="stop_rpc">Stoppa RPC</string>
     <string name="stop">Stoppa</string>
     <string name="start_appDetectionToast">Appidentifiering har startats</string>
     <string name="start_mediaRpcToast">Media RPC har startats</string>
-    <string name="start_experimentalRpcToast">Experimental RPC har startats</string>
+    <string name="start_manualRpcToast">Manual RPC har startats</string>
     <string name="stop_rpcToast">Alla tjänster har stoppats</string>
     <string name="show_playbackState">Visa uppspelningsstatus</string>
     <string name="copied_toClipboard">Kopierat till urklipp</string>
@@ -209,16 +209,14 @@
     <string name="custom_application_id_desc">Åsidosätter standard Discord-applikations-ID</string>
     <string name="use_a_vpnDesc">Discord-inloggning kan inte fungera i ditt land utan VPN/DPI. Använd VPN/DPI för att fortsätta.</string>
     <string name="rpc_templates_note">&quot;Använd mallar som &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; osv. Tomma fält kommer att använda standardbeteende eller utelämnas.&quot;</string>
-    <string name="experimental_rpc_detectApps">Låt Experimental RPC upptäcka körande appar</string>
-    <string name="experimental_rpc_detect_media">Tillåt Experimental RPC att upptäcka medieuppspelning</string>
     <string name="app_preferences">Applikationsinställningar</string>
-    <string name="app_preferences_desc">Välj vilka appar som är aktiverade för Experimental RPC</string>
+    <string name="app_preferences_desc">Välj vilka appar som är aktiverade för Manual RPC</string>
     <string name="completion_media_title">Låt/titel för video</string>
     <string name="completion_media_artist">Huvudartist</string>
     <string name="completion_appName">Identifierat programnamn</string>
     <string name="show_coverArt">Visa albumomslag</string>
     <string name="show_coverArt_desc">Visa albumet som stor bild</string>
-    <string name="enable_experimentalRpc">Aktivera Experimental RPC</string>
+    <string name="enable_manualRpc">Aktivera Manual RPC</string>
     <string name="completion_media_author">Huvudförfattare</string>
     <string name="completion_media_album">Albumnamn</string>
     <string name="completion_media_albumArtist">Albumartist</string>
@@ -235,8 +233,6 @@
     <string name="use_youtubeButton_desc">Lägg automatiskt till en klickbar knapp (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) när media spelas</string>
     <string name="link_toArtistChannel">Länk till artisterkanal</string>
     <string name="link_toArtistChannel_desc">Knapplänken går till artistkanalen istället för låt/video</string>
-    <string name="experimental_rpcTitleToggle">Titel</string>
-    <string name="experimental_rpcTitleToggle_desc">Visa låteinformation i aktivitetstiteln istället för appnamn</string>
     <string name="title_source_song">Låtens titel</string>
     <string name="title_source_artist">Artist</string>
     <string name="type_to_insert_variable">Skriv &apos;{{&apos; för att infoga en variabel</string>
@@ -329,4 +325,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

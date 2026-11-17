@@ -103,7 +103,7 @@ fun Home(
 ) {
     val ctx = LocalContext.current
     val mediaRpcTitle = stringResource(R.string.main_mediaRpc)
-    val experimentalRpcTitle = stringResource(R.string.main_experimentalRpc)
+    val manualRpcTitle = stringResource(R.string.main_manualRpc)
     val customRpcTitle = stringResource(R.string.main_customRpc)
     var homeItems by remember {
         mutableStateOf(features)
@@ -132,7 +132,7 @@ fun Home(
             homeItems = features.map { item ->
                 when (item.title) {
                     mediaRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.MediaRpc)
-                    experimentalRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ManualRpc)
+                    manualRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ManualRpc)
                     customRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.CustomRpc)
                     else -> item
                 }
@@ -377,7 +377,7 @@ val fakeFeatures = listOf(
         tooltipText = ToolTipContent.APP_DETECTION_DOCS
     ),
     HomeFeature(
-        title = "Experimental RPC",
+        title = "Manual RPC",
         icon = R.drawable.ic_dev_rpc,
         shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
         tooltipText = ToolTipContent.MANUAL_RPC_DOCS

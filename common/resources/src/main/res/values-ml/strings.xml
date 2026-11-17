@@ -116,8 +116,8 @@
     <string name="main_customRpc">കസ്റ്റം RPC</string>
     <string name="main_consoleRpc">കോൺസോൾ RPC</string>
     <string name="main_consoleRpc_details">Kizzy ചില പ്രീ-ഡിഫൈൻഡ് പ്രീസെറ്റ് ഉപയോഗിച്ച് Discord-ൽ നിങ്ങളുടെ സംഗതി നിശ്ചയിക്കാൻ അനുവദിക്കുന്നു.</string>
-    <string name="main_experimentalRpc">ആക്സ്പിരിമെന്റൽ RPC</string>
-    <string name="main_experimentalRpc_details">ആക്സ്പിരിമെന്റൽ RPC കിഴിയിലെ ഒരു ഫീച്ചர் ആണ്, അത് ആപ്പ്‌സ് RPC-യും മീഡിയ RPC-യും തമ്മിൽ perpétuellement മാറിക്കൊണ്ടിരിക്കുന്നു.</string>
+    <string name="main_manualRpc">ആക്സ്പിരിമെന്റൽ RPC</string>
+    <string name="main_manualRpc_details">ആക്സ്പിരിമെന്റൽ RPC കിഴിയിലെ ഒരു ഫീച്ചர் ആണ്, അത് ആപ്പ്‌സ് RPC-യും മീഡിയ RPC-യും തമ്മിൽ perpétuellement മാറിക്കൊണ്ടിരിക്കുന്നു.</string>
     <string name="main_customRpc_details">Kizzy നിങ്ങളുടെ സ്വന്തം പൂർണ്ണമായി കസ്റ്റമൈസ് ചെയ്യാവുന്ന റിച്ച് പ്രെസൻസ് Discord-ൽ സൃഷ്ടിക്കാൻ അനുവദിക്കുന്നു.</string>
     <string name="main_comingSoon">വientôt വenganും</string>
     <string name="exit">വ saída</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">ഇമുറെ വികസിപ്പിക്കേണ്ട ചിത്ര പ്രോക്സി ഉപയോഗിക്കുക.</string>
     <string name="start_appDetection">ആപ്പ് ഡിറ്റക്ഷൻ തുടങ്ങുക</string>
     <string name="start_mediaRPC">മീഡിയ RPC തുടങ്ങുക</string>
-    <string name="start_experimentalRPC">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങുക</string>
+    <string name="start_manualRpc">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങുക</string>
     <string name="stop_rpc">RPC നിർത്തുക</string>
     <string name="stop">നിർത്തുക</string>
     <string name="start_appDetection_toast">ആപ്പ് ഡിറ്റക്ഷൻ തുടങ്ങി</string>
     <string name="start_mediaRPC_toast">മീഡിയ RPC തുടങ്ങി</string>
-    <string name="start_experimentalRPC_toast">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങി</string>
+    <string name="start_manualRpc_toast">മాన్యുവൽ RPC തുടങ്ങി</string>
     <string name="stop_rpc_toast">എല്ലാ സർവീസും നിർത്തി</string>
     <string name="show_playback_state">പ്ലേബാക്ക് അവസ്ഥ പ്രദർശിപ്പിക്കുക</string>
     <string name="copied_to_clipboard">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
@@ -209,8 +209,6 @@
     <string name="custom_application_id_desc">ഡിഫോൾട്ട് ഡിസ്കോഡ് ആപ്പ് ഐഡി ഓവർട്ടൈഡ് ചെയ്യും</string>
     <string name="use_a_vpn_desc">ഡിസ്കോഡ് ലോഗിന് നിങ്ങളുടെ നാട്ടിൽ VPN/DPI Keralaകില്ല. ദയവിട്ട് VPN/DPI ഉപയോഗിക്കുക.</string>
     <string name="rpc_templates_note">&quot;പ്ലേഹോൾഡറുകളായ &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; എന്നിവ ഉപയോഗിക്കുക. ശൂന്യമായ ഫീൽഡുകൾ ഡിഫോൾട്ട് ബिहാവിയർ ഉപയോഗിക്കും അല്ലെങ്കിൽ ഒഴിവാക്കാം.&quot;</string>
-    <string name="experimental_rpc_detect_apps">ആക്സ്പിരിമെന്റൽ RPC-ക്ക് പ്രവർത്തിക്കാനുള്ള ആപ്പുകൾ കണ്ടെത്താൻ അനുവദിക്കുക</string>
-    <string name="experimental_rpc_detect_media">ആക്സ്പിരിമെന്റൽ RPC-ക്ക് മീഡിയ പ്ലേബാക്ക് കണ്ടെത്താൻ അനുവദിക്കുക</string>
     <string name="app_preferences">ആപ്പ് പ്ര/frontendferencias</string>
     <string name="app_preferences_desc">ആക്സ്പിരിമെന്റൽ RPC-യ്ക്ക് ഏത് ആപ്പുകൾ എനേബിൾ ആകുന്നു എന്ന് തിരഞ്ഞെടുക്കുക</string>
     <string name="completion_media_title">പാട്ട്/വീഡിയോ തീം</string>
@@ -218,7 +216,6 @@
     <string name="completion_app_name">കണ്ടെത്തിയ ആപ്പ് പേര്</string>
     <string name="show_cover_art">ആൽബം കവർ പ്രദർശിപ്പിക്കുക</string>
     <string name="show_cover_art_desc">ആൽബം കവർ വലിയ ചിത്രമായി പ്രദർശിപ്പിക്കുക</string>
-    <string name="enable_experimental_rpc">ആക്സ്പിരിമെന്റൽ RPC സജീവമാക്കുക</string>
     <string name="completion_media_author">പ്രധാന രചയിതാവ്</string>
     <string name="completion_media_album">ആൽബം പേര്</string>
     <string name="completion_media_album_artist">ആൽബം കലാകാരൻ</string>
@@ -235,8 +232,6 @@
     <string name="use_youtube_button_desc">മീഡിയ പ്ലേ ചെയ്യുമ്പോൾ ഓട്ടോമാറ്റിക് ക്ലിക്കബിൾ ബട്ടൺ (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) ചേർക്കുക</string>
     <string name="link_to_artist_channel">കലാകാരൻ ചാനലിലേക്ക് ലിങ്ക് ചെയ്യുക</string>
     <string name="link_to_artist_channel_desc">ബട്ടൺ ട്രാക്ക്/വീഡിയോക്ക് പകരം കലാകാരൻ ചാനലിലേക്ക് ലിങ്ക് ചെയ്യും</string>
-    <string name="experimental_rpc_title_toggle">ശീർഷകം</string>
-    <string name="experimental_rpc_title_toggle_desc">ആപ്പ് പേരിന് പകരം പ്രവർത്തന ശീർഷകത്തിൽ പാട്ട് വിവരങ്ങൾ പ്രദർശിപ്പിക്കുക</string>
     <string name="title_source_song">പാട്ട് പേര്</string>
     <string name="title_source_artist">കലാകാരൻ</string>
     <string name="type_to_insert_variable">വേരിയബിൾ ഇടാൻ &apos;{{&apos; ടൈപ്പ് ചെയ്യുക</string>
@@ -329,4 +324,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

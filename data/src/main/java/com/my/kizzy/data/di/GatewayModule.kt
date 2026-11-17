@@ -44,7 +44,7 @@ object GatewayModule {
         logger: Logger
     ): DiscordWebSocket {
         // Spoof the gateway IDENTIFY "browser" (what platform-indicator plugins read)
-        // based on the platform selected in Experimental RPC.
+        // based on the platform selected in Manual RPC.
         val (browser, os, device) = Constants.spoofIdentifyProperties(
             Prefs[Prefs.MANUAL_RPC_PLATFORM, ""]
         )

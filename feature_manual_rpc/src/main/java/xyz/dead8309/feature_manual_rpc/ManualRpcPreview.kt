@@ -42,7 +42,7 @@ private val DISCORD_TEXT = Color(0xFFDBDBDB)
 private val DISCORD_SUBTEXT = Color(0xFFB5BAC1)
 
 @Composable
-fun ExperimentalRpcPreview(
+fun ManualRpcPreview(
     state: UiState,
     modifier: Modifier = Modifier,
 ) {
@@ -121,10 +121,10 @@ fun ExperimentalRpcPreview(
     }
 }
 
-@Preview(name = "ExperimentalRpcPreview")
+@Preview(name = "ManualRpcPreview")
 @Composable
-fun ExperimentalRpcPreviewPreview() {
-    ExperimentalRpcPreview(
+fun ManualRpcPreviewPreview() {
+    ManualRpcPreview(
         state = UiState(
             templateName = "Discord",
             templateDetails = "Listening to Spotify",

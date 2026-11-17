@@ -113,7 +113,7 @@
     <string name="main_customRpc">Прилагоден RPC</string>
     <string name="main_consoleRpc">Консола RPC</string>
     <string name="main_consoleRpcDetails">Kizzy се користи за тестову прибаву за обезбеђење успoredоване DC/RPC имплементације.</string>
-    <string name="main_experimentalRpc">Експериментален RPC</string>
+    <string name="main_manualRpc">Manual RPC</string>
     <string name="main_customRpcDetails">Kizzy даје вам могућност да постигнете prilagođeno prisustvo на Discord.</string>
     <string name="main_comingSoon">Ѕе доћи</string>
     <string name="exit">Излез</string>
@@ -190,12 +190,12 @@
     <string name="use_imgurDesc">Использување Imgur као резервног аeters</string>
     <string name="start_appDetection">Поčni Ап датец</string>
     <string name="start_mediaRpc">Почни Media RPC</string>
-    <string name="start_experimentalRpc">Покрени Experimental RPC</string>
+    <string name="start_manualRpc">Покрени Manual RPC</string>
     <string name="stop_rpc">Скини RPC</string>
     <string name="stop">Стоп</string>
     <string name="start_appDetectionToast">Ап детекција покrenuta</string>
     <string name="start_mediaRpcToast">Медија РПЦ покренут</string>
-    <string name="start_experimentalRpcToast">Експериментални РПЦ покренут</string>
+    <string name="start_manualRpcToast">Рачни РПЦ покренути</string>
     <string name="stop_rpcToast">Све сервиси spent</string>
     <string name="show_playbackState">Покажи стат.</string>
     <string name="copied_toClipboard">Копирано у буфер</string>
@@ -204,16 +204,14 @@
     <string name="custom_application_id_desc">Преопределите код DFT Киззи апликације</string>
     <string name="use_a_vpnDesc">Опиши го користеньето на VPN</string>
     <string name="rpc_templates_note">&quot;Визуализујте網集: apos;@app_nameapos; и apos;&amp;stateapos; и т.н. Како се mairesse ирони, две исти falsnе حديци겠습니다 &quot;</string>
-    <string name="experimental_rpc_detectApps">Experimental RPC да детектира апликације</string>
-    <string name="experimental_rpc_detectMedia">Eкспериментални RPC детектиране multimediji</string>
     <string name="app_preferences">Апп приоритети</string>
-    <string name="app_preferences_desc">Изберете текућа подржана апликације Experimental RPC</string>
+    <string name="app_preferences_desc">Изберете текућа подржана апликације Manual RPC</string>
     <string name="completion_media_title">Наслов песме</string>
     <string name="completion_media_artist">Име артиста</string>
     <string name="completion_appName">Изведени име апликације</string>
     <string name="show_coverArt">Покажи албума</string>
     <string name="show_coverArt_desc">Покажи албум као слику</string>
-    <string name="enable_experimentalRpc">Оствари Experimental RPC</string>
+    <string name="enable_manualRpc">Оствари Manual RPC</string>
     <string name="completion_media_author">Автор</string>
     <string name="completion_media_album">Назив альбома</string>
     <string name="completion_media_albumArtist">Артист albuma</string>
@@ -230,8 +228,6 @@
     <string name="use_youtubeButtonDesc">Додајте YouTube dugmе</string>
     <string name="link_toArtistChannel">Слово на ниво</string>
     <string name="link_toArtistChannel_desc">Ова дугме линкује да функционира</string>
-    <string name="experimental_rpcTitleToggle">Организује MS JS</string>
-    <string name="experimental_rpcTitleToggle_desc">То committing Server API</string>
     <string name="title_source_song">Наслов песме</string>
     <string name="title_source_artist">Име UMU</string>
     <string name="type_toInsertVariable">Напишете "{{" да вставите променљиву</string>
@@ -324,4 +320,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

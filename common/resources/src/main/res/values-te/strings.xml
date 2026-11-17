@@ -114,8 +114,8 @@
     <string name="main_customRpc">కస్టమ్ RPC</string>
     <string name="main_consoleRpc">కాన్సోల్ RPC</string>
     <string name="main_consoleRpcDetails">Kizzy ప్రీ-డిఫైన్డ్ ప్రీసెట్ ఉపయోగించి Discord లో మీ ఉనికిని సెట్ చేయడానికి అనుమతిస్తుంది.</string>
-    <string name="main_experimentalRpc">ఎక్స్‌పెరీమెంటల్ RPC</string>
-    <string name="main_experimentalRpcDetails">ఎక్స్పెరీమెంటల్ RPC Kizzy లో ఒక ఫీచర్, ఇది యాప్స్ RPC మరియు మీడియా RPC ల మధ్య అసలు rotates చేశాడు.</string>
+    <string name="main_manualRpc">ఎక్స్‌పెరీమెంటల్ RPC</string>
+    <string name="main_manualRpcDetails">ఎక్స్పెరీమెంటల్ RPC Kizzy లో ఒక ఫీచర్, ఇది యాప్స్ RPC మరియు మీడియా RPC ల మధ్య అసలు rotates చేశాడు.</string>
     <string name="main_customRpcDetails">Kizzy డిజిటల్ రించ్ ఫోజూన్స్ సృష్టించడానికి అనుమతిస్తుంది.</string>
     <string name="main_comingSoon">రాజు రాకుండా</string>
     <string name="exit">బయటకు వెళ్ళండి</string>
@@ -193,12 +193,12 @@
     <string name="use_imgurDesc">ఇమూర్ ప్రతిబింబ ప్రొక్సీ వంటి ఉపయోగించండి.</string>
     <string name="start_appDetection">యాప్ డిటెక్షన్ ప్రారంభించండి</string>
     <string name="start_mediaRpc">మీడియా RPC ప్రారంభించండి</string>
-    <string name="start_experimentalRpc">ఎక్స్పిరిమెంటల్ RPC ప్రారంభించండి</string>
+    <string name="start_manualRpc">ఎక్స్పిరిమెంటల్ RPC ప్రారంభించండి</string>
     <string name="stop_rpc">RPC నిలిపించండి</string>
     <string name="stop">నిలిపించండి</string>
     <string name="start_appDetectionToast">యాప్ డిటెక్షన్ ప్రారంభించింది</string>
     <string name="start_mediaRpcToast">మీడియా RPC ప్రారంభించింది</string>
-    <string name="start_experimentalRpcToast">ఎక్స్పెరిమెంటల్ RPC ప్రారంభించింది</string>
+    <string name="start_manualRpcToast">మాన్యువల్ RPC ప్రారంభించింది</string>
     <string name="stop_rpcToast">అన్ని సెవ్య ఉచితం</string>
     <string name="show_playbackState">ప్లేబ్యాక్ స్థితి చూపించండి</string>
     <string name="copied_toClipboard">క్లిప్ బోర్డులో నకిలీ</string>
@@ -207,16 +207,14 @@
     <string name="custom_application_id_desc">డిఫాల్ట్ డిస్కార్డ్ అప్లికేషన్ ఆది ఓవేర్రైడ్ చేస్తుంది</string>
     <string name="use_a_vpnDesc">VPN వివరణ</string>
     <string name="rpc_templates_note">&quot;&apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; టెంప్లేట్ ఉపయోగించండి. ఖాళీ ఫీల్డ్ డిఫాల్ట్ బ rainha అనుసరించవచ్చు లేదా వదిలేయవచ్చు.&quot;</string>
-    <string name="experimental_rpc_detectApps">ఎక్స్పిరిమెంటల్ RPC యాప్స్ డిటెక్ట్ చేయడానికి అనుమతి ఇవ్వండి</string>
-    <string name="experimental_rpc_detectMedia">ఎక్స్పిరిమెంటల్ RPC మీడియా డిటెక్ట్ చేయడానికి అనుమతి ఇవ్వండి</string>
     <string name="app_preferences">యాప్ ప్రెఫరెన్స్</string>
-    <string name="app_preferences_desc">Experimental RPC కోసం ఏ యాప్‌లు ప్రారంభించాలో ఎంచుకోండి</string>
+    <string name="app_preferences_desc">Manual RPC కోసం ఏ యాప్‌లు ప్రారంభించాలో ఎంచుకోండి</string>
     <string name="completion_media_title">పాట/వీడియో శీర్షిక</string>
     <string name="completion_media_artist">ప్రధాన కళాకారుడు</string>
     <string name="completion_appName">డిటెక్ట్ చేయబడిన యాప్ పేరు</string>
     <string name="show_coverArt">ఆల్బమ్ కవర్ చూపించండి</string>
     <string name="show_coverArt_desc">ఆల్బమ్ కవర్ పెద్ద చిత్రంగా చూపించండి</string>
-    <string name="enable_experimentalRpc">ఎక్స్పిరిమెంటల్ RPC ఎనేబుల్ చేయండి</string>
+    <string name="enable_manualRpc">ఎక్స్పిరిమెంటల్ RPC ఎనేబుల్ చేయండి</string>
     <string name="completion_media_author">ప్రధాన రచయిత</string>
     <string name="completion_media_album">ఆల్బమ్ పేరు</string>
     <string name="completion_media_albumArtist">ఆల్బం కళాకారుడు</string>
@@ -232,8 +230,6 @@
     <string name="use_youtubeButton">మీడియా బటన్ కలిగి వచ్చి</string>
     <string name="use_youtubeButtonDesc">YouTube బటన్ వివరణ</string>
     <string name="link_toArtistChannel">కలాకారుడు ఫోన్ కి లింక్ చేయండి</string>
-    <string name="experimental_rpcTitleToggle">శీర్షిక</string>
-    <string name="experimental_rpcTitleToggle_desc">క్రియల శీర్షికలో యాప్ పేరు బదులుగా పాట Mahata</string>
     <string name="title_source_song">గీత రాలే</string>
     <string name="title_source_artist">కలాకారుడు</string>
     <string name="type_toInsertVariable"> వేర్!, కలయిక తప్పాక &apos;{{&apos; టైప్ చేయండి</string>
@@ -326,4 +322,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

@@ -101,7 +101,7 @@
     <string name="update">Оновити</string>
     <string name="configs_directory">Директорія конфігурацій</string>
     <string name="custom_activity_type">Користувальничий тип активності</string>
-    <string name="custom_activity_type_desc">Перевизначає стандартний тип активності. Працює лише для Media та Experimental RPC</string>
+    <string name="custom_activity_type_desc">Перевизначає стандартний тип активності. Працює лише для Media та Manual RPC</string>
     <string name="custom_activity_status">Користувацький статус активності</string>
     <string name="custom_activity_status_desc">Перевизначає стандартний статус активності</string>
     <string name="search">Пошук</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">Власний RPC</string>
     <string name="main_consoleRpc">Консоль RPC</string>
     <string name="main_consoleRpc_details">Kizzy дозволяє використовувати деякі попередньо налаштовані налаштування, щоб встановити вашу присутність на Discord.</string>
-    <string name="main_experimentalRpc">Експериментальний RPC</string>
-    <string name="main_experimentalRpc_details">Експериментальний RPC — це функція Kizzy, яка постійно перемикається між Apps RPC та Media RPC.</string>
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC — це функція Kizzy, яка постійно перемикається між Apps RPC та Media RPC.</string>
     <string name="main_customRpc_details">Kizzy дозволяє створити повністю налаштовану rich presence для Discord.</string>
     <string name="main_comingSoon">Звільнити</string>
     <string name="exit">Вихід</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Використовувати Imgur як альтернативне проксі для зображень.</string>
     <string name="start_appDetection">Запустити виявлення програм</string>
     <string name="start_mediaRPC">Запустити Media RPC</string>
-    <string name="start_experimentalRPC">Запустити Експериментальний RPC</string>
+    <string name="start_manualRpc">Запустити Manual RPC</string>
     <string name="stop_rpc">Зупинити RPC</string>
     <string name="stop">Зупинити</string>
     <string name="start_appDetection_toast">Виявлення програм запущено</string>
     <string name="start_mediaRPC_toast">Media RPC запущено</string>
-    <string name="start_experimentalRPC_toast">Експериментальний RPC запущено</string>
+    <string name="start_manualRpc_toast">Ручний RPC запущено</string>
     <string name="stop_rpc_toast">Всі служби зупинено</string>
     <string name="show_playback_state">Показати стан відтворення</string>
     <string name="copied_to_clipboard">Скопійовано в буфер обміну</string>
@@ -209,8 +209,6 @@
     <string name="custom_application_id_desc">Перевизначає стандартний ідентифікатор додатка Discord</string>
     <string name="use_a_vpn_desc">Увійти в Discord може не працювати у вашій країні без VPN/DPI. Будь ласка, використовуйте VPN/DPI, щоб продовжити.</string>
     <string name="rpc_templates_note">&quot;Використовуйте замісники, такі як &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; тощо. Порожні поля використовуватимуть поведінку за замовчуванням або будуть пропущені.&quot;</string>
-    <string name="experimental_rpc_detect_apps">Дозволити Експериментальному RPC виявляти запущені програми</string>
-    <string name="experimental_rpc_detect_media">Дозволити Експериментальному RPC виявляти відтворення медіа</string>
     <string name="app_preferences">Параметри програми</string>
     <string name="app_preferences_desc">Оберіть, які програми увімкнуто для Експериментального RPC</string>
     <string name="completion_media_title">Назва пісні/відео</string>
@@ -218,7 +216,6 @@
     <string name="completion_app_name">Виявлене ім’я додатка</string>
     <string name="show_cover_art">Показати обкладинку альбому</string>
     <string name="show_cover_art_desc">Відображати обкладинку альбому як велике зображення</string>
-    <string name="enable_experimental_rpc">Увімкнути Експериментальний RPC</string>
     <string name="completion_media_author">Головний автор</string>
     <string name="completion_media_album">Назва альбому</string>
     <string name="completion_media_album_artist">Виконавець альбому</string>
@@ -235,8 +232,6 @@
     <string name="use_youtube_button_desc">Автоматично додавати клікнуту кнопку (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) під час відтворення медіа</string>
     <string name="link_to_artist_channel">Посилання на канал виконавця</string>
     <string name="link_to_artist_channel_desc">Кнопка посилається на канал виконавця замість треку/відео</string>
-    <string name="experimental_rpc_title_toggle">Заголовок</string>
-    <string name="experimental_rpc_title_toggle_desc">Показувати інформацію про пісню у заголовку активності замість імені програми</string>
     <string name="title_source_song">Назва пісні</string>
     <string name="title_source_artist">Виконавець</string>
     <string name="type_to_insert_variable">Навведіть &apos;{{&apos; щоб вставити змінну</string>
@@ -329,4 +324,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

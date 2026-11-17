@@ -110,7 +110,7 @@
     <string name="configs_directory">Direktorij konfiguracija</string>
     <string name="custom_activity_type">Prilagođena vrsta aktivnosti</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Prilagođeni status aktivnosti</string>
     <string name="custom_activity_status_desc">Nadjačava zadani status aktivnosti</string>
     <string name="search">Pretraži</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Konzolni RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Eksperimentalan RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Koristi Imgur kao alternativni posrednik za slike.</string>
     <string name="start_appDetection">Pokreni detekciju aplikacija</string>
     <string name="start_mediaRPC">Pokreni Media RPC</string>
-    <string name="start_experimentalRPC">Pokreni Experimental RPC</string>
+    <string name="start_manualRpc">Pokreni Manual RPC</string>
     <string name="stop_rpc">Zaustavi RPC</string>
     <string name="stop">Zaustavi</string>
     <string name="start_appDetection_toast">Detekcija aplikacija je pokrenuta</string>
     <string name="start_mediaRPC_toast">Media RPC je pokrenut</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC je pokrenut</string>
+    <string name="start_manualRpc_toast">Manual RPC je pokrenut</string>
     <string name="stop_rpc_toast">Sve usluge su zaustavljene</string>
     <string name="show_playback_state">Prikaži stanje reprodukcije</string>
     <string name="copied_to_clipboard">Kopirano u međuspremnik</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Dopusti Experimental RPC da otkriva pokrenute aplikacije</string>
-    <string name="experimental_rpc_detect_media">Dopusti Experimental RPC da otkriva reprodukciju medija</string>
     <string name="app_preferences">Postavke aplikacije</string>
-    <string name="app_preferences_desc">Odaberite koje su aplikacije omogućene za Experimental RPC</string>
+    <string name="app_preferences_desc">Odaberite koje su aplikacije omogućene za Manual RPC</string>
     <string name="completion_media_title">Naslov pjesme/videa</string>
     <string name="completion_media_artist">Glavni izvođač</string>
     <string name="completion_app_name">Naziv otkrivene aplikacije</string>
     <string name="show_cover_art">Prikaži naslovnicu</string>
     <string name="show_cover_art_desc">Prikaži naslovnicu albuma kao veliku sliku</string>
-    <string name="enable_experimental_rpc">Omogući Experimental RPC</string>
     <string name="completion_media_author">Glavni autor</string>
     <string name="completion_media_album">Naziv albuma</string>
     <string name="completion_media_album_artist">Izvođač albuma</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Poveznica na kanal izvođača</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Naslov</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Naziv pjesme</string>
     <string name="title_source_artist">Izvođač</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

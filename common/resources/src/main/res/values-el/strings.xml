@@ -101,7 +101,7 @@
     <string name="update">Ενημέρωση</string>
     <string name="configs_directory">Κατάλογος ρυθμίσεων</string>
     <string name="custom_activity_type">Ειδικός τύπος δραστηριότητας</string>
-    <string name="custom_activity_type_desc">Ανακαλύπτει τον προκαθορισμένο τύπο δραστηριότητας. Λειτουργεί μόνο για Media και Experimental RPC</string>
+    <string name="custom_activity_type_desc">Ανακαλύπτει τον προκαθορισμένο τύπο δραστηριότητας. Λειτουργεί μόνο για Media και Manual RPC</string>
     <string name="custom_activity_status">Κατάσταση δραστηριότητας προσαρμοσμένη</string>
     <string name="custom_activity_status_desc">Ανακαλύπτει την προυθοδοσμένη κατάσταση δραστηριότητας</string>
     <string name="search">Αναζήτηση</string>
@@ -116,7 +116,7 @@
     <string name="main_customRpc">Προσαρμοσμένο RPC</string>
     <string name="main_consoleRpc">RPC κονσόλας</string>
     <string name="main_consoleRpcDetails">Το Kizzy σάς επιτρέπει να χρησιμοποιήσετε ορισμένες καθορισμένες previously-hourly ρυθμίσεις για να ορίσετε την παρουσία σας στο Discord.</string>
-    <string name="main_experimentalRpc">Πειραματικό RPC</string>
+    <string name="main_manualRpc">Πειραματικό RPC</string>
     <string name="main_customRpcDetails">Το Kizzy σας επιτρέπει να δημιουργήσετε το δικό σας πλήρως προσαρμοσιμο Rich Presence για το Discord.</string>
     <string name="main_comingSoon">Εructe σύντομα</string>
     <string name="exit">Έξοδος</string>
@@ -194,12 +194,12 @@
     <string name="use_imgurDesc">Χρησιμοποιήστε το Imgur ως εναρτιστού προacte.</string>
     <string name="start_appDetection">Έναρξη ανίχνευσης εφαρμογών</string>
     <string name="start_mediaRpc">Έναρξη Media RPC</string>
-    <string name="start_experimentalRpc">Έναρξη Experimental RPC</string>
+    <string name="start_manualRpc">Έναρξη Manual RPC</string>
     <string name="stop_rpc">Σταμάτηση RPC</string>
     <string name="stop">Σταμάτησέ</string>
     <string name="start_appDetectionToast">Ανίχνευση εφαρμογών ξεκίνησε</string>
     <string name="start_mediaRpcToast">Media RPC ξεκίνησε</string>
-    <string name="start_experimentalRpcToast">Experimental RPC ξεκίνησε</string>
+    <string name="start_manualRpcToast">Manual RPC ξεκίνησε</string>
     <string name="stop_rpcToast">Όλες οι υπηρεσίες σταμάτησαν</string>
     <string name="show_playbackState">Προβολή κατάστασης αναπαραγωγής</string>
     <string name="copied_toClipboard">Αντιγράφηκε στο πάπiro</string>
@@ -208,16 +208,14 @@
     <string name="custom_application_id_desc">Παράβιαση του πρε δείκτης της εφαρμογής Discord</string>
     <string name="use_a_vpnDesc">Η σύνδεση στο Discord μπορεί να μην λειτουργεί στην χώρα σας χωρίς VPN/DPI. Παρακαλούμε να χρησιμοποιήσετε VPN/DPI για να συνεχίσετε.</string>
     <string name="rpc_templates_note">&quot;Χρησιμοποιήστε πρότυπα όπως &quot;{{apos;app_name}}apos;apos;, &apos;{{&apos;media_title}}apos;apos;, ε천원. Τα κενά πεδία θα χρησιμοποιηθούν το προκαθορισμένο σκέλος ή θα παραβληθούν.&quot;</string>
-    <string name="experimental_rpc_detectApps">Επιτρέψτε στο Experimental RPC να εντοπίζει τρέχουσες εφαρμογές</string>
-    <string name="experimental_rpc_detectMedia">Επιτρέψτε στο Experimental RPC να εντοπίζει την αναπαραγωγή μέσων</string>
     <string name="app_preferences">Προτιμήσεις εφαρμογών</string>
-    <string name="app_preferences_desc">Επιλέξτε ποιες εφαρμογές είναι ενεργοποιημένες για το Experimental RPC</string>
+    <string name="app_preferences_desc">Επιλέξτε ποιες εφαρμογές είναι ενεργοποιημένες για το Manual RPC</string>
     <string name="completion_media_title">Τίτλος τραγουδιού/βίντεο</string>
     <string name="completion_media_artist">Κύριος καλλιτέχνης</string>
     <string name="completion_appName">Το όνομα της εντοπισμένης εφαρμογής</string>
     <string name="show_coverArt">Εμφάνιση καλμαρίου</string>
     <string name="show_coverArt_desc">Προβολή καλυμπότιδας albaς ως μεγάλο χρώμα</string>
-    <string name="enable_experimentalRpc">Ενεργοποίηση Experimental RPC</string>
+    <string name="enable_manualRpc">Ενεργοποίηση Manual RPC</string>
     <string name="completion_media_author">Αρχός</string>
     <string name="completion_media_album">Όνομα albumu</string>
     <string name="completion_media_albumArtist">Καλλιτέχνης albums</string>
@@ -234,8 +232,6 @@
     <string name="use_youtubeButtonDesc">Προσθέτει αυτόματα ένα κλικ susceptible κουμπί (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) κατά την αναπαραγωγή μέσων</string>
     <string name="link_toArtistChannel">Σύνδεση με τον κανάλι του καλλιτέχνη</string>
     <string name="link_toArtistChannel_desc">Το κουμπί συνδέεται στον κανάλι του καλλιτέχνη αντί για το τραγούδι/βίντεο</string>
-    <string name="experimental_rpcTitleToggle">Τίτλος</string>
-    <string name="experimental_rpcTitleToggle_desc">Προβολή πληροφοριών τραγουδιού στον τίτλο δραστηριότητας αντί για το όνομα της εφαρμογής</string>
     <string name="title_source_song">Ονομασίες τραγουδιού</string>
     <string name="title_source_artist">Καλλιτέχνης</string>
     <string name="type_toInsertVariable">Πληκτρολογήστε &apos;{{&apos; για να εισαγάγετε μια μεταβλητή</string>
@@ -328,4 +324,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

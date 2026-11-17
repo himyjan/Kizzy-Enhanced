@@ -116,8 +116,8 @@
     <string name="main_customRpc">कस्टम आरपीसी</string>
     <string name="main_consoleRpc">कंसोल आरपीसी</string>
     <string name="main_consoleRpcDetails">किज़ी आपको डिस्कॉर्ड पर अपनी उपस्थिति सेट करने के लिए पहले से निर्धारित सेटिंग्स का उपयोग करने की अनुमति देता है।</string>
-    <string name="main_experimentalRpc">एक्सपेरिमेंटल आरपीसी</string>
-    <string name="main_experimentalRpcDetails">एक्सपेरिमेंटल आरपीसी किज़ी की एक विशेषता है जो लगातार ऐप्स आरपीसी और मीडिया आरपीसी के बीच स्विच करता है।</string>
+    <string name="main_manualRpc">एक्सपेरिमेंटल आरपीसी</string>
+    <string name="main_manualRpcDetails">एक्सपेरिमेंटल आरपीसी किज़ी की एक विशेषता है जो लगातार ऐप्स आरपीसी और मीडिया आरपीसी के बीच स्विच करता है।</string>
     <string name="main_customRpcDetails">किज़ी आपको डिस्कॉर्ड के लिए पूरी तरह से अनुकूलन योग्य रिच प्रेज़ेंस बनाने की अनुमति देता है।</string>
     <string name="main_comingSoon">जल्द आ रहा है</string>
     <string name="exit">निकास</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">इमगुर को वैकल्पिक छवि प्रॉक्सी के रूप में उपयोग करें।</string>
     <string name="start_appDetection">ऐप डिटेक्शन शुरू करें</string>
     <string name="start_mediaRpc">मीडिया आरपीसी शुरू करें</string>
-    <string name="start_experimentalRpc">एक्सपेरिमेंटल आरपीसी शुरू करें</string>
+    <string name="start_manualRpc">एक्सपेरिमेंटल आरपीसी शुरू करें</string>
     <string name="stop_rpc">आरपीसी रोकें</string>
     <string name="stop">रोकें</string>
     <string name="start_appDetectionToast">ऐप डिटेक्शन शुरू किया गया</string>
     <string name="start_mediaRpcToast">मीडिया आरपीसी शुरू किया गया</string>
-    <string name="start_experimentalRpcToast">एक्सपेरिमेंटल आरपीसी शुरू किया गया</string>
+    <string name="start_manualRpcToast">मैनुअल आरपीसी शुरू किया गया</string>
     <string name="stop_rpcToast">सभी सेवाएं रोक दी गईं</string>
     <string name="show_playbackState">प्लेबैक स्थिति दिखाएं</string>
     <string name="copied_to_clipboard">क्लिपबोर्ड पर कॉपी किया गया</string>
@@ -209,8 +209,6 @@
     <string name="custom_application_id_desc">डिफ़ॉल्ट डिस्कॉर्ड एप्लिकेशन आईडी को ओवरराइड करता है</string>
     <string name="use_a_vpn_desc">डिस्कॉर्ड लॉगिन आपके देश में वीपीएन/डीपीआई के बिना काम नहीं कर सकता है। वीपीएन/डीपीआई का उपयोग करके आगे बढ़ें।</string>
     <string name="rpc_templates_note">&quot;`{{app_name}}` और `{{media_title}}` जैसे टेम्पलेट का उपयोग करें। खाली फ़ील्ड डिफ़ॉल्ट व्यवहार का उपयोग करेंगे या छोड़ दिए जाएंगे।&quot;</string>
-    <string name="experimental_rpc_detect_apps">एक्सपेरिमेंटल आरपीसी को चल रहे एप्लिकेशन का पता लगाने की अनुमति दें</string>
-    <string name="experimental_rpc_detect_media">एक्सपेरिमेंटल आरपीसी को मीडिया प्लेबैक का पता लगाने की अनुमति दें</string>
     <string name="app_preferences">ऐप प्राथमिकताएं</string>
     <string name="app_preferences_desc">एक्सपेरिमेंटल आरपीसी के लिए सक्षम किए गए ऐप्स का चयन करें</string>
     <string name="completion_media_title">गाना/वीडियो शीर्षक</string>
@@ -218,7 +216,6 @@
     <string name="completion_appName">पता चला ऐप का नाम</string>
     <string name="show_cover_art">एल्बम कवर दिखाएं</string>
     <string name="show_cover_art_desc">एल्बम कवर को बड़ी छवि के रूप में दिखाएं</string>
-    <string name="enable_experimental_rpc">एक्सपेरिमेंटल आरपीसी सक्षम करें</string>
     <string name="completion_media_author">मुख्य लेखक</string>
     <string name="completion_media_album">एल्बम नाम</string>
     <string name="completion_media_albumArtist">एल्बम कलाकार</string>
@@ -235,8 +232,6 @@
     <string name="use_youtubeButton_desc">मीडिया चलाते समय ऑटोमैटिक रूप से एक क्लिक करने योग्य बटन (यूट्यूब, स्पॉटिफाई, एपल म्यूज़िक, डीज़र, साउंडक्लाउड, स्ट्रीटवॉइस, वाईम्यूज़िक) जोड़ें</string>
     <string name="link_to_artist_channel">आर्टिस्ट चैनल से लिंक करें</string>
     <string name="link_to_artist_channel_desc">बटन ट्रैक/वीडियो के बजाय आर्टिस्ट चैनल से लिंक करता है</string>
-    <string name="experimental_rpc_title_toggle">शीर्षक</string>
-    <string name="experimental_rpc_title_toggle_desc">शीर्षक में ऐप के नाम के बजाय गीत की जानकारी दिखाएं</string>
     <string name="title_source_song">गाने का नाम</string>
     <string name="title_source_artist">कलाकार</string>
     <string name="type_to_insert_variable">वेरिएबल डालने के लिए `{{` टाइप करें</string>
@@ -329,4 +324,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

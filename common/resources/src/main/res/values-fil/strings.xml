@@ -110,7 +110,7 @@
     <string name="configs_directory">Direktoryo ng config</string>
     <string name="custom_activity_type">Custom na activity type</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Custom na activity status</string>
     <string name="custom_activity_status_desc">Inaoverride ang default na activity status</string>
     <string name="search">Maghanap</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Gumamit ng Imgur bilang alternatibong image proxy.</string>
     <string name="start_appDetection">Simulan ang Pagtukoy ng App</string>
     <string name="start_mediaRPC">Simulan ang Media RPC</string>
-    <string name="start_experimentalRPC">Simulan ang Experimental RPC</string>
+    <string name="start_manualRpc">Simulan ang Manual RPC</string>
     <string name="stop_rpc">Itigil ang RPC</string>
     <string name="stop">Itigil</string>
     <string name="start_appDetection_toast">Nagsimula ang Pagtukoy ng App</string>
     <string name="start_mediaRPC_toast">Nagsimula ang Media RPC</string>
-    <string name="start_experimentalRPC_toast">Nagsimula ang Experimental RPC</string>
+    <string name="start_manualRpc_toast">Nagsimula ang Manual RPC</string>
     <string name="stop_rpc_toast">Itinigil ang lahat ng serbisyo</string>
     <string name="show_playback_state">Ipakita ang estado ng playback</string>
     <string name="copied_to_clipboard">Nakopya sa clipboard</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Payagan ang Experimental RPC na makita ang mga tumatakbong app</string>
-    <string name="experimental_rpc_detect_media">Payagan ang Experimental RPC na makita ang media playback</string>
     <string name="app_preferences">Mga kagustuhan ng app</string>
-    <string name="app_preferences_desc">Piliin kung aling mga app ang pinapagana para sa Experimental RPC</string>
+    <string name="app_preferences_desc">Piliin kung aling mga app ang pinapagana para sa Manual RPC</string>
     <string name="completion_media_title">Pamagat ng awit/video</string>
     <string name="completion_media_artist">Pangunahing tagapambayan</string>
     <string name="completion_app_name">Pangalan ng natukoy na app</string>
     <string name="show_cover_art">Ipakita ang cover art</string>
     <string name="show_cover_art_desc">Ipakita ang cover art ng album bilang malaking larawan</string>
-    <string name="enable_experimental_rpc">I-enable ang Experimental RPC</string>
     <string name="completion_media_author">Pangunahing manunulat</string>
     <string name="completion_media_album">Pangalan ng album</string>
     <string name="completion_media_album_artist">Tagapambayan ng album</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Link sa channel ng tagapambayan</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Pamagat</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Pangalan ng awit</string>
     <string name="title_source_artist">Tagapambayan</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

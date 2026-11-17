@@ -39,5 +39,5 @@ Media-session-driven Rich Presence that reflects the currently playing track/alb
 ## UX notes
 
 - Searchable list of media apps with individual enable/disable checkboxes (`MediaAppsState`).
-- Enabling Media RPC stops Custom, Apps, and Experimental RPC first (mutual exclusion).
+- Enabling Media RPC stops Custom, Apps, and Manual RPC first (mutual exclusion).
 - Reflects `AppUtils.mediaRpcRunning()` in the toggle.

@@ -110,7 +110,7 @@
     <string name="configs_directory">ספריית תצורות</string>
     <string name="custom_activity_type">סוג פעילות מותאם אישית</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">סטטוס פעילות מותאם אישית</string>
     <string name="custom_activity_status_desc">עוקף את סטטוס הפעילות המוגדר כברירת מחדל</string>
     <string name="search">לְחַפֵּשׂ</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">קונסולה RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">RPC ניסיוני</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">RPC ניסיוני</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">השתמש ב-Imgur כשרת פרוקסי חלופי לתמונות.</string>
     <string name="start_appDetection">הפעלת זיהוי אפליקציות</string>
     <string name="start_mediaRPC">התחל מדיה RPC</string>
-    <string name="start_experimentalRPC">הפעל RPC ניסיוני</string>
+    <string name="start_manualRpc">הפעל RPC ניסיוני</string>
     <string name="stop_rpc">עצירת RPC</string>
     <string name="stop">לְהַפְסִיק</string>
     <string name="start_appDetection_toast">זיהוי אפליקציות התחיל</string>
     <string name="start_mediaRPC_toast">RPC של המדיה הופעל</string>
-    <string name="start_experimentalRPC_toast">RPC ניסיוני התחיל</string>
+    <string name="start_manualRpc_toast">ידני RPC התחיל</string>
     <string name="stop_rpc_toast">כל השירותים נעצרו</string>
     <string name="show_playback_state">הצג מצב השמעה</string>
     <string name="copied_to_clipboard">הועתק ללוח</string>
@@ -226,8 +226,6 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">אפשר ל-RPC ניסיוני לזהות אפליקציות פועלות</string>
-    <string name="experimental_rpc_detect_media">אפשר ל-RPC ניסיוני לזהות השמעת מדיה</string>
     <string name="app_preferences">העדפות אפליקציה</string>
     <string name="app_preferences_desc">בחר אילו אפליקציות מופעלות עבור RPC ניסיוני</string>
     <string name="completion_media_title">שיר / כותרת וידאו</string>
@@ -235,7 +233,6 @@
     <string name="completion_app_name">שם אפליקציה זוהה</string>
     <string name="show_cover_art">הצג תמונת עטיפה</string>
     <string name="show_cover_art_desc">תצוגת עטיפת אלבום כתמונה גדולה</string>
-    <string name="enable_experimental_rpc">הפעל RPC ניסיוני</string>
     <string name="completion_media_author">מחבר ראשי</string>
     <string name="completion_media_album">שם האלבום</string>
     <string name="completion_media_album_artist">אמן האלבום</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">קישור לערוץ האמן</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">כותרת</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">שם השיר</string>
     <string name="title_source_artist">אמן</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

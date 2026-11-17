@@ -49,7 +49,7 @@
 
 ## Nouveautés de ce fork
 
-Toutes les nouvelles fonctionnalités se trouvent sur l'écran **Experimental RPC** et sur l'écran d'accueil.
+Toutes les nouvelles fonctionnalités se trouvent sur l'écran **Manual RPC** et sur l'écran d'accueil.
 
 ### ⭐ Spoofer de plateforme
 - Choisissez depuis quelle plateforme votre présence se connecte — **Bureau, Web, Android, iOS, Xbox, Playstation, VR** (porté depuis le platformSpoofer d'Equicord).
@@ -72,7 +72,7 @@ En plus des originaux, avec autocomplétion :
 
 ### ⭐ Refonte de l'écran d'accueil
 - Les cartes de fonctionnalités sont maintenant une pile verticale de cartes pleine largeur.
-- **Interrupteurs marche/arrêt sur chaque carte**, pour que Media / Custom / Experimental RPC puissent être démarrés et arrêtés directement depuis l'écran d'accueil.
+- **Interrupteurs marche/arrêt sur chaque carte**, pour que Media / Custom / Manual RPC puissent être démarrés et arrêtés directement depuis l'écran d'accueil.
 
 ### ⭐ Résilience de la passerelle (porté depuis [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy))
 - Reconnexion automatique avec retrait exponentiel en cas de déconnexion inattendue.

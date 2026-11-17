@@ -126,7 +126,7 @@ class App : Application(), Configuration.Provider {
             val appContext = this@App
             scope.launch {
                 val rpcEnabled = withContext(Dispatchers.IO) {
-                    Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, false] || Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, false] || Prefs[Prefs.USE_RPC_BUTTONS, false]
+                    Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, false] || Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, false] || Prefs[Prefs.USE_RPC_BUTTONS, false]
                 }
                 if (rpcEnabled) {
                     withContext(Dispatchers.Main) {

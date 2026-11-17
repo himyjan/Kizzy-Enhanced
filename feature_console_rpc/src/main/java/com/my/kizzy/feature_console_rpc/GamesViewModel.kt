@@ -71,7 +71,7 @@ class GamesViewModel @Inject constructor(
 
     /** Whether another RPC service is running (updated from AppUtils on init). */
     private val _otherRpcServicesRunning = mutableStateOf(
-        AppUtils.mediaRpcRunning() || AppUtils.experimentalRpcRunning() || AppUtils.appDetectionRunning()
+        AppUtils.mediaRpcRunning() || AppUtils.manualRpcRunning() || AppUtils.appDetectionRunning()
     )
     val otherRpcServicesRunning: State<Boolean> = _otherRpcServicesRunning
 

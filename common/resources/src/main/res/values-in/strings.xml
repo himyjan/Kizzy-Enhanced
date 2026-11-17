@@ -110,7 +110,7 @@
     <string name="configs_directory">Folder Konfigurasi</string>
     <string name="custom_activity_type">Jenis Aktivitas Kustom</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Status Aktivitas Kustom</string>
     <string name="custom_activity_status_desc">Mengganti status aktivitas default</string>
     <string name="search">Cari</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">RPC Eksperimental</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Pakai Imgur sebagai alternatif proxy gambar.</string>
     <string name="start_appDetection">Mulai Deteksi Aplikasi</string>
     <string name="start_mediaRPC">Mulai Media RPC</string>
-    <string name="start_experimentalRPC">Mulai Experimental RPC</string>
+    <string name="start_manualRpc">Mulai Manual RPC</string>
     <string name="stop_rpc">Hentikan RPC</string>
     <string name="stop">Hentikan</string>
     <string name="start_appDetection_toast">Deteksi aplikasi dimulai</string>
     <string name="start_mediaRPC_toast">Media RPC dimulai</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC dimulai</string>
+    <string name="start_manualRpc_toast">Manual RPC dimulai</string>
     <string name="stop_rpc_toast">Semua layanan dihentikan</string>
     <string name="show_playback_state">Tampilkan Status Pemutaran</string>
     <string name="copied_to_clipboard">Disalin ke clipboard</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Izinkan Experimental RPC mendeteksi aplikasi yang berjalan</string>
-    <string name="experimental_rpc_detect_media">Izinkan Experimental RPC mendeteksi pemutaran media</string>
     <string name="app_preferences">Preferensi Aplikasi</string>
-    <string name="app_preferences_desc">Pilih aplikasi yang diaktifkan untuk Experimental RPC</string>
+    <string name="app_preferences_desc">Pilih aplikasi yang diaktifkan untuk Manual RPC</string>
     <string name="completion_media_title">Judul Lagu/Video</string>
     <string name="completion_media_artist">Artis Utama</string>
     <string name="completion_app_name">Nama Aplikasi Terdeteksi</string>
     <string name="show_cover_art">Tampilkan Sampul</string>
     <string name="show_cover_art_desc">Tampilkan sampul album sebagai gambar besar</string>
-    <string name="enable_experimental_rpc">Aktifkan Experimental RPC</string>
     <string name="completion_media_author">Penulis Utama</string>
     <string name="completion_media_album">Nama Album</string>
     <string name="completion_media_album_artist">Artis Album</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Tautan ke Kanal Artis</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Judul</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Nama Lagu</string>
     <string name="title_source_artist">Artis</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

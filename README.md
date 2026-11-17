@@ -65,7 +65,7 @@
 
 ## What's new in this fork
 
-All additions live in the **Experimental RPC** screen and on the home screen.
+All additions live in the **Manual RPC** screen and on the home screen.
 
 ### ⭐ Platform spoofer
 - Choose which platform your presence connects from — **Desktop, Web, Android, iOS, Xbox, Playstation, VR** (ported from the platforms used by Equicord's platformSpoofer).
@@ -88,7 +88,7 @@ In addition to the original ones, with autocomplete:
 
 ### ⭐ Home screen redesign
 - Feature cards are now a vertical stack of full-width cards.
-- **On/off toggle switches on every card**, so Media / Custom / Experimental RPC can be started and stopped directly from the home screen.
+- **On/off toggle switches on every card**, so Media / Custom / Manual RPC can be started and stopped directly from the home screen.
 
 ### ⭐ Gateway resilience (ported from [YuuzuTH/Kizzy](https://github.com/YuuzuTH/Kizzy))
 - Auto-reconnect with exponential backoff on any unexpected disconnect.

@@ -60,7 +60,7 @@ import com.my.kizzy.navigation.Routes
 import com.my.kizzy.preference.Prefs
 import xyz.dead8309.feature_manual_rpc.ManualRpcScreen
 import xyz.dead8309.feature_manual_rpc.ManualRpcViewmodel
-import xyz.dead8309.feature_manual_rpc.apps.ExperimentalRpcAppsScreen
+import xyz.dead8309.feature_manual_rpc.apps.ManualRpcAppsScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalAnimationApi::class)
@@ -306,25 +306,25 @@ internal fun Kizzy(
                     onBackPressed = { navController.popBackStack() }
                 )
             }
-            composable(Routes.EXPERIMENTAL_RPC) { navBackStackEntry ->
-                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
+            composable(Routes.MANUAL_RPC) { navBackStackEntry ->
+                val manualRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
                 ManualRpcScreen(
-                    state = experimentalRpcViewModel.uiState.collectAsState().value,
-                    onEvent = experimentalRpcViewModel::onEvent,
+                    state = manualRpcViewModel.uiState.collectAsState().value,
+                    onEvent = manualRpcViewModel::onEvent,
                     onBackPressed = { navController.popBackStack() },
                     hasUsageAccess = usageAccessStatus.value,
                     hasNotificationAccess = notificationListenerAccess.value,
                     navigateToAppSelection = {
-                        navController.navigate(Routes.EXPERIMENTAL_RPC_APPS)
+                        navController.navigate(Routes.MANUAL_RPC_APPS)
                     },
                 )
             }
-            composable(Routes.EXPERIMENTAL_RPC_APPS) { navBackStackEntry ->
-                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
-                ExperimentalRpcAppsScreen(
+            composable(Routes.MANUAL_RPC_APPS) { navBackStackEntry ->
+                val manualRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
+                ManualRpcAppsScreen(
                     onBackPressed = { navController.popBackStack() },
-                    state = experimentalRpcViewModel.uiState.collectAsState().value,
-                    onEvent = experimentalRpcViewModel::onEvent,
+                    state = manualRpcViewModel.uiState.collectAsState().value,
+                    onEvent = manualRpcViewModel::onEvent,
                 )
             }
         }

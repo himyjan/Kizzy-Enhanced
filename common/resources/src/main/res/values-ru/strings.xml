@@ -101,7 +101,7 @@
     <string name="update">Обновить</string>
     <string name="configs_directory">Директория конфигураций</string>
     <string name="custom_activity_type">Тип пользовательской активности</string>
-    <string name="custom_activity_type_desc">Переопределяет стандартный тип активности. Работает только для Media и Experimental RPC</string>
+    <string name="custom_activity_type_desc">Переопределяет стандартный тип активности. Работает только для Media и Manual RPC</string>
     <string name="custom_activity_status">Пользовательский статус активности</string>
     <string name="custom_activity_status_desc">Переопределяет стандартный статус активности</string>
     <string name="search">Поиск</string>
@@ -116,8 +116,8 @@
     <string name="main_customRpc">Свой RPC</string>
     <string name="main_consoleRpc">Консоль RPC</string>
     <string name="main_consoleRpcDetails">Kizzy позволяет вам использовать некоторые предустановленные настройки для установки вашего присутствия на Discord.</string>
-    <string name="main_experimentalRpc">Экспериментальный RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC — это функция в Kizzy, которая постоянно переключается между приложениями и медиа RPC.</string>
+    <string name="main_manualRpc">Экспериментальный RPC</string>
+    <string name="main_manualRpcDetails">Manual RPC — это функция в Kizzy, которая постоянно переключается между приложениями и медиа RPC.</string>
     <string name="main_customRpcDetails">Kizzy позволяет вам создать свою полную кастомизацию rich presence для Discord.</string>
     <string name="main_comingSoon">Скоро</string>
     <string name="exit">Выход</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Использовать Imgur как альтернативный прокси-сервер изображений.</string>
     <string name="start_appDetection">Запуск обнаружения приложений</string>
     <string name="start_mediaRpc">Запуск Media RPC</string>
-    <string name="start_experimentalRpc">Запуск Experimental RPC</string>
+    <string name="start_manualRpc">Запуск Manual RPC</string>
     <string name="stop_rpc">Остановить RPC</string>
     <string name="stop">Остановить</string>
     <string name="start_appDetectionToast">Обнаружение приложений запущено</string>
     <string name="start_mediaRpcToast">Media RPC запущен</string>
-    <string name="start_experimentalRpcToast">Experimental RPC запущен</string>
+    <string name="start_manualRpcToast">Manual RPC запущен</string>
     <string name="stop_rpcToast">Все службы остановлены</string>
     <string name="show_playbackState">Показать состояние воспроизведения</string>
     <string name="copied_toClipboard">Скопировано в буфер обмена</string>
@@ -209,16 +209,14 @@
     <string name="custom_application_id_desc">Переопределяет стандартный идентификатор приложения Discord</string>
     <string name="use_a_vpnDesc">Вход в Discord может не работать в вашей стране без VPN/DPI. Пожалуйста, используйте VPN/DPI для продолжения.</string>
     <string name="rpc_templates_note">&quot;Используйте шаблоны, такие как &apos;{{&apos;app_name}}&apos;&apos;, &apos;{{&apos;media_title}}&apos;&apos; и т.д. Пустые поля будут использовать поведение по умолчанию или будут пропущены.&quot;</string>
-    <string name="experimental_rpc_detectApps">Разрешить Experimental RPC обнаруживать запущенные приложения</string>
-    <string name="experimental_rpc_detect_media">Разрешить Experimental RPC обнаруживать воспроизведение медиа</string>
     <string name="app_preferences">Предпочтения приложений</string>
-    <string name="app_preferences_desc">Выберите, какие приложения включены для Experimental RPC</string>
+    <string name="app_preferences_desc">Выберите, какие приложения включены для Manual RPC</string>
     <string name="completion_media_title">Название песни/видео</string>
     <string name="completion_media_artist">Основной исполнитель</string>
     <string name="completion_appName">Название обнаруженного приложения</string>
     <string name="show_coverArt">Показать обложку альбома</string>
     <string name="show_coverArt_desc">Показать обложку альбома как большое изображение</string>
-    <string name="enable_experimentalRpc">Включить Experimental RPC</string>
+    <string name="enable_manualRpc">Включить Manual RPC</string>
     <string name="completion_media_author">Основной автор</string>
     <string name="completion_media_album">Название альбома</string>
     <string name="completion_media_albumArtist">Исполнитель альбома</string>
@@ -235,8 +233,6 @@
     <string name="use_youtubeButtonDesc">Автоматически добавлять кликабельную кнопку (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) при воспроизведении медиа</string>
     <string name="link_toArtistChannel">Ссылка на канал исполнителя</string>
     <string name="link_toArtistChannel_desc">Кнопка ссылается на канал артиста вместо трека/видео</string>
-    <string name="experimental_rpcTitle_toggle">Заголовок</string>
-    <string name="experimental_rpcTitleToggle_desc">Показать информацию о песне в заголовке активности вместо названия приложения</string>
     <string name="title_source_song">Название песни</string>
     <string name="title_source_artist">Исполнитель</string>
     <string name="type_to_insert_variable">Введите &apos;{{&apos; для вставки переменной</string>
@@ -329,4 +325,14 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_album_artist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you&apos;re currently listening to or watching.</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRPC">Start Media RPC</string>
+    <string name="start_mediaRPC_toast">Media RPC started</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

@@ -110,7 +110,7 @@
     <string name="configs_directory">Direktoria e konfigurimeve</string>
     <string name="custom_activity_type">Lloj i personalizuar aktiviteti</string>
     <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+        and manual rpc only</string>
     <string name="custom_activity_status">Gjendje e personalizuar e aktivitetit</string>
     <string name="custom_activity_status_desc">Zëvendëson gjendjen standarde të aktivitetit</string>
     <string name="search">Kërko</string>
@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_manualRpc">Manual RPC</string>
+    <string name="main_manualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Përdor Imgur si proxy alternativ për imazhet.</string>
     <string name="start_appDetection">Nis zbulimin e aplikacioneve</string>
     <string name="start_mediaRPC">Nis Media RPC</string>
-    <string name="start_experimentalRPC">Nis Experimental RPC</string>
+    <string name="start_manualRpc">Nis Manual RPC</string>
     <string name="stop_rpc">Ndalo RPC</string>
     <string name="stop">Ndalo</string>
     <string name="start_appDetection_toast">Zbulimi i aplikacioneve filloi</string>
     <string name="start_mediaRPC_toast">Media RPC filloi</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC filloi</string>
+    <string name="start_manualRpc_toast">Manual RPC filloi</string>
     <string name="stop_rpc_toast">Të gjitha shërbimet u ndaluan</string>
     <string name="show_playback_state">Shfaq gjendjen e luajtjes</string>
     <string name="copied_to_clipboard">Kopjuar në clipboard</string>
@@ -226,16 +226,13 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos;, etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="experimental_rpc_detect_apps">Lejo Experimental RPC të zbulojë aplikacionet në ekzekutim</string>
-    <string name="experimental_rpc_detect_media">Lejo Experimental RPC të zbulojë luajtjen e medias</string>
     <string name="app_preferences">Preferencat e aplikacionit</string>
-    <string name="app_preferences_desc">Zgjidhni cilat aplikacione të aktivizohen për Experimental RPC</string>
+    <string name="app_preferences_desc">Zgjidhni cilat aplikacione të aktivizohen për Manual RPC</string>
     <string name="completion_media_title">Titulli i këngës/video</string>
     <string name="completion_media_artist">Artisti kryesor</string>
     <string name="completion_app_name">Emri i aplikacionit të detektuar</string>
     <string name="show_cover_art">Shfaq kopertinën</string>
     <string name="show_cover_art_desc">Shfaq kopertinën e albumit si imazh të madh</string>
-    <string name="enable_experimental_rpc">Aktivizo Experimental RPC</string>
     <string name="completion_media_author">Autori kryesor</string>
     <string name="completion_media_album">Emri i albumit</string>
     <string name="completion_media_album_artist">Artisti i albumit</string>
@@ -254,9 +251,6 @@
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
     <string name="link_to_artist_channel">Lidhje te kanali i artistit</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
-    <string name="experimental_rpc_title_toggle">Titulli</string>
-    <string name="experimental_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
     <string name="title_source_song">Emri i këngës</string>
     <string name="title_source_artist">Artisti</string>
     <string name="type_to_insert_variable">Type &apos;{{&apos; to insert a variable</string>
@@ -349,4 +343,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>

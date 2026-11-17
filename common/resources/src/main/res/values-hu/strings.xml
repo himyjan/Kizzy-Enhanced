@@ -116,8 +116,8 @@
     <string name="main_customRpc">Egyedi RPC</string>
     <string name="main_consoleRpc">Konzol RPC</string>
     <string name="main_consoleRpc_details">A Kizzy lehetővé teszi, hogy előre meghatározott beállításokkal állítsa jelenlétét a Discordon.</string>
-    <string name="main_experimentalRpc">Kísérleti RPC</string>
-    <string name="main_experimentalRpc_details">A Kísérleti RPC a Kizzy funkciója, amely folyamatosan váltakozik az Apps RPC és a Média RPC között.</string>
+    <string name="main_manualRpc">Kísérleti RPC</string>
+    <string name="main_manualRpc_details">A Kísérleti RPC a Kizzy funkciója, amely folyamatosan váltakozik az Apps RPC és a Média RPC között.</string>
     <string name="main_customRpc_details">A Kizzy lehetővé teszi, hogy teljesen testreszabható riche-presencét hozzon létre a Discordon.</string>
     <string name="main_comingSoon">Hamarosan</string>
     <string name="exit">Kilépés</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Használja az Imgur-t alternatív kép proxyként.</string>
     <string name="start_appDetection">Alkalmazásfelismerés indítása</string>
     <string name="start_mediaRPC">Média RPC indítása</string>
-    <string name="start_experimentalRPC">Kísérleti RPC indítása</string>
+    <string name="start_manualRpc">Kísérleti RPC indítása</string>
     <string name="stop_rpc">RPC leállítás</string>
     <string name="stop">Leállítás</string>
     <string name="start_appDetection_toast">Alkalmazásfelismerés elindítva</string>
     <string name="start_mediaRPC_toast">Média RPC elindítva</string>
-    <string name="start_experimentalRPC_toast">Kísérleti RPC elindítva</string>
+    <string name="start_manualRpc_toast">Kézi RPC elindítva</string>
     <string name="stop_rpc_toast">Minden szolgáltatás leállítva</string>
     <string name="show_playback_state">Lejátszási állapot megjelenítése</string>
     <string name="copied_to_clipboard">Másolva a vágólapra</string>
@@ -209,8 +209,6 @@
     <string name="custom_application_id_desc">Felülírja az alapértelmezett Discord alkalmazás azonosítót</string>
     <string name="use_a_vpn_desc">A Discord bejelentkezés nem lehet, hogy működik az Ön országában VPN/DPI nélkül. Kérjük, használjon VPN/DPI-t a folytatáshoz.</string>
     <string name="rpc_templates_note">&quot;Használja a helyőrzőket, mint &apos;{{&apos;;app_name}}&apos;&apos;, &apos;{{&apos;;media_title}}&apos;&apos; stb. Az üres mezők az alapértelmezett működést használják vagy kihagyásra kerülnek.&quot;</string>
-    <string name="experimental_rpc_detect_apps">Engedélyezze a Kísérleti RPC-nek, hogy felismerje a futó alkalmazásokat</string>
-    <string name="experimental_rpc_detect_media">Engedélyezze a Kísérleti RPC-nek, hogy felismerje a média lejátszást</string>
     <string name="app_preferences">Alkalmazás beállítások</string>
     <string name="app_preferences_desc">Válassza ki, milyen alkalmazások engedélyezve vannak a Kísérleti RPC-hez</string>
     <string name="completion_media_title">Dísz/Video cím</string>
@@ -218,7 +216,6 @@
     <string name="completion_app_name">Felfedezett alkalmazás neve</string>
     <string name="show_cover_art">Borító megjelenítése</string>
     <string name="show_cover_art_desc">Borító megjelenítése nagy képként</string>
-    <string name="enable_experimental_rpc">Kísérleti RPC engedélyezése</string>
     <string name="completion_media_author">Fő szerző</string>
     <string name="completion_media_album">Album neve</string>
     <string name="completion_media_album_artist">Album előadója</string>
@@ -235,8 +232,6 @@
     <string name="use_youtube_button_desc">Automatikusan hozzáad egy kattintható gombot (YouTube, Spotify, Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) a média lejátszása során</string>
     <string name="link_to_artist_channel">Kapcsolódás az előadó csatornához</string>
     <string name="link_to_artist_channel_desc">A gomb az előadó csatornához kapcsol, nem a dal/videóhoz</string>
-    <string name="experimental_rpc_title_toggle">Cím</string>
-    <string name="experimental_rpc_title_toggle_desc">Dal információ megjelenítése a tevékenység címében az alkalmazás nevé helyett</string>
     <string name="title_source_song">Dal neve</string>
     <string name="title_source_artist">Előadó</string>
     <string name="type_to_insert_variable">Változó beillesztéséhez írja be &apos;{{&apos; karaktert</string>
@@ -329,4 +324,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+
+    <string name="completion_media_albumArtist">Album Artist</string>
+    <string name="enableMediaRpc">Enable Media RPC</string>
+    <string name="manual_rpc_detect_media">Allow Manual RPC to detect media playback</string>
+    <string name="start_mediaRpc">Start Media RPC</string>
+    <string name="start_mediaRpcToast">Start Media RPC Toast</string>
+    <string name="start_media_rpc">Start Media RPC</string>
+    <string name="start_media_rpc_toast">Start Media RPC Toast</string>
 </resources>
