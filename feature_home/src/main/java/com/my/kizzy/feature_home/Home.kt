@@ -112,8 +112,9 @@ fun Home(
         mutableStateOf(false)
     }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val drawerOpen by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    var isDrawerAnimating by remember { mutableStateOf(false) }
+    var lastDrawerToggleTime by remember { mutableStateOf(0L) }
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState(),
@@ -188,13 +189,15 @@ fun Home(
                         IconButton(
                             onClick = {
                                 if (!isDrawerAnimating) {
+                                    isDrawerAnimating = true
+                                    val targetOpen = !drawerOpen
                                     scope.launch {
-                                        isDrawerAnimating = true
-                                        if (drawerState.currentValue == DrawerValue.Closed) {
+                                        if (targetOpen) {
                                             drawerState.open()
                                         } else {
                                             drawerState.close()
                                         }
+                                        drawerOpen = targetOpen
                                         isDrawerAnimating = false
                                     }
                                 }
