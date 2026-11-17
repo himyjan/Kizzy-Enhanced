@@ -116,8 +116,8 @@
     <string name="main_customRpc">自訂 RPC</string>
     <string name="main_consoleRpc">主機 RPC</string>
     <string name="main_consoleRpc_details">Kizzy 允許你使用一些預設預置來設置你在 Discord 上的狀態。</string>
-    <string name="main_experimentalRpc">實驗性 RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC 是 Kizzy 的一項功能，會不斷在 Apps RPC 和 Media RPC 之間切換。</string>
+    <string name="main_ManualRpc">實驗性 RPC</string>
+    <string name="main_ManualRpc_details">Experimental RPC 是 Kizzy 的一項功能，會不斷在 Apps RPC 和 Media RPC 之間切換。</string>
     <string name="main_customRpc_details">Kizzy 允許你為 Discord 創建完全可自定義的豐富存在。</string>
     <string name="main_comingSoon">即將推出</string>
     <string name="exit">退出</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">使用 Imgur 作為備用圖片代理。</string>
     <string name="start_appDetection">啟動應用程式檢測</string>
     <string name="start_mediaRPC">啟動 Media RPC</string>
-    <string name="start_experimentalRPC">啟動 Experimental RPC</string>
+    <string name="start_ManualRpc">啟動 Experimental RPC</string>
     <string name="stop_rpc">停止 RPC</string>
     <string name="stop">停止</string>
     <string name="start_appDetection_toast">應用程式檢測已啟動</string>
     <string name="start_mediaRPC_toast">Media RPC 已啟動</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC 已啟動</string>
+    <string name="start_ManualRpc_toast">Experimental RPC 已啟動</string>
     <string name="stop_rpc_toast">所有服務已停止</string>
     <string name="show_playback_state">顯示播放狀態</string>
     <string name="copied_to_clipboard">已複製到剪貼簿</string>

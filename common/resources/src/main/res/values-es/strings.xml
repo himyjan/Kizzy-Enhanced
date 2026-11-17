@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC personalizado</string>
     <string name="main_consoleRpc">RPC de consola</string>
     <string name="main_consoleRpc_details">Kizzy te permite usar algunos ajustes predefinidos para establecer tu presencia en Discord.</string>
-    <string name="main_experimentalRpc">RPC experimental</string>
-    <string name="main_experimentalRpc_details">Experimental RPC es una característica en Kizzy que cambia constantemente entre Apps RPC y Media RPC.</string>
+    <string name="main_ManualRpc">RPC experimental</string>
+    <string name="main_ManualRpc_details">Experimental RPC es una característica en Kizzy que cambia constantemente entre Apps RPC y Media RPC.</string>
     <string name="main_customRpc_details">Kizzy te permite crear tu propia presencia rica totalmente personalizable para Discord.</string>
     <string name="main_comingSoon">Pronto</string>
     <string name="exit">Salir</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Usar Imgur como un proxy de imagen alternativo.</string>
     <string name="start_appDetection">Iniciar Detección de Apps</string>
     <string name="start_mediaRPC">Iniciar Media RPC</string>
-    <string name="start_experimentalRPC">Iniciar Experimental RPC</string>
+    <string name="start_ManualRpc">Iniciar Experimental RPC</string>
     <string name="stop_rpc">Detener RPC</string>
     <string name="stop">Detener</string>
     <string name="start_appDetection_toast">Detección de Apps iniciada</string>
     <string name="start_mediaRPC_toast">Media RPC iniciado</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC iniciado</string>
+    <string name="start_ManualRpc_toast">Experimental RPC iniciado</string>
     <string name="stop_rpc_toast">Todos los servicios detenidos</string>
     <string name="show_playback_state">Mostrar Estado de Reproducción</string>
     <string name="copied_to_clipboard">Copiado al portapapeles</string>

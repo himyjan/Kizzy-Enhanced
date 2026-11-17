@@ -116,8 +116,8 @@
     <string name="main_customRpc">Mukautettu RPC</string>
     <string name="main_consoleRpc">Konsoli-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy antaa sinun käyttää muutamia ennalta määritettyjä asetuksia asettaaksesi läsnäolosi Discordissa.</string>
-    <string name="main_experimentalRpc">Kokeellinen RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC on Kizzyn ominaisuus, joka vaihtaa jatkuvasti Apps RPC:n ja Median RPC:n välillä.</string>
+    <string name="main_ManualRpc">Kokeellinen RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC on Kizzyn ominaisuus, joka vaihtaa jatkuvasti Apps RPC:n ja Median RPC:n välillä.</string>
     <string name="main_customRpcDetails">Kizzy antaa sinun luoda oman täysin muokattavan rich presence -ominaisuuden Discordissa.</string>
     <string name="main_comingSoon">Tulossa pian</string>
     <string name="exit">Poistu</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Käytä Imguria vaihtoehtoisena kuvapalvelimena.</string>
     <string name="start_appDetection">Käynnistä sovelluksen tunnistus</string>
     <string name="start_mediaRpc">Käynnistä Media RPC</string>
-    <string name="start_experimentalRpc">Käynnistä Experimental RPC</string>
+    <string name="start_ManualRpc">Käynnistä Experimental RPC</string>
     <string name="stop_rpc">Pysäytä RPC</string>
     <string name="stop">Pysäytä</string>
     <string name="start_appDetectionToast">Sovelluksen tunnistus käynnistetty</string>
     <string name="start_mediaRpcToast">Media RPC käynnistetty</string>
-    <string name="start_experimentalRpcToast">Experimental RPC käynnistetty</string>
+    <string name="start_ManualRpcToast">Experimental RPC käynnistetty</string>
     <string name="stop_rpcToast">Kaikki palvelut pysäytetty</string>
     <string name="show_playbackState">Näytä toistotila</string>
     <string name="copied_toClipboard">Kopioitu leikepöydälle</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Tunnistettu sovelluksen nimi</string>
     <string name="show_coverArt">Näytä albumin kansi</string>
     <string name="show_coverArt_desc">Näytä albumin kansi isona kuvana</string>
-    <string name="enable_experimentalRpc">Ota kokeellinen RPC käyttöön</string>
+    <string name="enable_ManualRpc">Ota kokeellinen RPC käyttöön</string>
     <string name="completion_media_author">Päätekijä</string>
     <string name="completion_media_album">Albumin nimi</string>
     <string name="completion_media_albumArtist">Albumitaiteilija</string>

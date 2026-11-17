@@ -116,7 +116,7 @@
     <string name="main_customRpc">Προσαρμοσμένο RPC</string>
     <string name="main_consoleRpc">RPC κονσόλας</string>
     <string name="main_consoleRpcDetails">Το Kizzy σάς επιτρέπει να χρησιμοποιήσετε ορισμένες καθορισμένες previously-hourly ρυθμίσεις για να ορίσετε την παρουσία σας στο Discord.</string>
-    <string name="main_experimentalRpc">Πειραματικό RPC</string>
+    <string name="main_ManualRpc">Πειραματικό RPC</string>
     <string name="main_customRpcDetails">Το Kizzy σας επιτρέπει να δημιουργήσετε το δικό σας πλήρως προσαρμοσιμο Rich Presence για το Discord.</string>
     <string name="main_comingSoon">Εructe σύντομα</string>
     <string name="exit">Έξοδος</string>
@@ -194,12 +194,12 @@
     <string name="use_imgurDesc">Χρησιμοποιήστε το Imgur ως εναρτιστού προacte.</string>
     <string name="start_appDetection">Έναρξη ανίχνευσης εφαρμογών</string>
     <string name="start_mediaRpc">Έναρξη Media RPC</string>
-    <string name="start_experimentalRpc">Έναρξη Experimental RPC</string>
+    <string name="start_ManualRpc">Έναρξη Experimental RPC</string>
     <string name="stop_rpc">Σταμάτηση RPC</string>
     <string name="stop">Σταμάτησέ</string>
     <string name="start_appDetectionToast">Ανίχνευση εφαρμογών ξεκίνησε</string>
     <string name="start_mediaRpcToast">Media RPC ξεκίνησε</string>
-    <string name="start_experimentalRpcToast">Experimental RPC ξεκίνησε</string>
+    <string name="start_ManualRpcToast">Experimental RPC ξεκίνησε</string>
     <string name="stop_rpcToast">Όλες οι υπηρεσίες σταμάτησαν</string>
     <string name="show_playbackState">Προβολή κατάστασης αναπαραγωγής</string>
     <string name="copied_toClipboard">Αντιγράφηκε στο πάπiro</string>
@@ -217,7 +217,7 @@
     <string name="completion_appName">Το όνομα της εντοπισμένης εφαρμογής</string>
     <string name="show_coverArt">Εμφάνιση καλμαρίου</string>
     <string name="show_coverArt_desc">Προβολή καλυμπότιδας albaς ως μεγάλο χρώμα</string>
-    <string name="enable_experimentalRpc">Ενεργοποίηση Experimental RPC</string>
+    <string name="enable_ManualRpc">Ενεργοποίηση Experimental RPC</string>
     <string name="completion_media_author">Αρχός</string>
     <string name="completion_media_album">Όνομα albumu</string>
     <string name="completion_media_albumArtist">Καλλιτέχνης albums</string>

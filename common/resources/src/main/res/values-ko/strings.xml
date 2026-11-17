@@ -116,8 +116,8 @@
     <string name="main_customRpc">커스텀 RPC</string>
     <string name="main_consoleRpc">콘솔 RPC</string>
     <string name="main_consoleRpcDetails">Kizzy는 미리 정의된 설정을 사용하여 Discord에 존재를 설정할 수 있게 해줍니다.</string>
-    <string name="main_experimentalRpc">실험적 RPC</string>
-    <string name="main_experimentalRpcDetails">실험적 RPC는 앱 RPC와 미디어 RPC를 계속 전환하는 Kizzy의 기능입니다.</string>
+    <string name="main_ManualRpc">실험적 RPC</string>
+    <string name="main_ManualRpcDetails">실험적 RPC는 앱 RPC와 미디어 RPC를 계속 전환하는 Kizzy의 기능입니다.</string>
     <string name="main_customRpcDetails">Kizzy는 Discord에 완전히 사용자 정의 가능한 리치 프레즌스를 만들 수 있게 해줍니다.</string>
     <string name="main_comingSoon">곧 출시됩니다</string>
     <string name="exit">종료</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Imgur를 대체 이미지 프록시로 사용하세요.</string>
     <string name="start_appDetection">앱 감지 시작</string>
     <string name="start_mediaRpc">미디어 RPC 시작</string>
-    <string name="start_experimentalRpc">실험적 RPC 시작</string>
+    <string name="start_ManualRpc">실험적 RPC 시작</string>
     <string name="stop_rpc">RPC 중지</string>
     <string name="stop">중지</string>
     <string name="start_appDetectionToast">앱 감지 시작됨</string>
     <string name="start_mediaRpcToast">미디어 RPC 시작됨</string>
-    <string name="start_experimentalRpcToast">실험적 RPC 시작됨</string>
+    <string name="start_ManualRpcToast">실험적 RPC 시작됨</string>
     <string name="stop_rpcToast">모든 서비스 중지됨</string>
     <string name="show_playbackState">재생 상태 표시</string>
     <string name="copied_to_clipboard">클립보드에 복사됨</string>

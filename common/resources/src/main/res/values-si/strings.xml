@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Experimental RPC</string>
+    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">අන්තර්ජෙට් රූප ප්‍රක්සි ලෙස Imgur භාවිත කරන්න.</string>
     <string name="start_appDetection">යෙදු අනන්තරය ආරමතු කිරීම</string>
     <string name="start_mediaRPC">Media RPC ආරමතු කිරීම</string>
-    <string name="start_experimentalRPC">Experimental RPC ආරමතු කිරීම</string>
+    <string name="start_ManualRpc">Experimental RPC ආරමතු කිරීම</string>
     <string name="stop_rpc">RPC නවත්වන්න</string>
     <string name="stop">නවත්වන්න</string>
     <string name="start_appDetection_toast">යෙදු අනන්තරය ආරමතු විය</string>
     <string name="start_mediaRPC_toast">Media RPC ආරමතු විය</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC ආරමතු විය</string>
+    <string name="start_ManualRpc_toast">Experimental RPC ආරමතු විය</string>
     <string name="stop_rpc_toast">සියලුම සේවා නවත්වා ඇත</string>
     <string name="show_playback_state">ප්ලේ බැලීමේ තත්ත්ව පෙන්වීම</string>
     <string name="copied_to_clipboard">පසුරුහි පිටපත් කරන ලදී</string>

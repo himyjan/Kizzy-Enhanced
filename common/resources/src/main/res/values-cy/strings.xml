@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Experimental RPC</string>
+    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Defnyddio Imgur fel dirprydwr delwedd amgen.</string>
     <string name="start_appDetection">Cychwyn canfydiad Apps</string>
     <string name="start_mediaRPC">Cychwyn Media RPC</string>
-    <string name="start_experimentalRPC">Cychwyn Experimental RPC</string>
+    <string name="start_ManualRpc">Cychwyn Experimental RPC</string>
     <string name="stop_rpc">Stopio\'r RPC</string>
     <string name="stop">Stopio</string>
     <string name="start_appDetection_toast">Dechrau canfydiad Apps</string>
     <string name="start_mediaRPC_toast">Dechrau Media RPC</string>
-    <string name="start_experimentalRPC_toast">Dechrau Experimental RPC</string>
+    <string name="start_ManualRpc_toast">Dechrau Experimental RPC</string>
     <string name="stop_rpc_toast">Mae pob gwasanaeth wedi stopio</string>
     <string name="show_playback_state">Dangos statws chwarae</string>
     <string name="copied_to_clipboard">Wedi\'i gopio i\'r glannau</string>

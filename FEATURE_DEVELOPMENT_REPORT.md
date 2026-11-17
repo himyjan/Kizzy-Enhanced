@@ -2221,7 +2221,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 77. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
+## 77. Bug Fix: ManualRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
@@ -2322,7 +2322,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 81. Bug Fix: ExperimentalRpc — Remove "Using Kizzy RPC" Default Presence Text
+## 81. Bug Fix: ManualRpc — Remove "Using Kizzy RPC" Default Presence Text
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
@@ -2380,7 +2380,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ---
 
-## 83. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
+## 83. Bug Fix: ManualRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
 
 **Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
@@ -2917,7 +2917,7 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 
 ---
 
-## 98. Bug Fix: ExperimentalRpc — First Song Direct Media Detection
+## 98. Bug Fix: ManualRpc — First Song Direct Media Detection
 
 **File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
@@ -2942,7 +2942,7 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 
 ---
 
-## 99. Bug Fix: ExperimentalRpc — Discord Gateway Connection (`kizzyRPC.build()`)
+## 99. Bug Fix: ManualRpc — Discord Gateway Connection (`kizzyRPC.build()`)
 
 **File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
@@ -3274,7 +3274,7 @@ When user toggled RPC on/off from other screens (Media RPC, Custom RPC, etc.) an
 - **`ON_RESUME` re-detection** — When home screen resumes, queries each RPC service's running state:
   - `AppUtils.mediaRpcRunning()` → Media RPC switch
   - `AppUtils.customRpcRunning()` → Custom RPC & Console RPC switches
-  - `AppUtils.experimentalRpcRunning()` → Experimental RPC switch
+  - `AppUtils.ManualRpcRunning()` → Experimental RPC switch
 - **String resolution** — Feature titles resolved once at composable level, used in `ON_RESUME` re-detection
 
 ### Result

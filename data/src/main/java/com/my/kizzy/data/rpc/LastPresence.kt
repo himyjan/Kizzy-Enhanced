@@ -42,7 +42,7 @@ object LastPresence {
      * Remembers the presence of the Experimental RPC.
      */
     fun rememberExperimental(rpcConfig: RpcConfig) {
-        runCatching { Prefs[Prefs.LAST_RUN_EXPERIMENTAL_RPC] = json.encodeToString(RpcConfig.serializer(), rpcConfig) }
+        runCatching { Prefs[Prefs.LAST_RUN_MANUAL_RPC] = json.encodeToString(RpcConfig.serializer(), rpcConfig) }
     }
 
     /**
@@ -53,7 +53,7 @@ object LastPresence {
     /**
      * The presence of the Experimental RPC that was sent last, or null.
      */
-    fun experimental(): RpcConfig? = read(Prefs.LAST_RUN_EXPERIMENTAL_RPC)
+    fun experimental(): RpcConfig? = read(Prefs.LAST_RUN_MANUAL_RPC)
 
     private fun read(key: String): RpcConfig? {
         val raw = Prefs[key, ""]

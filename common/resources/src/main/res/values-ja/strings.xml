@@ -116,8 +116,8 @@
     <string name="main_customRpc">カスタム RPC</string>
     <string name="main_consoleRpc">コンソール RPC</string>
     <string name="main_consoleRpcDetails">Kizzy は、事前定義済みの設定を使用して Discord でのプレゼンスを設定できるようにします。</string>
-    <string name="main_experimentalRpc">実験的 RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC は、アプリ RPC とメディア RPC の間を常に切り替える Kizzy の機能です。</string>
+    <string name="main_ManualRpc">実験的 RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC は、アプリ RPC とメディア RPC の間を常に切り替える Kizzy の機能です。</string>
     <string name="main_customRpcDetails">Kizzy は、Discord 用の完全にカスタマイズ可能なリッチプレゼンスを作成できるようにします。</string>
     <string name="main_comingSoon">近日公開</string>
     <string name="exit">終了</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Imgur を代替イメージプロキシとして使用します。</string>
     <string name="start_appDetection">アプリ検出を開始</string>
     <string name="start_mediaRpc">メディア RPC を開始</string>
-    <string name="start_experimentalRpc">Experimental RPC を開始</string>
+    <string name="start_ManualRpc">Experimental RPC を開始</string>
     <string name="stop_rpc">RPC を停止</string>
     <string name="stop">停止</string>
     <string name="start_appDetectionToast">アプリ検出を開始しました</string>
     <string name="start_mediaRpcToast">Media RPC を開始しました</string>
-    <string name="start_experimentalRpcToast">Experimental RPC を開始しました</string>
+    <string name="start_ManualRpcToast">Experimental RPC を開始しました</string>
     <string name="stop_rpcToast">すべてのサービスを停止しました</string>
     <string name="show_playbackState">再生状態を表示</string>
     <string name="copied_toClipboard">クリップボードにコピーされました</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">検出されたアプリ名</string>
     <string name="show_coverArt">アルバムジャケットを表示</string>
     <string name="show_coverArt_desc">アルバムジャケットを大きな画像として表示</string>
-    <string name="enable_experimentalRpc">Experimental RPC を有効化</string>
+    <string name="enable_ManualRpc">Experimental RPC を有効化</string>
     <string name="completion_media_author">主な著者</string>
     <string name="completion_media_album">アルバム名</string>
     <string name="completion_media_albumArtist">アルバムアーティスト</string>

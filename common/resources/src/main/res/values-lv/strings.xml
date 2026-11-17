@@ -116,8 +116,8 @@
     <string name="main_customRpc">Pielāgoto RPC</string>
     <string name="main_consoleRpc">Konsoles RPC</string>
     <string name="main_consoleRpcDetails">Kizzy ļauj izmantot iepriekš definētos iestatījus, lai iestatītu savu priekšrakstu Discord.</string>
-    <string name="main_experimentalRpc">Eksperimentālais RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC ir Kizzy funkcionalitāte, kas pastāvīgi nomaina lietojumprogrammas RPC un mediju RPC starpā.</string>
+    <string name="main_ManualRpc">Eksperimentālais RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC ir Kizzy funkcionalitāte, kas pastāvīgi nomaina lietojumprogrammas RPC un mediju RPC starpā.</string>
     <string name="main_customRpcDetails">Kizzy ļauj izveidot savu unikālu un pilnībā personalizētu rich presence Discord.</string>
     <string name="main_comingSoon">Drīzumā</string>
     <string name="exit">Iziet</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Lieto Imgur kā alternatīvo attēla proxy.</string>
     <string name="start_appDetection">Sākt lietotņu atklāšanu</string>
     <string name="start_mediaRpc">Sākt Media RPC</string>
-    <string name="start_experimentalRpc">Sākt Experimental RPC</string>
+    <string name="start_ManualRpc">Sākt Experimental RPC</string>
     <string name="stop_rpc">Noliet RPC</string>
     <string name="stop">Noliet</string>
     <string name="start_appDetectionToast">Lietotņu atklāšana sāksies</string>
     <string name="start_mediaRpcToast">Media RPC saņemt</string>
-    <string name="start_experimentalRpcToast">Experimental RPC saņemt</string>
+    <string name="start_ManualRpcToast">Experimental RPC saņemt</string>
     <string name="stop_rpcToast">Visas pakalpojumi uzrakstīti</string>
     <string name="show_playbackState">Rāda atskaite attieksmes stāvokli</string>
     <string name="copied_toClipboard">Kopēts lietotāja datu pāli</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Atrastais programmas nosaukums</string>
     <string name="show_coverArt">Rādīdzināts albuma attēls</string>
     <string name="show_coverArt_desc">Rādīt albumu un visu detaļu</string>
-    <string name="enable_experimentalRpc">Iespējot Experimental RPC</string>
+    <string name="enable_ManualRpc">Iespējot Experimental RPC</string>
     <string name="completion_media_author">Mūzikas veidātājs</string>
     <string name="completion_media_album">Albuma nosaukums</string>
     <string name="completion_media_albumArtist">Albuma kalpi</string>

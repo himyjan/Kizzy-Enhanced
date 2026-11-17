@@ -2,7 +2,7 @@
  *
  *  ******************************************************************
  *  *  * Copyright (C) 2022
- *  *  * ExperimentalRpcAppsScreen.kt is part of Kizzy
+ *  *  * ManualRpcAppsScreen.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
@@ -211,7 +211,7 @@ private fun AppListItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExperimentalRpcAppsScreen(
+fun ManualRpcAppsScreen(
     onBackPressed: () -> Unit,
     state: UiState,
     onEvent: (UiEvent) -> Unit,

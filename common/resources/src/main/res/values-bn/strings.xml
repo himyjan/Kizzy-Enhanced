@@ -113,7 +113,7 @@
     <string name="main_mediaRpc">মিডিয়া আরপিসি</string>
     <string name="main_customRpc">কাস্টম আরপিসি</string>
     <string name="main_consoleRpc">কনসোল আরপিসি</string>
-    <string name="main_experimentalRpc">এক্সপেরিমেন্টাল আরপিসি</string>
+    <string name="main_ManualRpc">এক্সপেরিমেন্টাল আরপিসি</string>
     <string name="main_comingSoon">দ্রুত আসছে</string>
     <string name="exit">এক্সিট</string>
     <string name="logs">লগ</string>
@@ -189,12 +189,12 @@
     <string name="use_imgur_desc">বিকল্প ইমেজ প্রক্সি হিসেবে Imgur ব্যবহার করুন।</string>
     <string name="start_appDetection">অ্যাপ ডিটেকশন চালু করুন</string>
     <string name="start_mediaRpc">মিডিয়া আরপিসি শুরু করুন</string>
-    <string name="start_experimentalRpc">এক্সপেরিমেন্টাল আরপিসি শুরু করুন</string>
+    <string name="start_ManualRpc">এক্সপেরিমেন্টাল আরপিসি শুরু করুন</string>
     <string name="stop_rpc">RPC বন্ধ করুন</string>
     <string name="stop">বন্ধ করুন</string>
     <string name="start_appDetectionToast">অ্যাপ ডিটেকশন শুরু হয়েছে</string>
     <string name="start_mediaRpcToast">মিডিয়া আরপিসি শুরু হয়েছে</string>
-    <string name="start_experimentalRpcToast">এক্সপেরিমেন্টাল আরপিসি শুরু হয়েছে</string>
+    <string name="start_ManualRpcToast">এক্সপেরিমেন্টাল আরপিসি শুরু হয়েছে</string>
     <string name="stop_rpcToast">সব সার্ভিস বন্ধ করা হলো</string>
     <string name="show_playbackState">প্লেব্যাক স্টেটস শো করুন</string>
     <string name="copied_to_clipboard">ক্লিপবোর্ডে কপি করা হয়েছে</string>

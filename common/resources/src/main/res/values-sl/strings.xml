@@ -116,8 +116,8 @@
     <string name="main_customRpc">Prilagojen RPC</string>
     <string name="main_consoleRpc">Konzolni RPC</string>
     <string name="main_consoleRpcDetails">Kizzy vam omogoča, da uporabljate nekatere predzadane nastavitve, da nastavite svoje prisotnost na Discord.</string>
-    <string name="main_experimentalRpc">Poskusni RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC je funkcija v Kizzy, ki stalno preključa med Apps RPC in Media RPC.</string>
+    <string name="main_ManualRpc">Poskusni RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC je funkcija v Kizzy, ki stalno preključa med Apps RPC in Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vam omogoča, da ustvarite svoje popolnoma prilagodljivo Rich Presence za Discord.</string>
     <string name="main_comingSoon">Naslednje</string>
     <string name="exit">Izhod</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Uporabi Imgur kot alternativni slikovni strežnik.</string>
     <string name="start_appDetection">Začni detekcijo aplikacij</string>
     <string name="start_mediaRpc">Zaženi Media RPC</string>
-    <string name="start_experimentalRpc">Zaženi Experimental RPC</string>
+    <string name="start_ManualRpc">Zaženi Experimental RPC</string>
     <string name="stop_rpc">Prekini RPC</string>
     <string name="stop">Prekini</string>
     <string name="start_appDetectionToast">Detekcija aplikacij je začeta</string>
     <string name="start_mediaRpcToast">Media RPC je začet</string>
-    <string name="start_experimentalRpcToast">Experimental RPC je začet</string>
+    <string name="start_ManualRpcToast">Experimental RPC je začet</string>
     <string name="stop_rpcToast">Vse storitve so ustavljene</string>
     <string name="show_playbackState">Prikaži stanje predvajanja</string>
     <string name="copied_toClipboard">Kopirano v odložilno mesto</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Zaznano ime aplikacije</string>
     <string name="show_coverArt">Prikaži albumsko sliko</string>
     <string name="show_coverArt_desc">Prikaži albuma sliko kot veliko sliko</string>
-    <string name="enable_experimentalRpc">Omogoči Experimental RPC</string>
+    <string name="enable_ManualRpc">Omogoči Experimental RPC</string>
     <string name="completion_media_author">Glavni avtor</string>
     <string name="completion_media_album">Naziv albuma</string>
     <string name="completion_media_albumArtist">Avtor albuma</string>

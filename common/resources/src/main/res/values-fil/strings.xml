@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Experimental RPC</string>
+    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Gumamit ng Imgur bilang alternatibong image proxy.</string>
     <string name="start_appDetection">Simulan ang Pagtukoy ng App</string>
     <string name="start_mediaRPC">Simulan ang Media RPC</string>
-    <string name="start_experimentalRPC">Simulan ang Experimental RPC</string>
+    <string name="start_ManualRpc">Simulan ang Experimental RPC</string>
     <string name="stop_rpc">Itigil ang RPC</string>
     <string name="stop">Itigil</string>
     <string name="start_appDetection_toast">Nagsimula ang Pagtukoy ng App</string>
     <string name="start_mediaRPC_toast">Nagsimula ang Media RPC</string>
-    <string name="start_experimentalRPC_toast">Nagsimula ang Experimental RPC</string>
+    <string name="start_ManualRpc_toast">Nagsimula ang Experimental RPC</string>
     <string name="stop_rpc_toast">Itinigil ang lahat ng serbisyo</string>
     <string name="show_playback_state">Ipakita ang estado ng playback</string>
     <string name="copied_to_clipboard">Nakopya sa clipboard</string>

@@ -115,7 +115,7 @@
     <string name="main_customRpc">कस्टम RPC</string>
     <string name="main_consoleRpc">कन्सोल RPC</string>
     <string name="main_consoleRpcDetails">Kizzy प्री-डिफाइन गरिएको प्रीसेट प्रयोग गरेर Discord मा तपाईंको उपस्थिति सेट गर्ने सुविधा दिन्छ.</string>
-    <string name="main_experimentalRpc">एक्सपेरिमेंटल RPC</string>
+    <string name="main_ManualRpc">एक्सपेरिमेंटल RPC</string>
     <string name="main_customRpcDetails">Kizzy Discord का लागि तपाईंको आफ्नै पूर्ण रूपमा कस्टमाइज गर्न सकिने रिच प्रेसेन्स तयार गर्ने सुविधा दिन्छ.</string>
     <string name="main_comingSoon">छिटो आउँदैछ</string>
     <string name="exit">बाहिर निस्कनुहोस्</string>
@@ -192,12 +192,12 @@
     <string name="use_imgurDesc">इम्युरलाई पर्यायी चित्र प्रक्सीको रूपमा प्रयोग गर्नुहोस्.</string>
     <string name="start_appDetection">ऍप डिटेक्शन सुरु गर्नुहोस्</string>
     <string name="start_mediaRpc">मीडिया RPC सुरु गर्नुहोस्</string>
-    <string name="start_experimentalRpc">एक्सपेरिमेंटल RPC सुरु गर्नुहोस्</string>
+    <string name="start_ManualRpc">एक्सपेरिमेंटल RPC सुरु गर्नुहोस्</string>
     <string name="stop_rpc">RPC रोक्नुहोस्</string>
     <string name="stop">रोक्नुहोस्</string>
     <string name="start_appDetectionToast">ऍप डिटेक्शन सुरु गरियो</string>
     <string name="start_mediaRpcToast">मीडिया RPC सुरु गरियो</string>
-    <string name="start_experimentalRpcToast">एक्सपेरिमेंटल RPC सुरु गरियो</string>
+    <string name="start_ManualRpcToast">एक्सपेरिमेंटल RPC सुरु गरियो</string>
     <string name="stop_rpcToast">सबै सेवा रोकियो</string>
     <string name="show_playbackState">प्लेब्याक अवस्था देखाउनुहोस्</string>
     <string name="copied_toClipboard">क्लिपबोर्डमा कपी गरियो</string>
@@ -215,7 +215,7 @@
     <string name="completion_appName">डिटेक्ट गरिएको ऍपको नाम</string>
     <string name="show_coverArt">एल्बम कभर देखाउनुहोस्</string>
     <string name="show_coverArtDesc">एल्बम कभर ठूलो चित्रको रूपमा देखाउनुहोस्</string>
-    <string name="enable_experimentalRpc">एक्सपेरिमेंटल RPC सक्षम गर्नुहोस्</string>
+    <string name="enable_ManualRpc">एक्सपेरिमेंटल RPC सक्षम गर्नुहोस्</string>
     <string name="completion_media_author">मुख्य लेखक</string>
     <string name="completion_media_album">एल्बमको नाम</string>
     <string name="completion_media_albumArtist">एल्बम कलाकार</string>

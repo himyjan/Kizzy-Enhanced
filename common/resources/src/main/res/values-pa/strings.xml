@@ -112,7 +112,7 @@
     <string name="main_mediaRpc">ਮੀਡੀਆ RPC</string>
     <string name="main_customRpc">ਕਸਟਮ RPC</string>
     <string name="main_consoleRpc">ਕੰਸੋਲ RPC</string>
-    <string name="main_experimentalRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC</string>
+    <string name="main_ManualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC</string>
     <string name="main_comingSoon">ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ</string>
     <string name="exit">ਬਾਹਰ ਨਿਕਲੋ</string>
     <string name="logs">ਲਾਗ</string>
@@ -188,12 +188,12 @@
     <string name="use_imgurDesc">Imgur ਦੀ ਵਰਤੋਂ ਬਾਰੇ ਵੇਵਰਾ</string>
     <string name="start_appDetection">ਐਪ ਡਿਟੈਕਸ਼ਨ ਸ਼ੁਰੂ ਕਰੋ</string>
     <string name="start_mediaRpc">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
-    <string name="start_experimentalRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
+    <string name="start_ManualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕਰੋ</string>
     <string name="stop_rpc">RPC ਰੋਕੋ</string>
     <string name="stop">ਰੋਕੋ</string>
     <string name="start_appDetectionToast">ਐਪ ਡਿਟੈਕਸ਼ਨ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
     <string name="start_mediaRpcToast">ਮੀਡੀਆ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
-    <string name="start_experimentalRpcToast">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
+    <string name="start_ManualRpcToast">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ</string>
     <string name="stop_rpcToast">ਸਾਰੀਆਂ ਸੇਵਾਵਾਂ ਰੋਕ ਦਿੱਤੀਆਂ ਗਈਆਂ ਹਨ</string>
     <string name="show_playbackState">ਪਲੇਬੈਕ ਸਥਿਤੀ ਦਿਖਾਓ</string>
     <string name="copied_toClipboard">ਕਲਿੱਪਬੋਰਡ apos;ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ ਹੈ</string>
@@ -211,7 +211,7 @@
     <string name="completion_appName">ਡਿਟੈਕਟ ਕੀਤਾ ਗਿਆ ਐਪ ਨਾਮ</string>
     <string name="show_coverArt">ਐਲਬਮ ਕਵਰ ਦਿਖਾਓ</string>
     <string name="show_coverArtDesc">ਐਲਬਮ ਕਵਰ ਵੱਡੀ ਤਸਵੀਰ ਵਜੋਂ ਦਿਖਾਓ</string>
-    <string name="enable_experimentalRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸਕਰੀਏਲ ਕਰੋ</string>
+    <string name="enable_ManualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC ਸਕਰੀਏਲ ਕਰੋ</string>
     <string name="completion_media_author">ਮੁੱਖ ਲੇਖਕ</string>
     <string name="completion_media_album">ਐਲਬਮ ਦਾ ਨਾਮ</string>
     <string name="completion_media_albumArtist">ਐਲਬਮ ਕਲਾਕਾਰ</string>

@@ -116,8 +116,8 @@
     <string name="main_customRpc">Egendefinert RPC</string>
     <string name="main_consoleRpc">Konsoll-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy lar deg bruke noen forhåndsdefinerte innstillinger for å sette din tilstedeværelse på Discord.</string>
-    <string name="main_experimentalRpc">Eksperimentell RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC er en funksjon i Kizzy som konstant bytter mellom Apps RPC og Media RPC.</string>
+    <string name="main_ManualRpc">Eksperimentell RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC er en funksjon i Kizzy som konstant bytter mellom Apps RPC og Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy lar deg lage din egen fullstendig tilpasselige rik presens for Discord.</string>
     <string name="main_comingSoon">Kommer snart</string>
     <string name="exit">Avslutt</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Bruk Imgur som alternativ bildeproxy.</string>
     <string name="start_appDetection">Start appdeteksjon</string>
     <string name="start_mediaRpc">Start Medie-RPC</string>
-    <string name="start_experimentalRpc">Start Eksperimentell RPC</string>
+    <string name="start_ManualRpc">Start Eksperimentell RPC</string>
     <string name="stop_rpc">Stopp RPC</string>
     <string name="stop">Stopp</string>
     <string name="start_appDetectionToast">App-deteksjon startet</string>
     <string name="start_mediaRpcToast">Media RPC startet</string>
-    <string name="start_experimentalRpcToast">Experimental RPC startet</string>
+    <string name="start_ManualRpcToast">Experimental RPC startet</string>
     <string name="stop_rpcToast">Alle tjenester stoppet</string>
     <string name="show_playbackState">Vis avspillingsstatus</string>
     <string name="copied_toClipboard">Kopiert til utklippstavle</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Oppdaget app-navn</string>
     <string name="show_coverArt">Vis albumomslag</string>
     <string name="show_coverArt_desc">Vis albumomslag som stort bilde</string>
-    <string name="enable_experimentalRpc">Aktiver Experimental RPC</string>
+    <string name="enable_ManualRpc">Aktiver Experimental RPC</string>
     <string name="completion_media_author">Hovedforfatter</string>
     <string name="completion_media_album">Albumnavn</string>
     <string name="completion_media_albumArtist">Albumartist</string>

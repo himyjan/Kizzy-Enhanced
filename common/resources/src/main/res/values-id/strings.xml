@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC Kustom</string>
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpcDetails">Kizzy memungkinkan Anda menggunakan beberapa pengaturan yang telah ditetapkan untuk menentukan kehadiran Anda di Discord.</string>
-    <string name="main_experimentalRpc">RPC Eksperimental</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC adalah fitur di Kizzy yang terus beralih antara Apps RPC dan Media RPC.</string>
+    <string name="main_ManualRpc">RPC Eksperimental</string>
+    <string name="main_ManualRpcDetails">Experimental RPC adalah fitur di Kizzy yang terus beralih antara Apps RPC dan Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy memungkinkan Anda membuat kustomisasi penuh dari Rich Presence untuk Discord.</string>
     <string name="main_comingSoon">Segera Hadir</string>
     <string name="exit">Keluar</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Gunakan Imgur sebagai proxy gambar alternatif.</string>
     <string name="start_appDetection">Mulai Deteksi Aplikasi</string>
     <string name="start_mediaRpc">Mulai Media RPC</string>
-    <string name="start_experimentalRpc">Mulai Experimental RPC</string>
+    <string name="start_ManualRpc">Mulai Experimental RPC</string>
     <string name="stop_rpc">Hentikan RPC</string>
     <string name="stop">Hentikan</string>
     <string name="start_appDetectionToast">Deteksi Aplikasi Dimulai</string>
     <string name="start_mediaRpcToast">Media RPC Dimulai</string>
-    <string name="start_experimentalRpcToast">Experimental RPC Dimulai</string>
+    <string name="start_ManualRpcToast">Experimental RPC Dimulai</string>
     <string name="stop_rpcToast">Semua layanan dihentikan</string>
     <string name="show_playbackState">Tampilkan Status Pemutaran</string>
     <string name="copied_toClipboard">Disalin ke clipboard</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Nama Aplikasi Terdeteksi</string>
     <string name="show_cover_art">Tampilkan Sampul Album</string>
     <string name="show_cover_art_desc">Tampilkan sampul album sebagai gambar besar</string>
-    <string name="enable_experimentalRpc">Aktifkan Experimental RPC</string>
+    <string name="enable_ManualRpc">Aktifkan Experimental RPC</string>
     <string name="completion_media_author">Penulis Utama</string>
     <string name="completion_media_album">Nama Album</string>
     <string name="completion_media_albumArtist">Artis Album</string>

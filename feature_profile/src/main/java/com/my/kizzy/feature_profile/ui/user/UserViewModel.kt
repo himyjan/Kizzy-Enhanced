@@ -243,7 +243,7 @@ class UserViewModel @Inject constructor(
             }
             AppUtils.mediaRpcRunning() ->
                 LastPresence.media() ?: RpcConfig(name = "Media RPC", details = "Playing media", type = "2")
-            AppUtils.experimentalRpcRunning() ->
+            AppUtils.ManualRpcRunning() ->
                 LastPresence.experimental() ?: RpcConfig(name = "Experimental RPC", details = "Active")
             AppUtils.appDetectionRunning() -> RpcConfig(name = "App Detection", details = "Detecting apps")
             else -> LastPresence.media() ?: LastPresence.experimental() ?: kizzyDefault()

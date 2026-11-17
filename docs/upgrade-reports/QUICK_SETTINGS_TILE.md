@@ -8,7 +8,7 @@ A Android Quick Settings tile that lets users start or stop any RPC directly fro
 
 - **Service:** `feature_rpc_base/services/KizzyTileService.kt` — extends `TileService`
 - **Dialog:** `DialogActivity.kt` (launched when the device is locked)
-- **State:** `AppUtils.appDetectionRunning()`, `AppUtils.mediaRpcRunning()`, `AppUtils.experimentalRpcRunning()`
+- **State:** `AppUtils.appDetectionRunning()`, `AppUtils.mediaRpcRunning()`, `AppUtils.ManualRpcRunning()`
 
 ## Tile behavior
 

@@ -116,8 +116,8 @@
     <string name="main_customRpc">Kohandatud RPC</string>
     <string name="main_consoleRpc">Konsooli RPC</string>
     <string name="main_consoleRpcDetails">Kizzy lubab teil kasutada ette määratud seadistusi, et määrata oma olemasolu Discordis.</string>
-    <string name="main_experimentalRpc">Katse-RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC on Kizzy funktsioon, mis vahetab pidevalt Apps RPC ja Media RPC vahel.</string>
+    <string name="main_ManualRpc">Katse-RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC on Kizzy funktsioon, mis vahetab pidevalt Apps RPC ja Media RPC vahel.</string>
     <string name="main_customRpcDetails">Kizzy annab teil võimaluse luua oma täielikult kohandatava rich presence Discordis.</string>
     <string name="main_comingSoon">Kiiresti tuleb</string>
     <string name="exit">Välju</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Kasutage Imguri alternatiivse piliproksiiona.</string>
     <string name="start_appDetection">Käivita rakenduse tuvastus</string>
     <string name="start_mediaRpc">Käivita Media RPC</string>
-    <string name="start_experimentalRpc">Käivita Experimental RPC</string>
+    <string name="start_ManualRpc">Käivita Experimental RPC</string>
     <string name="stop_rpc">Peata RPC</string>
     <string name="stop">Peata</string>
     <string name="start_appDetectionToast">Rakenduse tuvastus käivitatud</string>
     <string name="start_mediaRpcToast">Media RPC käivitatud</string>
-    <string name="start_experimentalRpcToast">Experimental RPC käivitatud</string>
+    <string name="start_ManualRpcToast">Experimental RPC käivitatud</string>
     <string name="stop_rpcToast">Kõik teenused peatatud</string>
     <string name="show_playbackState">Näita esitusfunktsiooni seisundi</string>
     <string name="copied_toClipboard">Kopioitud lõikelauale</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Leitud rakenduse nimi</string>
     <string name="show_coverArt">Näita albumi kaama</string>
     <string name="show_coverArt_desc">Näita albumi kanda suureks pildiks</string>
-    <string name="enable_experimentalRpc">Luba Experimental RPC</string>
+    <string name="enable_ManualRpc">Luba Experimental RPC</string>
     <string name="completion_media_author">Peaautor</string>
     <string name="completion_media_album">Albuminimi</string>
     <string name="completion_media_albumArtist">Albumi kunstner</string>

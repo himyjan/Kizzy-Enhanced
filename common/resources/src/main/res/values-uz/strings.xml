@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">Experimental RPC</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Experimental RPC</string>
+    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Imgur\'dan muqobil rasm proksi sifatida foydalaning.</string>
     <string name="start_appDetection">Ilova aniqlashni boshlash</string>
     <string name="start_mediaRPC">Media RPC boshlash</string>
-    <string name="start_experimentalRPC">Experimental RPC boshlash</string>
+    <string name="start_ManualRpc">Experimental RPC boshlash</string>
     <string name="stop_rpc">RPC to\'xtatish</string>
     <string name="stop">To\'xtatish</string>
     <string name="start_appDetection_toast">Ilova aniqlash boshlandi</string>
     <string name="start_mediaRPC_toast">Media RPC boshlandi</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC boshlandi</string>
+    <string name="start_ManualRpc_toast">Experimental RPC boshlandi</string>
     <string name="stop_rpc_toast">Barcha xizmatlar to\'xtatildi</string>
     <string name="show_playback_state">Ijro holatini ko\'rsatish</string>
     <string name="copied_to_clipboard">Buferga nusxalandi</string>

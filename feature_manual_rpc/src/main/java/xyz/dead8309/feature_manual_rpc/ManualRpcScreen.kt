@@ -136,7 +136,7 @@ import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 
-import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
+import com.my.kizzy.feature_rpc_base.services.ManualRpc
 
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 
@@ -238,9 +238,9 @@ fun ManualRpcScreen(
         rpcManager.refreshFromServices()
     }
 
-    var experimentalRpcRunning by remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ExperimentalRpc) }
+    var ManualRpcRunning by remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ManualRpc) }
     LaunchedEffect(rpcManager.activeRpc) {
-        experimentalRpcRunning = rpcManager.activeRpc.value == RpcType.ExperimentalRpc
+        ManualRpcRunning = rpcManager.activeRpc.value == RpcType.ManualRpc
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -269,7 +269,7 @@ fun ManualRpcScreen(
 
                     Text(
 
-                        text = stringResource(id = R.string.main_experimentalRpc),
+                        text = stringResource(id = R.string.main_ManualRpc),
 
                         style = MaterialTheme.typography.headlineMedium,
 
@@ -351,16 +351,16 @@ fun ManualRpcScreen(
 
                 title = stringResource(id = R.string.enable_experimental_rpc),
 
-                isChecked = experimentalRpcRunning,
+                isChecked = ManualRpcRunning,
 
                 enabled = hasUsageAccess && hasNotificationAccess,
 
             ) {
 
-                val newValue = !experimentalRpcRunning
-                experimentalRpcRunning = newValue
+                val newValue = !ManualRpcRunning
+                ManualRpcRunning = newValue
                 scope.launch {
-                    rpcManager.switchTo(if (newValue) RpcType.ExperimentalRpc else RpcType.None)
+                    rpcManager.switchTo(if (newValue) RpcType.ManualRpc else RpcType.None)
                 }
 
             }

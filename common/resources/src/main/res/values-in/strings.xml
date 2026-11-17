@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_experimentalRpc">RPC Eksperimental</string>
-    <string name="main_experimentalRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">RPC Eksperimental</string>
+    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Pakai Imgur sebagai alternatif proxy gambar.</string>
     <string name="start_appDetection">Mulai Deteksi Aplikasi</string>
     <string name="start_mediaRPC">Mulai Media RPC</string>
-    <string name="start_experimentalRPC">Mulai Experimental RPC</string>
+    <string name="start_ManualRpc">Mulai Experimental RPC</string>
     <string name="stop_rpc">Hentikan RPC</string>
     <string name="stop">Hentikan</string>
     <string name="start_appDetection_toast">Deteksi aplikasi dimulai</string>
     <string name="start_mediaRPC_toast">Media RPC dimulai</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC dimulai</string>
+    <string name="start_ManualRpc_toast">Experimental RPC dimulai</string>
     <string name="stop_rpc_toast">Semua layanan dihentikan</string>
     <string name="show_playback_state">Tampilkan Status Pemutaran</string>
     <string name="copied_to_clipboard">Disalin ke clipboard</string>

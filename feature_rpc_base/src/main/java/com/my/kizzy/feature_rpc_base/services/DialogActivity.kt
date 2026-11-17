@@ -32,7 +32,7 @@ class DialogActivity : Activity() {
         val rpc = arrayOf(
             getString(R.string.main_appDetection),
             getString(R.string.main_mediaRpc),
-            getString(R.string.main_experimentalRpc)
+            getString(R.string.main_ManualRpc)
         )
         val dialog = MaterialAlertDialogBuilder(ContextThemeWrapper(this, com.my.kizzy.feature_rpc_base.R.style.MyTileDialogTheme))
             .setTitle(getString(R.string.choose_rpc))

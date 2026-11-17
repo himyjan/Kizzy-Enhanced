@@ -114,8 +114,8 @@
     <string name="main_customRpc">కస్టమ్ RPC</string>
     <string name="main_consoleRpc">కాన్సోల్ RPC</string>
     <string name="main_consoleRpcDetails">Kizzy ప్రీ-డిఫైన్డ్ ప్రీసెట్ ఉపయోగించి Discord లో మీ ఉనికిని సెట్ చేయడానికి అనుమతిస్తుంది.</string>
-    <string name="main_experimentalRpc">ఎక్స్‌పెరీమెంటల్ RPC</string>
-    <string name="main_experimentalRpcDetails">ఎక్స్పెరీమెంటల్ RPC Kizzy లో ఒక ఫీచర్, ఇది యాప్స్ RPC మరియు మీడియా RPC ల మధ్య అసలు rotates చేశాడు.</string>
+    <string name="main_ManualRpc">ఎక్స్‌పెరీమెంటల్ RPC</string>
+    <string name="main_ManualRpcDetails">ఎక్స్పెరీమెంటల్ RPC Kizzy లో ఒక ఫీచర్, ఇది యాప్స్ RPC మరియు మీడియా RPC ల మధ్య అసలు rotates చేశాడు.</string>
     <string name="main_customRpcDetails">Kizzy డిజిటల్ రించ్ ఫోజూన్స్ సృష్టించడానికి అనుమతిస్తుంది.</string>
     <string name="main_comingSoon">రాజు రాకుండా</string>
     <string name="exit">బయటకు వెళ్ళండి</string>
@@ -193,12 +193,12 @@
     <string name="use_imgurDesc">ఇమూర్ ప్రతిబింబ ప్రొక్సీ వంటి ఉపయోగించండి.</string>
     <string name="start_appDetection">యాప్ డిటెక్షన్ ప్రారంభించండి</string>
     <string name="start_mediaRpc">మీడియా RPC ప్రారంభించండి</string>
-    <string name="start_experimentalRpc">ఎక్స్పిరిమెంటల్ RPC ప్రారంభించండి</string>
+    <string name="start_ManualRpc">ఎక్స్పిరిమెంటల్ RPC ప్రారంభించండి</string>
     <string name="stop_rpc">RPC నిలిపించండి</string>
     <string name="stop">నిలిపించండి</string>
     <string name="start_appDetectionToast">యాప్ డిటెక్షన్ ప్రారంభించింది</string>
     <string name="start_mediaRpcToast">మీడియా RPC ప్రారంభించింది</string>
-    <string name="start_experimentalRpcToast">ఎక్స్పెరిమెంటల్ RPC ప్రారంభించింది</string>
+    <string name="start_ManualRpcToast">ఎక్స్పెరిమెంటల్ RPC ప్రారంభించింది</string>
     <string name="stop_rpcToast">అన్ని సెవ్య ఉచితం</string>
     <string name="show_playbackState">ప్లేబ్యాక్ స్థితి చూపించండి</string>
     <string name="copied_toClipboard">క్లిప్ బోర్డులో నకిలీ</string>
@@ -216,7 +216,7 @@
     <string name="completion_appName">డిటెక్ట్ చేయబడిన యాప్ పేరు</string>
     <string name="show_coverArt">ఆల్బమ్ కవర్ చూపించండి</string>
     <string name="show_coverArt_desc">ఆల్బమ్ కవర్ పెద్ద చిత్రంగా చూపించండి</string>
-    <string name="enable_experimentalRpc">ఎక్స్పిరిమెంటల్ RPC ఎనేబుల్ చేయండి</string>
+    <string name="enable_ManualRpc">ఎక్స్పిరిమెంటల్ RPC ఎనేబుల్ చేయండి</string>
     <string name="completion_media_author">ప్రధాన రచయిత</string>
     <string name="completion_media_album">ఆల్బమ్ పేరు</string>
     <string name="completion_media_albumArtist">ఆల్బం కళాకారుడు</string>

@@ -116,8 +116,8 @@
     <string name="main_customRpc">自定义 RPC</string>
     <string name="main_consoleRpc">主机 RPC</string>
     <string name="main_consoleRpcDetails">Kizzy 允许您使用一些预设预设来设置您在 Discord 上的状态。</string>
-    <string name="main_experimentalRpc">实验性 RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC 是 Kizzy 的一个功能，它会不断在 Apps RPC 和 Media RPC 之间切换。</string>
+    <string name="main_ManualRpc">实验性 RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC 是 Kizzy 的一个功能，它会不断在 Apps RPC 和 Media RPC 之间切换。</string>
     <string name="main_customRpcDetails">Kizzy 允许您为 Discord 创建完全自定义的丰富状态。</string>
     <string name="main_comingSoon">即将推出</string>
     <string name="exit">退出</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">将 Imgur 用作替代图片代理。</string>
     <string name="start_appDetection">启动应用程序检测</string>
     <string name="start_mediaRpc">启动 Media RPC</string>
-    <string name="start_experimentalRpc">启动 Experimental RPC</string>
+    <string name="start_ManualRpc">启动 Experimental RPC</string>
     <string name="stop_rpc">停止 RPC</string>
     <string name="stop">停止</string>
     <string name="start_appDetectionToast">应用程序检测已启动</string>
     <string name="start_mediaRpcToast">Media RPC 已启动</string>
-    <string name="start_experimentalRpcToast">Experimental RPC 已启动</string>
+    <string name="start_ManualRpcToast">Experimental RPC 已启动</string>
     <string name="stop_rpcToast">所有服务已停止</string>
     <string name="show_playbackState">显示播放状态</string>
     <string name="copied_toClipboard">已复制到剪贴板</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">检测到的应用程序名称</string>
     <string name="show_coverArt">显示专辑封面</string>
     <string name="show_coverArt_desc">将专辑封面显示为大图</string>
-    <string name="enable_experimentalRpc">启用 Experimental RPC</string>
+    <string name="enable_ManualRpc">启用 Experimental RPC</string>
     <string name="completion_media_author">主要作者</string>
     <string name="completion_media_album">专辑名称</string>
     <string name="completion_media_albumArtist">专辑艺术家</string>

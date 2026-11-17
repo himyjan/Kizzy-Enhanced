@@ -116,8 +116,8 @@
     <string name="main_customRpc">कस्टम आरपीसी</string>
     <string name="main_consoleRpc">कंसोल आरपीसी</string>
     <string name="main_consoleRpcDetails">किज़ी आपको डिस्कॉर्ड पर अपनी उपस्थिति सेट करने के लिए पहले से निर्धारित सेटिंग्स का उपयोग करने की अनुमति देता है।</string>
-    <string name="main_experimentalRpc">एक्सपेरिमेंटल आरपीसी</string>
-    <string name="main_experimentalRpcDetails">एक्सपेरिमेंटल आरपीसी किज़ी की एक विशेषता है जो लगातार ऐप्स आरपीसी और मीडिया आरपीसी के बीच स्विच करता है।</string>
+    <string name="main_ManualRpc">एक्सपेरिमेंटल आरपीसी</string>
+    <string name="main_ManualRpcDetails">एक्सपेरिमेंटल आरपीसी किज़ी की एक विशेषता है जो लगातार ऐप्स आरपीसी और मीडिया आरपीसी के बीच स्विच करता है।</string>
     <string name="main_customRpcDetails">किज़ी आपको डिस्कॉर्ड के लिए पूरी तरह से अनुकूलन योग्य रिच प्रेज़ेंस बनाने की अनुमति देता है।</string>
     <string name="main_comingSoon">जल्द आ रहा है</string>
     <string name="exit">निकास</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">इमगुर को वैकल्पिक छवि प्रॉक्सी के रूप में उपयोग करें।</string>
     <string name="start_appDetection">ऐप डिटेक्शन शुरू करें</string>
     <string name="start_mediaRpc">मीडिया आरपीसी शुरू करें</string>
-    <string name="start_experimentalRpc">एक्सपेरिमेंटल आरपीसी शुरू करें</string>
+    <string name="start_ManualRpc">एक्सपेरिमेंटल आरपीसी शुरू करें</string>
     <string name="stop_rpc">आरपीसी रोकें</string>
     <string name="stop">रोकें</string>
     <string name="start_appDetectionToast">ऐप डिटेक्शन शुरू किया गया</string>
     <string name="start_mediaRpcToast">मीडिया आरपीसी शुरू किया गया</string>
-    <string name="start_experimentalRpcToast">एक्सपेरिमेंटल आरपीसी शुरू किया गया</string>
+    <string name="start_ManualRpcToast">एक्सपेरिमेंटल आरपीसी शुरू किया गया</string>
     <string name="stop_rpcToast">सभी सेवाएं रोक दी गईं</string>
     <string name="show_playbackState">प्लेबैक स्थिति दिखाएं</string>
     <string name="copied_to_clipboard">क्लिपबोर्ड पर कॉपी किया गया</string>

@@ -113,7 +113,7 @@
     <string name="main_customRpc">கஸ்டம் RPC</string>
     <string name="main_consoleRpc">கன்சோல் RPC</string>
     <string name="main_consoleRpcDetails">Kizzy ஆப்ஜெக்ட் RAM</string>
-    <string name="main_experimentalRpc">அக்ஸ்பீரிமெண்டல் RPC</string>
+    <string name="main_ManualRpc">அக்ஸ்பீரிமெண்டல் RPC</string>
     <string name="main_comingSoon">விரைவில் வருகிறது</string>
     <string name="exit">வெளியேறு</string>
     <string name="logs">லாக்</string>
@@ -190,12 +190,12 @@
     <string name="use_imgurDesc">இமுர் பிம்ப பிராக்சி definition</string>
     <string name="start_appDetection">ஏப் டெகெக்ஷன் தொடங்கு</string>
     <string name="start_mediaRpc">மீடியா RPC தொடங்கு</string>
-    <string name="start_experimentalRpc">எக்ஸ்பெரிமெண்டல் RPC தொடங்கு</string>
+    <string name="start_ManualRpc">எக்ஸ்பெரிமெண்டல் RPC தொடங்கு</string>
     <string name="stop_rpc">RPC நிறுத்து</string>
     <string name="stop">நிறுத்து</string>
     <string name="start_appDetectionToast">ஏப் டெகெக்ஷன் தொடங்கியது</string>
     <string name="start_mediaRpcToast">மீடியா RPC தொடங்கியது</string>
-    <string name="start_experimentalRpcToast">எக்ஸ்பெரிமெண்டல் RPC தொடங்கியது</string>
+    <string name="start_ManualRpcToast">எக்ஸ்பெரிமெண்டல் RPC தொடங்கியது</string>
     <string name="stop_rpcToast">அனைத்து சேவைகள் நிறுத்தப்பட்டன</string>
     <string name="show_playbackState">பிளேபேக் நிலை காட்ட</string>
     <string name="copied_toClipboard">கிளிப்போர்டில் நகலுடன்</string>
@@ -212,7 +212,7 @@
     <string name="completion_appName">டெகெக்ஷன் செய்யப்பட்ட ஏப் பெயர்</string>
     <string name="show_coverArt">இஸ்மே சுரேஷ்</string>
     <string name="show_coverArt_desc">கவர் ஆர்ட்டைக் காட்டுவது பற்றிய விவரம்</string>
-    <string name="enable_experimentalRpc">எக்ஸ்பீரிமெண்டல் RPC இயக்க</string>
+    <string name="enable_ManualRpc">எக்ஸ்பீரிமெண்டல் RPC இயக்க</string>
     <string name="completion_media_author">முதன்மை ஆசிரியர்</string>
     <string name="completion_media_album">அல்பாம் பெயர்</string>
     <string name="completion_media_albumArtist">Album பிரத்யேக கலைஞர்</string>

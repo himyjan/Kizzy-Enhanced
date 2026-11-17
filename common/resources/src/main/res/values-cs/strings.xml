@@ -116,8 +116,8 @@
     <string name="main_customRpc">Vlastní RPC</string>
     <string name="main_consoleRpc">Konzolové RPC</string>
     <string name="main_consoleRpcDetails">Kizzy vám umožňuje použít některé předdefinované nastavení pro nastavení vaší přítomnosti na Discord.</string>
-    <string name="main_experimentalRpc">Experimentální RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC je funkce v Kizzy, která nepřetržitě přepíná mezi Apps RPC a Media RPC.</string>
+    <string name="main_ManualRpc">Experimentální RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC je funkce v Kizzy, která nepřetržitě přepíná mezi Apps RPC a Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vám umožňuje vytvořit si vlastní plně přizpůsobitelnou rich presence pro Discord.</string>
     <string name="main_comingSoon">Brzy</string>
     <string name="exit">Ukončit</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Použijte Imgur jako alternativní proxy obrázků.</string>
     <string name="start_appDetection">Spustit detekci aplikací</string>
     <string name="start_mediaRpc">Spustit Media RPC</string>
-    <string name="start_experimentalRpc">Spustit Experimental RPC</string>
+    <string name="start_ManualRpc">Spustit Experimental RPC</string>
     <string name="stop_rpc">Zastavit RPC</string>
     <string name="stop">Zastavit</string>
     <string name="start_appDetectionToast">Detekce aplikací zahájena</string>
     <string name="start_mediaRpcToast">Media RPC spuštěno</string>
-    <string name="start_experimentalRpcToast">Experimental RPC spuštěno</string>
+    <string name="start_ManualRpcToast">Experimental RPC spuštěno</string>
     <string name="stop_rpcToast">Všechny služby zastaveny</string>
     <string name="show_playbackState">Zobrazit stav přehrávání</string>
     <string name="copied_toClipboard">Zkopírováno do schránky</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Název detekované aplikace</string>
     <string name="show_coverArt">Zobrazit obal alba</string>
     <string name="show_coverArt_desc">Zobrazit obal alba jako velký obrázek</string>
-    <string name="enable_experimentalRpc">Povolit Experimental RPC</string>
+    <string name="enable_ManualRpc">Povolit Experimental RPC</string>
     <string name="completion_media_author">Hlavní autor</string>
     <string name="completion_media_album">Název alba</string>
     <string name="completion_media_albumArtist">Umělec alba</string>

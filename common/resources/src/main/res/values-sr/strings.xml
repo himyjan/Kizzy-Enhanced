@@ -116,8 +116,8 @@
     <string name="main_customRpc">Prilagođen RPC</string>
     <string name="main_consoleRpc">Конзола RPC</string>
     <string name="main_consoleRpcDetails">Kizzy vam omogućava da koristite一些 predefined settings kako bi postavili svoje prisustvo na Discord.</string>
-    <string name="main_experimentalRpc">Eksperimentalan RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC je new feature u Kizzy koji stalno mijenja između Apps RPC i Media RPC.</string>
+    <string name="main_ManualRpc">Eksperimentalan RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC je new feature u Kizzy koji stalno mijenja između Apps RPC i Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vam omogućava da stvorite svoju potpuno prilagodljivu rich presence za Discord.</string>
     <string name="main_comingSoon">Brzo dolazi</string>
     <string name="exit">Излази</string>
@@ -194,12 +194,12 @@
     <string name="use_imgurDesc">Опишите коришћење Imgur-а</string>
     <string name="start_appDetection">Стартуј детекцију апликација</string>
     <string name="start_mediaRpc">Запусти Media RPC</string>
-    <string name="start_experimentalRpc">Почни Experimental RPC</string>
+    <string name="start_ManualRpc">Почни Experimental RPC</string>
     <string name="stop_rpc">Скини RPC</string>
     <string name="stop">Стоп</string>
     <string name="start_appDetectionToast">Ап детекција покренута</string>
     <string name="start_mediaRpcToast">Media RPC покренуто</string>
-    <string name="start_experimentalRpcToast">Experimental RPC pokrenut</string>
+    <string name="start_ManualRpcToast">Experimental RPC pokrenut</string>
     <string name="stop_rpcToast">Све услуге су stunning</string>
     <string name="show_playbackState">Покажи стање грејања</string>
     <string name="application_id">Идентификатор апликације</string>
@@ -216,7 +216,7 @@
     <string name="completion_appName">Аппликација наименована</string>
     <string name="show_coverArt">Прикажи обложку альбома</string>
     <string name="show_coverArt_desc">Покажи обложку альбома као велику слику</string>
-    <string name="enable_experimentalRpc">Омogući Experimental RPC</string>
+    <string name="enable_ManualRpc">Омogući Experimental RPC</string>
     <string name="completion_media_author">Основни аутор</string>
     <string name="completion_media_album">Име албума</string>
     <string name="completion_media_albumArtist">Албом автор</string>

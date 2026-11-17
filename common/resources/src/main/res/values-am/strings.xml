@@ -116,8 +116,8 @@
     <string name="main_customRpc">ብጁ RPC</string>
     <string name="main_consoleRpc">ኮንሶል RPC</string>
     <string name="main_consoleRpc_details">Kizzy በዲስኮርድ ላይ መገኘትዎን ለማቀናበር ቀድሞ የተዘጋጁ ቅድመ-ቅምጦችን እንዲጠቀሙ ይፈቅድልዎታል።</string>
-    <string name="main_experimentalRpc">የሙከራ RPC</string>
-    <string name="main_experimentalRpc_details">የሙከራ RPC በመተግበሪያዎች RPC እና በሚዲያ RPC መካከል ያለማቋረጥ የሚቀያየር በKizzy ውስጥ ያለ ባህሪ ነው።</string>
+    <string name="main_ManualRpc">የሙከራ RPC</string>
+    <string name="main_ManualRpc_details">የሙከራ RPC በመተግበሪያዎች RPC እና በሚዲያ RPC መካከል ያለማቋረጥ የሚቀያየር በKizzy ውስጥ ያለ ባህሪ ነው።</string>
     <string name="main_customRpc_details">Kizzy ለዲስኮርድ የራስዎን ሙሉ በሙሉ ሊበጅ የሚችል የበለፀገ መገኘት እንዲፈጥሩ ይፈቅድልዎታል።</string>
     <string name="main_comingSoon">በቅርብ ወጥ</string>
     <string name="exit">ውጣ</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Imgurን እንደ አማራጭ የምስል ፕሮክሲ ተጠቀም።</string>
     <string name="start_appDetection">የመተግበሪያ ማወቂያ ጀምር</string>
     <string name="start_mediaRPC">የሚዲያ RPC ጀምር</string>
-    <string name="start_experimentalRPC">የሙከራ RPC ጀምር</string>
+    <string name="start_ManualRpc">የሙከራ RPC ጀምር</string>
     <string name="stop_rpc">RPC አቁም</string>
     <string name="stop">አቁም</string>
     <string name="start_appDetection_toast">የመተግበሪያ ማወቂያ ጀምሯል</string>
     <string name="start_mediaRPC_toast">የሚዲያ RPC ጀምሯል</string>
-    <string name="start_experimentalRPC_toast">የሙከራ RPC ጀምሯል</string>
+    <string name="start_ManualRpc_toast">የሙከራ RPC ጀምሯል</string>
     <string name="stop_rpc_toast">ሁሉም አገልግሎቶች ቆመዋል</string>
     <string name="show_playback_state">የመልሶ ማጫወት ሁኔታ አሳይ</string>
     <string name="copied_to_clipboard">ወደ ክሊፕቦርድ ተገለበጠ</string>

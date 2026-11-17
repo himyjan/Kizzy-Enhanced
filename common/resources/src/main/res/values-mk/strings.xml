@@ -113,7 +113,7 @@
     <string name="main_customRpc">Прилагоден RPC</string>
     <string name="main_consoleRpc">Консола RPC</string>
     <string name="main_consoleRpcDetails">Kizzy се користи за тестову прибаву за обезбеђење успoredоване DC/RPC имплементације.</string>
-    <string name="main_experimentalRpc">Експериментален RPC</string>
+    <string name="main_ManualRpc">Експериментален RPC</string>
     <string name="main_customRpcDetails">Kizzy даје вам могућност да постигнете prilagođeno prisustvo на Discord.</string>
     <string name="main_comingSoon">Ѕе доћи</string>
     <string name="exit">Излез</string>
@@ -190,12 +190,12 @@
     <string name="use_imgurDesc">Использување Imgur као резервног аeters</string>
     <string name="start_appDetection">Поčni Ап датец</string>
     <string name="start_mediaRpc">Почни Media RPC</string>
-    <string name="start_experimentalRpc">Покрени Experimental RPC</string>
+    <string name="start_ManualRpc">Покрени Experimental RPC</string>
     <string name="stop_rpc">Скини RPC</string>
     <string name="stop">Стоп</string>
     <string name="start_appDetectionToast">Ап детекција покrenuta</string>
     <string name="start_mediaRpcToast">Медија РПЦ покренут</string>
-    <string name="start_experimentalRpcToast">Експериментални РПЦ покренут</string>
+    <string name="start_ManualRpcToast">Експериментални РПЦ покренут</string>
     <string name="stop_rpcToast">Све сервиси spent</string>
     <string name="show_playbackState">Покажи стат.</string>
     <string name="copied_toClipboard">Копирано у буфер</string>
@@ -213,7 +213,7 @@
     <string name="completion_appName">Изведени име апликације</string>
     <string name="show_coverArt">Покажи албума</string>
     <string name="show_coverArt_desc">Покажи албум као слику</string>
-    <string name="enable_experimentalRpc">Оствари Experimental RPC</string>
+    <string name="enable_ManualRpc">Оствари Experimental RPC</string>
     <string name="completion_media_author">Автор</string>
     <string name="completion_media_album">Назив альбома</string>
     <string name="completion_media_albumArtist">Артист albuma</string>

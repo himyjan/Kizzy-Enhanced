@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC tùy chỉnh</string>
     <string name="main_consoleRpc">RPC bảng điều khiển</string>
     <string name="main_consoleRpcDetails">Kizzy cho phép bạn sử dụng một số cài đặt có sẵn để thiết lập trạng thái hiện diện của bạn trên Discord.</string>
-    <string name="main_experimentalRpc">RPC thử nghiệm</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC là một tính năng của Kizzy mà nó liên tục chuyển đổi giữa Apps RPC và Media RPC.</string>
+    <string name="main_ManualRpc">RPC thử nghiệm</string>
+    <string name="main_ManualRpcDetails">Experimental RPC là một tính năng của Kizzy mà nó liên tục chuyển đổi giữa Apps RPC và Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy cho phép bạn tạo một sự hiện diện phong phú hoàn toàn tùy chỉnh cho Discord.</string>
     <string name="main_comingSoon">Sắp ra mắt</string>
     <string name="exit">Thoát</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Sử dụng Imgur làm proxy hình ảnh thay thế.</string>
     <string name="start_appDetection">Khởi động Phát hiện ứng dụng</string>
     <string name="start_mediaRpc">Khởi động Media RPC</string>
-    <string name="start_experimentalRpc">Khởi động Experimental RPC</string>
+    <string name="start_ManualRpc">Khởi động Experimental RPC</string>
     <string name="stop_rpc">Dừng RPC</string>
     <string name="stop">Dừng</string>
     <string name="start_appDetectionToast">Phát hiện ứng dụng đã khởi động</string>
     <string name="start_mediaRpcToast">Media RPC đã khởi động</string>
-    <string name="start_experimentalRpcToast">Experimental RPC đã khởi động</string>
+    <string name="start_ManualRpcToast">Experimental RPC đã khởi động</string>
     <string name="stop_rpcToast">Tất cả các dịch vụ đã được dừng</string>
     <string name="show_playbackState">Hiển thị trạng thái phát lại</string>
     <string name="copied_toClipboard">Đã sao chép vào khay nhớ tạm</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Tên ứng dụng đã phát hiện</string>
     <string name="show_coverArt">Hiển thị bìa album</string>
     <string name="show_coverArt_desc">Hiển thị bìa album dưới dạng hình lớn</string>
-    <string name="enable_experimentalRpc">Kích hoạt Experimental RPC</string>
+    <string name="enable_ManualRpc">Kích hoạt Experimental RPC</string>
     <string name="completion_media_author">Tác giả chính</string>
     <string name="completion_media_album">Tên album</string>
     <string name="completion_media_albumArtist">Nghệ sĩ album</string>

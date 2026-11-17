@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC مخصص</string>
     <string name="main_consoleRpc">RPC وحدة التحكم</string>
     <string name="main_consoleRpc_details">يسمح لك Kizzy باستخدام بعض الإعدادات المسبقة predefined لتعيين حضورك على Discord.</string>
-    <string name="main_experimentalRpc">RPC تجريبي</string>
-    <string name="main_experimentalRpc_details">Experimental RPC هي ميزة في Kizzy تقوم بالتبديل باستمرار بين Apps RPC و Media RPC.</string>
+    <string name="main_ManualRpc">RPC تجريبي</string>
+    <string name="main_ManualRpc_details">Experimental RPC هي ميزة في Kizzy تقوم بالتبديل باستمرار بين Apps RPC و Media RPC.</string>
     <string name="main_customRpc_details">يسمح لك Kizzy بإنشاء حضور غني مخصص بالكامل لـ Discord.</string>
     <string name="main_comingSoon">قريبًا</string>
     <string name="exit">خروج</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">استخدم Imgur كوكيل صورة بديل.</string>
     <string name="start_appDetection">ابدأ اكتشاف التطبيقات</string>
     <string name="start_mediaRPC">ابدأ Media RPC</string>
-    <string name="start_experimentalRPC">ابدأ Experimental RPC</string>
+    <string name="start_ManualRpc">ابدأ Experimental RPC</string>
     <string name="stop_rpc">توقف RPC</string>
     <string name="stop">توقف</string>
     <string name="start_appDetection_toast">تم بدء اكتشاف التطبيقات</string>
     <string name="start_mediaRPC_toast">تم بدء Media RPC</string>
-    <string name="start_experimentalRPC_toast">تم بدء Experimental RPC</string>
+    <string name="start_ManualRpc_toast">تم بدء Experimental RPC</string>
     <string name="stop_rpc_toast">تم إيقاف جميع الخدمات</string>
     <string name="show_playback_state">إظهار حالة التشغيل</string>
     <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>

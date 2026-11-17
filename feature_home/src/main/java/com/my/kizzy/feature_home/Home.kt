@@ -103,7 +103,7 @@ fun Home(
 ) {
     val ctx = LocalContext.current
     val mediaRpcTitle = stringResource(R.string.main_mediaRpc)
-    val experimentalRpcTitle = stringResource(R.string.main_experimentalRpc)
+    val ManualRpcTitle = stringResource(R.string.main_ManualRpc)
     val customRpcTitle = stringResource(R.string.main_customRpc)
     var homeItems by remember {
         mutableStateOf(features)
@@ -132,7 +132,7 @@ fun Home(
             homeItems = features.map { item ->
                 when (item.title) {
                     mediaRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.MediaRpc)
-                    experimentalRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ManualRpc)
+                    ManualRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ManualRpc)
                     customRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.CustomRpc)
                     else -> item
                 }

@@ -58,7 +58,7 @@ class ShortcutsActivity : Activity() {
 
                     startService(Intent(this, ManualRpc::class.java))
                     Toast.makeText(
-                        this, getString(R.string.start_experimentalRPC_toast), Toast.LENGTH_SHORT
+                        this, getString(R.string.start_ManualRpc_toast), Toast.LENGTH_SHORT
                     ).show()
                 }
 

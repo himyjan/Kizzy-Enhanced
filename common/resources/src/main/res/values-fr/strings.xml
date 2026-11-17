@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC personnalisé</string>
     <string name="main_consoleRpc">RPC console</string>
     <string name="main_consoleRpcDetails">Kizzy vous permet dapos;utiliser quelques préréglages prédéfinis pour définir votre présence sur Discord.</string>
-    <string name="main_experimentalRpc">RPC expérimental</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC est une fonctionnalité de Kizzy qui alterne constamment entre Apps RPC et Media RPC.</string>
+    <string name="main_ManualRpc">RPC expérimental</string>
+    <string name="main_ManualRpcDetails">Experimental RPC est une fonctionnalité de Kizzy qui alterne constamment entre Apps RPC et Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy vous permet de créer votre propre présence riche entièrement personnalisable pour Discord.</string>
     <string name="main_comingSoon">Bientôt disponible</string>
     <string name="exit">Quitter</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Utiliser Imgur comme proxy dapos;image alternatif.</string>
     <string name="start_appDetection">Démarrer la détection dapos;applications</string>
     <string name="start_mediaRpc">Démarrer Media RPC</string>
-    <string name="start_experimentalRpc">Démarrer Experimental RPC</string>
+    <string name="start_ManualRpc">Démarrer Experimental RPC</string>
     <string name="stop_rpc">Arrêter RPC</string>
     <string name="stop">Arrêter</string>
     <string name="start_appDetectionToast">Détection dapos;applications démarrée</string>
     <string name="start_mediaRpcToast">Media RPC démarré</string>
-    <string name="start_experimentalRpcToast">Experimental RPC démarré</string>
+    <string name="start_ManualRpcToast">Experimental RPC démarré</string>
     <string name="stop_rpcToast">Tous les services arrêtés</string>
     <string name="show_playbackState">Afficher lapos;état de lecture</string>
     <string name="copied_toClipboard">Copié dans le presse-papiers</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Nom de lapos;application détectée</string>
     <string name="show_coverArt">Afficher la pochette de lapos;album</string>
     <string name="show_coverArt_desc">Afficher la pochette de lapos;album comme grande image</string>
-    <string name="enable_experimentalRpc">Activer Experimental RPC</string>
+    <string name="enable_ManualRpc">Activer Experimental RPC</string>
     <string name="completion_media_author">Auteur principal</string>
     <string name="completion_media_album">Nom de lapos;album</string>
     <string name="completion_media_albumArtist">Artiste de lapos;album</string>

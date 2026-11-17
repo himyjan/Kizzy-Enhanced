@@ -116,8 +116,8 @@
     <string name="main_customRpc">RPC Kustom</string>
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpc_details">Kizzy nyedhiyakake kesempatan kanggo nggunakake sawijining praetakan sing ditetepake kanggo netepake kehadiran marang Discord.</string>
-    <string name="main_experimentalRpc">RPC Eksperimen</string>
-    <string name="main_experimentalRpc_details">Experimental RPC minangka fitur ing Kizzy sing anyar-anyar ora-nalika mbenteni antarane Apps RPC lan Media RPC.</string>
+    <string name="main_ManualRpc">RPC Eksperimen</string>
+    <string name="main_ManualRpc_details">Experimental RPC minangka fitur ing Kizzy sing anyar-anyar ora-nalika mbenteni antarane Apps RPC lan Media RPC.</string>
     <string name="main_customRpc_details">Kizzy nyedhiyakake kesempatan kanggo nggawe rich presence sing bisa disesuaikan sepenuh kanggo Discord.</string>
     <string name="main_comingSoon">Segera Hadir</string>
     <string name="exit">Keluar</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Gunakake Imgur minangka proxy gambar anyar.</string>
     <string name="start_appDetection">Mulai Deteksi Aplikasi</string>
     <string name="start_mediaRPC">Mulai Media RPC</string>
-    <string name="start_experimentalRPC">Mulai Experimental RPC</string>
+    <string name="start_ManualRpc">Mulai Experimental RPC</string>
     <string name="stop_rpc">Berhenti RPC</string>
     <string name="stop">Berhenti</string>
     <string name="start_appDetection_toast">Deteksi Aplikasi dimulai</string>
     <string name="start_mediaRPC_toast">Media RPC dimulai</string>
-    <string name="start_experimentalRPC_toast">Experimental RPC dimulai</string>
+    <string name="start_ManualRpc_toast">Experimental RPC dimulai</string>
     <string name="stop_rpc_toast">Semua layanan berhenti</string>
     <string name="show_playback_state">Tampilan Status Pemutaran</string>
     <string name="copied_to_clipboard">Disalin marang papan klip</string>

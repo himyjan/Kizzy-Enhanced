@@ -6,7 +6,7 @@ An advanced, template-driven Rich Presence that combines rich-media detection wi
 
 ## Implementation
 
-- **Service:** `feature_rpc_base/services/ExperimentalRpc.kt` — `@AndroidEntryPoint` foreground service (extends `Service`)
+- **Service:** `feature_rpc_base/services/ManualRpc.kt` — `@AndroidEntryPoint` foreground service (extends `Service`)
 - **UI:** `feature_manual_rpc/ManualRpcScreen.kt` + `ManualRpcViewmodel.kt`
 - **Core logic:** `TemplateProcessor`, `Timestamps`, `CommonRpc`, `RpcImage`
 

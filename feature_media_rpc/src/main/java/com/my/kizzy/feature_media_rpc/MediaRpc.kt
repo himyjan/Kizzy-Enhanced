@@ -298,7 +298,7 @@ fun MediaRPCContent(
             SwitchBar(
                 title = stringResource(id = R.string.enable_mediaRpc),
                 isChecked = mediaRpcRunning,
-                enabled = hasNotificationAccess && !AppUtils.experimentalRpcRunning(),
+                enabled = hasNotificationAccess && !AppUtils.ManualRpcRunning(),
             ) { onMediaRpcRunningChanged() }
             LazyColumn {
                 item {

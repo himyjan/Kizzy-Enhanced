@@ -116,8 +116,8 @@
     <string name="main_customRpc">Własne RPC</string>
     <string name="main_consoleRpc">RPC konsoli</string>
     <string name="main_consoleRpcDetails">Kizzy pozwala Ci użyć niektórych wstępnie zdefiniowanych ustawień, aby ustawić swoją obecność na Discord.</string>
-    <string name="main_experimentalRpc">Eksperymentalne RPC</string>
-    <string name="main_experimentalRpcDetails">Experimental RPC to funkcja w Kizzy, która stale przełącza się między Apps RPC a Media RPC.</string>
+    <string name="main_ManualRpc">Eksperymentalne RPC</string>
+    <string name="main_ManualRpcDetails">Experimental RPC to funkcja w Kizzy, która stale przełącza się między Apps RPC a Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy pozwala Ci stworzyć własny w pełni konfigurowalny rich presence dla Discord.</string>
     <string name="main_comingSoon">Wkrótce</string>
     <string name="exit">Wyjdź</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Użyj Imgur jako zamiennego proxy obrazu.</string>
     <string name="start_appDetection">Uruchom wykrywanie aplikacji</string>
     <string name="start_mediaRpc">Uruchom Media RPC</string>
-    <string name="start_experimentalRpc">Uruchom Experimental RPC</string>
+    <string name="start_ManualRpc">Uruchom Experimental RPC</string>
     <string name="stop_rpc">Zatrzymaj RPC</string>
     <string name="stop">Zatrzymaj</string>
     <string name="start_appDetectionToast">Wykrywanie aplikacji zostało uruchomione</string>
     <string name="start_mediaRpcToast">Media RPC zostało uruchomione</string>
-    <string name="start_experimentalRpcToast">Experimental RPC zostało uruchomione</string>
+    <string name="start_ManualRpcToast">Experimental RPC zostało uruchomione</string>
     <string name="stop_rpcToast">Wszystkie usługi zostały zatrzymane</string>
     <string name="show_playbackState">Pokaż stan odtwarzania</string>
     <string name="copied_toClipboard">Skopiowano do schowka</string>
@@ -218,7 +218,7 @@
     <string name="completion_appName">Wykryta nazwa aplikacji</string>
     <string name="show_coverArt">Pokaż okładkę albumu</string>
     <string name="show_coverArt_desc">Pokaż okładkę albumu jako duży obraz</string>
-    <string name="enable_experimentalRpc">Włącz Experimental RPC</string>
+    <string name="enable_ManualRpc">Włącz Experimental RPC</string>
     <string name="completion_media_author">Główny autor</string>
     <string name="completion_media_album">Nazwa albumu</string>
     <string name="completion_media_albumArtist">Wykonawca albumu</string>

@@ -68,11 +68,11 @@ fun homeFeaturesProvider(
     }
     val mediaRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.MediaRpc) }
     val customRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.CustomRpc) }
-    val experimentalRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ManualRpc) }
+    val ManualRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ManualRpc) }
     val appDetectionRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.AppDetectionRpc) }
     LaunchedEffect(rpcManager.activeRpc) {
         mediaRpcRunning.value = rpcManager.activeRpc.value == RpcType.MediaRpc
-        experimentalRpcRunning.value = rpcManager.activeRpc.value == RpcType.ManualRpc
+        ManualRpcRunning.value = rpcManager.activeRpc.value == RpcType.ManualRpc
         customRpcRunning.value = rpcManager.activeRpc.value == RpcType.CustomRpc
         appDetectionRunning.value = rpcManager.activeRpc.value == RpcType.AppDetectionRpc
     }
@@ -105,11 +105,11 @@ fun homeFeaturesProvider(
 
         ),
         HomeFeature(
-            title = stringResource(id = R.string.main_experimentalRpc),
+            title = stringResource(id = R.string.main_ManualRpc),
             icon = R.drawable.ic_dev_rpc,
             route = Routes.MANUAL_RPC,
             onClick = { navigateTo(it) },
-            isChecked = experimentalRpcRunning.value,
+            isChecked = ManualRpcRunning.value,
 
             onCheckedChange = {
                 scope.launch {
@@ -121,7 +121,7 @@ fun homeFeaturesProvider(
 
             showSwitch = true,
 
-            tooltipText = stringResource(id = R.string.main_experimentalRpc_details),
+            tooltipText = stringResource(id = R.string.main_ManualRpc_details),
 
             featureDocsLink = ToolTipContent.MANUAL_RPC_DOCS_LINK
 

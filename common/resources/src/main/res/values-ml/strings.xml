@@ -116,8 +116,8 @@
     <string name="main_customRpc">കസ്റ്റം RPC</string>
     <string name="main_consoleRpc">കോൺസോൾ RPC</string>
     <string name="main_consoleRpc_details">Kizzy ചില പ്രീ-ഡിഫൈൻഡ് പ്രീസെറ്റ് ഉപയോഗിച്ച് Discord-ൽ നിങ്ങളുടെ സംഗതി നിശ്ചയിക്കാൻ അനുവദിക്കുന്നു.</string>
-    <string name="main_experimentalRpc">ആക്സ്പിരിമെന്റൽ RPC</string>
-    <string name="main_experimentalRpc_details">ആക്സ്പിരിമെന്റൽ RPC കിഴിയിലെ ഒരു ഫീച്ചர் ആണ്, അത് ആപ്പ്‌സ് RPC-യും മീഡിയ RPC-യും തമ്മിൽ perpétuellement മാറിക്കൊണ്ടിരിക്കുന്നു.</string>
+    <string name="main_ManualRpc">ആക്സ്പിരിമെന്റൽ RPC</string>
+    <string name="main_ManualRpc_details">ആക്സ്പിരിമെന്റൽ RPC കിഴിയിലെ ഒരു ഫീച്ചர் ആണ്, അത് ആപ്പ്‌സ് RPC-യും മീഡിയ RPC-യും തമ്മിൽ perpétuellement മാറിക്കൊണ്ടിരിക്കുന്നു.</string>
     <string name="main_customRpc_details">Kizzy നിങ്ങളുടെ സ്വന്തം പൂർണ്ണമായി കസ്റ്റമൈസ് ചെയ്യാവുന്ന റിച്ച് പ്രെസൻസ് Discord-ൽ സൃഷ്ടിക്കാൻ അനുവദിക്കുന്നു.</string>
     <string name="main_comingSoon">വientôt വenganും</string>
     <string name="exit">വ saída</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">ഇമുറെ വികസിപ്പിക്കേണ്ട ചിത്ര പ്രോക്സി ഉപയോഗിക്കുക.</string>
     <string name="start_appDetection">ആപ്പ് ഡിറ്റക്ഷൻ തുടങ്ങുക</string>
     <string name="start_mediaRPC">മീഡിയ RPC തുടങ്ങുക</string>
-    <string name="start_experimentalRPC">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങുക</string>
+    <string name="start_ManualRpc">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങുക</string>
     <string name="stop_rpc">RPC നിർത്തുക</string>
     <string name="stop">നിർത്തുക</string>
     <string name="start_appDetection_toast">ആപ്പ് ഡിറ്റക്ഷൻ തുടങ്ങി</string>
     <string name="start_mediaRPC_toast">മീഡിയ RPC തുടങ്ങി</string>
-    <string name="start_experimentalRPC_toast">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങി</string>
+    <string name="start_ManualRpc_toast">ആക്സ്പിരിമെന്റൽ RPC തുടങ്ങി</string>
     <string name="stop_rpc_toast">എല്ലാ സർവീസും നിർത്തി</string>
     <string name="show_playback_state">പ്ലേബാക്ക് അവസ്ഥ പ്രദർശിപ്പിക്കുക</string>
     <string name="copied_to_clipboard">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>

@@ -116,8 +116,8 @@
     <string name="main_customRpc">Власний RPC</string>
     <string name="main_consoleRpc">Консоль RPC</string>
     <string name="main_consoleRpc_details">Kizzy дозволяє використовувати деякі попередньо налаштовані налаштування, щоб встановити вашу присутність на Discord.</string>
-    <string name="main_experimentalRpc">Експериментальний RPC</string>
-    <string name="main_experimentalRpc_details">Експериментальний RPC — це функція Kizzy, яка постійно перемикається між Apps RPC та Media RPC.</string>
+    <string name="main_ManualRpc">Експериментальний RPC</string>
+    <string name="main_ManualRpc_details">Експериментальний RPC — це функція Kizzy, яка постійно перемикається між Apps RPC та Media RPC.</string>
     <string name="main_customRpc_details">Kizzy дозволяє створити повністю налаштовану rich presence для Discord.</string>
     <string name="main_comingSoon">Звільнити</string>
     <string name="exit">Вихід</string>
@@ -195,12 +195,12 @@
     <string name="use_imgur_desc">Використовувати Imgur як альтернативне проксі для зображень.</string>
     <string name="start_appDetection">Запустити виявлення програм</string>
     <string name="start_mediaRPC">Запустити Media RPC</string>
-    <string name="start_experimentalRPC">Запустити Експериментальний RPC</string>
+    <string name="start_ManualRpc">Запустити Експериментальний RPC</string>
     <string name="stop_rpc">Зупинити RPC</string>
     <string name="stop">Зупинити</string>
     <string name="start_appDetection_toast">Виявлення програм запущено</string>
     <string name="start_mediaRPC_toast">Media RPC запущено</string>
-    <string name="start_experimentalRPC_toast">Експериментальний RPC запущено</string>
+    <string name="start_ManualRpc_toast">Експериментальний RPC запущено</string>
     <string name="stop_rpc_toast">Всі служби зупинено</string>
     <string name="show_playback_state">Показати стан відтворення</string>
     <string name="copied_to_clipboard">Скопійовано в буфер обміну</string>
