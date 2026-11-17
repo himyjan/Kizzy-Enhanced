@@ -19,81 +19,45 @@
  *
 
  */
-
-
-
 package com.my.kizzy.feature_custom_rpc
-
-
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-
 import androidx.compose.animation.AnimatedVisibility
-
 import androidx.compose.foundation.background
-
 import androidx.compose.foundation.clickable
-
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Row
-
 import androidx.compose.foundation.layout.Arrangement
-
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
-
 import androidx.compose.foundation.layout.fillMaxSize
-
 import androidx.compose.foundation.layout.fillMaxWidth
-
 import androidx.compose.foundation.layout.padding
-
 import androidx.compose.foundation.layout.size
-
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-
 import androidx.compose.material.icons.Icons
-
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Search
-
 import androidx.compose.material.icons.filled.DesktopWindows
-
 import androidx.compose.material.icons.filled.Edit
-
 import androidx.compose.material3.DropdownMenu
-
 import androidx.compose.material3.DropdownMenuItem
-
 import androidx.compose.material3.ExperimentalMaterial3Api
-
 import androidx.compose.material3.Icon
-
 import androidx.compose.material3.IconButton
-
 import androidx.compose.material3.LargeTopAppBar
-
 import androidx.compose.material3.MaterialTheme
-
 import androidx.compose.material3.Scaffold
-
 import androidx.compose.material3.Tab
-
 import androidx.compose.material3.TabRow
-
 import androidx.compose.material3.SnackbarHost
-
 import androidx.compose.material3.SnackbarHostState
-
 import androidx.compose.material3.Text
-
 import androidx.compose.material3.TopAppBarDefaults
-
 import androidx.compose.material3.rememberTopAppBarState
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -101,94 +65,51 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-
 import androidx.compose.ui.Alignment
-
 import androidx.compose.ui.draw.clip
-
 import androidx.compose.foundation.shape.RoundedCornerShape
-
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-
 import coil3.compose.AsyncImage
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-
 import androidx.compose.foundation.layout.height
-
 import androidx.compose.ui.platform.LocalContext
-
 import androidx.compose.ui.res.stringResource
-
 import androidx.compose.ui.text.input.KeyboardType
-
 import androidx.compose.ui.text.style.TextOverflow
-
 import androidx.compose.ui.tooling.preview.Preview
-
 import com.my.kizzy.data.rpc.Constants
-
 import com.my.kizzy.data.rpc.Constants.MAX_ALLOWED_CHARACTER_LENGTH
-
 import com.my.kizzy.data.utils.uriToFile
-
 import com.my.kizzy.domain.model.user.User
-
 import com.my.kizzy.domain.model.rpc.RpcConfig
-
 import com.my.kizzy.feature_custom_rpc.components.BottomSheet
-
 import com.my.kizzy.feature_custom_rpc.components.DateTimePickerDialog
-
 import com.my.kizzy.feature_custom_rpc.components.ImagePicker
-
 import com.my.kizzy.feature_custom_rpc.components.sheet.DeleteConfigDialog
-
 import com.my.kizzy.feature_custom_rpc.components.sheet.LoadConfig
-
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
-
 import com.my.kizzy.feature_custom_rpc.components.sheet.PreviewDialog
-
 import com.my.kizzy.feature_custom_rpc.components.sheet.RequestStoragePermissionDialog
-
 import com.my.kizzy.feature_custom_rpc.components.sheet.SaveConfigDialog
-
 import com.my.kizzy.feature_custom_rpc.components.sheet.ShareConfig
-
 import com.my.kizzy.preference.Prefs
-
 import com.my.kizzy.resources.R
-
 import com.my.kizzy.ui.components.BackButton
-
 import com.my.kizzy.ui.components.RpcField
-
 import com.my.kizzy.ui.components.SwitchBar
-
 import kotlinx.coroutines.launch
-
 import kotlinx.serialization.json.Json
-
 import androidx.compose.material.icons.outlined.EditCalendar
-
 import androidx.compose.material.icons.outlined.Image
-
 import androidx.compose.material.icons.outlined.Info
-
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-
 import androidx.compose.material.icons.outlined.MoreVert
-
 import androidx.compose.material.icons.outlined.BrokenImage
-
-
 
 @Composable
 
@@ -2099,25 +2020,42 @@ private fun RpcTextFieldsColumn(
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(games, key = { it.game_title }) { game ->
-                        val gameSelectedText = stringResource(R.string.console_game_selected, game.game_title)
-                        ConsoleGameItem(
-                            game = game,
-                            selected = consoleSelectedGameTitle == game.game_title,
-                            onClick = {
-                                consoleSelectedGameTitle = game.game_title
-                                val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
-                                val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
-                                scope.launch {
-                                    snackBarHostState.showSnackbar(gameSelectedText)
-                                }
-                                applyConsoleGame(
-                                    game = game,
-                                    startTs = startTs,
-                                    endTs = endTs
+                    if (uiState.consoleGames.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No games found",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
-                        )
+                        }
+                    } else {
+                        items(games, key = { it.game_title }) { game ->
+                            val gameSelectedText = stringResource(R.string.console_game_selected, game.game_title)
+                            ConsoleGameItem(
+                                game = game,
+                                selected = consoleSelectedGameTitle == game.game_title,
+                                onClick = {
+                                    consoleSelectedGameTitle = game.game_title
+                                    val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
+                                    val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
+                                    scope.launch {
+                                        snackBarHostState.showSnackbar(gameSelectedText)
+                                    }
+                                    applyConsoleGame(
+                                        game = game,
+                                        startTs = startTs,
+                                        endTs = endTs
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -2253,20 +2191,7 @@ fun ConsoleGameItem(
             }
         }
     }
-
-    if (games.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "No games found",
-                style = MaterialTheme.typography.bodyMedium,
-                color = colorScheme.onSurfaceVariant,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
+}
 
 /**
  * A row in the Console RPC preset list.
