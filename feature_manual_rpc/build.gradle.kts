@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.my.kizzy.feature_experimental_rpc"
+    namespace = "com.my.kizzy.feature_manual_rpc"
 }
 
 dependencies {

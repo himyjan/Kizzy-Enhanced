@@ -58,9 +58,9 @@ import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.navigation.Routes
 import com.my.kizzy.preference.Prefs
-import xyz.dead8309.feature_experimental_rpc.ExperimentalRpcScreen
-import xyz.dead8309.feature_experimental_rpc.ExperimentalRpcViewmodel
-import xyz.dead8309.feature_experimental_rpc.apps.ExperimentalRpcAppsScreen
+import xyz.dead8309.feature_manual_rpc.ManualRpcScreen
+import xyz.dead8309.feature_manual_rpc.ManualRpcViewmodel
+import xyz.dead8309.feature_manual_rpc.apps.ExperimentalRpcAppsScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalAnimationApi::class)
@@ -307,8 +307,8 @@ internal fun Kizzy(
                 )
             }
             composable(Routes.EXPERIMENTAL_RPC) { navBackStackEntry ->
-                val experimentalRpcViewModel = hiltViewModel<ExperimentalRpcViewmodel>(navBackStackEntry)
-                ExperimentalRpcScreen(
+                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
+                ManualRpcScreen(
                     state = experimentalRpcViewModel.uiState.collectAsState().value,
                     onEvent = experimentalRpcViewModel::onEvent,
                     onBackPressed = { navController.popBackStack() },
@@ -320,7 +320,7 @@ internal fun Kizzy(
                 )
             }
             composable(Routes.EXPERIMENTAL_RPC_APPS) { navBackStackEntry ->
-                val experimentalRpcViewModel = hiltViewModel<ExperimentalRpcViewmodel>(navBackStackEntry)
+                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
                 ExperimentalRpcAppsScreen(
                     onBackPressed = { navController.popBackStack() },
                     state = experimentalRpcViewModel.uiState.collectAsState().value,

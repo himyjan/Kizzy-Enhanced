@@ -40,7 +40,7 @@ class DialogActivity : Activity() {
                 when (which) {
                     0 -> startService(Intent(this, AppDetectionService::class.java))
                     1 -> startService(Intent(this, MediaRpcService::class.java))
-                    2 -> startService(Intent(this, ExperimentalRpc::class.java))
+                    2 -> startService(Intent(this, ManualRpc::class.java))
                 }
                 dialog.dismiss()
                 finish()

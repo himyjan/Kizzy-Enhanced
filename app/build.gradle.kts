@@ -103,7 +103,7 @@ dependencies {
     implementation(projects.featureMediaRpc)
     implementation(projects.featureConsoleRpc)
     implementation(projects.featureCustomRpc)
-    implementation(projects.featureExperimentalRpc)
+    implementation(projects.featureManualRpc)
     implementation(projects.featureHome)
     implementation(projects.common.preference)
     implementation(projects.common.navigation)

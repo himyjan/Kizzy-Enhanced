@@ -18,6 +18,7 @@ import android.content.MutableContextWrapper
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -75,9 +76,14 @@ class DiscordAuthManager(context: Context) {
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
         }
 
+        // Apply AndroidX isolated multi-profile storage & ensure clean profile state
         try {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)) {
                 val profileStore = ProfileStore.getInstance()
+                // Wipe previous profile data if it existed to guarantee freshness
+                if (profileStore.getAllProfileNames().contains(EPHEMERAL_PROFILE_NAME)) {
+                    profileStore.deleteProfile(EPHEMERAL_PROFILE_NAME)
+                }
                 profileStore.getProfile(EPHEMERAL_PROFILE_NAME)
                 WebViewCompat.setProfile(webView, EPHEMERAL_PROFILE_NAME)
             }
@@ -86,6 +92,8 @@ class DiscordAuthManager(context: Context) {
         }
 
         CookieManager.getInstance().apply {
+            removeAllCookies(null)
+            flush()
             setAcceptCookie(true)
             setAcceptThirdPartyCookies(webView, true)
         }
@@ -132,6 +140,11 @@ class DiscordAuthManager(context: Context) {
                 super.onPageFinished(view, url)
                 tryExtractToken(view, url)
             }
+
+            override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
+                destroy()
+                return true
+            }
         }
 
         // Load the URL immediately when attached to window (un-throttled full speed)
@@ -154,21 +167,34 @@ class DiscordAuthManager(context: Context) {
             clearCache(true)
             clearHistory()
             clearFormData()
+            clearSslPreferences()
             (parent as? ViewGroup)?.removeView(this)
             destroy()
         }
 
+        // Thoroughly purge isolated profile storage, cookies, and local web storage
         try {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)) {
-                ProfileStore.getInstance().deleteProfile(EPHEMERAL_PROFILE_NAME)
+                val profileStore = ProfileStore.getInstance()
+                if (profileStore.getAllProfileNames().contains(EPHEMERAL_PROFILE_NAME)) {
+                    profileStore.deleteProfile(EPHEMERAL_PROFILE_NAME)
+                }
             }
         } catch (e: Exception) {
             // Ignored
         }
 
-        CookieManager.getInstance().removeAllCookies(null)
-        CookieManager.getInstance().flush()
-        android.webkit.WebStorage.getInstance().deleteAllData()
+        CookieManager.getInstance().apply {
+            removeAllCookies(null)
+            removeSessionCookies(null)
+            flush()
+        }
+
+        try {
+            android.webkit.WebStorage.getInstance().deleteAllData()
+        } catch (e: Exception) {
+            // Ignored
+        }
 
         contextWrapper.baseContext = appContext
         cachedWebView = null
@@ -194,6 +220,8 @@ internal fun DiscordAuthView(
     DisposableEffect(authManager) {
         onDispose {
             authManager.detach()
+            // Force destruction on compose disposal so cookies never leak across visits
+            authManager.destroy()
         }
     }
 

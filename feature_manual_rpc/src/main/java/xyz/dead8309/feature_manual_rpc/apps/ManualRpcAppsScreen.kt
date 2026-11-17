@@ -10,7 +10,7 @@
  *
  */
 
-package xyz.dead8309.feature_experimental_rpc.apps
+package xyz.dead8309.feature_manual_rpc.apps
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -86,8 +86,8 @@ import com.my.kizzy.ui.components.KSwitch
 import com.my.kizzy.ui.components.ActivityTypeChip
 import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.components.rememberAppIconBitmap
-import xyz.dead8309.feature_experimental_rpc.UiEvent
-import xyz.dead8309.feature_experimental_rpc.UiState
+import xyz.dead8309.feature_manual_rpc.UiEvent
+import xyz.dead8309.feature_manual_rpc.UiState
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Headphones

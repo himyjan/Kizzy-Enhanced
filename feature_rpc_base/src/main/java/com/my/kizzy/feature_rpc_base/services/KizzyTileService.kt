@@ -36,7 +36,7 @@ class KizzyTileService : TileService() {
             Tile.STATE_ACTIVE -> {
                 ctx.stopService(Intent(ctx, AppDetectionService::class.java))
                 ctx.stopService(Intent(ctx, MediaRpcService::class.java))
-                ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
+                ctx.stopService(Intent(ctx, ManualRpc::class.java))
                 Toast.makeText(ctx, getString(R.string.stop_rpc_toast), Toast.LENGTH_SHORT).show()
             }
             Tile.STATE_INACTIVE -> {
@@ -82,7 +82,7 @@ class KizzyTileService : TileService() {
                         Toast.makeText(ctx, getString(R.string.start_mediaRPC_toast), Toast.LENGTH_SHORT).show()
                     }
                     2 -> {
-                        ctx.startForegroundService(Intent(ctx, ExperimentalRpc::class.java))
+                        ctx.startForegroundService(Intent(ctx, ManualRpc::class.java))
                         Toast.makeText(ctx, getString(R.string.start_experimentalRPC_toast), Toast.LENGTH_SHORT).show()
                     }
                     else -> {}

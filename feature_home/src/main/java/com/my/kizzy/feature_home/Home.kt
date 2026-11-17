@@ -132,7 +132,7 @@ fun Home(
             homeItems = features.map { item ->
                 when (item.title) {
                     mediaRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.MediaRpc)
-                    experimentalRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ExperimentalRpc)
+                    experimentalRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ManualRpc)
                     customRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.CustomRpc)
                     else -> item
                 }
@@ -380,7 +380,7 @@ val fakeFeatures = listOf(
         title = "Experimental RPC",
         icon = R.drawable.ic_dev_rpc,
         shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-        tooltipText = ToolTipContent.EXPERIMENTAL_RPC_DOCS
+        tooltipText = ToolTipContent.MANUAL_RPC_DOCS
     ),
     HomeFeature(
         title = "Custom RPC",

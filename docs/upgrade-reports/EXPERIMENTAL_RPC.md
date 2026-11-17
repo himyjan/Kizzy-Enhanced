@@ -7,7 +7,7 @@ An advanced, template-driven Rich Presence that combines rich-media detection wi
 ## Implementation
 
 - **Service:** `feature_rpc_base/services/ExperimentalRpc.kt` — `@AndroidEntryPoint` foreground service (extends `Service`)
-- **UI:** `feature_experimental_rpc/ExperimentalRpcScreen.kt` + `ExperimentalRpcViewmodel.kt`
+- **UI:** `feature_manual_rpc/ManualRpcScreen.kt` + `ManualRpcViewmodel.kt`
 - **Core logic:** `TemplateProcessor`, `Timestamps`, `CommonRpc`, `RpcImage`
 
 ## Key capabilities
@@ -58,7 +58,7 @@ Read via `BatteryManager.BATTERY_PROPERTY_CAPACITY` (0–100), exposed as the `{
 | `EXPERIMENTAL_RPC_USE_BUTTONS` | false | Show RPC buttons |
 | `EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID` | false | Use custom Discord application ID |
 | `EXPERIMENTAL_RPC_APPLICATION_ID` | — | Custom application ID value |
-| `EXPERIMENTAL_RPC_PLATFORM` | — | Spoofed gateway identify platform/os/device |
+| `MANUAL_RPC_PLATFORM` | — | Spoofed gateway identify platform/os/device |
 | `ENABLED_EXPERIMENTAL_APPS` | `[]` | JSON list of app package names to detect |
 
 ## Service behavior

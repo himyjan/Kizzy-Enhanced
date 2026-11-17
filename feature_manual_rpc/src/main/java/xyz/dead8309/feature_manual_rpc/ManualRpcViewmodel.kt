@@ -2,7 +2,7 @@
  *
  *  ******************************************************************
  *  *  * Copyright (C) 2022
- *  *  * ExperimentalRpcViewmodel.kt is part of Kizzy
+ *  *  * ManualRpcViewmodel.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
@@ -10,7 +10,7 @@
  *
  */
 
-package xyz.dead8309.feature_experimental_rpc
+package xyz.dead8309.feature_manual_rpc
 
 import android.content.Context
 import android.content.Intent
@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class ExperimentalRpcViewmodel @Inject constructor(
+class ManualRpcViewmodel @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
@@ -48,7 +48,7 @@ class ExperimentalRpcViewmodel @Inject constructor(
             showPlaybackState = Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_PLAYBACK_STATE, false],
             enableTimestamps = Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, false],
             hideOnPause = Prefs[Prefs.EXPERIMENTAL_RPC_HIDE_ON_PAUSE, false],
-            platform = Prefs[Prefs.EXPERIMENTAL_RPC_PLATFORM, ""],
+            platform = Prefs[Prefs.MANUAL_RPC_PLATFORM, ""],
             buttonsEnabled = Prefs[Prefs.EXPERIMENTAL_RPC_USE_BUTTONS, false],
             button1Text = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_TEXT, ""],
             button1Url = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""],
@@ -255,7 +255,7 @@ class ExperimentalRpcViewmodel @Inject constructor(
                 }
 
                 is UiEvent.SetPlatform -> {
-                    Prefs[Prefs.EXPERIMENTAL_RPC_PLATFORM] = event.value
+                    Prefs[Prefs.MANUAL_RPC_PLATFORM] = event.value
                     _uiState.update { it.copy(platform = event.value, platformIsExpanded = false) }
                     // Platform is applied via the gateway IDENTIFY on service start,
                     // so restart the running service to apply the new platform live.

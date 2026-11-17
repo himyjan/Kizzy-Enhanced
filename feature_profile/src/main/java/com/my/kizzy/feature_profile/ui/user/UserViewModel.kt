@@ -77,14 +77,14 @@ class UserViewModel @Inject constructor(
             Prefs.remove(Prefs.LASTFM_SHOW_COVER_ART)
             Prefs.remove(Prefs.LASTFM_SHOW_PARTY_CURRENT)
             Prefs.remove(Prefs.LASTFM_SHOW_PARTY_MAX)
-                            // Clear ListenBrainz scrobbling credentials so the next login
-                            // starts fresh with no stored scrobbling session.
-                            Prefs.remove(Prefs.LISTENBRAINZ_USER_TOKEN)
-                            Prefs.remove(Prefs.LISTENBRAINZ_ENABLED)
-                            Prefs.remove(Prefs.LISTENBRAINZ_ENABLE_TIMESTAMPS)
-                            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_COVER_ART)
-                            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_PARTY_CURRENT)
-                            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_PARTY_MAX)
+            // Clear ListenBrainz scrobbling credentials so the next login
+            // starts fresh with no stored scrobbling session.
+            Prefs.remove(Prefs.LISTENBRAINZ_USER_TOKEN)
+            Prefs.remove(Prefs.LISTENBRAINZ_ENABLED)
+            Prefs.remove(Prefs.LISTENBRAINZ_ENABLE_TIMESTAMPS)
+            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_COVER_ART)
+            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_PARTY_CURRENT)
+            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_PARTY_MAX)
 
             // Reset state to show not-logged-in UI immediately
             _state.value = UserState.Error(
@@ -99,7 +99,8 @@ class UserViewModel @Inject constructor(
 
     private fun getUser() {
         val userId = Prefs[Prefs.USER_ID, ""]
-        if (userId.isBlank()) {
+        val token = Prefs[Prefs.TOKEN, ""]
+        if (userId.isBlank() && token.isBlank()) {
             // Not logged in on cold start - show Error state with empty user
             // so UserScreen displays Discord Signin button immediately
             _state.value = UserState.Error(
@@ -109,37 +110,67 @@ class UserViewModel @Inject constructor(
             )
             return
         }
-        getUserUseCase(userId).onEach { result ->
-            // The ViewModel is created from inside the profile composition. A flow that
-            // emits eagerly would otherwise run this code synchronously during that
-            // composition. Posting to the main queue moves it to after the frame.
-            viewModelScope.launch(Dispatchers.Main) {
-                // Compute new state (off Main thread via coroutine dispatcher)
-                val newState = when (result) {
-                    is Resource.Success -> {
-                        val user = result.data?.copy(
-                            bio = Prefs[Prefs.USER_BIO],
-                            nitro = Prefs[Prefs.USER_NITRO]
-                        )
-                        Prefs[Prefs.USER_DATA] = Json.encodeToString(result.data)
-                        UserState.LoadingCompleted(
-                            user,
-                            currentRpcConfig()
-                        )
+        // If token exists but userId is blank, still try to load user
+        // (happens after Discord login where only token is saved initially)
+        if (userId.isBlank() && token.isNotBlank()) {
+            _state.value = UserState.Loading
+            // Try to load user via GetUserUseCase - it will use token to fetch user info
+            getUserUseCase(userId).onEach { result ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    val newState = when (result) {
+                        is Resource.Success -> {
+                            val user = result.data?.copy(
+                                bio = Prefs[Prefs.USER_BIO],
+                                nitro = Prefs[Prefs.USER_NITRO]
+                            )
+                            Prefs[Prefs.USER_DATA] = Json.encodeToString(result.data)
+                            UserState.LoadingCompleted(
+                                user,
+                                currentRpcConfig()
+                            )
+                        }
+                        is Resource.Error -> {
+                            val user = Json.decodeFromString<User>(Prefs[Prefs.USER_DATA, "{}"])
+                            UserState.Error(
+                                error = result.message ?: "An unexpected error occurred",
+                                user = user,
+                                rpcConfig = currentRpcConfig()
+                            )
+                        }
+                        is Resource.Loading -> UserState.Loading
                     }
-                    is Resource.Error -> {
-                        val user = Json.decodeFromString<User>(Prefs[Prefs.USER_DATA, "{}"])
-                        UserState.Error(
-                            error = result.message ?: "An unexpected error occurred",
-                            user = user,
-                            rpcConfig = currentRpcConfig()
-                        )
-                    }
-                    is Resource.Loading -> UserState.Loading
+                    _state.value = newState
                 }
-                _state.value = newState
-            }
-        }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
+        } else {
+            getUserUseCase(userId).onEach { result ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    val newState = when (result) {
+                        is Resource.Success -> {
+                            val user = result.data?.copy(
+                                bio = Prefs[Prefs.USER_BIO],
+                                nitro = Prefs[Prefs.USER_NITRO]
+                            )
+                            Prefs[Prefs.USER_DATA] = Json.encodeToString(result.data)
+                            UserState.LoadingCompleted(
+                                user,
+                                currentRpcConfig()
+                            )
+                        }
+                        is Resource.Error -> {
+                            val user = Json.decodeFromString<User>(Prefs[Prefs.USER_DATA, "{}"])
+                            UserState.Error(
+                                error = result.message ?: "An unexpected error occurred",
+                                user = user,
+                                rpcConfig = currentRpcConfig()
+                            )
+                        }
+                        is Resource.Loading -> UserState.Loading
+                    }
+                    _state.value = newState
+                }
+            }.launchIn(viewModelScope)
+        }
     }
 
     private fun observeRpcState() {

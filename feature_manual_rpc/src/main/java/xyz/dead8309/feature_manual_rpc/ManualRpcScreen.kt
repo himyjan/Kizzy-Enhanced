@@ -6,7 +6,7 @@
 
  *  *  * Copyright (C) 2022
 
- *  *  * ExperimentalRpcScreen.kt is part of Kizzy
+ *  *  * ManualRpcScreen.kt is part of Kizzy
 
  *  *  *  and can not be copied and/or distributed without the express
 
@@ -22,7 +22,7 @@
 
 
 
-package xyz.dead8309.feature_experimental_rpc
+package xyz.dead8309.feature_manual_rpc
 
 
 
@@ -215,7 +215,7 @@ private val completions = listOf(
 
 @Composable
 
-fun ExperimentalRpcScreen(
+fun ManualRpcScreen(
 
     onBackPressed: () -> Unit,
 
@@ -1185,11 +1185,11 @@ fun ExperimentalRpcScreen(
 
 
 
-@Preview(name = "ExperimentalRpcScreen (Light)")
+@Preview(name = "ManualRpcScreen (Light)")
 
 @Composable
 
-fun ExperimentalRpcScreenLightPreview() {
+fun ManualRpcScreenLightPreview() {
 
     val uiState = UiState(
 
@@ -1251,7 +1251,7 @@ fun ExperimentalRpcScreenLightPreview() {
 
     )
 
-    ExperimentalRpcScreen(
+    ManualRpcScreen(
 
         onBackPressed = {},
 
@@ -1271,11 +1271,11 @@ fun ExperimentalRpcScreenLightPreview() {
 
 
 
-@Preview(name = "ExperimentalRpcScreen (Dark)")
+@Preview(name = "ManualRpcScreen (Dark)")
 
 @Composable
 
-fun ExperimentalRpcScreenDarkPreview() {
+fun ManualRpcScreenDarkPreview() {
 
     val uiState = UiState(
 
@@ -1347,7 +1347,7 @@ fun ExperimentalRpcScreenDarkPreview() {
 
     ) {
 
-        ExperimentalRpcScreen(
+        ManualRpcScreen(
 
             onBackPressed = {},
 

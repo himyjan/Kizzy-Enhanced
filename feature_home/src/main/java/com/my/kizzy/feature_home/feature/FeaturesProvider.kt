@@ -26,11 +26,8 @@ package com.my.kizzy.feature_home.feature
 
 
 
-import android.content.Intent
-
 import androidx.compose.foundation.shape.RoundedCornerShape
 
-import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 
@@ -48,15 +45,6 @@ import androidx.compose.ui.res.stringResource
 
 import androidx.compose.ui.unit.dp
 
-import com.my.kizzy.feature_rpc_base.services.AppDetectionService
-
-import com.my.kizzy.feature_rpc_base.services.CustomRpcService
-
-import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
-
-import com.my.kizzy.feature_rpc_base.services.MediaRpcService
-
-import com.my.kizzy.feature_rpc_base.utils.stopMediaRpcService
 import com.my.kizzy.navigation.Routes
 
 import com.my.kizzy.preference.Prefs
@@ -80,11 +68,11 @@ fun homeFeaturesProvider(
     }
     val mediaRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.MediaRpc) }
     val customRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.CustomRpc) }
-    val experimentalRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ExperimentalRpc) }
+    val experimentalRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ManualRpc) }
     val appDetectionRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.AppDetectionRpc) }
     LaunchedEffect(rpcManager.activeRpc) {
         mediaRpcRunning.value = rpcManager.activeRpc.value == RpcType.MediaRpc
-        experimentalRpcRunning.value = rpcManager.activeRpc.value == RpcType.ExperimentalRpc
+        experimentalRpcRunning.value = rpcManager.activeRpc.value == RpcType.ManualRpc
         customRpcRunning.value = rpcManager.activeRpc.value == RpcType.CustomRpc
         appDetectionRunning.value = rpcManager.activeRpc.value == RpcType.AppDetectionRpc
     }
@@ -119,13 +107,13 @@ fun homeFeaturesProvider(
         HomeFeature(
             title = stringResource(id = R.string.main_experimentalRpc),
             icon = R.drawable.ic_dev_rpc,
-            route = Routes.EXPERIMENTAL_RPC,
+            route = Routes.MANUAL_RPC,
             onClick = { navigateTo(it) },
             isChecked = experimentalRpcRunning.value,
 
             onCheckedChange = {
                 scope.launch {
-                    rpcManager.switchTo(if (it) RpcType.ExperimentalRpc else RpcType.None)
+                    rpcManager.switchTo(if (it) RpcType.ManualRpc else RpcType.None)
                 }
             },
 
@@ -135,7 +123,7 @@ fun homeFeaturesProvider(
 
             tooltipText = stringResource(id = R.string.main_experimentalRpc_details),
 
-            featureDocsLink = ToolTipContent.EXPERIMENTAL_RPC_DOCS_LINK
+            featureDocsLink = ToolTipContent.MANUAL_RPC_DOCS_LINK
 
         ),
         HomeFeature(

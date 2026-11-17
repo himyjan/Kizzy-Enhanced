@@ -31,7 +31,7 @@ All RPC features are built on a shared foundation in `feature_rpc_base`:
 | Custom RPC | `CustomRpcService` | `CustomRPC` | Toggle switch in Custom RPC screen |
 | Media RPC | `MediaRpcService` | `MediaRPC` | Toggle switch in Media RPC screen |
 | Apps RPC | `AppDetectionService` | `AppsRPC` | Toggle switch in Apps RPC screen |
-| Experimental RPC | `ExperimentalRpc` | `ExperimentalRpcScreen` | Toggle switch in Experimental RPC screen |
+| Experimental RPC | `ManualRpc` | `ManualRpcScreen` | Toggle switch in Experimental RPC screen |
 | Quick Settings Tile | `KizzyTileService` | — | Quick-settings tile tap |
 
 Each individual report details the fields, behaviors, permissions, and user-facing settings for that feature.

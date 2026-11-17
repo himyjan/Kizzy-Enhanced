@@ -232,7 +232,7 @@ class KizzyRPC @Inject constructor(
         }
 
         val (browser, os, device) = Constants.spoofIdentifyProperties(
-            Prefs[Prefs.EXPERIMENTAL_RPC_PLATFORM, ""]
+            Prefs[Prefs.MANUAL_RPC_PLATFORM, ""]
         )
         if (discordWebSocket is DiscordWebSocketImpl) {
             discordWebSocket.refreshIdentifyProperties(token, browser, os, device)

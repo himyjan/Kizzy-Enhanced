@@ -2,7 +2,7 @@
  *
  *  ******************************************************************
  *  *  * Copyright (C) 2022
- *  *  * ExperimentalRpc.kt is part of Kizzy
+ *  *  * ManualRpc.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
@@ -44,11 +44,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val TAG = "ExperimentalRPC"
+private const val TAG = "ManualRPC"
 
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
-class ExperimentalRpc : Service() {
+class ManualRpc : Service() {
 
     @Inject
     lateinit var scope: CoroutineScope
@@ -185,8 +185,8 @@ class ExperimentalRpc : Service() {
         mediaRefreshJob = null
     }
 
-    private var useAppsRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, true]
-    private var useMediaRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, true]
+    private var useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
+    private var useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
 
     // Media detection retry settings - YouTube Music/LX Music can take 1-3 seconds
     // to populate title metadata after session appears.
@@ -194,11 +194,11 @@ class ExperimentalRpc : Service() {
     private val maxMediaDetectionAttempts = 4
 
     private var templateName =
-        Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
+        Prefs[Prefs.MANUAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
     private var templateDetails =
-        Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_DETAILS, TemplateKeys.MEDIA_TITLE]
+        Prefs[Prefs.MANUAL_RPC_TEMPLATE_DETAILS, TemplateKeys.MEDIA_TITLE]
     private var templateState =
-        Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
+        Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
 
     private var enabledExperimentalApps: List<String> = readEnabledExperimentalApps()
 
@@ -213,14 +213,14 @@ class ExperimentalRpc : Service() {
         if (intent?.action.equals(Constants.ACTION_STOP_SERVICE)) stopSelf()
         else if (intent?.action.equals(Constants.ACTION_RESTART_SERVICE)) {
             stopSelf()
-            startService(Intent(this, ExperimentalRpc::class.java))
+            startService(Intent(this, ManualRpc::class.java))
         } else {
-            val stopIntent = Intent(this, ExperimentalRpc::class.java)
+            val stopIntent = Intent(this, ManualRpc::class.java)
             stopIntent.action = Constants.ACTION_STOP_SERVICE
             val pendingIntent: PendingIntent = PendingIntent.getService(
                 this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
-            val restartIntent = Intent(this, ExperimentalRpc::class.java)
+            val restartIntent = Intent(this, ManualRpc::class.java)
             restartIntent.action = Constants.ACTION_RESTART_SERVICE
             val restartPendingIntent: PendingIntent = PendingIntent.getService(
                 this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -275,11 +275,11 @@ class ExperimentalRpc : Service() {
             // Move DataStore reads off main thread to avoid StrictMode DiskReadViolation
             scope.launch {
                 withContext(Dispatchers.IO) {
-                    templateName = Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
-                    templateDetails = Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_DETAILS, TemplateKeys.MEDIA_TITLE]
-                    templateState = Prefs[Prefs.EXPERIMENTAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
-                    useAppsRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_APPS_RPC, true]
-                    useMediaRpc = Prefs[Prefs.EXPERIMENTAL_RPC_USE_MEDIA_RPC, true]
+                    templateName = Prefs[Prefs.MANUAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
+                    templateDetails = Prefs[Prefs.MANUAL_RPC_TEMPLATE_DETAILS, TemplateKeys.MEDIA_TITLE]
+                    templateState = Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
+                    useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
+                    useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
                     enabledExperimentalApps = readEnabledExperimentalApps()
                 }
             }
@@ -427,7 +427,7 @@ class ExperimentalRpc : Service() {
 
         // Hide media on pause if enabled
         if (richMediaInfo != null &&
-            Prefs[Prefs.EXPERIMENTAL_RPC_HIDE_ON_PAUSE, false] &&
+            Prefs[Prefs.MANUAL_RPC_HIDE_ON_PAUSE, false] &&
             (richMediaInfo.playbackState == PlaybackState.STATE_PAUSED ||
                     richMediaInfo.playbackState == PlaybackState.STATE_STOPPED)
         ) {
@@ -437,12 +437,12 @@ class ExperimentalRpc : Service() {
                 // Clear the activity but keep the gateway connection alive, so playback can
                 // resume instantly instead of having to reconnect from scratch.
                 kizzyRPC.clearPresence()
-                val stopIntent = Intent(this, ExperimentalRpc::class.java)
+                val stopIntent = Intent(this, ManualRpc::class.java)
                 stopIntent.action = Constants.ACTION_STOP_SERVICE
                 val stopPendingIntent = PendingIntent.getService(
                     this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
                 )
-                val restartIntent = Intent(this, ExperimentalRpc::class.java)
+                val restartIntent = Intent(this, ManualRpc::class.java)
                 restartIntent.action = Constants.ACTION_RESTART_SERVICE
                 val restartPendingIntent = PendingIntent.getService(
                     this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
@@ -481,8 +481,8 @@ class ExperimentalRpc : Service() {
             currentMediaDurationSec = (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0)
 
             logger.d(TAG, "Processing Rich Media Context")
-            if (Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE, false]) {
-                val titleSource = Prefs[Prefs.EXPERIMENTAL_RPC_TITLE_SOURCE, "title"]
+            if (Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE, false]) {
+                val titleSource = Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE, "title"]
                 finalName = if (titleSource == "artist") richMediaInfo.artist else richMediaInfo.title
                 finalDetails = resolveTemplateValue(processor.process(templateDetails),
                     richMediaInfo.appName
@@ -501,20 +501,20 @@ class ExperimentalRpc : Service() {
             }
 
             finalLargeImage = when {
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_COVER_ART, true] &&
+                Prefs[Prefs.MANUAL_RPC_SHOW_COVER_ART, true] &&
                 Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false ->
                     // Fall back to the player's app icon when cover art is unavailable
                     richMediaInfo.coverArt ?: richMediaInfo.appIcon
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] &&
+                Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON, false] &&
                 Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false -> richMediaInfo.appIcon
                 else -> null
             }
 
             finalSmallImage = when {
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_PLAYBACK_STATE, true] ->
+                Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE, true] ->
                     richMediaInfo.playbackStateIcon
 
-                Prefs[Prefs.EXPERIMENTAL_RPC_SHOW_APP_ICON, false] &&
+                Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON, false] &&
                 Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false && finalLargeImage != richMediaInfo.appIcon ->
                     richMediaInfo.appIcon
                 else -> null
@@ -567,12 +567,12 @@ class ExperimentalRpc : Service() {
                 // Clear the activity but keep the connection, so the next track shows up
                 // immediately.
                 kizzyRPC.clearPresence()
-                val stopIntent = Intent(this, ExperimentalRpc::class.java)
+                val stopIntent = Intent(this, ManualRpc::class.java)
                 stopIntent.action = Constants.ACTION_STOP_SERVICE
                 val stopPendingIntent = PendingIntent.getService(
                     this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
                 )
-                val restartIntent = Intent(this, ExperimentalRpc::class.java)
+                val restartIntent = Intent(this, ManualRpc::class.java)
                 restartIntent.action = Constants.ACTION_RESTART_SERVICE
                 val restartPendingIntent = PendingIntent.getService(
                     this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
@@ -641,11 +641,11 @@ class ExperimentalRpc : Service() {
         // Experimental RPC screen. They were stored in the preferences but never actually
         // applied to the presence.
         kizzyRPC.clearButtons()
-        if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_BUTTONS, false]) {
-            val button1Text = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_TEXT, ""]
-            val button1Url = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON1_URL, ""]
-            val button2Text = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_TEXT, ""]
-            val button2Url = Prefs[Prefs.EXPERIMENTAL_RPC_BUTTON2_URL, ""]
+        if (Prefs[Prefs.MANUAL_RPC_USE_BUTTONS, false]) {
+            val button1Text = Prefs[Prefs.MANUAL_RPC_BUTTON1_TEXT, ""]
+            val button1Url = Prefs[Prefs.MANUAL_RPC_BUTTON1_URL, ""]
+            val button2Text = Prefs[Prefs.MANUAL_RPC_BUTTON2_TEXT, ""]
+            val button2Url = Prefs[Prefs.MANUAL_RPC_BUTTON2_URL, ""]
             if (button1Text.isNotEmpty() && button1Url.isNotEmpty()) {
                 kizzyRPC.setButton1(button1Text, button1Url)
             }
@@ -678,14 +678,14 @@ class ExperimentalRpc : Service() {
                 }
             }
         }
-        if (Prefs[Prefs.EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID, false]) {
-            kizzyRPC.setApplicationId(Prefs[Prefs.EXPERIMENTAL_RPC_APPLICATION_ID, ""])
+        if (Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false]) {
+            kizzyRPC.setApplicationId(Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""])
         }
         kizzyRPC.setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
 
         kizzyRPC.updateRPC(
             commonRpc = commonRpc,
-            enableTimestamps = Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]
+            enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true]
         )
 
         // Remember the presence for the RPC preview.
@@ -723,12 +723,12 @@ class ExperimentalRpc : Service() {
                 .ifEmpty { getString(R.string.idling_notification) }
         }
 
-        val stopIntent = Intent(this, ExperimentalRpc::class.java)
+        val stopIntent = Intent(this, ManualRpc::class.java)
         stopIntent.action = Constants.ACTION_STOP_SERVICE
         val stopPendingIntent = PendingIntent.getService(
             this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
         )
-        val restartIntent = Intent(this, ExperimentalRpc::class.java)
+        val restartIntent = Intent(this, ManualRpc::class.java)
         restartIntent.action = Constants.ACTION_RESTART_SERVICE
         val restartPendingIntent = PendingIntent.getService(
             this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
@@ -739,7 +739,7 @@ class ExperimentalRpc : Service() {
                 .setSmallIcon(R.drawable.ic_dev_rpc)
                 .setContentTitle(notifTitle)
                 .setContentText(notifText)
-                .setLargeIcon(finalLargeImage, this@ExperimentalRpc)
+                .setLargeIcon(finalLargeImage, this@ManualRpc)
                 .addAction(R.drawable.ic_dev_rpc, getString(R.string.restart), restartPendingIntent)
                 .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), stopPendingIntent)
                 .apply {
@@ -816,7 +816,7 @@ class ExperimentalRpc : Service() {
 
             launchPresenceUpdate {
                 delay(200.milliseconds)
-                val richMediaData = this@ExperimentalRpc.getCurrentPlayingMediaAll.invoke()
+                val richMediaData = this@ManualRpc.getCurrentPlayingMediaAll.invoke()
                 val hasMediaData = richMediaData.appName != null
 
                 if (hasMediaData && useMediaRpc) {
@@ -824,7 +824,7 @@ class ExperimentalRpc : Service() {
                     // current song (not the old paused session).
                     val freshController = try {
                         mediaSessionManager
-                            .getActiveSessions(ComponentName(this@ExperimentalRpc, NotificationListener::class.java))
+                            .getActiveSessions(ComponentName(this@ManualRpc, NotificationListener::class.java))
                             .firstOrNull { it.packageName == richMediaData.packageName }
                     } catch (_: Exception) {
                         null
@@ -885,8 +885,8 @@ class ExperimentalRpc : Service() {
      * Returns null when timestamps are globally disabled.
      */
     private fun resolveTimestamps(contextTimestamps: Timestamps?): Timestamps? {
-        if (!Prefs[Prefs.EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS, true]) return null
-        return when (Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_MODE, "default"]) {
+        if (!Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true]) return null
+        return when (Prefs[Prefs.MANUAL_RPC_TIMESTAMP_MODE, "default"]) {
             "current" -> {
                 // Mirror Vencord's customRPC "TIME" mode:
                 // start = midnight of today → Discord shows elapsed = current time of day
@@ -898,8 +898,8 @@ class ExperimentalRpc : Service() {
                 Timestamps(start = midnightMs)
             }
             "custom" -> {
-                val start = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START, ""].toLongOrNull()
-                val end = Prefs[Prefs.EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END, ""].toLongOrNull()
+                val start = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_START, ""].toLongOrNull()
+                val end = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_END, ""].toLongOrNull()
                 if (start == null && end == null) null else Timestamps(start = start, end = end)
             }
             else -> contextTimestamps

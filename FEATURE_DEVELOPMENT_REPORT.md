@@ -610,7 +610,7 @@ val sessions: List<android.media.session.MediaController> = try {
 }
 ```
 
-Note: `ExperimentalRpc.kt`, `NotificationListener.kt`, and `KizzyNotificationListener.kt` already had `try/catch (SecurityException)` protection — only these three sites were unprotected.
+Note: `ManualRpc.kt`, `NotificationListener.kt`, and `KizzyNotificationListener.kt` already had `try/catch (SecurityException)` protection — only these three sites were unprotected.
 
 ### Result
 
@@ -1402,7 +1402,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 ## 46. Bug Fix: Media RPC — Discord Gateway Stability, Timeline Pause, Cover Art, First Song
 
-**Files:** `KizzyRPC.kt`, `MediaRpcService.kt`, `ExperimentalRpc.kt`, `GetCurrentlyPlayingMedia.kt`, `GetCurrentPlayingMediaAll.kt`, `MetadataResolver.kt`, `RpcImage.kt`, `NotificationListener.kt`, `MediaRpc.kt`, `HiltWorkers.kt`, `LogScreen.kt`
+**Files:** `KizzyRPC.kt`, `MediaRpcService.kt`, `ManualRpc.kt`, `GetCurrentlyPlayingMedia.kt`, `GetCurrentPlayingMediaAll.kt`, `MetadataResolver.kt`, `RpcImage.kt`, `NotificationListener.kt`, `MediaRpc.kt`, `HiltWorkers.kt`, `LogScreen.kt`
 
 ### Problems Fixed
 
@@ -1437,7 +1437,7 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 - Added album art via `setLargeIcon(coverBitmap)` from `RpcImage.BitmapImage`
 - Changed `MEDIA_RPC_ENABLE_TIMESTAMPS` default from `false` to `true`
 
-**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`**
 
 - Added `delay(500)` before `getCurrentPlayingMediaAll()` in `activeSessionsListener()` — gives media metadata time to populate on first song
 - `finalTimestamps` now returns `null` when `playbackState != STATE_PLAYING` — clears Discord timeline on pause/stop
@@ -1575,17 +1575,17 @@ Accompanist permissions dependency fully removed. Uses official AndroidX `Activi
 
 ## 58. Bug Fix: Experimental RPC — Remove "Using Kizzy RPC" Default Presence Text
 
-**Files:** `ExperimentalRpc.kt`
+**Files:** `ManualRpc.kt`
 
 ### Problems Fixed
 
-1. **Discord showing "Using Kizzy RPC" placeholder text** — When no media session or app was active, `ExperimentalRpc.kt` hardcoded `finalName = "Kizzy"`, `finalDetails = "Using Kizzy RPC"`, and `finalState = "Idle"` as fallback values. Discord would display this placeholder text even when nothing was playing, which was confusing and unprofessional.
+1. **Discord showing "Using Kizzy RPC" placeholder text** — When no media session or app was active, `ManualRpc.kt` hardcoded `finalName = "Kizzy"`, `finalDetails = "Using Kizzy RPC"`, and `finalState = "Idle"` as fallback values. Discord would display this placeholder text even when nothing was playing, which was confusing and unprofessional.
 
 2. **Idle presence showing raw template keys** — When `templateName`/`templateDetails`/`templateState` contained template keys (e.g. `{{app_name}}`) but no media context existed to resolve them, Discord would show the raw keys instead of nothing.
 
 ### Fixes Applied
 
-**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`**
 
 - Changed `finalName` from `"Kizzy"` to `null`
 - Changed `finalDetails` from `"Using Kizzy RPC"` to `null`
@@ -2223,7 +2223,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ## 77. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
 
-**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
+**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
 ### Problems Fixed
 
@@ -2231,7 +2231,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ### Fixes Applied
 
-**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`**
 
 - Added `startMediaRefresh()` — periodic refresh every 1 second that calls `updatePresence()` to catch position changes that happen between `onPlaybackStateChanged()` callbacks
 - Added `lastSentCommonRpc: CommonRpc?` field for de-duplication — skips redundant updates when presence data hasn't changed
@@ -2324,16 +2324,16 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ## 81. Bug Fix: ExperimentalRpc — Remove "Using Kizzy RPC" Default Presence Text
 
-**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
+**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
 ### Problems Fixed
 
-1. **Discord showing "Using Kizzy RPC" placeholder text** — When no media session or app was active, `ExperimentalRpc.kt` hardcoded `finalName = "Kizzy"`, `finalDetails = "Using Kizzy RPC"`, and `finalState = "Idle"` as fallback values. Discord would display this placeholder text even when nothing was playing, which was confusing and unprofessional.
+1. **Discord showing "Using Kizzy RPC" placeholder text** — When no media session or app was active, `ManualRpc.kt` hardcoded `finalName = "Kizzy"`, `finalDetails = "Using Kizzy RPC"`, and `finalState = "Idle"` as fallback values. Discord would display this placeholder text even when nothing was playing, which was confusing and unprofessional.
 2. **Idle presence showing raw template keys** — When `templateName`/`templateDetails`/`templateState` contained template keys (e.g. `{{app_name}}`) but no media context existed to resolve them, Discord would show the raw keys instead of nothing.
 
 ### Fixes Applied
 
-**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`**
 
 - Changed `finalName` from `"Kizzy"` to `null`
 - Changed `finalDetails` from `"Using Kizzy RPC"` to `null`
@@ -2382,7 +2382,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ## 83. Bug Fix: ExperimentalRpc — Add Periodic Media Refresh for Drag-Seek Position Changes
 
-**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
+**Files:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
 ### Problems Fixed
 
@@ -2390,7 +2390,7 @@ The R8 Configuration Analyzer is a tool that provides detailed insights into an 
 
 ### Fixes Applied
 
-**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`**
 
 - Added `startMediaRefresh()` — periodic refresh every 1 second that calls `updatePresence()` to catch position changes that happen between `onPlaybackStateChanged()` callbacks
 - Added `lastSentCommonRpc: CommonRpc?` field for de-duplication — skips redundant updates when presence data hasn't changed
@@ -2646,7 +2646,7 @@ _All features implemented and verified — debug build passes with zero compilat
 | `app/proguard-rules.pro`                                                                                  | Ktor client/CIO/plugins/WebSockets/HTTP/serialization/coroutines keep rules; DynamicActivityDetectionEngine keep rules                               |
 | `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/AppDetectionService.kt`            | Integrated DynamicActivityDetectionEngine, game detection, AI detection; shouldShow independent of runningPackage                                    |
 | `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/DynamicActivityDetectionEngine.kt` | Unified AI (semantic keywords + RoleManager) + Game (FLAG_IS_GAME/CATEGORY_GAME) detection                                                           |
-| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`                | Direct `getCurrentPlayingMediaAll()` call before app-polling fallback; `onTaskRemoved` WorkManager recovery; `kizzyRPC.build()` gateway connection   |
+| `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`                | Direct `getCurrentPlayingMediaAll()` call before app-polling fallback; `onTaskRemoved` WorkManager recovery; `kizzyRPC.build()` gateway connection   |
 | `settings.gradle.kts`                                                                                     | Added `:macrobenchmark` module                                                                                                                       |
 | `.gitignore`                                                                                              | Added `**/build/` and `**/.kotlin/` exclusions                                                                                                       |
 
@@ -2919,7 +2919,7 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 
 ## 98. Bug Fix: ExperimentalRpc — First Song Direct Media Detection
 
-**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
 ### Problems Fixed
 
@@ -2928,7 +2928,7 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 
 ### Fix Applied
 
-**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`**
 
 - Added `getCurrentPlayingMediaAll()` method with retry logic (up to `maxMediaDetectionAttempts` = 4 attempts, with `mediaDetectionDelayMs * attempt` delay between retries) — same logic used in `activeSessionsListener()`
 - Called this method **before** falling back to the slow app-detection polling cycle, so the first song appears immediately on service start
@@ -2944,7 +2944,7 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 
 ## 99. Bug Fix: ExperimentalRpc — Discord Gateway Connection (`kizzyRPC.build()`)
 
-**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`
+**File:** `feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`
 
 ### Problems Fixed
 
@@ -2953,7 +2953,7 @@ Build verified: `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 /
 
 ### Fix Applied
 
-**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ExperimentalRpc.kt`**
+**`feature_rpc_base/src/main/java/com/my/kizzy/feature_rpc_base/services/ManualRpc.kt`**
 
 - Added `scope.launch { kizzyRPC.build() }` in `onStartCommand()` to establish the Discord WebSocket gateway connection
 - `build()` calls `connectToWebSocket()` which calls `discordWebSocket.connect()` and `markConnected()`
@@ -3176,7 +3176,7 @@ Unresolved reference 'RichMediaMetadata'
 
 ### Fix
 
-Created `RichMediaMetadata.kt` data class with all properties used by `GetCurrentPlayingMediaAll.invoke()` and `ExperimentalRpc.kt`:
+Created `RichMediaMetadata.kt` data class with all properties used by `GetCurrentPlayingMediaAll.invoke()` and `ManualRpc.kt`:
 
 | Property | Type | Default |
 | -------- | ---- | ------- |
@@ -3199,7 +3199,7 @@ Created `RichMediaMetadata.kt` data class with all properties used by `GetCurren
 ### Result
 
 - `:data:compileDebugKotlin` — BUILD SUCCESSFUL
-- `RichMediaMetadata` resolved in both `GetCurrentPlayingMediaAll.kt` and `ExperimentalRpc.kt`
+- `RichMediaMetadata` resolved in both `GetCurrentPlayingMediaAll.kt` and `ManualRpc.kt`
 
 ---
 

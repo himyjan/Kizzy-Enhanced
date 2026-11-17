@@ -42,19 +42,13 @@ import androidx.compose.foundation.layout.Box
 
 import androidx.compose.foundation.layout.Column
 
-import androidx.compose.foundation.layout.Spacer
-
 import androidx.compose.foundation.layout.fillMaxSize
-
-import androidx.compose.foundation.layout.height
 
 import androidx.compose.foundation.layout.padding
 
 import androidx.compose.foundation.lazy.LazyColumn
 
 import androidx.compose.material.icons.Icons
-
-import androidx.compose.material.icons.filled.AppsOutage
 
 import androidx.compose.material.icons.outlined.Search
 
@@ -81,8 +75,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 
-import androidx.compose.ui.tooling.preview.Preview
-
 import androidx.compose.runtime.getValue
 
 import androidx.compose.runtime.mutableStateOf
@@ -103,7 +95,6 @@ import androidx.compose.ui.res.stringResource
 
 import androidx.compose.ui.unit.dp
 
-import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 
@@ -111,11 +102,7 @@ import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 
-import com.my.kizzy.data.utils.AppsInfo
-
-import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
-
-import com.my.kizzy.feature_rpc_base.services.MediaRpcService
+import com.my.kizzy.feature_rpc_base.services.ManualRpc
 
 import com.my.kizzy.feature_rpc_base.utils.stopMediaRpcService
 import com.my.kizzy.resources.R
@@ -347,7 +334,7 @@ fun AppsRPC(
 
                                     ctx.stopService(Intent(ctx, CustomRpcService::class.java))
 
-                                    ctx.stopService(Intent(ctx, ExperimentalRpc::class.java))
+                                    ctx.stopService(Intent(ctx, ManualRpc::class.java))
 
                                     ctx.startService(Intent(ctx, AppDetectionService::class.java))
 

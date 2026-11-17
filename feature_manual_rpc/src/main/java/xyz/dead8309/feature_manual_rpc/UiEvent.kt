@@ -10,7 +10,7 @@
  *
  */
 
-package xyz.dead8309.feature_experimental_rpc
+package xyz.dead8309.feature_manual_rpc
 
 sealed interface UiEvent {
     data class ToggleAppsRpcPart(val enabled: Boolean) : UiEvent

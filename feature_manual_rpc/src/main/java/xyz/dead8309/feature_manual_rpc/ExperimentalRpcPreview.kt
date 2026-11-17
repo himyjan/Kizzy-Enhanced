@@ -1,4 +1,4 @@
-package xyz.dead8309.feature_experimental_rpc
+package xyz.dead8309.feature_manual_rpc
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

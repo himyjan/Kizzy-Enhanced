@@ -325,7 +325,7 @@ object Prefs {
     const val MEDIA_RPC_ARTIST_LINK = "media_rpc_artist_link"
     const val MEDIA_RPC_ENABLED = "media_rpc_enabled"
     const val LAST_RUN_MEDIA_RPC = "last_run_media_rpc"
-    const val LAST_RUN_EXPERIMENTAL_RPC = "last_run_experimental_rpc"
+    const val LAST_RUN_MANUAL_RPC = "last_run_manual_rpc"
 
     // Discord RPC connection method: "gateway" (default) or "oauth"
     const val RPC_CONNECTION_METHOD = "rpc_connection_method"
@@ -424,35 +424,35 @@ object Prefs {
         "org.videolan.vlc"
     )
 
-    const val EXPERIMENTAL_RPC_USE_APPS_RPC = "experimental_rpc_use_apps"
-    const val EXPERIMENTAL_RPC_USE_MEDIA_RPC = "experimental_rpc_use_media"
-    const val EXPERIMENTAL_RPC_TEMPLATE_NAME = "experimental_rpc_template_name"
-    const val EXPERIMENTAL_RPC_TEMPLATE_DETAILS = "experimental_rpc_template_details"
-    const val EXPERIMENTAL_RPC_TEMPLATE_STATE = "experimental_rpc_template_state"
-    const val EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES = "experimental_rpc_app_activity_types"
+    const val MANUAL_RPC_USE_APPS_RPC = "manual_rpc_use_apps"
+    const val MANUAL_RPC_USE_MEDIA_RPC = "manual_rpc_use_media"
+    const val MANUAL_RPC_TEMPLATE_NAME = "manual_rpc_template_name"
+    const val MANUAL_RPC_TEMPLATE_DETAILS = "manual_rpc_template_details"
+    const val MANUAL_RPC_TEMPLATE_STATE = "manual_rpc_template_state"
+    const val MANUAL_RPC_APP_ACTIVITY_TYPES = "manual_rpc_app_activity_types"
     const val APP_ACTIVITY_TYPES = "app_activity_types"
     const val MEDIA_RPC_ACTIVITY_TYPE = "media_rpc_activity_type"
     const val ACTIVITY_TYPE_AUTO = -1
     const val AUTO_ACTIVITY_TYPE = "auto_activity_type"
-    const val EXPERIMENTAL_RPC_SHOW_COVER_ART = "experimental_rpc_show_cover_art"
-    const val EXPERIMENTAL_RPC_SHOW_APP_ICON = "experimental_rpc_show_app_icon"
-    const val EXPERIMENTAL_RPC_SHOW_PLAYBACK_STATE = "experimental_rpc_show_playback_state"
-    const val EXPERIMENTAL_RPC_ENABLE_TIMESTAMPS = "experimental_rpc_enable_timestamps"
-    const val EXPERIMENTAL_RPC_HIDE_ON_PAUSE = "experimental_rpc_hide_on_pause"
-    const val EXPERIMENTAL_RPC_PLATFORM = "experimental_rpc_platform"
-    const val EXPERIMENTAL_RPC_USE_BUTTONS = "experimental_rpc_use_buttons"
-    const val EXPERIMENTAL_RPC_BUTTON1_TEXT = "experimental_rpc_button1_text"
-    const val EXPERIMENTAL_RPC_BUTTON1_URL = "experimental_rpc_button1_url"
-    const val EXPERIMENTAL_RPC_BUTTON2_TEXT = "experimental_rpc_button2_text"
-    const val EXPERIMENTAL_RPC_BUTTON2_URL = "experimental_rpc_button2_url"
-    const val EXPERIMENTAL_RPC_USE_CUSTOM_APP_ID = "experimental_rpc_use_custom_app_id"
-    const val EXPERIMENTAL_RPC_APPLICATION_ID = "experimental_rpc_application_id"
-    const val EXPERIMENTAL_RPC_TIMESTAMP_MODE = "experimental_rpc_timestamp_mode"
-    const val EXPERIMENTAL_RPC_TIMESTAMP_CURRENT_START = "experimental_rpc_timestamp_current_start"
-    const val EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_START = "experimental_rpc_timestamp_custom_start"
-    const val EXPERIMENTAL_RPC_TIMESTAMP_CUSTOM_END = "experimental_rpc_timestamp_custom_end"
-    const val EXPERIMENTAL_RPC_SHOW_SONG_AS_TITLE = "experimental_rpc_show_song_as_title"
-    const val EXPERIMENTAL_RPC_TITLE_SOURCE = "experimental_rpc_title_source"
+    const val MANUAL_RPC_SHOW_COVER_ART = "manual_rpc_show_cover_art"
+    const val MANUAL_RPC_SHOW_APP_ICON = "manual_rpc_show_app_icon"
+    const val MANUAL_RPC_SHOW_PLAYBACK_STATE = "manual_rpc_show_playback_state"
+    const val MANUAL_RPC_ENABLE_TIMESTAMPS = "manual_rpc_enable_timestamps"
+    const val MANUAL_RPC_HIDE_ON_PAUSE = "manual_rpc_hide_on_pause"
+    const val MANUAL_RPC_PLATFORM = "manual_rpc_platform"
+    const val MANUAL_RPC_USE_BUTTONS = "manual_rpc_use_buttons"
+    const val MANUAL_RPC_BUTTON1_TEXT = "manual_rpc_button1_text"
+    const val MANUAL_RPC_BUTTON1_URL = "manual_rpc_button1_url"
+    const val MANUAL_RPC_BUTTON2_TEXT = "manual_rpc_button2_text"
+    const val MANUAL_RPC_BUTTON2_URL = "manual_rpc_button2_url"
+    const val MANUAL_RPC_USE_CUSTOM_APP_ID = "manual_rpc_use_custom_app_id"
+    const val MANUAL_RPC_APPLICATION_ID = "manual_rpc_application_id"
+    const val MANUAL_RPC_TIMESTAMP_MODE = "manual_rpc_timestamp_mode"
+    const val MANUAL_RPC_TIMESTAMP_CURRENT_START = "manual_rpc_timestamp_current_start"
+    const val MANUAL_RPC_TIMESTAMP_CUSTOM_START = "manual_rpc_timestamp_custom_start"
+    const val MANUAL_RPC_TIMESTAMP_CUSTOM_END = "manual_rpc_timestamp_custom_end"
+    const val MANUAL_RPC_SHOW_SONG_AS_TITLE = "manual_rpc_show_song_as_title"
+    const val MANUAL_RPC_TITLE_SOURCE = "manual_rpc_title_source"
 
     fun saveAppActivityType(packageName: String, activityType: Int) {
         val map = getAppActivityTypes().toMutableMap()
@@ -471,7 +471,7 @@ object Prefs {
         val json = get(APP_ACTIVITY_TYPES, "")
         if (json.isNotBlank()) return decodeAppActivityTypes(json)
 
-        val legacy = decodeAppActivityTypes(get(EXPERIMENTAL_RPC_APP_ACTIVITY_TYPES, "{}"))
+        val legacy = decodeAppActivityTypes(get(MANUAL_RPC_APP_ACTIVITY_TYPES, "{}"))
         if (legacy.isNotEmpty()) {
             set(APP_ACTIVITY_TYPES, Json.encodeToString(legacy))
         }

@@ -18,7 +18,7 @@ import android.app.ActivityManager
 import android.content.Context
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
-import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
+import com.my.kizzy.feature_rpc_base.services.ManualRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.preference.Prefs
 import jakarta.inject.Singleton
@@ -65,7 +65,7 @@ object AppUtils {
     }
 
     fun experimentalRpcRunning(): Boolean {
-        return checkForRunningService<ExperimentalRpc>()
+        return checkForRunningService<ManualRpc>()
     }
     private fun isActivityManagerInitialized(): Boolean = ::activityManager.isInitialized
 

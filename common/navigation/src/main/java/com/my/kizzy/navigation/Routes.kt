@@ -31,8 +31,8 @@ class Routes {
         const val MEDIA_RPC = "media_rpc"
         const val CUSTOM_RPC = "custom_rpc"
         const val CONSOLE_RPC = "console_rpc"
-        const val EXPERIMENTAL_RPC = "experimental_rpc"
-        const val EXPERIMENTAL_RPC_APPS = "experimental_rpc_apps"
+        const val MANUAL_RPC = "manual_rpc"
+        const val MANUAL_RPC_APPS = "manual_rpc_apps"
 
         /* Settings Screens */
         const val LANGUAGES = "languages"

@@ -15,22 +15,18 @@ package com.my.kizzy.feature_rpc_base
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.feature_rpc_base.services.DiscordOAuth2RpcService
-import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
+import com.my.kizzy.feature_rpc_base.services.ManualRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 /**
  * Centralized RPC state manager.
@@ -55,7 +51,7 @@ class RpcManager @Inject constructor(
         MediaRpc,
         CustomRpc,
         ConsoleRpc,
-        ExperimentalRpc,
+        ManualRpc,
         AppDetectionRpc,
         DiscordOAuth2Rpc,
     }
@@ -80,7 +76,7 @@ class RpcManager @Inject constructor(
             AppUtils.mediaRpcRunning() -> RpcType.MediaRpc
             AppUtils.customRpcRunning() -> RpcType.CustomRpc
             AppUtils.consoleRpcRunning() -> RpcType.ConsoleRpc
-            AppUtils.experimentalRpcRunning() -> RpcType.ExperimentalRpc
+            AppUtils.experimentalRpcRunning() -> RpcType.ManualRpc
             AppUtils.appDetectionRunning() -> RpcType.AppDetectionRpc
             Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].isNotEmpty() && Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY] == Prefs.RPC_CONNECTION_METHOD_OAUTH2 -> RpcType.DiscordOAuth2Rpc
             else -> RpcType.None
@@ -146,9 +142,9 @@ class RpcManager @Inject constructor(
                 intent.putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, true)
                 context.startService(intent)
             }
-            RpcType.ExperimentalRpc -> {
-                Log.d(TAG, "Starting ExperimentalRpc")
-                context.startService(Intent(context, ExperimentalRpc::class.java))
+            RpcType.ManualRpc -> {
+                Log.d(TAG, "Starting ManualRpc")
+                context.startService(Intent(context, ManualRpc::class.java))
             }
             RpcType.AppDetectionRpc -> {
                 Log.d(TAG, "Starting AppDetectionService")
@@ -170,7 +166,7 @@ class RpcManager @Inject constructor(
         Log.d(TAG, "Stopping all RPC services")
         context.stopService(Intent(context, MediaRpcService::class.java))
         context.stopService(Intent(context, CustomRpcService::class.java))
-        context.stopService(Intent(context, ExperimentalRpc::class.java))
+        context.stopService(Intent(context, ManualRpc::class.java))
         context.stopService(Intent(context, AppDetectionService::class.java))
         context.stopService(Intent(context, DiscordOAuth2RpcService::class.java))
 

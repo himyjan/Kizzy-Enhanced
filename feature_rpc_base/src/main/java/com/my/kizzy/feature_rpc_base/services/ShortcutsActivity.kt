@@ -32,7 +32,7 @@ class ShortcutsActivity : Activity() {
                 Intents.START_APP_DETECTION_SHORTCUT -> {
                     stopService(Intent(this, AppDetectionService::class.java))
                     stopService(Intent(this, MediaRpcService::class.java))
-                    stopService(Intent(this, ExperimentalRpc::class.java))
+                    stopService(Intent(this, ManualRpc::class.java))
 
                     startService(Intent(this, AppDetectionService::class.java))
                     Toast.makeText(
@@ -43,7 +43,7 @@ class ShortcutsActivity : Activity() {
                 Intents.START_MEDIA_RPC_SHORTCUT -> {
                     stopService(Intent(this, AppDetectionService::class.java))
                     stopService(Intent(this, MediaRpcService::class.java))
-                    stopService(Intent(this, ExperimentalRpc::class.java))
+                    stopService(Intent(this, ManualRpc::class.java))
 
                     startService(Intent(this, MediaRpcService::class.java))
                     Toast.makeText(
@@ -51,12 +51,12 @@ class ShortcutsActivity : Activity() {
                     ).show()
                 }
 
-                Intents.START_EXPERIMENTAL_RPC_SHORTCUT -> {
+                Intents.START_MANUAL_RPC_SHORTCUT -> {
                     stopService(Intent(this, AppDetectionService::class.java))
                     stopService(Intent(this, MediaRpcService::class.java))
-                    stopService(Intent(this, ExperimentalRpc::class.java))
+                    stopService(Intent(this, ManualRpc::class.java))
 
-                    startService(Intent(this, ExperimentalRpc::class.java))
+                    startService(Intent(this, ManualRpc::class.java))
                     Toast.makeText(
                         this, getString(R.string.start_experimentalRPC_toast), Toast.LENGTH_SHORT
                     ).show()
@@ -65,7 +65,7 @@ class ShortcutsActivity : Activity() {
                 Intents.STOP_RPC -> {
                     stopService(Intent(this, AppDetectionService::class.java))
                     stopService(Intent(this, MediaRpcService::class.java))
-                    stopService(Intent(this, ExperimentalRpc::class.java))
+                    stopService(Intent(this, ManualRpc::class.java))
 
                     Toast.makeText(this, getString(R.string.stop_rpc_toast), Toast.LENGTH_SHORT)
                         .show()
@@ -83,8 +83,8 @@ class ShortcutsActivity : Activity() {
         object Intents {
             val START_APP_DETECTION_SHORTCUT = "com.my.kizzy.intent.action.START_APP_DETECTION"
             val START_MEDIA_RPC_SHORTCUT = "com.my.kizzy.intent.action.START_MEDIA_RPC"
-            val START_EXPERIMENTAL_RPC_SHORTCUT =
-                "com.my.kizzy.intent.action.START_EXPERIMENTAL_RPC"
+            val START_MANUAL_RPC_SHORTCUT =
+                "com.my.kizzy.intent.action.START_MANUAL_RPC"
             val STOP_RPC = "com.my.kizzy.intent.action.STOP_RPC"
         }
     }

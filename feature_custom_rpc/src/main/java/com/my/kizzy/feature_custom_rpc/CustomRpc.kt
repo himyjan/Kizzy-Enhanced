@@ -26,11 +26,8 @@ package com.my.kizzy.feature_custom_rpc
 
 
 
-import android.content.Intent
-
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.PickVisualMediaRequest
 
 import androidx.compose.animation.AnimatedVisibility
 
@@ -39,8 +36,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Column
-
-import androidx.compose.foundation.layout.Box
 
 import androidx.compose.foundation.layout.Row
 
@@ -68,19 +63,6 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.filled.DesktopWindows
 
 import androidx.compose.material.icons.filled.Edit
-
-import androidx.compose.material.icons.filled.EditCalendar
-
-import androidx.compose.material.icons.filled.Image
-
-import androidx.compose.material.icons.filled.Info
-
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.SportsEsports
 
 import androidx.compose.material3.DropdownMenu
 
@@ -125,9 +107,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.shape.CircleShape
-
-import androidx.compose.ui.graphics.vector.ImageVector
 
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 
@@ -139,12 +118,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 
 import androidx.compose.foundation.layout.height
-
-import androidx.compose.animation.AnimatedVisibility
-
-import androidx.compose.foundation.layout.padding
-
-import androidx.compose.foundation.layout.size
 
 import androidx.compose.ui.platform.LocalContext
 
@@ -176,7 +149,6 @@ import com.my.kizzy.feature_custom_rpc.components.sheet.DeleteConfigDialog
 
 import com.my.kizzy.feature_custom_rpc.components.sheet.LoadConfig
 
-import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 
@@ -188,17 +160,6 @@ import com.my.kizzy.feature_custom_rpc.components.sheet.SaveConfigDialog
 
 import com.my.kizzy.feature_custom_rpc.components.sheet.ShareConfig
 
-import com.my.kizzy.feature_custom_rpc.components.sheet.dataToString
-
-import com.my.kizzy.feature_rpc_base.services.AppDetectionService
-
-import com.my.kizzy.feature_rpc_base.services.CustomRpcService
-
-import com.my.kizzy.feature_rpc_base.services.ExperimentalRpc
-
-import com.my.kizzy.feature_rpc_base.services.MediaRpcService
-
-import com.my.kizzy.feature_rpc_base.utils.stopMediaRpcService
 import com.my.kizzy.preference.Prefs
 
 import com.my.kizzy.resources.R
@@ -210,7 +171,6 @@ import com.my.kizzy.ui.components.RpcField
 import com.my.kizzy.ui.components.SwitchBar
 
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 
 import kotlinx.serialization.json.Json
 
