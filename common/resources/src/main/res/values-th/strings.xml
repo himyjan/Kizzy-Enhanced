@@ -129,7 +129,7 @@
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
     <string name="main_ManualRpc">ทดลอง RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">จะใช้ Imgur เป็นพร็อกซี่ของภาพที่จะใช้แทน</string>
     <string name="start_appDetection">เริ่มการใช้ App Detection แล้ว</string>
     <string name="start_media_rpc">เริ่มการใช้ Media RPC แล้ว</string>
-    <string name="start_manual_rpc">เริ่มการใช้ Experimental RPC แล้ว</string>
+    <string name="start_manual_rpc">เริ่มการใช้ Manual RPC แล้ว</string>
     <string name="stop_rpc">หยุดการใช้ RPC แล้ว</string>
     <string name="stop">หยุด</string>
     <string name="start_appDetection_toast">App Detection เริ่มใช้งานไปแล้ว</string>
     <string name="start_media_rpc_toast">Media RPC เริ่มใช้งานไปแล้ว</string>
-    <string name="start_manual_rpc_toast">Experimental RPC เริ่มใช้งานไปแล้ว</string>
+    <string name="start_manual_rpc_toast">Manual RPC เริ่มใช้งานไปแล้ว</string>
     <string name="stop_rpc_toast">services ทั้งหมดหยุดการทำงานแล้ว</string>
     <string name="show_playback_state">แสดงสถานะการเล่น</string>
     <string name="copied_to_clipboard">ก็อปไปยังคลิปบอร์ดแล้ว</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">อนุญาตให้ Experimental RPC ตรวจจับแอปที่กำลังทำงานอยู่</string>
-    <string name="manual_rpc_detect_media">อนุญาตให้ Experimental RPC ตรวจจับสื่อที่กำลังเล่นอยู่</string>
+    <string name="manual_rpc_detect_apps">อนุญาตให้ Manual RPC ตรวจจับแอปที่กำลังทำงานอยู่</string>
+    <string name="manual_rpc_detect_media">อนุญาตให้ Manual RPC ตรวจจับสื่อที่กำลังเล่นอยู่</string>
     <string name="app_preferences">การตั้งค่าแอป</string>
-    <string name="app_preferences_desc">เลือกแอปที่จะเปิดใช้งาน Experimental RPC</string>
+    <string name="app_preferences_desc">เลือกแอปที่จะเปิดใช้งาน Manual RPC</string>
     <string name="completion_media_title">ชื่อเพลง/วิดีโอ</string>
     <string name="completion_media_artist">ศิลปินหลัก</string>
     <string name="completion_app_name">ชื่อแอปที่ตรวจพบ</string>
     <string name="show_cover_art">แสดงภาพปกอัลบั้ม</string>
     <string name="show_cover_art_desc">แสดงภาพปกอัลบั้มเป็นภาพขนาดใหญ่</string>
-    <string name="enable_manualRpc">เปิดใช้งาน Experimental RPC</string>
+    <string name="enable_manualRpc">เปิดใช้งาน Manual RPC</string>
     <string name="completion_media_author">ผู้แต่งหลัก</string>
     <string name="completion_media_album">ชื่ออัลบั้ม</string>
     <string name="completion_media_album_artist">ศิลปินอัลบั้ม</string>

@@ -101,7 +101,7 @@
     <string name="update">Perbarui</string>
     <string name="configs_directory">Direktori Konfigurasi</string>
     <string name="custom_activity_type">Jenis Aktivitas Kustom</string>
-    <string name="custom_activity_type_desc">Mengganti tipe aktivitas default. Berfungsi hanya untuk media dan Experimental RPC</string>
+    <string name="custom_activity_type_desc">Mengganti tipe aktivitas default. Berfungsi hanya untuk media dan Manual RPC</string>
     <string name="custom_activity_status">Status Aktivitas Kustom</string>
     <string name="custom_activity_status_desc">Menimpa status aktivitas default</string>
     <string name="search">Cari</string>
@@ -117,7 +117,7 @@
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpcDetails">Kizzy memungkinkan Anda menggunakan beberapa pengaturan yang telah ditetapkan untuk menentukan kehadiran Anda di Discord.</string>
     <string name="main_ManualRpc">RPC Eksperimental</string>
-    <string name="main_ManualRpcDetails">Experimental RPC adalah fitur di Kizzy yang terus beralih antara Apps RPC dan Media RPC.</string>
+    <string name="main_ManualRpcDetails">Manual RPC adalah fitur di Kizzy yang terus beralih antara Apps RPC dan Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy memungkinkan Anda membuat kustomisasi penuh dari Rich Presence untuk Discord.</string>
     <string name="main_comingSoon">Segera Hadir</string>
     <string name="exit">Keluar</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Gunakan Imgur sebagai proxy gambar alternatif.</string>
     <string name="start_appDetection">Mulai Deteksi Aplikasi</string>
     <string name="start_media_rpc">Mulai Media RPC</string>
-    <string name="start_manual_rpc">Mulai Experimental RPC</string>
+    <string name="start_manual_rpc">Mulai Manual RPC</string>
     <string name="stop_rpc">Hentikan RPC</string>
     <string name="stop">Hentikan</string>
     <string name="start_appDetectionToast">Deteksi Aplikasi Dimulai</string>
     <string name="start_media_rpc_toast">Media RPC Dimulai</string>
-    <string name="start_manual_rpc_toast">Experimental RPC Dimulai</string>
+    <string name="start_manual_rpc_toast">Manual RPC Dimulai</string>
     <string name="stop_rpcToast">Semua layanan dihentikan</string>
     <string name="show_playbackState">Tampilkan Status Pemutaran</string>
     <string name="copied_toClipboard">Disalin ke clipboard</string>
@@ -209,16 +209,16 @@
     <string name="custom_application_id_desc">Mengganti ID Aplikasi Discord standar</string>
     <string name="use_a_vpn_desc">Login Discord mungkin tidak berfungsi di negara Anda tanpa VPN/DPI. Silakan gunakan VPN/DPI untuk melanjutkan.</string>
     <string name="rpc_templates_note">&quot;Gunakan placeholder seperti `./gradlew assembleDebug` — BUILD SUCCESSFUL on Gradle 9.9.0 / AGP 9.6.0-alpha03.` dan `srcDir = file(&quot;src/test/resources&quot;)`` dst. Kolom kosong akan menggunakan perilaku default atau diabaikan.&quot;</string>
-    <string name="manual_rpc_detect_apps">Izinkan Experimental RPC mendeteksi aplikasi yang sedang berjalan</string>
-    <string name="manual_rpc_detect_media">Izinkan Experimental RPC mendeteksi pemutaran media</string>
+    <string name="manual_rpc_detect_apps">Izinkan Manual RPC mendeteksi aplikasi yang sedang berjalan</string>
+    <string name="manual_rpc_detect_media">Izinkan Manual RPC mendeteksi pemutaran media</string>
     <string name="app_preferences">Preferensi Aplikasi</string>
-    <string name="app_preferences_desc">Pilih aplikasi yang diaktifkan untuk Experimental RPC</string>
+    <string name="app_preferences_desc">Pilih aplikasi yang diaktifkan untuk Manual RPC</string>
     <string name="completion_media_title">Judul Lagu/Video</string>
     <string name="completion_media_artist">Artis Utama</string>
     <string name="completion_appName">Nama Aplikasi Terdeteksi</string>
     <string name="show_cover_art">Tampilkan Sampul Album</string>
     <string name="show_cover_art_desc">Tampilkan sampul album sebagai gambar besar</string>
-    <string name="enable_manualRpc">Aktifkan Experimental RPC</string>
+    <string name="enable_manualRpc">Aktifkan Manual RPC</string>
     <string name="completion_media_author">Penulis Utama</string>
     <string name="completion_media_album">Nama Album</string>
     <string name="completion_media_albumArtist">Artis Album</string>

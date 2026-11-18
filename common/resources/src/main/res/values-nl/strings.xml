@@ -117,7 +117,7 @@
     <string name="main_consoleRpc">Console-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy maakt het mogelijk enkele vooraf gedefinieerde instellingen te gebruiken om uw aanwezigheid op Discord in te stellen.</string>
     <string name="main_ManualRpc">Experimentele RPC</string>
-    <string name="main_ManualRpcDetails">Experimental RPC is een functie in Kizzy die voortdurend schakelt tussen Apps RPC en Media RPC.</string>
+    <string name="main_ManualRpcDetails">Manual RPC is een functie in Kizzy die voortdurend schakelt tussen Apps RPC en Media RPC.</string>
     <string name="main_customRpcDetails">Kizzy maakt het mogelijk een volledig aanpasbare rich presence voor Discord te creëren.</string>
     <string name="main_comingSoon">Binnenkort</string>
     <string name="exit">Afsluiten</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Gebruik Imgur als alternatieve afbeeldingsproxyserver.</string>
     <string name="start_appDetection">App-detectie starten</string>
     <string name="start_media_rpc">Media RPC starten</string>
-    <string name="start_manual_rpc">Experimental RPC starten</string>
+    <string name="start_manual_rpc">Manual RPC starten</string>
     <string name="stop_rpc">RPC stoppen</string>
     <string name="stop">Stoppen</string>
     <string name="start_appDetectionToast">App-detectie gestart</string>
     <string name="start_media_rpc_toast">Media RPC gestart</string>
-    <string name="start_manual_rpc_toast">Experimental RPC gestart</string>
+    <string name="start_manual_rpc_toast">Manual RPC gestart</string>
     <string name="stop_rpcToast">Alle services gestopt</string>
     <string name="show_playbackState">Afspeelstatus weergeven</string>
     <string name="copied_toClipboard">Gekopieerd naar klembord</string>

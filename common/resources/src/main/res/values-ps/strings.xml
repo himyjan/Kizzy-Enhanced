@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">د انځور بدیل پروکسي لپاره Imgur وکاروئ.</string>
     <string name="start_appDetection">د اپلیکیشن کشف پیلول</string>
     <string name="start_media_rpc">Media RPC پیلول</string>
-    <string name="start_manual_rpc">Experimental RPC پیلول</string>
+    <string name="start_manual_rpc">Manual RPC پیلول</string>
     <string name="stop_rpc">RPC درول</string>
     <string name="stop">درول</string>
     <string name="start_appDetection_toast">د اپلیکیشن کشف پیل شو</string>
     <string name="start_media_rpc_toast">Media RPC پیل شو</string>
-    <string name="start_manual_rpc_toast">Experimental RPC پیل شو</string>
+    <string name="start_manual_rpc_toast">Manual RPC پیل شو</string>
     <string name="stop_rpc_toast">ټولې خدمتونه درول شوي</string>
     <string name="show_playback_state">د play back حالت ښودل</string>
     <string name="copied_to_clipboard">کاپي شو</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">اجازه ورکړئ چې Experimental RPC کې روان اپلیکیشنونه کشف کړي</string>
-    <string name="manual_rpc_detect_media">اجازه ورکړئ چې Experimental RPC مدیا play back کشف کړي</string>
+    <string name="manual_rpc_detect_apps">اجازه ورکړئ چې Manual RPC کې روان اپلیکیشنونه کشف کړي</string>
+    <string name="manual_rpc_detect_media">اجازه ورکړئ چې Manual RPC مدیا play back کشف کړي</string>
     <string name="app_preferences">د اپلیکیشن ترجیحات</string>
-    <string name="app_preferences_desc">د Experimental RPC لپاره وټاکي چې کوم اپلیکیشنونو فعال وي</string>
+    <string name="app_preferences_desc">د Manual RPC لپاره وټاکي چې کوم اپلیکیشنونو فعال وي</string>
     <string name="completion_media_title">د غږ/ویډیو نوم</string>
     <string name="completion_media_artist">اصلي هنرمن</string>
     <string name="completion_app_name">د کشف شوي اپليکیشن نوم</string>
     <string name="show_cover_art">کاور ښودل</string>
     <string name="show_cover_art_desc">د الېبم کاور د لوړې انځور په توګه ښودل</string>
-    <string name="enable_manualRpc">Experimental RPC فعالول</string>
+    <string name="enable_manualRpc">Manual RPC فعالول</string>
     <string name="completion_media_author">اصلي لیکوال</string>
     <string name="completion_media_album">د الېبم نوم</string>
     <string name="completion_media_album_artist">د الېبم هنرمن</string>

@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Použiť Imgur ako alternatívny proxy obrázkov.</string>
     <string name="start_appDetection">Spustiť detekciu aplikácií</string>
     <string name="start_media_rpc">Spustiť Media RPC</string>
-    <string name="start_manual_rpc">Spustiť Experimental RPC</string>
+    <string name="start_manual_rpc">Spustiť Manual RPC</string>
     <string name="stop_rpc">Zastaviť RPC</string>
     <string name="stop">Zastaviť</string>
     <string name="start_appDetection_toast">Detekcia aplikácií sa spustila</string>
     <string name="start_media_rpc_toast">Media RPC sa spustil</string>
-    <string name="start_manual_rpc_toast">Experimental RPC sa spustil</string>
+    <string name="start_manual_rpc_toast">Manual RPC sa spustil</string>
     <string name="stop_rpc_toast">Všetky služby boli zastavené</string>
     <string name="show_playback_state">Zobraziť stav prehrávania</string>
     <string name="copied_to_clipboard">Skopírované do schránky</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Povoľte Experimental RPC detegovať bežiace aplikácie</string>
-    <string name="manual_rpc_detect_media">Povoľte Experimental RPC detegovať prehrávanie médií</string>
+    <string name="manual_rpc_detect_apps">Povoľte Manual RPC detegovať bežiace aplikácie</string>
+    <string name="manual_rpc_detect_media">Povoľte Manual RPC detegovať prehrávanie médií</string>
     <string name="app_preferences">Predvoľby aplikácie</string>
-    <string name="app_preferences_desc">Vyberte, ktoré aplikácie sú povolené pre Experimental RPC</string>
+    <string name="app_preferences_desc">Vyberte, ktoré aplikácie sú povolené pre Manual RPC</string>
     <string name="completion_media_title">Názov skladby/videa</string>
     <string name="completion_media_artist">Hlavný interpret</string>
     <string name="completion_app_name">Názov zistenej aplikácie</string>
     <string name="show_cover_art">Zobraziť obal</string>
     <string name="show_cover_art_desc">Zobraziť obal albumu ako veľký obrázok</string>
-    <string name="enable_manualRpc">Povoliť Experimental RPC</string>
+    <string name="enable_manualRpc">Povoliť Manual RPC</string>
     <string name="completion_media_author">Hlavný autor</string>
     <string name="completion_media_album">Názov albumu</string>
     <string name="completion_media_album_artist">Interpret albumu</string>

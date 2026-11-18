@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Përdor Imgur si proxy alternativ për imazhet.</string>
     <string name="start_appDetection">Nis zbulimin e aplikacioneve</string>
     <string name="start_media_rpc">Nis Media RPC</string>
-    <string name="start_manual_rpc">Nis Experimental RPC</string>
+    <string name="start_manual_rpc">Nis Manual RPC</string>
     <string name="stop_rpc">Ndalo RPC</string>
     <string name="stop">Ndalo</string>
     <string name="start_appDetection_toast">Zbulimi i aplikacioneve filloi</string>
     <string name="start_media_rpc_toast">Media RPC filloi</string>
-    <string name="start_manual_rpc_toast">Experimental RPC filloi</string>
+    <string name="start_manual_rpc_toast">Manual RPC filloi</string>
     <string name="stop_rpc_toast">Të gjitha shërbimet u ndaluan</string>
     <string name="show_playback_state">Shfaq gjendjen e luajtjes</string>
     <string name="copied_to_clipboard">Kopjuar në clipboard</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Lejo Experimental RPC të zbulojë aplikacionet në ekzekutim</string>
-    <string name="manual_rpc_detect_media">Lejo Experimental RPC të zbulojë luajtjen e medias</string>
+    <string name="manual_rpc_detect_apps">Lejo Manual RPC të zbulojë aplikacionet në ekzekutim</string>
+    <string name="manual_rpc_detect_media">Lejo Manual RPC të zbulojë luajtjen e medias</string>
     <string name="app_preferences">Preferencat e aplikacionit</string>
-    <string name="app_preferences_desc">Zgjidhni cilat aplikacione të aktivizohen për Experimental RPC</string>
+    <string name="app_preferences_desc">Zgjidhni cilat aplikacione të aktivizohen për Manual RPC</string>
     <string name="completion_media_title">Titulli i këngës/video</string>
     <string name="completion_media_artist">Artisti kryesor</string>
     <string name="completion_app_name">Emri i aplikacionit të detektuar</string>
     <string name="show_cover_art">Shfaq kopertinën</string>
     <string name="show_cover_art_desc">Shfaq kopertinën e albumit si imazh të madh</string>
-    <string name="enable_manualRpc">Aktivizo Experimental RPC</string>
+    <string name="enable_manualRpc">Aktivizo Manual RPC</string>
     <string name="completion_media_author">Autori kryesor</string>
     <string name="completion_media_album">Emri i albumit</string>
     <string name="completion_media_album_artist">Artisti i albumit</string>

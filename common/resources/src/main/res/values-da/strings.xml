@@ -101,7 +101,7 @@
     <string name="update">Opdater</string>
     <string name="configs_directory">Konfigurationsmappe</string>
     <string name="custom_activity_type">Brugerdefineret aktivitetstype</string>
-    <string name="custom_activity_type_desc">Overskriver standardaktivitetstypen. Virker kun for media- og Experimental RPC</string>
+    <string name="custom_activity_type_desc">Overskriver standardaktivitetstypen. Virker kun for media- og Manual RPC</string>
     <string name="custom_activity_status">Brugerdefineret aktivitetstilstand</string>
     <string name="custom_activity_status_desc">Overskriver standardaktivitetsstatus</string>
     <string name="search">Søg</string>
@@ -117,7 +117,7 @@
     <string name="main_consoleRpc">Konsol-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy giver dig mulighed for at bruge nogle foruddefinerede indstillinger for at sætte din tilstedeværelse på Discord.</string>
     <string name="main_ManualRpc">Eksperimentel RPC</string>
-    <string name="main_ManualRpcDetails">Experimental RPC er en funktion i Kizzy der konstant skifter mellem apps RPC og media RPC.</string>
+    <string name="main_ManualRpcDetails">Manual RPC er en funktion i Kizzy der konstant skifter mellem apps RPC og media RPC.</string>
     <string name="main_customRpcDetails">Kizzy giver dig mulighed for at oprette din egen fuldt tilpasselige rich presence til Discord.</string>
     <string name="main_comingSoon">Kommer snart</string>
     <string name="exit">Afslut</string>
@@ -200,7 +200,7 @@
     <string name="stop">Stop</string>
     <string name="start_appDetectionToast">App-detektion startet</string>
     <string name="start_media_rpc_toast">Media RPC startet</string>
-    <string name="start_manual_rpc_toast">Experimental RPC startet</string>
+    <string name="start_manual_rpc_toast">Manual RPC startet</string>
     <string name="stop_rpcToast">Alle tjenester stoppet</string>
     <string name="show_playbackState">Vis afspilningsstatus</string>
     <string name="copied_toClipboard">Kopieret til udklipsholder</string>
@@ -209,16 +209,16 @@
     <string name="custom_application_id_desc">Overskriver standard Discord-applikations-ID</string>
     <string name="use_a_vpnDesc">Discord-login virker måske ikke i dit land uden VPN/DPI. Brug venligst VPN/DPI for at fortsætte.</string>
     <string name="rpc_templates_note">&quot;Brug skabeloner som \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' osv. Tomme felter vil bruge standardadfærd eller blive udeladt.&quot;</string>
-    <string name="manual_rpc_detect_apps">Tillad Experimental RPC at opdage kørende apps</string>
-    <string name="manual_rpc_detect_media">Tillad Experimental RPC at opdage medieafspilning</string>
+    <string name="manual_rpc_detect_apps">Tillad Manual RPC at opdage kørende apps</string>
+    <string name="manual_rpc_detect_media">Tillad Manual RPC at opdage medieafspilning</string>
     <string name="app_preferences">App-præferencer</string>
-    <string name="app_preferences_desc">Vælg hvilke apps der er aktiveret for Experimental RPC</string>
+    <string name="app_preferences_desc">Vælg hvilke apps der er aktiveret for Manual RPC</string>
     <string name="completion_media_title">Sangtitel/videotitel</string>
     <string name="completion_media_artist">Hovedkunstner</string>
     <string name="completion_appName">Opdaget app-navn</string>
     <string name="show_coverArt">Vis albumomslag</string>
     <string name="show_coverArt_desc">Vis albumomslag som stort billede</string>
-    <string name="enable_manualRpc">Aktiver Experimental RPC</string>
+    <string name="enable_manualRpc">Aktiver Manual RPC</string>
     <string name="completion_media_author">Hovedforfatter</string>
     <string name="completion_media_album">Albumnavn</string>
     <string name="completion_media_albumArtist">Albumkunstner</string>

@@ -129,7 +129,7 @@
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
     <string name="main_ManualRpc">RPC ניסיוני</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>

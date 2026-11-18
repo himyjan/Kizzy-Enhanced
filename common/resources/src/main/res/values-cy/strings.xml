@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Defnyddio Imgur fel dirprydwr delwedd amgen.</string>
     <string name="start_appDetection">Cychwyn canfydiad Apps</string>
     <string name="start_media_rpc">Cychwyn Media RPC</string>
-    <string name="start_manual_rpc">Cychwyn Experimental RPC</string>
+    <string name="start_manual_rpc">Cychwyn Manual RPC</string>
     <string name="stop_rpc">Stopio\'r RPC</string>
     <string name="stop">Stopio</string>
     <string name="start_appDetection_toast">Dechrau canfydiad Apps</string>
     <string name="start_media_rpc_toast">Dechrau Media RPC</string>
-    <string name="start_manual_rpc_toast">Dechrau Experimental RPC</string>
+    <string name="start_manual_rpc_toast">Dechrau Manual RPC</string>
     <string name="stop_rpc_toast">Mae pob gwasanaeth wedi stopio</string>
     <string name="show_playback_state">Dangos statws chwarae</string>
     <string name="copied_to_clipboard">Wedi\'i gopio i\'r glannau</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Caniatáu i Experimental RPC ganfod apps sy\'n rhedeg</string>
-    <string name="manual_rpc_detect_media">Caniatáu i Experimental RPC ganfod cyfarthyddiaeth</string>
+    <string name="manual_rpc_detect_apps">Caniatáu i Manual RPC ganfod apps sy\'n rhedeg</string>
+    <string name="manual_rpc_detect_media">Caniatáu i Manual RPC ganfod cyfarthyddiaeth</string>
     <string name="app_preferences">Hoffiannau\'r ap</string>
-    <string name="app_preferences_desc">Dewiswch yr apiau i\'w cael eu galluogi ar gyfer Experimental RPC</string>
+    <string name="app_preferences_desc">Dewiswch yr apiau i\'w cael eu galluogi ar gyfer Manual RPC</string>
     <string name="completion_media_title">Teitl y gân/fideo</string>
     <string name="completion_media_artist">Prif artist</string>
     <string name="completion_app_name">Enw\'r ap a ganfydwyd</string>
     <string name="show_cover_art">Dangos y gorchenn</string>
     <string name="show_cover_art_desc">Dangos gorchenn yr albwm fel delwedd mawr</string>
-    <string name="enable_manualRpc">Troi Experimental RPC ymlaen</string>
+    <string name="enable_manualRpc">Troi Manual RPC ymlaen</string>
     <string name="completion_media_author">Prif awdur</string>
     <string name="completion_media_album">Enw albwm</string>
     <string name="completion_media_album_artist">Artist albwm</string>

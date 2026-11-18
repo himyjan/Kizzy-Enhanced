@@ -206,13 +206,13 @@
     <string name="manual_rpc_detect_apps">এক্সপেরিমেন্টাল RPC-কে চলমান অ্যাপ্লিকেশন খুঁজে বের করার অনুমতি দিন</string>
     <string name="manual_rpc_detect_media">এক্সপেরিমেন্টাল RPC-কে মিডিয়া প্লেব্যাক শনাক্ত করতে দিন</string>
     <string name="app_preferences">অ্যাপ পছন্দ</string>
-    <string name="app_preferences_desc">Experimental RPC-এর জন্য কোন অ্যাপগুলো সক্রিয় রাখবেন তা নির্বাচন করুন</string>
+    <string name="app_preferences_desc">Manual RPC-এর জন্য কোন অ্যাপগুলো সক্রিয় রাখবেন তা নির্বাচন করুন</string>
     <string name="completion_media_title">গান / ভিডিও টাইটেল</string>
     <string name="completion_media_artist">মূল শিল্পী</string>
     <string name="completion_app_name">নাম Sussex</string>
     <string name="show_cover_art">অ্যালবামের কভার শো করুন</string>
     <string name="show_cover_art_desc">আলবাম কভার বড় ছবি হিসেবে দেখান</string>
-    <string name="enable_manualRpc">Experimental RPC সক্রিয় করুন</string>
+    <string name="enable_manualRpc">Manual RPC সক্রিয় করুন</string>
     <string name="completion_media_author">প্রধান লেখক</string>
     <string name="completion_media_album">অলবামের নাম</string>
     <string name="completion_media_album_artist">অ্যালবাম শিল্পী</string>

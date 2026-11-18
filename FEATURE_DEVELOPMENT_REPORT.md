@@ -3274,7 +3274,7 @@ When user toggled RPC on/off from other screens (Media RPC, Custom RPC, etc.) an
 - **`ON_RESUME` re-detection** — When home screen resumes, queries each RPC service's running state:
   - `AppUtils.mediaRpcRunning()` → Media RPC switch
   - `AppUtils.customRpcRunning()` → Custom RPC & Console RPC switches
-  - `AppUtils.ManualRpcRunning()` → Experimental RPC switch
+  - `AppUtils.ManualRpcRunning()` → Manual RPC switch
 - **String resolution** — Feature titles resolved once at composable level, used in `ON_RESUME` re-detection
 
 ### Result

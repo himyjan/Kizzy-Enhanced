@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Erabili Imgur irudi-proxy alternatibo bezala.</string>
     <string name="start_appDetection">Hasi aplikazioen detekzioa</string>
     <string name="start_media_rpc">Hasi Media RPC</string>
-    <string name="start_manual_rpc">Hasi Experimental RPC</string>
+    <string name="start_manual_rpc">Hasi Manual RPC</string>
     <string name="stop_rpc">Gelditu RPC</string>
     <string name="stop">Gelditu</string>
     <string name="start_appDetection_toast">Aplikazioen detekzioa hasi da</string>
     <string name="start_media_rpc_toast">Media RPC hasi da</string>
-    <string name="start_manual_rpc_toast">Experimental RPC hasi da</string>
+    <string name="start_manual_rpc_toast">Manual RPC hasi da</string>
     <string name="stop_rpc_toast">Zerbitzu guztiak geldituta</string>
     <string name="show_playback_state">Erakutsi erreprodukzioaren egoera</string>
     <string name="copied_to_clipboard">Arbelera kopiatuta</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Baimendu Experimental RPC-ek exekutatzen ari diren aplikazioak detektatzea</string>
-    <string name="manual_rpc_detect_media">Baimendu Experimental RPC-ek multimedia erreprodukzioa detektatzea</string>
+    <string name="manual_rpc_detect_apps">Baimendu Manual RPC-ek exekutatzen ari diren aplikazioak detektatzea</string>
+    <string name="manual_rpc_detect_media">Baimendu Manual RPC-ek multimedia erreprodukzioa detektatzea</string>
     <string name="app_preferences">Aplikazioaren ezarpenak</string>
-    <string name="app_preferences_desc">Aukeratu zein aplikazio gaituta dauden Experimental RPC-rentzat</string>
+    <string name="app_preferences_desc">Aukeratu zein aplikazio gaituta dauden Manual RPC-rentzat</string>
     <string name="completion_media_title">Kantuaren/bidearen izenburua</string>
     <string name="completion_media_artist">Artista nagusia</string>
     <string name="completion_app_name">Detektatutako aplikazioaren izena</string>
     <string name="show_cover_art">Erakutsi estalkia</string>
     <string name="show_cover_art_desc">Erakutsi albumaren estalkia irudi handi gisa</string>
-    <string name="enable_manualRpc">Gaitu Experimental RPC</string>
+    <string name="enable_manualRpc">Gaitu Manual RPC</string>
     <string name="completion_media_author">Egile nagusia</string>
     <string name="completion_media_album">Albumaren izena</string>
     <string name="completion_media_album_artist">Albumaren artista</string>

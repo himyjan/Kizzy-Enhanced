@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Օգտագործել Imgur-ը որպես այլընտրելի պրոքսի։</string>
     <string name="start_appDetection">Սկսել հավելերի հայտնաբերումը</string>
     <string name="start_media_rpc">Սկսել Media RPC</string>
-    <string name="start_manual_rpc">Սկսել Experimental RPC</string>
+    <string name="start_manual_rpc">Սկսել Manual RPC</string>
     <string name="stop_rpc">Կանգնեցնել RPC-ն</string>
     <string name="stop">Կանգնեցնել</string>
     <string name="start_appDetection_toast">Հավելերի հայտնաբերումը սկսվել է</string>
     <string name="start_media_rpc_toast">Media RPC-ն սկսվել է</string>
-    <string name="start_manual_rpc_toast">Experimental RPC-ն սկսվել է</string>
+    <string name="start_manual_rpc_toast">Manual RPC-ն սկսվել է</string>
     <string name="stop_rpc_toast">Բոլոր ծառայությունները կանգնվել են</string>
     <string name="show_playback_state">Ցույց տալ ներիշնառման վիճակը</string>
     <string name="copied_to_clipboard">Պատճենված է սեփնաթերթին</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Թույլ տեղ տալ Experimental RPC-ին հայտնաբերել աշխատող հավելերը</string>
-    <string name="manual_rpc_detect_media">Թույլ տեղ տալ Experimental RPC-ին հայտնաբերել մեդիա ներիշնառումը</string>
+    <string name="manual_rpc_detect_apps">Թույլ տեղ տալ Manual RPC-ին հայտնաբերել աշխատող հավելերը</string>
+    <string name="manual_rpc_detect_media">Թույլ տեղ տալ Manual RPC-ին հայտնաբերել մեդիա ներիշնառումը</string>
     <string name="app_preferences">Հավելի նախապեսներ</string>
-    <string name="app_preferences_desc">Ընտրեք, թե որ հավելներն են միացված Experimental RPC-ի համար</string>
+    <string name="app_preferences_desc">Ընտրեք, թե որ հավելներն են միացված Manual RPC-ի համար</string>
     <string name="completion_media_title">Երաժշտի/տեսանության վերնագիր</string>
     <string name="completion_media_artist">Գլխավոր կատարող</string>
     <string name="completion_app_name">Նշված հավելի անուն</string>
     <string name="show_cover_art">Ցույց տալ մասնաշերը</string>
     <string name="show_cover_art_desc">Ցույց տալ ալբոմի մասնաշերը որպես մեծ պատկեր</string>
-    <string name="enable_manualRpc">Միացնել Experimental RPC</string>
+    <string name="enable_manualRpc">Միացնել Manual RPC</string>
     <string name="completion_media_author">Գլխավոր հեղինակ</string>
     <string name="completion_media_album">Ալբոմի անուն</string>
     <string name="completion_media_album_artist">Ալբոմի կատարող</string>

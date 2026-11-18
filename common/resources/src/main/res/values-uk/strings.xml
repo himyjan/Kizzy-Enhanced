@@ -101,7 +101,7 @@
     <string name="update">Оновити</string>
     <string name="configs_directory">Директорія конфігурацій</string>
     <string name="custom_activity_type">Користувальничий тип активності</string>
-    <string name="custom_activity_type_desc">Перевизначає стандартний тип активності. Працює лише для Media та Experimental RPC</string>
+    <string name="custom_activity_type_desc">Перевизначає стандартний тип активності. Працює лише для Media та Manual RPC</string>
     <string name="custom_activity_status">Користувацький статус активності</string>
     <string name="custom_activity_status_desc">Перевизначає стандартний статус активності</string>
     <string name="search">Пошук</string>

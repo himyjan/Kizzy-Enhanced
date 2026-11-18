@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Guna Imgur sebagai proksi imej alternatif.</string>
     <string name="start_appDetection">Mulakan pengesanan aplikasi</string>
     <string name="start_media_rpc">Mulakan Media RPC</string>
-    <string name="start_manual_rpc">Mulakan Experimental RPC</string>
+    <string name="start_manual_rpc">Mulakan Manual RPC</string>
     <string name="stop_rpc">Henti RPC</string>
     <string name="stop">Henti</string>
     <string name="start_appDetection_toast">Pengesanan aplikasi bermula</string>
     <string name="start_media_rpc_toast">Media RPC bermula</string>
-    <string name="start_manual_rpc_toast">Experimental RPC bermula</string>
+    <string name="start_manual_rpc_toast">Manual RPC bermula</string>
     <string name="stop_rpc_toast">Semua perkhidmatan dihentikan</string>
     <string name="show_playback_state">Papar keadaan main semula</string>
     <string name="copied_to_clipboard">Disalin ke papan klip</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Benarkan Experimental RPC mengesan aplikasi yang berjalan</string>
-    <string name="manual_rpc_detect_media">Benarkan Experimental RPC mengesan main semula media</string>
+    <string name="manual_rpc_detect_apps">Benarkan Manual RPC mengesan aplikasi yang berjalan</string>
+    <string name="manual_rpc_detect_media">Benarkan Manual RPC mengesan main semula media</string>
     <string name="app_preferences">Tetapan aplikasi</string>
-    <string name="app_preferences_desc">Pilih aplikasi yang didayakan untuk Experimental RPC</string>
+    <string name="app_preferences_desc">Pilih aplikasi yang didayakan untuk Manual RPC</string>
     <string name="completion_media_title">Tajuk lagu/video</string>
     <string name="completion_media_artist">Seniman utama</string>
     <string name="completion_app_name">Nama aplikasi dikesan</string>
     <string name="show_cover_art">Papar muka surat</string>
     <string name="show_cover_art_desc">Papar muka surat album sebagai imej besar</string>
-    <string name="enable_manualRpc">Dayakan Experimental RPC</string>
+    <string name="enable_manualRpc">Dayakan Manual RPC</string>
     <string name="completion_media_author">Penulis utama</string>
     <string name="completion_media_album">Nama album</string>
     <string name="completion_media_album_artist">Seniman album</string>

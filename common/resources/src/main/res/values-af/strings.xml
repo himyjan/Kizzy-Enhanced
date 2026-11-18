@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Gebruik Imgur as \'n alternatiewe beeld-proxy.</string>
     <string name="start_appDetection">Start app-deteksie</string>
     <string name="start_media_rpc">Begin Media RPC</string>
-    <string name="start_manual_rpc">Begin Experimental RPC</string>
+    <string name="start_manual_rpc">Begin Manual RPC</string>
     <string name="stop_rpc">RPC-stop</string>
     <string name="stop">Stop</string>
     <string name="start_appDetection_toast">App-deteksie het begin</string>
     <string name="start_media_rpc_toast">Media RPC het begin</string>
-    <string name="start_manual_rpc_toast">Experimental RPC het begin</string>
+    <string name="start_manual_rpc_toast">Manual RPC het begin</string>
     <string name="stop_rpc_toast">Alle dienste gestop</string>
     <string name="show_playback_state">Wys afspeelstatus</string>
     <string name="copied_to_clipboard">Na knipbord gekopieer</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Laat Experimental RPC bedienende apps opspoor</string>
-    <string name="manual_rpc_detect_media">Laat Experimental RPC mediaterugspeel opspoor</string>
+    <string name="manual_rpc_detect_apps">Laat Manual RPC bedienende apps opspoor</string>
+    <string name="manual_rpc_detect_media">Laat Manual RPC mediaterugspeel opspoor</string>
     <string name="app_preferences">App-voorkeures</string>
-    <string name="app_preferences_desc">Kies watter apps geaktiveer is vir Experimental RPC</string>
+    <string name="app_preferences_desc">Kies watter apps geaktiveer is vir Manual RPC</string>
     <string name="completion_media_title">Song/Video-titel</string>
     <string name="completion_media_artist">Hoofartiest</string>
     <string name="completion_app_name">Waargenome appnaam</string>
     <string name="show_cover_art">Wys omslagbeeld</string>
     <string name="show_cover_art_desc">Wys albumomslag as groot beeld</string>
-    <string name="enable_manualRpc">Aktiveer Experimental RPC</string>
+    <string name="enable_manualRpc">Aktiveer Manual RPC</string>
     <string name="completion_media_author">Hoofskrywer</string>
     <string name="completion_media_album">Albumnaam</string>
     <string name="completion_media_album_artist">Albumartiest</string>

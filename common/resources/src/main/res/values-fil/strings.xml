@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Gumamit ng Imgur bilang alternatibong image proxy.</string>
     <string name="start_appDetection">Simulan ang Pagtukoy ng App</string>
     <string name="start_media_rpc">Simulan ang Media RPC</string>
-    <string name="start_manual_rpc">Simulan ang Experimental RPC</string>
+    <string name="start_manual_rpc">Simulan ang Manual RPC</string>
     <string name="stop_rpc">Itigil ang RPC</string>
     <string name="stop">Itigil</string>
     <string name="start_appDetection_toast">Nagsimula ang Pagtukoy ng App</string>
     <string name="start_media_rpc_toast">Nagsimula ang Media RPC</string>
-    <string name="start_manual_rpc_toast">Nagsimula ang Experimental RPC</string>
+    <string name="start_manual_rpc_toast">Nagsimula ang Manual RPC</string>
     <string name="stop_rpc_toast">Itinigil ang lahat ng serbisyo</string>
     <string name="show_playback_state">Ipakita ang estado ng playback</string>
     <string name="copied_to_clipboard">Nakopya sa clipboard</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Payagan ang Experimental RPC na makita ang mga tumatakbong app</string>
-    <string name="manual_rpc_detect_media">Payagan ang Experimental RPC na makita ang media playback</string>
+    <string name="manual_rpc_detect_apps">Payagan ang Manual RPC na makita ang mga tumatakbong app</string>
+    <string name="manual_rpc_detect_media">Payagan ang Manual RPC na makita ang media playback</string>
     <string name="app_preferences">Mga kagustuhan ng app</string>
-    <string name="app_preferences_desc">Piliin kung aling mga app ang pinapagana para sa Experimental RPC</string>
+    <string name="app_preferences_desc">Piliin kung aling mga app ang pinapagana para sa Manual RPC</string>
     <string name="completion_media_title">Pamagat ng awit/video</string>
     <string name="completion_media_artist">Pangunahing tagapambayan</string>
     <string name="completion_app_name">Pangalan ng natukoy na app</string>
     <string name="show_cover_art">Ipakita ang cover art</string>
     <string name="show_cover_art_desc">Ipakita ang cover art ng album bilang malaking larawan</string>
-    <string name="enable_manualRpc">I-enable ang Experimental RPC</string>
+    <string name="enable_manualRpc">I-enable ang Manual RPC</string>
     <string name="completion_media_author">Pangunahing manunulat</string>
     <string name="completion_media_album">Pangalan ng album</string>
     <string name="completion_media_album_artist">Tagapambayan ng album</string>

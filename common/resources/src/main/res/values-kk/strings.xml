@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Imgur-ді баламалы сурет прокси ретінде қолданыңыз.</string>
     <string name="start_appDetection">Қолданбаларды анықтауды бастау</string>
     <string name="start_media_rpc">Media RPC бастау</string>
-    <string name="start_manual_rpc">Experimental RPC бастау</string>
+    <string name="start_manual_rpc">Manual RPC бастау</string>
     <string name="stop_rpc">RPC тоқтату</string>
     <string name="stop">Тоқтату</string>
     <string name="start_appDetection_toast">Қолданбаларды анықтау басталды</string>
     <string name="start_media_rpc_toast">Media RPC басталды</string>
-    <string name="start_manual_rpc_toast">Experimental RPC басталды</string>
+    <string name="start_manual_rpc_toast">Manual RPC басталды</string>
     <string name="stop_rpc_toast">Барлық қызметтер тоқтатылды</string>
     <string name="show_playback_state">Ойнатқыш күйін көрсету</string>
     <string name="copied_to_clipboard">Буферге көшірілді</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Experimental RPC жұмыс істейтін қолданбаларды анықтауға рұқсат беру</string>
-    <string name="manual_rpc_detect_media">Experimental RPC медиа ойнауын анықтауға рұқсат беру</string>
+    <string name="manual_rpc_detect_apps">Manual RPC жұмыс істейтін қолданбаларды анықтауға рұқсат беру</string>
+    <string name="manual_rpc_detect_media">Manual RPC медиа ойнауын анықтауға рұқсат беру</string>
     <string name="app_preferences">Қолданба параметрлері</string>
-    <string name="app_preferences_desc">Experimental RPC үшін қай қолданбалар қосулы болатынын таңдаңыз</string>
+    <string name="app_preferences_desc">Manual RPC үшін қай қолданбалар қосулы болатынын таңдаңыз</string>
     <string name="completion_media_title">Ән/видео атауы</string>
     <string name="completion_media_artist">Негізгі орындаушы</string>
     <string name="completion_app_name">Анықталған қолданба атауы</string>
     <string name="show_cover_art">Мұқабаны көрсету</string>
     <string name="show_cover_art_desc">Альбом мұқабасын үлкен сурет ретінде көрсету</string>
-    <string name="enable_manualRpc">Experimental RPC қосу</string>
+    <string name="enable_manualRpc">Manual RPC қосу</string>
     <string name="completion_media_author">Негізгі автор</string>
     <string name="completion_media_album">Альбом атауы</string>
     <string name="completion_media_album_artist">Альбом орындаушысы</string>

@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">အခြားပုံ proxy အဖြစ် Imgur ကို သုံးပါ။</string>
     <string name="start_appDetection">အက်ပ်ရှာဖွေ့ခြင်း စတင်ပါ</string>
     <string name="start_media_rpc">Media RPC စတင်ပါ</string>
-    <string name="start_manual_rpc">Experimental RPC စတင်ပါ</string>
+    <string name="start_manual_rpc">Manual RPC စတင်ပါ</string>
     <string name="stop_rpc">RPC ရပ်ပါ</string>
     <string name="stop">ရပ်ပါ</string>
     <string name="start_appDetection_toast">အက်ပ်ရှာဖွေ့ခြင်း စတင်ပြီးပါပြီ</string>
     <string name="start_media_rpc_toast">Media RPC စတင်ပြီးပါပြီ</string>
-    <string name="start_manual_rpc_toast">Experimental RPC စတင်ပြီးပါပြီ</string>
+    <string name="start_manual_rpc_toast">Manual RPC စတင်ပြီးပါပြီ</string>
     <string name="stop_rpc_toast">ဝန်ဆောင်မှုအားလုံး ရပ်ပြီးပါပြီ</string>
     <string name="show_playback_state">ဖွင့်ခြင်းအခြေအနေ ပြပါ</string>
     <string name="copied_to_clipboard">ကလုံးသို့ ကူးယူပြီးပါပြီ</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Experimental RPC က လည်းဆောင်နေသော အက်ပ်များကို ရှာဖွေ့ခွင့်ပေးပါ</string>
-    <string name="manual_rpc_detect_media">Experimental RPC က မီဒီယာဖွင့်ခြင်းကို ရှာဖွေ့ခွင့်ပေးပါ</string>
+    <string name="manual_rpc_detect_apps">Manual RPC က လည်းဆောင်နေသော အက်ပ်များကို ရှာဖွေ့ခွင့်ပေးပါ</string>
+    <string name="manual_rpc_detect_media">Manual RPC က မီဒီယာဖွင့်ခြင်းကို ရှာဖွေ့ခွင့်ပေးပါ</string>
     <string name="app_preferences">အက်ပ် ဆက်တင်များ</string>
-    <string name="app_preferences_desc">Experimental RPC အတွက် ဖွင့်ထားရမည့် အက်ပ်များကို ရွေးပါ</string>
+    <string name="app_preferences_desc">Manual RPC အတွက် ဖွင့်ထားရမည့် အက်ပ်များကို ရွေးပါ</string>
     <string name="completion_media_title">သီချင်း/ဗီဒီယို အမည်</string>
     <string name="completion_media_artist">အဓိက အနုပညာရှင်</string>
     <string name="completion_app_name">တွေ့ရှိသော အက်ပ်အမည်</string>
     <string name="show_cover_art">အကျဉ်းပုံပြပါ</string>
     <string name="show_cover_art_desc">အလာ်ဘ်အကျဉ်းပုံကို ကြီးမြတ်ပုံအဖြစ် ပြပါ</string>
-    <string name="enable_manualRpc">Experimental RPC ဖွင့်ပါ</string>
+    <string name="enable_manualRpc">Manual RPC ဖွင့်ပါ</string>
     <string name="completion_media_author">အဓိက စာရေးသူ</string>
     <string name="completion_media_album">အလာ်ဘ်အမည်</string>
     <string name="completion_media_album_artist">အလာ်ဘ်အနုပညာရှင်</string>

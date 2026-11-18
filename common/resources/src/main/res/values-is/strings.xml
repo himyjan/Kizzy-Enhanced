@@ -128,8 +128,8 @@
     <string name="main_consoleRpc">Console RPC</string>
     <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
         your presence on Discord.</string>
-    <string name="main_ManualRpc">Experimental RPC</string>
-    <string name="main_ManualRpc_details">Experimental RPC is a feature in Kizzy that
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
@@ -210,12 +210,12 @@
     <string name="use_imgur_desc">Notaðu Imgur sem valkost myndarpróksi.</string>
     <string name="start_appDetection">Ræsa greiningu forrita</string>
     <string name="start_media_rpc">Ræsa Media RPC</string>
-    <string name="start_manual_rpc">Ræsa Experimental RPC</string>
+    <string name="start_manual_rpc">Ræsa Manual RPC</string>
     <string name="stop_rpc">Stöðva RPC</string>
     <string name="stop">Stöðva</string>
     <string name="start_appDetection_toast">Greining forrita hófst</string>
     <string name="start_media_rpc_toast">Media RPC hófst</string>
-    <string name="start_manual_rpc_toast">Experimental RPC hófst</string>
+    <string name="start_manual_rpc_toast">Manual RPC hófst</string>
     <string name="stop_rpc_toast">Öll þjónusta stöðvað</string>
     <string name="show_playback_state">Sýna afspilunarstöðu</string>
     <string name="copied_to_clipboard">Afritað á klippiborð</string>
@@ -226,16 +226,16 @@
         Please use a VPN/DPI to proceed.</string>
     <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
         Empty fields will use default behavior or be omitted."</string>
-    <string name="manual_rpc_detect_apps">Leyfa Experimental RPC að greina keyrandi forrit</string>
-    <string name="manual_rpc_detect_media">Leyfa Experimental RPC að greina efnisafspilun</string>
+    <string name="manual_rpc_detect_apps">Leyfa Manual RPC að greina keyrandi forrit</string>
+    <string name="manual_rpc_detect_media">Leyfa Manual RPC að greina efnisafspilun</string>
     <string name="app_preferences">App stillingar</string>
-    <string name="app_preferences_desc">Veldu hvaða forrit eru virk fyrir Experimental RPC</string>
+    <string name="app_preferences_desc">Veldu hvaða forrit eru virk fyrir Manual RPC</string>
     <string name="completion_media_title">Titill lags/myndskeiðs</string>
     <string name="completion_media_artist">Aðal listamaður</string>
     <string name="completion_app_name">Nafn greindra forrits</string>
     <string name="show_cover_art">Sýna umslag</string>
     <string name="show_cover_art_desc">Sýna albúmsumslagið sem stóra mynd</string>
-    <string name="enable_manualRpc">Kveikja á Experimental RPC</string>
+    <string name="enable_manualRpc">Kveikja á Manual RPC</string>
     <string name="completion_media_author">Aðalhöfundur</string>
     <string name="completion_media_album">Nafn albúms</string>
     <string name="completion_media_album_artist">Listamaður albúms</string>

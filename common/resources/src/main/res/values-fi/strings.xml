@@ -117,7 +117,7 @@
     <string name="main_consoleRpc">Konsoli-RPC</string>
     <string name="main_consoleRpcDetails">Kizzy antaa sinun käyttää muutamia ennalta määritettyjä asetuksia asettaaksesi läsnäolosi Discordissa.</string>
     <string name="main_ManualRpc">Kokeellinen RPC</string>
-    <string name="main_ManualRpcDetails">Experimental RPC on Kizzyn ominaisuus, joka vaihtaa jatkuvasti Apps RPC:n ja Median RPC:n välillä.</string>
+    <string name="main_ManualRpcDetails">Manual RPC on Kizzyn ominaisuus, joka vaihtaa jatkuvasti Apps RPC:n ja Median RPC:n välillä.</string>
     <string name="main_customRpcDetails">Kizzy antaa sinun luoda oman täysin muokattavan rich presence -ominaisuuden Discordissa.</string>
     <string name="main_comingSoon">Tulossa pian</string>
     <string name="exit">Poistu</string>
@@ -195,12 +195,12 @@
     <string name="use_imgurDesc">Käytä Imguria vaihtoehtoisena kuvapalvelimena.</string>
     <string name="start_appDetection">Käynnistä sovelluksen tunnistus</string>
     <string name="start_media_rpc">Käynnistä Media RPC</string>
-    <string name="start_manual_rpc">Käynnistä Experimental RPC</string>
+    <string name="start_manual_rpc">Käynnistä Manual RPC</string>
     <string name="stop_rpc">Pysäytä RPC</string>
     <string name="stop">Pysäytä</string>
     <string name="start_appDetectionToast">Sovelluksen tunnistus käynnistetty</string>
     <string name="start_media_rpc_toast">Media RPC käynnistetty</string>
-    <string name="start_manual_rpc_toast">Experimental RPC käynnistetty</string>
+    <string name="start_manual_rpc_toast">Manual RPC käynnistetty</string>
     <string name="stop_rpcToast">Kaikki palvelut pysäytetty</string>
     <string name="show_playbackState">Näytä toistotila</string>
     <string name="copied_toClipboard">Kopioitu leikepöydälle</string>
