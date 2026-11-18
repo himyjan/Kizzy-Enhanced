@@ -10,6 +10,11 @@ data class LastFmSession(
 )
 
 @Serializable
+data class LastFmSessionResponse(
+    val session: LastFmSession
+)
+
+@Serializable
 data class LastFmTokenResponse(
     val token: String
 )

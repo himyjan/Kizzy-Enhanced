@@ -1,6 +1,5 @@
 package com.my.kizzy.feature_rpc_base.services.lastfm
 
-import com.my.kizzy.preference.Prefs
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -14,7 +13,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.serialization.json.Json
@@ -23,9 +22,14 @@ import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 import java.security.MessageDigest
 
-object LastFM {
+private const val LASTFM_API_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
+private const val LIBREFM_API_BASE_URL = "https://libre.fm/2.0/"
+private const val MAX_API_RETRIES = 3
 
-    const val API_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
+open class LastFmApiClient(
+    private val apiBaseUrl: String,
+    loggerName: String
+) {
 
     private var apiKey: String = ""
     private var secret: String = ""
@@ -33,7 +37,7 @@ object LastFM {
     /** Current session key, set after successful authentication */
     var sessionKey: String? = null
 
-    /** Whether the user is logged in to Last.fm */
+    /** Whether the user has an authenticated session for this service */
     val isAuthenticated: Boolean
         get() = !sessionKey.isNullOrEmpty()
 
@@ -48,21 +52,19 @@ object LastFM {
                 json(json)
             }
             defaultRequest {
-                url(API_BASE_URL)
+                url(apiBaseUrl)
                 header(HttpHeaders.UserAgent, "Kizzy/1.0")
             }
             expectSuccess = false
         }
     }
 
-    private val logger: Logger = LoggerFactory.getLogger("LastFM")
+    private val logger: Logger = LoggerFactory.getLogger(loggerName)
 
     /**
      * Maximum number of retry attempts for failed Last.fm API calls.
      * Exponential backoff: 1s, 2s, 4s
      */
-    private const val MAX_API_RETRIES = 3
-
     /**
      * Execute a Last.fm API call with retry logic and exponential backoff.
      * Returns null if all retries fail.
@@ -75,9 +77,10 @@ object LastFM {
                 call()
             } catch (e: LastFmException) {
                 lastError = e.errorMessage
-                // Don't retry on auth errors (4xx)
-                if (e.code in 400..499) throw e
+                if (e.code in 400..499 || e.code in setOf(4, 6, 9, 10, 13, 26)) throw e
                 null
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 lastError = e.message
                 null
@@ -111,6 +114,24 @@ object LastFM {
         return digest.joinToString("") { "%02x".format(it) }
     }
 
+    private fun validateResponse(responseCode: Int, responseBody: String) {
+        if (responseCode !in 200..299) {
+            throw LastFmException(responseCode, responseBody)
+        }
+        if (responseBody.contains("\"error\"")) {
+            val error = json.decodeFromString<LastFmError>(responseBody)
+            throw LastFmException(error.error, error.message)
+        }
+    }
+
+    internal fun decodeSessionResponse(responseBody: String): LastFmSession {
+        if (responseBody.contains("\"error\"")) {
+            val error = json.decodeFromString<LastFmError>(responseBody)
+            throw LastFmException(error.error, error.message)
+        }
+        return json.decodeFromString<LastFmSessionResponse>(responseBody).session
+    }
+
     private fun buildPostData(
         method: String,
         sessionKey: String? = null,
@@ -136,17 +157,14 @@ object LastFM {
     suspend fun getToken(): LastFmTokenResponse? = apiCallWithRetry {
         val postData = buildPostData("auth.getToken")
         val response = client.post {
-            url(API_BASE_URL)
+            url(apiBaseUrl)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             setBody(postData)
         }
         val responseCode = response.status.value
         val responseBody = response.bodyAsText()
-        if (responseCode in 200..299) {
-            json.decodeFromString<LastFmTokenResponse>(responseBody)
-        } else {
-            throw LastFmException(responseCode, responseBody)
-        }
+        validateResponse(responseCode, responseBody)
+        json.decodeFromString<LastFmTokenResponse>(responseBody)
     }
 
     /**
@@ -154,7 +172,7 @@ object LastFM {
      */
     suspend fun getSession(token: String): LastFmSession? = apiCallWithRetry {
         val response = client.post {
-            url(API_BASE_URL)
+            url(apiBaseUrl)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             setBody(
                 buildPostData(
@@ -164,11 +182,8 @@ object LastFM {
             )
         }
         val responseText = response.bodyAsText()
-        if (responseText.contains("\"error\"")) {
-            val error = json.decodeFromString<LastFmError>(responseText)
-            throw LastFmException(error.error, error.message)
-        }
-        json.decodeFromString<LastFmSession>(responseText)
+        validateResponse(response.status.value, responseText)
+        decodeSessionResponse(responseText)
     }
 
     /**
@@ -176,7 +191,7 @@ object LastFM {
      */
     suspend fun getMobileSession(username: String, password: String): LastFmSession? = apiCallWithRetry {
         val response = client.post {
-            url(API_BASE_URL)
+            url(apiBaseUrl)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             setBody(
                 buildPostData(
@@ -188,11 +203,8 @@ object LastFM {
         }
 
         val responseText = response.bodyAsText()
-        if (responseText.contains("\"error\"")) {
-            val error = json.decodeFromString<LastFmError>(responseText)
-            throw LastFmException(error.error, error.message)
-        }
-        json.decodeFromString<LastFmSession>(responseText)
+        validateResponse(response.status.value, responseText)
+        decodeSessionResponse(responseText)
     }
 
     /**
@@ -207,8 +219,8 @@ object LastFM {
         duration: Int? = null
     ): Boolean = apiCallWithRetry {
         val currentSession = sessionKey ?: return@apiCallWithRetry false
-        client.post {
-            url(API_BASE_URL)
+        val response = client.post {
+            url(apiBaseUrl)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             setBody(
                 buildPostData(
@@ -226,6 +238,7 @@ object LastFM {
             )
             parameter("format", "json")
         }
+        validateResponse(response.status.value, response.bodyAsText())
         true
     } != null
 
@@ -240,8 +253,8 @@ object LastFM {
         duration: Int? = null
     ): Boolean = apiCallWithRetry {
         val currentSession = sessionKey ?: return@apiCallWithRetry false
-        client.post {
-            url(API_BASE_URL)
+        val response = client.post {
+            url(apiBaseUrl)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             setBody(
                 buildPostData(
@@ -251,13 +264,14 @@ object LastFM {
                         put("artist", artist)
                         put("track", track)
                         album?.let { put("album", it) }
-                        trackNumber?.let { put("trackNumber[0]", it.toString()) }
-                        duration?.let { put("duration[0]", duration.toString()) }
+                        trackNumber?.let { put("trackNumber", it.toString()) }
+                        duration?.let { put("duration", it.toString()) }
                     }
                 )
             )
             parameter("format", "json")
         }
+        validateResponse(response.status.value, response.bodyAsText())
         true
     } != null
 
@@ -271,8 +285,8 @@ object LastFM {
     ): Boolean = apiCallWithRetry {
         val currentSession = sessionKey ?: return@apiCallWithRetry false
         val method = if (love) "track.love" else "track.unlove"
-        client.post {
-            url(API_BASE_URL)
+        val response = client.post {
+            url(apiBaseUrl)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             setBody(
                 buildPostData(
@@ -286,11 +300,21 @@ object LastFM {
             )
             parameter("format", "json")
         }
+        validateResponse(response.status.value, response.bodyAsText())
         true
     } != null
 }
 
+object LastFM : LastFmApiClient(LASTFM_API_BASE_URL, "LastFM") {
+    const val API_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
+}
+
+object LibreFM : LastFmApiClient(LIBREFM_API_BASE_URL, "LibreFM") {
+    const val API_BASE_URL = "https://libre.fm/2.0/"
+}
+
 /**
- * Exception thrown when Last.fm API returns an error.
+ * Exception thrown when a Last.fm-compatible API returns an error.
  */
-class LastFmException(val code: Int, val errorMessage: String) : Exception("Last.fm error $code: $errorMessage")
+class LastFmException(val code: Int, val errorMessage: String) :
+    Exception("Scrobbling API error $code: $errorMessage")

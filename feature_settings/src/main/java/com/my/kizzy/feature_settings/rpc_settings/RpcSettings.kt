@@ -139,6 +139,14 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var lastfmShowPartyMax by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_PARTY_MAX, false]) }
     var isLastFmEnabled by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLED, false]) }
 
+    // Libre.fm scrobbling settings
+    var showLibreFmDialog by remember { mutableStateOf(false) }
+    var librefmApiKey by remember { mutableStateOf(Prefs[Prefs.LIBREFM_API_KEY, ""]) }
+    var librefmSecret by remember { mutableStateOf(Prefs[Prefs.LIBREFM_SECRET, ""]) }
+    var librefmUsername by remember { mutableStateOf(Prefs[Prefs.LIBREFM_USERNAME, ""]) }
+    var librefmPassword by remember { mutableStateOf(Prefs[Prefs.LIBREFM_PASSWORD, ""]) }
+    var isLibreFmEnabled by remember { mutableStateOf(Prefs[Prefs.LIBREFM_ENABLED, false]) }
+
     // ListenBrainz scrobbling settings
     var showListenBrainzDialog by remember { mutableStateOf(false) }
     var listenbrainzUserToken by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""]) }
@@ -455,6 +463,20 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                     lastfmShowPartyMax = Prefs[Prefs.LASTFM_SHOW_PARTY_MAX, false]
                     isLastFmEnabled = Prefs[Prefs.LASTFM_ENABLED, false]
                     showLastFmDialog = true
+                }
+            }
+            item(key = "librefm_settings") {
+                val libreFmStatus = if (isLibreFmEnabled) "Enabled" else "Disabled"
+                SettingItem(
+                    title = stringResource(id = R.string.librefm_settings_title),
+                    description = stringResource(id = R.string.librefm_enabled) + "  •  $libreFmStatus",
+                ) {
+                    librefmApiKey = Prefs[Prefs.LIBREFM_API_KEY, ""]
+                    librefmSecret = Prefs[Prefs.LIBREFM_SECRET, ""]
+                    librefmUsername = Prefs[Prefs.LIBREFM_USERNAME, ""]
+                    librefmPassword = Prefs[Prefs.LIBREFM_PASSWORD, ""]
+                    isLibreFmEnabled = Prefs[Prefs.LIBREFM_ENABLED, false]
+                    showLibreFmDialog = true
                 }
             }
             item(key = "listenbrainz_settings") {
@@ -894,6 +916,78 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                         ) {
                             lastfmShowPartyMax = !lastfmShowPartyMax
                         }
+                    }
+                },
+            )
+        }
+
+        if (showLibreFmDialog) {
+            AlertDialog(
+                onDismissRequest = { showLibreFmDialog = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val credentialsChanged =
+                            Prefs[Prefs.LIBREFM_API_KEY, ""] != librefmApiKey ||
+                                Prefs[Prefs.LIBREFM_SECRET, ""] != librefmSecret ||
+                                Prefs[Prefs.LIBREFM_USERNAME, ""] != librefmUsername ||
+                                Prefs[Prefs.LIBREFM_PASSWORD, ""] != librefmPassword
+                        Prefs[Prefs.LIBREFM_API_KEY] = librefmApiKey
+                        Prefs[Prefs.LIBREFM_SECRET] = librefmSecret
+                        Prefs[Prefs.LIBREFM_USERNAME] = librefmUsername
+                        Prefs[Prefs.LIBREFM_PASSWORD] = librefmPassword
+                        Prefs[Prefs.LIBREFM_ENABLED] = isLibreFmEnabled
+                        if (credentialsChanged) Prefs[Prefs.LIBREFM_SESSION_KEY] = ""
+                        showLibreFmDialog = false
+                    }) {
+                        Text(stringResource(R.string.save))
+                    }
+                },
+                title = { Text(stringResource(R.string.librefm_settings_title)) },
+                text = {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        PreferenceSwitch(
+                            title = stringResource(id = R.string.librefm_enabled),
+                            isChecked = isLibreFmEnabled,
+                        ) {
+                            isLibreFmEnabled = !isLibreFmEnabled
+                        }
+
+                        RpcField(
+                            value = librefmApiKey,
+                            label = R.string.librefm_api_key,
+                        ) {
+                            librefmApiKey = it
+                        }
+
+                        RpcField(
+                            value = librefmSecret,
+                            label = R.string.librefm_secret,
+                        ) {
+                            librefmSecret = it
+                        }
+
+                        RpcField(
+                            value = librefmUsername,
+                            label = R.string.librefm_username,
+                        ) {
+                            librefmUsername = it
+                        }
+
+                        RpcField(
+                            value = librefmPassword,
+                            label = R.string.librefm_password,
+                        ) {
+                            librefmPassword = it
+                        }
+
+                        Text(
+                            text = stringResource(R.string.librefm_api_key_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
                     }
                 },
             )

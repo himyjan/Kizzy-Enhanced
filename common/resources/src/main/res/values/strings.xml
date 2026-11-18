@@ -458,6 +458,14 @@
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
 
+    <string name="librefm_settings_title">Libre.fm Scrobbling</string>
+    <string name="librefm_enabled">Enable Libre.fm</string>
+    <string name="librefm_api_key">Libre.fm API Key</string>
+    <string name="librefm_secret">Libre.fm API Secret</string>
+    <string name="librefm_username">Libre.fm Username</string>
+    <string name="librefm_password">Libre.fm Password</string>
+    <string name="librefm_api_key_desc">Create an API key at https://libre.fm/api-keys.php. Libre.fm uses the Last.fm-compatible API.</string>
+
     <string name="listenbrainz_settings_title">ListenBrainz Scrobbling</string>
     <string name="listenbrainz_enabled">Enable ListenBrainz</string>
     <string name="listenbrainz_user_token">User Token</string>

@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.kotlinx.serialization)
     id ("kizzy.android.library")
     id ("kizzy.android.library.compose")
     id ("kizzy.android.feature")
@@ -44,6 +45,7 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.kotlinx.serialization)
     implementation(libs.ktor.content.negotiation)
+    testImplementation(libs.junit)
 
     // Hilt annotation processor
     ksp(libs.hilt.compiler)

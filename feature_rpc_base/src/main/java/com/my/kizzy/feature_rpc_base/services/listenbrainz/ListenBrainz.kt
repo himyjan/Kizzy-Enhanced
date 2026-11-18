@@ -14,7 +14,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -70,6 +70,8 @@ object ListenBrainz {
                 lastError = e.errorMessage
                 if (e.code in 400..499) throw e
                 null
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 lastError = e.message
                 null
@@ -94,6 +96,12 @@ object ListenBrainz {
     }
 
     fun isInitialized(): Boolean = userToken.isNotEmpty()
+
+    private suspend fun validateResponse(response: io.ktor.client.statement.HttpResponse) {
+        if (response.status.value !in 200..299) {
+            throw ListenBrainzException(response.status.value, response.bodyAsText())
+        }
+    }
 
     /**
      * Validate the ListenBrainz user token.
@@ -146,12 +154,13 @@ object ListenBrainz {
             put("payload", listOf(payload))
         }
 
-        client.post {
+        val response = client.post {
             url("submit-listens")
             header(HttpHeaders.Authorization, "Token $userToken")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(json.encodeToString(requestBody))
         }
+        validateResponse(response)
         true
     } != null
 
@@ -186,12 +195,13 @@ object ListenBrainz {
             put("payload", listOf(payload))
         }
 
-        client.post {
+        val response = client.post {
             url("submit-listens?return_msid=true")
             header(HttpHeaders.Authorization, "Token $userToken")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(json.encodeToString(requestBody))
         }
+        validateResponse(response)
         true
     } != null
 }

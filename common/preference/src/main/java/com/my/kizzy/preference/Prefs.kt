@@ -59,6 +59,11 @@ object Prefs {
         LASTFM_USERNAME,
         LASTFM_PASSWORD,
         LASTFM_SESSION_KEY,
+        LIBREFM_API_KEY,
+        LIBREFM_SECRET,
+        LIBREFM_USERNAME,
+        LIBREFM_PASSWORD,
+        LIBREFM_SESSION_KEY,
         LISTENBRAINZ_USER_TOKEN,
     )
 
@@ -356,6 +361,14 @@ object Prefs {
     const val LASTFM_SHOW_COVER_ART = "lastfm_show_cover_art"
     const val LASTFM_SHOW_PARTY_CURRENT = "lastfm_show_party_current"
     const val LASTFM_SHOW_PARTY_MAX = "lastfm_show_party_max"
+
+    // Libre.fm scrobbling settings
+    const val LIBREFM_API_KEY = "librefm_api_key"
+    const val LIBREFM_SECRET = "librefm_secret"
+    const val LIBREFM_USERNAME = "librefm_username"
+    const val LIBREFM_PASSWORD = "librefm_password"
+    const val LIBREFM_SESSION_KEY = "librefm_session_key"
+    const val LIBREFM_ENABLED = "librefm_enabled"
 
     // ListenBrainz scrobbling settings
     const val LISTENBRAINZ_USER_TOKEN = "listenbrainz_user_token"

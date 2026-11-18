@@ -23,6 +23,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
+import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.work.RpcRecoveryHiltWorker
 import com.my.kizzy.domain.interfaces.Logger
@@ -43,6 +44,11 @@ import kotlinx.coroutines.sync.withLock
 import com.my.kizzy.feature_rpc_base.R as FeatureRpcR
 
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
+import com.my.kizzy.feature_rpc_base.services.lastfm.LastFmApiClient
+import com.my.kizzy.feature_rpc_base.services.lastfm.LastFmException
+import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFM
+import com.my.kizzy.feature_rpc_base.services.listenbrainz.ListenBrainz
+import com.my.kizzy.feature_rpc_base.services.listenbrainz.ListenBrainzException
 
 @AndroidEntryPoint
 class MediaRpcService : Service() {
@@ -70,12 +76,61 @@ class MediaRpcService : Service() {
 
     private var wakeLock: WakeLock? = null
 
-    // Last.fm scrobbling state
-    var lastfmSessionKey: String = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
-    var isLastfmEnabled: Boolean = Prefs[Prefs.LASTFM_ENABLED, false]
-    var lastfmScrobbledTrack: String? = null
-    var lastfmScrobbledArtist: String? = null
-    var lastfmScrobbledTimestamp: Long = 0
+    private var activeScrobbleTrack: String? = null
+    private var lastFmScrobbledIdentity: String? = null
+    private var listenBrainzScrobbledIdentity: String? = null
+    private var lastFmNowPlayingIdentity: String? = null
+    private var listenBrainzNowPlayingIdentity: String? = null
+    private var lastFmScrobbleInFlight: String? = null
+    private var listenBrainzScrobbleInFlight: String? = null
+    private var lastFmTrackStartTimestamp: Long = 0
+    private var lastFmScrobbleRetryAfter: Long = 0
+    private var listenBrainzScrobbleRetryAfter: Long = 0
+    private var lastFmNowPlayingInFlight: String? = null
+    private var listenBrainzNowPlayingInFlight: String? = null
+    private var lastFmNowPlayingRetryAfter: Long = 0
+    private var listenBrainzNowPlayingRetryAfter: Long = 0
+    private var listenBrainzMissingTokenLogged = false
+    private val lastFmAuth = LastFmAuthState(
+        name = "LastFM",
+        client = LastFM,
+        enabledPreference = Prefs.LASTFM_ENABLED,
+        apiKeyPreference = Prefs.LASTFM_API_KEY,
+        secretPreference = Prefs.LASTFM_SECRET,
+        usernamePreference = Prefs.LASTFM_USERNAME,
+        passwordPreference = Prefs.LASTFM_PASSWORD,
+        sessionKeyPreference = Prefs.LASTFM_SESSION_KEY
+    )
+    private val libreFmAuth = LastFmAuthState(
+        name = "LibreFM",
+        client = LibreFM,
+        enabledPreference = Prefs.LIBREFM_ENABLED,
+        apiKeyPreference = Prefs.LIBREFM_API_KEY,
+        secretPreference = Prefs.LIBREFM_SECRET,
+        usernamePreference = Prefs.LIBREFM_USERNAME,
+        passwordPreference = Prefs.LIBREFM_PASSWORD,
+        sessionKeyPreference = Prefs.LIBREFM_SESSION_KEY
+    )
+    private var libreFmScrobbledIdentity: String? = null
+    private var libreFmNowPlayingIdentity: String? = null
+    private var libreFmScrobbleInFlight: String? = null
+    private var libreFmNowPlayingInFlight: String? = null
+    private var libreFmScrobbleRetryAfter: Long = 0
+    private var libreFmNowPlayingRetryAfter: Long = 0
+
+    private data class LastFmAuthState(
+        val name: String,
+        val client: LastFmApiClient,
+        val enabledPreference: String,
+        val apiKeyPreference: String,
+        val secretPreference: String,
+        val usernamePreference: String,
+        val passwordPreference: String,
+        val sessionKeyPreference: String,
+        var retryAfter: Long = 0,
+        var missingConfigLogged: Boolean = false,
+        val mutex: Mutex = Mutex()
+    )
 
     private var isPaused = false
 
@@ -306,6 +361,357 @@ class MediaRpcService : Service() {
         }
     }
 
+    private suspend fun ensureLastFmCompatibleSession(auth: LastFmAuthState): Boolean =
+        auth.mutex.withLock {
+        if (!Prefs[auth.enabledPreference, false]) return@withLock false
+
+        val apiKey = Prefs[auth.apiKeyPreference, ""]
+        val secret = Prefs[auth.secretPreference, ""]
+        if (apiKey.isBlank() || secret.isBlank()) {
+            auth.client.sessionKey = null
+            if (!auth.missingConfigLogged) {
+                logger.w(auth.name, "Scrobbling is enabled, but the API key or secret is missing")
+                auth.missingConfigLogged = true
+            }
+            return@withLock false
+        }
+
+        auth.missingConfigLogged = false
+        auth.client.init(apiKey, secret)
+        val savedSessionKey = Prefs[auth.sessionKeyPreference, ""]
+        if (savedSessionKey.isNotBlank()) {
+            auth.client.sessionKey = savedSessionKey
+            return@withLock true
+        }
+        auth.client.sessionKey = null
+
+        val now = System.currentTimeMillis()
+        if (now < auth.retryAfter) return@withLock false
+
+        val username = Prefs[auth.usernamePreference, ""]
+        val password = Prefs[auth.passwordPreference, ""]
+        if (username.isBlank() || password.isBlank()) {
+            logger.w(auth.name, "Scrobbling is enabled, but username or password is missing")
+            auth.retryAfter = now + 60_000
+            return@withLock false
+        }
+
+        val session = try {
+            auth.client.getMobileSession(username, password)
+        } catch (e: LastFmException) {
+            logger.e(auth.name, "Authentication failed: ${e.message}")
+            null
+        }
+        if (session == null) {
+            logger.w(auth.name, "Could not obtain a scrobbling session; retrying in one minute")
+            auth.retryAfter = now + 60_000
+            return@withLock false
+        }
+
+        auth.client.sessionKey = session.key
+        Prefs[auth.sessionKeyPreference] = session.key
+        auth.retryAfter = 0
+        true
+    }
+
+    private suspend fun invalidateLastFmCompatibleSessionIfRejected(
+        auth: LastFmAuthState,
+        error: Exception
+    ): Boolean {
+        if ((error as? LastFmException)?.code != 9) return false
+        auth.mutex.withLock {
+            auth.client.sessionKey = null
+            Prefs[auth.sessionKeyPreference] = ""
+            auth.retryAfter = 0
+        }
+        return true
+    }
+
+    private fun updateScrobblers(playingMedia: CommonRpc) {
+        val metadata = currentMediaController
+            ?.takeIf { it.packageName == playingMedia.appPackage }
+            ?.metadata
+        val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?: listOfNotNull(playingMedia.name, playingMedia.details)
+                .firstOrNull { it.isNotBlank() && it != playingMedia.appName }
+                ?.trim()
+                ?.takeIf { it.isNotEmpty() }
+        val artist = metadata?.let { MetadataResolver.getArtistOrAuthor(it) }
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?: playingMedia.state?.trim()?.takeIf { it.isNotEmpty() }
+        if (title == null || artist == null) return
+
+        val identity = "$artist\u001f$title"
+        val nowMs = System.currentTimeMillis()
+        val playbackState = currentMediaController?.playbackState
+        val playbackStateCode = playbackState?.state ?: playingMedia.playbackState
+        val isPlaying = !isPaused &&
+            (playbackStateCode == PlaybackState.STATE_PLAYING ||
+                (playbackStateCode == null && playingMedia.time != null))
+        val metadataDurationSec = (metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L)
+            .div(1000L).toInt().coerceAtLeast(0)
+        val durationSec = maxOf(currentMediaDurationSec, metadataDurationSec)
+        val timelineStartMs = playingMedia.time?.start
+        val reportedPositionSec = ((playbackState?.position ?: 0L) / 1000L).toInt().coerceAtLeast(0)
+
+        if (activeScrobbleTrack != identity) {
+            activeScrobbleTrack = identity
+            lastFmTrackStartTimestamp = timelineStartMs?.div(1000L)
+                ?: (nowMs / 1000L - reportedPositionSec)
+            lastFmScrobbledIdentity = null
+            libreFmScrobbledIdentity = null
+            listenBrainzScrobbledIdentity = null
+            lastFmNowPlayingIdentity = null
+            libreFmNowPlayingIdentity = null
+            listenBrainzNowPlayingIdentity = null
+            lastFmScrobbleRetryAfter = 0
+            libreFmScrobbleRetryAfter = 0
+            listenBrainzScrobbleRetryAfter = 0
+            lastFmNowPlayingRetryAfter = 0
+            libreFmNowPlayingRetryAfter = 0
+            listenBrainzNowPlayingRetryAfter = 0
+        }
+
+        val positionSec = timelineStartMs?.let { ((nowMs - it) / 1000L).toInt().coerceAtLeast(0) }
+            ?: if (isPlaying) {
+                maxOf(reportedPositionSec, (nowMs / 1000L - lastFmTrackStartTimestamp).toInt())
+            } else {
+                reportedPositionSec
+            }
+
+        val album = metadata?.let { MetadataResolver.getAlbum(it) }
+        val trackNumber = metadata?.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER)
+            ?.takeIf { it > 0L }
+            ?.toInt()
+        val lastFmEnabled = Prefs[lastFmAuth.enabledPreference, false]
+        val libreFmEnabled = Prefs[libreFmAuth.enabledPreference, false]
+        val listenBrainzEnabled = Prefs[Prefs.LISTENBRAINZ_ENABLED, false]
+
+        if (!lastFmEnabled) {
+            lastFmNowPlayingIdentity = null
+        } else if (isPlaying && lastFmNowPlayingIdentity != identity &&
+            lastFmNowPlayingInFlight != identity && nowMs >= lastFmNowPlayingRetryAfter
+        ) {
+            lastFmNowPlayingInFlight = identity
+            lastFmNowPlayingIdentity = identity
+            scope.launch {
+                try {
+                    if (ensureLastFmCompatibleSession(lastFmAuth)) {
+                        val sent = lastFmAuth.client.updateNowPlaying(
+                            artist, title, album, trackNumber, durationSec.takeIf { it > 0 }
+                        )
+                        if (!sent) throw IllegalStateException("Last.fm did not accept the now-playing update")
+                        logger.d("LastFM", "Now-playing updated for $artist - $title")
+                    } else {
+                        lastFmNowPlayingIdentity = null
+                        lastFmNowPlayingRetryAfter = System.currentTimeMillis() + 60_000
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logger.e("LastFM", "Now-playing update failed: ${e.message}")
+                    val sessionRejected = invalidateLastFmCompatibleSessionIfRejected(lastFmAuth, e)
+                    lastFmNowPlayingIdentity = null
+                    lastFmNowPlayingRetryAfter =
+                        if (sessionRejected) 0 else System.currentTimeMillis() + 60_000
+                } finally {
+                    if (lastFmNowPlayingInFlight == identity) lastFmNowPlayingInFlight = null
+                }
+            }
+        }
+
+        val scrobbleThresholdSec = if (durationSec > 0) minOf(durationSec / 2, 240) else 240
+        val eligibleToScrobble = isPlaying &&
+            (durationSec == 0 || durationSec >= 30) &&
+            positionSec >= scrobbleThresholdSec
+
+        if (lastFmEnabled && eligibleToScrobble &&
+            lastFmScrobbledIdentity != identity && lastFmScrobbleInFlight != identity &&
+            nowMs >= lastFmScrobbleRetryAfter
+        ) {
+            lastFmScrobbleInFlight = identity
+            scope.launch {
+                try {
+                    if (!ensureLastFmCompatibleSession(lastFmAuth)) {
+                        lastFmScrobbleRetryAfter = System.currentTimeMillis() + 60_000
+                        return@launch
+                    }
+                    val sent = lastFmAuth.client.scrobble(
+                        artist = artist,
+                        track = title,
+                        timestamp = lastFmTrackStartTimestamp,
+                        album = album,
+                        trackNumber = trackNumber,
+                        duration = durationSec.takeIf { it > 0 }
+                    )
+                    if (sent) {
+                        lastFmScrobbledIdentity = identity
+                        logger.d("LastFM", "Scrobbled $artist - $title")
+                    } else {
+                        lastFmScrobbleRetryAfter = System.currentTimeMillis() + 60_000
+                        logger.w("LastFM", "Scrobble failed for $artist - $title")
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    val sessionRejected = invalidateLastFmCompatibleSessionIfRejected(lastFmAuth, e)
+                    lastFmScrobbleRetryAfter =
+                        if (sessionRejected) 0 else System.currentTimeMillis() + 60_000
+                    logger.e("LastFM", "Scrobble failed: ${e.message}")
+                } finally {
+                    if (lastFmScrobbleInFlight == identity) lastFmScrobbleInFlight = null
+                }
+            }
+        }
+
+        if (!libreFmEnabled) {
+            libreFmNowPlayingIdentity = null
+        } else if (isPlaying && libreFmNowPlayingIdentity != identity &&
+            libreFmNowPlayingInFlight != identity && nowMs >= libreFmNowPlayingRetryAfter
+        ) {
+            libreFmNowPlayingInFlight = identity
+            libreFmNowPlayingIdentity = identity
+            scope.launch {
+                try {
+                    if (ensureLastFmCompatibleSession(libreFmAuth)) {
+                        val sent = libreFmAuth.client.updateNowPlaying(
+                            artist, title, album, trackNumber, durationSec.takeIf { it > 0 }
+                        )
+                        if (!sent) throw IllegalStateException("Libre.fm did not accept the now-playing update")
+                        logger.d("LibreFM", "Now-playing updated for $artist - $title")
+                    } else {
+                        libreFmNowPlayingIdentity = null
+                        libreFmNowPlayingRetryAfter = System.currentTimeMillis() + 60_000
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logger.e("LibreFM", "Now-playing update failed: ${e.message}")
+                    val sessionRejected = invalidateLastFmCompatibleSessionIfRejected(libreFmAuth, e)
+                    libreFmNowPlayingIdentity = null
+                    libreFmNowPlayingRetryAfter =
+                        if (sessionRejected) 0 else System.currentTimeMillis() + 60_000
+                } finally {
+                    if (libreFmNowPlayingInFlight == identity) libreFmNowPlayingInFlight = null
+                }
+            }
+        }
+
+        if (libreFmEnabled && eligibleToScrobble &&
+            libreFmScrobbledIdentity != identity && libreFmScrobbleInFlight != identity &&
+            nowMs >= libreFmScrobbleRetryAfter
+        ) {
+            libreFmScrobbleInFlight = identity
+            scope.launch {
+                try {
+                    if (!ensureLastFmCompatibleSession(libreFmAuth)) {
+                        libreFmScrobbleRetryAfter = System.currentTimeMillis() + 60_000
+                        return@launch
+                    }
+                    val sent = libreFmAuth.client.scrobble(
+                        artist = artist,
+                        track = title,
+                        timestamp = lastFmTrackStartTimestamp,
+                        album = album,
+                        trackNumber = trackNumber,
+                        duration = durationSec.takeIf { it > 0 }
+                    )
+                    if (sent) {
+                        libreFmScrobbledIdentity = identity
+                        logger.d("LibreFM", "Scrobbled $artist - $title")
+                    } else {
+                        libreFmScrobbleRetryAfter = System.currentTimeMillis() + 60_000
+                        logger.w("LibreFM", "Scrobble failed for $artist - $title")
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    val sessionRejected = invalidateLastFmCompatibleSessionIfRejected(libreFmAuth, e)
+                    libreFmScrobbleRetryAfter =
+                        if (sessionRejected) 0 else System.currentTimeMillis() + 60_000
+                    logger.e("LibreFM", "Scrobble failed: ${e.message}")
+                } finally {
+                    if (libreFmScrobbleInFlight == identity) libreFmScrobbleInFlight = null
+                }
+            }
+        }
+
+        if (!listenBrainzEnabled) {
+            listenBrainzNowPlayingIdentity = null
+            return
+        }
+
+        val userToken = Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""]
+        if (userToken.isBlank()) {
+            if (!listenBrainzMissingTokenLogged) {
+                logger.w("ListenBrainz", "Scrobbling is enabled, but the user token is missing")
+                listenBrainzMissingTokenLogged = true
+            }
+            listenBrainzNowPlayingIdentity = null
+            return
+        }
+        listenBrainzMissingTokenLogged = false
+        ListenBrainz.init(userToken)
+
+        if (isPlaying && listenBrainzNowPlayingIdentity != identity &&
+            listenBrainzNowPlayingInFlight != identity && nowMs >= listenBrainzNowPlayingRetryAfter
+        ) {
+            listenBrainzNowPlayingInFlight = identity
+            listenBrainzNowPlayingIdentity = identity
+            scope.launch {
+                try {
+                    val sent = ListenBrainz.updateNowPlaying(
+                        artist, title, album, durationSec.takeIf { it > 0 }
+                    )
+                    if (!sent) throw IllegalStateException("ListenBrainz did not accept the now-playing update")
+                    logger.d("ListenBrainz", "Now-playing updated for $artist - $title")
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logger.e("ListenBrainz", "Now-playing update failed: ${e.message}")
+                    listenBrainzNowPlayingIdentity = null
+                    listenBrainzNowPlayingRetryAfter = System.currentTimeMillis() + 60_000
+                } finally {
+                    if (listenBrainzNowPlayingInFlight == identity) listenBrainzNowPlayingInFlight = null
+                }
+            }
+        }
+
+        if (eligibleToScrobble && listenBrainzScrobbledIdentity != identity &&
+            listenBrainzScrobbleInFlight != identity && nowMs >= listenBrainzScrobbleRetryAfter
+        ) {
+            listenBrainzScrobbleInFlight = identity
+            scope.launch {
+                try {
+                    val sent = ListenBrainz.scrobble(
+                        artist = artist,
+                        track = title,
+                        timestamp = lastFmTrackStartTimestamp,
+                        album = album,
+                        duration = durationSec.takeIf { it > 0 }
+                    )
+                    if (sent) {
+                        listenBrainzScrobbledIdentity = identity
+                        logger.d("ListenBrainz", "Scrobbled $artist - $title")
+                    } else {
+                        listenBrainzScrobbleRetryAfter = System.currentTimeMillis() + 60_000
+                        logger.w("ListenBrainz", "Scrobble failed for $artist - $title")
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    listenBrainzScrobbleRetryAfter = System.currentTimeMillis() + 60_000
+                    logger.e("ListenBrainz", "Scrobble failed: ${e.message}")
+                } finally {
+                    if (listenBrainzScrobbleInFlight == identity) listenBrainzScrobbleInFlight = null
+                }
+            }
+        }
+    }
+
     private suspend fun updatePresenceLocked(forceRefresh: Boolean = false) {
         if (BuildConfig.DEBUG) Trace.beginSection("MediaRpc.updatePresence")
         val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
@@ -367,6 +773,9 @@ class MediaRpcService : Service() {
                 currentMediaTitle = null
                 currentMediaArtist = null
                 currentMediaCoverArt = null
+                activeScrobbleTrack = null
+                lastFmNowPlayingIdentity = null
+                listenBrainzNowPlayingIdentity = null
                 stateRepository.setConnected(false)
                 stateRepository.clearTrackInfo()
                 stopTimelineUpdates()
@@ -384,6 +793,7 @@ class MediaRpcService : Service() {
         )
         lastKnownTrackTitle = trackName
         lastKnownTrackArtist = playingMedia.state
+        updateScrobblers(playingMedia)
 
         // Keep the 1-second timeline ticker running while media is playing. It is what
         // refreshes the Discord progress bar and the notification. It was previously
