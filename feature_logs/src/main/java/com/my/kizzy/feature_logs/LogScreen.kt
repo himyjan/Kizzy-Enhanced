@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,13 +57,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.my.kizzy.domain.model.logs.LogEvent
-import com.my.kizzy.domain.model.logs.LogLevel
+
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.KSwitch
 import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.theme.KizzyTheme
 import com.my.kizzy.ui.theme.LogColors.color
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -88,15 +91,19 @@ fun LogScreen(viewModel: LogsViewModel, onBackPressed: () -> Unit = {}) {
         onToggleShowCompat = { viewModel.setShowCompat(!viewModel.showCompat.value) },
         onToggleDeveloperMode = { viewModel.setDeveloperMode(!viewModel.developerMode.value) },
         onSaveLogs = {
-            val path = viewModel.saveLogsToFile(context)
-            if (path != null) {
-                Toast.makeText(context, context.getString(R.string.logs_saved_toast, path), Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(context, logsSaveError, Toast.LENGTH_SHORT).show()
+            // IO off the main thread; the toast is shown when the write
+            // completes.
+            viewModel.saveLogsToFile(context) { path ->
+                if (path != null) {
+                    Toast.makeText(context, context.getString(R.string.logs_saved_toast, path), Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(context, logsSaveError, Toast.LENGTH_SHORT).show()
+                }
             }
         },
         // @Suppress("LocalContextGetResourceValueCall") applied at LogScreen level
         onClearLogs = { viewModel.clearLogs() },
+        onCopyAllLogs = { onReady -> viewModel.copyAllLogs(onReady) },
         onSearchToggle = {
             val visible = !viewModel.isSearchBarVisible.value
             viewModel.isSearchBarVisible.value = visible
@@ -121,6 +128,7 @@ fun LogScreenContent(
     onToggleDeveloperMode: () -> Unit = {},
     onSaveLogs: () -> Unit = {},
     onClearLogs: () -> Unit = {},
+    onCopyAllLogs: ((String) -> Unit) -> Unit = {},
     onSearchToggle: () -> Unit = {},
     onFilterChange: (String) -> Unit = {}
 ) {
@@ -147,10 +155,14 @@ fun LogScreenContent(
                 onToggleDeveloperMode = onToggleDeveloperMode,
                 onSaveLogs = onSaveLogs,
                 onClearLogs = onClearLogs,
+                // Instant jumps: scrollToItem is O(1) for an index but forces
+                // a full relayout at the destination. animateScroll would run
+                // many frames; a single jump is the lowest-cost option.
                 onScrollToTop = { scope.launch { lazyListState.scrollToItem(0) } },
                 onScrollToBottom = {
-                    if (visibleLogs.isNotEmpty()) {
-                        scope.launch { lazyListState.scrollToItem(visibleLogs.lastIndex) }
+                    val last = visibleLogs.lastIndex
+                    if (last >= 0) {
+                        scope.launch { lazyListState.scrollToItem(last) }
                     }
                 }
             )
@@ -158,12 +170,11 @@ fun LogScreenContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val allLogs = visibleLogs.joinToString("\n") { log ->
-                        "[${LogDateFormat.format(Date(log.createdAt))}] ${log.level.name} ${log.tag}: ${log.text}"
+                    // Build the text off the main thread (see ViewModel).
+                    onCopyAllLogs { text ->
+                        clipboardManager.setPrimaryClip(ClipData.newPlainText("kizzy_logs", text))
+                        Toast.makeText(context, copiedToClipboard, Toast.LENGTH_SHORT).show()
                     }
-                    val truncated = if (allLogs.length > 500_000) allLogs.takeLast(500_000) + "\n... (truncated)" else allLogs
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("kizzy_logs", truncated))
-                    Toast.makeText(context, copiedToClipboard, Toast.LENGTH_SHORT).show()
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             ) {
@@ -171,13 +182,25 @@ fun LogScreenContent(
             }
         }
     ) { paddingValues ->
-        LaunchedEffect(autoScroll, visibleLogs) {
-            if (autoScroll && visibleLogs.isNotEmpty()) {
-                val isNearBottom = lazyListState.firstVisibleItemIndex >= (visibleLogs.size - 2)
-                if (isNearBottom || lazyListState.firstVisibleItemIndex == 0) {
-                    lazyListState.scrollToItem(visibleLogs.lastIndex)
+        LaunchedEffect(autoScroll) {
+            // Keyed on the toggle only. Watching visibleLogs here restarted a
+            // coroutine on EVERY log append and re-scrolled even when the user
+            // had scrolled away. Instead observe the list size (a cheap Int)
+            // through snapshotFlow and only follow when already at the bottom.
+            if (!autoScroll) return@LaunchedEffect
+            snapshotFlow { visibleLogs.size }
+                .distinctUntilChanged()
+                .collect { size ->
+                    if (size == 0) return@collect
+                    val layoutInfo = lazyListState.layoutInfo
+                    val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                    val atBottom = lastVisible >= size - 2
+                    // Also catch the initial state (nothing laid out yet).
+                    val untouched = layoutInfo.totalItemsCount == 0
+                    if (atBottom || untouched) {
+                        lazyListState.scrollToItem(size - 1)
+                    }
                 }
-            }
         }
         LazyColumn(
             state = lazyListState,
@@ -186,14 +209,18 @@ fun LogScreenContent(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            items(
+            itemsIndexed(
                 items = visibleLogs,
-                key = { logEvent -> "${logEvent.createdAt}-${logEvent.tag}-${logEvent.text.hashCode()}" }
-            ) { logEvent ->
+                // Combine timestamp, tag, text hash and index to guarantee key uniqueness
+                // even when multiple identical logs are emitted within the same millisecond.
+                key = { index, logEvent -> "${logEvent.createdAt}_${logEvent.tag}_${logEvent.text.hashCode()}_$index" }
+            ) { _, logEvent ->
+                // Format the timestamp ONCE per composition of this row.
+                val timeText = LogDateFormat.format(Date(logEvent.createdAt))
                 if (showCompat) {
-                    LogEntryCompat(logEvent, clipboardManager, copiedToClipboard)
+                    LogEntryCompat(logEvent, clipboardManager, copiedToClipboard, timeText)
                 } else {
-                    LogsCard(logEvent, clipboardManager, copiedToClipboard)
+                    LogsCard(logEvent, clipboardManager, copiedToClipboard, timeText)
                 }
             }
         }
@@ -204,7 +231,8 @@ fun LogScreenContent(
 fun LogEntryCompat(
     logEvent: LogEvent,
     clipboardManager: ClipboardManager,
-    copiedToClipboard: String
+    copiedToClipboard: String,
+    timeText: String = LogDateFormat.format(Date(logEvent.createdAt)),
 ) {
     val context = LocalContext.current
     var isExpanded by remember(logEvent) { mutableStateOf(false) }
@@ -226,13 +254,13 @@ fun LogEntryCompat(
                 .padding(12.dp)
         ) {
             Text(
-                text = logEvent.annotated(),
+                text = logEvent.annotated(timeText),
                 style = MaterialTheme.typography.labelMedium.copy(color = colorScheme.onSurface.copy(alpha = 0.9f)),
                 modifier = Modifier
                     .combinedClickable(
                         onClick = { isExpanded = !isExpanded },
                         onLongClick = {
-                            val formattedLog = "[${LogDateFormat.format(Date(logEvent.createdAt))}] ${logEvent.level.name} ${logEvent.tag}: ${logEvent.text}"
+                            val formattedLog = "[$timeText] ${logEvent.level.name} ${logEvent.tag}: ${logEvent.text}"
                             clipboardManager.setPrimaryClip(ClipData.newPlainText("", formattedLog))
                             Toast.makeText(context, copiedToClipboard, Toast.LENGTH_SHORT).show()
                         }
@@ -250,7 +278,8 @@ fun LogEntryCompat(
 fun LogsCard(
     logEvent: LogEvent,
     clipboardManager: ClipboardManager,
-    copiedToClipboard: String
+    copiedToClipboard: String,
+    timeText: String = LogDateFormat.format(Date(logEvent.createdAt)),
 ) {
     val context = LocalContext.current
     var isExpanded by remember(logEvent) { mutableStateOf(false) }
@@ -313,7 +342,7 @@ fun LogsCard(
                     )
 
                     Text(
-                        text = LogDateFormat.format(Date(logEvent.createdAt)),
+                        text = timeText,
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontSize = 10.sp,
                             color = colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
@@ -333,7 +362,7 @@ fun LogsCard(
                         .combinedClickable(
                             onClick = { isExpanded = !isExpanded },
                             onLongClick = {
-                                val formattedLog = "[${LogDateFormat.format(Date(logEvent.createdAt))}] ${logEvent.level.name} ${logEvent.tag}: ${logEvent.text}"
+                                val formattedLog = "[$timeText] ${logEvent.level.name} ${logEvent.tag}: ${logEvent.text}"
                                 clipboardManager.setPrimaryClip(ClipData.newPlainText("", formattedLog))
                                 Toast.makeText(context, copiedToClipboard, Toast.LENGTH_SHORT).show()
                             }
@@ -460,13 +489,13 @@ fun ToolBarContent(
 }
 
 @Composable
-fun LogEvent.annotated() = buildAnnotatedString {
+fun LogEvent.annotated(timeText: String = LogDateFormat.format(createdAt)) = buildAnnotatedString {
     val colorScheme = MaterialTheme.colorScheme
     withStyle(style = SpanStyle(color = colorScheme.onBackground, background = level.color().copy(0.4f))) {
         append(" ${level.name[0]} ")
     }
     withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold, background = colorScheme.surfaceVariant.copy(alpha = 0.3f))) {
-        append(LogDateFormat.format(createdAt))
+        append(timeText)
     }
     append(" $tag: $text")
 }
