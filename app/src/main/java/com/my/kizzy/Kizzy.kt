@@ -14,17 +14,23 @@ package com.my.kizzy
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.navArgument
@@ -72,9 +78,36 @@ internal fun Kizzy(
     Scaffold()
     {
         val navController = rememberNavController()
+        val startDestination = if (Prefs[Prefs.IS_FIRST_LAUNCHED, true]) Routes.SETUP else Routes.HOME
+
+        // A destination must ALWAYS be present. Rapid double-taps on the back
+        // arrow used to empty the back stack, leaving NavHost with nothing to
+        // render (a blank screen, no crash). Restore the root destination
+        // whenever the stack becomes empty.
+        val currentEntry by navController.currentBackStackEntryAsState()
+        LaunchedEffect(currentEntry) {
+            if (currentEntry == null) {
+                navController.navigate(startDestination) {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        }
+
+        // Safe back: pop only when there is a destination below the current
+        // one; otherwise re-seat the root. This stops a second (rapid) back
+        // tap from ever emptying the stack in the first place.
+        fun goBack() {
+            if (!navController.popBackStack()) {
+                navController.navigate(startDestination) {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        }
         NavHost(
             navController = navController,
-            startDestination = if (Prefs[Prefs.IS_FIRST_LAUNCHED, true]) Routes.SETUP else Routes.HOME
+            startDestination = startDestination
         ) {
             composable(Routes.SETUP) {
                 StartUp(
@@ -146,7 +179,7 @@ internal fun Kizzy(
             composable(Routes.APPS_DETECTION) { navBackStackEntry ->
                 val viewModel = hiltViewModel<AppsScreenViewModel>(navBackStackEntry)
                 AppsRPC(
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = { goBack() },
                     hasUsageAccess = usageAccessStatus.value,
                     state = viewModel.state.collectAsState().value,
                     updateAppEnabled = viewModel::updateAppEnabled,
@@ -155,7 +188,7 @@ internal fun Kizzy(
             composable(Routes.CUSTOM_RPC) { navBackStackEntry ->
                 val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)
                 CustomRPC(
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = { goBack() },
                     state = viewModel.uiState.collectAsState().value,
                     onEvent = viewModel::onEvent
                 )
@@ -163,7 +196,7 @@ internal fun Kizzy(
             composable(Routes.MEDIA_RPC) { navBackStackEntry ->
                 val viewModel = hiltViewModel<MediaScreenViewModel>(navBackStackEntry)
                 MediaRPC(
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = { goBack() },
                     state = viewModel.state.collectAsState().value,
                     hasNotificationAccess = notificationListenerAccess.value,
                     updateMediaAppEnabled = viewModel::updateMediaAppEnabled,
@@ -178,7 +211,7 @@ internal fun Kizzy(
                 val scope = rememberCoroutineScope()
                 UserScreen(
                     state = state,
-                    onBackPressed = navController::popBackStack,
+                    onBackPressed = { goBack() },
                     onLogout = { ctx ->
                         viewModel.logout(ctx, scope)
                     },
@@ -226,48 +259,48 @@ internal fun Kizzy(
             composable(Routes.CONSOLE_RPC) { navBackStackEntry ->
                 val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)
                 CustomRPC(
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = { goBack() },
                     state = viewModel.uiState.collectAsState().value,
                     onEvent = viewModel::onEvent
                 )
             }
             composable(Routes.LANGUAGES) {
                 Language(
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = { goBack() },
                     updateLocaleLanguage = MainActivity::setLanguage
                 )
             }
             composable(Routes.STYLE_AND_APPEARANCE) {
                 Appearance(onBackPressed = {
-                    navController.popBackStack()
+                    goBack()
                 }) {
                     navController.navigate(Routes.DARK_THEME)
                 }
             }
             composable(Routes.DARK_THEME) {
                 DarkThemePreferences {
-                    navController.popBackStack()
+                    goBack()
                 }
             }
             composable(Routes.RPC_SETTINGS) {
-                RpcSettings { navController.popBackStack() }
+                RpcSettings { goBack(); true }
             }
             composable(Routes.LOGIN) { navBackStackEntry ->
                 LoginScreen(
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = { goBack() },
                     onCompleted = {
-                        navController.popBackStack()
+                        goBack()
                     },
                 )
             }
             composable(Routes.LOGS_SCREEN) { navBackStackEntry ->
                 val viewModel = hiltViewModel<LogsViewModel>(navBackStackEntry)
-                LogScreen(viewModel, onBackPressed = { navController.popBackStack() })
+                LogScreen(viewModel, onBackPressed = { goBack() })
             }
             composable(Routes.ABOUT) {
                 About(
                     onBackPressed = {
-                        navController.popBackStack()
+                        goBack()
                     },
                     navigateToCredits = {
                         navController.navigate(Routes.CREDITS)
@@ -279,7 +312,7 @@ internal fun Kizzy(
                 Credits(
                     state = viewModel.creditScreenState.collectAsState().value,
                     onBackPressed = {
-                        navController.popBackStack()
+                        goBack()
                     }
                 )
             }
@@ -303,7 +336,7 @@ internal fun Kizzy(
                     userId = userId,
                     avatarUrl = avatarUrl,
                     rpcConfig = rpcConfig,
-                    onBackPressed = { navController.popBackStack() }
+                    onBackPressed = { goBack() }
                 )
             }
             composable(Routes.MANUAL_RPC) { navBackStackEntry ->
@@ -311,7 +344,7 @@ internal fun Kizzy(
                 ManualRpcScreen(
                     state = experimentalRpcViewModel.uiState.collectAsState().value,
                     onEvent = experimentalRpcViewModel::onEvent,
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = { goBack() },
                     hasUsageAccess = usageAccessStatus.value,
                     hasNotificationAccess = notificationListenerAccess.value,
                     navigateToAppSelection = {
@@ -322,7 +355,7 @@ internal fun Kizzy(
             composable(Routes.MANUAL_RPC_APPS) { navBackStackEntry ->
                 val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
                 ManualRpcAppsScreen(
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = { goBack() },
                     state = experimentalRpcViewModel.uiState.collectAsState().value,
                     onEvent = experimentalRpcViewModel::onEvent,
                 )
