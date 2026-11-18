@@ -47,6 +47,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,6 +70,12 @@ import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
 import com.my.kizzy.ui.theme.DISCORD_TEXT
 import com.my.kizzy.ui.theme.DISCORD_YELLOW
 
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.layout.offset
+
 const val NITRO_ICON = "https://cdn.discordapp.com/badge-icons/2ba85e8026a8614b640c2837bcdfe21b.png"
 
 // Discord's presence dots - brand status palette.
@@ -76,12 +84,62 @@ private val IDLE = DISCORD_YELLOW
 private val DND = DISCORD_RED
 private val OFFLINE = Color(0xFF80848E)
 
-private fun presenceColor(status: String?): Color? = when (status) {
+private fun presenceColor(status: String?): Color? = when (status?.lowercase()?.trim()) {
     "online" -> ONLINE
     "idle" -> IDLE
     "dnd" -> DND
     "offline", "invisible" -> OFFLINE
     else -> null
+}
+
+@Composable
+private fun DiscordPresenceBadge(
+    status: String?,
+    modifier: Modifier = Modifier,
+    borderColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+) {
+    val cleanStatus = status?.lowercase()?.trim() ?: return
+    val dotColor = presenceColor(cleanStatus) ?: return
+
+    Box(
+        modifier = modifier
+            .size(26.dp)
+            .border(4.dp, borderColor, CircleShape)
+            .clip(CircleShape)
+            .background(dotColor),
+        contentAlignment = Alignment.Center,
+    ) {
+        when (cleanStatus) {
+            "idle" -> {
+                // Crescent moon cutout
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .offset(x = (-2).dp, y = (-2).dp)
+                        .clip(CircleShape)
+                        .background(borderColor),
+                )
+            }
+            "dnd" -> {
+                // Horizontal minus bar
+                Box(
+                    modifier = Modifier
+                        .width(10.dp)
+                        .height(3.dp)
+                        .clip(RoundedCornerShape(1.dp))
+                        .background(Color.White),
+                )
+            }
+            "offline", "invisible" -> {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(borderColor),
+                )
+            }
+        }
+    }
 }
 
 // bannerColor arrives as "#RRGGBB" / "RRGGBB" (sometimes with alpha);
@@ -107,8 +165,8 @@ private fun User.accentComposeColor(): Color? =
 @Composable
 fun ProfileCard(
     user: User?,
-    borderColors: List<Color> = listOf(DISCORD_TEXT, DISCORD_SUBTEXT),
-    backgroundColors: List<Color> = listOf(DISCORD_CARD, DISCORD_CARD),
+    borderColors: List<Color> = listOf(MaterialTheme.colorScheme.onBackground, MaterialTheme.colorScheme.onSurfaceVariant),
+    backgroundColors: List<Color> = listOf(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.surfaceVariant),
     padding: Dp = 0.dp,
     type: String = stringResource(id = R.string.user_profile_rpc_name),
     rpcConfig: RpcConfig? = null,
@@ -118,10 +176,10 @@ fun ProfileCard(
     if (user == null) return
 
     val accent = user.accentComposeColor()
-    val ringColor = accent ?: borderColors.firstOrNull() ?: DISCORD_TEXT
+    val ringColor = accent ?: borderColors.firstOrNull() ?: MaterialTheme.colorScheme.onBackground
     val bannerFallback = parseHexColor(user.bannerColor)
         ?: accent
-        ?: DISCORD_LIGHT_DARK
+        ?: MaterialTheme.colorScheme.surfaceContainerHighest
 
     Column(
         modifier = Modifier
@@ -192,21 +250,38 @@ fun ProfileCard(
                             imageVector = Icons.Filled.Person,
                             contentDescription = "User Avatar",
                             modifier = Modifier.size(86.dp).clip(CircleShape),
-                            tint = DISCORD_SUBTEXT,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
 
-                // Presence dot - driven by the RPC activity status.
-                val dotColor = presenceColor(rpcConfig?.status?.takeIf { it.isNotBlank() })
-                if (dotColor != null) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .size(26.dp)
-                            .border(5.dp, DISCORD_CARD, CircleShape)
-                            .clip(CircleShape)
-                            .background(dotColor),
+                // Presence badge - driven by the RPC activity status.
+                val statusStr = rpcConfig?.status?.takeIf { it.isNotBlank() } ?: "online"
+                DiscordPresenceBadge(
+                    status = statusStr,
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    borderColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+
+            // Custom Status Speech Bubble (attached to the top-right side of avatar)
+            val customStatus = user.special?.takeIf { it.isNotBlank() }
+            if (customStatus != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 124.dp, bottom = 12.dp, end = 20.dp)
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 16.dp, bottomStart = 4.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f), RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 16.dp, bottomStart = 4.dp))
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        text = customStatus,
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, lineHeight = 17.sp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -222,18 +297,19 @@ fun ProfileCard(
 
             val displayName = user.globalName?.takeIf { it.isNotBlank() } ?: user.username
             if (!displayName.isNullOrEmpty()) {
-                Text(
-                    text = displayName,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = DISCORD_TEXT,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = displayName,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
 
-            // Username row, with the custom status as a chip - "name 🌧 rain".
-            val customStatus = user.special?.takeIf { it.isNotBlank() }
+            // Username row, with pronouns and custom status chip - "name 🌧 rain".
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(top = 4.dp),
@@ -244,27 +320,10 @@ fun ProfileCard(
                 Text(
                     text = usernameText,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = DISCORD_SUBTEXT,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                if (customStatus != null) {
-                    Spacer(Modifier.width(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(DISCORD_LIGHT_DARK)
-                            .padding(horizontal = 8.dp, vertical = 3.dp),
-                    ) {
-                        Text(
-                            text = customStatus,
-                            fontSize = 13.sp,
-                            color = DISCORD_TEXT,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                }
             }
 
             // --- Badges ---------------------------------------------------
@@ -274,7 +333,7 @@ fun ProfileCard(
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(DISCORD_LIGHT_DARK)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                         .padding(horizontal = 8.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -291,20 +350,25 @@ fun ProfileCard(
                 }
             }
 
-            // --- Bio (collapsible, "View Full Bio") -----------------------
+            // --- Bio (collapsible, with Discord blue clickable links) -----
             val bio = user.bio?.takeIf { it.isNotBlank() }
             if (bio != null) {
                 Spacer(Modifier.height(16.dp))
                 SectionHeader(text = stringResource(id = R.string.user_profile_bio))
                 var bioExpanded by remember { mutableStateOf(false) }
                 var bioOverflow by remember { mutableStateOf(false) }
+                val linkColor = MaterialTheme.colorScheme.primary
+                val textColor = MaterialTheme.colorScheme.onBackground
+                val annotatedBio = remember(bio, linkColor, textColor) {
+                    buildAnnotatedBio(bio, linkColor, textColor)
+                }
+
                 Text(
-                    text = bio,
+                    text = annotatedBio,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = DISCORD_TEXT,
                     maxLines = if (bioExpanded) Int.MAX_VALUE else 5,
                     overflow = TextOverflow.Ellipsis,
-                    onTextLayout = { result -> bioOverflow = result.hasVisualOverflow },
+                    onTextLayout = { res: TextLayoutResult -> bioOverflow = res.hasVisualOverflow },
                     modifier = Modifier.padding(top = 4.dp),
                 )
                 if (bioOverflow) {
@@ -315,7 +379,7 @@ fun ProfileCard(
                         ),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
-                        color = DISCORD_TEXT,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .padding(top = 8.dp)
                             .clickable { bioExpanded = !bioExpanded },
@@ -347,7 +411,7 @@ fun SectionHeader(
         style = MaterialTheme.typography.labelSmall,
         fontWeight = FontWeight.Bold,
         letterSpacing = 0.8.sp,
-        color = DISCORD_SUBTEXT,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.padding(top = 4.dp),
     )
 }
@@ -365,12 +429,35 @@ fun ProfileButton(label: String?, link: String?) {
                 }
             },
             colors = ButtonDefaults.elevatedButtonColors(
-                containerColor = DISCORD_LIGHT_DARK,
-                contentColor = Color.White.copy(alpha = 0.8f)
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                contentColor = MaterialTheme.colorScheme.onSurface,
             ),
             shape = RoundedCornerShape(8.dp)
         ) {
             Text(label)
+        }
+    }
+}
+
+private fun buildAnnotatedBio(bio: String, linkColor: Color, textColor: Color): AnnotatedString = buildAnnotatedString {
+    val urlRegex = Regex("https?://[^\\s]+")
+    var lastIndex = 0
+    urlRegex.findAll(bio).forEach { matchResult ->
+        val start = matchResult.range.first
+        val end = matchResult.range.last + 1
+        if (start > lastIndex) {
+            withStyle(SpanStyle(color = textColor)) {
+                append(bio.substring(lastIndex, start))
+            }
+        }
+        withStyle(SpanStyle(color = linkColor, fontWeight = FontWeight.Medium)) {
+            append(bio.substring(start, end))
+        }
+        lastIndex = end
+    }
+    if (lastIndex < bio.length) {
+        withStyle(SpanStyle(color = textColor)) {
+            append(bio.substring(lastIndex))
         }
     }
 }

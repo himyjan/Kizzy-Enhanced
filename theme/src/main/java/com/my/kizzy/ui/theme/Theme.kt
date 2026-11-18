@@ -90,8 +90,8 @@ private val DiscordLight = lightColorScheme(
     onPrimaryContainer = Color(0xFF1E1F4B),
     secondary = DISCORD_BLURPLE,
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFE3E6FF),
-    onSecondaryContainer = Color(0xFF1E1F4B),
+    secondaryContainer = Color(0xFFFFFFFF),
+    onSecondaryContainer = Color(0xFF060607),
     tertiary = Color(0xFF23A55A),
     onTertiary = Color.White,
     tertiaryContainer = Color(0xFFD3F5DF),
@@ -100,23 +100,23 @@ private val DiscordLight = lightColorScheme(
     onError = Color.White,
     errorContainer = Color(0xFFFFDAD6),
     onErrorContainer = Color(0xFF410002),
-    background = Color(0xFFFFFFFF),
-    onBackground = Color(0xFF1A1C1E),
+    background = Color(0xFFF2F3F5),
+    onBackground = Color(0xFF060607),
     surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF1A1C1E),
-    surfaceVariant = Color(0xFFF2F3F5),
-    onSurfaceVariant = Color(0xFF5C5E66),
+    onSurface = Color(0xFF060607),
+    surfaceVariant = Color(0xFFFFFFFF),
+    onSurfaceVariant = Color(0xFF4E5058),
     surfaceTint = DISCORD_BLURPLE,
     inverseSurface = Color(0xFF2F3033),
     inverseOnSurface = Color(0xFFF2F3F5),
     outline = Color(0xFFC4C6CE),
-    outlineVariant = Color(0xFFE3E6EB),
+    outlineVariant = Color(0xFFE3E5E8),
     scrim = Color.Black,
     surfaceBright = Color.White,
     surfaceDim = Color(0xFFDADCE0),
-    surfaceContainer = Color(0xFFF2F3F5),
-    surfaceContainerHigh = Color(0xFFECEEF1),
-    surfaceContainerHighest = Color(0xFFE6E8EC),
+    surfaceContainer = Color(0xFFFFFFFF),
+    surfaceContainerHigh = Color(0xFFF2F3F5),
+    surfaceContainerHighest = Color(0xFFE3E5E8),
     surfaceContainerLow = Color(0xFFF8F9FB),
     surfaceContainerLowest = Color.White,
 )
@@ -167,22 +167,30 @@ fun KizzyTheme(
     )
     val window = LocalView.current.context.findWindow()
     val view = LocalView.current
+    val themeStyle = LocalThemeStyle.current
+    val isLightMode = themeStyle == ThemeStyle.DISCORD_LIGHT || (!darkTheme && themeStyle != ThemeStyle.DISCORD_DARK)
 
     // Modern native edge-to-edge layout: transparent status/navigation bars
     // Icon appearance (light/dark) controlled via WindowInsetsControllerCompat
     if (!view.isInEditMode) {
-        LaunchedEffect(darkTheme) {
+        LaunchedEffect(darkTheme, themeStyle) {
             window?.let {
                 val controller = WindowCompat.getInsetsController(it, view)
-                controller.isAppearanceLightStatusBars = !darkTheme
-                controller.isAppearanceLightNavigationBars = !darkTheme
+                controller.isAppearanceLightStatusBars = isLightMode
+                controller.isAppearanceLightNavigationBars = isLightMode
             }
         }
     }
 
+    val typography = if (themeStyle == ThemeStyle.DISCORD_DARK || themeStyle == ThemeStyle.DISCORD_LIGHT) {
+        DiscordTypography
+    } else {
+        AppTypography
+    }
+
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = AppTypography,
+        typography = typography,
         content = content
     )
 }

@@ -95,12 +95,11 @@ fun RpcPreviewScreen(
     }
 
     Scaffold(
-        // Discord's dark theme background instead of the dynamic color scheme.
-        containerColor = DISCORD_BG,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text("RPC Preview") },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = DISCORD_BG),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 navigationIcon = { BackButton { onBackPressed() } },
             )
         },
@@ -123,7 +122,7 @@ fun RpcPreviewScreen(
                         .align(Alignment.TopCenter)
                         .fillMaxWidth()
                         .height(140.dp)
-                        .background(DISCORD_LIGHT_DARK),
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
                 )
 
                 Box(
@@ -153,7 +152,7 @@ fun RpcPreviewScreen(
                             modifier = Modifier
                                 .size(86.dp)
                                 .clip(CircleShape),
-                            tint = DISCORD_SUBTEXT,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
 
@@ -163,7 +162,7 @@ fun RpcPreviewScreen(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .size(26.dp)
-                                .border(5.dp, DISCORD_CARD, CircleShape)
+                                .border(5.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                                 .clip(CircleShape)
                                 .background(dotColor),
                         )
@@ -184,7 +183,7 @@ fun RpcPreviewScreen(
                         text = userId,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = DISCORD_TEXT,
+                        color = MaterialTheme.colorScheme.onBackground,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -203,7 +202,7 @@ fun RpcPreviewScreen(
                     Spacer(Modifier.height(18.dp))
                     Text(
                         text = "No activity detected",
-                        color = DISCORD_SUBTEXT,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

@@ -69,9 +69,7 @@ fun UserScreen(
     val yesLabel = stringResource(R.string.yes)
 
     Scaffold(
-        // Discord's dark theme background - the dynamic color scheme would
-        // otherwise paint a wallpaper-tinted grey behind the profile.
-        containerColor = DISCORD_BG,
+        containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = {
             // Larger than the default snackbar: the logout confirmation is the
             // primary affordance on this screen, so it needs a bigger tap
@@ -80,8 +78,8 @@ fun UserScreen(
                 Snackbar(
                     modifier = Modifier.padding(16.dp),
                     shape = RoundedCornerShape(12.dp),
-                    containerColor = DISCORD_CARD,
-                    contentColor = DISCORD_TEXT,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
                     actionContentColor = DISCORD_BLURPLE,
                 ) {
                     Text(
@@ -110,7 +108,7 @@ fun UserScreen(
         topBar = {
             TopAppBar(
                 title = { },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = DISCORD_BG),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 navigationIcon = { BackButton { onBackPressed() } },
             )
         },
@@ -169,42 +167,40 @@ fun UserScreen(
                                 .padding(horizontal = 16.dp)
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(DISCORD_CARD),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                         ) {
                             MenuRow(
                                 icon = Icons.Filled.PlayArrow,
                                 label = stringResource(R.string.profile_open_rpc_preview),
                                 onClick = { onNavigateToRpcPreview() },
                             )
-                        }
+                            MenuDivider()
+                            // Log Out stays in the same menu card as Open RPC
+                            // Preview, but keeps Discord's destructive red.
+                            MenuRow(
+                                icon = Icons.AutoMirrored.Filled.Logout,
+                                label = stringResource(R.string.logout),
+                                contentColor = DISCORD_LOGOUT_RED,
+                                onClick = {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = sureMessage,
+                                            actionLabel = yesLabel,
+                                            duration = SnackbarDuration.Short,
+                                            withDismissAction = true
+                                        ).run {
+                                            when (this) {
+                                                SnackbarResult.ActionPerformed -> {
+                                                    onLogout(ctx)
+                                                }
 
-                        // Log Out is a standalone destructive row, exactly like
-                        // Discord: salmon red icon + label on the bare page,
-                        // outside the menu card and with no divider.
-                        Spacer(Modifier.height(8.dp))
-                        MenuRow(
-                            icon = Icons.AutoMirrored.Filled.Logout,
-                            label = stringResource(R.string.logout),
-                            contentColor = DISCORD_LOGOUT_RED,
-                            onClick = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        message = sureMessage,
-                                        actionLabel = yesLabel,
-                                        duration = SnackbarDuration.Short,
-                                        withDismissAction = true
-                                    ).run {
-                                        when (this) {
-                                            SnackbarResult.ActionPerformed -> {
-                                                onLogout(ctx)
+                                                SnackbarResult.Dismissed -> Unit
                                             }
-
-                                            SnackbarResult.Dismissed -> Unit
                                         }
                                     }
-                                }
-                            },
-                        )
+                                },
+                            )
+                        }
                         Spacer(Modifier.height(24.dp))
                     }
                 }
@@ -214,11 +210,22 @@ fun UserScreen(
 }
 
 @Composable
+private fun MenuDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 50.dp)
+            .height(1.dp)
+            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)),
+    )
+}
+
+@Composable
 private fun MenuRow(
     icon: ImageVector,
     label: String,
     modifier: Modifier = Modifier,
-    contentColor: Color = DISCORD_TEXT,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
     onClick: () -> Unit,
 ) {
     Row(

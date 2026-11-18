@@ -120,7 +120,7 @@ fun ProfileNetworkErrorDiscord(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .background(DISCORD_CARD)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .clip(RoundedCornerShape(12.dp))
     ) {
         Column(
@@ -135,12 +135,12 @@ fun ProfileNetworkErrorDiscord(
             )
             Text(
                 text = stringResource(R.string.user_profile_error),
-                color = DISCORD_TEXT,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
             Text(
                 text = error,
-                color = DISCORD_SUBTEXT,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium
             )
         }

@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
+import androidx.compose.material3.MaterialTheme
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.theme.DISCORD_CARD
 import com.my.kizzy.ui.theme.DISCORD_GREEN
@@ -194,7 +195,7 @@ fun ActivityRow(
             startMs != null && stopMs != null
 
     Surface(
-        color = DISCORD_CARD,
+        color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -210,7 +211,7 @@ fun ActivityRow(
             ) {
                 Text(
                     text = activityPrefix,
-                    color = DISCORD_TEXT,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
@@ -221,7 +222,7 @@ fun ActivityRow(
                 Icon(
                     imageVector = Icons.Filled.MoreHoriz,
                     contentDescription = null,
-                    tint = DISCORD_SUBTEXT,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp),
                 )
             }
@@ -246,7 +247,7 @@ fun ActivityRow(
                         else
                             Modifier
                                 .size(48.dp)
-                                .background(DISCORD_CARD, RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
                                 .align(Alignment.TopStart),
                     )
                     if (!rpcConfig?.smallImg.isNullOrEmpty()) {
@@ -256,7 +257,7 @@ fun ActivityRow(
                                 Modifier
                                     .border(
                                         3.dp,
-                                        DISCORD_CARD,
+                                        MaterialTheme.colorScheme.surfaceVariant,
                                         CircleShape,
                                     ).padding(2.dp)
                                     .align(Alignment.BottomEnd),
@@ -287,7 +288,7 @@ fun ActivityRow(
                 ) {
                     Text(
                         text = renderedDetails.orEmpty(),
-                        color = DISCORD_TEXT,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
@@ -297,7 +298,7 @@ fun ActivityRow(
                     if (!renderedState.isNullOrEmpty()) {
                         Text(
                             text = renderedState,
-                            color = DISCORD_SUBTEXT,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -337,7 +338,7 @@ fun ActivityRow(
                                 )
                                     .takeIf { it.isNotEmpty() } ?: elapsedText
                             ),
-                            color = DISCORD_SUBTEXT,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 6.dp),
                         )
@@ -355,7 +356,7 @@ fun ActivityRow(
                 ) {
                     Text(
                         text = elapsedText,
-                        color = DISCORD_SUBTEXT,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp,
                     )
                     Spacer(Modifier.width(8.dp))
@@ -363,20 +364,20 @@ fun ActivityRow(
                         modifier = Modifier
                             .weight(1f)
                             .height(4.dp)
-                            .background(DISCORD_TRACK_COLOR, RoundedCornerShape(2.dp)),
+                            .background(MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(2.dp)),
                         contentAlignment = Alignment.CenterStart,
                     ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth(sliderPosition)
                                 .height(4.dp)
-                                .background(DISCORD_TEXT, RoundedCornerShape(2.dp))
+                                .background(MaterialTheme.colorScheme.onSurface, RoundedCornerShape(2.dp))
                         )
                     }
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = getFormatFromMs(stopMs - startMs),
-                        color = DISCORD_SUBTEXT,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp,
                     )
                 }
