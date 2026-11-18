@@ -194,12 +194,16 @@ object Prefs {
             // Prime the synchronous mirror with the values that are already
             // stored on disk, so the first reads do not return the defaults.
             CoroutineScope(Dispatchers.IO).launch {
-                dataStore?.data?.first()?.asMap()?.forEach { (key, value) ->
-                    val name = key.name
-                    val plain = if (value is String) decodeFromStorage(name, value) else value
-                    _prefsState.update { it + (name to plain) }
+                runCatching {
+                    dataStore?.data?.first()?.asMap()?.forEach { (key, value) ->
+                        val name = key.name
+                        val plain = if (value is String) decodeFromStorage(name, value) else value
+                        _prefsState.update { it + (name to plain) }
+                    }
                 }
-            }
+                // Signal even when the read failed, so the UI never waits
+                // forever on the default (pre-priming) values.
+                            }
         }
     }
 
