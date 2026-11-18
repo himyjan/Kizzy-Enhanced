@@ -628,6 +628,29 @@ class MediaRpcService : Service() {
             }
         }
 
+        // Saved button configurations from RPC Settings ("Use saved RPC
+        // buttons") take precedence over the two media switches. They used to
+        // be stored in preferences but never applied here, so enabling both
+        // links in Settings produced a presence with no buttons at all.
+        if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
+            val saved = runCatching {
+                kotlinx.serialization.json.Json {
+                    ignoreUnknownKeys = true
+                }.decodeFromString<com.my.kizzy.domain.model.rpc.RpcButtons>(
+                    Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]
+                )
+            }.getOrNull()
+            if (saved != null) {
+                kizzyRPC.clearButtons()
+                if (saved.button1.isNotBlank() && saved.button1Url.isNotBlank()) {
+                    kizzyRPC.setButton1(saved.button1, saved.button1Url)
+                }
+                if (saved.button2.isNotBlank() && saved.button2Url.isNotBlank()) {
+                    kizzyRPC.setButton2(saved.button2, saved.button2Url)
+                }
+            }
+        }
+
         kizzyRPC.updateRPC(commonRpc, enableTimestamps)
         updateNotificationPauseButton()
     }
