@@ -192,22 +192,47 @@ class KizzyRPC @Inject constructor(
      * ensures a late login still works without restarting the service.
      */
     suspend fun refreshFromPrefs() {
-        // Determine which token to use based on connection method
+        // Discord's Gateway IDENTIFY only accepts an ACCOUNT token
+        // (user_id.timestamp.hmac). An OAuth2 bearer token
+        // (Authorization: Bearer ...) is rejected with close code 4004
+        // "Authentication failed". The "OAuth2" connection method therefore
+        // still needs the account token captured by the WebView login - the
+        // bearer token is only used for REST API calls, not for the gateway.
+        //
+        // Prefer the account token; only fall back to the OAuth2 value when it
+        // is itself an account token (the settings dialog may store one there).
+        val accountToken = Prefs[Prefs.TOKEN, ""]
+        val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
-        val newToken = when (connectionMethod) {
-            Prefs.RPC_CONNECTION_METHOD_OAUTH2 -> {
-                val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
-                logger.d("KizzyRPC", "Using OAuth2 token, len=${oauthToken.length}")
+
+        val isAccountToken: (String) -> Boolean = { value ->
+            // Account tokens are "<base64-ish id>.<timestamp>.<hmac>";
+            // OAuth2 access tokens (JWT-like / opaque) have no such structure.
+            val parts = value.split(".")
+            parts.size >= 3 && parts[0].isNotBlank() &&
+                    parts[1].toLongOrNull() != null || value.startsWith("mfa.")
+        }
+        val newToken = when {
+            accountToken.isNotBlank() -> accountToken
+            isAccountToken(oauthToken) -> {
+                // Keep the gateway and the account-token pref in sync.
+                Prefs[Prefs.TOKEN] = oauthToken
                 oauthToken
             }
             else -> {
-                val gatewayToken = Prefs[Prefs.TOKEN, ""]
-                logger.d("KizzyRPC", "Using Gateway token, len=${gatewayToken.length}")
-                gatewayToken
+                if (oauthToken.isNotBlank()) {
+                    logger.w(
+                        "KizzyRPC",
+                        "connectionMethod=$connectionMethod but only an OAuth2 bearer token is available. " +
+                            "The gateway will reject it with 4004 - open Discord Login to capture the account token."
+                    )
+                }
+                ""
             }
         }
+        token = newToken
 
-        logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod newToken=${newToken.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"} currentToken=${token.takeIf { it.isNotEmpty() }?.let { "len=${it.length}" } ?: "empty"}")
+        logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod tokenLen=${token.length}")
 
         // Never mutate/delete the stored token here. refreshFromPrefs() runs on every
         // service start and settings change; deleting a freshly obtained OAuth2 token

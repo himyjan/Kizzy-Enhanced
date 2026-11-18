@@ -21,13 +21,28 @@ import com.my.kizzy.preference.Prefs.USER_NITRO
 import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
 import kizzy.gateway.entities.Payload
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-suspend fun getUserInfo(token: String, onInfoSaved: () -> Unit) {
-    val discordWebSocket: DiscordWebSocket = object: DiscordWebSocketImpl(token){
-        override fun Payload.handleDispatch(jsonString: String) {
-            if (this.t.toString() == "READY"){
+/**
+ * Fetches the account identity from the gateway READY payload and persists it.
+ *
+ * The WebView login only captures the account token; it never writes USER_ID /
+ * USER_DATA / USER_BIO / USER_NITRO. Without those the profile has no avatar,
+ * banner, bio or badges, and UserViewModel treats the account as logged out
+ * even though TOKEN exists (so the "Login with Discord" button stays visible).
+ *
+ * Returns null when READY does not arrive within [timeoutMs] or the token was
+ * rejected - callers must fall back to cached data instead of crashing.
+ */
+suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
+    withTimeoutOrNull(timeoutMs) {
+        val deferred = CompletableDeferred<User?>()
+        val socket: DiscordWebSocket = object : DiscordWebSocketImpl(token) {
+            override fun Payload.handleDispatch(jsonString: String) {
+                if (this.t.toString() != "READY") return
                 val readyUser = decodeReady(jsonString)?.user ?: return
                 val user = User(
                     id = readyUser.id,
@@ -43,14 +58,20 @@ suspend fun getUserInfo(token: String, onInfoSaved: () -> Unit) {
                     publicFlags = readyUser.publicFlags,
                     verified = readyUser.verified ?: false,
                 )
-                Prefs[USER_ID] = user.id
-                Prefs[USER_BIO] = user.bio
-                Prefs[USER_NITRO] = user.nitro
-                Prefs[USER_DATA] = Json.encodeToString(user)
                 close()
-                onInfoSaved()
+                deferred.complete(user)
             }
         }
+        socket.connect()
+        deferred.await()
+    }?.also { user ->
+        Prefs[USER_ID] = user.id
+        Prefs[USER_BIO] = user.bio
+        Prefs[USER_NITRO] = user.nitro
+        Prefs[USER_DATA] = Json.encodeToString(user)
     }
-    discordWebSocket.connect()
+
+/** Legacy callback variant kept for callers outside this module. */
+suspend fun getUserInfo(token: String, onInfoSaved: () -> Unit) {
+    fetchUserInfo(token)?.let { onInfoSaved() }
 }

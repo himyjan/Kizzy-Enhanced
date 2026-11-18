@@ -337,11 +337,25 @@ open class DiscordWebSocketImpl(
         heartbeatJob?.cancel()
         connected = false
         val closeReason = session.closeReason.await()
+        val code = closeReason?.code ?: -1
         if (!deliberateClose) {
             logger.w(
                 "Gateway",
-                "WebSocket closed: code=${closeReason?.code ?: -1}, reason=${closeReason?.message ?: "none"}"
+                "WebSocket closed: code=$code, reason=${closeReason?.message ?: "none"}"
             )
+            // 4004 = Authentication failed (bad token, or an OAuth2 bearer
+            // token used for IDENTIFY). Retrying with the same token creates an
+            // endless reconnect loop and floods the log. Stop and require a
+            // new login / token refresh instead.
+            if (code.toInt() in NON_RESUMABLE_CLOSE_CODES) {
+                logger.e("Gateway", "Non-resumable close ($code): authentication failed, not reconnecting")
+                sessionId = null
+                sequence = 0
+                resumeGatewayUrl = null
+                deliberateClose = true
+                emitEvent(RpcEvent.ERROR, "Authentication failed ($code). Please log in again.")
+                return
+            }
             scheduleReconnect()
         }
     }

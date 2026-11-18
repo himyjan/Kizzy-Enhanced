@@ -22,10 +22,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.my.kizzy.feature_profile.fetchUserInfo
 import com.my.kizzy.feature_profile.ui.component.DiscordAuthView
 import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.ui.components.BackButton
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +36,8 @@ fun LoginScreen(
     onBackPressed: () -> Unit
 ) {
     var showWebView by remember { mutableStateOf(false) }
+    var isSaving by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -61,15 +65,24 @@ fun LoginScreen(
             if (showWebView) {
                 DiscordAuthView(
                     onLoginCompleted = { token ->
+                        // Save the account token, then fetch the identity from the
+                        // gateway READY payload. Without this step USER_ID /
+                        // USER_DATA / USER_BIO are never written: the profile has
+                        // no avatar or bio and still shows "Login with Discord".
                         Prefs[Prefs.TOKEN] = token
                         showWebView = false
-                        onCompleted()
+                        isSaving = true
+                        scope.launch {
+                            fetchUserInfo(token)
+                            isSaving = false
+                            onCompleted()
+                        }
                     }
                 )
             } else {
                 DiscordLoginButton(
                     onClick = { showWebView = true },
-                    enabled = true
+                    enabled = !isSaving
                 )
             }
         }

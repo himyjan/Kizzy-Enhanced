@@ -1,5 +1,6 @@
 package com.my.kizzy.feature_profile.ui.user
 
+import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,18 +9,24 @@ import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
+import com.my.kizzy.feature_profile.fetchUserInfo
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
+import com.my.kizzy.feature_rpc_base.services.AppDetectionService
+import com.my.kizzy.feature_rpc_base.services.CustomRpcService
+import com.my.kizzy.feature_rpc_base.services.DiscordOAuth2RpcService
+import com.my.kizzy.feature_rpc_base.services.ManualRpc
+import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import com.my.kizzy.feature_rpc_base.services.MediaRpcService
-import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -35,74 +42,54 @@ class UserViewModel @Inject constructor(
     private val _state = MutableStateFlow<UserState>(UserState.Loading)
     val state: StateFlow<UserState> = _state.asStateFlow()
 
+    /** Cancels an in-flight identity fetch when the account logs out. */
+    private var identityJob: kotlinx.coroutines.Job? = null
+    /** Last identity key we resolved, so prefs emissions don't re-fetch forever. */
+    @Volatile
+    private var lastIdentityKey: String? = null
+
     init {
-        getUser()
+        observeLoginState()
         observeRpcState()
     }
 
     /**
-     * Logs the user out: clears all preferences, stops RPC services, and resets
-     * state to show the Discord Signin button.
+     * Reacts to credential changes in [Prefs.prefsState].
      *
-     * This must be called from a coroutine scope.
+     * The profile ViewModel lives in the navigation backstack and used to fetch
+     * only once in init, so after a Discord re-login (or logout) it kept showing
+     * the stale "Login with Discord" state. Every token/USER_ID write is now a
+     * trigger.
      */
-    fun logout(ctx: android.content.Context, scope: kotlinx.coroutines.CoroutineScope) {
-        scope.launch {
-            logger.info("Logging out user")
+    private fun observeLoginState() {
+        Prefs.prefsState
+            .map { state ->
+                val token = state[Prefs.TOKEN] as? String ?: ""
+                val userId = state[Prefs.USER_ID] as? String ?: ""
+                val cached = state[Prefs.USER_DATA] as? String ?: ""
+                Triple(token, userId, cached)
+            }
+            .distinctUntilChanged()
+            .onEach { (token, userId, cachedJson) ->
+                val key = "$token|$userId|$cachedJson"
+                if (key == lastIdentityKey) return@onEach
+                lastIdentityKey = key
 
-            // Stop all running RPC services
-            ctx.stopService(Intent(ctx, MediaRpcService::class.java))
-            ctx.stopService(Intent(ctx, CustomRpcService::class.java))
-
-            // Clear all user preferences
-            Prefs.remove(Prefs.TOKEN)
-            Prefs.remove(Prefs.USER_ID)
-            Prefs.remove(Prefs.USER_DATA)
-            Prefs.remove(Prefs.USER_BIO)
-            Prefs.remove(Prefs.USER_NITRO)
-            Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
-            Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
-            Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)
-            Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
-            Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
-            Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
-            Prefs.remove(Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID)
-            Prefs.remove(Prefs.LASTFM_API_KEY)
-            Prefs.remove(Prefs.LASTFM_SECRET)
-            Prefs.remove(Prefs.LASTFM_USERNAME)
-            Prefs.remove(Prefs.LASTFM_PASSWORD)
-            Prefs.remove(Prefs.LASTFM_SESSION_KEY)
-            Prefs.remove(Prefs.LASTFM_ENABLED)
-            Prefs.remove(Prefs.LASTFM_ENABLE_TIMESTAMPS)
-            Prefs.remove(Prefs.LASTFM_SHOW_COVER_ART)
-            Prefs.remove(Prefs.LASTFM_SHOW_PARTY_CURRENT)
-            Prefs.remove(Prefs.LASTFM_SHOW_PARTY_MAX)
-            // Clear ListenBrainz scrobbling credentials so the next login
-            // starts fresh with no stored scrobbling session.
-            Prefs.remove(Prefs.LISTENBRAINZ_USER_TOKEN)
-            Prefs.remove(Prefs.LISTENBRAINZ_ENABLED)
-            Prefs.remove(Prefs.LISTENBRAINZ_ENABLE_TIMESTAMPS)
-            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_COVER_ART)
-            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_PARTY_CURRENT)
-            Prefs.remove(Prefs.LISTENBRAINZ_SHOW_PARTY_MAX)
-
-            // Reset state to show not-logged-in UI immediately
-            _state.value = UserState.Error(
-                error = "Not logged in",
-                user = User(),
-                rpcConfig = currentRpcConfig()
-            )
-
-            logger.info("User logged out successfully")
-        }
+                identityJob?.cancel()
+                identityJob = viewModelScope.launch {
+                    loadIdentity(token, userId, cachedJson)
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
-    private fun getUser() {
-        val userId = Prefs[Prefs.USER_ID, ""]
-        val token = Prefs[Prefs.TOKEN, ""]
-        if (userId.isBlank() && token.isBlank()) {
-            // Not logged in on cold start - show Error state with empty user
-            // so UserScreen displays Discord Signin button immediately
+    private suspend fun loadIdentity(token: String, userId: String, cachedJson: String) {
+        val cachedUser = runCatching {
+            if (cachedJson.isNotBlank()) Json.decodeFromString<User>(cachedJson) else null
+        }.getOrNull()
+
+        if (token.isBlank()) {
+            // Logged out: no account data at all.
             _state.value = UserState.Error(
                 error = "Not logged in",
                 user = User(),
@@ -110,66 +97,92 @@ class UserViewModel @Inject constructor(
             )
             return
         }
-        // If token exists but userId is blank, still try to load user
-        // (happens after Discord login where only token is saved initially)
-        if (userId.isBlank() && token.isNotBlank()) {
-            _state.value = UserState.Loading
-            // Try to load user via GetUserUseCase - it will use token to fetch user info
-            getUserUseCase(userId).onEach { result ->
-                viewModelScope.launch(Dispatchers.Main) {
-                    val newState = when (result) {
-                        is Resource.Success -> {
-                            val user = result.data?.copy(
-                                bio = Prefs[Prefs.USER_BIO],
-                                nitro = Prefs[Prefs.USER_NITRO]
-                            )
-                            Prefs[Prefs.USER_DATA] = Json.encodeToString(result.data)
-                            UserState.LoadingCompleted(
-                                user,
-                                currentRpcConfig()
-                            )
-                        }
-                        is Resource.Error -> {
-                            val user = Json.decodeFromString<User>(Prefs[Prefs.USER_DATA, "{}"])
-                            UserState.Error(
-                                error = result.message ?: "An unexpected error occurred",
-                                user = user,
-                                rpcConfig = currentRpcConfig()
-                            )
-                        }
-                        is Resource.Loading -> UserState.Loading
-                    }
-                    _state.value = newState
-                }
-            }.launchIn(viewModelScope)
+
+        // The account token alone is enough: fetch the identity from the
+        // gateway READY payload (which also persists USER_ID/USER_DATA/BIO).
+        val fresh = fetchUserInfo(token)
+        if (fresh != null) {
+            _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())
+            return
+        }
+
+        // Gateway failed (offline / 4004): fall back to the cached identity or
+        // the profile API, but NEVER report "not logged in" while a token is
+        // present - that would wrongly show the login button.
+        val fallback = cachedUser ?: runCatching {
+            var result: User? = null
+            getUserUseCase(userId).collect { resource ->
+                if (resource is Resource.Success) result = resource.data
+            }
+            result
+        }.getOrNull()
+
+        _state.value = if (fallback != null) {
+            UserState.LoadingCompleted(fallback, currentRpcConfig())
         } else {
-            getUserUseCase(userId).onEach { result ->
-                viewModelScope.launch(Dispatchers.Main) {
-                    val newState = when (result) {
-                        is Resource.Success -> {
-                            val user = result.data?.copy(
-                                bio = Prefs[Prefs.USER_BIO],
-                                nitro = Prefs[Prefs.USER_NITRO]
-                            )
-                            Prefs[Prefs.USER_DATA] = Json.encodeToString(result.data)
-                            UserState.LoadingCompleted(
-                                user,
-                                currentRpcConfig()
-                            )
-                        }
-                        is Resource.Error -> {
-                            val user = Json.decodeFromString<User>(Prefs[Prefs.USER_DATA, "{}"])
-                            UserState.Error(
-                                error = result.message ?: "An unexpected error occurred",
-                                user = user,
-                                rpcConfig = currentRpcConfig()
-                            )
-                        }
-                        is Resource.Loading -> UserState.Loading
-                    }
-                    _state.value = newState
-                }
-            }.launchIn(viewModelScope)
+            UserState.Error(
+                error = "Could not load profile",
+                user = User(),
+                rpcConfig = currentRpcConfig()
+            )
+        }
+    }
+
+    /**
+     * Logs the user out: stops every RPC service, clears all credentials and
+     * account data, and resets state to show the Discord Signin button.
+     */
+    fun logout(ctx: Context, scope: CoroutineScope) {
+        viewModelScope.launch {
+            logger.info("Logging out user")
+
+            // Stop EVERY RPC service, not just Media/Custom. Manual RPC,
+            // App Detection and the OAuth2 service also hold a gateway socket
+            // with the old token; leaving them running keeps a stale session
+            // alive and can resurrect the presence after logout.
+            runCatching { RpcManager.getInstance(ctx).switchTo(RpcManager.RpcType.None) }
+            listOf(
+                MediaRpcService::class.java,
+                CustomRpcService::class.java,
+                ManualRpc::class.java,
+                AppDetectionService::class.java,
+                DiscordOAuth2RpcService::class.java,
+            ).forEach { service -> ctx.stopService(Intent(ctx, service)) }
+
+            // Credentials - both gateway (user token) and OAuth2 (bearer +
+            // refresh). Both are encrypted on disk via SecurePrefs.
+            Prefs.remove(Prefs.TOKEN)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
+            Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
+            Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
+            // Do NOT clear the OAuth2 application client id - it is a
+            // configuration value, not a credential.
+
+            // Account identity
+            Prefs.remove(Prefs.USER_ID)
+            Prefs.remove(Prefs.USER_DATA)
+            Prefs.remove(Prefs.USER_BIO)
+            Prefs.remove(Prefs.USER_NITRO)
+
+            // Third-party credentials / scrobbling sessions
+            Prefs.remove(Prefs.LASTFM_API_KEY)
+            Prefs.remove(Prefs.LASTFM_SECRET)
+            Prefs.remove(Prefs.LASTFM_USERNAME)
+            Prefs.remove(Prefs.LASTFM_PASSWORD)
+            Prefs.remove(Prefs.LASTFM_SESSION_KEY)
+            Prefs.remove(Prefs.LISTENBRAINZ_USER_TOKEN)
+
+            // Reset state immediately; observeLoginState() will also react.
+            identityJob?.cancel()
+            _state.value = UserState.Error(
+                error = "Not logged in",
+                user = User(),
+                rpcConfig = currentRpcConfig()
+            )
+            logger.info("User logged out successfully")
         }
     }
 
@@ -202,29 +215,19 @@ class UserViewModel @Inject constructor(
             }
         }
         mediaFlow.flatMapLatest { it }.onEach { newRpcConfig ->
-            // Post the write instead of doing it inside the flow collection. The state
-            // is read during composition, so it must not change while the profile is
-            // composing.
             viewModelScope.launch(Dispatchers.Main) {
                 val current = _state.value
-                // While still loading, ignore media updates: the branch below
-                // would emit LoadingCompleted with an EMPTY User(), rendering
-                // the profile without name/badges/bio and then jumping again
-                // when getUser() delivers the real account (the "quick UI
-                // change" on open). getUser() seeds rpcConfig itself.
+                // While still loading, ignore media updates: rendering the
+                // profile with an EMPTY user caused a visible jump on open.
                 if (current is UserState.Loading) return@launch
-                // The media service can publish the same presence again (for example a
-                // duplicate metadata callback). Replacing the state with an equal value
-                // would only trigger another recomposition of the whole profile.
                 if (current is UserState.LoadingCompleted && current.rpcConfig == newRpcConfig) {
                     return@launch
                 }
                 _state.value = UserState.LoadingCompleted(
                     when (current) {
                         is UserState.LoadingCompleted -> current.user
-                        // Loading was filtered above; only Error can remain with
-                        // a user object.
-                        else -> (current as UserState.Error).user
+                        is UserState.Error -> current.user
+                        else -> User()
                     },
                     newRpcConfig
                 )
@@ -251,7 +254,7 @@ class UserViewModel @Inject constructor(
             AppUtils.mediaRpcRunning() ->
                 LastPresence.media() ?: RpcConfig(name = "Media RPC", details = "Playing media", type = "2")
             AppUtils.ManualRpcRunning() ->
-                LastPresence.experimental() ?: RpcConfig(name = "Experimental RPC", details = "Active")
+                LastPresence.experimental() ?: RpcConfig(name = "Manual RPC", details = "Active")
             AppUtils.appDetectionRunning() -> RpcConfig(name = "App Detection", details = "Detecting apps")
             else -> LastPresence.media() ?: LastPresence.experimental() ?: kizzyDefault()
         }
