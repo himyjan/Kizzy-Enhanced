@@ -673,10 +673,16 @@ class ManualRpc : Service() {
             // so the presence links to the music like the Media RPC does.
             val mediaUrl = rawMediaMetadata?.let {
                 MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
-            }
+            } ?: MediaServiceResolver.mediaSearchUrl(
+                effectivePackageName,
+                finalName.takeIf { !it.isNullOrBlank() } ?: finalDetails,
+            ) ?: MediaServiceResolver.browserSearchUrl(
+                finalName.takeIf { !it.isNullOrBlank() } ?: finalDetails,
+            )
             mediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
                 kizzyRPC.setButton1(
-                    MediaServiceResolver.mediaButtonLabel(
+                    MediaServiceResolver.mediaLinkLabel(
+                        url,
                         effectivePackageName,
                         commonRpc.type ?: ActivityTypeResolver.DEFAULT_TYPE,
                     ),

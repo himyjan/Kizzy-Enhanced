@@ -55,7 +55,7 @@ object MediaServiceResolver {
     private const val DEEZER_SEARCH = "https://www.deezer.com/search/%s"
     private const val SOUNDCLOUD_SEARCH = "https://soundcloud.com/search/%s"
     private const val STREETVOICE_SEARCH = "https://streetvoice.com/search?q=%s"
-    private const val YMUSIC_SEARCH = "https://ymusicapp.com/watch?v=%s"
+    private const val YMUSIC_SEARCH = YOUTUBE_SEARCH
     private const val NETFLIX_SEARCH = "https://www.netflix.com/search?q=%s"
     private const val TWITCH_SEARCH = "https://www.twitch.tv/search?query=%s"
     private const val KICK_SEARCH = "https://kick.com/search?q=%s"
@@ -123,7 +123,7 @@ object MediaServiceResolver {
         ),
         Entry(
             listOf("kapp.youtube", "ymusicapp"),
-            Service("YMusic", Kind.MUSIC, YMUSIC_SEARCH, YMUSIC_SEARCH)
+            Service("YouTube Music", Kind.MUSIC, YOUTUBE_SEARCH, YOUTUBE_ARTIST_SEARCH)
         ),
         Entry(
             // YouTube Music wrapper / alternative clients. They all play YouTube Music
@@ -297,6 +297,47 @@ object MediaServiceResolver {
         return pkg.contains("youtube") || YOUTUBE_WRAPPER_SIGNATURES.any { pkg.contains(it) }
     }
 
+    /** Browsers that publish a MediaSession for a web player (Apple Music web,
+     * YouTube web, Spotify web, ...). The link must be the PAGE url. */
+    private val BROWSER_SIGNATURES = listOf(
+        "chrome", "chromium", "cromite", "bromite", "vanadium",
+        "microsoft.emmx", "edge",
+        "firefox", "fennec", "fenix", "focus", "klar", "mozilla",
+        "vivaldi", "brave", "opera", "kiwi",
+        "duckduckgo", "ecosia", "qwant",
+        "sbrowser", "samsung.android.internet",
+        "android.browser", "miui.browser", "huawei.browser", "heytap.browser",
+        "uc.browser", "ucmobile", "via.gp", "aloha", "ghostery",
+        "org.chromium",
+    )
+
+    fun isBrowser(packageName: String?): Boolean {
+        if (packageName.isNullOrBlank()) return false
+        val pkg = packageName.lowercase()
+        return BROWSER_SIGNATURES.any { sig -> pkg.contains(sig) }
+    }
+
+    /** Human friendly name of the browser, used on the button label. */
+    fun browserName(packageName: String?): String {
+        if (packageName == null) return "Browser"
+        val pkg = packageName.lowercase()
+        return when {
+            "vivaldi" in pkg -> "Vivaldi"
+            "microsoft.emmx" in pkg || "edge" in pkg -> "Edge"
+            "firefox" in pkg || "fennec" in pkg || "fenix" in pkg -> "Firefox"
+            "brave" in pkg -> "Brave"
+            "opera" in pkg -> "Opera"
+            "duckduckgo" in pkg -> "DuckDuckGo"
+            "sbrowser" in pkg -> "Samsung Internet"
+            "kiwi" in pkg -> "Kiwi"
+            "cromite" in pkg -> "Cromite"
+            "bromite" in pkg -> "Bromite"
+            "chromium" in pkg -> "Chromium"
+            "chrome" in pkg -> "Chrome"
+            else -> "Browser"
+        }
+    }
+
     private fun encode(value: String): String =
         URLEncoder.encode(value, StandardCharsets.UTF_8.toString())
 
@@ -322,6 +363,12 @@ object MediaServiceResolver {
         val template = service.artistUrlTemplate ?: return null
         if (artist.isNullOrBlank()) return null
         return template.replace("%s", encode(artist))
+    }
+
+    /** Generic search fallback for browser players that publish no page url. */
+    fun browserSearchUrl(title: String?): String? {
+        if (title.isNullOrBlank()) return null
+        return "https://www.google.com/search?q=" + encode(title)
     }
 
     /**
@@ -351,5 +398,31 @@ object MediaServiceResolver {
     fun artistButtonLabel(packageName: String?): String {
         val service = service(packageName)
         return if (service != null) "Artist on ${service.name}" else "Artist Channel"
+    }
+
+    /**
+     * Label that names what the media link actually points at. Discord shows
+     * this text on the button, so "Playlist" / "Video" / "Track" is clearer
+     * than a generic "Listen on ...".
+     */
+    fun mediaLinkLabel(url: String?, packageName: String?, activityType: Int = ActivityTypeResolver.DEFAULT_TYPE): String {
+        val service = service(packageName)
+        val serviceName = if (isBrowser(packageName)) {
+            MediaServiceResolver.browserName(packageName)
+        } else {
+            service?.name
+        }
+        val prefix = when {
+            url?.contains("playlist?list=") == true || url?.contains("/album/") == true ||
+                url?.contains("/playlist/") == true -> "Playlist"
+            url?.contains("/channel/") == true -> "Channel"
+            url?.contains("youtu.be/") == true || url?.contains("/watch?v=") == true -> "Video"
+            service?.kind == Kind.LIVE -> "Stream"
+            service?.kind == Kind.VIDEO -> "Video"
+            activityType == ActivityTypeResolver.WATCHING -> "Video"
+            activityType == ActivityTypeResolver.LISTENING -> "Track"
+            else -> "Media"
+        }
+        return if (serviceName != null) "$prefix on $serviceName" else prefix
     }
 }

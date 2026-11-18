@@ -105,12 +105,70 @@ object YouTubeResolver {
     private val failed = ConcurrentHashMap<String, Boolean>()
 
     /**
+     * Checks if a string is a valid YouTube video ID (typically 11 chars, 10..12 allowed).
+     */
+    fun isValidVideoId(id: String?): Boolean {
+        if (id.isNullOrBlank()) return false
+        val clean = id.trim()
+        return clean.length in 10..12 && clean.matches(Regex("^[A-Za-z0-9_-]{10,12}$"))
+    }
+
+    private val VIDEO_ID_QUERY = Regex("[?&]v=([A-Za-z0-9_-]{10,12})", RegexOption.IGNORE_CASE)
+    private val VIDEO_ID_SHORT = Regex("(?:youtu\\.be|ymusicapp\\.com)/([A-Za-z0-9_-]{10,12})", RegexOption.IGNORE_CASE)
+    private val VIDEO_ID_PATH = Regex("/(?:shorts|live|embed|watch)/([A-Za-z0-9_-]{10,12})", RegexOption.IGNORE_CASE)
+    private val CHANNEL_ID_PATTERN = Regex("""(?:"channelId"\s*:\s*"|itemprop=["']channelId["']\s+content=["'])(UC[A-Za-z0-9_-]{22})""")
+    private val YMUSIC_HOST = Regex("(?i)^(?:https?://)?(?:www\\.)?ymusicapp\\.com(?=[:/?#]|$)")
+
+    /**
+     * True for youtube.com, music.youtube.com, youtu.be, ymusicapp.com,
+     * www.ymusicapp.com and any other *.ymusicapp.com host.
+     */
+    fun isYoutubeFamilyUrl(url: String?): Boolean {
+        if (url.isNullOrBlank()) return false
+        val candidate = url.trim().let {
+            if (it.contains("://")) it else "https://$it"
+        }
+        val host = runCatching { java.net.URI(candidate).host?.lowercase() }.getOrNull()
+            ?: return false
+        return listOf("youtube.com", "youtu.be", "ymusicapp.com").any { domain ->
+            host == domain || host.endsWith(".$domain")
+        }
+    }
+
+    /**
+     * Rewrites a YMusic wrapper url (ymusicapp.com / www.ymusicapp.com) onto
+     * youtube.com so the rest of the parsers can read it as a normal watch url.
+     */
+    fun unwrapYmusicUrl(url: String): String {
+        return YMUSIC_HOST.replaceFirst(url.trim(), "https://www.youtube.com")
+    }
+
+    /**
+     * The RPC link of a YouTube-family url: always https://youtu.be/ID
+     * when a video id can be read. Channel and playlist urls stay on youtube.com.
+     *
+     * YMusic publishes both https://ymusicapp.com/watch?v=ID and
+     * https://www.ymusicapp.com/watch?v=ID; both become https://youtu.be/ID.
+     */
+    fun toRpcUrl(url: String?): String? {
+        if (url.isNullOrBlank()) return url
+        val trimmed = url.trim()
+        if (!isYoutubeFamilyUrl(trimmed)) return trimmed
+        val unwrapped = unwrapYmusicUrl(trimmed)
+        extractVideoId(unwrapped)?.let { return "https://youtu.be/$it" }
+        extractVideoId(trimmed)?.let { return "https://youtu.be/$it" }
+        extractChannelId(unwrapped)?.let { return "https://www.youtube.com/channel/$it" }
+        extractPlaylistId(unwrapped)?.let { return "https://www.youtube.com/playlist?list=$it" }
+        return unwrapped
+    }
+
+    /**
      * The video id of every YouTube url form, or null when the url is not a
      * YouTube video url.
      *
      * Handles "youtu.be/ID", "youtube.com/watch?v=ID", "music.youtube.com/watch?v=ID",
-     * "youtube.com/shorts/ID", "youtube.com/live/ID", "youtube.com/embed/ID"
-     * and "ymusicapp.com/watch?v=ID".
+     * "youtube.com/shorts/ID", "youtube.com/live/ID", "youtube.com/embed/ID",
+     * "ymusicapp.com/watch?v=ID" and "www.ymusicapp.com/watch?v=ID".
      *
      * Returns null for channel URLs (/channel/) and playlist URLs (/playlist?)
      * since those are not individual videos.
@@ -118,39 +176,57 @@ object YouTubeResolver {
     fun extractVideoId(url: String): String? {
         val trimmed = url.trim()
         if (trimmed.isEmpty()) return null
-        val lower = trimmed.lowercase()
 
-        if (!lower.contains("youtube.com") && !lower.contains("youtu.be") && !lower.contains("ymusicapp.com")) return null
+        // If the string itself is directly an 11-character video ID
+        if (isValidVideoId(trimmed)) return trimmed
+
+        val unwrapped = unwrapYmusicUrl(trimmed)
+        val lower = unwrapped.lowercase()
+        if (!isYoutubeFamilyUrl(unwrapped) && !isYoutubeFamilyUrl(trimmed)) return null
 
         // Channel URLs are not videos
         if (lower.contains("/channel/")) return null
 
-        // Playlist URLs are not individual videos
+        // Playlist URLs are not individual videos (unless they also carry v=)
+        VIDEO_ID_QUERY.find(unwrapped)?.groupValues?.getOrNull(1)?.let {
+            if (isValidVideoId(it)) return it
+        }
+        VIDEO_ID_QUERY.find(trimmed)?.groupValues?.getOrNull(1)?.let {
+            if (isValidVideoId(it)) return it
+        }
+
         if (lower.contains("/playlist?") || lower.contains("/playlist/")) return null
+
+        VIDEO_ID_SHORT.find(unwrapped)?.groupValues?.getOrNull(1)?.let {
+            if (isValidVideoId(it)) return it
+        }
+        VIDEO_ID_SHORT.find(trimmed)?.groupValues?.getOrNull(1)?.let {
+            if (isValidVideoId(it)) return it
+        }
+
+        VIDEO_ID_PATH.find(unwrapped)?.groupValues?.getOrNull(1)?.let {
+            if (isValidVideoId(it)) return it
+        }
 
         // youtu.be/<id>
         if (lower.contains("youtu.be/")) {
-            val id = trimmed.substringAfter("youtu.be/").substringBefore('?').substringBefore('&')
-            if (id.isNotBlank() && id.length >= 11) return id.take(11)
+            val id = unwrapped.substringAfter("youtu.be/").substringBefore('?').substringBefore('&').substringBefore('/')
+            if (isValidVideoId(id)) return id
         }
 
-        // ymusicapp.com/watch?v=<id>
-        if (lower.contains("ymusicapp.com") && lower.contains("/watch")) {
-            val id = trimmed.substringAfter("v=").substringBefore('&').substringBefore('#')
-            if (id.isNotBlank() && id.length >= 11) return id.take(11)
-        }
-
-        // /watch?v=<id>
-        if (lower.contains("/watch")) {
-            val id = trimmed.substringAfter("v=").substringBefore('&').substringBefore('#')
-            if (id.isNotBlank() && id.length >= 11) return id.take(11)
+        // /watch?v=<id> (ymusicapp.com, www.ymusicapp.com, youtube.com)
+        if (lower.contains("/watch") || lower.contains("watch?")) {
+            val id = unwrapped.substringAfter("v=", missingDelimiterValue = "")
+                .ifEmpty { trimmed.substringAfter("v=", missingDelimiterValue = "") }
+                .substringBefore('&').substringBefore('#').substringBefore('/')
+            if (isValidVideoId(id)) return id
         }
 
         // /shorts/<id>, /live/<id>, /embed/<id>
         listOf("/shorts/", "/live/", "/embed/").forEach { marker ->
             if (lower.contains(marker)) {
-                val id = trimmed.substringAfter(marker).substringBefore('?').substringBefore('/')
-                if (id.isNotBlank() && id.length >= 11) return id.take(11)
+                val id = unwrapped.substringAfter(marker).substringBefore('?').substringBefore('&').substringBefore('/')
+                if (isValidVideoId(id)) return id
             }
         }
 
@@ -161,14 +237,14 @@ object YouTubeResolver {
      * Extracts the channel id from a YouTube channel URL.
      *
      * Handles "youtube.com/channel/UC...", "music.youtube.com/channel/UC...",
-     * and "ymusicapp.com/channel/UC...".
+     * "ymusicapp.com/channel/UC..." and "www.ymusicapp.com/channel/UC...".
      */
     fun extractChannelId(url: String): String? {
-        val trimmed = url.trim()
+        val trimmed = unwrapYmusicUrl(url)
         if (trimmed.isEmpty()) return null
         val lower = trimmed.lowercase()
 
-        if (!lower.contains("youtube.com") && !lower.contains("youtu.be") && !lower.contains("ymusicapp.com")) return null
+        if (!isYoutubeFamilyUrl(trimmed)) return null
 
         if (!lower.contains("/channel/")) return null
 
@@ -181,16 +257,16 @@ object YouTubeResolver {
      * Extracts the playlist id from a YouTube playlist URL.
      *
      * Handles "youtube.com/playlist?list=PL...", "music.youtube.com/playlist?list=PL...",
-     * and "ymusicapp.com/playlist?list=PL...".
+     * "ymusicapp.com/playlist?list=PL..." and "www.ymusicapp.com/playlist?list=PL...".
      */
     fun extractPlaylistId(url: String): String? {
-        val trimmed = url.trim()
+        val trimmed = unwrapYmusicUrl(url)
         if (trimmed.isEmpty()) return null
         val lower = trimmed.lowercase()
 
-        if (!lower.contains("youtube.com") && !lower.contains("youtu.be") && !lower.contains("ymusicapp.com")) return null
+        if (!isYoutubeFamilyUrl(trimmed)) return null
 
-        if (!lower.contains("/playlist?")) return null
+        if (!lower.contains("list=")) return null
 
         val id = trimmed.substringAfter("list=").substringBefore('&').substringBefore('#')
         if (id.isNotBlank() && id.length >= 10) return id
@@ -276,10 +352,12 @@ object YouTubeResolver {
             val authorUrl = obj["author_url"]?.jsonPrimitive?.content
             val thumbnail = obj["thumbnail_url"]?.jsonPrimitive?.content
             val title = obj["title"]?.jsonPrimitive?.content
+            val channelUrl = lookupChannelId(videoId)?.let(::channelUrl)
+                ?: authorUrl?.let { extractChannelId(it)?.let(::channelUrl) ?: normalizeChannelUrl(it) }
 
             Video(
                 watchUrl = target,
-                channelUrl = authorUrl?.let { normalizeChannelUrl(it) } ?: "",
+                channelUrl = channelUrl.orEmpty(),
                 title = title.orEmpty(),
                 thumbnailUrl = thumbnail.orEmpty(),
             ).also { cache[videoId] = it }
@@ -290,6 +368,25 @@ object YouTubeResolver {
             null
         }
     }
+
+    /**
+     * Resolves the uploader's stable UC channel id from the public video page.
+     * oEmbed only returns a handle for newer channels, so the video page is
+     * needed to provide the canonical /channel/UC... artist link.
+     */
+    private suspend fun lookupChannelId(videoId: String): String? {
+        return try {
+            val body = client.get(watchUrl(videoId)) {
+                headers.append("User-Agent", USER_AGENT)
+            }.bodyAsText()
+            CHANNEL_ID_PATTERN.find(body)?.groupValues?.getOrNull(1)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun channelUrl(channelId: String): String =
+        "https://www.youtube.com/channel/$channelId"
 
     /**
      * The channel url of a handle.

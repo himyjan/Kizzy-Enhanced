@@ -583,10 +583,29 @@ class MediaRpcService : Service() {
         // on the profile.
         kizzyRPC.clearButtons()
         if (mediaButtonEnabled) {
-            val url = playingMedia.mediaUrl ?: resolveDirectMediaUrl()
+            // Prefer the URL already resolved by GetCurrentlyPlayingMedia,
+            // then the direct resolver, then a plain metadata search.
+            // NEVER leave the button out just because the session published
+            // no direct url: build a search link from the presence title
+            // itself so the media (video / track / playlist) button always
+            // exists - the artist button already falls back the same way.
+            val candidateUrl = playingMedia.mediaUrl
+                ?: resolveDirectMediaUrl()
+                ?: currentMediaController?.metadata?.let { metadata ->
+                    MetadataResolver.getMediaUrl(metadata, playingMedia.appPackage)
+                }
+                ?: MediaServiceResolver.mediaSearchUrl(
+                    playingMedia.appPackage,
+                    playingMedia.name.takeIf { it.isNotBlank() } ?: playingMedia.details,
+                )
+                ?: MediaServiceResolver.browserSearchUrl(
+                    playingMedia.name.takeIf { it.isNotBlank() } ?: playingMedia.details,
+                )
+            val url = candidateUrl?.let { YouTubeResolver.toRpcUrl(it) ?: it }
             if (url != null) {
                 kizzyRPC.setButton1(
-                    MediaServiceResolver.mediaButtonLabel(
+                    MediaServiceResolver.mediaLinkLabel(
+                        url,
                         playingMedia.appPackage,
                         commonRpc.type ?: ActivityTypeResolver.DEFAULT_TYPE,
                     ),

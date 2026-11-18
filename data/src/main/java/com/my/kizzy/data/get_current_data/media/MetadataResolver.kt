@@ -14,6 +14,7 @@ class MetadataResolver @Inject constructor(
 ) {
     companion object {
         private const val METADATA_KEY_SOURCE_URL = "android.media.metadata.SOURCE_URL"
+        private const val METADATA_KEY_MEDIA_URI = "android.media.metadata.MEDIA_URI"
     }
 
     fun getCoverArt(metadata: MediaMetadata): Bitmap? {
@@ -99,11 +100,44 @@ class MetadataResolver @Inject constructor(
         return channelMatch?.value?.replaceFirstChar { it.uppercase() }
     }
 
-    fun getMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
-        if (MediaServiceResolver.isYouTube(packageName)) {
-            extractYouTubeUrl(metadata)?.let { return normalizeMediaUrl(it, packageName) }
+    fun getMediaUrl(
+        metadata: MediaMetadata,
+        packageName: String?,
+        extraValues: List<String> = emptyList(),
+    ): String? {
+        return toRpcMediaUrl(resolveRawMediaUrl(metadata, packageName, extraValues))
+    }
+
+    /**
+     * YMusic (ymusicapp.com / www.ymusicapp.com) and every other YouTube-family
+     * watch url must land on https://youtu.be/ID in the RPC button.
+     */
+    private fun toRpcMediaUrl(url: String?): String? {
+        if (url.isNullOrBlank()) return url
+        return YouTubeResolver.toRpcUrl(url) ?: url
+    }
+
+    private fun resolveRawMediaUrl(
+        metadata: MediaMetadata,
+        packageName: String?,
+        extraValues: List<String>,
+    ): String? {
+        // A browser media session (Chrome / Edge / Firefox / Vivaldi / ...)
+        // plays a WEB PAGE (e.g. music.apple.com/jp/album/...). The page url
+        // is published in one of the metadata string fields, so extract it
+        // before applying any app-specific normalisation.
+        // Prefer a supported webpage URL for browsers, including browsers whose
+        // package names are not in the known list. Unknown players are scanned
+        // too, since they may be browser-based media sessions.
+        if (MediaServiceResolver.isBrowser(packageName) || MediaServiceResolver.service(packageName) == null) {
+            browserPageUrl(metadata, extraValues)?.let { return it }
         }
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
+        if (MediaServiceResolver.isYouTube(packageName)) {
+            extractYouTubeUrl(metadata)?.let { url ->
+                normalizeMediaUrl(url, packageName)?.let { return it }
+            }
+        }
+        val sourceUrl = firstMetadataUrl(metadata, extraValues)
         if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
             val normalized = normalizeMediaUrl(sourceUrl, packageName)
             if (normalized != null) return normalized
@@ -120,11 +154,24 @@ class MetadataResolver @Inject constructor(
         scanAllMetadataForUrl(metadata)?.let { url ->
             normalizeMediaUrl(url, packageName)?.let { return it }
         }
+        extraValues.firstOrNull { it.isValidMediaUrl() }?.let { url ->
+            normalizeMediaUrl(url, packageName)?.let { return it }
+        }
         if (MediaServiceResolver.isYouTube(packageName)) {
             extractYouTubeUrl(metadata)?.let { url ->
                 normalizeMediaUrl(url, packageName)?.let { return it }
             }
-            return null
+            // No direct video/playlist id was published by the session.
+            // Fall back to the title search instead of returning null: the
+            // artist link still gets a search page, so the media link must too,
+            // otherwise Discord shows only "Artist on ..." and the
+            // video/music/playlist button disappears entirely.
+            val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+            return MediaServiceResolver.mediaSearchUrl(packageName, title)
+        }
+        if (MediaServiceResolver.isBrowser(packageName)) {
+            val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+            return MediaServiceResolver.browserSearchUrl(title)
         }
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
         return MediaServiceResolver.mediaSearchUrl(packageName, title)
@@ -209,11 +256,9 @@ class MetadataResolver @Inject constructor(
         val lower = trimmed.lowercase()
         val pkg = packageName?.lowercase().orEmpty()
 
-        // YouTube / YouTube Music track URLs
-        if (lower.contains("youtube.com") || lower.contains("youtu.be") || lower.contains("ymusicapp.com")) {
-            val videoId = YouTubeResolver.extractVideoId(trimmed)
-            if (videoId != null) return "https://youtu.be/$videoId"
-            return null
+        // YouTube / YouTube Music / YMusic (ymusicapp.com, www.ymusicapp.com)
+        if (YouTubeResolver.isYoutubeFamilyUrl(trimmed)) {
+            return YouTubeResolver.toRpcUrl(trimmed)
         }
 
         // Spotify track: open.spotify.com/track/{id}
@@ -1156,8 +1201,8 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // YouTube playlist handled by extractPlaylistId
-        if (lower.contains("youtube.com") || lower.contains("youtu.be") || lower.contains("ymusicapp.com")) {
+        // YouTube playlist handled by extractPlaylistId (incl. www.ymusicapp.com)
+        if (YouTubeResolver.isYoutubeFamilyUrl(trimmed)) {
             val playlistId = YouTubeResolver.extractPlaylistId(trimmed)
             if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
         }
@@ -1167,14 +1212,17 @@ class MetadataResolver @Inject constructor(
 
     suspend fun getDirectMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
         if (!MediaServiceResolver.isYouTube(packageName)) return null
+        firstMetadataUrl(metadata)?.let { url ->
+            if (YouTubeResolver.isYoutubeFamilyUrl(url)) {
+                toRpcMediaUrl(url)?.let { return it }
+            }
+        }
         val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
-            // Full watch url or youtu.be — extract just the video id
-            // Also handle ymusicapp.com/watch?v=ID (YMusic app publishes full URLs)
-            if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/") || mediaId.contains("ymusicapp.com/watch?v=")) {
-                val id = YouTubeResolver.extractVideoId(mediaId)
-                if (id != null) return "https://youtu.be/$id"
+            if (YouTubeResolver.isYoutubeFamilyUrl(mediaId)) {
+                toRpcMediaUrl(mediaId)?.let { return it }
             }
+            YouTubeResolver.extractVideoId(mediaId)?.let { return "https://youtu.be/$it" }
             // Channel URL — keep as a channel link
             val channelId = YouTubeResolver.extractChannelId(mediaId)
             if (channelId != null) return "https://www.youtube.com/channel/$channelId"
@@ -1185,26 +1233,106 @@ class MetadataResolver @Inject constructor(
             val id = mediaId.substringAfterLast(":").substringAfterLast("/")
                 .substringBefore('?').substringBefore('&')
                 .takeIf { it.isNotBlank() && it.length >= 11 }?.take(11)
-            if (id != null) return "https://youtu.be/$id"
+            if (id != null && YouTubeResolver.isValidVideoId(id)) return "https://youtu.be/$id"
             val rawId = mediaId.trim()
-            if (rawId.length == 11 && rawId.matches(Regex("[A-Za-z0-9_-]{11}"))) {
+            if (YouTubeResolver.isValidVideoId(rawId)) {
                 return "https://youtu.be/$rawId"
             }
-            YouTubeResolver.extractVideoId(mediaId)?.let { return "https://youtu.be/$it" }
         }
         val video = resolveYouTubeVideo(metadata) ?: return null
-        return video.watchUrl
+        return toRpcMediaUrl(video.watchUrl)
     }
 
     suspend fun resolveYouTubeVideo(metadata: MediaMetadata): YouTubeResolver.Video? {
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
-        if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be") || sourceUrl.contains("ymusicapp.com"))) {
-            YouTubeResolver.lookup(sourceUrl)?.let { return it }
+        val sourceUrl = firstMetadataUrl(metadata)
+        if (!sourceUrl.isNullOrEmpty() && YouTubeResolver.isYoutubeFamilyUrl(sourceUrl)) {
+            YouTubeResolver.lookup(YouTubeResolver.unwrapYmusicUrl(sourceUrl))?.let { return it }
         }
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
         if (title.isNullOrEmpty()) return null
         val artist = MetadataResolverArtistName(metadata)
         return YouTubeResolver.lookupByTitle(title, artist)
+    }
+
+    /**
+     * Extracts the page url of a web player from a browser MediaSession.
+     *
+     * Browsers (Chrome, Edge, Firefox, Vivaldi, ...) publish the page url in
+     * different metadata fields depending on the site. We scan every string
+     * metadata value for a known media host and keep the FULL url - e.g.
+     * https://music.apple.com/jp/album/celestia-fragments/1856761201 -
+     * instead of replacing it with a search page.
+     *
+     * YouTube / YMusic pages are rewritten to https://youtu.be/ID.
+     * Returns null when no page url was published so the caller can fall back.
+     */
+    private fun browserPageUrl(metadata: MediaMetadata, extraValues: List<String> = emptyList()): String? {
+        val mediaHosts = listOf(
+            "music.apple.com", "itunes.apple.com", "open.spotify.com",
+            "youtube.com", "youtu.be", "ymusicapp.com",
+            "music.youtube.com", "deezer.com", "soundcloud.com",
+            "music.amazon.com", "amazon.com/music", "tidal.com", "bandcamp.com",
+            "nicovideo.jp", "bilibili.com", "twitch.tv", "netflix.com",
+            "disneyplus.com", "music.163.com", "y.qq.com", "streetvoice.com",
+        )
+        val skipHosts = listOf(
+            "blob:", "data:", "googlevideo.com", "mzstatic.com", "googleusercontent.com",
+            "ytimg.com", "ggpht.com", "akamaized.net",
+        )
+        val candidates = mutableListOf<String>()
+        extraValues.forEach { candidates.add(it) }
+        // Standard keys first (most browsers put the url here).
+        listOf(
+            METADATA_KEY_MEDIA_URI,
+            METADATA_KEY_SOURCE_URL,
+            MediaMetadata.METADATA_KEY_MEDIA_ID,
+            MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE,
+            MediaMetadata.METADATA_KEY_DISPLAY_DESCRIPTION,
+            MediaMetadata.METADATA_KEY_ARTIST,
+            MediaMetadata.METADATA_KEY_ALBUM_ARTIST,
+            MediaMetadata.METADATA_KEY_AUTHOR,
+            MediaMetadata.METADATA_KEY_TITLE,
+            MediaMetadata.METADATA_KEY_ALBUM,
+            MediaMetadata.METADATA_KEY_GENRE,
+            MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI,
+            MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
+            MediaMetadata.METADATA_KEY_ART_URI,
+        ).forEach { key ->
+            metadata.getString(key)?.takeIf { it.isNotBlank() }?.let { candidates.add(it) }
+        }
+        // Then every key available in the bundle (sites use custom keys).
+        metadata.keySet().forEach { key ->
+            runCatching { metadata.getString(key) }
+                .getOrNull()
+                ?.takeIf { it.isNotBlank() }
+                ?.let { candidates.add(it) }
+        }
+        for (candidate in candidates) {
+            val url = Regex("https?://[^\\s\"<>]+").find(candidate)?.value
+                ?: candidate.takeIf { it.startsWith("http") }
+                ?: continue
+            val cleaned = url.trim().trimEnd(')', ',', ']', '"', '\'')
+            if (skipHosts.any { host -> cleaned.contains(host, ignoreCase = true) }) continue
+            if (mediaHosts.any { host -> cleaned.contains(host, ignoreCase = true) }) {
+                return toRpcMediaUrl(cleaned)
+            }
+        }
+        return null
+    }
+
+    private fun firstMetadataUrl(
+        metadata: MediaMetadata,
+        extraValues: List<String> = emptyList(),
+    ): String? {
+        extraValues.firstOrNull { it.isValidMediaUrl() }?.let { return it }
+        listOf(
+            METADATA_KEY_MEDIA_URI,
+            METADATA_KEY_SOURCE_URL,
+            MediaMetadata.METADATA_KEY_MEDIA_ID,
+        ).forEach { key ->
+            metadata.getString(key)?.takeIf { it.isValidMediaUrl() }?.let { return it }
+        }
+        return scanAllMetadataForUrl(metadata)
     }
 
     private fun scanAllMetadataForUrl(metadata: MediaMetadata): String? {
@@ -1223,75 +1351,39 @@ class MetadataResolver @Inject constructor(
 
     private fun normalizeMediaUrl(url: String, packageName: String?): String? {
         val trimmed = url.trim()
-        if (trimmed.contains("/browse/")) return trimmed
-        // Do not return early for list= (playlist parameter) — extract just the video id
-        // so Discord opens the single video, not a playlist that may auto-play a different track.
-        if (!MediaServiceResolver.isYouTube(packageName) &&
-            !trimmed.contains("youtube.com") && !trimmed.contains("youtu.be") && !trimmed.contains("ymusicapp.com")) return trimmed
-        // Try video id first
-        val videoId = YouTubeResolver.extractVideoId(trimmed)
-        if (videoId != null) return "https://youtu.be/$videoId"
-        // Try channel id — keep as a channel link, not a video link
-        val channelId = YouTubeResolver.extractChannelId(trimmed)
-        if (channelId != null) return "https://www.youtube.com/channel/$channelId"
-        // Try playlist id — keep as a playlist link
-        val playlistId = YouTubeResolver.extractPlaylistId(trimmed)
-        if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
-        return null
+        if (trimmed.contains("/browse/")) return toRpcMediaUrl(trimmed)
+        if (YouTubeResolver.isYoutubeFamilyUrl(trimmed) || MediaServiceResolver.isYouTube(packageName)) {
+            return YouTubeResolver.toRpcUrl(trimmed)
+        }
+        return trimmed
     }
 
     private fun extractYouTubeUrl(metadata: MediaMetadata): String? {
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+        fun fromRaw(raw: String?): String? {
+            if (raw.isNullOrBlank()) return null
+            if (raw.contains("/results?search_query")) return null
+            if (YouTubeResolver.isYoutubeFamilyUrl(raw)) return YouTubeResolver.toRpcUrl(raw)
+            YouTubeResolver.extractVideoId(raw)?.let { return "https://youtu.be/$it" }
+            return null
+        }
+        fromRaw(metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID))?.let { return it }
+        fromRaw(firstMetadataUrl(metadata))?.let { return it }
         val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
-            // Full watch url or youtu.be — extract just the video id
-            // Also handle ymusicapp.com/watch?v=ID (YMusic app publishes full URLs)
-            if (mediaId.contains("youtube.com/watch?v=") || mediaId.contains("youtu.be/") || mediaId.contains("ymusicapp.com/watch?v=")) {
-                return YouTubeResolver.extractVideoId(mediaId)?.let { "https://youtu.be/$it" }
-            }
-            // Channel URL — keep as a channel link, not a video link
             val channelId = YouTubeResolver.extractChannelId(mediaId)
             if (channelId != null) return "https://www.youtube.com/channel/$channelId"
-            // Playlist URL — keep as a playlist link
             val playlistId = YouTubeResolver.extractPlaylistId(mediaId)
             if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
-            // yt:video:VIDEO_ID or t:VIDEO_ID
             val id = mediaId.substringAfterLast(":").substringAfterLast("/").substringBefore('?').substringBefore('&')
-            if (id.isNotBlank() && id.length >= 11) return "https://youtu.be/$id"
-            // Raw video ID (11 chars, alphanumeric/_/-) from modded YouTube apps
+            if (YouTubeResolver.isValidVideoId(id)) return "https://youtu.be/$id"
             val rawId = mediaId.trim()
-            if (rawId.length == 11 && rawId.matches(Regex("[A-Za-z0-9_-]{11}"))) return "https://youtu.be/$rawId"
-            // Fallback: try YouTubeResolver.extractVideoId for any URL format
-            val resolvedId = YouTubeResolver.extractVideoId(mediaId)
-            if (resolvedId != null) return "https://youtu.be/$resolvedId"
+            if (YouTubeResolver.isValidVideoId(rawId)) return "https://youtu.be/$rawId"
         }
-        // Check METADATA_KEY_SOURCE_URL for any YouTube URL
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
-        if (!sourceUrl.isNullOrEmpty() && (sourceUrl.contains("youtube.com") || sourceUrl.contains("youtu.be") || sourceUrl.contains("ymusicapp.com"))) {
-            if (!sourceUrl.contains("/results?search_query")) {
-                // Try video id first
-                YouTubeResolver.extractVideoId(sourceUrl)?.let { return "https://youtu.be/$it" }
-                // Then channel id
-                YouTubeResolver.extractChannelId(sourceUrl)?.let { return "https://www.youtube.com/channel/$it" }
-                // Then playlist id
-                YouTubeResolver.extractPlaylistId(sourceUrl)?.let { return "https://www.youtube.com/playlist?list=$it" }
-            }
-        }
-        // Check custom keys that might contain YouTube URLs
         val youtubeKeys = listOf("youtube_url", "video_url", "source_url", "media_url", "content_url",
             "yt_url", "youtube_video_url", "youtube_watch_url")
         for (key in youtubeKeys) {
-            val value = metadata.getString(key)
-            if (!value.isNullOrEmpty() && (value.contains("youtube.com") || value.contains("youtu.be") || value.contains("ymusicapp.com"))) {
-                if (!value.contains("/results?search_query")) {
-                    // Try video id first
-                    YouTubeResolver.extractVideoId(value)?.let { return "https://youtu.be/$it" }
-                    // Then channel id
-                    YouTubeResolver.extractChannelId(value)?.let { return "https://www.youtube.com/channel/$it" }
-                    // Then playlist id
-                    YouTubeResolver.extractPlaylistId(value)?.let { return "https://www.youtube.com/playlist?list=$it" }
-                }
-            }
+            fromRaw(metadata.getString(key))?.let { return it }
         }
         if (!title.isNullOrEmpty()) {
             return "https://www.youtube.com/results?search_query=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
@@ -1313,6 +1405,10 @@ class MetadataResolver @Inject constructor(
         val parsedCollaborators = parseCollaboratingArtists(rawArtistString)
         val isMultiArtist = artists.size > 1 || parsedCollaborators.size > 1
         val pkg = packageName?.lowercase().orEmpty()
+        if (MediaServiceResolver.isYouTube(packageName) && isMultiArtist) {
+            val combinedQuery = parsedCollaborators.joinToString(" ").ifBlank { artist }
+            return MediaServiceResolver.artistUrl(packageName, combinedQuery)
+        }
         val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
         val parsedArtistUrl = when {
             "soundcloud" in pkg -> soundcloudArtistUrl(sourceUrl)
@@ -1361,16 +1457,17 @@ class MetadataResolver @Inject constructor(
     }
 
     private fun youtubeArtistUrl(sourceUrl: String?): String? {
-        val url = sourceUrl ?: return null
-        if (!url.contains("youtube.com") && !url.contains("youtu.be")) return null
+        val url = sourceUrl?.let { YouTubeResolver.unwrapYmusicUrl(it) } ?: return null
+        if (!YouTubeResolver.isYoutubeFamilyUrl(url)) return null
         try {
             val uri = java.net.URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             if (segments.size >= 2 && segments[0] == "channel") return "https://www.youtube.com/channel/${segments[1]}"
             if (segments.size >= 2 && segments[0] == "c") return "https://www.youtube.com/c/${segments[1]}"
             if (segments.size >= 2 && segments[0] == "@") return "https://www.youtube.com/${segments[1]}"
-            val videoId = YouTubeResolver.extractVideoId(url)
-            if (videoId != null) return "https://www.youtube.com/channel/$videoId"
+            // Do NOT use video ID as channel ID - instead return null so
+            // resolveYouTubeVideo() can fetch the real channel via oEmbed
+            return null
         } catch (_: Exception) {}
         return null
     }
