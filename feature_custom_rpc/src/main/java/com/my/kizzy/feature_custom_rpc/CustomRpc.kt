@@ -546,8 +546,11 @@ private fun RpcTextFieldsColumn(
             timestampsStart = startTs,
             timestampsStop = endTs,
             platform = consolePlatform,
-            largeImg = "",
-            smallImg = "",
+            // Use the cover art URLs that were set on uiState.rpcConfig (by
+            // applyConsolePreset / applyConsoleGame / SetFieldsFromConfig) when
+            // cover art is enabled, otherwise clear them.
+            largeImg = if (consoleShowCoverArt) uiState.rpcConfig.largeImg else "",
+            smallImg = if (consoleShowCoverArt) uiState.rpcConfig.smallImg else "",
             button1 = consoleButton1Text,
             button1link = consoleButton1Url,
             button2 = consoleButton2Text,
