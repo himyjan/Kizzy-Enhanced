@@ -104,6 +104,8 @@ object ActivityTypeResolver {
         "com.google.android.youtube.vr",
         "com.google.android.apps.mediashell",
         "com.google.android.videos",
+        "app.morphe.android.youtube",
+        "anddea.youtube",
         "com.netflix.mediaclient",
         "com.amazon.avod",
         "com.amazon.amazonvideo.livingroom",
