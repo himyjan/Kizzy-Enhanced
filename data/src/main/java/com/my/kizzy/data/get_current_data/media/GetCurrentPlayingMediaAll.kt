@@ -183,6 +183,7 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 artist = author,
                 state = state,
                 album = album,
+                playlistName = metadata?.let { metadataResolver.getPlaylistName(it) },
                 coverArt = coverArt,
                 appIcon = appIcon,
                 playbackStateIcon = playbackStateIcon,

@@ -76,6 +76,39 @@ class MetadataResolver @Inject constructor(
         ) else null
     }
 
+    /**
+     * Best-effort playlist name.
+     *
+     * Android's [MediaMetadata] has no standard playlist-title field, so this
+     * only returns a value for players that publish a custom key (e.g.
+     * "playlist_name" / "playlist_title"). Url-valued keys are ignored.
+     */
+    fun getPlaylistName(metadata: MediaMetadata): String? {
+        val customKeys = listOf(
+            "playlist_name", "playlist_title", "playlistName", "playlist",
+            "android.media.metadata.PLAYLIST_TITLE", "android.media.metadata.PLAYLIST_NAME",
+        )
+        for (key in customKeys) {
+            metadata.getString(key)?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
+        }
+        return runCatching {
+            metadata.keySet().firstNotNullOfOrNull { key ->
+                val lowerKey = key.lowercase()
+                // Only keys that clearly name the playlist, never ids/urls.
+                val looksLikeName = lowerKey == "playlist" ||
+                    (lowerKey.contains("playlist") &&
+                        (lowerKey.contains("name") || lowerKey.contains("title")))
+                if (!looksLikeName) return@firstNotNullOfOrNull null
+                val value = metadata.getString(key)?.trim() ?: return@firstNotNullOfOrNull null
+                value.takeIf {
+                    it.isNotEmpty() &&
+                        !it.startsWith("http://", ignoreCase = true) &&
+                        !it.startsWith("https://", ignoreCase = true)
+                }
+            }
+        }.getOrNull()
+    }
+
     fun getAlbumArtists(metadata: MediaMetadata): String? {
         return if (!metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST).isNullOrEmpty()) metadata.getString(
             MediaMetadata.METADATA_KEY_ALBUM_ARTIST

@@ -22,6 +22,11 @@ data class RichMediaMetadata(
     val artist: String? = null,
     val state: String? = null,
     val album: String? = null,
+    /**
+     * Best-effort playlist name, used for the large image text when the track
+     * has no album (players rarely publish it).
+     */
+    val playlistName: String? = null,
     val coverArt: RpcImage? = null,
     val appIcon: RpcImage? = null,
     val playbackStateIcon: RpcImage? = null,

@@ -243,7 +243,13 @@ class GetCurrentPlayingMedia @Inject constructor(
                 smallImage = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appIcon else null,
                 // Large URL for clickable artwork - only media URL, not search URLs
                 largeUrl = mediaUrl,
-                largeText = album.takeIf { albumEnabled },
+                // Line 4 (large_text): album name, or the playlist name when the
+                // track has no album but the player publishes a playlist title.
+                largeText = if (!album.isNullOrBlank()) {
+                    album.takeIf { albumEnabled }
+                } else {
+                    MetadataResolver.getPlaylistName(metadata)
+                },
                 smallText = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appName else null,
                 packageName = "$title::${mediaController.packageName}",
                 time = timestamps.takeIf { it != null },

@@ -537,7 +537,8 @@ class ManualRpc : Service() {
                 else -> null
             }
 
-            finalLargeText = richMediaInfo.album
+            // Line 4: album name, or the playlist name when there is no album.
+            finalLargeText = richMediaInfo.album ?: richMediaInfo.playlistName
             finalSmallText =
                 if (finalSmallImage == richMediaInfo.appIcon) richMediaInfo.appName else null
 
