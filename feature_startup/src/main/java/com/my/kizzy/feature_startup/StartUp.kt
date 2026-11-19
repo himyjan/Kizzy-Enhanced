@@ -175,7 +175,11 @@ fun StartUp(
                         description = stringResource(id = R.string.usage_access_desc),
                         status = usageAccessStatus.value
                     ) {
-                        context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                        // Open usage access settings and try to pre-select Kizzy's
+                        // package so the user can flip the toggle directly.
+                        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        context.startActivity(intent)
                     }
                 }
                 item {

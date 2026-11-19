@@ -125,7 +125,7 @@ internal fun Kizzy(
                         }
                     },
                     navigateToLogin = {
-                        navController.navigate(Routes.PROFILE)
+                        navController.navigate(Routes.LOGIN)
                     })
             }
             composable(Routes.HOME) { navBackStackEntry ->
