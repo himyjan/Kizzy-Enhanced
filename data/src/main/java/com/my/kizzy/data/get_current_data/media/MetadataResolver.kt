@@ -144,19 +144,31 @@ class MetadataResolver @Inject constructor(
     /**
      * YMusic (ymusicapp.com / www.ymusicapp.com) and every other YouTube-family
      * watch url must land on https://youtu.be/ID in the RPC button.
+     *
+     * Non-YouTube URLs (e.g. github.com/morphe-patches for Morphe,
+     * github.com/.../revanced-patches for AndDea Revanced Patches) are kept
+     * as-is so the cover art stays clickable for YouTube clients that publish
+     * their own page instead of a YouTube video URL.
      */
     private fun toRpcMediaUrl(url: String?): String? {
         if (url.isNullOrBlank()) return null
 
         // Delegate directly to YouTubeResolver's robust unwrapping and normalization logic
-        return YouTubeResolver.toRpcUrl(url)?.let { canonicalUrl ->
+        YouTubeResolver.toRpcUrl(url)?.let { canonicalUrl ->
             // Additional safety check: ensure it's either ayoutu.be video,
             // a channel link, or a playlist link, and not an accidental search query.
-            if (canonicalUrl.contains("/results?search_query=")) {
-                null // Block accidental search queries from becoming direct media URLs
-            } else {
-                canonicalUrl
+            if (!canonicalUrl.contains("/results?search_query=")) {
+                return canonicalUrl
             }
+        }
+
+        // Non-YouTube URL: keep it as-is if it is a real http(s) URL.
+        // This keeps the cover art clickable for clients like Morphe and
+        // AndDea Revanced Patches that publish their project page instead
+        // of a YouTube video link.
+        return url.takeIf {
+            (it.startsWith("http://") || it.startsWith("https://")) &&
+                !it.contains("/results?search_query=")
         }
     }
 
