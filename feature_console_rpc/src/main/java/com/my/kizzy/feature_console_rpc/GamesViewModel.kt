@@ -25,7 +25,8 @@ import com.my.kizzy.data.rpc.ConsoleGameCatalog
 import com.my.kizzy.domain.model.Game
 import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.use_case.get_games.GetGamesUseCase
-import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -65,13 +66,17 @@ class GamesViewModel @Inject constructor(
     val autoDetect = mutableStateOf(Prefs[Prefs.CONSOLE_RPC_AUTO_DETECT, true])
     val includeSpoofed = mutableStateOf(Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false])
 
-    /** Whether Console RPC is running (updated from AppUtils on init). */
-    private val _consoleRpcRunning = mutableStateOf(AppUtils.consoleRpcRunning())
+    /** Whether Console RPC is running. Seeded from the persisted state. */
+    private val _consoleRpcRunning = mutableStateOf(
+        RpcManager.getInstance(context).activeRpc.value == RpcType.ConsoleRpc
+    )
     val consoleRpcRunning: State<Boolean> = _consoleRpcRunning
 
-    /** Whether another RPC service is running (updated from AppUtils on init). */
+    /** Whether another RPC service is running (or was enabled last). */
     private val _otherRpcServicesRunning = mutableStateOf(
-        AppUtils.mediaRpcRunning() || AppUtils.ManualRpcRunning() || AppUtils.appDetectionRunning()
+        RpcManager.getInstance(context).activeRpc.value.let {
+            it != RpcType.None && it != RpcType.ConsoleRpc
+        }
     )
     val otherRpcServicesRunning: State<Boolean> = _otherRpcServicesRunning
 

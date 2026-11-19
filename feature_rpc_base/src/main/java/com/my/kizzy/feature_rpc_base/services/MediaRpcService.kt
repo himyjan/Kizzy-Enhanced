@@ -28,6 +28,7 @@ import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.work.RpcRecoveryHiltWorker
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
@@ -258,6 +259,7 @@ class MediaRpcService : Service() {
         // it becomes available. MEDIA_RPC_ENABLED is set to true so the watchdog
         // knows the service should be running.
         Prefs[Prefs.MEDIA_RPC_ENABLED] = true
+        Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.MediaRpc.name
         setupWakeLock()
 
         val stopIntent = Intent(this, MediaRpcService::class.java)
@@ -1392,6 +1394,9 @@ class MediaRpcService : Service() {
         val ac = intent?.action
         when (ac) {
             Constants.ACTION_STOP_SERVICE -> {
+                // The user stopped the RPC on purpose, so forget the enabled
+                // state as well - otherwise the next cold start would restore it.
+                Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
                 // Move DataStore write off main thread to avoid StrictMode DiskReadViolation
                 scope.launch {
                     withContext(Dispatchers.IO) {

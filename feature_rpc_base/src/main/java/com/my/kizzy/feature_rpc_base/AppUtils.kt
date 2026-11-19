@@ -46,6 +46,18 @@ object AppUtils {
     fun init(context: Context) {
         activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     }
+
+    /**
+     * Drops the cached list of running services.
+     *
+     * Called after starting or stopping an RPC so the next check does not
+     * return the state from before the switch (the cache lives for one second,
+     * which is long enough for a screen to show the wrong switch state).
+     */
+    fun invalidateRunningServicesCache() {
+        cachedRunningServices = null
+        cachedRunningServicesAt = 0L
+    }
     fun appDetectionRunning(): Boolean {
         return checkForRunningService<AppDetectionService>()
     }

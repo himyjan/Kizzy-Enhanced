@@ -13,6 +13,7 @@ import com.google.android.material.color.DynamicColors
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.feature_logs.LoggerProvider
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.preference.PreferenceConfig
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.HiltAndroidApp
@@ -119,21 +120,19 @@ class App : Application(), Configuration.Provider {
             // WorkManager not available - non-critical
         }
 
-        // 7. Auto-start RPC service if it was previously enabled
+        // 7. Restore the RPC the user had enabled before the cold start.
+        //
+        // The preference mirror is primed from disk asynchronously, so the
+        // restore has to wait for it. Reading earlier only sees the defaults
+        // and treats an enabled RPC as disabled, which left every switch off
+        // until the user toggled it again.
         try {
-            // Read prefs off main thread to avoid StrictMode DiskReadViolation,
-            // then start the service on the main thread
             val appContext = this@App
             scope.launch {
-                val rpcEnabled = withContext(Dispatchers.IO) {
-                    Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, false] || Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, false] || Prefs[Prefs.USE_RPC_BUTTONS, false]
-                }
-                if (rpcEnabled) {
-                    withContext(Dispatchers.Main) {
-                        val intent = Intent(appContext, com.my.kizzy.feature_rpc_base.services.MediaRpcService::class.java)
-                        startService(intent)
-                        android.util.Log.d("App", "Auto-started MediaRpcService - RPC was previously enabled")
-                    }
+                Prefs.awaitInitialized()
+                withContext(Dispatchers.Main) {
+                    RpcManager.getInstance(appContext).restoreActiveRpc()
+                    android.util.Log.d("App", "Restored RPC state after cold start")
                 }
             }
         } catch (e: Exception) {

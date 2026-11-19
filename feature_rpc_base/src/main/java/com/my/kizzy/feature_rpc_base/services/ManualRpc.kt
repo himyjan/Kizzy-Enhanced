@@ -34,6 +34,7 @@ import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
@@ -224,11 +225,15 @@ class ManualRpc : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action.equals(Constants.ACTION_STOP_SERVICE)) stopSelf()
-        else if (intent?.action.equals(Constants.ACTION_RESTART_SERVICE)) {
+        if (intent?.action.equals(Constants.ACTION_STOP_SERVICE)) {
+            // Explicit stop: the next cold start must not bring it back.
+            Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+            stopSelf()
+        } else if (intent?.action.equals(Constants.ACTION_RESTART_SERVICE)) {
             stopSelf()
             startService(Intent(this, ManualRpc::class.java))
         } else {
+            Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.ManualRpc.name
             val stopIntent = Intent(this, ManualRpc::class.java)
             stopIntent.action = Constants.ACTION_STOP_SERVICE
             val pendingIntent: PendingIntent = PendingIntent.getService(

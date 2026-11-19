@@ -45,6 +45,20 @@ object Prefs {
     val prefsState: StateFlow<Map<String, Any?>> = _prefsState.asStateFlow()
 
     /**
+     * Completes once the synchronous mirror has been primed from disk.
+     *
+     * On a cold start the mirror is empty until DataStore has been read. Every
+     * reader that decides whether a feature was enabled (for example the RPC
+     * auto-start) has to wait for this, otherwise it only sees the defaults
+     * and treats an enabled feature as disabled.
+     */
+    private val _initialized = CompletableDeferred<Unit>()
+    val initialized: Deferred<Unit> get() = _initialized
+
+    /** Suspends until [prefsState] contains the values that are stored on disk. */
+    suspend fun awaitInitialized() = _initialized.await()
+
+    /**
      * The keys that hold secrets and are therefore written to disk encrypted.
      *
      * The Discord token is the master key of the user's account, so it must not
@@ -191,7 +205,12 @@ object Prefs {
     }
 
     internal fun initDataStore(context: Context) {
-        if (dataStore == null) {
+        if (dataStore != null) {
+            // A second call must not leave a waiter hanging.
+            _initialized.complete(Unit)
+            return
+        }
+        try {
             // Prepare the encryption before the values are read, otherwise a
             // stored token would stay encrypted in the in-memory mirror.
             SecurePrefs.init(context)
@@ -208,7 +227,13 @@ object Prefs {
                 }
                 // Signal even when the read failed, so the UI never waits
                 // forever on the default (pre-priming) values.
-                            }
+                _initialized.complete(Unit)
+            }
+        } catch (e: Exception) {
+            // Storage could not be opened: keep the defaults, but never leave
+            // the waiters (RPC restore, UI) hanging on a deferred that will
+            // not complete.
+            _initialized.complete(Unit)
         }
     }
 
@@ -335,6 +360,13 @@ object Prefs {
     const val MEDIA_RPC_ENABLED = "media_rpc_enabled"
     const val LAST_RUN_MEDIA_RPC = "last_run_media_rpc"
     const val LAST_RUN_MANUAL_RPC = "last_run_manual_rpc"
+
+    /**
+     * The RPC type the user last enabled, stored as the name of
+     * `RpcManager.RpcType`. Restored after a cold start so the UI and the
+     * service come back in the same state instead of all being off.
+     */
+    const val ACTIVE_RPC_TYPE = "active_rpc_type"
 
     // Discord RPC connection method: "gateway" (default) or "oauth"
     const val RPC_CONNECTION_METHOD = "rpc_connection_method"

@@ -17,6 +17,8 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.my.kizzy.data.rpc.KizzyRPC
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -47,6 +49,7 @@ class DiscordOAuth2RpcService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand")
+        Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.DiscordOAuth2Rpc.name
 
         // Refresh the gateway token and identify properties from prefs.
         // Also send presence so Discord shows this account as online.

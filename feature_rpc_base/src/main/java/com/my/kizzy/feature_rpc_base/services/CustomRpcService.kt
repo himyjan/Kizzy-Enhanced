@@ -29,6 +29,7 @@ import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
@@ -67,6 +68,17 @@ class CustomRpcService : Service() {
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let { readConsoleMode(it) }
+
+        if (intent?.action == Constants.ACTION_STOP_SERVICE) {
+            // Explicit stop: the next cold start must not bring it back.
+            Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+            Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
+            Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
+        } else {
+            Prefs[Prefs.ACTIVE_RPC_TYPE] =
+                if (consoleMode) RpcManager.RpcType.ConsoleRpc.name
+                else RpcManager.RpcType.CustomRpc.name
+        }
 
         intent?.action?.let { ac ->
             if (ac == Constants.ACTION_STOP_SERVICE) {

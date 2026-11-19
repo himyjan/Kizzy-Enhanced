@@ -32,6 +32,7 @@ import android.util.Log
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
@@ -70,6 +71,8 @@ class AppDetectionService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             Constants.ACTION_STOP_SERVICE -> {
+                // Explicit stop: the next cold start must not bring it back.
+                Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
                 stopSelf()
             }
             Constants.ACTION_RESTART_SERVICE -> {
@@ -77,6 +80,7 @@ class AppDetectionService : Service() {
                 startService(Intent(this, AppDetectionService::class.java))
             }
             else -> {
+                Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.AppDetectionRpc.name
                 handleAppDetection()
             }
         }

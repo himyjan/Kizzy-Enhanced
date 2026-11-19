@@ -98,13 +98,6 @@ import androidx.compose.ui.unit.dp
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 
-import com.my.kizzy.feature_rpc_base.services.AppDetectionService
-
-import com.my.kizzy.feature_rpc_base.services.CustomRpcService
-
-import com.my.kizzy.feature_rpc_base.services.ManualRpc
-
-import com.my.kizzy.feature_rpc_base.utils.stopMediaRpcService
 import com.my.kizzy.resources.R
 
 import com.my.kizzy.ui.components.AppsItem
@@ -328,31 +321,11 @@ fun AppsRPC(
 
                             when (serviceEnabled) {
 
-                                true -> {
+                                // Let the manager stop the other RPCs, persist the
+                                // choice and remember it for the next cold start.
+                                true -> rpcManager.switchTo(RpcType.AppDetectionRpc)
 
-                                    ctx.stopMediaRpcService()
-
-                                    ctx.stopService(Intent(ctx, CustomRpcService::class.java))
-
-                                    ctx.stopService(Intent(ctx, ManualRpc::class.java))
-
-                                    ctx.startService(Intent(ctx, AppDetectionService::class.java))
-
-                                }
-
-
-
-                                false -> ctx.stopService(
-
-                                    Intent(
-
-                                        ctx,
-
-                                        AppDetectionService::class.java
-
-                                    )
-
-                                )
+                                false -> rpcManager.switchTo(RpcType.None)
 
                             }
 
