@@ -39,6 +39,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.filled.DesktopWindows
@@ -334,6 +335,18 @@ fun CustomRpcScreen(
                             imageVector = Icons.Outlined.MoreVert,
 
                             contentDescription = "menu"
+
+                        )
+
+                    }
+
+                    IconButton(onClick = { onEvent(UiEvent.SheetEvent.ClearAllFields) }) {
+
+                        Icon(
+
+                            imageVector = Icons.Outlined.ClearAll,
+
+                            contentDescription = stringResource(id = R.string.clear_all_fields)
 
                         )
 

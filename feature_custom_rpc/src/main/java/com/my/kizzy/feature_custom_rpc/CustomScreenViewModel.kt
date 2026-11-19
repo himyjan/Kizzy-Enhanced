@@ -44,9 +44,12 @@ class CustomScreenViewModel @Inject constructor(
     private val uiEventChannel = Channel<UiEvent>(capacity = Channel.UNLIMITED)
 
     init {
-        if (Prefs[Prefs.APPLY_FIELDS_FROM_LAST_RUN_RPC, false]) {
+        // Always load the last saved custom RPC config so the screen remembers
+        // what the user last modified, even if they haven't started the RPC yet.
+        val lastConfig = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+        if (lastConfig.isNotBlank()) {
             _uiState.value = _uiState.value.copy(
-                rpcConfig = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].stringToData()
+                rpcConfig = lastConfig.stringToData()
             )
         }
         // Load console games so the game list shows in Custom RPC tab
@@ -171,6 +174,8 @@ class CustomScreenViewModel @Inject constructor(
                     rpcConfig = RpcConfig(),
                     showBottomSheet = false
                 )
+                // Persist the clearing so the next time the screen opens it starts empty
+                Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
             }
         }
     }
