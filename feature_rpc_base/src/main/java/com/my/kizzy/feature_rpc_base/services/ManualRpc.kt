@@ -617,18 +617,31 @@ class ManualRpc : Service() {
         // Primary media link priority chain: mediaUrl -> albumUrl -> channelUrl.
         // Links are independent of the cover-art toggles.
         val mediaUrl = rawMediaMetadata?.let {
-            MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
+            MetadataResolver.getDirectMediaUrl(it, richMediaInfo?.packageName)
+                ?: MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
         } ?: richMediaInfo?.mediaUrl
         val songLink = YouTubeResolver.primaryMediaUrl(
             mediaUrl,
             richMediaInfo?.albumUrl,
             richMediaInfo?.channelUrl ?: richMediaInfo?.artistUrl,
         )
-        // details line -> media URL (song/track)
+        // details line -> media URL (song/track), with a search fallback so the
+        // line stays clickable even when no direct URL was published.
         val detailsUrl = songLink
+            ?: MediaServiceResolver.mediaSearchUrl(
+                richMediaInfo?.packageName ?: effectivePackageName ?: "",
+                richMediaInfo?.title ?: finalDetails ?: finalName ?: "",
+            )
+            ?: MediaServiceResolver.browserSearchUrl(
+                richMediaInfo?.title ?: finalDetails ?: finalName ?: "",
+            )
 
-        // state line -> artist/channel URL
+        // state line -> artist/channel URL, with a service-level fallback.
         val stateUrl = richMediaInfo?.artistUrl
+            ?: MediaServiceResolver.artistUrl(
+                richMediaInfo?.packageName ?: effectivePackageName,
+                richMediaInfo?.artist ?: richMediaInfo?.state ?: "",
+            )
 
         // large image (cover art) -> album/playlist URL first, then video URL.
         // When line 4 shows the playlist name (no album), the playlist link wins.
