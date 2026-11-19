@@ -401,6 +401,31 @@ object MediaServiceResolver {
     }
 
     /**
+     * The URL to the app's download page or GitHub release.
+     * Priority: GitHub release > Play Store > Google search
+     */
+    fun appDownloadUrl(packageName: String?): String? {
+        if (packageName.isNullOrBlank()) return null
+        val pkg = packageName.lowercase()
+        
+        // Check if it's a known app with GitHub release
+        val knownApp = when {
+            pkg.contains("youtube.music") || pkg.contains("ymusicapp") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
+            pkg.contains("kapp.youtube") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
+            pkg.contains(YOUTUBE_WRAPPER_SIGNATURES.joinToString("|")) -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
+            pkg.contains("youtube") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
+            pkg.contains("spotify") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
+            pkg.contains("apple.android.music") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
+            pkg.contains("netease") || pkg.contains("cloudmusic") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
+            else -> null
+        }
+        if (knownApp != null) return knownApp
+        
+        // For unknown apps, try Google Play Store
+        return "https://play.google.com/store/apps/details?id=$packageName"
+    }
+
+    /**
      * Label that names what the media link actually points at. Discord shows
      * this text on the button, so "Playlist" / "Video" / "Track" is clearer
      * than a generic "Listen on ...".

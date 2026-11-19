@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.SystemClock
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.CommonRpc
+import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.data.utils.toRpcImage
@@ -113,11 +114,15 @@ class GetCurrentPlayingMedia @Inject constructor(
             }
             val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() }
 
-            // "name" and "details" used to both carry the track title, so Discord
-            // showed the title twice and the app name was lost. The app name now
-            // fills whichever line the title does not use.
+            // Requested layout:
+            //   title (name)  = song name
+            //   details       = song name (clickable -> media URL)
+            //   state         = channel / artist (clickable -> artist URL)
+            // The app name is exposed via the small-image hover text (largeText/smallText)
+            // and its download page via the small-image URL.
             val rpcName = if (showSongAsTitle) title else appName
-            val rpcDetails = if (showSongAsTitle) appName else title
+            // Always put the song name on the details line so it is not missing.
+            val rpcDetails = title
 
             val playbackState = mediaController.playbackState?.state
 
@@ -207,18 +212,45 @@ class GetCurrentPlayingMedia @Inject constructor(
             // track. Without it the button linked to a search page.
             val mediaUrl = MetadataResolver.getDirectMediaUrl(metadata, mediaController.packageName)
                 ?: MetadataResolver.getMediaUrl(metadata, mediaController.packageName)
+            
+            // Fallback search URL for details_url (first line clickable)
+            // This ensures the details line is always clickable even if the direct URL is unavailable
+            val detailsUrl = mediaUrl ?: MediaServiceResolver.mediaSearchUrl(
+                mediaController.packageName,
+                title ?: rpcDetails
+            ) ?: MediaServiceResolver.browserSearchUrl(
+                title ?: rpcDetails
+            )
 
+            // Artist URL for state_url (second line clickable)
+            val artistUrl = MetadataResolver.getArtistUrl(metadata, mediaController.packageName)
+                ?: MediaServiceResolver.artistUrl(mediaController.packageName, author)
+
+            // Album / playlist / channel URLs for the link fallback chains.
+            val albumUrl = metadata?.let { MetadataResolver.getAlbumUrl(it, mediaController.packageName) }
+            val playlistUrl = metadata?.let { MetadataResolver.getPlaylistUrl(it, mediaController.packageName) }
+            val channelUrl = artistUrl
+            
             return CommonRpc(
                 name = rpcName,
                 details = rpcDetails,
                 state = state,
+                // Media URL for details_url (first line clickable)
+                detailsUrl = detailsUrl,
+                // Artist URL for state_url (second line clickable)
+                stateUrl = artistUrl,
                 largeImage = coverArt,
                 smallImage = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appIcon else null,
+                // Large URL for clickable artwork - only media URL, not search URLs
+                largeUrl = mediaUrl,
                 largeText = album.takeIf { albumEnabled },
                 smallText = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appName else null,
                 packageName = "$title::${mediaController.packageName}",
                 time = timestamps.takeIf { it != null },
                 mediaUrl = mediaUrl,
+                albumUrl = albumUrl,
+                playlistUrl = playlistUrl,
+                channelUrl = channelUrl,
                 playbackState = playbackState,
                 appPackage = mediaController.packageName,
                 appName = appName,

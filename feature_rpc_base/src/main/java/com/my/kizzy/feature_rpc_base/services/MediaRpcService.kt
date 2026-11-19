@@ -968,13 +968,62 @@ class MediaRpcService : Service() {
             null
         }
 
+        // Final layout ("Show Song as Title" ON):
+        //   Activity name (title) = song name
+        //   details (line 2)      = "songName • appName"  (one clean line)
+        //   state   (line 3)      = channel name  (link -> artist URL)
+        val showSongAsTitle = Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true]
+        // details always carries the song name; appName is the dedicated app-name field.
+        val songName = playingMedia.details?.takeIf { it.isNotBlank() }
+            ?: playingMedia.name
+        val appName = playingMedia.appName.takeIf { it.isNotBlank() }
+            ?: playingMedia.name
+        val channelName = playingMedia.state
+
+        val rpcName = (if (showSongAsTitle) songName else playingMedia.name) ?: playingMedia.name
+        val rpcDetails = listOfNotNull(songName, appName)
+            .filter { it.isNotBlank() }
+            .joinToString(" • ")
+            .takeIf { it.isNotEmpty() } ?: playingMedia.details
+        // state (line 3) = channel name
+        val rpcState = channelName
+
+        // Primary media link priority chain: mediaUrl -> albumUrl -> channelUrl.
+        // Only real http(s) URLs reach the RPC fields; null/blank/invalid are dropped.
+        val songLink = if (showCoverArtGlobal && showCoverArt) {
+            YouTubeResolver.primaryMediaUrl(
+                playingMedia.mediaUrl,
+                playingMedia.albumUrl,
+                playingMedia.channelUrl,
+            ) ?: playingMedia.detailsUrl
+        } else null
+        val detailsUrl = songLink
+        val stateUrl = playingMedia.stateUrl?.takeIf { showCoverArtGlobal && showCoverArt }
+            ?: MediaServiceResolver.artistUrl(playingMedia.appPackage, channelName)
+                ?.takeIf { showCoverArtGlobal && showCoverArt }
+
+        // large image (cover art) -> album/playlist URL first, then video URL
+        val largeUrl = if (showCoverArtGlobal && showCoverArt) {
+            YouTubeResolver.largeImageUrl(
+                playingMedia.mediaUrl,
+                playingMedia.albumUrl,
+                playingMedia.playlistUrl,
+            )
+        } else null
+        val smallUrl = MediaServiceResolver.appDownloadUrl(playingMedia.appPackage)
+            ?.takeIf { showCoverArtGlobal && showCoverArt }
+
         val commonRpc = CommonRpc(
-            name = playingMedia.name,
+            name = rpcName,
             type = resolveActivityType(playingMedia),
-            details = playingMedia.details,
-            state = playingMedia.state,
+            details = rpcDetails,
+            state = rpcState,
+            detailsUrl = detailsUrl,
+            stateUrl = stateUrl,
             largeImage = largeImage,
             smallImage = smallImage,
+            largeUrl = largeUrl,
+            smallUrl = smallUrl,
             largeText = if (showCoverArtGlobal && showCoverArt) playingMedia.largeText else null,
             smallText = playingMedia.smallText,
             time = if (enableTimestamps && !isPaused) Timestamps(
@@ -1468,4 +1517,5 @@ class MediaRpcService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
+
 }

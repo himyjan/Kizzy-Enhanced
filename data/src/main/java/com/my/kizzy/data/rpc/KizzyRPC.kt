@@ -128,6 +128,21 @@ class KizzyRPC @Inject constructor(
             return trimmed
         }
 
+        /**
+         * Sanitizes a rich-presence field URL (details_url / state_url / large_url /
+         * small_url). Unlike [String.sanitize] — which truncates display TEXT to 128
+         * chars — these URLs must be kept whole: truncating a YouTube/Spotify link to
+         * 128 chars corrupts it and Discord silently makes it unclickable. Discord
+         * accepts http(s) URLs up to 512 chars here; anything else is dropped.
+         */
+        private fun sanitizeFieldUrl(raw: String?): String? {
+            val trimmed = raw?.trim() ?: return null
+            if (trimmed.isEmpty()) return null
+            if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) return null
+            if (trimmed.length > 512) return null
+            return trimmed
+        }
+
         /** Discord allows at most 2 buttons. Invalid entries are dropped. */
         private fun sanitizeButtons(buttons: List<ActivityButton>?): List<ActivityButton>? {
             if (buttons.isNullOrEmpty()) return null
@@ -739,12 +754,18 @@ class KizzyRPC @Inject constructor(
 
     suspend fun build(forceRefresh: Boolean = false) {
         val cleanButtons = sanitizeButtons(buttons.takeIf { buttons.isNotEmpty() })
+        
+        // Check if cover art is enabled for URL fields
+        val showCoverArtGlobal = Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false
+        
         presence = Presence(
             activities = listOf(
                 Activity(
                     name = activityName,
                     state = state?.sanitize(),
                     details = details?.sanitize(),
+                    // For manual RPC, use url field as details_url if set and cover art enabled
+                    detailsUrl = if (showCoverArtGlobal && type != 1) sanitizeFieldUrl(url) else null,
                     party = party.takeIf { party != null },
                     type = type,
                     platform = platform?.sanitize(),
@@ -756,7 +777,9 @@ class KizzyRPC @Inject constructor(
                         largeImage = largeImage?.resolveImage(kizzyRepository),
                         smallImage = smallImage?.resolveImage(kizzyRepository),
                         largeText = largeText?.sanitize(),
-                        smallText = smallText?.sanitize()
+                        smallText = smallText?.sanitize(),
+                        // For manual RPC, use url as large_url if set and cover art enabled
+                        largeUrl = if (showCoverArtGlobal && type != 1) sanitizeFieldUrl(url) else null
                     ).takeIf { largeImage != null || smallImage != null },
                     // Client-presence format: labels in buttons, urls in metadata.
                     buttons = cleanButtons?.map { it.label },
@@ -977,12 +1000,17 @@ class KizzyRPC @Inject constructor(
             val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0]
             val cleanButtons = sanitizeButtons(buttonsSnapshot)
 
+            // Global switch: if user disabled cover art, don't set URL fields either
+            val showCoverArtGlobal = Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false
+            
             val presence = Presence(
                 activities = listOf(
                     Activity(
                         name = commonRpc.name,
                         details = commonRpc.details?.takeIf { it.isNotEmpty() }?.sanitize(),
                         state = commonRpc.state?.takeIf { it.isNotEmpty() }?.sanitize(),
+                        detailsUrl = if (showCoverArtGlobal) sanitizeFieldUrl(commonRpc.detailsUrl) else null,
+                        stateUrl = if (showCoverArtGlobal) sanitizeFieldUrl(commonRpc.stateUrl) else null,
                         type = activityType,
                         platform = commonRpc.platform?.sanitize(),
                         timestamps = time,
@@ -991,7 +1019,9 @@ class KizzyRPC @Inject constructor(
                             largeImage = finalLargeImageWithDefault,
                             smallImage = finalSmallImageWithDefault,
                             largeText = commonRpc.largeText?.sanitize(),
-                            smallText = commonRpc.smallText?.sanitize()
+                            smallText = commonRpc.smallText?.sanitize(),
+                            largeUrl = if (showCoverArtGlobal) sanitizeFieldUrl(commonRpc.largeUrl) else null,
+                            smallUrl = if (showCoverArtGlobal) sanitizeFieldUrl(commonRpc.smallUrl) else null
                         ).takeIf { finalLargeImageWithDefault != null || finalSmallImageWithDefault != null },
                         party = party.takeIf { party != null },
                         // Client-presence format: labels in buttons, urls in metadata.
@@ -1065,6 +1095,10 @@ class KizzyRPC @Inject constructor(
             smallImg = smallImage.orEmpty(),
             largeText = commonRpc.largeText.orEmpty(),
             smallText = commonRpc.smallText.orEmpty(),
+            detailsUrl = commonRpc.detailsUrl.orEmpty(),
+            stateUrl = commonRpc.stateUrl.orEmpty(),
+            largeUrl = commonRpc.largeUrl.orEmpty(),
+            smallUrl = commonRpc.smallUrl.orEmpty(),
             button1 = button1?.label.orEmpty(),
             button1link = button1?.url.orEmpty(),
             button2 = button2?.label.orEmpty(),

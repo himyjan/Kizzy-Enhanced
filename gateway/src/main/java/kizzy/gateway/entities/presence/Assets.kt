@@ -13,4 +13,8 @@ data class Assets(
     val largeText: String? = null,
     @SerialName("small_text")
     val smallText: String? = null,
+    @SerialName("large_url")
+    val largeUrl: String? = null,
+    @SerialName("small_url")
+    val smallUrl: String? = null,
 )

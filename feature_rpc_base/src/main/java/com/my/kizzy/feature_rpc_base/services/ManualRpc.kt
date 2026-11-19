@@ -478,6 +478,9 @@ class ManualRpc : Service() {
         val currentContextIsMedia =
             useMediaRpc && richMediaInfo != null && richMediaInfo.appName != null
         val currentContextIsApp = useAppsRpc && appInfo != null && appInfo.name.isNotEmpty()
+        
+        // Global toggle: if user disabled cover art entirely, hide cover art from all RPCs
+        val showCoverArtGlobal = Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false
 
         val processor = TemplateProcessor(
             mediaMetadata = rawMediaMetadata,
@@ -605,6 +608,37 @@ class ManualRpc : Service() {
             return
         }
 
+        // Primary media link priority chain: mediaUrl -> albumUrl -> channelUrl
+        val mediaUrl = rawMediaMetadata?.let {
+            MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
+        }?.takeIf { showCoverArtGlobal }
+            ?: richMediaInfo?.mediaUrl?.takeIf { showCoverArtGlobal }
+        val songLink = if (showCoverArtGlobal) {
+            YouTubeResolver.primaryMediaUrl(
+                mediaUrl,
+                richMediaInfo?.albumUrl,
+                richMediaInfo?.channelUrl ?: richMediaInfo?.artistUrl,
+            )
+        } else null
+        // details line -> media URL (song/track)
+        val detailsUrl = songLink
+
+        // state line -> artist/channel URL
+        val stateUrl = richMediaInfo?.artistUrl?.takeIf { showCoverArtGlobal }
+
+        // large image (cover art) -> album/playlist URL first, then video URL
+        val largeUrl = if (showCoverArtGlobal) {
+            YouTubeResolver.largeImageUrl(
+                mediaUrl,
+                richMediaInfo?.albumUrl,
+                richMediaInfo?.playlistUrl,
+            )
+        } else null
+
+        // small image (app icon) -> app download page (GitHub release first priority)
+        val smallUrl = MediaServiceResolver.appDownloadUrl(richMediaInfo?.packageName)
+            ?.takeIf { showCoverArtGlobal }
+        
         // Build the CommonRpc once - this is what we want to send to Discord
         val commonRpc = CommonRpc(
             name = finalName ?: "",
@@ -616,8 +650,11 @@ class ManualRpc : Service() {
             ),
             details = finalDetails,
             state = finalState,
+            detailsUrl = detailsUrl,
+            stateUrl = stateUrl,
             largeImage = finalLargeImage,
             smallImage = finalSmallImage,
+            largeUrl = largeUrl,
             largeText = finalLargeText,
             smallText = finalSmallText,
             time = finalTimestamps,
@@ -723,6 +760,10 @@ class ManualRpc : Service() {
                 timestampsStop = finalTimestamps?.end?.toString().orEmpty(),
                 largeText = finalLargeText.orEmpty(),
                 smallText = finalSmallText.orEmpty(),
+                detailsUrl = commonRpc.detailsUrl.orEmpty(),
+                stateUrl = commonRpc.stateUrl.orEmpty(),
+                largeUrl = commonRpc.largeUrl.orEmpty(),
+                smallUrl = commonRpc.smallUrl.orEmpty(),
                 largeImg = resolvedLargeImage.orEmpty(),
                 smallImg = resolvedSmallImage.orEmpty(),
                 button1 = kizzyRPC.currentButtons()?.getOrNull(0)?.label.orEmpty(),

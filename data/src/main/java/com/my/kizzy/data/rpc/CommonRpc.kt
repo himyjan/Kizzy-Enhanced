@@ -17,16 +17,26 @@ data class CommonRpc(
     val type: Int? = null,
     val details: String? = "",
     val state: String? = "",
+    val detailsUrl: String? = null,
+    val stateUrl: String? = null,
     val partyCurrentSize: Int? = null,
     val partyMaxSize: Int? = null,
     val largeImage: RpcImage? = null,
     val smallImage: RpcImage? = null,
+    val largeUrl: String? = null,
+    val smallUrl: String? = null,
     var largeText: String? = null,
     var smallText: String? = null,
     val time: Timestamps? = null,
     val packageName: String = "",
     val platform: String? = null,
     val mediaUrl: String? = null,
+    /** Album URL (fallback link when mediaUrl is unavailable). */
+    val albumUrl: String? = null,
+    /** Playlist URL (preferred link for the large/cover image). */
+    val playlistUrl: String? = null,
+    /** Channel/artist URL (final fallback link). */
+    val channelUrl: String? = null,
     val playbackState: Int? = null,
     /**
      * The clean package name of the app, without the "title::" prefix that

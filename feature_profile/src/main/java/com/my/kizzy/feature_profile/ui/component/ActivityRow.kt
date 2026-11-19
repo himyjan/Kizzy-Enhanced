@@ -2,6 +2,7 @@ package com.my.kizzy.feature_profile.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -127,6 +129,18 @@ fun ActivityRow(
     showTs: Boolean,
     special: String?,
 ) {
+    val uriHandler = LocalUriHandler.current
+    // Only open real http(s) links so a bad/blank url never crashes the preview.
+    fun openLink(url: String?) {
+        val trimmed = url?.trim()
+        if (trimmed != null &&
+            (trimmed.startsWith("http://", ignoreCase = true) ||
+                trimmed.startsWith("https://", ignoreCase = true))
+        ) {
+            runCatching { uriHandler.openUri(trimmed) }
+        }
+    }
+
     val isPlaying =
         rpcConfig?.type?.isNullOrEmpty() == true || rpcConfig?.type?.toIntOrNull()?.equals(0) == true
     val isPlayingMedia =
@@ -230,7 +244,11 @@ fun ActivityRow(
             Spacer(Modifier.height(12.dp))
 
             Row(verticalAlignment = Alignment.Top) {
-                Box(Modifier.size(88.dp)) {
+                Box(
+                    Modifier
+                        .size(88.dp)
+                        .clickable { openLink(rpcConfig?.largeUrl) }
+                ) {
                     val largeImg = rpcConfig?.largeImg?.removePrefix("mp:")
                     AsyncImage(
                         model = if (isAsset(largeImg)) "https://media.discordapp.net/$largeImg" else
@@ -293,6 +311,7 @@ fun ActivityRow(
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clickable { openLink(rpcConfig?.detailsUrl) },
                     )
 
                     if (!renderedState.isNullOrEmpty()) {
@@ -302,6 +321,7 @@ fun ActivityRow(
                             fontSize = 14.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.clickable { openLink(rpcConfig?.stateUrl) },
                         )
                     }
 

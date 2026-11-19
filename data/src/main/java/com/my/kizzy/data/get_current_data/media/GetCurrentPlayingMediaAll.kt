@@ -164,6 +164,18 @@ class GetCurrentPlayingMediaAll @Inject constructor(
 
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
+            // Get media URL for details_url and large_url
+            val mediaUrl = metadata?.let { metadataResolver.getMediaUrl(it, mediaController.packageName) }
+                ?: metadataResolver.getDirectMediaUrl(metadata, mediaController.packageName)
+
+            // Get artist/channel URL for state_url
+            val artistUrl = metadata?.let { metadataResolver.getArtistUrl(it, mediaController.packageName) }
+
+            // Album / playlist / channel URLs for the link fallback chains.
+            val albumUrl = metadata?.let { metadataResolver.getAlbumUrl(it, mediaController.packageName) }
+            val playlistUrl = metadata?.let { metadataResolver.getPlaylistUrl(it, mediaController.packageName) }
+            val channelUrl = artistUrl
+
             return RichMediaMetadata(
                 appName = appName,
                 packageName = mediaController.packageName,
@@ -181,6 +193,11 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 timestamps = timestamps,
                 audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) },
                 allArtists = metadata?.let { metadataResolver.getAllArtists(it) } ?: emptyList(),
+                mediaUrl = mediaUrl,
+                artistUrl = artistUrl,
+                albumUrl = albumUrl,
+                playlistUrl = playlistUrl,
+                channelUrl = channelUrl,
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")

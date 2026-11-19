@@ -43,5 +43,17 @@ data class RichMediaMetadata(
     /**
      * The url of the channel of the artist, when it is known.
      */
-    val artistUrl: String? = null
+    val artistUrl: String? = null,
+    /**
+     * The url of the album, when the session publishes one (fallback link).
+     */
+    val albumUrl: String? = null,
+    /**
+     * The url of the playlist, when the session publishes one (preferred cover-art link).
+     */
+    val playlistUrl: String? = null,
+    /**
+     * The url of the channel (final fallback link).
+     */
+    val channelUrl: String? = null
 )

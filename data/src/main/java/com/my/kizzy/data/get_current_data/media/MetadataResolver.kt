@@ -113,8 +113,18 @@ class MetadataResolver @Inject constructor(
      * watch url must land on https://youtu.be/ID in the RPC button.
      */
     private fun toRpcMediaUrl(url: String?): String? {
-        if (url.isNullOrBlank()) return url
-        return YouTubeResolver.toRpcUrl(url) ?: url
+        if (url.isNullOrBlank()) return null
+
+        // Delegate directly to YouTubeResolver's robust unwrapping and normalization logic
+        return YouTubeResolver.toRpcUrl(url)?.let { canonicalUrl ->
+            // Additional safety check: ensure it's either ayoutu.be video,
+            // a channel link, or a playlist link, and not an accidental search query.
+            if (canonicalUrl.contains("/results?search_query=")) {
+                null // Block accidental search queries from becoming direct media URLs
+            } else {
+                canonicalUrl
+            }
+        }
     }
 
     private fun resolveRawMediaUrl(
