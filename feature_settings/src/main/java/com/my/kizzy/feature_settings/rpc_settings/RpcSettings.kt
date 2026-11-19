@@ -40,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,10 +50,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
+import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
+import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFM
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
@@ -133,6 +137,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var lastfmSecret by remember { mutableStateOf(Prefs[Prefs.LASTFM_SECRET, ""]) }
     var lastfmUsername by remember { mutableStateOf(Prefs[Prefs.LASTFM_USERNAME, ""]) }
     var lastfmPassword by remember { mutableStateOf(Prefs[Prefs.LASTFM_PASSWORD, ""]) }
+    var lastfmPasswordVisible by remember { mutableStateOf(false) }
     var lastfmShowTimestamps by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS, true]) }
     var lastfmShowCoverArt by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_COVER_ART, true]) }
     var lastfmShowPartyCurrent by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_PARTY_CURRENT, true]) }
@@ -145,6 +150,7 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
     var librefmSecret by remember { mutableStateOf(Prefs[Prefs.LIBREFM_SECRET, ""]) }
     var librefmUsername by remember { mutableStateOf(Prefs[Prefs.LIBREFM_USERNAME, ""]) }
     var librefmPassword by remember { mutableStateOf(Prefs[Prefs.LIBREFM_PASSWORD, ""]) }
+    var librefmPasswordVisible by remember { mutableStateOf(false) }
     var isLibreFmEnabled by remember { mutableStateOf(Prefs[Prefs.LIBREFM_ENABLED, false]) }
 
     // ListenBrainz scrobbling settings
@@ -445,8 +451,10 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 }
             }
             item(key = "lastfm_settings") {
+                val sessionKey = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
+                val lastFmAuthStatus = if (sessionKey.isNotBlank()) "Authenticated" else "Not authenticated"
                 val lastFmStatus = when {
-                    isLastFmEnabled -> "Enabled"
+                    isLastFmEnabled -> "Enabled  •  $lastFmAuthStatus"
                     else -> "Disabled"
                 }
                 SettingItem(
@@ -466,7 +474,9 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 }
             }
             item(key = "librefm_settings") {
-                val libreFmStatus = if (isLibreFmEnabled) "Enabled" else "Disabled"
+                val sessionKey = Prefs[Prefs.LIBREFM_SESSION_KEY, ""]
+                val libreFmAuthStatus = if (sessionKey.isNotBlank()) "Authenticated" else "Not authenticated"
+                val libreFmStatus = if (isLibreFmEnabled) "Enabled  •  $libreFmAuthStatus" else "Disabled"
                 SettingItem(
                     title = stringResource(id = R.string.librefm_settings_title),
                     description = stringResource(id = R.string.librefm_enabled) + "  •  $libreFmStatus",
@@ -480,8 +490,10 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 }
             }
             item(key = "listenbrainz_settings") {
+                val listenbrainzToken = Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""]
+                val listenbrainzAuthStatus = if (listenbrainzToken.isNotBlank()) "Authenticated" else "Not authenticated"
                 val listenbrainzStatus = when {
-                    listenbrainzEnabled -> "Enabled"
+                    listenbrainzEnabled -> "Enabled  •  $listenbrainzAuthStatus"
                     else -> "Disabled"
                 }
                 SettingItem(
@@ -883,10 +895,75 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                         }
 
                         RpcField(
-                            value = lastfmPassword,
+                            value = if (lastfmPasswordVisible) lastfmPassword else lastfmPassword.replace(Regex("."), "*"),
                             label = R.string.lastfm_password,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                            trailingIcon = {
+                                IconButton(onClick = { lastfmPasswordVisible = !lastfmPasswordVisible }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.RemoveRedEye,
+                                        contentDescription = stringResource(if (lastfmPasswordVisible) R.string.lastfm_hide_password else R.string.lastfm_show_password)
+                                    )
+                                }
+                            },
                         ) {
                             lastfmPassword = it
+                        }
+
+                        // Last.fm login / logout
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp)
+                        ) {
+                            val lastFmSessionKey = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
+                            val isAuthenticated = lastFmSessionKey.isNotBlank()
+                            Text(
+                                text = stringResource(
+                                    if (isAuthenticated) R.string.lastfm_authenticated else R.string.lastfm_not_authenticated
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isAuthenticated) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                            )
+                            if (isAuthenticated) {
+                                TextButton(
+                                    onClick = {
+                                        scope.launch {
+                                            Prefs[Prefs.LASTFM_SESSION_KEY] = ""
+                                            Prefs[Prefs.LASTFM_PASSWORD] = ""
+                                            lastfmPassword = ""
+                                        }
+                                    }
+                                ) {
+                                    Text(text = stringResource(R.string.lastfm_logout))
+                                }
+                            } else {
+                                TextButton(
+                                    onClick = {
+                                        if (lastfmUsername.isBlank() || lastfmPassword.isBlank()) {
+                                            Toast.makeText(context, "Enter username and password first", Toast.LENGTH_SHORT).show()
+                                        } else if (lastfmApiKey.isBlank() || lastfmSecret.isBlank()) {
+                                            Toast.makeText(context, "Enter API key and secret first", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            scope.launch {
+                                                LastFM.init(lastfmApiKey, lastfmSecret)
+                                                val session = try {
+                                                    LastFM.getMobileSession(lastfmUsername, lastfmPassword)
+                                                } catch (e: Exception) {
+                                                    null
+                                                }
+                                                if (session != null && session.key.isNotEmpty()) {
+                                                    Prefs[Prefs.LASTFM_SESSION_KEY] = session.key
+                                                    Toast.makeText(context, "Logged in to Last.fm", Toast.LENGTH_SHORT).show()
+                                                } else {
+                                                    Toast.makeText(context, "Last.fm login failed", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    Text(text = stringResource(R.string.lastfm_login))
+                                }
+                            }
                         }
 
                         PreferenceSwitch(
@@ -976,10 +1053,75 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                         }
 
                         RpcField(
-                            value = librefmPassword,
+                            value = if (librefmPasswordVisible) librefmPassword else librefmPassword.replace(Regex("."), "*"),
                             label = R.string.librefm_password,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                            trailingIcon = {
+                                IconButton(onClick = { librefmPasswordVisible = !librefmPasswordVisible }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.RemoveRedEye,
+                                        contentDescription = stringResource(if (librefmPasswordVisible) R.string.lastfm_hide_password else R.string.lastfm_show_password)
+                                    )
+                                }
+                            },
                         ) {
                             librefmPassword = it
+                        }
+
+                        // Libre.fm login / logout
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp)
+                        ) {
+                            val libreFmSessionKey = Prefs[Prefs.LIBREFM_SESSION_KEY, ""]
+                            val isAuthenticated = libreFmSessionKey.isNotBlank()
+                            Text(
+                                text = stringResource(
+                                    if (isAuthenticated) R.string.lastfm_authenticated else R.string.lastfm_not_authenticated
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isAuthenticated) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                            )
+                            if (isAuthenticated) {
+                                TextButton(
+                                    onClick = {
+                                        scope.launch {
+                                            Prefs[Prefs.LIBREFM_SESSION_KEY] = ""
+                                            Prefs[Prefs.LIBREFM_PASSWORD] = ""
+                                            librefmPassword = ""
+                                        }
+                                    }
+                                ) {
+                                    Text(text = stringResource(R.string.lastfm_logout))
+                                }
+                            } else {
+                                TextButton(
+                                    onClick = {
+                                        if (librefmUsername.isBlank() || librefmPassword.isBlank()) {
+                                            Toast.makeText(context, "Enter username and password first", Toast.LENGTH_SHORT).show()
+                                        } else if (librefmApiKey.isBlank() || librefmSecret.isBlank()) {
+                                            Toast.makeText(context, "Enter API key and secret first", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            scope.launch {
+                                                LibreFM.init(librefmApiKey, librefmSecret)
+                                                val session = try {
+                                                    LibreFM.getMobileSession(librefmUsername, librefmPassword)
+                                                } catch (e: Exception) {
+                                                    null
+                                                }
+                                                if (session != null && session.key.isNotEmpty()) {
+                                                    Prefs[Prefs.LIBREFM_SESSION_KEY] = session.key
+                                                    Toast.makeText(context, "Logged in to Libre.fm", Toast.LENGTH_SHORT).show()
+                                                } else {
+                                                    Toast.makeText(context, "Libre.fm login failed", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    Text(text = stringResource(R.string.lastfm_login))
+                                }
+                            }
                         }
 
                         Text(
@@ -1026,6 +1168,50 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                             label = R.string.listenbrainz_user_token,
                         ) {
                             listenbrainzUserToken = it
+                        }
+
+                        // ListenBrainz login / logout (token-based)
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp)
+                        ) {
+                            val listenbrainzToken = Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""]
+                            val isAuthenticated = listenbrainzToken.isNotBlank()
+                            Text(
+                                text = stringResource(
+                                    if (isAuthenticated) R.string.lastfm_authenticated else R.string.lastfm_not_authenticated
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isAuthenticated) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                            )
+                            if (isAuthenticated) {
+                                TextButton(
+                                    onClick = {
+                                        scope.launch {
+                                            Prefs[Prefs.LISTENBRAINZ_USER_TOKEN] = ""
+                                            listenbrainzUserToken = ""
+                                        }
+                                    }
+                                ) {
+                                    Text(text = stringResource(R.string.lastfm_logout))
+                                }
+                            } else {
+                                TextButton(
+                                    onClick = {
+                                        if (listenbrainzUserToken.isBlank()) {
+                                            Toast.makeText(context, "Enter your ListenBrainz user token first", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            scope.launch {
+                                                Prefs[Prefs.LISTENBRAINZ_USER_TOKEN] = listenbrainzUserToken
+                                                listenbrainzUserToken = listenbrainzUserToken
+                                                Toast.makeText(context, "ListenBrainz token saved", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    Text(text = stringResource(R.string.lastfm_login))
+                                }
+                            }
                         }
 
                         Text(

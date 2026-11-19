@@ -457,6 +457,12 @@
     <string name="lastfm_show_cover_art">Show Cover Art</string>
     <string name="lastfm_show_party_current">Show Party Current Size</string>
     <string name="lastfm_show_party_max">Show Party Max Size</string>
+    <string name="lastfm_login">Log in</string>
+    <string name="lastfm_logout">Log out</string>
+    <string name="lastfm_authenticated">Authenticated</string>
+    <string name="lastfm_not_authenticated">Not authenticated</string>
+    <string name="lastfm_show_password">Show password</string>
+    <string name="lastfm_hide_password">Hide password</string>
 
     <string name="librefm_settings_title">Libre.fm Scrobbling</string>
     <string name="librefm_enabled">Enable Libre.fm</string>
