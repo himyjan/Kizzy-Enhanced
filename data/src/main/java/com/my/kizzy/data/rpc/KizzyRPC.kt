@@ -754,18 +754,16 @@ class KizzyRPC @Inject constructor(
 
     suspend fun build(forceRefresh: Boolean = false) {
         val cleanButtons = sanitizeButtons(buttons.takeIf { buttons.isNotEmpty() })
-        
-        // Check if cover art is enabled for URL fields
-        val showCoverArtGlobal = Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false
-        
+
         presence = Presence(
             activities = listOf(
                 Activity(
                     name = activityName,
                     state = state?.sanitize(),
                     details = details?.sanitize(),
-                    // For manual RPC, use url field as details_url if set and cover art enabled
-                    detailsUrl = if (showCoverArtGlobal && type != 1) sanitizeFieldUrl(url) else null,
+                    // For manual RPC, use url field as details_url if set.
+                    // Links do not depend on whether cover art is shown.
+                    detailsUrl = if (type != 1) sanitizeFieldUrl(url) else null,
                     party = party.takeIf { party != null },
                     type = type,
                     platform = platform?.sanitize(),
@@ -778,8 +776,8 @@ class KizzyRPC @Inject constructor(
                         smallImage = smallImage?.resolveImage(kizzyRepository),
                         largeText = largeText?.sanitize(),
                         smallText = smallText?.sanitize(),
-                        // For manual RPC, use url as large_url if set and cover art enabled
-                        largeUrl = if (showCoverArtGlobal && type != 1) sanitizeFieldUrl(url) else null
+                        // For manual RPC, use url as large_url if set.
+                        largeUrl = if (type != 1) sanitizeFieldUrl(url) else null
                     ).takeIf { largeImage != null || smallImage != null },
                     // Client-presence format: labels in buttons, urls in metadata.
                     buttons = cleanButtons?.map { it.label },
@@ -1000,17 +998,14 @@ class KizzyRPC @Inject constructor(
             val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0]
             val cleanButtons = sanitizeButtons(buttonsSnapshot)
 
-            // Global switch: if user disabled cover art, don't set URL fields either
-            val showCoverArtGlobal = Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false
-            
             val presence = Presence(
                 activities = listOf(
                     Activity(
                         name = commonRpc.name,
                         details = commonRpc.details?.takeIf { it.isNotEmpty() }?.sanitize(),
                         state = commonRpc.state?.takeIf { it.isNotEmpty() }?.sanitize(),
-                        detailsUrl = if (showCoverArtGlobal) sanitizeFieldUrl(commonRpc.detailsUrl) else null,
-                        stateUrl = if (showCoverArtGlobal) sanitizeFieldUrl(commonRpc.stateUrl) else null,
+                        detailsUrl = sanitizeFieldUrl(commonRpc.detailsUrl),
+                        stateUrl = sanitizeFieldUrl(commonRpc.stateUrl),
                         type = activityType,
                         platform = commonRpc.platform?.sanitize(),
                         timestamps = time,
@@ -1020,8 +1015,8 @@ class KizzyRPC @Inject constructor(
                             smallImage = finalSmallImageWithDefault,
                             largeText = commonRpc.largeText?.sanitize(),
                             smallText = commonRpc.smallText?.sanitize(),
-                            largeUrl = if (showCoverArtGlobal) sanitizeFieldUrl(commonRpc.largeUrl) else null,
-                            smallUrl = if (showCoverArtGlobal) sanitizeFieldUrl(commonRpc.smallUrl) else null
+                            largeUrl = sanitizeFieldUrl(commonRpc.largeUrl),
+                            smallUrl = sanitizeFieldUrl(commonRpc.smallUrl)
                         ).takeIf { finalLargeImageWithDefault != null || finalSmallImageWithDefault != null },
                         party = party.takeIf { party != null },
                         // Client-presence format: labels in buttons, urls in metadata.

@@ -988,32 +988,27 @@ class MediaRpcService : Service() {
         // state (line 3) = channel name
         val rpcState = channelName
 
-        // Primary media link priority chain: mediaUrl -> albumUrl -> channelUrl.
-        // Only real http(s) URLs reach the RPC fields; null/blank/invalid are dropped.
-        val songLink = if (showCoverArtGlobal && showCoverArt) {
-            YouTubeResolver.primaryMediaUrl(
-                playingMedia.mediaUrl,
-                playingMedia.albumUrl,
-                playingMedia.channelUrl,
-            ) ?: playingMedia.detailsUrl
-        } else null
+        // Links are independent of the image toggles: hiding the cover art must
+        // not disable the clickable text lines, and a default cover image still
+        // needs its click target. Only real http(s) URLs reach the RPC fields.
+        val songLink = YouTubeResolver.primaryMediaUrl(
+            playingMedia.mediaUrl,
+            playingMedia.albumUrl,
+            playingMedia.channelUrl,
+        ) ?: playingMedia.detailsUrl
         val detailsUrl = songLink
-        val stateUrl = playingMedia.stateUrl?.takeIf { showCoverArtGlobal && showCoverArt }
+        val stateUrl = playingMedia.stateUrl
             ?: MediaServiceResolver.artistUrl(playingMedia.appPackage, channelName)
-                ?.takeIf { showCoverArtGlobal && showCoverArt }
 
         // large image (cover art) -> album/playlist URL first, then video URL.
         // When line 4 shows the playlist name (no album), the playlist link wins.
-        val largeUrl = if (showCoverArtGlobal && showCoverArt) {
-            YouTubeResolver.largeImageUrl(
-                playingMedia.mediaUrl,
-                playingMedia.albumUrl,
-                playingMedia.playlistUrl,
-                preferPlaylist = playingMedia.largeTextIsPlaylist,
-            )
-        } else null
+        val largeUrl = YouTubeResolver.largeImageUrl(
+            playingMedia.mediaUrl,
+            playingMedia.albumUrl,
+            playingMedia.playlistUrl,
+            preferPlaylist = playingMedia.largeTextIsPlaylist,
+        )
         val smallUrl = MediaServiceResolver.appDownloadUrl(playingMedia.appPackage)
-            ?.takeIf { showCoverArtGlobal && showCoverArt }
 
         val commonRpc = CommonRpc(
             name = rpcName,

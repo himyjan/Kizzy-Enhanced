@@ -609,40 +609,35 @@ class ManualRpc : Service() {
             return
         }
 
-        // Primary media link priority chain: mediaUrl -> albumUrl -> channelUrl
+        // Primary media link priority chain: mediaUrl -> albumUrl -> channelUrl.
+        // Links are independent of the cover-art toggles.
         val mediaUrl = rawMediaMetadata?.let {
             MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
-        }?.takeIf { showCoverArtGlobal }
-            ?: richMediaInfo?.mediaUrl?.takeIf { showCoverArtGlobal }
-        val songLink = if (showCoverArtGlobal) {
-            YouTubeResolver.primaryMediaUrl(
-                mediaUrl,
-                richMediaInfo?.albumUrl,
-                richMediaInfo?.channelUrl ?: richMediaInfo?.artistUrl,
-            )
-        } else null
+        } ?: richMediaInfo?.mediaUrl
+        val songLink = YouTubeResolver.primaryMediaUrl(
+            mediaUrl,
+            richMediaInfo?.albumUrl,
+            richMediaInfo?.channelUrl ?: richMediaInfo?.artistUrl,
+        )
         // details line -> media URL (song/track)
         val detailsUrl = songLink
 
         // state line -> artist/channel URL
-        val stateUrl = richMediaInfo?.artistUrl?.takeIf { showCoverArtGlobal }
+        val stateUrl = richMediaInfo?.artistUrl
 
         // large image (cover art) -> album/playlist URL first, then video URL.
         // When line 4 shows the playlist name (no album), the playlist link wins.
         val largeTextIsPlaylist =
             richMediaInfo?.album.isNullOrBlank() && !richMediaInfo?.playlistName.isNullOrBlank()
-        val largeUrl = if (showCoverArtGlobal) {
-            YouTubeResolver.largeImageUrl(
-                mediaUrl,
-                richMediaInfo?.albumUrl,
-                richMediaInfo?.playlistUrl,
-                preferPlaylist = largeTextIsPlaylist,
-            )
-        } else null
+        val largeUrl = YouTubeResolver.largeImageUrl(
+            mediaUrl,
+            richMediaInfo?.albumUrl,
+            richMediaInfo?.playlistUrl,
+            preferPlaylist = largeTextIsPlaylist,
+        )
 
         // small image (app icon) -> app download page (GitHub release first priority)
         val smallUrl = MediaServiceResolver.appDownloadUrl(richMediaInfo?.packageName)
-            ?.takeIf { showCoverArtGlobal }
         
         // Build the CommonRpc once - this is what we want to send to Discord
         val commonRpc = CommonRpc(
