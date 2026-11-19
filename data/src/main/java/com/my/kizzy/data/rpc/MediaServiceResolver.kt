@@ -401,28 +401,59 @@ object MediaServiceResolver {
     }
 
     /**
-     * The URL to the app's download page or GitHub release.
-     * Priority: GitHub release > Play Store > Google search
+     * The download page of the app that is playing.
+     *
+     * Open-source players are distributed through GitHub, so their releases
+     * page is used first. Official / closed-source apps fall back to their
+     * store listing (Play Store). Returns null only when the package is blank.
      */
     fun appDownloadUrl(packageName: String?): String? {
         if (packageName.isNullOrBlank()) return null
         val pkg = packageName.lowercase()
-        
-        // Check if it's a known app with GitHub release
-        val knownApp = when {
-            pkg.contains("youtube.music") || pkg.contains("ymusicapp") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
-            pkg.contains("kapp.youtube") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
-            pkg.contains(YOUTUBE_WRAPPER_SIGNATURES.joinToString("|")) -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
-            pkg.contains("youtube") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
-            pkg.contains("spotify") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
-            pkg.contains("apple.android.music") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
-            pkg.contains("netease") || pkg.contains("cloudmusic") -> "https://github.com/himyjan/Kizzy-Enhanced/releases"
+
+        // Open-source / community players: GitHub releases are the canonical
+        // download page. Matched by signature because forks rename the package.
+        val gitHubRelease = when {
+            "metrolist" in pkg -> "https://github.com/MetrolistGroup/Metrolist/releases"
+            "innertubex" in pkg || "intertubex" in pkg ->
+                "https://github.com/MetrolistGroup/InnertubeX/releases"
+            "innertune" in pkg || "intertune" in pkg ->
+                "https://github.com/z-huang/InnerTune/releases"
+            "outertune" in pkg -> "https://github.com/OuterTune/OuterTune/releases"
+            "vimusic" in pkg -> "https://github.com/vfsfitvnm/ViMusic/releases"
+            "rimusic" in pkg -> "https://github.com/fast4x/RiMusic/releases"
+            "simpmusic" in pkg -> "https://github.com/maxrave-dev/SimpMusic/releases"
+            "vitune" in pkg -> "https://github.com/25huizengek1/ViTune/releases"
+            "spotube" in pkg -> "https://github.com/KRTirtho/spotube/releases"
+            "newpipe" in pkg -> "https://github.com/TeamNewPipe/NewPipe/releases"
+            "pipepipe" in pkg -> "https://github.com/InfinityLoop1308/PipePipe/releases"
+            "libretube" in pkg -> "https://github.com/libre-tube/LibreTube/releases"
+            "skytube" in pkg -> "https://github.com/SkyTubeTeam/SkyTube/releases"
+            "grayjay" in pkg -> "https://github.com/futo-org/grayjay-android/releases"
+            "musify" in pkg -> "https://github.com/gokadzev/Musify/releases"
+            "namida" in pkg -> "https://github.com/namidaco/namida/releases"
+            "bloomee" in pkg -> "https://github.com/HemantKArya/BloomeeTunes/releases"
             else -> null
         }
-        if (knownApp != null) return knownApp
-        
-        // For unknown apps, try Google Play Store
-        return "https://play.google.com/store/apps/details?id=$packageName"
+        if (gitHubRelease != null) return gitHubRelease
+
+        // YMusic is closed source but not on the Play Store.
+        if ("ymusicapp" in pkg || "kapp.youtube" in pkg) return "https://ymusicapp.com"
+
+        // Official / closed-source apps: link to the store page of the app.
+        val storePackage = when {
+            "youtube.music" in pkg -> "com.google.android.apps.youtube.music"
+            "youtube" in pkg -> "com.google.android.youtube"
+            "spotify" in pkg -> "com.spotify.music"
+            "apple.android.music" in pkg -> "com.apple.android.music"
+            "deezer" in pkg -> "deezer.android.app"
+            "soundcloud" in pkg -> "com.soundcloud.android"
+            "tidal" in pkg -> "com.aspiro.tidal"
+            "amazon" in pkg -> "com.amazon.mp3"
+            "netease" in pkg || "cloudmusic" in pkg -> "com.netease.cloudmusic"
+            else -> packageName
+        }
+        return "https://play.google.com/store/apps/details?id=$storePackage"
     }
 
     /**
