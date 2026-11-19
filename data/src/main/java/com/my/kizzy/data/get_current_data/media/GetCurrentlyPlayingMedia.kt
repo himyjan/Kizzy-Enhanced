@@ -230,6 +230,16 @@ class GetCurrentPlayingMedia @Inject constructor(
             val albumUrl = metadata?.let { MetadataResolver.getAlbumUrl(it, mediaController.packageName) }
             val playlistUrl = metadata?.let { MetadataResolver.getPlaylistUrl(it, mediaController.packageName) }
             val channelUrl = artistUrl
+
+            // Line 4 (large_text): album name, or the playlist name when the
+            // track has no album but the player publishes a playlist title.
+            val albumText = album?.takeIf { it.isNotBlank() }
+            val playlistName = MetadataResolver.getPlaylistName(metadata)
+            val largeTextIsPlaylist = albumText == null && !playlistName.isNullOrBlank()
+            val largeTextValue = when {
+                albumText != null -> albumText.takeIf { albumEnabled }
+                else -> playlistName
+            }
             
             return CommonRpc(
                 name = rpcName,
@@ -243,13 +253,8 @@ class GetCurrentPlayingMedia @Inject constructor(
                 smallImage = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appIcon else null,
                 // Large URL for clickable artwork - only media URL, not search URLs
                 largeUrl = mediaUrl,
-                // Line 4 (large_text): album name, or the playlist name when the
-                // track has no album but the player publishes a playlist title.
-                largeText = if (!album.isNullOrBlank()) {
-                    album.takeIf { albumEnabled }
-                } else {
-                    MetadataResolver.getPlaylistName(metadata)
-                },
+                largeText = largeTextValue,
+                largeTextIsPlaylist = largeTextIsPlaylist,
                 smallText = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appName else null,
                 packageName = "$title::${mediaController.packageName}",
                 time = timestamps.takeIf { it != null },

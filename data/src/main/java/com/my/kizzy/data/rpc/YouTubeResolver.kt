@@ -153,14 +153,26 @@ object YouTubeResolver {
      *   2. playlist URL (normalized for YT-family URLs)
      *   3. video/media URL (normalized then plain)
      * Only real http(s) URLs are returned.
+     *
+     * When [preferPlaylist] is true (line 4 shows the playlist name because the
+     * track has no album), the playlist link is used first so the visible text
+     * and the click target match.
      */
-    fun largeImageUrl(mediaUrl: String?, albumUrl: String?, playlistUrl: String?): String? =
-        sanitizeHttpsUrl(toRpcUrl(albumUrl))
-            ?: sanitizeHttpsUrl(albumUrl)
-            ?: sanitizeHttpsUrl(toRpcUrl(playlistUrl))
-            ?: sanitizeHttpsUrl(playlistUrl)
-            ?: sanitizeHttpsUrl(toRpcUrl(mediaUrl))
-            ?: sanitizeHttpsUrl(mediaUrl)
+    fun largeImageUrl(
+        mediaUrl: String?,
+        albumUrl: String?,
+        playlistUrl: String?,
+        preferPlaylist: Boolean = false,
+    ): String? {
+        val playlist = sanitizeHttpsUrl(toRpcUrl(playlistUrl)) ?: sanitizeHttpsUrl(playlistUrl)
+        val album = sanitizeHttpsUrl(toRpcUrl(albumUrl)) ?: sanitizeHttpsUrl(albumUrl)
+        val media = sanitizeHttpsUrl(toRpcUrl(mediaUrl)) ?: sanitizeHttpsUrl(mediaUrl)
+        return if (preferPlaylist) {
+            playlist ?: album ?: media
+        } else {
+            album ?: playlist ?: media
+        }
+    }
 
     fun extractVideoId(url: String): String? {
         val trimmed = url.trim()

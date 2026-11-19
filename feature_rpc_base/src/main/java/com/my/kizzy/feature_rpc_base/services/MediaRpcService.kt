@@ -1002,12 +1002,14 @@ class MediaRpcService : Service() {
             ?: MediaServiceResolver.artistUrl(playingMedia.appPackage, channelName)
                 ?.takeIf { showCoverArtGlobal && showCoverArt }
 
-        // large image (cover art) -> album/playlist URL first, then video URL
+        // large image (cover art) -> album/playlist URL first, then video URL.
+        // When line 4 shows the playlist name (no album), the playlist link wins.
         val largeUrl = if (showCoverArtGlobal && showCoverArt) {
             YouTubeResolver.largeImageUrl(
                 playingMedia.mediaUrl,
                 playingMedia.albumUrl,
                 playingMedia.playlistUrl,
+                preferPlaylist = playingMedia.largeTextIsPlaylist,
             )
         } else null
         val smallUrl = MediaServiceResolver.appDownloadUrl(playingMedia.appPackage)
@@ -1025,6 +1027,7 @@ class MediaRpcService : Service() {
             largeUrl = largeUrl,
             smallUrl = smallUrl,
             largeText = if (showCoverArtGlobal && showCoverArt) playingMedia.largeText else null,
+            largeTextIsPlaylist = playingMedia.largeTextIsPlaylist,
             smallText = playingMedia.smallText,
             time = if (enableTimestamps && !isPaused) Timestamps(
                 start = playingMedia.time?.start,

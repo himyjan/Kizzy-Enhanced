@@ -35,6 +35,11 @@ data class CommonRpc(
     val albumUrl: String? = null,
     /** Playlist URL (preferred link for the large/cover image). */
     val playlistUrl: String? = null,
+    /**
+     * True when [largeText] is the playlist name (no album was available), so
+     * the large image / line 4 should link to [playlistUrl] instead of the album.
+     */
+    val largeTextIsPlaylist: Boolean = false,
     /** Channel/artist URL (final fallback link). */
     val channelUrl: String? = null,
     val playbackState: Int? = null,

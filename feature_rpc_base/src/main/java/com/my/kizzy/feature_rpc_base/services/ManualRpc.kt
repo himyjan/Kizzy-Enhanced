@@ -627,12 +627,16 @@ class ManualRpc : Service() {
         // state line -> artist/channel URL
         val stateUrl = richMediaInfo?.artistUrl?.takeIf { showCoverArtGlobal }
 
-        // large image (cover art) -> album/playlist URL first, then video URL
+        // large image (cover art) -> album/playlist URL first, then video URL.
+        // When line 4 shows the playlist name (no album), the playlist link wins.
+        val largeTextIsPlaylist =
+            richMediaInfo?.album.isNullOrBlank() && !richMediaInfo?.playlistName.isNullOrBlank()
         val largeUrl = if (showCoverArtGlobal) {
             YouTubeResolver.largeImageUrl(
                 mediaUrl,
                 richMediaInfo?.albumUrl,
                 richMediaInfo?.playlistUrl,
+                preferPlaylist = largeTextIsPlaylist,
             )
         } else null
 

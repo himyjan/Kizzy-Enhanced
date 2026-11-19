@@ -201,6 +201,8 @@ fun ActivityRow(
         rpcConfig?.details
     }
     val renderedState = rpcConfig?.state?.takeIf { it.isNotEmpty() }
+    // Line 4: album name (or playlist name when there is no album).
+    val renderedLargeText = rpcConfig?.largeText?.takeIf { it.isNotEmpty() }
     // Local vals so the timeline block can smart-cast below.
     val cfg = rpcConfig
     val startMs = cfg?.timestampsStart?.toLongOrNull()
@@ -322,6 +324,17 @@ fun ActivityRow(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.clickable { openLink(rpcConfig?.stateUrl) },
+                        )
+                    }
+
+                    if (!renderedLargeText.isNullOrEmpty()) {
+                        Text(
+                            text = renderedLargeText,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.clickable { openLink(rpcConfig?.largeUrl) },
                         )
                     }
 
