@@ -1233,9 +1233,8 @@ class MetadataResolver @Inject constructor(
                 toRpcMediaUrl(mediaId)?.let { return it }
             }
             YouTubeResolver.extractVideoId(mediaId)?.let { return "https://youtu.be/$it" }
-            // Channel URL — keep as a channel link
-            val channelId = YouTubeResolver.extractChannelId(mediaId)
-            if (channelId != null) return "https://www.youtube.com/channel/$channelId"
+            // Channel URL — keep as a channel link (supports /channel/UC..., /@handle, /c/, /user/)
+            YouTubeResolver.extractChannelUrl(mediaId)?.let { return it }
             // Playlist URL — keep as a playlist link
             val playlistId = YouTubeResolver.extractPlaylistId(mediaId)
             if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
@@ -1469,16 +1468,9 @@ class MetadataResolver @Inject constructor(
     private fun youtubeArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl?.let { YouTubeResolver.unwrapYmusicUrl(it) } ?: return null
         if (!YouTubeResolver.isYoutubeFamilyUrl(url)) return null
-        try {
-            val uri = java.net.URI(url)
-            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
-            if (segments.size >= 2 && segments[0] == "channel") return "https://www.youtube.com/channel/${segments[1]}"
-            if (segments.size >= 2 && segments[0] == "c") return "https://www.youtube.com/c/${segments[1]}"
-            if (segments.size >= 2 && segments[0] == "@") return "https://www.youtube.com/${segments[1]}"
-            // Do NOT use video ID as channel ID - instead return null so
-            // resolveYouTubeVideo() can fetch the real channel via oEmbed
-            return null
-        } catch (_: Exception) {}
+        // Reuse the canonical resolver so /@handle, /c/, /user/ and /channel/UC...
+        // all map to a real, clickable channel url (the @ must be kept).
+        YouTubeResolver.extractChannelUrl(url)?.let { return it }
         return null
     }
 

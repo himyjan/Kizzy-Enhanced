@@ -113,12 +113,8 @@ object YouTubeResolver {
             if (isValidVideoId(id)) return "https://youtu.be/$id"
         }
 
-        extractChannelId(unwrapped)?.let { channelId ->
-            return "https://www.youtube.com/channel/$channelId"
-        }
-        extractChannelId(trimmed)?.let { channelId ->
-            return "https://www.youtube.com/channel/$channelId"
-        }
+        extractChannelUrl(unwrapped)?.let { return it }
+        extractChannelUrl(trimmed)?.let { return it }
 
         extractPlaylistId(unwrapped)?.let { playlistId ->
             return "https://www.youtube.com/playlist?list=$playlistId"
@@ -228,6 +224,73 @@ object YouTubeResolver {
         if (id.isNotBlank() && id.startsWith("UC") && id.length >= 22) return id
         return null
     }
+
+    /**
+     * Canonical channel url of a YouTube-family link.
+     *
+     * Supports every channel form YouTube hands out:
+     * - legacy id:   youtube.com/channel/UC...
+     * - handle:      youtube.com/@Rusui-channel
+     * - custom:      youtube.com/c/Name
+     * - legacy user: youtube.com/user/Name
+     *
+     * Returns null when the url does not point at a channel.
+     */
+    fun extractChannelUrl(url: String?): String? {
+        if (url.isNullOrBlank()) return null
+        val unwrapped = unwrapYmusicUrl(url)
+        if (unwrapped.isEmpty()) return null
+        if (!isYoutubeFamilyUrl(unwrapped)) return null
+        val lower = unwrapped.lowercase()
+
+        fun segmentAfter(marker: String): String =
+            unwrapped.substringAfter(marker, "")
+                .substringBefore('/')
+                .substringBefore('?')
+                .substringBefore('&')
+                .substringBefore('#')
+                .trim()
+
+        // Legacy id form: youtube.com/channel/UC...
+        if (lower.contains("/channel/")) {
+            val id = segmentAfter("/channel/")
+            if (id.startsWith("@")) {
+                val handle = id.removePrefix("@")
+                if (isValidHandle(handle)) return "https://www.youtube.com/@$handle"
+            }
+            if (id.startsWith("UC") && id.length >= 22) {
+                return "https://www.youtube.com/channel/$id"
+            }
+            return null
+        }
+
+        // Modern handle form: youtube.com/@handle
+        val atIndex = lower.indexOf("/@")
+        if (atIndex != -1) {
+            val handle = unwrapped.substring(atIndex + 2)
+                .substringBefore('/')
+                .substringBefore('?')
+                .substringBefore('&')
+                .substringBefore('#')
+                .trim()
+            if (isValidHandle(handle)) return "https://www.youtube.com/@$handle"
+            return null
+        }
+
+        // Custom / legacy user forms: youtube.com/c/Name, youtube.com/user/Name
+        listOf("/c/", "/user/").forEach { marker ->
+            if (lower.contains(marker)) {
+                val name = segmentAfter(marker)
+                if (name.isNotBlank()) return "https://www.youtube.com${marker}$name"
+            }
+        }
+
+        return null
+    }
+
+    /** YouTube handles are 3..30 chars of letters, digits, "_", "-" or ".". */
+    private fun isValidHandle(handle: String): Boolean =
+        handle.length in 3..30 && handle.matches(Regex("^[A-Za-z0-9._-]+$"))
 
     fun extractPlaylistId(url: String): String? {
         val unwrapped = unwrapYmusicUrl(url)
