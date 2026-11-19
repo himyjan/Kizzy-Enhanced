@@ -2088,14 +2088,21 @@ private fun RpcTextFieldsColumn(
                 ConsolePresetStore.upsert(saved)
                 consoleCustomPresets = ConsolePresetStore.custom()
                 consolePresetEditorOpen = false
-                if (consoleSelectedPresetId == saved.id) {
-                    applyConsolePreset(saved, saved.name)
-                }
+                // Always apply when saving — whether creating a new preset or
+                // editing an existing one, the user just confirmed this preset
+                // is what they want on Discord.
+                applyConsolePreset(saved, saved.name)
+                consoleSelectedPresetId = saved.id
             },
             onDelete = if (!isSavedCustomPreset) null else ({
                 ConsolePresetStore.delete(presetToEdit.id)
                 consoleCustomPresets = ConsolePresetStore.custom()
                 consolePresetEditorOpen = false
+                // Clear the selection if we deleted the currently selected
+                // preset, so the UI doesn't point at a missing preset.
+                if (consoleSelectedPresetId == presetToEdit.id) {
+                    consoleSelectedPresetId = ""
+                }
             }),
             pickLargeImage = { pickLargeCoverArt.launch(it) },
             pickSmallImage = { pickSmallCoverArt.launch(it) },
