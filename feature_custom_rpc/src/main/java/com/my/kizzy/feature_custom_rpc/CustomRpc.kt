@@ -588,8 +588,10 @@ private fun RpcTextFieldsColumn(
             timestampsStart = startTs,
             timestampsStop = endTs,
             platform = preset.platform,
-            largeImg = if (preset.coverArt) "" else "",
-            smallImg = if (preset.coverArt) "" else "",
+            // Use the preset's cover art URLs when cover art is enabled,
+            // otherwise clear the images.
+            largeImg = if (preset.coverArt) preset.largeCoverArtUrl else "",
+            smallImg = if (preset.coverArt) preset.smallCoverArtUrl else "",
             button1 = "",
             button1link = "",
             button2 = "",
