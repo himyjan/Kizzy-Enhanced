@@ -27,6 +27,7 @@ import com.my.kizzy.feature_profile.ui.component.DiscordAuthView
 import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.ui.components.BackButton
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,9 +36,23 @@ fun LoginScreen(
     onCompleted: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    var showWebView by remember { mutableStateOf(false) }
+    // Check if user is already logged in before showing anything
+    val prefsState by remember { Prefs.prefsState }.collectAsState()
+    val token = prefsState[Prefs.TOKEN] as? String ?: ""
+    
+    // If user is already logged in, navigate back immediately
+    if (token.isNotEmpty()) {
+        onCompleted()
+        return
+    }
+    
+    var showWebView by remember { mutableStateOf(true) }
     var isSaving by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(showWebView) {
+        if (showWebView) delay(100)
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

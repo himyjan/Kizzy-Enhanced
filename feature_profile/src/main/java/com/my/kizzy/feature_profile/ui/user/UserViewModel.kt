@@ -51,6 +51,23 @@ class UserViewModel @Inject constructor(
     init {
         observeLoginState()
         observeRpcState()
+        
+        // Immediately load the current RPC config on init so the profile shows
+        // the real state after a cold boot, not empty/null values
+        val currentConfig = currentRpcConfig()
+        val currentState = _state.value
+        when (currentState) {
+            is UserState.Error -> _state.value = UserState.Error(
+                error = currentState.error,
+                user = currentState.user,
+                rpcConfig = currentConfig
+            )
+            is UserState.LoadingCompleted -> _state.value = UserState.LoadingCompleted(
+                user = currentState.user,
+                rpcConfig = currentConfig
+            )
+            UserState.Loading -> Unit // Keep as Loading, observeRpcState will update
+        }
     }
 
     /**

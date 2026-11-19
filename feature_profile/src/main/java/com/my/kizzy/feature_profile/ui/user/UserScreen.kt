@@ -81,26 +81,26 @@ fun UserScreen(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = MaterialTheme.colorScheme.onSurface,
                     actionContentColor = DISCORD_BLURPLE,
-                ) {
-                    Text(
-                        text = data.visuals.message,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(vertical = 6.dp),
-                    )
-                    data.visuals.actionLabel?.let { label ->
-                        TextButton(
-                            onClick = { data.performAction() },
-                            modifier = Modifier.padding(start = 12.dp),
-                        ) {
-                            Text(
-                                text = label,
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
+                    content = {
+                        Text(
+                            text = data.visuals.message,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        data.visuals.actionLabel?.let { label ->
+                            Spacer(Modifier.width(12.dp))
+                            TextButton(
+                                onClick = { data.performAction() },
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontSize = 17.sp,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
                         }
                     }
-                }
+                )
             }
         },
         modifier = Modifier
@@ -186,7 +186,7 @@ fun UserScreen(
                                         snackbarHostState.showSnackbar(
                                             message = sureMessage,
                                             actionLabel = yesLabel,
-                                            duration = SnackbarDuration.Short,
+                                            duration = SnackbarDuration.Indefinite,
                                             withDismissAction = true
                                         ).run {
                                             when (this) {
