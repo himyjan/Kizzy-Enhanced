@@ -218,10 +218,20 @@ class MetadataResolver @Inject constructor(
 
     /** Resolves an album URL from sourceUrl or custom metadata keys. */
     fun getAlbumUrl(metadata: MediaMetadata, packageName: String?): String? {
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
-        if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
-            val url = resolveAlbumUrl(sourceUrl, packageName)
-            if (url != null) return url
+        // YouTube Music clients often publish the album only through the media
+        // uri / media id (a browse page or a list=OLAK5uy_... url), so those are
+        // checked in addition to the source url.
+        val candidateKeys = listOf(
+            METADATA_KEY_SOURCE_URL,
+            METADATA_KEY_MEDIA_URI,
+            MediaMetadata.METADATA_KEY_MEDIA_ID,
+        )
+        for (key in candidateKeys) {
+            val value = metadata.getString(key)
+            if (value != null && value.isValidMediaUrl()) {
+                val url = resolveAlbumUrl(value, packageName)
+                if (url != null) return url
+            }
         }
         val customKeys = listOf(
             "spotify_album_url", "apple_music_album_url", "deezer_album_url",
@@ -1033,6 +1043,27 @@ class MetadataResolver @Inject constructor(
                     return trimmed
                 }
             } catch (_: Exception) {}
+        }
+
+        // YouTube Music album:
+        //  - browse page: music.youtube.com/browse/MPREb...
+        //  - album playlist: any YouTube url carrying list=OLAK5uy_...
+        if (lower.contains("youtube.com") || lower.contains("youtu.be")) {
+            val browseIndex = lower.indexOf("/browse/")
+            if (browseIndex != -1) {
+                val id = trimmed.substring(browseIndex + "/browse/".length)
+                    .substringBefore('?')
+                    .substringBefore('&')
+                    .substringBefore('#')
+                    .substringBefore('/')
+                    .trim()
+                if (id.isNotBlank()) return "https://music.youtube.com/browse/$id"
+            }
+            val listId = YouTubeResolver.extractPlaylistId(trimmed)
+            // OLAK5uy_... is the id YouTube Music uses for an album playlist.
+            if (listId != null && listId.startsWith("OLAK5uy")) {
+                return "https://music.youtube.com/playlist?list=$listId"
+            }
         }
 
         return null
