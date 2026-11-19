@@ -414,6 +414,8 @@ object MediaServiceResolver {
         // Open-source / community players: GitHub releases are the canonical
         // download page. Matched by signature because forks rename the package.
         val gitHubRelease = when {
+            "morphe" in pkg -> "https://github.com/MorpheApp/morphe-patches"
+            "anddea" in pkg -> "https://github.com/anddea/revanced-patches"
             "metrolist" in pkg -> "https://github.com/MetrolistGroup/Metrolist/releases"
             "innertubex" in pkg || "intertubex" in pkg ->
                 "https://github.com/MetrolistGroup/InnertubeX/releases"
@@ -437,8 +439,10 @@ object MediaServiceResolver {
         }
         if (gitHubRelease != null) return gitHubRelease
 
-        // YMusic is closed source but not on the Play Store.
-        if ("ymusicapp" in pkg || "kapp.youtube" in pkg) return "https://ymusicapp.com"
+        // YMusic is closed source but not on the Play Store — use its patch repo.
+        if ("ymusicapp" in pkg || "kapp.youtube" in pkg || "ymusicv4" in pkg) {
+            return "https://github.com/ymusic-io/YMusicV4"
+        }
 
         // Official / closed-source apps: link to the store page of the app.
         val storePackage = when {

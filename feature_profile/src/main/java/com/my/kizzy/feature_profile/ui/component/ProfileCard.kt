@@ -359,17 +359,22 @@ fun ProfileCard(
                 var bioOverflow by remember { mutableStateOf(false) }
                 val linkColor = MaterialTheme.colorScheme.primary
                 val textColor = MaterialTheme.colorScheme.onBackground
+                val uriHandler = LocalUriHandler.current
                 val annotatedBio = remember(bio, linkColor, textColor) {
                     buildAnnotatedBio(bio, linkColor, textColor)
                 }
 
                 Text(
                     text = annotatedBio,
+                    color = { textColor },
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = if (bioExpanded) Int.MAX_VALUE else 5,
                     overflow = TextOverflow.Ellipsis,
                     onTextLayout = { res: TextLayoutResult -> bioOverflow = res.hasVisualOverflow },
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = 4.dp)
+                        .clickable {
+                            Regex("https?://[^\\s]+").find(bio)?.value?.let { uriHandler.openUri(it) }
+                        },
                 )
                 if (bioOverflow) {
                     Text(
@@ -445,13 +450,15 @@ private fun buildAnnotatedBio(bio: String, linkColor: Color, textColor: Color): 
     urlRegex.findAll(bio).forEach { matchResult ->
         val start = matchResult.range.first
         val end = matchResult.range.last + 1
+        val url = bio.substring(start, end)
         if (start > lastIndex) {
             withStyle(SpanStyle(color = textColor)) {
                 append(bio.substring(lastIndex, start))
             }
         }
+        addStringAnnotation(url, "URL", start, end)
         withStyle(SpanStyle(color = linkColor, fontWeight = FontWeight.Medium)) {
-            append(bio.substring(start, end))
+            append(url)
         }
         lastIndex = end
     }
