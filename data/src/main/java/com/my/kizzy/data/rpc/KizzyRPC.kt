@@ -154,7 +154,18 @@ class KizzyRPC @Inject constructor(
             if (trimmed.isEmpty()) return null
             if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) return null
             if (trimmed.length > 512) return null
-            return trimmed
+            // Discord silently drops activities whose field URLs contain fullwidth
+            // brackets 【】 (U+3010, U+3011) - often percent-encoded as
+            // %E3%80%90 / %E3%80%91 in YouTube search URLs. Decode, convert them
+            // to regular brackets [ ], and return the cleaned URL so the whole
+            // presence is not rejected.
+            val decoded = try {
+                java.net.URLDecoder.decode(trimmed, "UTF-8")
+            } catch (_: Exception) {
+                trimmed
+            }
+            val cleaned = decoded.replace("【", "[").replace("】", "]")
+            return if (cleaned.isEmpty()) null else cleaned
         }
 
         /** Discord allows at most 2 buttons. Invalid entries are dropped. */
@@ -764,11 +775,27 @@ class KizzyRPC @Inject constructor(
         return this
     }
 
+    /**
+     * Sanitizes a rich-presence text field (name, details, state, largeText,
+     * smallText, platform) for the Discord gateway.
+     *
+     * Discord silently drops the entire activity when certain characters are
+     * present - most notably fullwidth brackets 【】 (U+3010, U+3011) which
+     * appear in many Japanese song titles. Truncating to 128 chars is not
+     * enough; the characters themselves must be replaced or Discord will
+     * reject the presence without any error response.
+     *
+     * Fullwidth brackets are converted to regular brackets [ ] so the title
+     * keeps its bracket structure instead of being stripped bare.
+     */
     private fun String.sanitize(): String {
-        return if (this.length > 128) {
-            this.substring(0, 128)
+        var result = this
+        // Discord silently drops activities containing fullwidth brackets.
+        result = result.replace("【", "[").replace("】", "]")
+        return if (result.length > 128) {
+            result.substring(0, 128)
         } else {
-            this
+            result
         }
     }
 
@@ -988,7 +1015,11 @@ class KizzyRPC @Inject constructor(
             val isFirstRun = lastPresenceTimeMs == 0L
 
             if (!forceRefresh && !isFirstRun && !contentChanged && !timelineJumped) {
-                logger.d("KizzyRPC", "Skipping presence update (content unchanged)")
+                logger.d(
+                    "KizzyRPC",
+                    "Skipping presence update (content unchanged) hash=$hash lastHash=$lastPresenceHash " +
+                        "isFirstRun=$isFirstRun timelineJumped=$timelineJumped"
+                )
                 return@withLock
             }
 
@@ -1050,7 +1081,6 @@ class KizzyRPC @Inject constructor(
                         // Client-presence format: labels in buttons, urls in metadata.
                         buttons = cleanButtons?.map { it.label },
                         metadata = cleanButtons?.let { Metadata(buttonUrls = it.map { b -> b.url }) },
-
                         applicationId = applicationIdNumber.takeIf { it.isNotEmpty() }
                             ?: Constants.APPLICATION_ID
                     )
@@ -1069,6 +1099,7 @@ class KizzyRPC @Inject constructor(
                 logger.w("KizzyRPC", "Presence not sent (socket not ready); will retry on the next update")
                 return@withLock
             }
+
             // Remember the presence so we can re-apply after SESSIONS_REPLACE reconnect
             lastPresence = presence
             lastPresenceHash = hash
