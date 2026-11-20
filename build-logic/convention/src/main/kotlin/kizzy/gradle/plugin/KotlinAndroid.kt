@@ -3,7 +3,6 @@ package kizzy.gradle.plugin
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -14,7 +13,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 private fun Project.configureCommonAndroid(commonExtension: CommonExtension) {
     commonExtension.compileSdk {
         version = release(37) {
-            minorApiLevel = 1
+            minorApiLevel = 2
         }
     }
 
@@ -22,8 +21,9 @@ private fun Project.configureCommonAndroid(commonExtension: CommonExtension) {
 
     commonExtension.buildFeatures.buildConfig = true
 
-    commonExtension.compileOptions.sourceCompatibility = JavaVersion.VERSION_26
-    commonExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_26
+    configure<KotlinAndroidProjectExtension> {
+        jvmToolchain(26)
+    }
 
     configure<KotlinAndroidProjectExtension> {
         jvmToolchain(26)

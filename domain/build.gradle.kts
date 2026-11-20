@@ -3,9 +3,8 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_26
-    targetCompatibility = JavaVersion.VERSION_26
+kotlin {
+    jvmToolchain(26)
 }
 dependencies{
     implementation(libs.kotlinx.coroutine)

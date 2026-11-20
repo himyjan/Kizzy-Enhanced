@@ -2,11 +2,6 @@ plugins {
     `kotlin-dsl`
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_26
-    targetCompatibility = JavaVersion.VERSION_26
-}
-
 kotlin {
     jvmToolchain(26)
 }

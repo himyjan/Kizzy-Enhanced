@@ -21,11 +21,6 @@ android {
     targetProjectPath = ":app"
     experimentalProperties["android.experimental.self-instrumenting"] = true
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_26
-        targetCompatibility = JavaVersion.VERSION_26
-    }
-
     buildTypes {
         create("benchmark") {
             initWith(getByName("debug"))
@@ -41,9 +36,4 @@ dependencies {
     implementation(libs.androidx.test.ext.junit)
     implementation(libs.androidx.test.uiautomator)
     implementation(libs.profileinstaller)
-}
-
-// Match project-wide Kotlin JVM target (VERSION_26 per build-logic convention)
-kotlin {
-    jvmToolchain(26)
 }
