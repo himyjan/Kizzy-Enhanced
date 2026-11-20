@@ -665,14 +665,10 @@ class ManualRpc : Service() {
             )
 
         // large image (cover art) -> album/playlist URL first, then video URL.
-        // When line 4 shows the playlist name (no album), the playlist link wins.
-        val largeTextIsPlaylist =
-            richMediaInfo?.album.isNullOrBlank() && !richMediaInfo?.playlistName.isNullOrBlank()
         val largeUrl = YouTubeResolver.largeImageUrl(
             mediaUrl,
             richMediaInfo?.albumUrl,
             richMediaInfo?.playlistUrl,
-            preferPlaylist = largeTextIsPlaylist,
         )
 
         // small image (app icon) -> app download page (GitHub release first priority)
