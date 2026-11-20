@@ -270,8 +270,7 @@
     <string name="go_to_profile">Go to Profile</string>
     <string name="version">Version</string>
     <string name="try_again">Retry</string>
-    <string name="request_for_notification_access">Notification Access is needed for app to extract
-        media information.</string>
+    <string name="request_for_notification_access">Notification Access is needed for app to extract media information. In the settings list that opens, find and tap \"Kizzy-Enhanced\", then enable the toggle.</string>
     <string name="update_check_for_update">Checking for update…</string>
     <string name="update_no_updates_available">No updates available</string>
     <string name="compact_mode">Compact Mode</string>
