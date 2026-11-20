@@ -1,0 +1,87 @@
+name: Update Dependency Versions
+
+on:
+  schedule:
+    # Run every Monday at 00:00 UTC to check for new library versions
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        description: 'Create a pull request with version updates'
+        required: false
+        default: 'true'
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: version-update
+  cancel-in-progress: true
+
+jobs:
+  update-versions:
+    name: Update libs.versions.toml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup JDK 27
+        uses: actions/setup-java@v6
+        with:
+          java-version: '27'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run versionCatalogUpdate
+        run: ./gradlew versionCatalogUpdate --no-daemon
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if git diff --quiet libs.versions.toml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            DIFF=$(git diff libs.versions.toml)
+            # Escape special characters for GitHub Actions output
+            DIFF="${DIFF//'%'/'%25'}"
+            DIFF="${DIFF//$'\n'/'%0A'}"
+            DIFF="${DIFF//$'\r'/'%0D'}"
+            echo "diff=$DIFF" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit version updates
+        if: steps.check-changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add libs.versions.toml
+          git commit -m "chore: update dependency versions via versionCatalogUpdate"
+          git push
+
+      - name: Create pull request
+        if: steps.check-changes.outputs.changed == 'true' && github.event.inputs.create_pr != 'false'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: chore: update dependency versions via versionCatalogUpdate
+          title: chore: update dependency versions
+          body: |
+            Automated dependency version update via `./gradlew versionCatalogUpdate`.
+
+            Changes to `libs.versions.toml`:
+            ```diff
+            ${{ steps.check-changes.outputs.diff }}
+            ```
+          branch: update/dependency-versions
+          delete-branch: true
+          labels: dependencies
