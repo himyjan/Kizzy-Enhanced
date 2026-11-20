@@ -274,7 +274,7 @@ fun StartUp(
                     }
                 }
             }
-            val allMandatoryComplete = batteryOptimizationStatus.value && notificationPostingPerm && usageAccessStatus.value || mediaControlStatus.value && batteryOptimizationStatus.value
+            val allMandatoryComplete = batteryOptimizationStatus.value && notificationPostingPerm && usageAccessStatus.value && mediaControlStatus.value
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
