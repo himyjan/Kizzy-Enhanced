@@ -93,7 +93,13 @@ fun homeFeaturesProvider(
 
             onCheckedChange = {
                 scope.launch {
-                    rpcManager.switchTo(if (it) RpcType.MediaRpc else RpcType.None)
+                    if (it) {
+                        // Add Media RPC without stopping Custom RPC or other RPCs.
+                        rpcManager.switchTo(setOf(RpcType.MediaRpc), add = true)
+                    } else {
+                        // Stop only Media RPC, leave Custom RPC and others running.
+                        rpcManager.stopRpcTypes(setOf(RpcType.MediaRpc))
+                    }
                 }
             },
 
@@ -113,7 +119,13 @@ fun homeFeaturesProvider(
 
             onCheckedChange = {
                 scope.launch {
-                    rpcManager.switchTo(if (it) RpcType.ManualRpc else RpcType.None)
+                    if (it) {
+                        // Add Manual RPC without stopping Custom RPC or other RPCs.
+                        rpcManager.switchTo(setOf(RpcType.ManualRpc), add = true)
+                    } else {
+                        // Stop only Manual RPC, leave Custom RPC and others running.
+                        rpcManager.stopRpcTypes(setOf(RpcType.ManualRpc))
+                    }
                 }
             },
 
@@ -142,9 +154,16 @@ fun homeFeaturesProvider(
                 scope.launch {
                     if (it) {
                         val lastRpc = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                        rpcManager.switchTo(RpcType.CustomRpc, rpcConfigString = lastRpc, isConsoleRpc = false)
+                        // Add Custom RPC without stopping Media RPC or other RPCs.
+                        rpcManager.switchTo(
+                            setOf(RpcType.CustomRpc),
+                            add = true,
+                            rpcConfigString = lastRpc,
+                            isConsoleRpc = false
+                        )
                     } else {
-                        rpcManager.switchTo(RpcType.None)
+                        // Stop only Custom RPC, leave Media RPC and others running.
+                        rpcManager.stopRpcTypes(setOf(RpcType.CustomRpc))
                     }
                 }
             },
