@@ -275,6 +275,7 @@ fun ActivityRow(
                         Box(
                             modifier =
                                 Modifier
+                                    .clickable { openLink(cfg?.smallUrl) }
                                     .border(
                                         3.dp,
                                         MaterialTheme.colorScheme.surfaceVariant,
