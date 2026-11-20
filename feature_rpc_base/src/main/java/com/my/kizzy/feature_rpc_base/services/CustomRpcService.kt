@@ -236,7 +236,7 @@ class CustomRpcService : Service() {
             Json.decodeFromString<RpcConfig>(Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""])
         } catch (e: Exception) {
             null
-        } ?: return
+        } ?: RpcConfig()
 
         val stopIntent = Intent(this, CustomRpcService::class.java)
         stopIntent.action = Constants.ACTION_STOP_SERVICE
@@ -306,8 +306,8 @@ class CustomRpcService : Service() {
                 startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
             }
 
-            kizzyRPC.apply {
-                rpcDataToUse.let {
+            rpcDataToUse?.let {
+                kizzyRPC.apply {
                     setName(it.name.ifEmpty { "" })
                     setDetails(it.details.ifEmpty { null })
                     setState(it.state.ifEmpty { null })
