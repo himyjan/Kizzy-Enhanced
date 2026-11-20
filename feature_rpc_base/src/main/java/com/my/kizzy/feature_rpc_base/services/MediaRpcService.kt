@@ -50,6 +50,9 @@ import com.my.kizzy.feature_rpc_base.services.lastfm.LastFmException
 import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFM
 import com.my.kizzy.feature_rpc_base.services.listenbrainz.ListenBrainz
 import com.my.kizzy.feature_rpc_base.services.listenbrainz.ListenBrainzException
+import kotlinx.serialization.json.Json
+
+private val rpcButtonsJson = Json { ignoreUnknownKeys = true }
 
 @AndroidEntryPoint
 class MediaRpcService : Service() {
@@ -982,7 +985,7 @@ class MediaRpcService : Service() {
             ?: playingMedia.name
         val channelName = playingMedia.state
 
-        val rpcName = (if (showSongAsTitle) songName else playingMedia.name) ?: playingMedia.name
+        val rpcName = if (showSongAsTitle) songName else playingMedia.name
         val rpcDetails = listOfNotNull(songName, appName)
             .filter { it.isNotBlank() }
             .joinToString(" • ")
@@ -1099,9 +1102,7 @@ class MediaRpcService : Service() {
         // links in Settings produced a presence with no buttons at all.
         if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
             val saved = runCatching {
-                kotlinx.serialization.json.Json {
-                    ignoreUnknownKeys = true
-                }.decodeFromString<com.my.kizzy.domain.model.rpc.RpcButtons>(
+                rpcButtonsJson.decodeFromString<com.my.kizzy.domain.model.rpc.RpcButtons>(
                     Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]
                 )
             }.getOrNull()
