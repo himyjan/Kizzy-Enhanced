@@ -683,15 +683,18 @@ private fun RpcTextFieldsColumn(
                             persistConsoleSettings()
                             val consoleConfig = buildConsoleConfig()
                             scope.launch {
+                                // Add Custom RPC without stopping Console RPC or other RPCs.
                                 rpcManager.switchTo(
-                                    RpcType.CustomRpc,
+                                    setOf(RpcType.CustomRpc),
+                                    add = true,
                                     rpcConfigString = Json.encodeToString(consoleConfig),
                                     isConsoleRpc = false
                                 )
                             }
                         }
                         false -> scope.launch {
-                            rpcManager.switchTo(RpcType.None)
+                            // Stop only Custom RPC, leave Console RPC and others running.
+                            rpcManager.stopRpcTypes(setOf(RpcType.CustomRpc))
                         }
                     }
                 }
@@ -1864,6 +1867,35 @@ private fun RpcTextFieldsColumn(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                 )
+            }
+
+            // Console RPC enable switch - independent from Custom RPC.
+            // Toggling it starts/stops only Console RPC, leaving Custom RPC running.
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.enable_console_rpc),
+                    isChecked = isConsoleRpcEnabled,
+                ) {
+                    val newValue = !isConsoleRpcEnabled
+                    isConsoleRpcEnabled = newValue
+                    when (newValue) {
+                        true -> {
+                            persistConsoleSettings()
+                            val consoleConfig = buildConsoleConfig()
+                            scope.launch {
+                                rpcManager.switchTo(
+                                    setOf(RpcType.ConsoleRpc),
+                                    add = true,
+                                    rpcConfigString = Json.encodeToString(consoleConfig),
+                                    isConsoleRpc = true
+                                )
+                            }
+                        }
+                        false -> scope.launch {
+                            rpcManager.stopRpcTypes(setOf(RpcType.ConsoleRpc))
+                        }
+                    }
+                }
             }
 
             // ===== Console RPC Presets =====
