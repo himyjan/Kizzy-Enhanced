@@ -133,7 +133,7 @@ private suspend fun fetchDiscordUserId(token: String): String? {
             val url = java.net.URL("https://discord.com/api/v10/users/@me")
             val connection = url.openConnection() as java.net.HttpURLConnection
             connection.requestMethod = "GET"
-            connection.setRequestProperty("Authorization", token)
+            connection.setRequestProperty("Authorization", "Bearer $token")
             connection.connectTimeout = 10000
             connection.readTimeout = 10000
 
