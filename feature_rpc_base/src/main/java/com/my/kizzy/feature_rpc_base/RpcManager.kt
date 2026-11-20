@@ -40,16 +40,16 @@ import kotlinx.coroutines.launch
  * state, so toggling one RPC on reliably closes all others and the UI reflects
  * the real running state across screens and page re-entries.
  *
- * The enabled RPC is persisted in [Prefs.ACTIVE_RPC_TYPE]. After a cold start
- * the state is restored from it before the service is up, so the switches show
- * the RPC the user had enabled instead of all being closed until the service
- * finishes starting.
+ * Multiple RPC types can be active at the same time - each service sends its
+ * own presence to Discord independently. The last presence sent wins on
+ * Discord's side (Discord only shows one presence per user).
  *
  * Usage:
- *   RpcManager.getInstance(context).activeRpc.collect { rpc ->
- *       // update UI switch based on rpc
+ *   RpcManager.getInstance(context).activeRpc.collect { rpcTypes ->
+ *       // update UI switches based on which types are in the set
  *   }
- *   RpcManager.getInstance(context).switchTo(RpcType.MediaRpc)
+ *   RpcManager.getInstance(context).switchTo(RpcType.MediaRpc, add = true)
+ *   RpcManager.getInstance(context).switchTo(RpcType.None) // stop all
  */
 @Singleton
 class RpcManager @Inject constructor(
@@ -78,14 +78,14 @@ class RpcManager @Inject constructor(
     @Volatile
     private var ignoreServiceDetectionUntil = 0L
 
-    /** Currently active RPC type. Observed by all RPC screens. */
-    private val _activeRpc = MutableStateFlow(RpcType.None)
-    val activeRpc: StateFlow<RpcType> = _activeRpc.asStateFlow()
+    /** Currently active RPC types. Observed by all RPC screens. */
+    private val _activeRpc = MutableStateFlow<Set<RpcType>>(emptySet())
+    val activeRpc: StateFlow<Set<RpcType>> = _activeRpc.asStateFlow()
 
     init {
         // Seed from the persisted choice first: on a cold start the service is
         // not running yet, but the switch must still show the enabled RPC.
-        _activeRpc.value = persistedRpcType()
+        _activeRpc.value = persistedRpcTypes()
         // Sync initial state from Android services on creation.
         refreshFromServices()
         // The preference mirror is primed asynchronously, so the first read may
@@ -99,199 +99,220 @@ class RpcManager @Inject constructor(
     /**
      * Re-syncs the internal state from the Android services.
      * Call this when a screen becomes visible so the UI matches reality.
-     *
-     * When no service is running the persisted choice is kept instead of
-     * reporting "all off": the service may still be starting after a cold
-     * boot, and the switch has to stay where the user left it.
      */
     fun refreshFromServices() {
         val running = if (System.currentTimeMillis() < ignoreServiceDetectionUntil) {
-            RpcType.None
+            emptySet<RpcType>()
         } else {
-            runningRpcType()
+            runningRpcTypes()
         }
-        val persisted = persistedRpcType()
-        val newType = if (running != RpcType.None) running else persisted
-        if (_activeRpc.value != newType) {
-            Log.d(TAG, "Synced RPC state: ${_activeRpc.value} -> $newType")
-            _activeRpc.value = newType
+        val persisted = persistedRpcTypes()
+        val newTypes = if (running.isNotEmpty()) running else persisted
+        if (_activeRpc.value != newTypes) {
+            Log.d(TAG, "Synced RPC state: ${_activeRpc.value} -> $newTypes")
+            _activeRpc.value = newTypes
         }
-        // Keep the persisted value in step with a service that was started
+        // Keep the persisted value in step with services that were started
         // outside this manager (tile, notification listener, apps screen).
-        if (running != RpcType.None && running != persisted) {
-            Prefs[Prefs.ACTIVE_RPC_TYPE] = running.name
+        for (rpcType in running) {
+            if (rpcType != RpcType.None && rpcType !in persisted) {
+                Prefs[Prefs.ACTIVE_RPC_TYPE] = rpcType.name
+            }
         }
-        // Self-heal: the RPC is enabled but its service is not running. This
-        // happens when the process was started in the background (where the
-        // foreground service could not be launched) or after a service crash.
-        // Screens call this while they are visible, so the start is allowed.
-        val restorable = restorableRpcType()
-        if (running == RpcType.None &&
-            restorable != RpcType.None &&
-            System.currentTimeMillis() >= ignoreServiceDetectionUntil
-        ) {
-            Log.d(TAG, "RPC $restorable is enabled but not running, starting it")
-            startRpcService(restorable, rpcConfigString = null, isConsoleRpc = restorable == RpcType.ConsoleRpc)
+        // Self-heal: RPCs are enabled but their services are not running.
+        val restorable = restorableRpcTypes()
+        val toStart = restorable.filter { it !in _activeRpc.value &&
+            System.currentTimeMillis() >= ignoreServiceDetectionUntil }
+        for (rpcType in toStart) {
+            Log.d(TAG, "RPC $rpcType is enabled but not running, starting it")
+            startRpcService(rpcType, rpcConfigString = null, isConsoleRpc = rpcType == RpcType.ConsoleRpc)
         }
     }
 
     /**
-     * Starts the RPC that was enabled before the process was killed.
+     * Starts the RPCs that were enabled before the process was killed.
      *
-     * Called from the Application after the preferences have been primed. If
-     * the service is already running this only restores the in-memory state.
+     * Called from the Application after the preferences have been primed.
      */
     fun restoreActiveRpc() {
-        // Only restore an RPC the user really enabled. The OAuth2 fallback in
-        // persistedRpcType() describes the connection method, not a toggle, so
-        // it must not start a service on its own.
-        val type = restorableRpcType()
-        if (type == RpcType.None) return
-
-        if (type == RpcType.DiscordOAuth2Rpc &&
-            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].isEmpty()
-        ) {
-            Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
-            _activeRpc.value = RpcType.None
-            return
+        val types = restorableRpcTypes()
+        val tokenEmpty = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].isEmpty()
+        for (type in types) {
+            if (type == RpcType.None) continue
+            if (type == RpcType.DiscordOAuth2Rpc && tokenEmpty) {
+                Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+                continue
+            }
+            if (type in runningRpcTypes()) {
+                _activeRpc.value = _activeRpc.value + type
+                continue
+            }
+            Log.d(TAG, "Restoring $type after a cold start")
+            startRpcService(type, rpcConfigString = null, isConsoleRpc = type == RpcType.ConsoleRpc)
+            _activeRpc.value = _activeRpc.value + type
         }
-
-        if (runningRpcType() == type) {
-            _activeRpc.value = type
-            return
-        }
-
-        Log.d(TAG, "Restoring $type after a cold start")
-        startRpcService(type, rpcConfigString = null, isConsoleRpc = type == RpcType.ConsoleRpc)
-        _activeRpc.value = type
     }
 
     /**
-     * Switches to the given RPC type.
+     * Switches the given RPC types.
      *
-     * Stops all other RPC services first, then starts the requested one.
-     * Logs the switch to logcat.
+     * When [add] is true, the given types are added to the currently active set
+     * (multiple RPCs can run simultaneously). When [add] is false, all other
+     * RPCs are stopped first and only the given types are started.
      *
-     * @param rpcType The RPC type to switch to. Use [RpcType.None] to stop all.
+     * @param rpcTypes The RPC types to switch to.
+     * @param add When true, adds to the current set instead of replacing it.
      * @param rpcConfigString Optional serialized RpcConfig for Custom/Console RPC.
      * @param isConsoleRpc Whether the CustomRpcService should run in console mode.
      */
     fun switchTo(
-        rpcType: RpcType,
+        rpcTypes: Set<RpcType>,
+        add: Boolean = false,
         rpcConfigString: String? = null,
         isConsoleRpc: Boolean = false
     ) {
         val previous = _activeRpc.value
-        Log.d(TAG, "Switching RPC: $previous -> $rpcType")
-        // The services need a moment to start/stop; do not let their old
-        // entries overwrite the state the user just selected.
-        ignoreServiceDetectionUntil = System.currentTimeMillis() + 1500
+        Log.d(TAG, "Switching RPC: $previous -> $rpcTypes (add=$add)")
 
-        // Stop all RPC services first
-        stopAllRpcServices()
+        if (!add) {
+            // Stop all RPC services first
+            stopAllRpcServices()
+            _activeRpc.value = emptySet()
+        } else {
+            // The services need a moment to start; do not let their old
+            // entries overwrite the state the user just selected.
+            ignoreServiceDetectionUntil = System.currentTimeMillis() + 1500
+        }
 
         // Update prefs so AppUtils reflects the new state
-        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = if (rpcType == RpcType.CustomRpc) rpcConfigString else ""
-        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = if (rpcType == RpcType.ConsoleRpc) rpcConfigString else ""
-        Prefs[Prefs.MEDIA_RPC_ENABLED] = rpcType == RpcType.MediaRpc
-        Prefs[Prefs.ACTIVE_RPC_TYPE] = if (rpcType == RpcType.None) "" else rpcType.name
+        val customRpc = rpcTypes.filter { it == RpcType.CustomRpc || it == RpcType.ConsoleRpc }
+        val mediaRpc = RpcType.MediaRpc in rpcTypes
+        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = if (customRpc.any { it == RpcType.CustomRpc }) rpcConfigString else ""
+        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = if (customRpc.any { it == RpcType.ConsoleRpc }) rpcConfigString else ""
+        Prefs[Prefs.MEDIA_RPC_ENABLED] = mediaRpc
+        Prefs[Prefs.ACTIVE_RPC_TYPE] = if (rpcTypes.isEmpty() || rpcTypes == setOf(RpcType.None)) ""
+        else rpcTypes.first { it != RpcType.None }.name
         // Only set connection method when explicitly switching to DiscordOAuth2Rpc.
-        // Never reset to Gateway when switching away — the user's saved choice
-        // (Gateway or OAuth2) must persist across RPC service switches.
-        if (rpcType == RpcType.DiscordOAuth2Rpc) {
+        if (RpcType.DiscordOAuth2Rpc in rpcTypes) {
             Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH2
         }
 
-        // Start the requested RPC (if not None)
-        if (rpcType == RpcType.None) {
-            Log.d(TAG, "All RPCs stopped")
+        // Start the requested RPCs (if not None)
+        val typesToStart = rpcTypes - setOf(RpcType.None)
+        if (typesToStart.isNotEmpty()) {
+            for (rpcType in typesToStart) {
+                startRpcService(rpcType, rpcConfigString, isConsoleRpc)
+            }
         } else {
-            startRpcService(rpcType, rpcConfigString, isConsoleRpc)
+            Log.d(TAG, "All RPCs stopped")
         }
 
-        _activeRpc.value = rpcType
+        _activeRpc.value = rpcTypes
+    }
+
+    /**
+     * Convenience overload for switching a single RPC type.
+     */
+    fun switchTo(
+        rpcType: RpcType,
+        add: Boolean = false,
+        rpcConfigString: String? = null,
+        isConsoleRpc: Boolean = false
+    ) {
+        switchTo(setOf(rpcType), add, rpcConfigString, isConsoleRpc)
     }
 
     /**
      * Starts the Android service that belongs to [rpcType].
-     *
-     * The foreground services have to be started with
-     * `startForegroundService` on Android 8+, otherwise the system kills the
-     * process when the service calls `startForeground`.
      */
-    @Suppress("UNUSED_PARAMETER")
     private fun startRpcService(
         rpcType: RpcType,
         rpcConfigString: String?,
         isConsoleRpc: Boolean,
     ) {
-        when (rpcType) {
-            RpcType.None -> Unit
-
+        val intent = when (rpcType) {
             RpcType.MediaRpc -> {
                 Log.d(TAG, "Starting MediaRpcService")
-                startService(Intent(context, MediaRpcService::class.java), foreground = true)
+                Intent(context, MediaRpcService::class.java)
             }
-
             RpcType.CustomRpc -> {
                 Log.d(TAG, "Starting CustomRpcService (custom mode)")
-                val intent = Intent(context, CustomRpcService::class.java)
-                intent.putExtra(
-                    "RPC",
-                    rpcConfigString ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                )
-                intent.putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, false)
-                startService(intent, foreground = true)
+                Intent(context, CustomRpcService::class.java).apply {
+                    putExtra(
+                        "RPC",
+                        rpcConfigString ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                    )
+                    putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, false)
+                }
             }
-
             RpcType.ConsoleRpc -> {
                 Log.d(TAG, "Starting CustomRpcService (console mode)")
-                val intent = Intent(context, CustomRpcService::class.java)
-                intent.putExtra(
-                    "RPC",
-                    rpcConfigString ?: Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
-                )
-                intent.putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, true)
-                startService(intent, foreground = true)
+                Intent(context, CustomRpcService::class.java).apply {
+                    putExtra(
+                        "RPC",
+                        rpcConfigString ?: Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
+                    )
+                    putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, true)
+                }
             }
-
             RpcType.ManualRpc -> {
                 Log.d(TAG, "Starting ManualRpc")
-                startService(Intent(context, ManualRpc::class.java), foreground = true)
+                Intent(context, ManualRpc::class.java)
             }
-
             RpcType.AppDetectionRpc -> {
                 Log.d(TAG, "Starting AppDetectionService")
-                startService(Intent(context, AppDetectionService::class.java), foreground = true)
+                Intent(context, AppDetectionService::class.java)
             }
-
             RpcType.DiscordOAuth2Rpc -> {
                 Log.d(TAG, "Starting DiscordOAuth2RpcService")
-                // This service does not post a foreground notification, so it
-                // must be started as a normal service.
-                startService(Intent(context, DiscordOAuth2RpcService::class.java), foreground = false)
+                Intent(context, DiscordOAuth2RpcService::class.java)
             }
+            RpcType.None -> return
         }
-    }
-
-    private fun startService(intent: Intent, foreground: Boolean) {
         try {
-            if (foreground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
             } else {
                 context.startService(intent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start ${intent.component?.className}", e)
-            // A plain start still works while the app is in the foreground.
             runCatching { context.startService(intent) }
         }
     }
 
     /**
+     * Stops the given RPC services.
+     */
+    fun stopRpcTypes(rpcTypes: Set<RpcType>) {
+        val typesToStop = rpcTypes - setOf(RpcType.None)
+        if (typesToStop.isEmpty()) return
+        Log.d(TAG, "Stopping RPC services: $typesToStop")
+        for (rpcType in typesToStop.toList()) {
+            when (rpcType) {
+                RpcType.MediaRpc -> context.stopService(Intent(context, MediaRpcService::class.java))
+                RpcType.CustomRpc, RpcType.ConsoleRpc ->
+                    context.stopService(Intent(context, CustomRpcService::class.java))
+                RpcType.ManualRpc -> context.stopService(Intent(context, ManualRpc::class.java))
+                RpcType.AppDetectionRpc ->
+                    context.stopService(Intent(context, AppDetectionService::class.java))
+                RpcType.DiscordOAuth2Rpc ->
+                    context.stopService(Intent(context, DiscordOAuth2RpcService::class.java))
+                RpcType.None -> Unit
+            }
+        }
+        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
+        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
+        Prefs[Prefs.MEDIA_RPC_ENABLED] = false
+        Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+        AppUtils.invalidateRunningServicesCache()
+        _activeRpc.value = _activeRpc.value - typesToStop
+    }
+
+    /**
      * Stops all RPC services and clears prefs.
      */
-    private fun stopAllRpcServices() {
+    fun stopAllRpcServices() {
         Log.d(TAG, "Stopping all RPC services")
         context.stopService(Intent(context, MediaRpcService::class.java))
         context.stopService(Intent(context, CustomRpcService::class.java))
@@ -304,54 +325,47 @@ class RpcManager @Inject constructor(
         Prefs[Prefs.MEDIA_RPC_ENABLED] = false
         Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
         AppUtils.invalidateRunningServicesCache()
+        _activeRpc.value = emptySet()
     }
 
-    /** The RPC type whose Android service is running right now. */
-    private fun runningRpcType(): RpcType = when {
-        AppUtils.mediaRpcRunning() -> RpcType.MediaRpc
-        AppUtils.customRpcRunning() -> RpcType.CustomRpc
-        AppUtils.consoleRpcRunning() -> RpcType.ConsoleRpc
-        AppUtils.ManualRpcRunning() -> RpcType.ManualRpc
-        AppUtils.appDetectionRunning() -> RpcType.AppDetectionRpc
-        else -> RpcType.None
+    /** The RPC types whose Android services are running right now. */
+    private fun runningRpcTypes(): Set<RpcType> = buildSet {
+        if (AppUtils.mediaRpcRunning()) add(RpcType.MediaRpc)
+        if (AppUtils.customRpcRunning()) add(RpcType.CustomRpc)
+        if (AppUtils.consoleRpcRunning()) add(RpcType.ConsoleRpc)
+        if (AppUtils.ManualRpcRunning()) add(RpcType.ManualRpc)
+        if (AppUtils.appDetectionRunning()) add(RpcType.AppDetectionRpc)
     }
 
     /**
-     * The RPC type the user enabled last, read from the preferences.
-     *
-     * Falls back to the older signals for users that updated from a version
-     * without [Prefs.ACTIVE_RPC_TYPE].
+     * The RPC types the user enabled last, read from the preferences.
      */
-    private fun persistedRpcType(): RpcType {
-        val restorable = restorableRpcType()
-        if (restorable != RpcType.None) return restorable
-        // OAuth2 is a connection method, not a toggle. It is still reported so
-        // the screens know that a session exists.
-        if (Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].isNotEmpty() &&
-            Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY] ==
-            Prefs.RPC_CONNECTION_METHOD_OAUTH2
-        ) {
-            return RpcType.DiscordOAuth2Rpc
+    private fun persistedRpcTypes(): Set<RpcType> {
+        val stored = Prefs[Prefs.ACTIVE_RPC_TYPE, ""]
+        val types = mutableSetOf<RpcType>()
+        if (stored.isNotEmpty()) {
+            runCatching { RpcType.valueOf(stored) }.getOrNull()?.let { types.add(it) }
         }
-        return RpcType.None
+        // Users that update from a version without ACTIVE_RPC_TYPE:
+        if (Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isNotEmpty()) types.add(RpcType.ConsoleRpc)
+        if (Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty()) types.add(RpcType.CustomRpc)
+        if (Prefs[Prefs.MEDIA_RPC_ENABLED, false]) types.add(RpcType.MediaRpc)
+        return types
     }
 
     /**
-     * The RPC the user really enabled and that may be started again.
-     *
-     * Older versions only persisted [Prefs.MEDIA_RPC_ENABLED] and the
-     * custom/console configs, so those are accepted as fallbacks.
+     * The RPC types the user really enabled and that may be started again.
      */
-    private fun restorableRpcType(): RpcType {
+    private fun restorableRpcTypes(): Set<RpcType> {
+        val types = mutableSetOf<RpcType>()
         val stored = Prefs[Prefs.ACTIVE_RPC_TYPE, ""]
         if (stored.isNotEmpty()) {
-            runCatching { RpcType.valueOf(stored) }.getOrNull()?.let { return it }
+            runCatching { RpcType.valueOf(stored) }.getOrNull()?.let { types.add(it) }
         }
-        // The custom/console config is only kept while that RPC is active.
-        if (Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isNotEmpty()) return RpcType.ConsoleRpc
-        if (Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty()) return RpcType.CustomRpc
-        if (Prefs[Prefs.MEDIA_RPC_ENABLED, false]) return RpcType.MediaRpc
-        return RpcType.None
+        if (Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isNotEmpty()) types.add(RpcType.ConsoleRpc)
+        if (Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty()) types.add(RpcType.CustomRpc)
+        if (Prefs[Prefs.MEDIA_RPC_ENABLED, false]) types.add(RpcType.MediaRpc)
+        return types
     }
 
     companion object {

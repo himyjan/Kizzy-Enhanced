@@ -102,6 +102,10 @@ object MediaServiceResolver {
         "kreate", "vitune", "simpmusic", "ymusic", "ymusicapp", "harmony", "harmonymusic",
         "gyawun", "musify", "namida", "bloomee", "vimusic", "spotube",
 
+        // Morphe / AndDea Revanced - YouTube clients that publish their own
+        // metadata but may not use standard YouTube media ID fields
+        "morphe", "anddea",
+
         // Full YouTube video / extractor clients
         "newpipe", "pipepipe", "tubular", "libretube", "clipious", "skytube",
         "grayjay", "noutube", "freetube", "bravepipe",
@@ -295,6 +299,14 @@ object MediaServiceResolver {
         if (packageName.isNullOrBlank()) return false
         val pkg = packageName.lowercase()
         return pkg.contains("youtube") || YOUTUBE_WRAPPER_SIGNATURES.any { pkg.contains(it) }
+    }
+
+    /** True when the package is a YouTube wrapper / alternative client (InnerTune,
+     * Metrolist, Morphe, AndDea Revanced, etc.). These publish their own metadata
+     * and should not fall back to a YouTube search page when no video URL is found. */
+    fun isYouTubeWrapper(packageName: String?): Boolean {
+        if (packageName.isNullOrBlank()) return false
+        return YOUTUBE_WRAPPER_SIGNATURES.any { packageName.lowercase().contains(it) }
     }
 
     /** Browsers that publish a MediaSession for a web player (Apple Music web,

@@ -444,14 +444,14 @@ private fun RpcTextFieldsColumn(
         rpcManager.refreshFromServices()
     }
     var isCustomRpcEnabled by remember {
-        mutableStateOf(rpcManager.activeRpc.value == RpcType.CustomRpc)
+        mutableStateOf(RpcType.CustomRpc in rpcManager.activeRpc.value)
     }
     var isConsoleRpcEnabled by remember {
-        mutableStateOf(rpcManager.activeRpc.value == RpcType.ConsoleRpc)
+        mutableStateOf(RpcType.ConsoleRpc in rpcManager.activeRpc.value)
     }
     LaunchedEffect(rpcManager.activeRpc) {
-        isCustomRpcEnabled = rpcManager.activeRpc.value == RpcType.CustomRpc
-        isConsoleRpcEnabled = rpcManager.activeRpc.value == RpcType.ConsoleRpc
+        isCustomRpcEnabled = RpcType.CustomRpc in rpcManager.activeRpc.value
+        isConsoleRpcEnabled = RpcType.ConsoleRpc in rpcManager.activeRpc.value
     }
     var consolePlatform by remember {
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"])
@@ -573,7 +573,7 @@ private fun RpcTextFieldsColumn(
 
     /** Re-sends the presence when Console RPC is already running. */
     fun applyConsoleSettingsIfRunning() {
-        if (rpcManager.activeRpc.value != RpcType.ConsoleRpc) return
+        if (RpcType.ConsoleRpc !in rpcManager.activeRpc.value) return
         scope.launch {
             rpcManager.switchTo(
                 RpcType.ConsoleRpc,
@@ -617,7 +617,7 @@ private fun RpcTextFieldsColumn(
         persistConsoleSettings()
 
         // If Console RPC is not running, start it so the preset takes effect immediately
-        if (rpcManager.activeRpc.value != RpcType.ConsoleRpc) {
+        if (RpcType.ConsoleRpc !in rpcManager.activeRpc.value) {
             scope.launch {
                 rpcManager.switchTo(
                     RpcType.ConsoleRpc,
@@ -645,7 +645,7 @@ private fun RpcTextFieldsColumn(
         persistConsoleSettings()
 
         // If Console RPC is not running, start it so the game takes effect immediately
-        if (rpcManager.activeRpc.value != RpcType.ConsoleRpc) {
+        if (RpcType.ConsoleRpc !in rpcManager.activeRpc.value) {
             scope.launch {
                 rpcManager.switchTo(
                     RpcType.ConsoleRpc,
@@ -664,37 +664,35 @@ private fun RpcTextFieldsColumn(
 
     ) {
 
-        // Enable Custom RPC / Console RPC switch - shown on both tabs but starts
-        // the appropriate RPC type based on which tab is active.
-        item {
+        // Enable Custom RPC switch - only on the Custom RPC tab. Console RPC is
+        // started by selecting a preset, no separate enable switch is needed.
+        if (selectedTab == 0) {
+            item {
 
-            SwitchBar(
+                SwitchBar(
 
-                title = stringResource(if (selectedTab == 0) R.string.enable_customRpc else R.string.enable_console_rpc),
+                    title = stringResource(R.string.enable_customRpc),
 
-                isChecked = if (selectedTab == 0) isCustomRpcEnabled else isConsoleRpcEnabled,
+                    isChecked = isCustomRpcEnabled,
 
-            ) {
-                val newValue = !if (selectedTab == 0) isCustomRpcEnabled else isConsoleRpcEnabled
-                if (selectedTab == 0) {
+                ) {
+                    val newValue = !isCustomRpcEnabled
                     isCustomRpcEnabled = newValue
-                } else {
-                    isConsoleRpcEnabled = newValue
-                }
-                when (newValue) {
-                    true -> {
-                        persistConsoleSettings()
-                        val consoleConfig = buildConsoleConfig()
-                        scope.launch {
-                            rpcManager.switchTo(
-                                if (selectedTab == 0) RpcType.CustomRpc else RpcType.ConsoleRpc,
-                                rpcConfigString = Json.encodeToString(consoleConfig),
-                                isConsoleRpc = selectedTab == 1
-                            )
+                    when (newValue) {
+                        true -> {
+                            persistConsoleSettings()
+                            val consoleConfig = buildConsoleConfig()
+                            scope.launch {
+                                rpcManager.switchTo(
+                                    RpcType.CustomRpc,
+                                    rpcConfigString = Json.encodeToString(consoleConfig),
+                                    isConsoleRpc = false
+                                )
+                            }
                         }
-                    }
-                    false -> scope.launch {
-                        rpcManager.switchTo(RpcType.None)
+                        false -> scope.launch {
+                            rpcManager.switchTo(RpcType.None)
+                        }
                     }
                 }
             }

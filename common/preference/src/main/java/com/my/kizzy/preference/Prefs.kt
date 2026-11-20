@@ -493,6 +493,8 @@ object Prefs {
     const val MANUAL_RPC_SHOW_COVER_ART = "manual_rpc_show_cover_art"
     const val MANUAL_RPC_SHOW_APP_ICON = "manual_rpc_show_app_icon"
     const val MANUAL_RPC_SHOW_PLAYBACK_STATE = "manual_rpc_show_playback_state"
+    const val MANUAL_RPC_SHOW_ARTIST_NAME = "manual_rpc_show_artist_name"
+    const val MANUAL_RPC_SHOW_ALBUM_NAME = "manual_rpc_show_album_name"
     const val MANUAL_RPC_ENABLE_TIMESTAMPS = "manual_rpc_enable_timestamps"
     const val MANUAL_RPC_HIDE_ON_PAUSE = "manual_rpc_hide_on_pause"
     const val MANUAL_RPC_PLATFORM = "manual_rpc_platform"

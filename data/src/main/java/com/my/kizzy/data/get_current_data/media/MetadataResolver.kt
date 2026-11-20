@@ -216,6 +216,13 @@ class MetadataResolver @Inject constructor(
             extractYouTubeUrl(metadata)?.let { url ->
                 normalizeMediaUrl(url, packageName)?.let { return it }
             }
+            // YouTube wrapper clients (Morphe, AndDea Revanced, Metrolist, etc.)
+            // publish their own metadata and should not fall back to a YouTube
+            // search page when no video URL is found. Return null instead so no
+            // misleading search link is sent to Discord.
+            if (MediaServiceResolver.isYouTubeWrapper(packageName)) {
+                return null
+            }
             // No direct video/playlist id was published by the session.
             // Fall back to the title search instead of returning null: the
             // artist link still gets a search page, so the media link must too,

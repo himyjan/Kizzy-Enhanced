@@ -68,14 +68,14 @@ class GamesViewModel @Inject constructor(
 
     /** Whether Console RPC is running. Seeded from the persisted state. */
     private val _consoleRpcRunning = mutableStateOf(
-        RpcManager.getInstance(context).activeRpc.value == RpcType.ConsoleRpc
+        RpcType.ConsoleRpc in RpcManager.getInstance(context).activeRpc.value
     )
     val consoleRpcRunning: State<Boolean> = _consoleRpcRunning
 
     /** Whether another RPC service is running (or was enabled last). */
     private val _otherRpcServicesRunning = mutableStateOf(
         RpcManager.getInstance(context).activeRpc.value.let {
-            it != RpcType.None && it != RpcType.ConsoleRpc
+            it.isNotEmpty() && (it - setOf(RpcType.None, RpcType.ConsoleRpc)).isNotEmpty()
         }
     )
     val otherRpcServicesRunning: State<Boolean> = _otherRpcServicesRunning

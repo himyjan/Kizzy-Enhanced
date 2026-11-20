@@ -45,6 +45,8 @@ class ManualRpcViewmodel @Inject constructor(
             templateState = Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, ""],
             showCoverArt = Prefs[Prefs.MANUAL_RPC_SHOW_COVER_ART, false],
             showAppIcon = Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON, false],
+            showArtistName = Prefs[Prefs.MANUAL_RPC_SHOW_ARTIST_NAME, true],
+            showAlbumName = Prefs[Prefs.MANUAL_RPC_SHOW_ALBUM_NAME, true],
             showPlaybackState = Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE, false],
             enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, false],
             hideOnPause = Prefs[Prefs.MANUAL_RPC_HIDE_ON_PAUSE, false],
@@ -227,6 +229,18 @@ class ManualRpcViewmodel @Inject constructor(
                         Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE] = false
                         _uiState.update { it.copy(showPlaybackState = false) }
                     }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.ToggleShowArtistName -> {
+                    Prefs[Prefs.MANUAL_RPC_SHOW_ARTIST_NAME] = event.enabled
+                    _uiState.update { it.copy(showArtistName = event.enabled) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.ToggleShowAlbumName -> {
+                    Prefs[Prefs.MANUAL_RPC_SHOW_ALBUM_NAME] = event.enabled
+                    _uiState.update { it.copy(showAlbumName = event.enabled) }
                     restartServiceIfRunning()
                 }
 

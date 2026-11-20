@@ -74,6 +74,10 @@ import androidx.compose.material.icons.outlined.Info
 
 import androidx.compose.material.icons.outlined.Title
 
+import androidx.compose.material.icons.outlined.Info
+
+import androidx.compose.material.icons.outlined.Title
+
 import androidx.compose.material3.DropdownMenu
 
 import androidx.compose.material3.DropdownMenuItem
@@ -238,9 +242,9 @@ fun ManualRpcScreen(
         rpcManager.refreshFromServices()
     }
 
-    var ManualRpcRunning by remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ManualRpc) }
+    var ManualRpcRunning by remember { mutableStateOf(RpcType.ManualRpc in rpcManager.activeRpc.value) }
     LaunchedEffect(rpcManager.activeRpc) {
-        ManualRpcRunning = rpcManager.activeRpc.value == RpcType.ManualRpc
+        ManualRpcRunning = RpcType.ManualRpc in rpcManager.activeRpc.value
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -517,112 +521,51 @@ fun ManualRpcScreen(
 
 
 
-                // Title source selector
+                // Media Display Options - same order as Media RPC settings
 
+                // 1. Enable artist name
                 item {
 
                     PreferenceSwitch(
 
-                        title = stringResource(R.string.manual_rpc_title_toggle),
+                        title = stringResource(R.string.enable_artist_name),
 
-                        description = stringResource(R.string.manual_rpc_title_toggle_desc),
+                        description = stringResource(R.string.manual_rpc_detect_artist),
 
-                        isChecked = state.showSongAsTitle,
+                        isChecked = state.showArtistName,
 
-                        onClick = { onEvent(UiEvent.ToggleShowSongAsTitle(!state.showSongAsTitle)) },
+                        onClick = {
 
-                        icon = Icons.Outlined.Title,
+                            onEvent(UiEvent.ToggleShowArtistName(!state.showArtistName))
+
+                        },
 
                     )
 
                 }
 
-                if (state.showSongAsTitle) {
+                // 2. Enable album name
+                item {
 
-                    item {
+                    PreferenceSwitch(
 
-                        val titleSources = linkedMapOf(
+                        title = stringResource(R.string.enable_album_name),
 
-                            stringResource(R.string.title_source_song) to "title",
+                        description = stringResource(R.string.manual_rpc_detect_album),
 
-                            stringResource(R.string.title_source_artist) to "artist",
+                        isChecked = state.showAlbumName,
 
-                        )
+                        onClick = {
 
-                        val titleIcon = if (state.titleSourceExpanded)
+                            onEvent(UiEvent.ToggleShowAlbumName(!state.showAlbumName))
 
-                            Icons.Outlined.KeyboardArrowUp
+                        },
 
-                        else
-
-                            Icons.Outlined.KeyboardArrowDown
-
-                        val titleLabel = titleSources.entries
-
-                            .firstOrNull { it.value == state.titleSource }?.key ?: ""
-
-                        RpcField(
-
-                            value = titleLabel,
-
-                            label = R.string.manual_rpc_title_toggle,
-
-                            trailingIcon = {
-
-                                Icon(
-
-                                    imageVector = titleIcon,
-
-                                    contentDescription = null,
-
-                                    modifier = Modifier.clickable {
-
-                                        onEvent(UiEvent.TriggerTitleSourceDropDown)
-
-                                    }
-
-                                )
-
-                            },
-
-                            content = {
-
-                                DropdownMenu(
-
-                                    expanded = state.titleSourceExpanded,
-
-                                    onDismissRequest = { onEvent(UiEvent.TriggerTitleSourceDropDown) },
-
-                                    modifier = Modifier.fillMaxWidth()
-
-                                ) {
-
-                                    titleSources.forEach { (label, value) ->
-
-                                        DropdownMenuItem(
-
-                                            text = { Text(text = label) },
-
-                                            onClick = { onEvent(UiEvent.SetTitleSource(value)) },
-
-                                        )
-
-                                    }
-
-                                }
-
-                            }
-
-                        )
-
-                    }
+                    )
 
                 }
 
-
-
-                // Media Display Options
-
+                // 3. Show cover art
                 item {
 
                     PreferenceSwitch(
@@ -645,6 +588,7 @@ fun ManualRpcScreen(
 
                 }
 
+                // 4. Show app icon
                 item {
 
                     PreferenceSwitch(
@@ -665,26 +609,7 @@ fun ManualRpcScreen(
 
                 }
 
-                item {
-
-                    PreferenceSwitch(
-
-                        title = stringResource(R.string.show_playback_state),
-
-                        isChecked = state.showPlaybackState,
-
-                        onClick = {
-
-                            onEvent(UiEvent.ToggleShowPlaybackState(!state.showPlaybackState))
-
-                        },
-
-                        icon = Icons.Outlined.PlayCircle
-
-                    )
-
-                }
-
+                // 5. Enable timestamps
                 item {
 
                     PreferenceSwitch(
@@ -827,6 +752,28 @@ fun ManualRpcScreen(
 
                 }
 
+                // 6. Show playback state
+                item {
+
+                    PreferenceSwitch(
+
+                        title = stringResource(R.string.show_playback_state),
+
+                        isChecked = state.showPlaybackState,
+
+                        onClick = {
+
+                            onEvent(UiEvent.ToggleShowPlaybackState(!state.showPlaybackState))
+
+                        },
+
+                        icon = Icons.Outlined.PlayCircle
+
+                    )
+
+                }
+
+                // 7. Hide on pause
                 item {
 
                     PreferenceSwitch(
@@ -842,6 +789,146 @@ fun ManualRpcScreen(
                         },
 
                         icon = Icons.Outlined.PauseCircle
+
+                    )
+
+                }
+
+                // 8. Show song as title
+                item {
+
+                    PreferenceSwitch(
+
+                        title = stringResource(R.string.manual_rpc_title_toggle),
+
+                        description = stringResource(R.string.manual_rpc_title_toggle_desc),
+
+                        isChecked = state.showSongAsTitle,
+
+                        onClick = { onEvent(UiEvent.ToggleShowSongAsTitle(!state.showSongAsTitle)) },
+
+                        icon = Icons.Outlined.Title,
+
+                    )
+
+                }
+
+                if (state.showSongAsTitle) {
+
+                    item {
+
+                        val titleSources = linkedMapOf(
+
+                            stringResource(R.string.title_source_song) to "title",
+
+                            stringResource(R.string.title_source_artist) to "artist",
+
+                        )
+
+                        val titleIcon = if (state.titleSourceExpanded)
+
+                            Icons.Outlined.KeyboardArrowUp
+
+                        else
+
+                            Icons.Outlined.KeyboardArrowDown
+
+                        val titleLabel = titleSources.entries
+
+                            .firstOrNull { it.value == state.titleSource }?.key ?: ""
+
+                        RpcField(
+
+                            value = titleLabel,
+
+                            label = R.string.manual_rpc_title_toggle,
+
+                            trailingIcon = {
+
+                                Icon(
+
+                                    imageVector = titleIcon,
+
+                                    contentDescription = null,
+
+                                    modifier = Modifier.clickable {
+
+                                        onEvent(UiEvent.TriggerTitleSourceDropDown)
+
+                                    }
+
+                                )
+
+                            },
+
+                            content = {
+
+                                DropdownMenu(
+
+                                    expanded = state.titleSourceExpanded,
+
+                                    onDismissRequest = { onEvent(UiEvent.TriggerTitleSourceDropDown) },
+
+                                    modifier = Modifier.fillMaxWidth()
+
+                                ) {
+
+                                    titleSources.forEach { (label, value) ->
+
+                                        DropdownMenuItem(
+
+                                            text = { Text(text = label) },
+
+                                            onClick = { onEvent(UiEvent.SetTitleSource(value)) },
+
+                                        )
+
+                                    }
+
+                                }
+
+                            }
+
+                        )
+
+                    }
+
+                }
+
+                // 9. Auto detect activity type
+                item {
+
+                    PreferenceSwitch(
+
+                        title = stringResource(R.string.auto_detect_activity_type),
+
+                        description = stringResource(R.string.auto_detect_activity_type_desc),
+
+                        isChecked = state.isAutoActivityTypeEnabled,
+
+                        onClick = {
+
+                            onEvent(UiEvent.ToggleAutoActivityType(!state.isAutoActivityTypeEnabled))
+
+                        },
+
+                        icon = {
+
+                            Icon(
+
+                                painter = painterResource(R.drawable.ic_apps),
+
+                                modifier = Modifier
+
+                                    .padding(start = 8.dp, end = 16.dp)
+
+                                    .size(24.dp),
+
+                                contentDescription = null
+
+                            )
+
+                        },
 
                     )
 

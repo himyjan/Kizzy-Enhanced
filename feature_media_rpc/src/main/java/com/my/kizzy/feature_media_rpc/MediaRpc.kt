@@ -103,10 +103,10 @@ fun MediaRPC(
         rpcManager.refreshFromServices()
     }
     var mediaRpcRunning by remember {
-        mutableStateOf(rpcManager.activeRpc.value == RpcType.MediaRpc)
+        mutableStateOf(RpcType.MediaRpc in rpcManager.activeRpc.value)
     }
     LaunchedEffect(rpcManager.activeRpc) {
-        mediaRpcRunning = rpcManager.activeRpc.value == RpcType.MediaRpc
+        mediaRpcRunning = RpcType.MediaRpc in rpcManager.activeRpc.value
     }
 
     var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, true]) }

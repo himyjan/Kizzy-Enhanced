@@ -35,6 +35,8 @@ data class UiState(
     val isAppsLoading: Boolean = false,
     val showCoverArt: Boolean = true,
     val showAppIcon: Boolean = false,
+    val showArtistName: Boolean = true,
+    val showAlbumName: Boolean = true,
     val showPlaybackState: Boolean = true,
     val enableTimestamps: Boolean = true,
     val hideOnPause: Boolean = false,

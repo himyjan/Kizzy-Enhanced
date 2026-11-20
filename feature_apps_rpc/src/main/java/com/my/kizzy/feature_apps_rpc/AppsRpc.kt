@@ -145,10 +145,10 @@ fun AppsRPC(
         rpcManager.refreshFromServices()
     }
     var serviceEnabled by remember {
-        mutableStateOf(rpcManager.activeRpc.value == RpcType.AppDetectionRpc)
+        mutableStateOf(RpcType.AppDetectionRpc in rpcManager.activeRpc.value)
     }
     LaunchedEffect(rpcManager.activeRpc) {
-        serviceEnabled = rpcManager.activeRpc.value == RpcType.AppDetectionRpc
+        serviceEnabled = RpcType.AppDetectionRpc in rpcManager.activeRpc.value
     }
 
     var searchText by remember { mutableStateOf("") }

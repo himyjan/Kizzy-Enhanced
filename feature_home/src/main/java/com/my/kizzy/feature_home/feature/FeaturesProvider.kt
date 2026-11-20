@@ -66,15 +66,15 @@ fun homeFeaturesProvider(
     LaunchedEffect(Unit) {
         rpcManager.refreshFromServices()
     }
-    val mediaRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.MediaRpc) }
-    val customRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.CustomRpc) }
-    val ManualRpcRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.ManualRpc) }
-    val appDetectionRunning = remember { mutableStateOf(rpcManager.activeRpc.value == RpcType.AppDetectionRpc) }
+    val mediaRpcRunning = remember { mutableStateOf(RpcType.MediaRpc in rpcManager.activeRpc.value) }
+    val customRpcRunning = remember { mutableStateOf(RpcType.CustomRpc in rpcManager.activeRpc.value) }
+    val ManualRpcRunning = remember { mutableStateOf(RpcType.ManualRpc in rpcManager.activeRpc.value) }
+    val appDetectionRunning = remember { mutableStateOf(RpcType.AppDetectionRpc in rpcManager.activeRpc.value) }
     LaunchedEffect(rpcManager.activeRpc) {
-        mediaRpcRunning.value = rpcManager.activeRpc.value == RpcType.MediaRpc
-        ManualRpcRunning.value = rpcManager.activeRpc.value == RpcType.ManualRpc
-        customRpcRunning.value = rpcManager.activeRpc.value == RpcType.CustomRpc
-        appDetectionRunning.value = rpcManager.activeRpc.value == RpcType.AppDetectionRpc
+        mediaRpcRunning.value = RpcType.MediaRpc in rpcManager.activeRpc.value
+        ManualRpcRunning.value = RpcType.ManualRpc in rpcManager.activeRpc.value
+        customRpcRunning.value = RpcType.CustomRpc in rpcManager.activeRpc.value
+        appDetectionRunning.value = RpcType.AppDetectionRpc in rpcManager.activeRpc.value
     }
 
     return listOf(

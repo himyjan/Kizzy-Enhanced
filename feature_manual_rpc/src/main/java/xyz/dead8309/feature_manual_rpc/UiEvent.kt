@@ -27,6 +27,8 @@ sealed interface UiEvent {
     data class SetAppActivityType(val packageName: String, val activityType: Int?) : UiEvent
     data class ToggleShowCoverArt(val enabled: Boolean) : UiEvent
     data class ToggleShowAppIcon(val enabled: Boolean) : UiEvent
+    data class ToggleShowArtistName(val enabled: Boolean) : UiEvent
+    data class ToggleShowAlbumName(val enabled: Boolean) : UiEvent
     data class ToggleShowPlaybackState(val enabled: Boolean) : UiEvent
     data class ToggleEnableTimestamps(val enabled: Boolean) : UiEvent
     data class ToggleHideOnPause(val enabled: Boolean) : UiEvent

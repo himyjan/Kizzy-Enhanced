@@ -139,9 +139,9 @@ fun Home(
             rpcManager.refreshFromServices()
             homeItems = features.map { item ->
                 when (item.title) {
-                    mediaRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.MediaRpc)
-                    ManualRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.ManualRpc)
-                    customRpcTitle -> item.copy(isChecked = rpcManager.activeRpc.value == RpcType.CustomRpc)
+                    mediaRpcTitle -> item.copy(isChecked = RpcType.MediaRpc in rpcManager.activeRpc.value)
+                    ManualRpcTitle -> item.copy(isChecked = RpcType.ManualRpc in rpcManager.activeRpc.value)
+                    customRpcTitle -> item.copy(isChecked = RpcType.CustomRpc in rpcManager.activeRpc.value)
                     else -> item
                 }
             }
