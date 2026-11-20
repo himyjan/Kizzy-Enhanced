@@ -209,6 +209,14 @@ class CustomRpcService : Service() {
      *   KizzyRPC.build()). Used by the notification restart button.
      */
     private fun sendPresenceAndNotification(forceRefresh: Boolean = false) {
+        // Load rpcData from prefs if null (service restarted without RPC intent extra,
+        // e.g. after Android kills and restarts it, or launched via adb).
+        val rpcDataToUse = rpcData ?: try {
+            Json.decodeFromString<RpcConfig>(Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""])
+        } catch (e: Exception) {
+            null
+        } ?: return
+
         val stopIntent = Intent(this, CustomRpcService::class.java)
         stopIntent.action = Constants.ACTION_STOP_SERVICE
         val pendingIntent: PendingIntent = PendingIntent.getService(
@@ -217,7 +225,7 @@ class CustomRpcService : Service() {
 
         val restartIntent = Intent(this, CustomRpcService::class.java)
         restartIntent.action = Constants.ACTION_RESTART_SERVICE
-        restartIntent.putExtra("RPC", if (rpcData != null) Json.encodeToString(rpcData) else "")
+        restartIntent.putExtra("RPC", Json.encodeToString(rpcDataToUse))
         restartIntent.putExtra(EXTRA_CONSOLE_RPC, consoleMode)
         val restartPendingIntent: PendingIntent = PendingIntent.getService(
             this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -251,7 +259,7 @@ class CustomRpcService : Service() {
             // replaced the notification entirely, removing its click intent and buttons.
             val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
                 .setContentTitle(getString(R.string.custom_rpc_running))
-                .setContentText(rpcData?.name ?: "")
+                .setContentText(rpcDataToUse.name ?: "")
                 .setSmallIcon(R.drawable.ic_rpc_placeholder)
                 .setContentIntent(appPendingIntent)
                 .addAction(
@@ -268,7 +276,7 @@ class CustomRpcService : Service() {
                         pendingIntent
                     ).build()
                 )
-                .setLargeIcon(rpcData?.largeImg?.toRpcImage(), this@CustomRpcService)
+                .setLargeIcon(rpcDataToUse.largeImg?.toRpcImage(), this@CustomRpcService)
                 .build()
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -278,7 +286,7 @@ class CustomRpcService : Service() {
             }
 
             kizzyRPC.apply {
-                rpcData?.let {
+                rpcDataToUse.let {
                     setName(it.name.ifEmpty { "" })
                     setDetails(it.details.ifEmpty { null })
                     setState(it.state.ifEmpty { null })
