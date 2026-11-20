@@ -456,7 +456,7 @@ class ManualRpc : Service() {
         }
 
         val finalName: String?
-        var finalDetails: String?
+        val finalDetails: String?
         val finalState: String?
         var finalLargeImage: RpcImage?
         var finalSmallImage: RpcImage?
@@ -602,23 +602,6 @@ class ManualRpc : Service() {
             finalTimestamps = null
             effectivePackageName = null
         }
-
-        // "Show App Name in Details" (mirrors Media RPC): append " • appName"
-        // to the details line unless already present (e.g. template used
-        // {{app_name}}). Skipped when there is no details text yet.
-        if (Prefs[Prefs.MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS, false] &&
-            !finalDetails.isNullOrBlank()
-        ) {
-            val detailsAppName = when {
-                currentContextIsMedia -> richMediaInfo?.appName
-                currentContextIsApp -> appInfo?.name
-                else -> null
-            }?.takeIf { it.isNotBlank() }
-            if (detailsAppName != null && !finalDetails.contains(detailsAppName, ignoreCase = true)) {
-                finalDetails = "$finalDetails • $detailsAppName"
-            }
-        }
-
         val rpcDataIsEmpty =
             finalName.isNullOrEmpty() && finalDetails.isNullOrEmpty() && finalState.isNullOrEmpty()
 

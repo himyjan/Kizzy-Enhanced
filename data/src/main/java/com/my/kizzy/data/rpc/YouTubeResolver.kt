@@ -45,6 +45,10 @@ object YouTubeResolver {
         val channelUrl: String,
         val title: String,
         val thumbnailUrl: String,
+        /** Avatar URL of the uploader/channel, or empty when not found. */
+        val avatarUrl: String = "",
+        /** True when the uploader is a single channel (not a multi-artist track). */
+        val isSingleChannel: Boolean = false,
     )
 
     private const val OEMBED = "https://www.youtube.com/oembed"
@@ -79,6 +83,11 @@ object YouTubeResolver {
     }
 
     private val CHANNEL_ID_PATTERN = Regex("""(?:"channelId"\s*:\s*"|itemprop=["']channelId["']\s+content=["'])(UC[A-Za-z0-9_-]{22})""")
+    // Uploader avatar + channel name from the watch page. The first "avatar" block
+    // paired with an "a11yLabel":"Go to channel <name>" is the video's owner.
+    private val CHANNEL_AVATAR_PATTERN = Regex(
+        "\"avatar\"\\s*:\\s*\\{[\\s\\S]{0,400}?\\{[\\s\\S]{0,200}?\"url\"\\s*:\\s*\"(https://yt3[^\"]+)\"[\\s\\S]{0,400}?\"a11yLabel\"\\s*:\\s*\"Go to channel ([^\"]+)\""
+    )
     private val YMUSIC_HOST = Regex("(?i)^(?:https?://)?(?:www\\.)?ymusicapp\\.com")
 
     fun isYoutubeFamilyUrl(url: String?): Boolean {
@@ -417,6 +426,29 @@ object YouTubeResolver {
                 headers.append("User-Agent", USER_AGENT)
             }.bodyAsText()
             CHANNEL_ID_PATTERN.find(body)?.groupValues?.getOrNull(1)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private val avatarCache = ConcurrentHashMap<String, String>()
+
+    /**
+     * Returns the uploader's avatar URL (yt3.ggpht.com) for a video, or null.
+     * Scrapes the watch page once and caches by video id. The avatar of the
+     * video owner is the first "avatar" block paired with a
+     * "Go to channel <name>" a11y label.
+     */
+    suspend fun lookupChannelAvatar(videoId: String): String? {
+        avatarCache[videoId]?.let { return it.takeIf { s -> s.isNotEmpty() } }
+        return try {
+            val body = client.get(watchUrl(videoId)) {
+                headers.append("User-Agent", USER_AGENT)
+                headers.append("Accept-Language", "en-US,en;q=0.9")
+            }.bodyAsText()
+            val avatar = CHANNEL_AVATAR_PATTERN.find(body)?.groupValues?.getOrNull(1)
+            if (avatar != null) avatarCache[videoId] = avatar
+            avatar
         } catch (_: Exception) {
             null
         }

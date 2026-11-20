@@ -1016,7 +1016,10 @@ class MediaRpcService : Service() {
             playingMedia.albumUrl,
             playingMedia.playlistUrl,
         )
-        val smallUrl = MediaServiceResolver.appDownloadUrl(playingMedia.appPackage)
+        // When the channel-avatar option is active, the small image links to
+        // the channel page (direct link); otherwise to the app download page.
+        val smallUrl = playingMedia.smallImageChannelUrl
+            ?: MediaServiceResolver.appDownloadUrl(playingMedia.appPackage)
 
         // If no media/album/playlist URL was resolved, fall back to the app
         // download page so the cover art is always clickable when an image

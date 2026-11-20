@@ -258,14 +258,6 @@ internal fun Kizzy(
                     }
                 )
             }
-            composable(Routes.CONSOLE_RPC) { navBackStackEntry ->
-                val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)
-                CustomRPC(
-                    onBackPressed = { goBack() },
-                    state = viewModel.uiState.collectAsState().value,
-                    onEvent = viewModel::onEvent
-                )
-            }
             composable(Routes.LANGUAGES) {
                 Language(
                     onBackPressed = { goBack() },

@@ -77,6 +77,7 @@ import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Audiotrack
 import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.PlayCircle
@@ -113,6 +114,7 @@ fun MediaRPC(
     var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, true]) }
     var isCoverArtEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_COVER_ART, true]) }
     var isAppIconEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_APP_ICON, false]) }
+    var isChannelIconEnabled by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false]) }
     var isTimestampsEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]) }
     var hideOnPause by remember { mutableStateOf(Prefs[MEDIA_RPC_HIDE_ON_PAUSE, false]) }
     var isShowPlaybackState by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE, false]) }
@@ -160,10 +162,22 @@ fun MediaRPC(
         },
         isAppIconEnabled = isAppIconEnabled,
         onAppIconEnabledChanged = {
-            val newValue = !isAppIconEnabled
-            isAppIconEnabled = newValue
+            isAppIconEnabled = !isAppIconEnabled
             Prefs[MEDIA_RPC_APP_ICON] = isAppIconEnabled
             if (isAppIconEnabled) {
+                isShowPlaybackState = false
+                Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = false
+                isChannelIconEnabled = false
+                Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = false
+            }
+        },
+        isChannelIconEnabled = isChannelIconEnabled,
+        onChannelIconEnabledChanged = {
+            isChannelIconEnabled = !isChannelIconEnabled
+            Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = isChannelIconEnabled
+            if (isChannelIconEnabled) {
+                isAppIconEnabled = false
+                Prefs[MEDIA_RPC_APP_ICON] = false
                 isShowPlaybackState = false
                 Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = false
             }
@@ -178,6 +192,8 @@ fun MediaRPC(
             if (isShowPlaybackState) {
                 isAppIconEnabled = false
                 Prefs[MEDIA_RPC_APP_ICON] = false
+                isChannelIconEnabled = false
+                Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = false
             }
         },
         hideOnPause = hideOnPause,
@@ -219,6 +235,8 @@ fun MediaRPCContent(
     onCoverArtEnabledChanged: () -> Unit,
     isAppIconEnabled: Boolean,
     onAppIconEnabledChanged: () -> Unit,
+    isChannelIconEnabled: Boolean,
+    onChannelIconEnabledChanged: () -> Unit,
     isTimestampsEnabled: Boolean,
     onTimestampsEnabledChanged: () -> Unit,
     isShowPlaybackState: Boolean,
@@ -341,6 +359,14 @@ fun MediaRPCContent(
                         icon = Icons.Outlined.Apps,
                         isChecked = isAppIconEnabled,
                     ) { onAppIconEnabledChanged() }
+                }
+                item {
+                    PreferenceSwitch(
+                        title = stringResource(id = R.string.show_channel_icon),
+                        description = stringResource(id = R.string.show_channel_icon_desc),
+                        icon = Icons.Outlined.AccountCircle,
+                        isChecked = isChannelIconEnabled,
+                    ) { onChannelIconEnabledChanged() }
                 }
                 item {
                     PreferenceSwitch(
@@ -504,6 +530,8 @@ fun MediaRPCLightPreview() {
                 onCoverArtEnabledChanged = {},
                 isAppIconEnabled = false,
                 onAppIconEnabledChanged = {},
+                isChannelIconEnabled = false,
+                onChannelIconEnabledChanged = {},
                 isTimestampsEnabled = true,
                 onTimestampsEnabledChanged = {},
                 isShowPlaybackState = false,
@@ -573,6 +601,8 @@ fun MediaRPCDarkPreview() {
                 onCoverArtEnabledChanged = {},
                 isAppIconEnabled = false,
                 onAppIconEnabledChanged = {},
+                isChannelIconEnabled = false,
+                onChannelIconEnabledChanged = {},
                 isTimestampsEnabled = true,
                 onTimestampsEnabledChanged = {},
                 isShowPlaybackState = false,

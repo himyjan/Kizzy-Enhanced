@@ -42,6 +42,8 @@
     <string name="enable_artist_name">Enable Artist Name</string>
     <string name="enable_album_name">Enable Album Name</string>
     <string name="show_app_icon">Show App Icon</string>
+    <string name="show_channel_icon">Show Channel Icon</string>
+    <string name="show_channel_icon_desc">Show the video/channel avatar as the small image (single-channel video/music only)</string>
     <string name="enable_timestamps">Enable Timestamps</string>
     <string name="timestamp_mode">Timestamp Mode</string>
     <string name="start_timestamp_ms">Start Timestamp (in milliseconds)</string>

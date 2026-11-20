@@ -13,6 +13,7 @@ import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.data.rpc.RpcImage
+import com.my.kizzy.data.rpc.YouTubeResolver
 import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.interfaces.Logger
@@ -218,6 +219,27 @@ class GetCurrentPlayingMedia @Inject constructor(
 
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
+            // Small image is a 1-of-3 choice: channel icon / app icon / playback
+            // state. Only one can be shown at a time; channel icon wins when
+            // enabled and the media is a single-channel video/music.
+            val showChannelIcon = Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false]
+            val showAppIconSmall = Prefs[Prefs.MEDIA_RPC_APP_ICON, false]
+            val showPlaybackIconSmall = Prefs[Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE, false]
+            val channelAvatarUrl = if (showChannelIcon && MediaServiceResolver.isYouTube(mediaController.packageName)) {
+                MetadataResolver.getChannelAvatarUrl(metadata, mediaController.packageName)
+            } else null
+            val smallImageRpc: RpcImage? = when {
+                channelAvatarUrl != null -> RpcImage.ExternalImage(channelAvatarUrl)
+                showAppIconSmall -> appIcon
+                showPlaybackIconSmall -> playbackStateIcon
+                else -> null
+            }
+            val smallTextRpc: String? = when {
+                channelAvatarUrl != null -> author.takeIf { it.isNotBlank() }
+                showAppIconSmall -> appName
+                else -> null
+            }
+
             // The direct url of the track. The session of YouTube Music does not
             // publish it, so it is looked up by the id or the title of the
             // track. Without it the button linked to a search page.
@@ -236,6 +258,12 @@ class GetCurrentPlayingMedia @Inject constructor(
             // Artist URL for state_url (second line clickable)
             val artistUrl = MetadataResolver.getArtistUrl(metadata, mediaController.packageName)
                 ?: MediaServiceResolver.artistUrl(mediaController.packageName, author)
+
+            // When showing the channel avatar, clicking the small image opens
+            // the channel page (a direct link).
+            val smallImageChannelUrl = if (channelAvatarUrl != null) {
+                artistUrl.takeIf { YouTubeResolver.isYoutubeFamilyUrl(it) }
+            } else null
 
             // Album / playlist / channel URLs for the link fallback chains.
             val albumUrl = metadata.let { MetadataResolver.getAlbumUrl(it, mediaController.packageName) }
@@ -261,12 +289,13 @@ class GetCurrentPlayingMedia @Inject constructor(
                 // Artist URL for state_url (second line clickable)
                 stateUrl = artistUrl,
                 largeImage = coverArt,
-                smallImage = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appIcon else null,
+                smallImage = smallImageRpc,
+                smallText = smallTextRpc,
+                smallImageChannelUrl = smallImageChannelUrl,
                 // Large URL for clickable artwork - only media URL, not search URLs
                 largeUrl = mediaUrl,
                 largeText = largeTextValue,
                 largeTextIsPlaylist = largeTextIsPlaylist,
-                smallText = if (Prefs[Prefs.MEDIA_RPC_APP_ICON, false]) appName else null,
                 packageName = "$title::${mediaController.packageName}",
                 time = timestamps.takeIf { it != null },
                 mediaUrl = mediaUrl,

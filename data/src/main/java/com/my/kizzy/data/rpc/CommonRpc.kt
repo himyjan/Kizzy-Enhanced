@@ -25,6 +25,8 @@ data class CommonRpc(
     val smallImage: RpcImage? = null,
     val largeUrl: String? = null,
     val smallUrl: String? = null,
+    /** Click target of the small image when the channel-avatar option is used. */
+    val smallImageChannelUrl: String? = null,
     var largeText: String? = null,
     var smallText: String? = null,
     val time: Timestamps? = null,

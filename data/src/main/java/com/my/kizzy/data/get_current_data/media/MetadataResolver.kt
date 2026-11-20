@@ -1382,6 +1382,26 @@ class MetadataResolver @Inject constructor(
     }
 
     /**
+     * Channel avatar URL for the "Show Channel Icon" small-image option.
+     * Only for YouTube-family clients with a SINGLE artist/channel — a
+     * collaboration (multiple artists) has no single channel to represent.
+     */
+    suspend fun getChannelAvatarUrl(
+        metadata: MediaMetadata,
+        packageName: String?,
+    ): String? {
+        if (!MediaServiceResolver.isYouTube(packageName)) return null
+        // Single channel only: skip collaborations / multi-artist tracks.
+        if (getAllArtists(metadata).size > 1) return null
+        val raw = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)
+            ?: metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+        if (!raw.isNullOrBlank() && splitArtists(raw).size > 1) return null
+        val video = resolveYouTubeVideo(metadata) ?: return null
+        val id = YouTubeResolver.extractVideoId(video.watchUrl) ?: return null
+        return YouTubeResolver.lookupChannelAvatar(id)
+    }
+
+    /**
      * Extracts the page url of a web player from a browser MediaSession.
      *
      * Browsers (Chrome, Edge, Firefox, Vivaldi, ...) publish the page url in
