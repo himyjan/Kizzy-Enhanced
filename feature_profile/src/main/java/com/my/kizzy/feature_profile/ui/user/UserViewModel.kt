@@ -157,7 +157,9 @@ class UserViewModel @Inject constructor(
             // App Detection and the OAuth2 service also hold a gateway socket
             // with the old token; leaving them running keeps a stale session
             // alive and can resurrect the presence after logout.
-            runCatching { RpcManager.getInstance(ctx).switchTo(RpcManager.RpcType.None) }
+            // Best-effort stop of all RPC services; ignore failures.
+            if (runCatching { RpcManager.getInstance(ctx).switchTo(RpcManager.RpcType.None) }.isFailure) {
+            }
             listOf(
                 MediaRpcService::class.java,
                 CustomRpcService::class.java,
@@ -244,7 +246,6 @@ class UserViewModel @Inject constructor(
                     when (current) {
                         is UserState.LoadingCompleted -> current.user
                         is UserState.Error -> current.user
-                        else -> User()
                     },
                     newRpcConfig
                 )

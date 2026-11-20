@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,13 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
-import androidx.compose.material3.MaterialTheme
 import com.my.kizzy.resources.R
-import com.my.kizzy.ui.theme.DISCORD_CARD
 import com.my.kizzy.ui.theme.DISCORD_GREEN
-import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
-import com.my.kizzy.ui.theme.DISCORD_TRACK_COLOR
-import com.my.kizzy.ui.theme.DISCORD_TEXT
 import kotlinx.coroutines.delay
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -135,9 +131,11 @@ fun ActivityRow(
         val trimmed = url?.trim()
         if (trimmed != null &&
             (trimmed.startsWith("http://", ignoreCase = true) ||
-                trimmed.startsWith("https://", ignoreCase = true))
+                    trimmed.startsWith("https://", ignoreCase = true))
         ) {
-            runCatching { uriHandler.openUri(trimmed) }
+            // Best-effort open; ignore failures (e.g. no browser installed).
+            if (runCatching { uriHandler.openUri(trimmed) }.isFailure) {
+            }
         }
     }
 
@@ -249,17 +247,18 @@ fun ActivityRow(
                 Box(
                     Modifier
                         .size(88.dp)
-                        .clickable { openLink(rpcConfig?.largeUrl) }
+                        .clickable { openLink(cfg?.largeUrl) }
                 ) {
-                    val largeImg = rpcConfig?.largeImg?.removePrefix("mp:")
+                    val rawLargeImg = cfg?.largeImg
+                    val largeImg = rawLargeImg?.removePrefix("mp:")
                     AsyncImage(
                         model = if (isAsset(largeImg)) "https://media.discordapp.net/$largeImg" else
-                            rpcConfig?.largeImg,
+                            rawLargeImg,
                         error = painterResource(id = R.drawable.editing_rpc_pencil),
                         placeholder = painterResource(R.drawable.editing_rpc_pencil),
                         contentDescription = null,
                         contentScale = ContentScale.FillHeight,
-                        modifier = if (!rpcConfig?.largeImg.isNullOrEmpty())
+                        modifier = if (!rawLargeImg.isNullOrEmpty())
                             Modifier
                                 .size(80.dp)
                                 .clip(RoundedCornerShape(4.dp))
@@ -270,8 +269,9 @@ fun ActivityRow(
                                 .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
                                 .align(Alignment.TopStart),
                     )
-                    if (!rpcConfig?.smallImg.isNullOrEmpty()) {
-                        val smallImg = rpcConfig?.smallImg?.removePrefix("mp:")
+                    val rawSmallImg = cfg?.smallImg
+                    if (!rawSmallImg.isNullOrEmpty()) {
+                        val smallImg = rawSmallImg.removePrefix("mp:")
                         Box(
                             modifier =
                                 Modifier
@@ -284,10 +284,10 @@ fun ActivityRow(
                         ) {
                             AsyncImage(
                                 model =
-                                if (isAsset(smallImg))
-                                    "https://media.discordapp.net/$smallImg"
-                                else
-                                    rpcConfig?.smallImg,
+                                    if (isAsset(smallImg))
+                                        "https://media.discordapp.net/$smallImg"
+                                    else
+                                        rawSmallImg,
                                 error = painterResource(id = R.drawable.ic_rpc_placeholder),
                                 placeholder = painterResource(id = R.drawable.ic_rpc_placeholder),
                                 contentDescription = null,
@@ -313,7 +313,7 @@ fun ActivityRow(
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clickable { openLink(rpcConfig?.detailsUrl) },
+                        modifier = Modifier.clickable { openLink(cfg?.detailsUrl) },
                     )
 
                     if (!renderedState.isNullOrEmpty()) {
@@ -323,7 +323,7 @@ fun ActivityRow(
                             fontSize = 14.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.clickable { openLink(rpcConfig?.stateUrl) },
+                            modifier = Modifier.clickable { openLink(cfg?.stateUrl) },
                         )
                     }
 
@@ -334,7 +334,7 @@ fun ActivityRow(
                             fontSize = 12.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.clickable { openLink(rpcConfig?.largeUrl) },
+                            modifier = Modifier.clickable { openLink(cfg?.largeUrl) },
                         )
                     }
 
@@ -362,12 +362,12 @@ fun ActivityRow(
                         // Playing game / non-media: "Time elapsed: 12m 30s".
                         showTs && isPlaying -> Text(
                             text = stringResource(
-                                id = rpcConfig?.timestampsStop?.toLongOrNull()?.let {
+                                id = cfg?.timestampsStop?.toLongOrNull()?.let {
                                     if (it > 0) R.string.time_left else R.string.time_elapsed
                                 } ?: R.string.time_elapsed,
                                 formatTime(
-                                    rpcConfig?.timestampsStart?.toLongOrNull(),
-                                    rpcConfig?.timestampsStop?.toLongOrNull()
+                                    cfg?.timestampsStart?.toLongOrNull(),
+                                    cfg?.timestampsStop?.toLongOrNull()
                                 )
                                     .takeIf { it.isNotEmpty() } ?: elapsedText
                             ),
@@ -416,15 +416,15 @@ fun ActivityRow(
                 }
             }
 
-            if (rpcConfig != null &&
-                (rpcConfig.button1.isNotEmpty() || rpcConfig.button2.isNotEmpty())
+            if (cfg != null &&
+                (cfg.button1.isNotEmpty() || cfg.button2.isNotEmpty())
             ) {
                 Spacer(Modifier.height(12.dp))
-                ProfileButton(label = rpcConfig.button1, link = rpcConfig.button1link)
-                if (rpcConfig.button1.isNotEmpty() && rpcConfig.button2.isNotEmpty()) {
+                ProfileButton(label = cfg.button1, link = cfg.button1link)
+                if (cfg.button1.isNotEmpty() && cfg.button2.isNotEmpty()) {
                     Spacer(Modifier.height(8.dp))
                 }
-                ProfileButton(label = rpcConfig.button2, link = rpcConfig.button2link)
+                ProfileButton(label = cfg.button2, link = cfg.button2link)
             }
         }
     }
