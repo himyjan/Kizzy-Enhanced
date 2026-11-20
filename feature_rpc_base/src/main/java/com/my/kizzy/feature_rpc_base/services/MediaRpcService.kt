@@ -1012,6 +1012,12 @@ class MediaRpcService : Service() {
         )
         val smallUrl = MediaServiceResolver.appDownloadUrl(playingMedia.appPackage)
 
+        // If no media/album/playlist URL was resolved, fall back to the app
+        // download page so the cover art is always clickable when an image
+        // is shown (e.g. Morphe, AndDea Revanced Patches, and other YouTube
+        // wrapper clients that don't publish a YouTube video URL).
+        val finalLargeUrl = largeUrl ?: smallUrl
+
         val commonRpc = CommonRpc(
             name = rpcName,
             type = resolveActivityType(playingMedia),
@@ -1021,7 +1027,7 @@ class MediaRpcService : Service() {
             stateUrl = stateUrl,
             largeImage = largeImage,
             smallImage = smallImage,
-            largeUrl = largeUrl,
+            largeUrl = finalLargeUrl,
             smallUrl = smallUrl,
             largeText = if (showCoverArtGlobal && showCoverArt) playingMedia.largeText else null,
             largeTextIsPlaylist = playingMedia.largeTextIsPlaylist,

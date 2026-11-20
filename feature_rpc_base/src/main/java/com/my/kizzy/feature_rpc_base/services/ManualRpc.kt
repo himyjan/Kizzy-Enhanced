@@ -656,6 +656,11 @@ class ManualRpc : Service() {
 
         // small image (app icon) -> app download page (GitHub release first priority)
         val smallUrl = MediaServiceResolver.appDownloadUrl(richMediaInfo?.packageName)
+
+        // If no media/album/playlist URL was resolved, fall back to the app
+        // download page so the cover art is always clickable when an image
+        // is shown.
+        val finalLargeUrl = largeUrl ?: smallUrl
         
         // Build the CommonRpc once - this is what we want to send to Discord
         val commonRpc = CommonRpc(
@@ -672,7 +677,7 @@ class ManualRpc : Service() {
             stateUrl = stateUrl,
             largeImage = finalLargeImage,
             smallImage = finalSmallImage,
-            largeUrl = largeUrl,
+            largeUrl = finalLargeUrl,
             largeText = finalLargeText,
             smallText = finalSmallText,
             time = finalTimestamps,
