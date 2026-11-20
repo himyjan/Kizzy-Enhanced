@@ -44,7 +44,26 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Set version
+      - name: Check current JDK version
+        id: current-jdk
+        run: |
+          CURRENT_VERSION=$(grep 'java-version:' .github/workflows/release.yml | grep -oP "'[0-9]+'" | tr -d "'")
+          echo "current=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check latest JDK version (Eclipse Temurin)
+        id: latest-jdk
+        run: |
+          LATEST_VERSION=$(curl -s "https://api.adoptium.net/v3/assets/latest/27/hotspot" | grep -oP '"version":\s*"[^"]+"' | head -1 | grep -oP '[0-9]+')
+          if [ -z "$LATEST_VERSION" ]; then
+            LATEST_VERSION=$(curl -s "https://api.adoptium.net/v3/assets/info/versions" | grep -oP '[0-9]+' | sort -V | tail -1)
+          fi
+          echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update JDK version in release.yml
+        if: steps.current-jdk.outputs.current != steps.latest-jdk.outputs.latest
+        run: |
+          echo "Updating JDK from ${{ steps.current-jdk.outputs.current }} to ${{ steps.latest-jdk.outputs.latest }}"
+          sed -i "s/java-version: '${{ steps.current-jdk.outputs.current }}'/java-version: '${{ steps.latest-jdk.outputs.latest }}'/" .github/workflows/release.yml
         run: |
           sed -i 's/version-name = ".*"/version-name = "6.2-enhanced-${{ github.run_number }}"/' gradle/libs.versions.toml
           sed -i 's/version-code = ".*"/version-code = "${{ github.run_number }}"/' gradle/libs.versions.toml
@@ -205,6 +224,15 @@ jobs:
             echo "3. If prompted, allow 'Install from unknown sources'."
             echo "4. If upgrading from an older build signed with a different key, uninstall the previous version first."
           } > release-notes.md
+
+      - name: Commit JDK version change
+        if: steps.current-jdk.outputs.current != steps.latest-jdk.outputs.latest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/release.yml
+          git commit -m "chore: update JDK version to ${{ steps.latest-jdk.outputs.latest }}"
+          git push
 
       - name: Upload All Release APKs
         uses: actions/upload-artifact@v7
