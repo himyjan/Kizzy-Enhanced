@@ -1,15 +1,3 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * RpcField.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.ui.components
 
 import androidx.annotation.StringRes
@@ -18,16 +6,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,20 +37,36 @@ fun RpcField(
     content: @Composable (() -> Unit) = {},
     onValueChange: (String) -> Unit = {}
 ) {
+    val textFieldState: TextFieldState = rememberTextFieldState(initialText = value)
+
+    // Sync external value changes without re-triggering onValueChange
+    LaunchedEffect(value) {
+        if (value != textFieldState.text.toString()) {
+            textFieldState.setTextAndPlaceCursorAtEnd(value)
+        }
+    }
+
+    // Emit user/state edits to onValueChange
+    LaunchedEffect(textFieldState) {
+        snapshotFlow { textFieldState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect { updated ->
+                onValueChange(updated)
+            }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        TextField(modifier = Modifier
-            .fillMaxWidth(),
-            value = value,
-            onValueChange = {
-                onValueChange(it)
-            },
+        TextField(
+            state = textFieldState,
+            modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            label = { Text(stringResource(id = label)) },
             keyboardOptions = keyboardOptions,
+            label = { Text(stringResource(id = label)) },
             trailingIcon = trailingIcon,
             isError = isError
         )

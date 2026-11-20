@@ -1,3 +1,15 @@
+/*
+ *
+ *  ******************************************************************
+ *  *  * Copyright (C) 2022
+ *  *  * KizzyRPC.kt is part of Kizzy
+ *  *  *  and can not be copied and/or distributed without the express
+ *  *  * permission of yzziK(Vaibhav)
+ *  *  *****************************************************************
+ *
+ *
+ */
+
 package com.my.kizzy.data.rpc
 
 import android.media.session.PlaybackState
@@ -239,7 +251,7 @@ class KizzyRPC @Inject constructor(
                     logger.w(
                         "KizzyRPC",
                         "connectionMethod=$connectionMethod but only an OAuth2 bearer token is available. " +
-                            "The gateway will reject it with 4004 - open Discord Login to capture the account token."
+                                "The gateway will reject it with 4004 - open Discord Login to capture the account token."
                     )
                 }
                 ""
@@ -758,7 +770,7 @@ class KizzyRPC @Inject constructor(
         presence = Presence(
             activities = listOf(
                 Activity(
-                    name = activityName,
+                    name = activityName?.sanitize().orEmpty(),
                     state = state?.sanitize(),
                     details = details?.sanitize(),
                     // For manual RPC, use url field as details_url if set.
@@ -1001,7 +1013,7 @@ class KizzyRPC @Inject constructor(
             val presence = Presence(
                 activities = listOf(
                     Activity(
-                        name = commonRpc.name,
+                        name = commonRpc.name.sanitize(),
                         details = commonRpc.details?.takeIf { it.isNotEmpty() }?.sanitize(),
                         state = commonRpc.state?.takeIf { it.isNotEmpty() }?.sanitize(),
                         detailsUrl = sanitizeFieldUrl(commonRpc.detailsUrl),
@@ -1025,7 +1037,6 @@ class KizzyRPC @Inject constructor(
 
                         applicationId = applicationIdNumber.takeIf { it.isNotEmpty() }
                             ?: Constants.APPLICATION_ID
-
                     )
                 ),
                 // The user is actively doing something, so they are not AFK. Sending

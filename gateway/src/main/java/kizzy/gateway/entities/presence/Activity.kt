@@ -44,5 +44,12 @@ data class Activity(
     @SerialName("application_id")
     val applicationId: String? = null,
     @SerialName("url")
-    val url: String? = null
+    val url: String? = null,
+    /**
+     * Controls which field (name, state, or details) is displayed in users'
+     * status text in the member list. Values: 0 = name, 1 = details, 2 = state.
+     * Defaults to 0 (name) if not specified.
+     */
+    @SerialName("status_display_type")
+    val statusDisplayType: Int? = null
 )

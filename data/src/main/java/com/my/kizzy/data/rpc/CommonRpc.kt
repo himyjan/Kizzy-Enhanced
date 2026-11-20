@@ -48,11 +48,17 @@ data class CommonRpc(
      * [packageName] carries for backwards compatibility.
      */
     val appPackage: String = "",
-    /** The human readable name of the app, e.g. "YouTube Music". */
+        /** The human readable name of the app, e.g. "YouTube Music". */
     val appName: String = "",
     /**
      * Whether the media session carries artist or album metadata, which means
      * it is a music track rather than a video.
      */
-    val isMusicMetadata: Boolean = false
+    val isMusicMetadata: Boolean = false,
+    /**
+     * Controls which field (name, state, or details) is displayed in users'
+     * status text in the member list. Values: 0 = name, 1 = details, 2 = state.
+     * Defaults to 0 (name) if not set.
+     */
+    val statusDisplayType: Int? = null
 )

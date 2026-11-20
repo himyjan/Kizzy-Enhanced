@@ -266,6 +266,7 @@ class GetCurrentPlayingMedia @Inject constructor(
                 appPackage = mediaController.packageName,
                 appName = appName,
                 isMusicMetadata = album != null || !author.isNullOrBlank(),
+                statusDisplayType = null
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")
