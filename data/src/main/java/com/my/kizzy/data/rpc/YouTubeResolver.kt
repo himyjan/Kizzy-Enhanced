@@ -138,12 +138,15 @@ object YouTubeResolver {
 
     /**
      * Primary media link priority chain:
-     *   1. mediaUrl (direct video/track/playlist URL)
+     *   1. mediaUrl (direct video/track/playlist URL, normalized via [toRpcUrl])
      *   2. albumUrl (normalized via [toRpcUrl] for YT-family URLs)
      *   3. channelUrl (normalized via [toRpcUrl] for YT-family URLs)
+     *
+     * mediaUrl is also run through [toRpcUrl] so YouTube watch URLs are
+     * canonicalized to youtu.be/ID instead of staying as full watch URLs.
      */
     fun primaryMediaUrl(mediaUrl: String?, albumUrl: String?, channelUrl: String?): String? =
-        sanitizeHttpsUrl(mediaUrl)
+        sanitizeHttpsUrl(toRpcUrl(mediaUrl)) ?: sanitizeHttpsUrl(mediaUrl)
             ?: sanitizeHttpsUrl(toRpcUrl(albumUrl))
             ?: sanitizeHttpsUrl(toRpcUrl(channelUrl))
 
@@ -154,24 +157,18 @@ object YouTubeResolver {
      *   3. video/media URL (normalized then plain)
      * Only real http(s) URLs are returned.
      *
-     * When [preferPlaylist] is true (line 4 shows the playlist name because the
-     * track has no album), the playlist link is used first so the visible text
-     * and the click target match.
+     * The order is always album → playlist → media so the large image click
+     * target consistently resolves to the album when one exists.
      */
     fun largeImageUrl(
         mediaUrl: String?,
         albumUrl: String?,
         playlistUrl: String?,
-        preferPlaylist: Boolean = false,
     ): String? {
         val playlist = sanitizeHttpsUrl(toRpcUrl(playlistUrl)) ?: sanitizeHttpsUrl(playlistUrl)
         val album = sanitizeHttpsUrl(toRpcUrl(albumUrl)) ?: sanitizeHttpsUrl(albumUrl)
         val media = sanitizeHttpsUrl(toRpcUrl(mediaUrl)) ?: sanitizeHttpsUrl(mediaUrl)
-        return if (preferPlaylist) {
-            playlist ?: album ?: media
-        } else {
-            album ?: playlist ?: media
-        }
+        return album ?: playlist ?: media
     }
 
     fun extractVideoId(url: String): String? {
