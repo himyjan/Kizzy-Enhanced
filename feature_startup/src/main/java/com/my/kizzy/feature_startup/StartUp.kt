@@ -107,13 +107,6 @@ fun StartUp(
             onResult = { isGranted ->
                 notificationPostingPerm = isGranted
             })
-    val batteryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
-            batteryOptimizationStatus.value = (context.getSystemService(Context.POWER_SERVICE) as PowerManager)
-                .isIgnoringBatteryOptimizations(context.packageName)
-        }
-    )
     Scaffold(topBar = {
         TopAppBar(title = {
             Text(
@@ -186,10 +179,18 @@ fun StartUp(
                         description = stringResource(id = R.string.usage_access_desc),
                         status = usageAccessStatus.value
                     ) {
-                        // Open Usage Access settings. Android has no one-tap dialog
-                        // for Usage Access (unlike Battery Optimization) — the user
-                        // must tap their app entry in the list and flip the toggle.
-                        context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                        // Open per-app Usage Access toggle screen directly (Android 8+).
+                        // One tap flips the toggle; no need to scroll through a list.
+                        // Falls back to the general Usage Access list on ROMs that
+                        // don't support package: routing.
+                        val perAppIntent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                        try {
+                            context.startActivity(perAppIntent)
+                        } catch (_: android.content.ActivityNotFoundException) {
+                            context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                        }
                     }
                 }
                 item {
@@ -207,10 +208,20 @@ fun StartUp(
                         description = stringResource(id = R.string.battery_optimization_desc),
                         status = batteryOptimizationStatus.value
                     ) {
-                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-                            .setData(android.net.Uri.parse("package:${context.packageName}"))
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        batteryLauncher.launch(intent)
+                        // Open Battery Optimization settings via direct dialog.
+                        // One tap toggles unrestricted mode.
+                        val directIntent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                        try {
+                            context.startActivity(directIntent)
+                        } catch (_: android.content.ActivityNotFoundException) {
+                            context.startActivity(
+                                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts("package", context.packageName, null)
+                                }
+                            )
+                        }
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
