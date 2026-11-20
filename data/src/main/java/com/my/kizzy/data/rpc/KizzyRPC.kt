@@ -1041,7 +1041,18 @@ class KizzyRPC @Inject constructor(
             // Media RPC uses type 2/3 (Listening/Watching), so its mediaUrl must NOT
             // be placed here - a non-null url with a non-streaming type makes Discord
             // silently drop the whole activity. The mediaUrl goes into the buttons.
-            val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, 0]
+            val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.LISTENING]
+            // Discord privacy-filters Custom Status (type 4) for users with private
+            // profiles — never use it for Rich Presence. Use Playing/Listening/
+            // Watching instead.
+            if (activityType == 4) {
+                logger.w(
+                    "KizzyRPC",
+                    "Activity type 4 (Custom Status) is privacy-filtered by Discord for users " +
+                        "with private profiles. Use Playing (0), Listening (2), Watching (3), " +
+                        "or Competing (5) instead."
+                )
+            }
             val cleanButtons = sanitizeButtons(buttonsSnapshot)
 
             val presence = Presence(
