@@ -1,11 +1,11 @@
 /*
  *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * UserScreen.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
+-  ******************************************************************
+-  *  * Copyright (C) 2022
+-  *  * UserScreen.kt is part of Kizzy
+-  *  *  and can not be copied and/or distributed without the express
+-  *  * permission of yzziK(Vaibhav)
+-  *  *****************************************************************
  *
  */
 
@@ -50,7 +50,6 @@ import com.my.kizzy.ui.theme.DISCORD_CARD
 import com.my.kizzy.ui.theme.DISCORD_LOGOUT_RED
 import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
 import com.my.kizzy.ui.theme.DISCORD_TEXT
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,48 +60,79 @@ fun UserScreen(
     onNavigateToLogin: () -> Unit = {},
     onNavigateToRpcPreview: () -> Unit = {}
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
-    // Resolved at composition so the snackbar text stays config-aware.
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    // Resolved at composition so the confirmation dialog stays config-aware.
     val sureMessage = stringResource(R.string.are_you_sure)
     val yesLabel = stringResource(R.string.yes)
+    val cancelLabel = stringResource(android.R.string.cancel)
+    val logoutLabel = stringResource(R.string.logout)
+
+    if (showLogoutDialog) {
+        // Modern Material 3 confirmation dialog for destructive logout action.
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            shape = RoundedCornerShape(24.dp),
+            icon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = null,
+                    tint = DISCORD_LOGOUT_RED,
+                    modifier = Modifier.size(28.dp),
+                )
+            },
+            title = {
+                Text(
+                    text = logoutLabel,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            },
+            text = {
+                Text(
+                    text = sureMessage,
+                    fontSize = 16.sp,
+                    lineHeight = 22.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutDialog = false
+                        onLogout(ctx)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DISCORD_LOGOUT_RED,
+                        contentColor = Color.White,
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text(
+                        text = yesLabel,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showLogoutDialog = false },
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text(
+                        text = cancelLabel,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+        )
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        snackbarHost = {
-            // Larger than the default snackbar: the logout confirmation is the
-            // primary affordance on this screen, so it needs a bigger tap
-            // target and heavier type.
-            SnackbarHost(snackbarHostState) { data ->
-                Snackbar(
-                    modifier = Modifier.padding(16.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                    actionContentColor = DISCORD_BLURPLE,
-                    content = {
-                        Text(
-                            text = data.visuals.message,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                        data.visuals.actionLabel?.let { label ->
-                            Spacer(Modifier.width(12.dp))
-                            TextButton(
-                                onClick = { data.performAction() },
-                            ) {
-                                Text(
-                                    text = label,
-                                    fontSize = 17.sp,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-        },
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
@@ -179,26 +209,9 @@ fun UserScreen(
                             // Preview, but keeps Discord's destructive red.
                             MenuRow(
                                 icon = Icons.AutoMirrored.Filled.Logout,
-                                label = stringResource(R.string.logout),
+                                label = logoutLabel,
                                 contentColor = DISCORD_LOGOUT_RED,
-                                onClick = {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            message = sureMessage,
-                                            actionLabel = yesLabel,
-                                            duration = SnackbarDuration.Indefinite,
-                                            withDismissAction = true
-                                        ).run {
-                                            when (this) {
-                                                SnackbarResult.ActionPerformed -> {
-                                                    onLogout(ctx)
-                                                }
-
-                                                SnackbarResult.Dismissed -> Unit
-                                            }
-                                        }
-                                    }
-                                },
+                                onClick = { showLogoutDialog = true },
                             )
                         }
                         Spacer(Modifier.height(24.dp))

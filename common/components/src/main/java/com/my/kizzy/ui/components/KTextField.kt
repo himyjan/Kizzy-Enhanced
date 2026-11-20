@@ -1,26 +1,20 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * KTextField.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- */
-
 package com.my.kizzy.ui.components
 
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -28,6 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.my.kizzy.ui.components.R
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,6 +39,24 @@ fun KTextField(
 ) {
     val clipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val focusRequester = remember { FocusRequester() }
+    val textFieldState = rememberTextFieldState(initialText = value)
+
+    // Keep the internal state in sync with the externally-provided value.
+    LaunchedEffect(value) {
+        if (textFieldState.text != value) {
+            textFieldState.setTextAndPlaceCursorAtEnd(value)
+        }
+    }
+
+    // Emit user/state edits to onValueChange
+    LaunchedEffect(textFieldState) {
+        snapshotFlow { textFieldState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect { updated ->
+                if (!readOnly) onValueChange(updated)
+            }
+    }
 
     LaunchedEffect(Unit) {
         delay(100)  // ???
@@ -50,18 +64,15 @@ fun KTextField(
     }
 
     TextField(
+        state = textFieldState,
         modifier = Modifier.focusRequester(focusRequester),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor = Color.Transparent,
         ),
-        maxLines = 1,
+        lineLimits = TextFieldLineLimits.SingleLine,
         enabled = !readOnly,
-        value = value,
-        onValueChange = {
-            if (!readOnly) onValueChange(it)
-        },
         placeholder = {
             Text(
                 text = placeholder,
@@ -70,7 +81,6 @@ fun KTextField(
             )
         },
         isError = errorMessage.isNotEmpty(),
-        singleLine = true,
         trailingIcon = {
             if (value.isNotEmpty()) {
                 IconButton(onClick = {
@@ -98,6 +108,5 @@ fun KTextField(
             }
         },
         keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
     )
 }

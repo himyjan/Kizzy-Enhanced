@@ -4,11 +4,11 @@
  *  *  * Copyright (C) 2022
  *  *  * SearchBar.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
- *  *  *  * permission of yzziK(Vaibhav)
+ *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
- *
- *
- */
+ *  *
+ *  */
+
 
 package com.my.kizzy.ui.components
 
@@ -48,8 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.resources.R
 
-/** Height of the search field.
- *
+/** Height of the search field. *
  * The height is fixed on purpose: the field is placed inside containers that hand
  * out unbounded height constraints (a `TopAppBar` action slot, a `Column`, ...) and a
  * field that is free to grow would stretch those containers instead of staying a

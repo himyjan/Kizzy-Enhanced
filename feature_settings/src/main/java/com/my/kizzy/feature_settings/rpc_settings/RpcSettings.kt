@@ -168,7 +168,9 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 text = stringResource(id = R.string.settings),
                 style = MaterialTheme.typography.headlineMedium,
             )
-        }, navigationIcon = { BackButton { onBackPressed() } })
+        }, navigationIcon = {
+            BackButton(onClick = { onBackPressed() })
+        })
     }) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
             item(key = "general_settings") {
@@ -825,8 +827,9 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
 
         if (showUserLogin) {
             DiscordUserLoginDialog(
+                token = "",
                 onDismiss = { showUserLogin = false },
-                onToken = { token ->
+                onConfirm = { token ->
                     Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = token
                     Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH2
                     connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH2

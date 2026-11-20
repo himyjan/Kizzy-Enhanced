@@ -19,6 +19,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,15 +45,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -55,6 +54,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.my.kizzy.resources.R
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 
 private val TEMPLATE_REGEX = Regex("\\{\\{[^{}]*\\}\\}")
 private val WORD_REGEX = Regex("\\w+$")
@@ -77,9 +78,7 @@ fun RpcFieldWithCompletions(
     onValueChange: (String) -> Unit = {},
     completionList: List<Pair<String, ResourceId>> = emptyList(),
 ) {
-    var textFieldValue by remember {
-        mutableStateOf(TextFieldValue(text = value, selection = TextRange(value.length)))
-    }
+    val textFieldState = rememberTextFieldState(initialText = value)
     var showSuggestions by remember { mutableStateOf(false) }
     var filteredPlaceholders by remember { mutableStateOf<List<Pair<String, ResourceId>>>(emptyList()) }
     var lastTemplateCursorPosition by rememberSaveable { mutableIntStateOf(-1) }
@@ -90,50 +89,13 @@ fun RpcFieldWithCompletions(
     val density = LocalDensity.current
     val textFieldInteractionSource = remember { MutableInteractionSource() }
 
-    LaunchedEffect(value) {
-        if (textFieldValue.text != value) {
-            textFieldValue = TextFieldValue(
-                text = value,
-                selection = TextRange(value.length),
-            )
-        }
-    }
-
-    val primaryColor = colorScheme.primary
-    val containerColor = colorScheme.primaryContainer.copy(alpha = 0.3f)
-    val surfaceColor = colorScheme.surface.copy(alpha = 0.98f)
-    val itemColor = surfaceColor
-
-    val visualTransformation = remember(primaryColor, containerColor) {
-        VisualTransformation { text ->
-            val rawText = text.text
-            val annotatedString = buildAnnotatedString {
-                append(rawText)
-                TEMPLATE_REGEX.findAll(rawText).forEach { matchResult ->
-                    addStyle(
-                        style = SpanStyle(
-                            color = primaryColor,
-                            background = containerColor,
-                        ),
-                        start = matchResult.range.first,
-                        end = matchResult.range.last + 1,
-                    )
-                }
-            }
-            TransformedText(
-                text = annotatedString,
-                offsetMapping = OffsetMapping.Identity,
-            )
-        }
-    }
-
-    fun refreshSuggestions(tfv: TextFieldValue) {
+    fun refreshSuggestions() {
         if (!internalIsFocused || !enabled || completionList.isEmpty()) {
             filteredPlaceholders = emptyList()
             showSuggestions = false
             return
         }
-        val query = extractActiveQuery(tfv.text, tfv.selection.start)
+        val query = extractActiveQuery(textFieldState.text.toString(), textFieldState.selection.start)
         val matches = if (query.isEmpty()) {
             completionList
         } else {
@@ -147,6 +109,29 @@ fun RpcFieldWithCompletions(
         showSuggestions = matches.isNotEmpty()
     }
 
+    // Keep the internal state in sync with the externally-provided value.
+    LaunchedEffect(value) {
+        if (textFieldState.text != value) {
+            textFieldState.setTextAndPlaceCursorAtEnd(value)
+        }
+    }
+
+    // Emit user/state edits to onValueChange and refresh suggestions.
+    LaunchedEffect(textFieldState) {
+        snapshotFlow { textFieldState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect { updated ->
+                onValueChange(updated)
+                refreshSuggestions()
+            }
+    }
+
+    val primaryColor = colorScheme.primary
+    val containerColor = colorScheme.primaryContainer.copy(alpha = 0.3f)
+    val surfaceColor = colorScheme.surface.copy(alpha = 0.98f)
+    val itemColor = surfaceColor
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
@@ -158,6 +143,7 @@ fun RpcFieldWithCompletions(
                 .border(BorderStroke(1.dp, primaryColor.copy(alpha = 0.15f)), RoundedCornerShape(16.dp)),
         ) {
             TextField(
+                state = textFieldState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
@@ -169,16 +155,9 @@ fun RpcFieldWithCompletions(
                             lastTemplateCursorPosition = -1
                             lastTemplateText = ""
                         } else {
-                            refreshSuggestions(textFieldValue)
+                            refreshSuggestions()
                         }
                     },
-                value = textFieldValue,
-                visualTransformation = visualTransformation,
-                onValueChange = { newText ->
-                    textFieldValue = newText
-                    onValueChange(newText.text)
-                    refreshSuggestions(newText)
-                },
                 enabled = enabled,
                 interactionSource = textFieldInteractionSource,
                 label = { Text(stringResource(id = label)) },
@@ -186,7 +165,7 @@ fun RpcFieldWithCompletions(
                 keyboardOptions = keyboardOptions,
                 trailingIcon = trailingIcon,
                 isError = isError,
-                singleLine = true,
+                lineLimits = TextFieldLineLimits.SingleLine,
             )
 
             if (isError && errorMessage.isNotEmpty()) {
@@ -247,8 +226,8 @@ fun RpcFieldWithCompletions(
                                                 interactionSource = itemInteractionSource,
                                                 indication = null,
                                                 onClick = {
-                                                    val currentText = textFieldValue.text
-                                                    val currentSelectionStart = textFieldValue.selection.start.coerceIn(0, currentText.length)
+                                                    val currentText = textFieldState.text.toString()
+                                                    val currentSelectionStart = textFieldState.selection.start.coerceIn(0, currentText.length)
                                                     val textUpToCursor = currentText.take(currentSelectionStart)
                                                     val actualKey = extractTemplateKey(placeholder)
 
@@ -273,10 +252,10 @@ fun RpcFieldWithCompletions(
                                                         }
                                                     }.coerceIn(0, newText.length)
 
-                                                    textFieldValue = TextFieldValue(
-                                                        text = newText,
-                                                        selection = TextRange(newCursorPos),
-                                                    )
+                                                    textFieldState.edit {
+                                                        replace(0, currentText.length, newText)
+                                                        selection = TextRange(newCursorPos, newCursorPos)
+                                                    }
                                                     lastTemplateCursorPosition = newCursorPos
                                                     lastTemplateText = newText
                                                     onValueChange(newText)

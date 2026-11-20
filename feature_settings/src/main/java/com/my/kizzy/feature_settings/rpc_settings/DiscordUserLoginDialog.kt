@@ -1,101 +1,89 @@
 package com.my.kizzy.feature_settings.rpc_settings
 
-import android.app.Activity
-import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import com.my.kizzy.resources.R
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 
-private const val LOGIN_URL = "https://discord.com/login"
+private class TrimmedSingleLineTokenTransformation : InputTransformation {
+    override fun TextFieldBuffer.transformInput() {
+        // TextFieldBuffer does not expose `.text`; read via `asCharSequence()`
+        // and mutate `this` in place (e.g., stripping newlines/whitespace).
+        val raw = asCharSequence().toString()
+        val cleaned = raw.replace("\n", "").replace("\r", "")
+        if (cleaned != raw) {
+            replace(0, length, cleaned)
+        }
+    }
+}
 
 @Composable
 fun DiscordUserLoginDialog(
+    token: String,
     onDismiss: () -> Unit,
-    onToken: (String) -> Unit,
+    onConfirm: (String) -> Unit,
 ) {
-    var manualToken by remember { mutableStateOf("") }
-    val context = LocalContext.current
+    val tokenState = rememberTextFieldState(initialText = token)
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background,
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Login with Discord",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.weight(1f),
-                    )
-                    TextButton(onClick = onDismiss) {
-                        Text("Close")
-                    }
-                }
-                
-                Spacer(Modifier.height(16.dp))
-                
-                Button(
-                    onClick = {
-                        val activity = context as? Activity
-                        if (activity != null) {
-                            val intent = CustomTabsIntent.Builder()
-                                .setShowTitle(true)
-                                .setEphemeralBrowsingEnabled(true)
-                                .build()
-                            intent.launchUrl(activity, Uri.parse(LOGIN_URL))
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Open Ephemeral Login Browser")
-                }
-
-                Spacer(Modifier.height(24.dp))
-                
-                OutlinedTextField(
-                    value = manualToken,
-                    onValueChange = { manualToken = it },
-                    label = { Text("Paste your account token manually") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                )
-                
-                Spacer(Modifier.height(8.dp))
-                
-                Button(
-                    onClick = { 
-                        if (manualToken.isNotBlank()) {
-                            onToken(manualToken.trim())
-                        }
-                    },
-                    enabled = manualToken.isNotBlank(),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Use this token")
-                }
-            }
+    LaunchedEffect(token) {
+        if (token != tokenState.text.toString()) {
+            tokenState.setTextAndPlaceCursorAtEnd(token)
         }
     }
+
+    LaunchedEffect(tokenState) {
+        snapshotFlow { tokenState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect {
+                // Observe live edits here if needed; OutlinedTextField(state = ...)
+                // does not take an `onValueChange` parameter.
+            }
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.login_with_discord)) },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedTextField(
+                    state = tokenState,
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(text = "Paste your account token manually") },
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    inputTransformation = TrimmedSingleLineTokenTransformation(),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(tokenState.text.toString().trim()) }) {
+                Text(text = "OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(android.R.string.cancel))
+            }
+        },
+    )
 }
