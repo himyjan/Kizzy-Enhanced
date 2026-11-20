@@ -74,7 +74,13 @@ class KizzyRPC @Inject constructor(
     // Presence update deduplication + throttling to prevent flooding Discord gateway
     // (rapid SESSIONS_REPLACE events used to cause connection closures / INVALID_SESSION)
     companion object {
-        private const val PRESENCE_MIN_INTERVAL_MS = 1500L
+        /**
+         * Discord allows 5 presence updates per 20 seconds per session. 1500 ms
+         * allowed ~13, so a busy media session could exceed the limit and have
+         * updates silently dropped (the presence then stopped updating until the
+         * next track). 4000 ms matches the documented budget.
+         */
+        private const val PRESENCE_MIN_INTERVAL_MS = 4000L
         private const val POST_CONNECT_DELAY_MS = 2000L
         // Max consecutive connection failures before backing off
         private const val MAX_CONNECTION_FAILURES = 5

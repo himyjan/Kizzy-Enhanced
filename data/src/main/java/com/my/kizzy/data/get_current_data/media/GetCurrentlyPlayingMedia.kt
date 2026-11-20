@@ -135,6 +135,17 @@ class GetCurrentPlayingMedia @Inject constructor(
             // A track that just started reports position 0. It still has a timeline, so
             // it is computed too - otherwise the very first presence of every track had
             // no progress bar and a second presence had to follow a rate-limit wait later.
+            //
+            // Always compute timestamps when we have a duration, even when the player is
+            // paused at position 0. Discord requires timestamps to initially apply a
+            // Listening (type=2) activity on a new session — without them the presence
+            // is silently dropped and the RPC never shows up.
+            //
+            // The drift concern (start = now - 0 moving forward every tick while paused)
+            // does not cause presence spam: contentChanged checks the hash (timestamps
+            // present-or-not, not actual values) and isTimelineJump only fires when the
+            // actual start moves by more than 3000ms — exactly one tick's drift, so it
+            // stays at the boundary and does not trigger.
             if (duration > 0L) {
                 var extrapolated = position
                 val lastUpdate = mediaController.playbackState?.lastPositionUpdateTime ?: 0L
