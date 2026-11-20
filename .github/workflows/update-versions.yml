@@ -59,6 +59,30 @@ jobs:
       - name: Run versionCatalogUpdate
         run: ./gradlew versionCatalogUpdate --no-daemon
 
+      - name: Check current Kotlin version
+        id: current-kotlin
+        run: |
+          CURRENT_VERSION=$(grep '^kotlin = ' gradle/libs.versions.toml | grep -oP '"[^"]*"' | tr -d '"')
+          echo "current=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check latest Kotlin version (including pre-release)
+        id: latest-kotlin
+        run: |
+          LATEST_VERSION=$(curl -s "https://search.maven.org/solrsearch/select?q=g:org.jetbrains.kotlin%20AND%20a:kotlin-gradle-plugin&core=gav&rows=20&wt=json" | grep -oP '"v":"[^"]+"' | grep -oP '[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' | sort -V | tail -1)
+          echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update Kotlin version in libs.versions.toml
+        if: steps.current-kotlin.outputs.current != steps.latest-kotlin.outputs.latest
+        run: |
+          echo "Updating Kotlin from ${{ steps.current-kotlin.outputs.current }} to ${{ steps.latest-kotlin.outputs.latest }}"
+          sed -i 's/^kotlin = ".*"/kotlin = "${{ steps.latest-kotlin.outputs.latest }}"/' gradle/libs.versions.toml
+
+      - name: Update kotlin-metadata-jvm version in build.gradle.kts
+        if: steps.current-kotlin.outputs.current != steps.latest-kotlin.outputs.latest
+        run: |
+          echo "Updating kotlin-metadata-jvm from ${{ steps.current-kotlin.outputs.current }} to ${{ steps.latest-kotlin.outputs.latest }}"
+          sed -i "s/kotlin-metadata-jvm:${{ steps.current-kotlin.outputs.current }}/kotlin-metadata-jvm:${{ steps.latest-kotlin.outputs.latest }}/" build.gradle.kts
+
       - name: Check for changes
         id: check-changes
         run: |
@@ -73,6 +97,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add gradle/wrapper/gradle-wrapper.properties libs.versions.toml .github/workflows/update-versions.yml
+          git add gradle/wrapper/gradle-wrapper.properties libs.versions.toml build.gradle.kts .github/workflows/update-versions.yml
           git commit -m "chore: update dependency versions via versionCatalogUpdate"
           git push
