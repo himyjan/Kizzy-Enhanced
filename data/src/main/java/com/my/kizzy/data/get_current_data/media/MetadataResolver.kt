@@ -1303,8 +1303,43 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /**
+     * Scans EVERY string metadata value for a YouTube video id.
+     *
+     * YouTube Music wrapper clients (Morphe, AndDea Revanced, InnerTune, ...)
+     * publish the playing video id under custom keys that vary by client, so a
+     * hardcoded key list misses them. Falling back to a network scrape of the
+     * YouTube search page is unreliable (often blocked) and produced search
+     * links like `youtube.com/results?search_query=...` instead of a direct
+     * `youtu.be/ID`. This local scan needs no network and makes the details /
+     * cover links resolve to the real video.
+     */
+    private fun findVideoIdInMetadata(metadata: MediaMetadata): String? {
+        // Check id/url-ish keys first, then everything else.
+        val orderedKeys = metadata.keySet().sortedByDescending { key ->
+            val k = key.lowercase()
+            when {
+                ("video" in k && "id" in k) -> 3
+                ("media" in k && "id" in k) -> 2
+                k == MediaMetadata.METADATA_KEY_MEDIA_ID.lowercase() -> 2
+                ("url" in k || "uri" in k || "link" in k) -> 1
+                else -> 0
+            }
+        }
+        for (key in orderedKeys) {
+            val value = metadata.getString(key)?.trim() ?: continue
+            if (value.isEmpty()) continue
+            val id = YouTubeResolver.extractVideoId(value) ?: continue
+            if (YouTubeResolver.isValidVideoId(id)) return id
+        }
+        return null
+    }
+
     suspend fun getDirectMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
         if (!MediaServiceResolver.isYouTube(packageName)) return null
+        // Local full-metadata scan first — no network needed. Handles clients
+        // that publish the video id under a custom key.
+        findVideoIdInMetadata(metadata)?.let { return "https://youtu.be/$it" }
         firstMetadataUrl(metadata)?.let { url ->
             if (YouTubeResolver.isYoutubeFamilyUrl(url)) {
                 toRpcMediaUrl(url)?.let { return it }
@@ -1452,6 +1487,9 @@ class MetadataResolver @Inject constructor(
 
     private fun extractYouTubeUrl(metadata: MediaMetadata): String? {
         val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+        // Local full-metadata scan first (no network), so wrapper clients resolve
+        // to youtu.be/ID instead of a search page.
+        findVideoIdInMetadata(metadata)?.let { return "https://youtu.be/$it" }
         fun fromRaw(raw: String?): String? {
             if (raw.isNullOrBlank()) return null
             if (raw.contains("/results?search_query")) return null

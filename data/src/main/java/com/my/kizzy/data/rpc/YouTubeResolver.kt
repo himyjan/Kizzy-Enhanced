@@ -50,11 +50,16 @@ object YouTubeResolver {
     private const val OEMBED = "https://www.youtube.com/oembed"
     private const val SEARCH = "https://www.youtube.com/results?search_query="
 
-    private val VIDEO_ID_PATTERN = Regex("\"videoId\":\"([A-Za-z0-9_-]{11})\"")
+    // Matches "videoId":"ID" and escaped variants (\\"videoId\\":\\"ID\\") that
+    // appear inside ytInitialData JSON string payloads.
+    private val VIDEO_ID_PATTERN = Regex("\\\\?\"videoId\\\\?\":\\\\?\"([A-Za-z0-9_-]{11})\\\\?\"")
 
+    // YouTube serves a stripped/consent page to the old mobile UA that contains
+    // no "videoId" fields, so the title scrape always failed. A desktop UA returns
+    // the full ytInitialData with real videoIds (verified 1.5 MB response).
     private val USER_AGENT =
-        "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " +
-                "Chrome/120.0.0.0 Mobile Safari/537.36"
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/120.0.0.0 Safari/537.36"
 
     private val client by lazy {
         HttpClient(OkHttp) {
