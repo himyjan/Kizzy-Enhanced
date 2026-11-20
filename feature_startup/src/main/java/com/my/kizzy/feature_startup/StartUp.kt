@@ -186,11 +186,20 @@ fun StartUp(
                         description = stringResource(id = R.string.usage_access_desc),
                         status = usageAccessStatus.value
                     ) {
-                        // Open usage access settings and try to pre-select Kizzy's
-                        // package so the user can flip the toggle directly.
+                        // Open per-app Usage Access toggle screen directly (Android 8+).
+                        // One tap flips the toggle; no need to scroll through a list.
+                        // Falls back to the general Usage Access list on ROMs that
+                        // don't support package: routing.
                         val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                        context.startActivity(intent)
+                            .setData(Uri.parse("package:${context.packageName}"))
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        try {
+                            context.startActivity(intent)
+                        } catch (_: android.content.ActivityNotFoundException) {
+                            context.startActivity(
+                                Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                            )
+                        }
                     }
                 }
                 item {
