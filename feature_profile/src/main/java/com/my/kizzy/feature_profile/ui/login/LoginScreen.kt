@@ -29,6 +29,8 @@ import com.my.kizzy.preference.Prefs
 import com.my.kizzy.ui.components.BackButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,14 +82,19 @@ fun LoginScreen(
             if (showWebView) {
                 DiscordAuthView(
                     onLoginCompleted = { token ->
-                        // Save the account token, then fetch the identity from the
-                        // gateway READY payload. Without this step USER_ID /
-                        // USER_DATA / USER_BIO are never written: the profile has
-                        // no avatar or bio and still shows "Login with Discord".
+                        // Save the account token, then fetch the user ID from
+                        // Discord's REST API immediately so the setup screen
+                        // shows the Discord ID instead of just "Logged in".
                         Prefs[Prefs.TOKEN] = token
                         showWebView = false
                         isSaving = true
                         scope.launch {
+                            // Fetch user ID via REST API right away (doesn't
+                            // depend on gateway READY). Fall back to gateway
+                            // READY fetch below if this fails.
+                            fetchDiscordUserId(token)?.let { userId ->
+                                Prefs[Prefs.USER_ID] = userId
+                            }
                             fetchUserInfo(token)
                             isSaving = false
                             onCompleted()
@@ -111,4 +118,38 @@ fun LoginScreenPreview() {
         onCompleted = {},
         onBackPressed = {}
     )
+}
+
+/**
+ * Fetches the Discord user ID via REST API /users/@me.
+ *
+ * Returns the numeric user ID string, or null if the request fails.
+ * Works with both account tokens (user_id.timestamp.hmac) and OAuth2
+ * bearer tokens.
+ */
+private suspend fun fetchDiscordUserId(token: String): String? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val url = java.net.URL("https://discord.com/api/v10/users/@me")
+            val connection = url.openConnection() as java.net.HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Authorization", token)
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
+
+            val responseCode = connection.responseCode
+            if (responseCode == 200) {
+                val inputStream = connection.inputStream
+                val body = inputStream.bufferedReader().use { it.readText() }
+                inputStream.close()
+
+                // Extract "id":"123456789" from the JSON response
+                Regex("\"id\":\"([^\"]+)\"").find(body)?.groupValues?.getOrNull(1)
+            } else {
+                null
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
 }
