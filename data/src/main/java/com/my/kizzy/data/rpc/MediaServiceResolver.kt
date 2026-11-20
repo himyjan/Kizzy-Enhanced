@@ -447,9 +447,35 @@ object MediaServiceResolver {
             "musify" in pkg -> "https://github.com/gokadzev/Musify/releases"
             "namida" in pkg -> "https://github.com/namidaco/namida/releases"
             "bloomee" in pkg -> "https://github.com/HemantKArya/BloomeeTunes/releases"
+
+            // Additional community players
+            "mpv" in pkg || "xyz.mpv" in pkg -> "https://github.com/mpv-android/mpv-android/releases"
+            "retromusic" in pkg || "monkey" in pkg -> "https://github.com/RetroMusicPlayer/RetroMusicPlayer/releases"
+            "brouken" in pkg -> "https://github.com/moneytoo/Player/releases"
+            "auxio" in pkg || "oxycblt" in pkg -> "https://github.com/OxygenCobalt/Auxio/releases"
+            "gramophone" in pkg || "akanework" in pkg -> "https://github.com/FoedusProgramme/Gramophone/releases"
+            "nextplayer" in pkg || "anilbeesetti" in pkg -> "https://github.com/anilbeesetti/nextplayer/releases"
+
             else -> null
         }
         if (gitHubRelease != null) return gitHubRelease
+
+        // Closed-source / official apps: their own download page or store listing.
+        val closedSourceRelease = when {
+            "foobar2000" in pkg -> "https://www.foobar2000.org/android"
+            "videolan" in pkg || "vlc" in pkg || "org.videolan" in pkg ->
+                "https://www.videolan.org/vlc/download-android.html"
+            "poweramp" in pkg || "maxmpz" in pkg ->
+                "https://forum.powerampapp.com/files/category/2-poweramp-v3-latest-releases"
+            "musicolet" in pkg || "krosbits" in pkg ->
+                "https://krosbits.in/musicolet/download"
+            "aimp" in pkg -> "https://aimp.ru/?do=download&os=android"
+            "mxtech" in pkg || "mxplayer" in pkg ->
+                "https://mx.j2inter.com/download"
+            "kodi" in pkg || "xbmc" in pkg -> "https://kodi.tv/download/android"
+            else -> null
+        }
+        if (closedSourceRelease != null) return closedSourceRelease
 
         // YMusic is closed source but not on the Play Store — use its patch repo.
         if ("ymusicapp" in pkg || "kapp.youtube" in pkg || "ymusicv4" in pkg) {
