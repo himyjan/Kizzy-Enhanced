@@ -21,8 +21,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldDecorator
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Search
@@ -32,7 +35,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,10 +49,10 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.resources.R
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /** Height of the search field. *
  * The height is fixed on purpose: the field is placed inside containers that hand
@@ -86,6 +92,28 @@ fun SearchBar(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val textState = rememberTextFieldState(initialText = text)
+    val currentText by rememberUpdatedState(text)
+    val currentOnTextChanged by rememberUpdatedState(onTextChanged)
+
+    // Keep the internal state in sync when the query is changed from the outside
+    // (e.g. the caller clears it after a search completes).
+    LaunchedEffect(text) {
+        if (text != textState.text.toString()) {
+            textState.setTextAndPlaceCursorAtEnd(text)
+        }
+    }
+
+    // Propagate user edits back to the caller. The comparison with the latest
+    // external value avoids echoing a change that already came from the outside.
+    LaunchedEffect(textState) {
+        snapshotFlow { textState.text.toString() }
+            .distinctUntilChanged()
+            .collect { updated ->
+                if (updated != currentText) currentOnTextChanged(updated)
+            }
+    }
+
     // The focus has to be requested *after* the field was attached to the
     // composition. Asking for it during the very first composition is silently
     // dropped, which left the user with a focused-looking field that never opened
@@ -121,22 +149,20 @@ fun SearchBar(
                 .padding(start = 10.dp, end = 6.dp)
         ) {
             BasicTextField(
-                value = text,
-                onValueChange = onTextChanged,
+                state = textState,
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     color = colorScheme.onSurface
                 ),
                 cursorBrush = SolidColor(colorScheme.primary),
-                singleLine = true,
-                visualTransformation = VisualTransformation.None,
+                lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
+                onKeyboardAction = { keyboardController?.hide() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
-                decorationBox = { innerTextField ->
+                decorator = TextFieldDecorator { innerTextField ->
                     Box {
-                        if (text.isEmpty()) {
+                        if (textState.text.isEmpty()) {
                             Text(
                                 text = placeholder,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -152,14 +178,17 @@ fun SearchBar(
 
         IconButton(
             onClick = {
-                if (text.isNotEmpty()) onTextChanged("")
-                else onClose()
+                if (textState.text.isNotEmpty()) {
+                    textState.setTextAndPlaceCursorAtEnd("")
+                } else {
+                    onClose()
+                }
             }
         ) {
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = stringResource(
-                    id = if (text.isNotEmpty()) R.string.clear else R.string.cancel
+                    id = if (textState.text.isNotEmpty()) R.string.clear else R.string.cancel
                 ),
                 tint = colorScheme.onSurfaceVariant,
             )

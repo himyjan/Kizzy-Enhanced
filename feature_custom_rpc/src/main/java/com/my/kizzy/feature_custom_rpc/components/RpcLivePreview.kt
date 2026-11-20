@@ -52,7 +52,7 @@ fun RpcLivePreview(
     val showTs = !rpcConfig.timestampsStart.isNullOrEmpty() ||
             !rpcConfig.timestampsStop.isNullOrEmpty()
 
-    val typeLabel = when (rpcConfig.type?.toIntOrNull()) {
+    val typeLabel = when (rpcConfig.type.toIntOrNull()) {
         1 -> stringResource(R.string.activity_streaming_title, rpcConfig.name.orEmpty())
         2 -> stringResource(R.string.activity_listening_title, rpcConfig.name.orEmpty().ifEmpty { "music" })
         3 -> stringResource(R.string.activity_watching_title, rpcConfig.name.orEmpty().ifEmpty { "video" })

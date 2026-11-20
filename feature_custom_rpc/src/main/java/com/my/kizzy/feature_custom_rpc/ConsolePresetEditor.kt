@@ -23,18 +23,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.SwitchBar
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 
 /**
  * Dialog that creates a new Console RPC preset or edits an existing one.
@@ -58,14 +65,56 @@ fun ConsolePresetEditorDialog(
     pickSmallImage: ((PickVisualMediaRequest) -> Unit)? = null,
 ) {
     var name by remember(initial.id, initial.name) { mutableStateOf(initial.name) }
+    val nameState = rememberTextFieldState(initialText = initial.name)
     var platform by remember(initial.id, initial.platform) { mutableStateOf(initial.platform) }
     var activityType by remember(initial.id, initial.activityType) { mutableStateOf(initial.activityType) }
     var status by remember(initial.id, initial.status) { mutableStateOf(initial.status) }
     var timestamps by remember(initial.id, initial.timestamps) { mutableStateOf(initial.timestamps) }
     var coverArt by remember(initial.id, initial.coverArt) { mutableStateOf(initial.coverArt) }
     var largeCoverArtUrl by remember(initial.id, initial.largeCoverArtUrl) { mutableStateOf(initial.largeCoverArtUrl) }
+    val largeCoverArtUrlState = rememberTextFieldState(initialText = initial.largeCoverArtUrl)
     var smallCoverArtUrl by remember(initial.id, initial.smallCoverArtUrl) { mutableStateOf(initial.smallCoverArtUrl) }
+    val smallCoverArtUrlState = rememberTextFieldState(initialText = initial.smallCoverArtUrl)
     var confirmDelete by remember(initial.id) { mutableStateOf(false) }
+
+    LaunchedEffect(initial.name) {
+        if (initial.name != nameState.text.toString()) {
+            nameState.setTextAndPlaceCursorAtEnd(initial.name)
+        }
+    }
+
+    LaunchedEffect(nameState) {
+        snapshotFlow { nameState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect { name = it }
+    }
+
+    LaunchedEffect(initial.largeCoverArtUrl) {
+        if (initial.largeCoverArtUrl != largeCoverArtUrlState.text.toString()) {
+            largeCoverArtUrlState.setTextAndPlaceCursorAtEnd(initial.largeCoverArtUrl)
+        }
+    }
+
+    LaunchedEffect(largeCoverArtUrlState) {
+        snapshotFlow { largeCoverArtUrlState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect { largeCoverArtUrl = it }
+    }
+
+    LaunchedEffect(initial.smallCoverArtUrl) {
+        if (initial.smallCoverArtUrl != smallCoverArtUrlState.text.toString()) {
+            smallCoverArtUrlState.setTextAndPlaceCursorAtEnd(initial.smallCoverArtUrl)
+        }
+    }
+
+    LaunchedEffect(smallCoverArtUrlState) {
+        snapshotFlow { smallCoverArtUrlState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect { smallCoverArtUrl = it }
+    }
 
     val platformLabel = Constants.ACTIVITY_PLATFORMS.entries
         .firstOrNull { it.value == platform }?.key ?: platform
@@ -90,10 +139,9 @@ fun ConsolePresetEditorDialog(
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
+                    state = nameState,
                     label = { Text(stringResource(R.string.console_preset_name)) },
-                    singleLine = true,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
@@ -125,10 +173,9 @@ fun ConsolePresetEditorDialog(
                     isChecked = coverArt,
                 ) { coverArt = !coverArt }
                 OutlinedTextField(
-                    value = largeCoverArtUrl,
-                    onValueChange = { largeCoverArtUrl = it },
+                    state = largeCoverArtUrlState,
                     label = { Text(stringResource(R.string.console_large_cover_art)) },
-                    singleLine = true,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp, top = 8.dp),
@@ -144,10 +191,9 @@ fun ConsolePresetEditorDialog(
                     }
                 )
                 OutlinedTextField(
-                    value = smallCoverArtUrl,
-                    onValueChange = { smallCoverArtUrl = it },
+                    state = smallCoverArtUrlState,
                     label = { Text(stringResource(R.string.console_small_cover_art)) },
-                    singleLine = true,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),

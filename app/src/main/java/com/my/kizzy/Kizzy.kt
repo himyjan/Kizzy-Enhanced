@@ -283,7 +283,7 @@ internal fun Kizzy(
                 }
             }
             composable(Routes.RPC_SETTINGS) {
-                RpcSettings { goBack(); true }
+                RpcSettings { goBack() }
             }
             composable(Routes.LOGIN) { navBackStackEntry ->
                 LoginScreen(

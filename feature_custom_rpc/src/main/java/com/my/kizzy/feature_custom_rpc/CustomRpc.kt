@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.filled.Check
@@ -52,8 +53,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -66,6 +67,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -81,6 +83,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.data.rpc.Constants.MAX_ALLOWED_CHARACTER_LENGTH
 import com.my.kizzy.data.utils.uriToFile
@@ -363,7 +367,7 @@ fun CustomRpcScreen(
 
         Column(modifier = Modifier.padding(padding)) {
 
-            TabRow(
+            PrimaryTabRow(
                 selectedTabIndex = selectedTab,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -457,7 +461,7 @@ private fun RpcTextFieldsColumn(
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"])
     }
     var consoleActivityType by remember {
-        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_ACTIVITY_TYPE, "0"].toString())
+        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_ACTIVITY_TYPE, "0"])
     }
     var consoleStatus by remember {
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_STATUS, "online"])
@@ -510,6 +514,14 @@ private fun RpcTextFieldsColumn(
 
     // Console RPC game list state
     var consoleSearchText by remember { mutableStateOf("") }
+    val consoleSearchTextState = rememberTextFieldState(initialText = "")
+
+    LaunchedEffect(consoleSearchTextState) {
+        snapshotFlow { consoleSearchTextState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect { consoleSearchText = it }
+    }
     var consoleSelectedGameTitle by remember { mutableStateOf("") }
 
     // Image pickers for preset cover art URLs
@@ -639,8 +651,8 @@ private fun RpcTextFieldsColumn(
             timestampsStart = startTs,
             timestampsStop = endTs,
             platform = game.platform,
-            largeImg = if (consoleShowCoverArt) game.large_image ?: "" else "",
-            smallImg = if (consoleShowCoverArt) game.small_image ?: "" else "",
+            largeImg = if (consoleShowCoverArt) game.large_image.orEmpty() else "",
+            smallImg = if (consoleShowCoverArt) game.small_image.orEmpty() else "",
         )))
         persistConsoleSettings()
 
@@ -2041,8 +2053,7 @@ private fun RpcTextFieldsColumn(
 
             item {
                 androidx.compose.material3.OutlinedTextField(
-                    value = consoleSearchText,
-                    onValueChange = { consoleSearchText = it },
+                    state = consoleSearchTextState,
                     label = { Text(text = stringResource(id = R.string.search)) },
                     leadingIcon = {
                         Icon(
@@ -2230,14 +2241,14 @@ fun ConsoleGameItem(
                 modifier = Modifier.weight(1f)
             ) {
                 androidx.compose.material3.Text(
-                    text = game.game_title ?: "",
+                    text = game.game_title,
                     style = MaterialTheme.typography.titleMedium,
                     color = contentColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 androidx.compose.material3.Text(
-                    text = game.platform ?: "",
+                    text = game.platform,
                     style = MaterialTheme.typography.bodySmall,
                     color = colorScheme.onSurfaceVariant,
                     maxLines = 1,

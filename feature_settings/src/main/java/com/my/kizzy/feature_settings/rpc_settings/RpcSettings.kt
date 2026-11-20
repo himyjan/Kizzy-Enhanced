@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Cached
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Code
@@ -59,7 +60,6 @@ import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
 import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFM
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
-import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.RpcField
 import com.my.kizzy.ui.components.SettingItem
 import com.my.kizzy.ui.components.Subtitle
@@ -80,7 +80,7 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RpcSettings(onBackPressed: () -> Boolean) {
+fun RpcSettings(onBackPressed: () -> Unit) {
     val context = LocalContext.current
     val activity = context as Activity
     val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
@@ -169,7 +169,12 @@ fun RpcSettings(onBackPressed: () -> Boolean) {
                 style = MaterialTheme.typography.headlineMedium,
             )
         }, navigationIcon = {
-            BackButton(onClick = { onBackPressed() })
+            IconButton(onClick = { onBackPressed() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null
+                )
+            }
         })
     }) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {

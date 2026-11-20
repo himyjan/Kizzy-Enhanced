@@ -183,17 +183,17 @@ fun ActivityRow(
     val activityPrefix = when (rpcConfig?.type?.toIntOrNull()) {
         2 -> stringResource(
             R.string.activity_listening_title,
-            rpcConfig?.name.orEmpty().ifEmpty { "music" })
+            rpcConfig.name.orEmpty().ifEmpty { "music" })
         3 -> stringResource(
             R.string.activity_watching_title,
-            rpcConfig?.name.orEmpty().ifEmpty { "video" })
-        5 -> stringResource(R.string.activity_competiting_title, rpcConfig?.name.orEmpty())
+            rpcConfig.name.orEmpty().ifEmpty { "video" })
+        5 -> stringResource(R.string.activity_competiting_title, rpcConfig.name.orEmpty())
         else -> rpcConfig?.name?.takeIf { it.isNotEmpty() }
             ?: stringResource(R.string.activity_playing_title)
     }
 
     val renderedDetails = if (isPlaying) {
-        rpcConfig?.details?.takeIf { it.isNotEmpty() }
+        rpcConfig.details.takeIf { it.isNotEmpty() }
             ?: stringResource(id = R.string.user_profile)
     } else {
         rpcConfig?.details
@@ -323,7 +323,7 @@ fun ActivityRow(
                             fontSize = 14.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.clickable { openLink(cfg?.stateUrl) },
+                            modifier = Modifier.clickable { openLink(cfg.stateUrl) },
                         )
                     }
 
@@ -334,7 +334,7 @@ fun ActivityRow(
                             fontSize = 12.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.clickable { openLink(cfg?.largeUrl) },
+                            modifier = Modifier.clickable { openLink(cfg.largeUrl) },
                         )
                     }
 
@@ -362,12 +362,12 @@ fun ActivityRow(
                         // Playing game / non-media: "Time elapsed: 12m 30s".
                         showTs && isPlaying -> Text(
                             text = stringResource(
-                                id = cfg?.timestampsStop?.toLongOrNull()?.let {
+                                id = cfg.timestampsStop.toLongOrNull()?.let {
                                     if (it > 0) R.string.time_left else R.string.time_elapsed
                                 } ?: R.string.time_elapsed,
                                 formatTime(
-                                    cfg?.timestampsStart?.toLongOrNull(),
-                                    cfg?.timestampsStop?.toLongOrNull()
+                                    cfg.timestampsStart.toLongOrNull(),
+                                    cfg.timestampsStop.toLongOrNull()
                                 )
                                     .takeIf { it.isNotEmpty() } ?: elapsedText
                             ),

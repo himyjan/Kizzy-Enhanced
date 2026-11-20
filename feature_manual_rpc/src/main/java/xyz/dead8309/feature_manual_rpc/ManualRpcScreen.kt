@@ -1386,7 +1386,7 @@ fun ManualRpcScreen(
 
                                 onClick = {
 
-                                    onEvent(UiEvent.SetStatus(value.toString()))
+                                    onEvent(UiEvent.SetStatus(value))
 
                                     onEvent(UiEvent.TriggerStatusDropDownMenu)
 
