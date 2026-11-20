@@ -63,6 +63,17 @@ class ManualRpcViewmodel @Inject constructor(
             customTimestampEnd = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_END, ""],
             showSongAsTitle = Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE, false],
             titleSource = Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE, "title"],
+
+            // Advanced settings
+            activityType = Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE, ""],
+            status = Prefs[Prefs.MANUAL_RPC_STATUS, "online"],
+            largeImage = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""],
+            smallImage = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""],
+            largeText = Prefs[Prefs.MANUAL_RPC_LARGE_TEXT, ""],
+            smallText = Prefs[Prefs.MANUAL_RPC_SMALL_TEXT, ""],
+            streamUrl = Prefs[Prefs.MANUAL_RPC_STREAM_URL, ""],
+            partyCurrentSize = Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE, ""],
+            partyMaxSize = Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE, ""],
         )
     )
     val uiState = _uiState.asStateFlow()
@@ -354,6 +365,69 @@ class ManualRpcViewmodel @Inject constructor(
 
                 is UiEvent.TriggerTitleSourceDropDown -> {
                     _uiState.update { it.copy(titleSourceExpanded = !it.titleSourceExpanded) }
+                }
+
+                // Advanced settings handlers
+                is UiEvent.SetActivityType -> {
+                    Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE] = event.value
+                    _uiState.update { it.copy(activityType = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.TriggerActivityTypeDropDownMenu -> {
+                    _uiState.update { it.copy(activityTypeIsExpanded = !it.activityTypeIsExpanded) }
+                }
+
+                is UiEvent.SetStatus -> {
+                    Prefs[Prefs.MANUAL_RPC_STATUS] = event.value
+                    _uiState.update { it.copy(status = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.TriggerStatusDropDownMenu -> {
+                    _uiState.update { it.copy(statusIsExpanded = !it.statusIsExpanded) }
+                }
+
+                is UiEvent.SetLargeImage -> {
+                    Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE] = event.value
+                    _uiState.update { it.copy(largeImage = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetSmallImage -> {
+                    Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE] = event.value
+                    _uiState.update { it.copy(smallImage = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetLargeText -> {
+                    Prefs[Prefs.MANUAL_RPC_LARGE_TEXT] = event.value
+                    _uiState.update { it.copy(largeText = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetSmallText -> {
+                    Prefs[Prefs.MANUAL_RPC_SMALL_TEXT] = event.value
+                    _uiState.update { it.copy(smallText = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetStreamUrl -> {
+                    Prefs[Prefs.MANUAL_RPC_STREAM_URL] = event.value
+                    _uiState.update { it.copy(streamUrl = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetPartyCurrentSize -> {
+                    Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE] = event.value
+                    _uiState.update { it.copy(partyCurrentSize = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetPartyMaxSize -> {
+                    Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE] = event.value
+                    _uiState.update { it.copy(partyMaxSize = event.value) }
+                    restartServiceIfRunning()
                 }
             }
         }

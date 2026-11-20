@@ -48,4 +48,17 @@ sealed interface UiEvent {
     data class ToggleShowSongAsTitle(val enabled: Boolean) : UiEvent
     data class SetTitleSource(val value: String) : UiEvent
     object TriggerTitleSourceDropDown : UiEvent
+
+    // Advanced settings (matching Custom RPC / RpcConfig fields)
+    data class SetActivityType(val value: String) : UiEvent
+    object TriggerActivityTypeDropDownMenu : UiEvent
+    data class SetStatus(val value: String) : UiEvent
+    object TriggerStatusDropDownMenu : UiEvent
+    data class SetLargeImage(val value: String) : UiEvent
+    data class SetSmallImage(val value: String) : UiEvent
+    data class SetLargeText(val value: String) : UiEvent
+    data class SetSmallText(val value: String) : UiEvent
+    data class SetStreamUrl(val value: String) : UiEvent
+    data class SetPartyCurrentSize(val value: String) : UiEvent
+    data class SetPartyMaxSize(val value: String) : UiEvent
 }

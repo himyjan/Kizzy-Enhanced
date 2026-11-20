@@ -46,6 +46,9 @@ import androidx.compose.foundation.layout.padding
 
 import androidx.compose.foundation.layout.size
 
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+
 import androidx.compose.foundation.lazy.LazyColumn
 
 import androidx.compose.material.icons.Icons
@@ -67,6 +70,10 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.AppSettingsAlt
 
 import androidx.compose.material.icons.outlined.Apps
+
+import androidx.compose.material.icons.outlined.Album
+
+import androidx.compose.material.icons.outlined.Audiotrack
 
 import androidx.compose.material.icons.outlined.Image
 
@@ -545,6 +552,8 @@ fun ManualRpcScreen(
 
                         },
 
+                        icon = Icons.Outlined.Audiotrack,
+
                     )
 
                 }
@@ -565,6 +574,8 @@ fun ManualRpcScreen(
                             onEvent(UiEvent.ToggleShowAlbumName(!state.showAlbumName))
 
                         },
+
+                        icon = Icons.Outlined.Album,
 
                     )
 
@@ -1227,6 +1238,329 @@ fun ManualRpcScreen(
 
                 }
 
+                // Activity Type
+                item {
+
+                    val activityTypeIcon = if (state.activityTypeIsExpanded)
+
+                        Icons.Outlined.KeyboardArrowUp
+
+                    else
+
+                        Icons.Outlined.KeyboardArrowDown
+
+                    val activityTypes = Constants.ACTIVITY_TYPE
+
+                    val activityTypeLabel = activityTypes.entries
+
+                        .firstOrNull { it.value.toString() == state.activityType }?.key ?: state.activityType
+
+                    RpcField(
+
+                        value = activityTypeLabel,
+
+                        label = R.string.activity_type,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+
+                        trailingIcon = {
+
+                            Icon(
+
+                                imageVector = activityTypeIcon,
+
+                                contentDescription = null,
+
+                                modifier = Modifier.clickable {
+
+                                    onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
+
+                                })
+
+                        }) {
+
+                        onEvent(UiEvent.SetActivityType(it))
+
+                    }
+
+                    DropdownMenu(
+
+                        expanded = state.activityTypeIsExpanded, onDismissRequest = {
+
+                            onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
+
+                        }, modifier = Modifier.fillMaxWidth()
+
+                    ) {
+
+                        activityTypes.forEach { (label, value) ->
+
+                            DropdownMenuItem(
+
+                                text = {
+
+                                    Text(text = label)
+
+                                },
+
+                                onClick = {
+
+                                    onEvent(UiEvent.SetActivityType(value.toString()))
+
+                                    onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
+
+                                },
+
+                            )
+
+                        }
+
+                    }
+
+                }
+
+                // Status
+                item {
+
+                    val statusIcon = if (state.statusIsExpanded)
+
+                        Icons.Outlined.KeyboardArrowUp
+
+                    else
+
+                        Icons.Outlined.KeyboardArrowDown
+
+                    val statuses = Constants.ACTIVITY_STATUS
+
+                    val statusLabel = statuses.entries
+
+                        .firstOrNull { it.value == state.status }?.let { stringResource(it.key) } ?: state.status
+
+                    RpcField(
+
+                        value = statusLabel,
+
+                        label = R.string.activity_status_online_idle_dnd,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+
+                        trailingIcon = {
+
+                            Icon(
+
+                                imageVector = statusIcon,
+
+                                contentDescription = null,
+
+                                modifier = Modifier.clickable {
+
+                                    onEvent(UiEvent.TriggerStatusDropDownMenu)
+
+                                })
+
+                        }) {
+
+                        onEvent(UiEvent.SetStatus(it))
+
+                    }
+
+                    DropdownMenu(
+
+                        expanded = state.statusIsExpanded, onDismissRequest = {
+
+                            onEvent(UiEvent.TriggerStatusDropDownMenu)
+
+                        }, modifier = Modifier.fillMaxWidth()
+
+                    ) {
+
+                        statuses.forEach { (label, value) ->
+
+                            DropdownMenuItem(
+
+                                text = {
+
+                                    Text(text = stringResource(label))
+
+                                },
+
+                                onClick = {
+
+                                    onEvent(UiEvent.SetStatus(value.toString()))
+
+                                    onEvent(UiEvent.TriggerStatusDropDownMenu)
+
+                                },
+
+                            )
+
+                        }
+
+                    }
+
+                }
+
+                // Large Image
+                item {
+
+                    RpcField(
+
+                        value = state.largeImage,
+
+                        label = R.string.activity_large_image,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                        trailingIcon = {
+
+                            Icon(
+
+                                imageVector = Icons.Outlined.Image,
+
+                                contentDescription = null,
+
+                                modifier = Modifier.size(20.dp)
+
+                            )
+
+                        },
+
+                    ) {
+
+                        onEvent(UiEvent.SetLargeImage(it))
+
+                    }
+
+                }
+
+                // Small Image
+                item {
+
+                    RpcField(
+
+                        value = state.smallImage,
+
+                        label = R.string.activity_small_image,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                        trailingIcon = {
+
+                            Icon(
+
+                                imageVector = Icons.Outlined.Image,
+
+                                contentDescription = null,
+
+                                modifier = Modifier.size(20.dp)
+
+                            )
+
+                        },
+
+                    ) {
+
+                        onEvent(UiEvent.SetSmallImage(it))
+
+                    }
+
+                }
+
+                // Large Text (hover text for large image)
+                item {
+
+                    RpcField(
+
+                        value = state.largeText,
+
+                        label = R.string.activity_large_text,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    ) {
+
+                        onEvent(UiEvent.SetLargeText(it))
+
+                    }
+
+                }
+
+                // Small Text (hover text for small image)
+                item {
+
+                    RpcField(
+
+                        value = state.smallText,
+
+                        label = R.string.activity_small_text,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    ) {
+
+                        onEvent(UiEvent.SetSmallText(it))
+
+                    }
+
+                }
+
+                // Stream URL (for type 1 / Streaming)
+                item {
+
+                    RpcField(
+
+                        value = state.streamUrl,
+
+                        label = R.string.stream_url,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    ) {
+
+                        onEvent(UiEvent.SetStreamUrl(it))
+
+                    }
+
+                }
+
+                // Party Current Size
+                item {
+
+                    RpcField(
+
+                        value = state.partyCurrentSize,
+
+                        label = R.string.party_current,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+
+                    ) {
+
+                        onEvent(UiEvent.SetPartyCurrentSize(it))
+
+                    }
+
+                }
+
+                // Party Max Size
+                item {
+
+                    RpcField(
+
+                        value = state.partyMaxSize,
+
+                        label = R.string.party_max,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+
+                    ) {
+
+                        onEvent(UiEvent.SetPartyMaxSize(it))
+
+                    }
+
+                }
+
 
 
                 item {
@@ -1341,6 +1675,29 @@ fun ManualRpcScreenLightPreview() {
 
         titleSourceExpanded = false,
 
+        // Advanced settings
+        activityType = "",
+
+        status = "online",
+
+        largeImage = "",
+
+        smallImage = "",
+
+        largeText = "",
+
+        smallText = "",
+
+        streamUrl = "",
+
+        partyCurrentSize = "",
+
+        partyMaxSize = "",
+
+        activityTypeIsExpanded = false,
+
+        statusIsExpanded = false,
+
     )
 
     ManualRpcScreen(
@@ -1426,6 +1783,29 @@ fun ManualRpcScreenDarkPreview() {
         titleSource = "title",
 
         titleSourceExpanded = false,
+
+        // Advanced settings
+        activityType = "",
+
+        status = "online",
+
+        largeImage = "",
+
+        smallImage = "",
+
+        largeText = "",
+
+        smallText = "",
+
+        streamUrl = "",
+
+        partyCurrentSize = "",
+
+        partyMaxSize = "",
+
+        activityTypeIsExpanded = false,
+
+        statusIsExpanded = false,
 
     )
 

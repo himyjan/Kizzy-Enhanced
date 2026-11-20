@@ -512,6 +512,17 @@ object Prefs {
     const val MANUAL_RPC_SHOW_SONG_AS_TITLE = "manual_rpc_show_song_as_title"
     const val MANUAL_RPC_TITLE_SOURCE = "manual_rpc_title_source"
 
+    // Advanced settings (matching Custom RPC / RpcConfig fields)
+    const val MANUAL_RPC_ACTIVITY_TYPE = "manual_rpc_activity_type"
+    const val MANUAL_RPC_STATUS = "manual_rpc_status"
+    const val MANUAL_RPC_LARGE_IMAGE = "manual_rpc_large_image"
+    const val MANUAL_RPC_SMALL_IMAGE = "manual_rpc_small_image"
+    const val MANUAL_RPC_LARGE_TEXT = "manual_rpc_large_text"
+    const val MANUAL_RPC_SMALL_TEXT = "manual_rpc_small_text"
+    const val MANUAL_RPC_STREAM_URL = "manual_rpc_stream_url"
+    const val MANUAL_RPC_PARTY_CURRENT_SIZE = "manual_rpc_party_current_size"
+    const val MANUAL_RPC_PARTY_MAX_SIZE = "manual_rpc_party_max_size"
+
     fun saveAppActivityType(packageName: String, activityType: Int) {
         val map = getAppActivityTypes().toMutableMap()
         map[packageName] = activityType

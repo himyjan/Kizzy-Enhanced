@@ -215,6 +215,17 @@ class ManualRpc : Service() {
     private var templateState =
         Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
 
+    // Advanced settings (matching Custom RPC / RpcConfig fields)
+    private var manualActivityType = Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE, ""]
+    private var manualStatus = Prefs[Prefs.MANUAL_RPC_STATUS, "online"]
+    private var manualLargeImage = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""]
+    private var manualSmallImage = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""]
+    private var manualLargeText = Prefs[Prefs.MANUAL_RPC_LARGE_TEXT, ""]
+    private var manualSmallText = Prefs[Prefs.MANUAL_RPC_SMALL_TEXT, ""]
+    private var manualStreamUrl = Prefs[Prefs.MANUAL_RPC_STREAM_URL, ""]
+    private var manualPartyCurrentSize = Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE, ""]
+    private var manualPartyMaxSize = Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE, ""]
+
     private var enabledExperimentalApps: List<String> = readEnabledExperimentalApps()
 
     /** Reads the list of apps enabled for the Manual RPC from the preferences. */
@@ -300,6 +311,16 @@ class ManualRpc : Service() {
                     useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
                     useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
                     enabledExperimentalApps = readEnabledExperimentalApps()
+                    // Advanced settings (matching Custom RPC / RpcConfig fields)
+                    manualActivityType = Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE, ""]
+                    manualStatus = Prefs[Prefs.MANUAL_RPC_STATUS, "online"]
+                    manualLargeImage = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""]
+                    manualSmallImage = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""]
+                    manualLargeText = Prefs[Prefs.MANUAL_RPC_LARGE_TEXT, ""]
+                    manualSmallText = Prefs[Prefs.MANUAL_RPC_SMALL_TEXT, ""]
+                    manualStreamUrl = Prefs[Prefs.MANUAL_RPC_STREAM_URL, ""]
+                    manualPartyCurrentSize = Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE, ""]
+                    manualPartyMaxSize = Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE, ""]
                 }
             }
 
@@ -665,12 +686,19 @@ class ManualRpc : Service() {
         // Build the CommonRpc once - this is what we want to send to Discord
         val commonRpc = CommonRpc(
             name = finalName ?: "",
-            type = ActivityTypeResolver.resolve(
-                packageName = effectivePackageName,
-                isMusicMetadata = richMediaInfo?.isMusicMetadata == true,
-                fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
-                useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
-            ),
+            type = if (manualActivityType.isNotEmpty()) manualActivityType.toIntOrNull()
+                ?: ActivityTypeResolver.resolve(
+                    packageName = effectivePackageName,
+                    isMusicMetadata = richMediaInfo?.isMusicMetadata == true,
+                    fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                    useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+                )
+                else ActivityTypeResolver.resolve(
+                    packageName = effectivePackageName,
+                    isMusicMetadata = richMediaInfo?.isMusicMetadata == true,
+                    fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                    useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+                ),
             details = finalDetails,
             state = finalState,
             detailsUrl = detailsUrl,
@@ -678,14 +706,17 @@ class ManualRpc : Service() {
             largeImage = finalLargeImage,
             smallImage = finalSmallImage,
             largeUrl = finalLargeUrl,
-            largeText = finalLargeText,
-            smallText = finalSmallText,
+            largeText = manualLargeText.takeIf { it.isNotEmpty() } ?: finalLargeText,
+            smallText = manualSmallText.takeIf { it.isNotEmpty() } ?: finalSmallText,
             time = finalTimestamps,
             packageName = effectivePackageName ?: "",
             playbackState = richMediaInfo?.playbackState,
             mediaUrl = rawMediaMetadata?.let {
                 MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
             },
+            // Party size as Int? (CommonRpc uses Int?, not String?)
+            partyCurrentSize = manualPartyCurrentSize.toIntOrNull(),
+            partyMaxSize = manualPartyMaxSize.toIntOrNull(),
         )
 
         // De-duplication: skip if nothing changed since the last push.
@@ -765,7 +796,8 @@ class ManualRpc : Service() {
 
         kizzyRPC.updateRPC(
             commonRpc = commonRpc,
-            enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true]
+            enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true],
+            status = manualStatus.takeIf { it.isNotEmpty() } ?: "online",
         )
 
         // Remember the presence for the RPC preview.
@@ -793,6 +825,11 @@ class ManualRpc : Service() {
                 button1link = kizzyRPC.currentButtons()?.getOrNull(0)?.url.orEmpty(),
                 button2 = kizzyRPC.currentButtons()?.getOrNull(1)?.label.orEmpty(),
                 button2link = kizzyRPC.currentButtons()?.getOrNull(1)?.url.orEmpty(),
+                // Advanced settings from Manual RPC UI
+                status = manualStatus.takeIf { it.isNotEmpty() } ?: "online",
+                url = manualStreamUrl.takeIf { it.isNotEmpty() } ?: "",
+                partyCurrentSize = manualPartyCurrentSize.takeIf { it.isNotEmpty() } ?: "",
+                partyMaxSize = manualPartyMaxSize.takeIf { it.isNotEmpty() } ?: "",
             )
         )
 

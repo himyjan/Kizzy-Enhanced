@@ -55,5 +55,20 @@ data class UiState(
     val customTimestampEnd: String = "",
     val showSongAsTitle: Boolean = false,
     val titleSource: String = "title", // "title" = song name, "artist" = artist name
-    val titleSourceExpanded: Boolean = false
+    val titleSourceExpanded: Boolean = false,
+
+    // Advanced settings (matching Custom RPC / RpcConfig fields)
+    val activityType: String = "",       // Activity type: Playing, Listening, Watching, etc.
+    val status: String = "online",       // Status: online, idle, dnd, etc.
+    val largeImage: String = "",         // Large image URL
+    val smallImage: String = "",         // Small image URL
+    val largeText: String = "",          // Large image hover text
+    val smallText: String = "",          // Small image hover text
+    val streamUrl: String = "",          // Stream URL (for type 1 / Streaming)
+    val partyCurrentSize: String = "",   // Party current size
+    val partyMaxSize: String = "",       // Party max size
+
+    // Dropdown expansion states
+    val activityTypeIsExpanded: Boolean = false,
+    val statusIsExpanded: Boolean = false,
 )
