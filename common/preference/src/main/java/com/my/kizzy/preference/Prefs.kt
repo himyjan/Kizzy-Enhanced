@@ -358,6 +358,7 @@ object Prefs {
     const val MEDIA_RPC_HIDE_ON_PAUSE = "hide_on_pause"
     const val MEDIA_RPC_SHOW_PLAYBACK_STATE = "show_playback_state"
     const val MEDIA_RPC_SHOW_SONG_AS_TITLE = "show_song_as_title"
+    const val MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS = "media_rpc_show_app_name_in_details"
     const val MEDIA_RPC_MEDIA_BUTTON = "media_rpc_media_button"
     const val MEDIA_RPC_ARTIST_LINK = "media_rpc_artist_link"
     const val MEDIA_RPC_ENABLED = "media_rpc_enabled"

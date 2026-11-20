@@ -119,6 +119,9 @@ fun MediaRPC(
     var showSongAsTitle by remember {
         mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true])
     }
+    var showAppNameInDetails by remember {
+        mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS, true])
+    }
     var isAutoActivityTypeEnabled by remember {
         mutableStateOf(Prefs[Prefs.AUTO_ACTIVITY_TYPE, true])
     }
@@ -181,6 +184,8 @@ fun MediaRPC(
         onHideOnPauseChanged = { hideOnPause = !hideOnPause; Prefs[MEDIA_RPC_HIDE_ON_PAUSE] = hideOnPause },
         showSongAsTitle = showSongAsTitle,
         onShowSongAsTitleChanged = { showSongAsTitle = !showSongAsTitle; Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE] = showSongAsTitle },
+        showAppNameInDetails = showAppNameInDetails,
+        onShowAppNameInDetailsChanged = { showAppNameInDetails = !showAppNameInDetails; Prefs[Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS] = showAppNameInDetails },
         isAutoActivityTypeEnabled = isAutoActivityTypeEnabled,
         onAutoActivityTypeEnabledChanged = {
             isAutoActivityTypeEnabled = !isAutoActivityTypeEnabled
@@ -222,6 +227,8 @@ fun MediaRPCContent(
     onHideOnPauseChanged: () -> Unit,
     showSongAsTitle: Boolean,
     onShowSongAsTitleChanged: () -> Unit,
+    showAppNameInDetails: Boolean,
+    onShowAppNameInDetailsChanged: () -> Unit,
     isAutoActivityTypeEnabled: Boolean,
     onAutoActivityTypeEnabledChanged: () -> Unit,
     activityType: Int,
@@ -365,6 +372,13 @@ fun MediaRPCContent(
                 }
                 item {
                     PreferenceSwitch(
+                        title = stringResource(id = R.string.show_app_name_in_details),
+                        description = stringResource(id = R.string.show_app_name_in_details_desc),
+                        isChecked = showAppNameInDetails,
+                    ) { onShowAppNameInDetailsChanged() }
+                }
+                item {
+                    PreferenceSwitch(
                         title = stringResource(id = R.string.auto_detect_activity_type),
                         icon = Icons.Outlined.AutoAwesome,
                         isChecked = isAutoActivityTypeEnabled,
@@ -498,6 +512,8 @@ fun MediaRPCLightPreview() {
                 onHideOnPauseChanged = {},
                 showSongAsTitle = false,
                 onShowSongAsTitleChanged = {},
+                showAppNameInDetails = true,
+                onShowAppNameInDetailsChanged = {},
                 isAutoActivityTypeEnabled = true,
                 onAutoActivityTypeEnabledChanged = {},
                 activityType = 3,
@@ -565,6 +581,8 @@ fun MediaRPCDarkPreview() {
                 onHideOnPauseChanged = {},
                 showSongAsTitle = false,
                 onShowSongAsTitleChanged = {},
+                showAppNameInDetails = true,
+                onShowAppNameInDetailsChanged = {},
                 isAutoActivityTypeEnabled = true,
                 onAutoActivityTypeEnabledChanged = {},
                 activityType = 3,

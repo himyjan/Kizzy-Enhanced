@@ -978,6 +978,7 @@ class MediaRpcService : Service() {
         //   details (line 2)      = "songName • appName"  (one clean line)
         //   state   (line 3)      = channel name  (link -> artist URL)
         val showSongAsTitle = Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true]
+        val showAppNameInDetails = Prefs[Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS, true]
         // details always carries the song name; appName is the dedicated app-name field.
         val songName = playingMedia.details?.takeIf { it.isNotBlank() }
             ?: playingMedia.name
@@ -986,7 +987,10 @@ class MediaRpcService : Service() {
         val channelName = playingMedia.state
 
         val rpcName = if (showSongAsTitle) songName else playingMedia.name
-        val rpcDetails = listOfNotNull(songName, appName)
+        val rpcDetails = listOfNotNull(
+            songName,
+            if (showAppNameInDetails) appName else null
+        )
             .filter { it.isNotBlank() }
             .joinToString(" • ")
             .takeIf { it.isNotEmpty() } ?: playingMedia.details
@@ -1011,7 +1015,6 @@ class MediaRpcService : Service() {
             playingMedia.mediaUrl,
             playingMedia.albumUrl,
             playingMedia.playlistUrl,
-            preferPlaylist = playingMedia.largeTextIsPlaylist,
         )
         val smallUrl = MediaServiceResolver.appDownloadUrl(playingMedia.appPackage)
 
