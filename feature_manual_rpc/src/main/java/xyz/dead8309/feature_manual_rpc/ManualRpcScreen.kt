@@ -364,7 +364,12 @@ fun ManualRpcScreen(
                 val newValue = !ManualRpcRunning
                 ManualRpcRunning = newValue
                 scope.launch {
-                    rpcManager.switchTo(if (newValue) RpcType.ManualRpc else RpcType.None)
+                    // Toggle Manual RPC independently — does not stop Custom/Console/Media RPC.
+                    if (newValue) {
+                        rpcManager.switchTo(setOf(RpcType.ManualRpc), add = true)
+                    } else {
+                        rpcManager.stopRpcTypes(setOf(RpcType.ManualRpc))
+                    }
                 }
 
             }

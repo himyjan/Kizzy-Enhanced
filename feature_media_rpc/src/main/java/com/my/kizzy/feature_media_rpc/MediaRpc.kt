@@ -138,7 +138,12 @@ fun MediaRPC(
             val newValue = !mediaRpcRunning
             mediaRpcRunning = newValue
             scope.launch {
-                rpcManager.switchTo(if (newValue) RpcType.MediaRpc else RpcType.None)
+                // Toggle Media RPC independently — does not stop Custom/Console/Manual RPC.
+                if (newValue) {
+                    rpcManager.switchTo(setOf(RpcType.MediaRpc), add = true)
+                } else {
+                    rpcManager.stopRpcTypes(setOf(RpcType.MediaRpc))
+                }
             }
         },
         isArtistEnabled = isArtistEnabled,

@@ -323,9 +323,9 @@ fun AppsRPC(
 
                                 // Let the manager stop the other RPCs, persist the
                                 // choice and remember it for the next cold start.
-                                true -> rpcManager.switchTo(RpcType.AppDetectionRpc)
+                                true -> rpcManager.switchTo(RpcType.AppDetectionRpc, add = true)
 
-                                false -> rpcManager.switchTo(RpcType.None)
+                                false -> rpcManager.stopRpcTypes(setOf(RpcType.AppDetectionRpc))
 
                             }
 
