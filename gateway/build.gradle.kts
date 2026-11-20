@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
+kotlin {
+    jvmToolchain(27)
+}
+
 dependencies {
     implementation(projects.domain)
     implementation(libs.kotlinx.coroutine)

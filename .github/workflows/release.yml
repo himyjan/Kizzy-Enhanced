@@ -64,7 +64,6 @@ jobs:
         run: |
           echo "Updating JDK from ${{ steps.current-jdk.outputs.current }} to ${{ steps.latest-jdk.outputs.latest }}"
           sed -i "s/java-version: '${{ steps.current-jdk.outputs.current }}'/java-version: '${{ steps.latest-jdk.outputs.latest }}'/" .github/workflows/release.yml
-        run: |
           sed -i 's/version-name = ".*"/version-name = "6.2-enhanced-${{ github.run_number }}"/' gradle/libs.versions.toml
           sed -i 's/version-code = ".*"/version-code = "${{ github.run_number }}"/' gradle/libs.versions.toml
 

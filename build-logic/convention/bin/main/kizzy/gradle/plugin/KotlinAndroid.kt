@@ -22,11 +22,11 @@ private fun Project.configureCommonAndroid(commonExtension: CommonExtension) {
 
     commonExtension.buildFeatures.buildConfig = true
 
-    commonExtension.compileOptions.sourceCompatibility = JavaVersion.VERSION_26
-    commonExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_26
+    commonExtension.compileOptions.sourceCompatibility = JavaVersion.VERSION_27
+    commonExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_27
 
     configure<KotlinAndroidProjectExtension> {
-        jvmToolchain(26)
+        jvmToolchain(27)
     }
 }
 

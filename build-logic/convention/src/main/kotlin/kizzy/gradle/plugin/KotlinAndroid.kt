@@ -20,14 +20,6 @@ private fun Project.configureCommonAndroid(commonExtension: CommonExtension) {
     commonExtension.defaultConfig.minSdk = 26
 
     commonExtension.buildFeatures.buildConfig = true
-
-    configure<KotlinAndroidProjectExtension> {
-        jvmToolchain(26)
-    }
-
-    configure<KotlinAndroidProjectExtension> {
-        jvmToolchain(26)
-    }
 }
 
 // Overload entry point for Application modules

@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.baselineprofile)
 }
 
+kotlin {
+    jvmToolchain(27)
+}
+
 android {
     namespace = "com.my.kizzy.macrobenchmark"
     compileSdk = 37

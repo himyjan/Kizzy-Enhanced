@@ -4,8 +4,9 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(26)
+    jvmToolchain(27)
 }
+
 dependencies{
     implementation(libs.kotlinx.coroutine)
     implementation(libs.kotlinx.serialization.json)
