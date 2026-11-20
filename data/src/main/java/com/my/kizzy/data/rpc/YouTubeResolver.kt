@@ -142,39 +142,64 @@ object YouTubeResolver {
         }
 
     /**
-     * Primary media link priority chain:
-     *   1. mediaUrl (direct video/track/playlist URL, normalized via [toRpcUrl])
-     *   2. albumUrl (normalized via [toRpcUrl] for YT-family URLs)
-     *   3. channelUrl (normalized via [toRpcUrl] for YT-family URLs)
-     *
-     * mediaUrl is also run through [toRpcUrl] so YouTube watch URLs are
-     * canonicalized to youtu.be/ID instead of staying as full watch URLs.
+     * Returns a DIRECT link for a URL, or null. YouTube-family URLs are
+     * canonicalized via [toRpcUrl] to youtu.be/ID, a channel, or a playlist.
+     * A YouTube search page (`results?search_query=` / `search?`) is NOT a
+     * direct link, so it is rejected instead of leaking into an RPC field.
+     * Non-YouTube http(s) links are kept as-is.
      */
-    fun primaryMediaUrl(mediaUrl: String?, albumUrl: String?, channelUrl: String?): String? =
-        sanitizeHttpsUrl(toRpcUrl(mediaUrl)) ?: sanitizeHttpsUrl(mediaUrl)
-            ?: sanitizeHttpsUrl(toRpcUrl(albumUrl))
-            ?: sanitizeHttpsUrl(toRpcUrl(channelUrl))
+    private fun directUrl(url: String?): String? {
+        if (url.isNullOrBlank()) return null
+        val trimmed = url.trim()
+        // Bare ids are direct links too - support ALL forms:
+        //   - video id (11 chars)       -> https://youtu.be/ID
+        //   - channel id (UC + 22)      -> https://www.youtube.com/channel/UC...
+        //   - handle (@id, explicit @)  -> https://www.youtube.com/@id
+        if (isBareChannelId(trimmed)) return channelUrl(trimmed)
+        if (isValidVideoId(trimmed)) return "https://youtu.be/$trimmed"
+        // Only an explicit "@" prefix is treated as a handle. A bare word could
+        // be an artist/song name, so it must never become a fake @handle link.
+        if (trimmed.startsWith("@")) {
+            val handle = trimmed.removePrefix("@")
+            if (isValidHandle(handle)) return "https://www.youtube.com/@$handle"
+        }
+        val canonical = toRpcUrl(trimmed)?.let { sanitizeHttpsUrl(it) }
+        if (canonical != null) return canonical
+        val plain = sanitizeHttpsUrl(trimmed) ?: return null
+        if (plain.contains("/results?", ignoreCase = true) ||
+            plain.contains("/search?", ignoreCase = true)
+        ) return null
+        return plain
+    }
+
+    /** True for a raw YouTube channel id (UC followed by 22 url-safe chars). */
+    private fun isBareChannelId(value: String): Boolean =
+        value.length == 24 && value.startsWith("UC") &&
+                value.substring(2).all { it.isLetterOrDigit() || it == '_' || it == '-' }
 
     /**
-     * Large/cover image link priority:
-     *   1. album URL (normalized for YT-family URLs)
-     *   2. playlist URL (normalized for YT-family URLs)
-     *   3. video/media URL (normalized then plain)
-     * Only real http(s) URLs are returned.
+     * Primary media link priority chain (direct links only):
+     *   1. mediaUrl (direct video/track URL -> youtu.be/ID)
+     *   2. albumUrl (direct album URL)
+     *   3. channelUrl (direct channel URL)
+     */
+    fun primaryMediaUrl(mediaUrl: String?, albumUrl: String?, channelUrl: String?): String? =
+        directUrl(mediaUrl) ?: directUrl(albumUrl) ?: directUrl(channelUrl)
+
+    /**
+     * Large/cover image link priority (direct links only):
+     *   1. album URL
+     *   2. playlist URL
+     *   3. video/media URL (youtu.be/ID)
      *
-     * The order is always album → playlist → media so the large image click
-     * target consistently resolves to the album when one exists.
+     * Search pages are never returned. This is the click target of the large
+     * cover art, so for Morphe/AndDea it resolves to the direct video link.
      */
     fun largeImageUrl(
         mediaUrl: String?,
         albumUrl: String?,
         playlistUrl: String?,
-    ): String? {
-        val playlist = sanitizeHttpsUrl(toRpcUrl(playlistUrl)) ?: sanitizeHttpsUrl(playlistUrl)
-        val album = sanitizeHttpsUrl(toRpcUrl(albumUrl)) ?: sanitizeHttpsUrl(albumUrl)
-        val media = sanitizeHttpsUrl(toRpcUrl(mediaUrl)) ?: sanitizeHttpsUrl(mediaUrl)
-        return album ?: playlist ?: media
-    }
+    ): String? = directUrl(albumUrl) ?: directUrl(playlistUrl) ?: directUrl(mediaUrl)
 
     fun extractVideoId(url: String): String? {
         val trimmed = url.trim()

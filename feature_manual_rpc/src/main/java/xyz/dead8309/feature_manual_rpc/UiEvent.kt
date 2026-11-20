@@ -46,6 +46,7 @@ sealed interface UiEvent {
     data class SetCustomTimestampStart(val value: String) : UiEvent
     data class SetCustomTimestampEnd(val value: String) : UiEvent
     data class ToggleShowSongAsTitle(val enabled: Boolean) : UiEvent
+    data class ToggleShowAppNameInDetails(val enabled: Boolean) : UiEvent
     data class SetTitleSource(val value: String) : UiEvent
     object TriggerTitleSourceDropDown : UiEvent
 

@@ -829,6 +829,25 @@ fun ManualRpcScreen(
 
                 }
 
+                // Show app name in details
+                item {
+
+                    PreferenceSwitch(
+
+                        title = stringResource(R.string.show_app_name_in_details),
+
+                        description = stringResource(R.string.show_app_name_in_details_desc),
+
+                        isChecked = state.showAppNameInDetails,
+
+                        onClick = { onEvent(UiEvent.ToggleShowAppNameInDetails(!state.showAppNameInDetails)) },
+
+                        icon = Icons.Outlined.Apps,
+
+                    )
+
+                }
+
                 if (state.showSongAsTitle) {
 
                     item {

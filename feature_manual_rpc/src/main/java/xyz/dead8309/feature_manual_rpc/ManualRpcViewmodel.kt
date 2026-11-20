@@ -62,6 +62,7 @@ class ManualRpcViewmodel @Inject constructor(
             customTimestampStart = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_START, ""],
             customTimestampEnd = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_END, ""],
             showSongAsTitle = Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE, false],
+            showAppNameInDetails = Prefs[Prefs.MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS, false],
             titleSource = Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE, "title"],
 
             // Advanced settings
@@ -354,6 +355,12 @@ class ManualRpcViewmodel @Inject constructor(
                 is UiEvent.ToggleShowSongAsTitle -> {
                     Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE] = event.enabled
                     _uiState.update { it.copy(showSongAsTitle = event.enabled) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.ToggleShowAppNameInDetails -> {
+                    Prefs[Prefs.MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS] = event.enabled
+                    _uiState.update { it.copy(showAppNameInDetails = event.enabled) }
                     restartServiceIfRunning()
                 }
 

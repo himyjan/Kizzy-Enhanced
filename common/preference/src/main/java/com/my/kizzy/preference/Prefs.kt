@@ -514,6 +514,7 @@ object Prefs {
     const val MANUAL_RPC_TIMESTAMP_CUSTOM_START = "manual_rpc_timestamp_custom_start"
     const val MANUAL_RPC_TIMESTAMP_CUSTOM_END = "manual_rpc_timestamp_custom_end"
     const val MANUAL_RPC_SHOW_SONG_AS_TITLE = "manual_rpc_show_song_as_title"
+    const val MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS = "manual_rpc_show_app_name_in_details"
     const val MANUAL_RPC_TITLE_SOURCE = "manual_rpc_title_source"
 
     // Advanced settings (matching Custom RPC / RpcConfig fields)
