@@ -42,12 +42,27 @@ jobs:
 
       - name: Check latest JDK version (Eclipse Temurin)
         id: latest-jdk
+        env:
+          CURRENT_VERSION: ${{ steps.current-jdk.outputs.current }}
         run: |
-          LATEST_VERSION=$(curl -s "https://api.adoptium.net/v3/assets/latest/27/hotspot" | grep -oP '"version":\s*"[^"]+"' | head -1 | grep -oP '[0-9]+')
+          # Ask Adoptium for the most recent *released* feature version. This is a
+          # GA release, unlike `tip_version`, which may be an early-access build
+          # that actions/setup-java cannot install.
+          LATEST_VERSION="$(curl -fsSL --retry 3 --retry-delay 2 \
+            "https://api.adoptium.net/v3/info/available_releases" 2>/dev/null \
+            | jq -r '.most_recent_feature_release // empty' 2>/dev/null)" || true
+
           if [ -z "$LATEST_VERSION" ]; then
-            # Fallback: try major version endpoint
-            LATEST_VERSION=$(curl -s "https://api.adoptium.net/v3/assets/info/versions" | grep -oP '[0-9]+' | sort -V | tail -1)
+            echo "::warning::Could not query the Adoptium API; keeping the configured JDK version."
+            LATEST_VERSION="$CURRENT_VERSION"
           fi
+
+          # Never downgrade if the API reports an older feature release.
+          if [ -n "$CURRENT_VERSION" ] && [ -n "$LATEST_VERSION" ] \
+              && [ "$LATEST_VERSION" -lt "$CURRENT_VERSION" ]; then
+            LATEST_VERSION="$CURRENT_VERSION"
+          fi
+
           echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Update JDK version in workflow
