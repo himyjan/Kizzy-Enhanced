@@ -72,7 +72,7 @@
     <string name="design_credits">Design Credits</string>
     <string name="enable_appsRpc">Enable App Detection</string>
     <string name="usage_access">Usage Access Required</string>
-    <string name="usage_access_desc">Usage Access is needed for app to get the current running app</string>
+    <string name="usage_access_desc">Usage Access is needed for app to get the current running app. Open the list and tap Kizzy to enable it.</string>
     <string name="enable_mediaRpc">Enable Media RPC</string>
     <string name="permission_required">Permission Required</string>
     <string name="enable_customRpc">Enable Custom RPC</string>
