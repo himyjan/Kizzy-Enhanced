@@ -267,7 +267,11 @@ fun StartUp(
                 }
                 item {
                     SetupCard(title = stringResource(id = R.string.account),
-                        description = user?.username ?: stringResource(id = R.string.login_with_discord)
+                        description = when {
+                            (prefsState[Prefs.TOKEN] as? String)?.isNotEmpty() == true ->
+                                (prefsState[Prefs.USER_ID] as? String) ?: stringResource(id = R.string.logged_in)
+                            else -> stringResource(id = R.string.login_with_discord)
+                        }
                         ) {
                         navigateToLogin()
                     }
