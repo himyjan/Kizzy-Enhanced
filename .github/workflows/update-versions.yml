@@ -5,16 +5,9 @@ on:
     # Run every Monday at 00:00 UTC to check for new library versions
     - cron: '0 0 * * 1'
   workflow_dispatch:
-    inputs:
-      create_pr:
-        description: 'Create a pull request with version updates'
-        required: false
-        default: 'true'
-        type: boolean
 
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
   group: version-update
@@ -51,12 +44,6 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            DIFF=$(git diff libs.versions.toml)
-            # Escape special characters for GitHub Actions output
-            DIFF="${DIFF//'%'/'%25'}"
-            DIFF="${DIFF//$'\n'/'%0A'}"
-            DIFF="${DIFF//$'\r'/'%0D'}"
-            echo "diff=$DIFF" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Commit version updates
@@ -67,21 +54,3 @@ jobs:
           git add libs.versions.toml
           git commit -m "chore: update dependency versions via versionCatalogUpdate"
           git push
-
-      - name: Create pull request
-        if: steps.check-changes.outputs.changed == 'true' && github.event.inputs.create_pr != 'false'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: chore: update dependency versions via versionCatalogUpdate
-          title: chore: update dependency versions
-          body: |
-            Automated dependency version update via `./gradlew versionCatalogUpdate`.
-
-            Changes to `libs.versions.toml`:
-            ```diff
-            ${{ steps.check-changes.outputs.diff }}
-            ```
-          branch: update/dependency-versions
-          delete-branch: true
-          labels: dependencies
