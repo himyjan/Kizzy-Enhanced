@@ -22,6 +22,7 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -284,16 +285,19 @@ fun StartUp(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(
-                    onClick = { navigateToHome() },
-                    enabled = allMandatoryComplete
+                AnimatedVisibility(
+                    visible = allMandatoryComplete
                 ) {
-                    Text(
-                        text = stringResource(R.string.start_app_now),
-                        maxLines = 1,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                        color = if (allMandatoryComplete) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                    TextButton(
+                        onClick = { navigateToHome() },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.start_app_now),
+                            maxLines = 1,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }
