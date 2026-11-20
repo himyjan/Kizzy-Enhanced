@@ -45,9 +45,11 @@ object GatewayModule {
     ): DiscordWebSocket {
         // Spoof the gateway IDENTIFY "browser" (what platform-indicator plugins read)
         // based on the platform selected in Manual RPC.
-        val (browser, os, device) = Constants.spoofIdentifyProperties(
-            Prefs[Prefs.MANUAL_RPC_PLATFORM, ""]
-        )
+        // Blank stored value (old default "") should identify as Android/mobile,
+        // not fall through to the desktop identify.
+        val platform = Prefs[Prefs.MANUAL_RPC_PLATFORM, "android"]
+            .takeIf { it.isNotBlank() } ?: "android"
+        val (browser, os, device) = Constants.spoofIdentifyProperties(platform)
         return DiscordWebSocketImpl(
             token = Prefs[Prefs.TOKEN, ""],
             logger = logger,

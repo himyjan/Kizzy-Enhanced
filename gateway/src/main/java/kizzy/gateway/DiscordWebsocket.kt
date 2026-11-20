@@ -16,8 +16,16 @@ sealed interface DiscordWebSocket : CoroutineScope {
     fun isWebSocketConnected(): Boolean
     fun close()
 
-    /** Called when Discord sends SESSIONS_REPLACE (clears presence on their end).
-     * Implementations should immediately re-send presence to avoid the activity
-     * disappearing for 1-2 seconds. */
-    var onSessionsReplace: (() -> Unit)?
+    /**
+     * Called when a `SESSIONS_REPLACE` dispatch arrives **and our activity is no
+     * longer part of it** (Discord cleared it, or another client replaced it).
+     *
+     * It is deliberately not called for the `SESSIONS_REPLACE` that Discord
+     * echoes after our own `PRESENCE_UPDATE`, because that one already contains
+     * the activity we just sent.
+     *
+     * Implementations should re-send the last presence so the activity does not
+     * stay missing.
+     */
+    var onPresenceDropped: (() -> Unit)?
 }

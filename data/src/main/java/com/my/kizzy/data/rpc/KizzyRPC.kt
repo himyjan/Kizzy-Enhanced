@@ -35,11 +35,11 @@ class KizzyRPC @Inject constructor(
     private val logger: Logger
 ) {
     private val rpcScope = CoroutineScope(Dispatchers.IO + kotlinx.coroutines.SupervisorJob())
-    // Wire up SESSIONS_REPLACE callback to immediately re-apply presence
-    // when Discord clears it (prevents activity disappearing for 1-2 seconds)
+    // Re-apply the presence when Discord reports that our activity is no longer
+    // part of the session list (it was cleared or replaced by another client).
     init {
         if (discordWebSocket is DiscordWebSocketImpl) {
-            discordWebSocket.onSessionsReplace = {
+            discordWebSocket.onPresenceDropped = {
                 rpcScope.launch {
                     launchReapplyPresence()
                 }
@@ -90,16 +90,12 @@ class KizzyRPC @Inject constructor(
          * Minimum time between two presence re-applies. Discord answers every
          * PRESENCE_UPDATE with SESSIONS_REPLACE, so re-applying on every one of those
          * events would loop forever and flood the gateway.
+         *
+         * Kept low (1s) because the app may rapidly switch RPC types (MediaRpc ->
+         * None -> MediaRpc), tearing down and recreating the WebSocket. A 10s cooldown
+         * would prevent the presence from ever being re-applied after a service restart.
          */
-        private const val REAPPLY_COOLDOWN_MS = 10000L
-
-        /**
-         * Discord answers every PRESENCE_UPDATE with a SESSIONS_REPLACE that already
-         * contains the activity we just sent. Re-applying in that case sends the same
-         * presence again (extra gateway traffic). Only a SESSIONS_REPLACE that arrives
-         * after this window can mean Discord actually cleared the activity.
-         */
-        private const val PRESENCE_ECHO_WINDOW_MS = 4000L
+        private const val REAPPLY_COOLDOWN_MS = 1000L
 
         /**
          * Sanitizes a button url so it can never break the whole presence.
@@ -201,7 +197,13 @@ class KizzyRPC @Inject constructor(
     // creates a brand-new, empty session; the previously-set activity is gone).
     private var lastPresence: Presence? = null
 
-    /** Called by DiscordWebSocketImpl after a successful RESUME or READY. */
+    /**
+     * Called by the connect flow right after [connect] has been requested.
+     *
+     * The gateway itself invokes [DiscordWebSocketImpl.onPresenceDropped] once
+     * READY arrives (a fresh IDENTIFY session starts empty), so this only has to
+     * cover the reconnect case where the socket is already READY.
+     */
     suspend fun markConnected() {
         lastConnectedTimeMs = System.currentTimeMillis()
         // Re-apply the last presence after reconnect so Discord doesn't show an empty card
@@ -283,36 +285,29 @@ class KizzyRPC @Inject constructor(
             (discordWebSocket as DiscordWebSocketImpl).updateTokenAndReconnect(token)
         }
 
-        val (browser, os, device) = Constants.spoofIdentifyProperties(
-            Prefs[Prefs.MANUAL_RPC_PLATFORM, ""]
-        )
+        // Blank stored value (old default "") should identify as Android/mobile,
+        // not fall through to the desktop identify.
+        val platform = Prefs[Prefs.MANUAL_RPC_PLATFORM, "android"]
+            .takeIf { it.isNotBlank() } ?: "android"
+        val (browser, os, device) = Constants.spoofIdentifyProperties(platform)
         if (discordWebSocket is DiscordWebSocketImpl) {
             discordWebSocket.refreshIdentifyProperties(token, browser, os, device)
         }
     }
 
     /**
-     * Re-apply the last presence after a reconnect. Runs on the gateway's own scope so the
+     * Re-apply the last presence after Discord dropped it (SESSIONS_REPLACE without our
+     * activity, or a fresh IDENTIFY session). Runs on the gateway's own scope so the
      * owning service cancelling its update coroutine cannot kill it.
      *
-     * Discord answers every PRESENCE_UPDATE with a SESSIONS_REPLACE event, so re-applying
-     * the presence on every such event creates a feedback loop (re-apply -> SESSIONS_REPLACE
-     * -> re-apply -> ...) that floods the gateway. A cooldown breaks that loop while still
-     * restoring the activity after a genuine session replacement.
+     * The gateway only calls this when the activity is genuinely missing, so there is no
+     * echo feedback loop. The cooldown is a safety net against a misbehaving server that
+     * keeps sending a session list without the activity we just sent.
      */
     private suspend fun launchReapplyPresence() {
         if (lastPresence == null) return
         withContext(Dispatchers.IO) {
             val now = System.currentTimeMillis()
-            // The SESSIONS_REPLACE that follows our own PRESENCE_UPDATE already shows
-            // our activity. Re-sending it would be a pure duplicate.
-            if (lastPresenceTimeMs != 0L && now - lastPresenceTimeMs < PRESENCE_ECHO_WINDOW_MS) {
-                logger.d(
-                    "KizzyRPC",
-                    "Skipping presence re-apply (SESSIONS_REPLACE is the echo of our own update)"
-                )
-                return@withContext
-            }
             if (now - lastReapplyTimeMs < REAPPLY_COOLDOWN_MS) {
                 logger.d(
                     "KizzyRPC",
@@ -320,15 +315,19 @@ class KizzyRPC @Inject constructor(
                 )
                 return@withContext
             }
+            // Claim the slot before the first delay so two callers (the connect
+            // flow and the gateway's READY callback) cannot both start a re-apply.
             lastReapplyTimeMs = now
             var attempt = 0
             val maxAttempts = 3
+            var attemptedSend = false
             while (attempt < maxAttempts) {
                 attempt++
                 delay(if (attempt == 1) 500L else 2000L)
                 if (!discordWebSocket.isWebSocketConnected()) {
                     continue
                 }
+                attemptedSend = true
                 try {
                     // Read the presence INSIDE the lock: a track change may have been
                     // sent while this re-apply was waiting, and re-sending the older
@@ -338,14 +337,21 @@ class KizzyRPC @Inject constructor(
                         discordWebSocket.sendActivity(latest)
                     }
                     if (sent) {
-                        logger.i("KizzyRPC", "Presence re-applied after reconnect (attempt $attempt)")
+                        logger.i("KizzyRPC", "Presence re-applied (attempt $attempt)")
                         return@withContext
                     }
                 } catch (e: Exception) {
                     logger.e("KizzyRPC", "Presence re-apply attempt $attempt failed: ${e.message ?: ""}")
                 }
             }
-            logger.e("KizzyRPC", "Presence re-apply gave up after $maxAttempts attempts")
+            if (!attemptedSend) {
+                // The gateway never reached READY in time. Release the cooldown so
+                // the READY callback can re-apply the presence as soon as it arrives.
+                lastReapplyTimeMs = 0L
+                logger.d("KizzyRPC", "Presence re-apply postponed: gateway not ready yet")
+            } else {
+                logger.e("KizzyRPC", "Presence re-apply gave up after $maxAttempts attempts")
+            }
         }
     }
 
@@ -431,6 +437,9 @@ class KizzyRPC @Inject constructor(
     /** Closes the WebSocket connection without blocking. Safe to call from any thread. */
     fun closeRPC() {
         discordWebSocket.close()
+        // Keep lastPresence in memory so the READY re-apply path can restore it
+        // when the service is restarted (e.g. after an RPC type switch). Clearing
+        // it here would mean the presence never comes back after a service restart.
     }
 
     /** Clears Discord presence by sending an empty activity.
@@ -438,14 +447,15 @@ class KizzyRPC @Inject constructor(
      * Must be called from a coroutine context. */
     suspend fun clearPresence() {
         presenceSendMutex.withLock {
-            // Send empty presence to clear Discord's activity card.
-            // The status must be a valid value ("invisible" hides the activity entirely).
+            // Remove the activity but keep the account online. The old code sent
+            // status="invisible" here, which made the user appear offline to every
+            // other client and hid the presence everywhere until the next update.
             discordWebSocket.sendActivity(
                 Presence(
                     activities = emptyList(),
-                    afk = true,
+                    afk = false,
                     since = null,
-                    status = "invisible"
+                    status = effectiveStatus(null)
                 )
             )
             // Forget the cached presence so the next update is not treated as unchanged.
