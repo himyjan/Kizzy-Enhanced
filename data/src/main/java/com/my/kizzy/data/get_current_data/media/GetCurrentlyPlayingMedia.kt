@@ -217,9 +217,9 @@ class GetCurrentPlayingMedia @Inject constructor(
             // This ensures the details line is always clickable even if the direct URL is unavailable
             val detailsUrl = mediaUrl ?: MediaServiceResolver.mediaSearchUrl(
                 mediaController.packageName,
-                title ?: rpcDetails
+                title
             ) ?: MediaServiceResolver.browserSearchUrl(
-                title ?: rpcDetails
+                title
             )
 
             // Artist URL for state_url (second line clickable)
@@ -227,8 +227,8 @@ class GetCurrentPlayingMedia @Inject constructor(
                 ?: MediaServiceResolver.artistUrl(mediaController.packageName, author)
 
             // Album / playlist / channel URLs for the link fallback chains.
-            val albumUrl = metadata?.let { MetadataResolver.getAlbumUrl(it, mediaController.packageName) }
-            val playlistUrl = metadata?.let { MetadataResolver.getPlaylistUrl(it, mediaController.packageName) }
+            val albumUrl = metadata.let { MetadataResolver.getAlbumUrl(it, mediaController.packageName) }
+            val playlistUrl = metadata.let { MetadataResolver.getPlaylistUrl(it, mediaController.packageName) }
             val channelUrl = artistUrl
 
             // Line 4 (large_text): album name, or the playlist name when the

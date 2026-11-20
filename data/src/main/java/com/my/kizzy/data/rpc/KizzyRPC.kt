@@ -351,7 +351,7 @@ class KizzyRPC @Inject constructor(
 
     private fun presenceHash(commonRpc: CommonRpc, buttons: List<ActivityButton>?): Int {
         var result = 1
-        result = 31 * result + (commonRpc.name.hashCode() ?: 0)
+        result = 31 * result + commonRpc.name.hashCode()
         result = 31 * result + (commonRpc.details?.hashCode() ?: 0)
         result = 31 * result + (commonRpc.state?.hashCode() ?: 0)
         result = 31 * result + normalizedPlaybackState(commonRpc.playbackState)

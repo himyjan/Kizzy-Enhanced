@@ -35,14 +35,18 @@ object LastPresence {
      * Remembers the presence of the Media RPC.
      */
     fun rememberMedia(rpcConfig: RpcConfig) {
-        runCatching { Prefs[Prefs.LAST_RUN_MEDIA_RPC] = json.encodeToString(RpcConfig.serializer(), rpcConfig) }
+        // Best-effort persist; ignore failures.
+        if (runCatching { Prefs[Prefs.LAST_RUN_MEDIA_RPC] = json.encodeToString(RpcConfig.serializer(), rpcConfig) }.isFailure) {
+        }
     }
 
     /**
      * Remembers the presence of the Manual RPC.
      */
     fun rememberExperimental(rpcConfig: RpcConfig) {
-        runCatching { Prefs[Prefs.LAST_RUN_MANUAL_RPC] = json.encodeToString(RpcConfig.serializer(), rpcConfig) }
+        // Best-effort persist; ignore failures.
+        if (runCatching { Prefs[Prefs.LAST_RUN_MANUAL_RPC] = json.encodeToString(RpcConfig.serializer(), rpcConfig) }.isFailure) {
+        }
     }
 
     /**

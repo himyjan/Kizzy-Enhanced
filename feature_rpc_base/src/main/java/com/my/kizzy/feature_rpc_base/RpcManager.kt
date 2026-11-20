@@ -277,7 +277,9 @@ class RpcManager @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start ${intent.component?.className}", e)
-            runCatching { context.startService(intent) }
+            // Best-effort fallback start; ignore failures.
+            if (runCatching { context.startService(intent) }.isFailure) {
+            }
         }
     }
 

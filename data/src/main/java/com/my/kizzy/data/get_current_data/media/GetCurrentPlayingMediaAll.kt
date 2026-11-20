@@ -89,22 +89,22 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 .takeIf { it.isNotBlank() }
                 ?: ActivityTypeResolver.knownAppName(mediaController.packageName)
                 ?: mediaController.packageName
-            val author = metadata?.let { metadataResolver.formatArtists(it) }
-            val album = metadata?.let { metadataResolver.getAlbum(it) }
+            val author = metadata.let { metadataResolver.formatArtists(it) }
+            val album = metadata.let { metadataResolver.getAlbum(it) }
 
             val stateParts = buildList {
-                author?.takeIf { it.isNotBlank() }?.let { add(it) }
-                metadata?.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
+                author.takeIf { it.isNotBlank() }?.let { add(it) }
+                metadata.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
             }
-            val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() } ?: null
+            val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() }
 
-            val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L
+            val duration = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
             val position = mediaController.playbackState?.position?.coerceAtLeast(0L) ?: 0L
             val playbackState = mediaController.playbackState?.state
 
             var timestamps: Timestamps? = null
             if (playbackState == PlaybackState.STATE_PLAYING) {
-                val durationForTs = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L
+                val durationForTs = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
                 var positionForTs = position
                 val lastUpdate = mediaController.playbackState?.lastPositionUpdateTime ?: 0L
                 if (lastUpdate > 0L) {
@@ -122,17 +122,17 @@ class GetCurrentPlayingMediaAll @Inject constructor(
             val appIcon = RpcImage.ApplicationIcon(mediaController.packageName, context)
 
             var coverArt: RpcImage? = null
-            val bitmap = metadata?.let { metadataResolver.getCoverArt(it) }
+            val bitmap = metadata.let { metadataResolver.getCoverArt(it) }
             if (bitmap != null) {
                 coverArt = RpcImage.BitmapImage(
                     context = context,
                     bitmap = bitmap,
                     packageName = mediaController.packageName,
-                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                    title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title}"
                 )
                 logger.i("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from embedded bitmap)")
             } else {
-                val artworkUri = metadata?.let { metadataResolver.getArtworkUri(it) }
+                val artworkUri = metadata.let { metadataResolver.getArtworkUri(it) }
                 if (artworkUri != null) {
                     val parsedUri = Uri.parse(artworkUri)
                     if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
@@ -144,7 +144,7 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                                 context = context,
                                 bitmap = bmp,
                                 packageName = mediaController.packageName,
-                                title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title ?: ""}"
+                                title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title}"
                             )
                             logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(decoded from artworkUri=$artworkUri)")
                         } else {
@@ -165,15 +165,15 @@ class GetCurrentPlayingMediaAll @Inject constructor(
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
             // Get media URL for details_url and large_url
-            val mediaUrl = metadata?.let { metadataResolver.getMediaUrl(it, mediaController.packageName) }
+            val mediaUrl = metadata.let { metadataResolver.getMediaUrl(it, mediaController.packageName) }
                 ?: metadataResolver.getDirectMediaUrl(metadata, mediaController.packageName)
 
             // Get artist/channel URL for state_url
-            val artistUrl = metadata?.let { metadataResolver.getArtistUrl(it, mediaController.packageName) }
+            val artistUrl = metadata.let { metadataResolver.getArtistUrl(it, mediaController.packageName) }
 
             // Album / playlist / channel URLs for the link fallback chains.
-            val albumUrl = metadata?.let { metadataResolver.getAlbumUrl(it, mediaController.packageName) }
-            val playlistUrl = metadata?.let { metadataResolver.getPlaylistUrl(it, mediaController.packageName) }
+            val albumUrl = metadata.let { metadataResolver.getAlbumUrl(it, mediaController.packageName) }
+            val playlistUrl = metadata.let { metadataResolver.getPlaylistUrl(it, mediaController.packageName) }
             val channelUrl = artistUrl
 
             return RichMediaMetadata(
@@ -183,7 +183,7 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 artist = author,
                 state = state,
                 album = album,
-                playlistName = metadata?.let { metadataResolver.getPlaylistName(it) },
+                playlistName = metadata.let { metadataResolver.getPlaylistName(it) },
                 coverArt = coverArt,
                 appIcon = appIcon,
                 playbackStateIcon = playbackStateIcon,
@@ -192,8 +192,8 @@ class GetCurrentPlayingMediaAll @Inject constructor(
                 position = position,
                 isMusicMetadata = album != null || !author.isNullOrBlank(),
                 timestamps = timestamps,
-                audioChannels = metadata?.let { metadataResolver.getAudioChannels(it) },
-                allArtists = metadata?.let { metadataResolver.getAllArtists(it) } ?: emptyList(),
+                audioChannels = metadata.let { metadataResolver.getAudioChannels(it) },
+                allArtists = metadata.let { metadataResolver.getAllArtists(it) },
                 mediaUrl = mediaUrl,
                 artistUrl = artistUrl,
                 albumUrl = albumUrl,

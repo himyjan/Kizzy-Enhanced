@@ -94,7 +94,9 @@ fun SearchBar(
     LaunchedEffect(autoFocus) {
         if (!autoFocus) return@LaunchedEffect
         withFrameNanos { }
-        runCatching { focusRequester.requestFocus() }
+        // Best-effort focus request; ignore failures.
+        if (runCatching { focusRequester.requestFocus() }.isFailure) {
+        }
         keyboardController?.show()
     }
 

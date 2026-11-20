@@ -179,7 +179,7 @@ object ActivityTypeResolver {
      * Example: NicoBox (jp.nicovideo.nicobox) displays as "ボカコレ" on Discord.
      */
     private val knownAppNames: Map<String, String> = buildMap {
-        "jp.nicovideo.nicobox" to "ボカコレ"
+        put("jp.nicovideo.nicobox", "ボカコレ")
     }
 
     /**

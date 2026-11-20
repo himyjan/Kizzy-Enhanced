@@ -181,7 +181,9 @@ sealed class RpcImage {
                         val bitmap = applicationInfo.toBitmap(context) ?: return@async null
                         val file = bitmap.toFile(context, "image")
                         if (!file.exists() || file.length() == 0L) {
-                            runCatching { file.delete() }
+                            // Best-effort cleanup; ignore failures.
+                            if (runCatching { file.delete() }.isFailure) {
+                            }
                             return@async null
                         }
                         val response = try {
@@ -189,7 +191,9 @@ sealed class RpcImage {
                                 repository.uploadImage(file)?.takeIf { it.isNotBlank() }
                             }
                         } finally {
-                            runCatching { file.delete() }
+                            // Best-effort cleanup; ignore failures.
+                            if (runCatching { file.delete() }.isFailure) {
+                            }
                         }
                         if (response != null) {
                             appIconCacheMutex.withLock {
@@ -240,7 +244,9 @@ sealed class RpcImage {
                         val file = bmp.scaleToMaxDimension(400)
                             .toFile(context, "art", Bitmap.CompressFormat.JPEG, 80)
                         if (!file.exists() || file.length() == 0L) {
-                            runCatching { file.delete() }
+                            // Best-effort cleanup; ignore failures.
+                            if (runCatching { file.delete() }.isFailure) {
+                            }
                             return@async null
                         }
                         val result = try {
@@ -248,7 +254,9 @@ sealed class RpcImage {
                                 repository.uploadImage(file)?.takeIf { it.isNotBlank() }
                             }
                         } finally {
-                            runCatching { file.delete() }
+                            // Best-effort cleanup; ignore failures.
+                            if (runCatching { file.delete() }.isFailure) {
+                            }
                         }
                         if (result != null) {
                             artworkCacheMutex.withLock {
