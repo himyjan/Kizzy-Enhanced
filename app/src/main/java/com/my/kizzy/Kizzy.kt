@@ -74,6 +74,7 @@ import xyz.dead8309.feature_manual_rpc.apps.ManualRpcAppsScreen
 internal fun Kizzy(
     usageAccessStatus: MutableState<Boolean>,
     notificationListenerAccess: MutableState<Boolean>,
+    batteryOptimizationStatus: MutableState<Boolean>,
 ) {
     Scaffold()
     {
@@ -113,6 +114,7 @@ internal fun Kizzy(
                 StartUp(
                     usageAccessStatus = usageAccessStatus,
                     mediaControlStatus = notificationListenerAccess,
+                    batteryOptimizationStatus = batteryOptimizationStatus,
                     navigateToLanguages = {
                         navController.navigate(Routes.LANGUAGES) {
                             launchSingleTop = true

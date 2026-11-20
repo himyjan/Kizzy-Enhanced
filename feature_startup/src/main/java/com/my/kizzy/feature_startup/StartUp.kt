@@ -13,9 +13,12 @@
 package com.my.kizzy.feature_startup
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.PowerManager
+import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -71,6 +74,7 @@ import com.my.kizzy.ui.components.Subtitle
 fun StartUp(
     usageAccessStatus: MutableState<Boolean>,
     mediaControlStatus: MutableState<Boolean>,
+    batteryOptimizationStatus: MutableState<Boolean>,
     navigateToLanguages: () -> Unit = {},
     navigateToLogin: () -> Unit = {},
     navigateToHome: () -> Unit = {}
@@ -103,6 +107,13 @@ fun StartUp(
             onResult = { isGranted ->
                 notificationPostingPerm = isGranted
             })
+    val batteryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            batteryOptimizationStatus.value = (context.getSystemService(Context.POWER_SERVICE) as PowerManager)
+                .isIgnoringBatteryOptimizations(context.packageName)
+        }
+    )
     Scaffold(topBar = {
         TopAppBar(title = {
             Text(
@@ -191,6 +202,18 @@ fun StartUp(
                         context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
                     }
                 }
+                item {
+                    SetupCard(
+                        title = stringResource(id = R.string.battery_optimization),
+                        description = stringResource(id = R.string.battery_optimization_desc),
+                        status = batteryOptimizationStatus.value
+                    ) {
+                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                            .setData(android.net.Uri.parse("package:${context.packageName}"))
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        batteryLauncher.launch(intent)
+                    }
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     item {
                         SetupCard(
@@ -240,6 +263,7 @@ fun StartUp(
                     }
                 }
             }
+            val allMandatoryComplete = batteryOptimizationStatus.value && notificationPostingPerm && usageAccessStatus.value || mediaControlStatus.value && batteryOptimizationStatus.value
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -250,20 +274,15 @@ fun StartUp(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = { navigateToHome() }, enabled = notificationPostingPerm && usageAccessStatus.value || mediaControlStatus.value) {
-                    val text =
-                        if (usageAccessStatus.value && mediaControlStatus.value) stringResource(R.string.start_app_now) else stringResource(R.string.skip)
-                    val style =
-                        if (usageAccessStatus.value && mediaControlStatus.value) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleLarge.copy(
-                            fontSize = 20.sp
-                        )
-                    val color =
-                        if (usageAccessStatus.value && mediaControlStatus.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSecondaryContainer
+                TextButton(
+                    onClick = { navigateToHome() },
+                    enabled = allMandatoryComplete
+                ) {
                     Text(
-                        text = text,
+                        text = stringResource(R.string.start_app_now),
                         maxLines = 1,
-                        style = style.copy(fontWeight = FontWeight.SemiBold),
-                        color = color
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = if (allMandatoryComplete) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
             }

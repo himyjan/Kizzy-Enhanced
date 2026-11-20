@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private lateinit var usageAccessStatus: MutableState<Boolean>
     private lateinit var notificationListenerAccess: MutableState<Boolean>
+    private lateinit var batteryOptimizationStatus: MutableState<Boolean>
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         usageAccessStatus = mutableStateOf(this.hasUsageAccess())
         notificationListenerAccess = mutableStateOf(this.hasNotificationAccess())
+        batteryOptimizationStatus = mutableStateOf(this.isIgnoringBatteryOptimizations())
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { v, insets ->
             v.setPadding(0, 0, 0, 0)
             insets
@@ -61,6 +64,7 @@ class MainActivity : AppCompatActivity() {
                     Kizzy(
                         usageAccessStatus = usageAccessStatus,
                         notificationListenerAccess = notificationListenerAccess,
+                        batteryOptimizationStatus = batteryOptimizationStatus,
                     )
                 }
             }
@@ -71,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         notificationListenerAccess.value = hasNotificationAccess()
         usageAccessStatus.value = hasUsageAccess()
+        batteryOptimizationStatus.value = isIgnoringBatteryOptimizations()
     }
 
     @Suppress("DEPRECATION")
@@ -95,6 +100,11 @@ class MainActivity : AppCompatActivity() {
             this.contentResolver, "enabled_notification_listeners"
         )
         return enabledNotificationListeners != null && enabledNotificationListeners.contains(this.packageName)
+    }
+
+    private fun Context.isIgnoringBatteryOptimizations(): Boolean {
+        return (getSystemService(Context.POWER_SERVICE) as PowerManager)
+            .isIgnoringBatteryOptimizations(packageName)
     }
 
     companion object {
