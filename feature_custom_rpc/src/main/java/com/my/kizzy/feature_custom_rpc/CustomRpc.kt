@@ -1390,7 +1390,7 @@ private fun RpcTextFieldsColumn(
 
                         AsyncImage(
 
-                            model = largeImg,
+                            model = coverArtPreviewUrl(largeImg),
 
                             contentDescription = null,
 
@@ -1528,7 +1528,7 @@ private fun RpcTextFieldsColumn(
 
                         AsyncImage(
 
-                            model = smallImg,
+                            model = coverArtPreviewUrl(smallImg),
 
                             contentDescription = null,
 
@@ -2330,5 +2330,23 @@ fun ConsolePresetChip(
                 tint = colorScheme.onPrimaryContainer
             )
         }
+    }
+}
+
+/**
+ * Converts a cover art path/URL to a previewable HTTP(S) URL for AsyncImage.
+ *
+ * Attachment paths (e.g. "attachments/123/456.png") and external paths
+ * (e.g. "external/123/456.png") are not valid HTTP URLs, so they are
+ * converted to "https://media.discordapp.net/...". The "mp:" prefix is
+ * stripped first. Plain http(s) URLs are returned as-is.
+ */
+private fun coverArtPreviewUrl(url: String?): String? {
+    val trimmed = url?.trim() ?: return null
+    val withoutMp = trimmed.removePrefix("mp:")
+    return when {
+        withoutMp.startsWith("attachments") || withoutMp.startsWith("external") ->
+            "https://media.discordapp.net/$withoutMp"
+        else -> withoutMp
     }
 }
