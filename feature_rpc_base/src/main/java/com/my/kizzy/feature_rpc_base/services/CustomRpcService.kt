@@ -74,17 +74,38 @@ class CustomRpcService : Service() {
             Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
             Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
             Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
+            stopSelf()
+            return super.onStartCommand(intent, flags, startId)
         } else {
             Prefs[Prefs.ACTIVE_RPC_TYPE] =
                 if (consoleMode) RpcManager.RpcType.ConsoleRpc.name
                 else RpcManager.RpcType.CustomRpc.name
         }
 
+        // Call startForeground() immediately and synchronously so Android doesn't
+        // kill the service for not calling startForeground() within 5 seconds.
+        // The full notification (with buttons, etc.) is built below inside the
+        // coroutine and replaces this placeholder notification.
+        val appIntent = packageManager.getLaunchIntentForPackage(packageName)
+            ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
+        appIntent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_SINGLE_TOP
+        )
+        val appPendingIntent = PendingIntent.getActivity(
+            this, 0, appIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val initialNotification = Notification.Builder(this, Constants.CHANNEL_ID)
+            .setContentTitle(getString(R.string.custom_rpc_running))
+            .setContentText("")
+            .setSmallIcon(R.drawable.ic_rpc_placeholder)
+            .setContentIntent(appPendingIntent)
+            .build()
+        startForeground(Constants.NOTIFICATION_ID, initialNotification)
+
         intent?.action?.let { ac ->
-            if (ac == Constants.ACTION_STOP_SERVICE) {
-                stopSelf()
-                return super.onStartCommand(intent, flags, startId)
-            }
             if (ac == Constants.ACTION_RESTART_SERVICE) {
                 // Restart in place: re-read the RPC config and resend presence.
                 // forceRefresh=true ensures the presence is actually sent even
