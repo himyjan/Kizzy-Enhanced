@@ -269,7 +269,9 @@ fun StartUp(
                     SetupCard(title = stringResource(id = R.string.account),
                         description = when {
                             (prefsState[Prefs.TOKEN] as? String)?.isNotEmpty() == true ->
-                                (prefsState[Prefs.USER_ID] as? String) ?: stringResource(id = R.string.logged_in)
+                                (prefsState[Prefs.USER_ID] as? String)
+                                    ?: extractUserIdFromToken(prefsState[Prefs.TOKEN] as? String ?: "")
+                                    ?: stringResource(id = R.string.logged_in)
                             else -> stringResource(id = R.string.login_with_discord)
                         }
                         ) {
@@ -315,6 +317,20 @@ fun StartUp(
             }
         }
     }
+}
+
+/**
+ * Extracts the Discord user ID from an account token.
+ *
+ * Discord account tokens are in the format:
+ *   user_id.timestamp.hmac
+ *
+ * The first segment before the first dot is the numeric user ID.
+ * OAuth2 bearer tokens have a different structure and won't match.
+ */
+private fun extractUserIdFromToken(token: String?): String? {
+    val parts = token?.split(".") ?: return null
+    return parts.firstOrNull()?.takeIf { it.isNotBlank() && it.all { it.isDigit() } }
 }
 
 /**
