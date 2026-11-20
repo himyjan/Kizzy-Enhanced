@@ -56,6 +56,22 @@ jobs:
           echo "Updating JDK from ${{ steps.current-jdk.outputs.current }} to ${{ steps.latest-jdk.outputs.latest }}"
           sed -i "s/java-version: '${{ steps.current-jdk.outputs.current }}'/java-version: '${{ steps.latest-jdk.outputs.latest }}'/" .github/workflows/update-versions.yml
 
+      - name: Update sourceCompatibility/targetCompatibility/jvmToolchain to match JDK version
+        if: steps.current-jdk.outputs.current != steps.latest-jdk.outputs.latest
+        run: |
+          NEW_VERSION=${{ steps.latest-jdk.outputs.latest }}
+          echo "Updating sourceCompatibility/targetCompatibility/jvmToolchain to Java $NEW_VERSION"
+          # KotlinAndroid.kt
+          sed -i "s/sourceCompatibility = JavaVersion.VERSION_[0-9]*/sourceCompatibility = JavaVersion.VERSION_${NEW_VERSION}/" build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/KotlinAndroid.kt
+          sed -i "s/targetCompatibility = JavaVersion.VERSION_[0-9]*/targetCompatibility = JavaVersion.VERSION_${NEW_VERSION}/" build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/KotlinAndroid.kt
+          sed -i "s/jvmToolchain([0-9]*)/jvmToolchain(${NEW_VERSION})/" build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/KotlinAndroid.kt
+          # domain/build.gradle.kts
+          sed -i "s/sourceCompatibility = JavaVersion.VERSION_[0-9]*/sourceCompatibility = JavaVersion.VERSION_${NEW_VERSION}/" domain/build.gradle.kts
+          sed -i "s/targetCompatibility = JavaVersion.VERSION_[0-9]*/targetCompatibility = JavaVersion.VERSION_${NEW_VERSION}/" domain/build.gradle.kts
+          # macrobenchmark/build.gradle.kts
+          sed -i "s/sourceCompatibility = JavaVersion.VERSION_[0-9]*/sourceCompatibility = JavaVersion.VERSION_${NEW_VERSION}/" macrobenchmark/build.gradle.kts
+          sed -i "s/targetCompatibility = JavaVersion.VERSION_[0-9]*/targetCompatibility = JavaVersion.VERSION_${NEW_VERSION}/" macrobenchmark/build.gradle.kts
+
       - name: Run versionCatalogUpdate
         run: ./gradlew versionCatalogUpdate --no-daemon
 
@@ -83,10 +99,31 @@ jobs:
           echo "Updating kotlin-metadata-jvm from ${{ steps.current-kotlin.outputs.current }} to ${{ steps.latest-kotlin.outputs.latest }}"
           sed -i "s/kotlin-metadata-jvm:${{ steps.current-kotlin.outputs.current }}/kotlin-metadata-jvm:${{ steps.latest-kotlin.outputs.latest }}/" build.gradle.kts
 
+      - name: Check current compileSdk version
+        id: current-compilesdk
+        run: |
+          CURRENT_VERSION=$(grep -oP 'release\(\K[0-9]+' build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/KotlinAndroid.kt)
+          echo "current=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check latest compileSdk version (Android API level)
+        id: latest-compilesdk
+        run: |
+          LATEST_VERSION=$(curl -s "https://developer.android.com/studio/releases" | grep -oP 'API Level [0-9]+' | grep -oP '[0-9]+' | sort -V | tail -1)
+          if [ -z "$LATEST_VERSION" ]; then
+            LATEST_VERSION=37
+          fi
+          echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update compileSdk version in KotlinAndroid.kt
+        if: steps.current-compilesdk.outputs.current != steps.latest-compilesdk.outputs.latest
+        run: |
+          echo "Updating compileSdk from ${{ steps.current-compilesdk.outputs.current }} to ${{ steps.latest-compilesdk.outputs.latest }}"
+          sed -i "s/release(${{ steps.current-compilesdk.outputs.current }})/release(${{ steps.latest-compilesdk.outputs.latest }})/" build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/KotlinAndroid.kt
+
       - name: Check for changes
         id: check-changes
         run: |
-          if git diff --quiet gradle/wrapper/gradle-wrapper.properties libs.versions.toml .github/workflows/update-versions.yml; then
+          if git diff --quiet gradle/wrapper/gradle-wrapper.properties libs.versions.toml build.gradle.kts build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/KotlinAndroid.kt .github/workflows/update-versions.yml; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -97,6 +134,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add gradle/wrapper/gradle-wrapper.properties libs.versions.toml build.gradle.kts .github/workflows/update-versions.yml
+          git add gradle/wrapper/gradle-wrapper.properties libs.versions.toml build.gradle.kts build-logic/convention/src/main/kotlin/kizzy/gradle/plugin/KotlinAndroid.kt domain/build.gradle.kts macrobenchmark/build.gradle.kts .github/workflows/update-versions.yml
           git commit -m "chore: update dependency versions via versionCatalogUpdate"
           git push
