@@ -186,20 +186,10 @@ fun StartUp(
                         description = stringResource(id = R.string.usage_access_desc),
                         status = usageAccessStatus.value
                     ) {
-                        // Open per-app Usage Access toggle screen directly (Android 8+).
-                        // One tap flips the toggle; no need to scroll through a list.
-                        // Falls back to the general Usage Access list on ROMs that
-                        // don't support package: routing.
-                        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                            .setData(Uri.parse("package:${context.packageName}"))
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        try {
-                            context.startActivity(intent)
-                        } catch (_: android.content.ActivityNotFoundException) {
-                            context.startActivity(
-                                Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                            )
-                        }
+                        // Open Usage Access settings. Android has no one-tap dialog
+                        // for Usage Access (unlike Battery Optimization) — the user
+                        // must tap their app entry in the list and flip the toggle.
+                        context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                     }
                 }
                 item {
