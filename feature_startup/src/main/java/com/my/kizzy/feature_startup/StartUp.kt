@@ -51,6 +51,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,11 +65,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.getLanguageDesc
 import com.my.kizzy.preference.languages
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.Subtitle
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +84,12 @@ fun StartUp(
     navigateToLogin: () -> Unit = {},
     navigateToHome: () -> Unit = {}
 ) {
-    val user = Prefs.getUser()
+    val prefsState by Prefs.prefsState.collectAsState()
+    val userJson: String = prefsState[Prefs.USER_DATA] as? String ?: ""
+    val user = when {
+        userJson.isNotEmpty() -> Json.decodeFromString<User>(userJson)
+        else -> null
+    }
     val context = LocalContext.current
     var storagePermissionGranted by remember {
         mutableStateOf(
