@@ -295,27 +295,28 @@ class AppDetectionService : Service() {
             }
         }
 
-        if (kizzyRPC.isRpcRunning()) {
-            kizzyRPC.updateRPC(
-                CommonRpc(
-                    name = appLabel,
-                    type = ActivityTypeResolver.resolve(
-                        packageName = packageName,
-                        fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
-                        useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
-                    ),
-                    details = details,
-                    state = state,
-                    largeImage = largeImage,
-                    time = Timestamps(start = System.currentTimeMillis()),
+        // Always send the presence update - the gateway connection will be
+        // established asynchronously, and updateRPC handles the connection state
+        // internally. Previously we skipped sending when isRpcRunning() was false,
+        // which meant the presence was never sent if the WebSocket hadn't connected
+        // yet when the app first came to the foreground.
+        kizzyRPC.updateRPC(
+            CommonRpc(
+                name = appLabel,
+                type = ActivityTypeResolver.resolve(
                     packageName = packageName,
-                    appPackage = packageName
+                    fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                    useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
                 ),
-                enableTimestamps = true
-            )
-        } else {
-            kizzyRPC.build()
-        }
+                details = details,
+                state = state,
+                largeImage = largeImage,
+                time = Timestamps(start = System.currentTimeMillis()),
+                packageName = packageName,
+                appPackage = packageName
+            ),
+            enableTimestamps = true
+        )
 
         notificationManager.notify(
             Constants.NOTIFICATION_ID, notificationBuilder
