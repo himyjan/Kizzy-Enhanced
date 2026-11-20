@@ -200,7 +200,7 @@ object Prefs {
     private fun launchDataStoreEdit(block: suspend MutablePreferences.() -> Unit): Deferred<Unit> {
         return CoroutineScope(Dispatchers.IO).async {
             dataStore?.edit(transform = block)
-            Unit
+            return@async Unit
         }
     }
 
@@ -218,12 +218,15 @@ object Prefs {
             // Prime the synchronous mirror with the values that are already
             // stored on disk, so the first reads do not return the defaults.
             CoroutineScope(Dispatchers.IO).launch {
-                runCatching {
+                // Prime the synchronous mirror with values already on disk;
+                // ignore failures so the UI never waits forever on defaults.
+                if (runCatching {
                     dataStore?.data?.first()?.asMap()?.forEach { (key, value) ->
                         val name = key.name
                         val plain = if (value is String) decodeFromStorage(name, value) else value
                         _prefsState.update { it + (name to plain) }
                     }
+                }.isFailure) {
                 }
                 // Signal even when the read failed, so the UI never waits
                 // forever on the default (pre-priming) values.

@@ -147,7 +147,9 @@ open class DiscordWebSocketImpl(
                         shouldConnect = true
                     }
                 }
-                runCatching { staleWebsocket?.close() }
+                // Best-effort close; ignore failures (e.g. socket already closed).
+                if (runCatching { staleWebsocket?.close() }.isFailure) {
+                }
                 if (shouldConnect) {
                     connectInternal()
                 }
@@ -185,7 +187,9 @@ open class DiscordWebSocketImpl(
                     }
                 }
                 if (gen != generation) {
-                    runCatching { session.close() }
+                    // Best-effort close; ignore failures (e.g. session already closed).
+                    if (runCatching { session.close() }.isFailure) {
+                    }
                     return@launch
                 }
                 websocket = session
@@ -452,7 +456,9 @@ open class DiscordWebSocketImpl(
         // to another app in the apps list leave Discord showing the previous app forever.
         connectionJob?.cancel()
         connectionJob = null
-        runCatching { websocket?.cancel() }
+        // Best-effort cancel; ignore failures (e.g. already cancelled).
+        if (runCatching { websocket?.cancel() }.isFailure) {
+        }
         websocket = null
         resumeGatewayUrl = null
         sessionId = null
@@ -562,7 +568,9 @@ open class DiscordWebSocketImpl(
     private suspend fun stopWebSocketInternally() {
         heartbeatJob?.cancel()
         heartbeatJob = null
-        runCatching { websocket?.close() }
+        // Best-effort close; ignore failures (e.g. already closed).
+        if (runCatching { websocket?.close() }.isFailure) {
+        }
         websocket = null
         connected = false
         sessionId = null
