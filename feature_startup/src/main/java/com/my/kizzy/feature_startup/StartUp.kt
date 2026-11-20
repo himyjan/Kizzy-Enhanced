@@ -56,6 +56,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -290,6 +294,17 @@ fun StartUp(
                 }
             }
             val allMandatoryComplete = batteryOptimizationStatus.value && notificationPostingPerm && usageAccessStatus.value && mediaControlStatus.value
+
+            // Fetch Discord user ID via REST API if we have a token but no USER_ID yet
+            LaunchedEffect(prefsState[Prefs.TOKEN] as? String) {
+                val token = prefsState[Prefs.TOKEN] as? String
+                val userId = prefsState[Prefs.USER_ID] as? String
+                if (token?.isNotEmpty() == true && (userId == null || userId.isEmpty())) {
+                    fetchDiscordUserId(token)?.let { fetchedUserId ->
+                        Prefs[Prefs.USER_ID] = fetchedUserId
+                    }
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -331,6 +346,40 @@ fun StartUp(
 private fun extractUserIdFromToken(token: String?): String? {
     val parts = token?.split(".") ?: return null
     return parts.firstOrNull()?.takeIf { it.isNotBlank() && it.all { it.isDigit() } }
+}
+
+/**
+ * Fetches the Discord user ID via REST API /users/@me.
+ *
+ * Returns the numeric user ID string, or null if the request fails.
+ * Works with both account tokens (user_id.timestamp.hmac) and OAuth2
+ * bearer tokens.
+ */
+private suspend fun fetchDiscordUserId(token: String): String? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val url = java.net.URL("https://discord.com/api/v10/users/@me")
+            val connection = url.openConnection() as java.net.HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Authorization", "Bearer $token")
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
+
+            val responseCode = connection.responseCode
+            if (responseCode == 200) {
+                val inputStream = connection.inputStream
+                val body = inputStream.bufferedReader().use { it.readText() }
+                inputStream.close()
+
+                // Extract "id":"123456789" from the JSON response
+                Regex("\"id\":\"([^\"]+)\"").find(body)?.groupValues?.getOrNull(1)
+            } else {
+                null
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
 }
 
 /**
