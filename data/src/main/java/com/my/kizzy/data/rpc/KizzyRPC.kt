@@ -238,15 +238,11 @@ class KizzyRPC @Inject constructor(
      * ensures a late login still works without restarting the service.
      */
     suspend fun refreshFromPrefs() {
-        // Discord's Gateway IDENTIFY only accepts an ACCOUNT token
-        // (user_id.timestamp.hmac). An OAuth2 bearer token
-        // (Authorization: Bearer ...) is rejected with close code 4004
-        // "Authentication failed". The "OAuth2" connection method therefore
-        // still needs the account token captured by the WebView login - the
-        // bearer token is only used for REST API calls, not for the gateway.
-        //
-        // Prefer the account token; only fall back to the OAuth2 value when it
-        // is itself an account token (the settings dialog may store one there).
+        // Discord's Gateway IDENTIFY accepts both account tokens
+        // (user_id.timestamp.hmac) and OAuth2 bearer tokens. Try the stored
+        // account token first; fall back to the OAuth2 token if it's available.
+        // Discord is the authority on whether the token is valid — let IDENTIFY
+        // fail naturally rather than pre-emptively blocking.
         val accountToken = Prefs[Prefs.TOKEN, ""]
         val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
@@ -260,21 +256,12 @@ class KizzyRPC @Inject constructor(
         }
         val newToken = when {
             accountToken.isNotBlank() -> accountToken
-            isAccountToken(oauthToken) -> {
+            oauthToken.isNotBlank() -> {
                 // Keep the gateway and the account-token pref in sync.
                 Prefs[Prefs.TOKEN] = oauthToken
                 oauthToken
             }
-            else -> {
-                if (oauthToken.isNotBlank()) {
-                    logger.w(
-                        "KizzyRPC",
-                        "connectionMethod=$connectionMethod but only an OAuth2 bearer token is available. " +
-                                "The gateway will reject it with 4004 - open Discord Login to capture the account token."
-                    )
-                }
-                ""
-            }
+            else -> ""
         }
         token = newToken
 
