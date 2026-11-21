@@ -14,7 +14,8 @@ else
 fi
 
 echo "📦 Extracting commits..."
-RAW_COMMITS=$(git log $RANGE --pretty=format:"%s (%h)" --no-merges 2>/dev/null || true)
+# Cap at last 50 commits so the changelog stays focused and bounded
+RAW_COMMITS=$(git log $RANGE --pretty=format:"%s (%h)" --no-merges | head -n 50 2>/dev/null || true)
 RAW_COMMITS_COUNT=$(printf '%s\n' "$RAW_COMMITS" | grep -c . 2>/dev/null || echo "0")
 echo "📊 Found $RAW_COMMITS_COUNT commits"
 
