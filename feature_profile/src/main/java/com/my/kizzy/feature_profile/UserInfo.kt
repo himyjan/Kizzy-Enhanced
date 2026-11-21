@@ -51,11 +51,20 @@ import kotlinx.serialization.json.intOrNull
  */
 suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
     withTimeoutOrNull(timeoutMs) {
+        // The READY payload is the only place Discord exposes `bio`. The token
+        // passed here can be either a gateway account token (id.timestamp.hmac)
+        // or an OAuth2 token. Detect by shape: account tokens have a numeric
+        // timestamp as their 2nd part; OAuth2 tokens do not and need "Bearer ".
+        val parts = token.split(".")
+        val isAccountToken = (parts.size >= 3 && parts[1].toLongOrNull() != null) ||
+            token.startsWith("mfa.")
+        val identifyToken = if (token.isNotBlank() && !isAccountToken) "Bearer $token" else token
         val deferred = CompletableDeferred<User?>()
-        val socket: DiscordWebSocket = object : DiscordWebSocketImpl(token) {
+        val socket: DiscordWebSocket = object : DiscordWebSocketImpl(identifyToken) {
             override fun Payload.handleDispatch(jsonString: String) {
                 if (this.t.toString() != "READY") return
-                val readyUser = decodeReady(jsonString)?.user ?: return
+                val ready = decodeReady(jsonString) ?: return
+                val readyUser = ready.user ?: return
                 val user = User(
                     id = readyUser.id,
                     username = readyUser.username,
@@ -66,6 +75,9 @@ suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
                     banner = readyUser.banner,
                     bannerColor = readyUser.bannerColor,
                     bio = readyUser.bio,
+                    // Custom status ("About Me") lives under user_settings in the
+                    // READY payload, not under user.bio.
+                    special = ready.userSettings?.customStatus?.text.orEmpty().takeIf { it.isNotBlank() },
                     nitro = readyUser.premiumType in 1..3,
                     publicFlags = readyUser.publicFlags,
                     verified = readyUser.verified ?: false,
