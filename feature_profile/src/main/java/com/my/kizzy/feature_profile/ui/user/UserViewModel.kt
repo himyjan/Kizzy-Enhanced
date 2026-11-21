@@ -9,6 +9,7 @@ import com.my.kizzy.domain.model.Resource
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
+import com.my.kizzy.feature_profile.fetchDiscordUser
 import com.my.kizzy.feature_profile.fetchUserInfo
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
@@ -115,18 +116,21 @@ class UserViewModel @Inject constructor(
             return
         }
 
-        // The account token alone is enough: fetch the identity from the
-        // gateway READY payload (which also persists USER_ID/USER_DATA/BIO).
-        val fresh = fetchUserInfo(token)
+        // Prefer the cached identity (instant, no flicker). Otherwise fetch the
+        // full user via REST /users/@me - unlike the gateway READY payload this
+        // works with OAuth2 bearer tokens and saves USER_DATA (avatar/bio/banner).
+        val fresh = cachedUser?.takeIf { !it.id.isNullOrBlank() }
+            ?: fetchDiscordUser(token)
+            ?: fetchUserInfo(token)
         if (fresh != null) {
             _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())
             return
         }
 
-        // Gateway failed (offline / 4004): fall back to the cached identity or
-        // the profile API, but NEVER report "not logged in" while a token is
-        // present - that would wrongly show the login button.
-        val fallback = cachedUser ?: runCatching {
+        // Everything failed: fall back to the profile API, but NEVER report
+        // "not logged in" while a token is present - that would wrongly show
+        // the login button.
+        val fallback = runCatching {
             var result: User? = null
             getUserUseCase(userId).collect { resource ->
                 if (resource is Resource.Success) result = resource.data

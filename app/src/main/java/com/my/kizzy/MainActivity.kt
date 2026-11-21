@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var batteryOptimizationStatus: MutableState<Boolean>
 
     // Holds the currently active screen's callback: (resultCode, callbackIntent) -> Unit.
-    // Screens (RpcSettings / LoginScreen) register via Kizzy(onBindAuthTabCallback).
+    // Screens (RpcSettings / UserScreen) register via Kizzy(onBindAuthTabCallback).
     private var activeAuthTabCallback: ((Int, Intent?) -> Unit)? = null
 
     // A deep link can arrive before the composable has bound its callback (cold start).

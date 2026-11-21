@@ -12,7 +12,10 @@
 
 package com.my.kizzy.feature_profile.ui.user
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -37,9 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
+import com.my.kizzy.feature_profile.fetchDiscordUser
+import com.my.kizzy.feature_settings.rpc_settings.DiscordOAuth2Auth
 import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
 import com.my.kizzy.feature_profile.ui.component.ProfileCard
 import com.my.kizzy.feature_profile.ui.component.ProfileNetworkError
+import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.shimmer.AnimatedShimmer
@@ -50,6 +56,7 @@ import com.my.kizzy.ui.theme.DISCORD_CARD
 import com.my.kizzy.ui.theme.DISCORD_LOGOUT_RED
 import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
 import com.my.kizzy.ui.theme.DISCORD_TEXT
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,11 +64,55 @@ fun UserScreen(
     state: UserState,
     onBackPressed: () -> Unit,
     onLogout: (Context) -> Unit,
-    onNavigateToLogin: () -> Unit = {},
-    onNavigateToRpcPreview: () -> Unit = {}
+    onNavigateToRpcPreview: () -> Unit = {},
+    // AuthTab launcher + binder from MainActivity -> Kizzy, used by the inline
+    // Discord login on this screen (no separate login screen).
+    authTabLauncher: ActivityResultLauncher<Intent>? = null,
+    onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
 ) {
     val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var oauth2Error by remember { mutableStateOf("") }
+    var isAuthorizing by remember { mutableStateOf(false) }
+
+    val discordAuth = remember(ctx, authTabLauncher) {
+        DiscordOAuth2Auth(context = ctx, authTabLauncher = authTabLauncher)
+    }
+
+    DisposableEffect(discordAuth, onBindAuthTabCallback) {
+        onBindAuthTabCallback?.invoke { resultCode, callbackIntent ->
+            discordAuth.onActivityResult(resultCode, callbackIntent)
+        }
+        onDispose { onBindAuthTabCallback?.invoke { _, _ -> } }
+    }
+
+    fun startOAuth() {
+        oauth2Error = ""
+        isAuthorizing = true
+        scope.launch {
+            try {
+                val result = discordAuth.authorize(ctx as Activity)
+                Prefs[Prefs.TOKEN] = result.accessToken
+                Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = result.accessToken
+                if (result.refreshToken.isNotEmpty()) {
+                    Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = result.refreshToken
+                }
+                if (result.expiresInSec > 0) {
+                    Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] =
+                        System.currentTimeMillis() + result.expiresInSec * 1000
+                }
+                // Persist avatar/bio/banner before the profile switches to logged-in.
+                fetchDiscordUser(result.accessToken)
+            } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
+                oauth2Error = e.message ?: "Authorization failed"
+            } catch (e: Exception) {
+                oauth2Error = "Unexpected error: ${e.message}"
+            } finally {
+                isAuthorizing = false
+            }
+        }
+    }
 
     // Resolved at composition so the confirmation dialog stays config-aware.
     val sureMessage = stringResource(R.string.are_you_sure)
@@ -166,9 +217,15 @@ fun UserScreen(
                         )
                         Spacer(Modifier.height(24.dp))
                         DiscordLoginButton(
-                            onClick = { onNavigateToLogin() },
-                            enabled = true
+                            onClick = { startOAuth() },
+                            enabled = !isAuthorizing
                         )
+                        if (oauth2Error.isNotBlank()) {
+                            Spacer(Modifier.height(8.dp))
+                            Text(text = oauth2Error, color = MaterialTheme.colorScheme.error)
+                        }
+                        Spacer(Modifier.height(16.dp))
+                        TokenLoginSection()
                         Spacer(Modifier.height(24.dp))
                     }
                 }
@@ -218,6 +275,73 @@ fun UserScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * Manual token entry shown on the profile page next to the Discord login button.
+ * Validates by fetching the REST identity, which also persists USER_DATA so the
+ * avatar/bio appear as soon as the user is logged in.
+ */
+@Composable
+private fun TokenLoginSection() {
+    var token by remember { mutableStateOf("") }
+    var isSubmitting by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "Or paste your Discord account token:",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(8.dp))
+        OutlinedTextField(
+            value = token,
+            onValueChange = { token = it },
+            label = { Text("Account Token") },
+            placeholder = { Text("Paste your Discord account token here") },
+            singleLine = true,
+            maxLines = 1,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(8.dp))
+        Button(
+            onClick = {
+                val value = token.trim()
+                if (value.isBlank()) {
+                    error = "Please paste a valid Discord account token"
+                    return@Button
+                }
+                error = ""
+                isSubmitting = true
+                scope.launch {
+                    Prefs[Prefs.TOKEN] = value
+                    val user = fetchDiscordUser(value)
+                    if (user == null) {
+                        Prefs.remove(Prefs.TOKEN)
+                        error = "Invalid token or network error"
+                    } else {
+                        Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = value
+                    }
+                    isSubmitting = false
+                }
+            },
+            enabled = !isSubmitting,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(text = if (isSubmitting) "Validating..." else "Login with Token")
+        }
+        if (error.isNotBlank()) {
+            Spacer(Modifier.height(4.dp))
+            Text(text = error, color = MaterialTheme.colorScheme.error)
         }
     }
 }
@@ -311,8 +435,7 @@ fun UserScreenPreview2() {
             )
         ),
         onBackPressed = {},
-        onLogout = { ctx -> },
-        onNavigateToLogin = {}
+        onLogout = { ctx -> }
     )
 }
 @Preview

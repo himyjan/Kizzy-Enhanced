@@ -21,10 +21,22 @@ import com.my.kizzy.preference.Prefs.USER_NITRO
 import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
 import kizzy.gateway.entities.Payload
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.intOrNull
 
 /**
  * Fetches the account identity from the gateway READY payload and persists it.
@@ -74,4 +86,71 @@ suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
 /** Legacy callback variant kept for callers outside this module. */
 suspend fun getUserInfo(token: String, onInfoSaved: () -> Unit) {
     fetchUserInfo(token)?.let { onInfoSaved() }
+}
+
+private val restJson = Json {
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+}
+
+/**
+ * Fetches the full account identity from Discord's REST API (`/users/@me`) and
+ * persists it so the profile card has an avatar, banner, bio and badges.
+ *
+ * The gateway-based [fetchUserInfo] cannot be used here: Discord does not accept
+ * an OAuth2 bearer token on the gateway, so the READY payload never arrives and
+ * USER_DATA is never written (profile shows no avatar/bio and keeps the login
+ * button visible). The REST endpoint works for both OAuth2 bearer tokens and
+ * raw account tokens, so both Authorization schemes are tried.
+ *
+ * Returns null when the token is rejected or the request fails.
+ */
+suspend fun fetchDiscordUser(token: String): User? {
+    if (token.isBlank()) return null
+
+    // Account tokens look like "id.timestamp.hmac" (dots); OAuth2 bearer tokens don't.
+    val authHeaders = if (token.count { it == '.' } >= 2) {
+        listOf(token, "Bearer $token")
+    } else {
+        listOf("Bearer $token", token)
+    }
+
+    HttpClient(OkHttp) {
+        install(HttpTimeout) {
+            connectTimeoutMillis = 10_000
+            requestTimeoutMillis = 10_000
+            socketTimeoutMillis = 10_000
+        }
+    }.use { client ->
+        for (auth in authHeaders) {
+            val body = try {
+                val response = client.get("https://discord.com/api/v10/users/@me") {
+                    header("Authorization", auth)
+                    header("Accept", "application/json")
+                }
+                if (response.status == HttpStatusCode.OK) response.bodyAsText() else null
+            } catch (_: Exception) {
+                null
+            } ?: continue
+
+            val user = runCatching {
+                val obj = restJson.parseToJsonElement(body) as? JsonObject ?: return@runCatching null
+                val parsed = restJson.decodeFromString<User>(body)
+                parsed.copy(
+                    // Discord reports subscription via premium_type, not "nitro".
+                    nitro = (obj["premium_type"] as? JsonPrimitive)?.intOrNull in 1..3,
+                    verified = (obj["verified"] as? JsonPrimitive)?.booleanOrNull ?: parsed.verified,
+                )
+            }.getOrNull() ?: continue
+
+            if (user.id.isNullOrBlank()) continue
+
+            Prefs[USER_ID] = user.id
+            Prefs[USER_BIO] = user.bio
+            Prefs[USER_NITRO] = user.nitro
+            Prefs[USER_DATA] = restJson.encodeToString(user)
+            return user
+        }
+    }
+    return null
 }

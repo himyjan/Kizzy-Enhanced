@@ -53,7 +53,6 @@ import com.my.kizzy.feature_logs.LogScreen
 import com.my.kizzy.feature_logs.LogsViewModel
 import com.my.kizzy.feature_media_rpc.MediaRPC
 import com.my.kizzy.feature_media_rpc.MediaScreenViewModel
-import com.my.kizzy.feature_profile.ui.login.LoginScreen
 import com.my.kizzy.feature_profile.ui.component.RpcPreviewScreen
 import com.my.kizzy.feature_profile.ui.component.RpcPreviewViewModel
 import com.my.kizzy.feature_profile.ui.user.UserScreen
@@ -81,7 +80,7 @@ internal fun Kizzy(
     batteryOptimizationStatus: MutableState<Boolean>,
     // ActivityResultLauncher registered in MainActivity for AuthTabIntent launches.
     authTabLauncher: ActivityResultLauncher<Intent>? = null,
-    // Allows active screens (RpcSettings / LoginScreen) to register a normalized
+    // Allows active screens (RpcSettings / UserScreen) to register a normalized
     // (resultCode, callbackIntent) handler with MainActivity without `:app` needing
     // direct access to `AuthTabIntent.AuthResult`.
     onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
@@ -137,7 +136,8 @@ internal fun Kizzy(
                         }
                     },
                     navigateToLogin = {
-                        navController.navigate(Routes.LOGIN)
+                        // Login now lives on the profile page - no separate screen.
+                        navController.navigate(Routes.PROFILE)
                     })
             }
             composable(Routes.HOME) { navBackStackEntry ->
@@ -227,9 +227,8 @@ internal fun Kizzy(
                     onLogout = { ctx ->
                         viewModel.logout(ctx, scope)
                     },
-                    onNavigateToLogin = {
-                        navController.navigate(Routes.LOGIN)
-                    },
+                    authTabLauncher = authTabLauncher,
+                    onBindAuthTabCallback = onBindAuthTabCallback,
                     onNavigateToRpcPreview = {
                         val currentState = state
                         val user = when (currentState) {
@@ -293,18 +292,6 @@ internal fun Kizzy(
                 // Pass named `onBackPressed` alongside AuthTab launcher & callback binder.
                 RpcSettings(
                     onBackPressed = { goBack() },
-                    authTabLauncher = authTabLauncher,
-                    onBindAuthTabCallback = onBindAuthTabCallback,
-                )
-            }
-            composable(Routes.LOGIN) { navBackStackEntry ->
-                // Forward AuthTab launcher & callback binder to LoginScreen so OAuth2
-                // authorization in login flow also receives browser results.
-                LoginScreen(
-                    onBackPressed = { goBack() },
-                    onCompleted = {
-                        goBack()
-                    },
                     authTabLauncher = authTabLauncher,
                     onBindAuthTabCallback = onBindAuthTabCallback,
                 )
