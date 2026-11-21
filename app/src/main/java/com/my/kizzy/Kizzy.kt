@@ -34,7 +34,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.navArgument
+import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.toVersion
+import kotlinx.serialization.json.Json
 import com.my.kizzy.feature_about.about.About
 import com.my.kizzy.feature_about.about.Credits
 import com.my.kizzy.feature_about.about.CreditsScreenViewModel
@@ -233,16 +235,19 @@ internal fun Kizzy(
                         // "+", which the navigation route does not decode back, so
                         // "Penthouse Rules" was shown as "Penthouse+Rules".
                         val encodedAvatarUrl = android.net.Uri.encode(avatarUrl)
-                        val rpcConfig = when (currentState) {
-                            is UserState.LoadingCompleted -> currentState.rpcConfig
-                            is UserState.Error -> currentState.rpcConfig
-                            UserState.Loading -> null
+                        // Read rpcConfig directly from prefs so it always reflects
+                        // the current RPC state, even if the user toggled RPC on/off
+                        // after this screen was created.
+                        val rpcConfig: RpcConfig? = try {
+                            val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                            if (json.isNotBlank()) {
+                                Json.decodeFromString(json)
+                            } else {
+                                null
+                            }
+                        } catch (e: Exception) {
+                            null
                         }
-                        // The config is serialized with the real serializer and
-                        // then encoded once. Building the json by hand broke on
-                        // every name that contained a quote or a backslash, and
-                        // the hand written json did not match the model, so
-                        // the preview showed nothing.
                         val encodedRpcConfig = if (rpcConfig != null) {
                             android.net.Uri.encode(
                                 kotlinx.serialization.json.Json {
