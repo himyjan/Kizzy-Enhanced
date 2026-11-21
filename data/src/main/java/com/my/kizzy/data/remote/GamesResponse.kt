@@ -32,15 +32,25 @@ fun GamesResponse.toGame() : Game {
     return Game(
         platform = when (label) {
             "nintendo" -> Constants.NINTENDO
+            "nintendo-switch-2" -> Constants.NINTENDO_SWITCH_2
             "wii" -> Constants.WII_U
             "nintendo-3ds" -> Constants.NINTENDO_3DS
             else -> Constants.XBOX
         },
         small_image = when (label) {
             "nintendo" -> Constants.NINTENDO_LINK
+            "nintendo-switch-2" -> Constants.NINTENDO_SWITCH_2_LINK
             "wii" -> Constants.WII_U_LINK
             "nintendo-3ds" -> Constants.N3DS_LINK
-            else -> Constants.XBOX_LINK
+            "xbox" -> Constants.XBOX_LINK
+            "ps5" -> Constants.PS5_LINK
+            "ps4" -> Constants.PS4_LINK
+            "android" -> Constants.ANDROID_LINK
+            "ios" -> Constants.IOS_LINK
+            "samsung" -> Constants.SAMSUNG_LINK
+            "droideck" -> Constants.DROIDDECK_LINK
+            "eden" -> Constants.EDEN_LINK
+            else -> Constants.ANDROID_LINK
         },
         large_image = link,
         game_title = title
