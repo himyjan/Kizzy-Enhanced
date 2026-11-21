@@ -56,8 +56,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -86,6 +88,7 @@ fun RpcSettings(
     onBackPressed: () -> Unit,
     authTabLauncher: ActivityResultLauncher<Intent>? = null,
     onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
+    navigateToCustomRpcBoardScreen: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val activity = context as Activity
@@ -309,6 +312,20 @@ fun RpcSettings(
             }
             item(key = "multi_rpc_header") {
                 Subtitle(text = "Multiple RPC Applications")
+            }
+
+            // Custom RPC Board section
+            item(key = "custom_rpc_board_section") {
+                Subtitle(text = stringResource(id = R.string.custom_rpc_board))
+            }
+            item(key = "custom_rpc_board_open") {
+                SettingItem(
+                    title = stringResource(id = R.string.custom_rpc_board_open),
+                    description = stringResource(id = R.string.custom_rpc_board_open_desc),
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_custom_rpc_board),
+                ) {
+                    navigateToCustomRpcBoardScreen?.invoke()
+                }
             }
 
             item(key = "oauth2_authorize_slot2") {

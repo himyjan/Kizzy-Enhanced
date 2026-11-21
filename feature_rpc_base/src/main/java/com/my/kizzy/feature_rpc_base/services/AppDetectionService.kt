@@ -161,8 +161,12 @@ class AppDetectionService : Service() {
                     if (packageName != null && packageName !in EXCLUDED_APPS) {
                         Log.d(TAG, "Foreground package: $packageName (enabled=${packageName in enabledPackages}, game=${dynamicActivityDetectionEngine.identifyGame(packageName) != null}, ai=${dynamicActivityDetectionEngine.identifyAiApp(packageName) != null})")
                         handleValidPackage(packageName, enabledPackages, rpcButtons)
-                    } else if (packageName == null) {
-                        Log.d(TAG, "No foreground package detected in last ${EVENT_LOOKBACK_MS / 1000}s")
+                    } else if (packageName == null && runningPackage != "") {
+                        // No foreground package detected (media/music closed, app switched away).
+                        // Clear the old presence so Discord doesn't keep showing the previous app.
+                        Log.d(TAG, "No foreground package detected, clearing old presence for: $runningPackage")
+                        handleDisabledPackage()
+                        runningPackage = ""
                     }
 
                     // Also check the active assistant (power-button / "Hey Google" triggers)

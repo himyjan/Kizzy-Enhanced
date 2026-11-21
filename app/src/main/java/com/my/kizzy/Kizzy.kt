@@ -294,7 +294,14 @@ internal fun Kizzy(
                     onBackPressed = { goBack() },
                     authTabLauncher = authTabLauncher,
                     onBindAuthTabCallback = onBindAuthTabCallback,
+                    navigateToCustomRpcBoardScreen = {
+                        navController.navigate(Routes.CUSTOM_RPC_BOARD)
+                    },
                 )
+            }
+
+            composable(Routes.CUSTOM_RPC_BOARD) {
+                CustomRpcBoardScreen(onBackPressed = { goBack() })
             }
             composable(Routes.LOGS_SCREEN) { navBackStackEntry ->
                 val viewModel = hiltViewModel<LogsViewModel>(navBackStackEntry)

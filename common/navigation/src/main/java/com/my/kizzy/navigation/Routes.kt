@@ -39,6 +39,9 @@ class Routes {
         const val STYLE_AND_APPEARANCE = "style_and_appearance"
         const val RPC_SETTINGS = "rpc_settings"
 
+        /* Custom RPC Board */
+        const val CUSTOM_RPC_BOARD = "custom_rpc_board"
+
         /* Display Screen */
         const val DARK_THEME ="dark_theme_screen"
 
