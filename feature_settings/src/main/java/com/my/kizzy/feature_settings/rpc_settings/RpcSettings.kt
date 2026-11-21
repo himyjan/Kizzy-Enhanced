@@ -310,6 +310,7 @@ fun RpcSettings(
             item(key = "multi_rpc_header") {
                 Subtitle(text = "Multiple RPC Applications")
             }
+
             item(key = "oauth2_authorize_slot2") {
                 val token2 = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2, ""]
                 val appId2 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "1573725984845201438"]

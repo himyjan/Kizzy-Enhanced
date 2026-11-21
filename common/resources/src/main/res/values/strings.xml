@@ -561,4 +561,28 @@
     <string name="copy_to_custom_rpc_desc">Copy the current media/manual presence to the Custom RPC editor</string>
     <string name="copied_to_custom_rpc">Copied to Custom RPC config</string>
     <string name="copy_to_custom_rpc_no_presence">No presence to copy</string>
+
+    <!-- Custom RPC Board -->
+    <string name="custom_rpc_board">Custom RPC Board</string>
+    <string name="custom_rpc_board_open">Open Custom RPC Board</string>
+    <string name="custom_rpc_board_open_desc">Manage and activate custom presence boards</string>
+    <string name="custom_rpc_board_add">Add Board</string>
+    <string name="custom_rpc_board_edit">Edit Board</string>
+    <string name="custom_rpc_board_delete">Delete Board</string>
+    <string name="custom_rpc_board_activate">Activate</string>
+    <string name="custom_rpc_board_deactivate">Deactivate</string>
+    <string name="custom_rpc_board_label">Board Label</string>
+    <string name="custom_rpc_board_application_id">Application ID</string>
+    <string name="custom_rpc_board_activity_type">Activity Type</string>
+    <string name="custom_rpc_board_name">Activity Name</string>
+    <string name="custom_rpc_board_details">Activity Details</string>
+    <string name="custom_rpc_board_state">Activity State</string>
+    <string name="custom_rpc_board_large_image">Large Image Key</string>
+    <string name="custom_rpc_board_small_image">Small Image Key</string>
+    <string name="custom_rpc_board_large_text">Large Image Text</string>
+    <string name="custom_rpc_board_small_text">Small Image Text</string>
+    <string name="custom_rpc_board_button1_label">Button 1 Label</string>
+    <string name="custom_rpc_board_button1_url">Button 1 URL</string>
+    <string name="custom_rpc_board_button2_label">Button 2 Label</string>
+    <string name="custom_rpc_board_button2_url">Button 2 URL</string>
 </resources>
