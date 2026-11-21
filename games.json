@@ -151,6 +151,11 @@
   },
   {
     "label": "xbox",
+    "title": "GTA VI",
+    "link": "https://www.rockstargames.com/VI/_next/static/media/GTAVI_FOB_UltimateEdition_Desktop_zh_tw.06w8bez6i41hd.jpg?akim=1&imdensity=1&imwidth=3024"
+  },
+  {
+    "label": "xbox",
     "title": "Forza Horizon 5",
     "link": "https://heyure.com/wp-content/uploads/2021/10/forza-horizon-5-button-fin-1629830068379-1024x1024.jpg"
   },
@@ -1148,10 +1153,5 @@
     "label": "android",
     "title": "Block Blast!",
     "link": "https://play-lh.googleusercontent.com/5FLR-EBlfNvoV9ydZkOMDqRF10nV64XcKdZzW_oQzmz2e8Me9PS5Zncnvviki0J3XumjO2a_lg6_IdwOqwnV=s512"
-  },
-  {
-    "label": "ps5",
-    "title": "GTA VI",
-    "link": ""
   }
 ]
