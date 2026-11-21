@@ -71,6 +71,14 @@ class KizzyRPC @Inject constructor(
     private val buttonsLock = ReentrantLock()
     private var url: String? = null
 
+    // Which RPC source currently "owns" the presence slot on Discord. Discord only
+    // shows one presence per user, so when multiple RPCs are enabled (Media + Custom +
+    // Manual), they must not overwrite each other. Lower priority number = higher
+    // priority: Manual(1) > Custom/Console(2) > Media(3) > AppDetection(4) > OAuth2(5).
+    // null = no owner, the next RPC to call updateRPC() becomes the owner.
+    @Volatile
+    private var activeRpcPriority: Int? = null
+
     // Presence update deduplication + throttling to prevent flooding Discord gateway
     // (rapid SESSIONS_REPLACE events used to cause connection closures / INVALID_SESSION)
     companion object {
@@ -102,6 +110,15 @@ class KizzyRPC @Inject constructor(
          * would prevent the presence from ever being re-applied after a service restart.
          */
         private const val REAPPLY_COOLDOWN_MS = 1000L
+
+        // Priority values for updateRPC() callers. Lower number = higher priority.
+        // Callers that don't specify a priority default to 100 (lowest).
+        private const val RPC_PRIORITY_MANUAL = 1
+        private const val RPC_PRIORITY_CUSTOM = 2
+        private const val RPC_PRIORITY_MEDIA = 3
+        private const val RPC_PRIORITY_APPDETECTION = 4
+        private const val RPC_PRIORITY_OAUTH2 = 5
+        private const val RPC_PRIORITY_DEFAULT = 100
 
         /**
          * Sanitizes a button url so it can never break the whole presence.
@@ -478,6 +495,8 @@ class KizzyRPC @Inject constructor(
             lastPresenceEnd = null
             lastResolvedLargeImage = null
             lastResolvedSmallImage = null
+            // Release the presence slot so another enabled RPC can become the owner.
+            activeRpcPriority = null
         }
     }
 
@@ -803,7 +822,7 @@ class KizzyRPC @Inject constructor(
     private fun effectiveStatus(explicit: String?): String =
         explicit?.takeIf { it.isNotBlank() } ?: status?.takeIf { it.isNotBlank() } ?: "online"
 
-    suspend fun build(forceRefresh: Boolean = false) {
+    suspend fun build(forceRefresh: Boolean = false, priority: Int = RPC_PRIORITY_DEFAULT) {
         // Discord drops activities whose name is empty (the whole activity is
         // rejected, so it never shows up in SESSIONS_REPLACE and the re-apply
         // logic loops forever). This happened when the service was restored from
@@ -812,6 +831,17 @@ class KizzyRPC @Inject constructor(
             logger.w("KizzyRPC", "Skipping presence: activity name is empty")
             return
         }
+        // Priority-based presence: if a higher-priority RPC already owns the
+        // presence slot, don't overwrite it (unless forceRefresh).
+        val currentOwner = activeRpcPriority
+        if (currentOwner != null && priority > currentOwner && !forceRefresh) {
+            logger.d(
+                "KizzyRPC",
+                "build() skipping: priority $priority (owner priority $currentOwner has higher priority)"
+            )
+            return
+        }
+        activeRpcPriority = priority
         val cleanButtons = sanitizeButtons(buttons.takeIf { buttons.isNotEmpty() })
 
         presence = Presence(
@@ -917,7 +947,16 @@ class KizzyRPC @Inject constructor(
         }
     }
 
-    suspend fun updateRPC(commonRpc: CommonRpc, enableTimestamps: Boolean? = true, status: String? = null, forceRefresh: Boolean = false) {
+    suspend fun updateRPC(
+        commonRpc: CommonRpc,
+        enableTimestamps: Boolean? = true,
+        status: String? = null,
+        forceRefresh: Boolean = false,
+        // Priority of the caller. Lower number = higher priority. Manual(1) >
+        // Custom/Console(2) > Media(3) > AppDetection(4) > OAuth2(5). Defaults to
+        // RPC_PRIORITY_DEFAULT (100) when not specified.
+        priority: Int = RPC_PRIORITY_DEFAULT,
+    ) {
         // Don't check isRpcRunning() here - sendActivity() will wait for the socket to connect
         // (up to CONNECT_WAIT_TIMEOUT_MS) before sending. This prevents media detection from
         // being lost when the gateway hasn't finished connecting yet.
@@ -992,6 +1031,24 @@ class KizzyRPC @Inject constructor(
         // coroutines at once; without this an older presence could be sent after a newer
         // one and leave Discord showing the previous song.
         presenceSendMutex.withLock {
+            // Priority-based presence: Discord only shows one presence per user. When
+            // multiple RPCs are enabled (Media + Custom + Manual), a lower-priority RPC
+            // (Media) must not keep overwriting a higher-priority one (Custom/Manual).
+            // The caller with the lowest priority number "owns" the presence slot.
+            // forceRefresh only bypasses content-dedup, NOT priority - a lower-priority
+            // RPC cannot overwrite a higher-priority one even with forceRefresh.
+            val callerPriority = priority
+            val currentOwner = activeRpcPriority
+            if (currentOwner != null && callerPriority > currentOwner) {
+                logger.d(
+                    "KizzyRPC",
+                    "Skipping presence update from priority $callerPriority (owner priority $currentOwner has higher priority)"
+                )
+                return@withLock
+            }
+            // This caller becomes (or remains) the presence owner.
+            activeRpcPriority = callerPriority
+
             // Deduplication.
             //
             // A presence is only re-sent when something actually changed: a different

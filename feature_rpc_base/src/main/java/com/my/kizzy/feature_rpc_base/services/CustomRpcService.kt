@@ -352,8 +352,8 @@ class CustomRpcService : Service() {
                         it.smallText
                     )
                     setStreamUrl(it.url.ifEmpty { null })
-                    Log.d("CustomRpcService", "Calling kizzyRPC.build(forceRefresh=$forceRefresh)")
-                    build(forceRefresh = forceRefresh)
+                    Log.d("CustomRpcService", "Calling kizzyRPC.build(forceRefresh=$forceRefresh, priority=2)")
+                    build(forceRefresh = forceRefresh, priority = 2) // Custom/Console RPC: user-configured, priority 2
                     Log.d("CustomRpcService", "kizzyRPC.build() completed")
                 }
             }

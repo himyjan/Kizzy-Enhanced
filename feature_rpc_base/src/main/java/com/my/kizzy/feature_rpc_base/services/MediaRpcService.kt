@@ -1373,7 +1373,9 @@ class MediaRpcService : Service() {
         // content changed (new track, new artwork, seek, etc.). Tell KizzyRPC to
         // send it even if its hash-based dedup would otherwise drop it as
         // "content unchanged" - that keeps the RPC from freezing on the old song.
-        kizzyRPC.updateRPC(commonRpc, enableTimestamps, forceRefresh = true)
+        // Priority 3 (Media): user-configured Custom/Manual RPC (priority 1/2)
+        // takes precedence over automatic Media RPC.
+        kizzyRPC.updateRPC(commonRpc, enableTimestamps, forceRefresh = true, priority = 3)
         updateNotificationPauseButton()
     }
 

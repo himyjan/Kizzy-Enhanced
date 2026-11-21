@@ -395,7 +395,7 @@ class ManualRpc : Service() {
         // can deliver presence. Without connect(), the socket is never opened and every
         // presence update times out with "Socket not connected within timeout".
         scope.launch {
-            kizzyRPC.build()
+            kizzyRPC.build(priority = 1) // Manual RPC: highest priority
         }
 
         return super.onStartCommand(intent, flags, startId)
@@ -841,6 +841,7 @@ class ManualRpc : Service() {
             enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true],
             status = manualStatus.takeIf { it.isNotEmpty() } ?: "online",
             forceRefresh = true,
+            priority = 1, // Manual RPC: highest priority - user explicitly configured
         )
 
         // Remember the presence for the RPC preview.

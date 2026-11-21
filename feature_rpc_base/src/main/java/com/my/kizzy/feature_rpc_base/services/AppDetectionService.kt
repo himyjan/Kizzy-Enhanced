@@ -331,7 +331,8 @@ class AppDetectionService : Service() {
                 packageName = packageName,
                 appPackage = packageName
             ),
-            enableTimestamps = true
+            enableTimestamps = true,
+            priority = 4, // App Detection: lower priority than user-configured RPCs
         )
 
         notificationManager.notify(
