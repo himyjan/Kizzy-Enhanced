@@ -32,8 +32,10 @@ import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
+import com.my.kizzy.data.rpc.CustomRpcBoardItem
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.CustomRpcBoardManager
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
@@ -58,6 +60,9 @@ class CustomRpcService : Service() {
 
     @Inject
     lateinit var scope: CoroutineScope
+
+    @Inject
+    lateinit var boardManager: CustomRpcBoardManager
 
     /** True when this service instance was started by the Console RPC screen. */
     private var consoleMode = false
@@ -136,7 +141,9 @@ class CustomRpcService : Service() {
                     }
                 }
                 Log.d("CustomRpcService", "ACTION_RESTART_SERVICE: rpcData=${rpcData?.name ?: "null"}")
-                sendPresenceAndNotification(forceRefresh = true)
+                scope.launch {
+                    sendPresenceAndNotification(forceRefresh = true)
+                }
                 startConsoleDetectionIfNeeded()
                 return super.onStartCommand(intent, flags, startId)
             }
@@ -153,7 +160,9 @@ class CustomRpcService : Service() {
         }
 
         Log.d("CustomRpcService", "onStartCommand: rpcData=${rpcData?.name ?: "null"}, details=${rpcData?.details ?: "null"}")
-        sendPresenceAndNotification()
+        scope.launch {
+            sendPresenceAndNotification()
+        }
         startConsoleDetectionIfNeeded()
         return super.onStartCommand(intent, flags, startId)
     }
@@ -240,7 +249,9 @@ class CustomRpcService : Service() {
 
         rpcData = updated
         Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = Json.encodeToString(updated)
-        sendPresenceAndNotification()
+        scope.launch {
+            sendPresenceAndNotification()
+        }
     }
 
     /**
@@ -251,14 +262,35 @@ class CustomRpcService : Service() {
      *   already connected (bypasses the "already connected" early return in
      *   KizzyRPC.build()). Used by the notification restart button.
      */
-    private fun sendPresenceAndNotification(forceRefresh: Boolean = false) {
-        // Load rpcData from prefs if null (service restarted without RPC intent extra,
-        // e.g. after Android kills and restarts it, or launched via adb).
-        val rpcDataToUse = rpcData ?: try {
-            Json.decodeFromString<RpcConfig>(Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""])
-        } catch (e: Exception) {
-            null
-        } ?: RpcConfig()
+    private suspend fun sendPresenceAndNotification(forceRefresh: Boolean = false) {
+        // If there is an active custom RPC board, use its fields to build the
+        // presence instead of the stored RpcConfig.
+        val activeBoard = boardManager.getActiveBoard()
+        val rpcDataToUse: RpcConfig = if (activeBoard != null) {
+            Log.d("CustomRpcService", "Using active board: ${activeBoard.id} (${activeBoard.label})")
+            RpcConfig(
+                name = activeBoard.name,
+                details = activeBoard.details,
+                state = activeBoard.state,
+                type = activeBoard.activityType.toString(),
+                largeImg = activeBoard.largeImage,
+                smallImg = activeBoard.smallImage,
+                largeText = activeBoard.largeText,
+                smallText = activeBoard.smallText,
+                button1 = activeBoard.button1Label,
+                button1link = activeBoard.button1Url,
+                button2 = activeBoard.button2Label,
+                button2link = activeBoard.button2Url,
+                url = if (activeBoard.activityType == 1) activeBoard.name else "",
+                status = "online",
+            )
+        } else {
+            rpcData ?: try {
+                Json.decodeFromString<RpcConfig>(Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""])
+            } catch (e: Exception) {
+                null
+            } ?: RpcConfig()
+        }
 
         Log.d("CustomRpcService", "sendPresenceAndNotification: forceRefresh=$forceRefresh, rpcDataToUse.name=${rpcDataToUse.name}, rpcDataToUse.details=${rpcDataToUse.details}, rpcDataToUse.state=${rpcDataToUse.state}")
 
@@ -337,6 +369,10 @@ class CustomRpcService : Service() {
                     setState(it.state.ifEmpty { null })
                     setPartySize(it.partyCurrentSize.toIntOrNull(), it.partyMaxSize.toIntOrNull())
                     setStatus(it.status.ifEmpty { "online" })
+                    // Use the board's applicationId when an active board is present
+                    if (activeBoard != null && activeBoard.applicationId.isNotBlank()) {
+                        setApplicationId(activeBoard.applicationId)
+                    }
                     setType(it.type.toIntOrNull() ?: 0)
                     setPlatform(if (consoleMode) it.platform.ifEmpty { null } else null)
                     setStartTimestamps(it.timestampsStart.toLongOrNull())

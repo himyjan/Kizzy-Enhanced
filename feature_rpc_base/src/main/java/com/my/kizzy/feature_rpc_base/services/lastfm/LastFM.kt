@@ -26,6 +26,14 @@ private const val LASTFM_API_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
 private const val LIBREFM_API_BASE_URL = "https://libre.fm/2.0/"
 private const val MAX_API_RETRIES = 3
 
+// TODO: Replace with your own Last.fm API key and secret obtained from https://www.last.fm/api
+internal const val DEFAULT_LASTFM_API_KEY = "d678407da0340da567478a3e5645f864"
+internal const val DEFAULT_LASTFM_SECRET = "7c3200d4a626f3d546da37eecd0849a2"
+
+// TODO: Replace with your own Libre.fm API key and secret
+internal const val DEFAULT_LIBREFM_API_KEY = "YOUR_LIBREFM_API_KEY"
+internal const val DEFAULT_LIBREFM_SECRET = "YOUR_LIBREFM_SECRET"
+
 open class LastFmApiClient(
     private val apiBaseUrl: String,
     loggerName: String

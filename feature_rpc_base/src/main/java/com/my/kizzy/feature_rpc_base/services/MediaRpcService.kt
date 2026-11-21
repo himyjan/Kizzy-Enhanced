@@ -50,6 +50,10 @@ import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration.Companion.milliseconds
 import com.my.kizzy.feature_rpc_base.R as FeatureRpcR
 
+import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LIBREFM_API_KEY
+import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LIBREFM_SECRET
+import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
+import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFmApiClient
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFmException
@@ -143,8 +147,8 @@ class MediaRpcService : Service() {
         val name: String,
         val client: LastFmApiClient,
         val enabledPreference: String,
-        val apiKeyPreference: String,
-        val secretPreference: String,
+        val apiKeyPreference: String = "",
+        val secretPreference: String = "",
         val usernamePreference: String,
         val passwordPreference: String,
         val sessionKeyPreference: String,
@@ -508,19 +512,29 @@ class MediaRpcService : Service() {
         auth.mutex.withLock {
         if (!Prefs[auth.enabledPreference, false]) return@withLock false
 
-        val apiKey = Prefs[auth.apiKeyPreference, ""]
-        val secret = Prefs[auth.secretPreference, ""]
-        if (apiKey.isBlank() || secret.isBlank()) {
+        // Use hardcoded default API key + secret (like Morphe / YouTube Music)
+        // Users only need to enter username + password
+        val defaultKey = when (auth.client::class.simpleName) {
+            "LastFM" -> DEFAULT_LASTFM_API_KEY
+            "LibreFM" -> DEFAULT_LIBREFM_API_KEY
+            else -> ""
+        }
+        val defaultSecret = when (auth.client::class.simpleName) {
+            "LastFM" -> DEFAULT_LASTFM_SECRET
+            "LibreFM" -> DEFAULT_LIBREFM_SECRET
+            else -> ""
+        }
+        if (defaultKey.isBlank() || defaultSecret.isBlank()) {
             auth.client.sessionKey = null
             if (!auth.missingConfigLogged) {
-                logger.w(auth.name, "Scrobbling is enabled, but the API key or secret is missing")
+                logger.w(auth.name, "Scrobbling is enabled, but default API key or secret is not configured")
                 auth.missingConfigLogged = true
             }
             return@withLock false
         }
 
         auth.missingConfigLogged = false
-        auth.client.init(apiKey, secret)
+        auth.client.init(defaultKey, defaultSecret)
         val savedSessionKey = Prefs[auth.sessionKeyPreference, ""]
         if (savedSessionKey.isNotBlank()) {
             auth.client.sessionKey = savedSessionKey
