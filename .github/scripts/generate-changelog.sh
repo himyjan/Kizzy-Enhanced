@@ -15,14 +15,14 @@ fi
 
 echo "📦 Extracting commits..."
 RAW_COMMITS=$(git log $RANGE --pretty=format:"%s (%h)" --no-merges 2>/dev/null || true)
-RAW_COMMITS_COUNT=$(echo "$RAW_COMMITS" | grep -c . 2>/dev/null || echo "0")
+RAW_COMMITS_COUNT=$(printf '%s\n' "$RAW_COMMITS" | grep -c . 2>/dev/null || echo "0")
 echo "📊 Found $RAW_COMMITS_COUNT commits"
 
-# Categorize commits
-FEATS=$(printf '%s\n' "$RAW_COMMITS" | rg -i '^feat(\(.+\))?:' | sed -E 's/^feat(\(([^)]+)\))?:\s*/- **\2**: /I; s/^\- \*\*\*\*: /- /' || true)
-FIXES=$(printf '%s\n' "$RAW_COMMITS" | rg -i '^fix(\(.+\))?:' | sed -E 's/^fix(\(([^)]+)\))?:\s*/- **\2**: /I; s/^\- \*\*\*\*: /- /' || true)
-PERFS=$(printf '%s\n' "$RAW_COMMITS" | rg -i '^(perf|refactor)(\(.+\))?:' | sed -E 's/^(perf|refactor)(\(([^)]+)\))?:\s*/- **\3**: /I; s/^\- \*\*\*\*: /- /' || true)
-OTHERS=$(printf '%s\n' "$RAW_COMMITS" | rg -iv '^(feat|fix|perf|refactor)(\(.+\))?:' | sed 's/^/- /' || true)
+# Categorize commits (grep -E is available everywhere; ripgrep is not on ubuntu-latest)
+FEATS=$(printf '%s\n' "$RAW_COMMITS" | grep -Ei '^feat(\(.+\))?:' | sed -E 's/^feat(\(([^)]+)\))?:\s*/- **\2**: /I; s/^\- \*\*\*\*: /- /' || true)
+FIXES=$(printf '%s\n' "$RAW_COMMITS" | grep -Ei '^fix(\(.+\))?:' | sed -E 's/^fix(\(([^)]+)\))?:\s*/- **\2**: /I; s/^\- \*\*\*\*: /- /' || true)
+PERFS=$(printf '%s\n' "$RAW_COMMITS" | grep -Ei '^(perf|refactor)(\(.+\))?:' | sed -E 's/^(perf|refactor)(\(([^)]+)\))?:\s*/- **\3**: /I; s/^\- \*\*\*\*: /- /' || true)
+OTHERS=$(printf '%s\n' "$RAW_COMMITS" | grep -Evi '^(feat|fix|perf|refactor)(\(.+\))?:' | sed 's/^/- /' || true)
 
 {
   echo "## 📋 Changelog"

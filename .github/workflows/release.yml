@@ -169,19 +169,22 @@ jobs:
       - name: Generate changelog
         run: chmod +x .github/scripts/generate-changelog.sh && .github/scripts/generate-changelog.sh
 
-      - name: Generate release asset table & checksums
-        id: assets
+      - name: Generate Release Notes Body
+        id: release_notes
         run: |
+          # Build the download table inline (asset names & checksums) so nothing
+          # depends on fragile cross-step multiline output interpolation.
           {
-            echo "table<<EOF"
             echo "| File | Architecture / Type | Size | SHA-256 |"
             echo "| :--- | :--- | :--- | :--- |"
+            RUN="${{ github.run_number }}"
             for FILE in \
-              "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk" \
-              "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk" \
-              "app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk" \
-              "app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
+              "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-arm64-v8a.apk" \
+              "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-x86_64.apk" \
+              "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-universal.apk" \
+              "app/build/outputs/bundle/release/KizzyEnhanced-${RUN}.aab"
             do
+              [ -f "$FILE" ] || continue
               NAME=$(basename "$FILE")
               SIZE=$(du -h "$FILE" | cut -f1)
               HASH=$(sha256sum "$FILE" | cut -d' ' -f1)
@@ -193,30 +196,25 @@ jobs:
               esac
               echo "| \`$NAME\` | $ARCH | $SIZE | \`$HASH\` |"
             done
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          } > download-table.md
 
-      - name: Generate Release Notes Body
-        id: release_notes
-        run: |
           {
             echo "## 🚀 Kizzy Enhanced ${{ github.run_number }}"
             echo ""
-            echo "${{ github.event.inputs.notes_en != '' && github.event.inputs.notes_en || 'No release notes provided.' }}"
+            # Use the user-provided notes when given, otherwise fall back to the
+            # auto-generated changelog so the release body is never empty.
+            NOTES="${{ github.event.inputs.notes_en }}"
+            if [ -n "$NOTES" ]; then
+              echo "$NOTES"
+            else
+              cat changelog.md
+            fi
             echo ""
             echo "---"
             echo ""
             echo "## 📦 Downloads"
             echo ""
-            echo "| File | Architecture / Type | Size | SHA-256 |"
-            echo "| :--- | :--- | :--- | :--- |"
-            echo "${{ steps.assets.outputs.table }}"
-            echo ""
-            echo "---"
-            echo ""
-            echo "## 📋 Changelog"
-            echo ""
-            cat changelog.md
+            cat download-table.md
             echo ""
             echo "---"
             echo ""
