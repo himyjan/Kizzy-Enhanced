@@ -1091,14 +1091,15 @@ class KizzyRPC @Inject constructor(
             )
             val sent = discordWebSocket.sendActivity(presence)
             if (!sent) {
-                // The socket was not ready. Do NOT touch the cache, otherwise the next
-                // update is dropped as "content unchanged" and Discord keeps showing the
-                // previous song until the track changes again.
-                logger.w("KizzyRPC", "Presence not sent (socket not ready); will retry on the next update")
-                return@withLock
+                // The socket was not ready. Record the presence anyway so that
+                // launchReapplyPresence() can re-send it once the WebSocket
+                // reconnects (onPresenceDropped → READY → onPresenceDropped).
+                logger.w("KizzyRPC", "Presence not sent (socket not ready); will re-apply on reconnect")
             }
 
-            // Remember the presence so we can re-apply after SESSIONS_REPLACE reconnect
+            // Remember the presence so we can re-apply after SESSIONS_REPLACE reconnect.
+            // Always update (even when send() failed) so that launchReapplyPresence()
+            // can retry once the WebSocket reconnects.
             lastPresence = presence
             lastPresenceHash = hash
             // The send may have waited for an artwork upload, so record the actual
