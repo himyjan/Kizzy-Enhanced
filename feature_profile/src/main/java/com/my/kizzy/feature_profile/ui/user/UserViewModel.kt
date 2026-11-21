@@ -121,17 +121,12 @@ class UserViewModel @Inject constructor(
             return
         }
 
-        // Prefer a complete cached identity (instant, no flicker). A cached user
-        // saved by the old gateway-only login has no bio/avatar, so refresh from
-        // REST /users/@me in that case. Unlike the READY payload, REST accepts the
-        // OAuth2 bearer token and saves USER_DATA (avatar/bio/banner).
-        val cachedComplete = cachedUser?.takeIf {
-            !it.id.isNullOrBlank() && !it.bio.isNullOrBlank()
-        }
-        val fresh = cachedComplete
+        // Match the 0703aa45 profile display: the gateway READY payload is the
+        // primary source of USER_DATA (avatar/banner/bio/badges). REST /users/@me
+        // is the fallback for OAuth2 sessions where the gateway is unavailable.
+        val fresh = fetchUserInfo(token)
             ?: fetchDiscordUser(token)
             ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }
-            ?: fetchUserInfo(token)
         if (fresh != null) {
             _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())
             return

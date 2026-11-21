@@ -47,7 +47,10 @@ class DiscordOAuth2Auth(
         private const val TAG = "DiscordOAuth2Auth"
         private const val DISCORD_OAUTH2_AUTHORIZE = "https://discord.com/oauth2/authorize"
         private const val DISCORD_OAUTH2_TOKEN = "https://discord.com/api/v10/oauth2/token"
-        private const val DISCORD_SCOPES = "identify guilds"
+        // Social SDK default presence scopes: required for the OAuth2 token to
+        // connect to the gateway and publish rich presence (same as Metrolist).
+        // `identify` keeps REST /users/@me working for the profile (avatar/bio).
+        private const val DISCORD_SCOPES = "openid identify sdk.social_layer_presence"
         private const val REDIRECT_URI = "kizzy://oauth2/callback"
         private const val REDIRECT_SCHEME = "kizzy"
 
@@ -70,6 +73,7 @@ class DiscordOAuth2Auth(
         class StateMismatch : DiscordOAuth2Exception("OAuth2 state mismatch")
         class NoBrowser(message: String = "No browser available") : DiscordOAuth2Exception(message)
         class InvalidClientId(message: String = "Invalid or missing Client ID") : DiscordOAuth2Exception(message)
+        class OAuthError(message: String) : DiscordOAuth2Exception(message)
     }
 
     private var continuation: CancellableContinuation<DiscordOAuth2Result>? = null
@@ -170,6 +174,22 @@ class DiscordOAuth2Auth(
                 val callbackUri = data?.data
                 val code = callbackUri?.getQueryParameter("code")
                 val state = callbackUri?.getQueryParameter("state")
+
+                // Discord may redirect back with ?error=... instead of ?code=...
+                // (e.g. invalid_scope, access_denied). Surface that clearly
+                // instead of the misleading "Missing code" network error.
+                val oauthError = callbackUri?.getQueryParameter("error")
+                if (!oauthError.isNullOrBlank()) {
+                    val description = callbackUri?.getQueryParameter("error_description")
+                        ?.replace("+", " ")
+                        ?.let { ": $it" }.orEmpty()
+                    val message = "$oauthError$description"
+                    Log.w(TAG, "onActivityResult: OAuth error: $message")
+                    if (cont.isActive) {
+                        cont.resumeWithException(DiscordOAuth2Exception.OAuthError(message))
+                    }
+                    return
+                }
 
                 if (state != auth.state) {
                     Log.w(TAG, "onActivityResult: state mismatch expected=${auth.state} actual=$state")

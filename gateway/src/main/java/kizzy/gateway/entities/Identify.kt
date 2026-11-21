@@ -13,7 +13,10 @@ data class Identify(
     @SerialName("properties")
     val properties: Properties,
     @SerialName("token")
-    val token: String
+    val token: String,
+    // Required by the Social SDK presence flow (and ignored by account tokens).
+    @SerialName("intents")
+    val intents: Int = 0
 ){
     companion object {
         fun String.toIdentifyPayload(

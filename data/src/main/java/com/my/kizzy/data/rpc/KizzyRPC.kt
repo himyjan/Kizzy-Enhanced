@@ -244,37 +244,34 @@ class KizzyRPC @Inject constructor(
      * ensures a late login still works without restarting the service.
      */
     suspend fun refreshFromPrefs() {
-        // Discord's gateway IDENTIFY requires a real account token
-        // ("user_id.timestamp.hmac"). OAuth2 bearer tokens are rejected with
-        // 4004 Authentication failed, so never feed one to the gateway. The
-        // OAuth2 token is kept separately for the OAuth2 connection method.
-        val stored = Prefs[Prefs.TOKEN, ""]
+        // Each connection method uses its own token:
+        //   Gateway -> the account token in TOKEN
+        //   OAuth2  -> the application OAuth2 token in DISCORD_OAUTH2_ACCESS_TOKEN
+        // The two are never mixed, so switching methods always uses the right one.
+        val accountToken = Prefs[Prefs.TOKEN, ""]
+        val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
 
-        val isAccountToken: (String) -> Boolean = { value ->
-            val parts = value.split(".")
-            (parts.size >= 3 && parts[0].isNotBlank() && parts[1].toLongOrNull() != null) ||
-                value.startsWith("mfa.")
+        val isOAuth2Method = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH2
+        // Social SDK OAuth2 tokens are sent as "Bearer <token>" in IDENTIFY,
+        // exactly like Metrolist. Gateway account tokens are sent raw.
+        val newToken = when {
+            isOAuth2Method && oauthToken.isNotBlank() -> "Bearer $oauthToken"
+            isOAuth2Method -> ""
+            else -> accountToken
         }
 
-        val accountToken = stored.takeIf(isAccountToken).orEmpty()
-        // A previous OAuth2 login may have written a bearer token into TOKEN.
-        // Drop it so the gateway never retries IDENTIFY with an invalid token.
-        if (stored.isNotBlank() && accountToken.isEmpty()) {
-            Prefs.remove(Prefs.TOKEN)
-        }
-
-        logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod tokenLen=${accountToken.length}")
+        logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod tokenLen=${newToken.length}")
         logger.d(
             "KizzyRPC",
-            "token shape: parts=${accountToken.count { it == '.' } + if (accountToken.isEmpty()) 0 else 1} len=${accountToken.length}"
+            "token shape: parts=${newToken.count { it == '.' } + if (newToken.isEmpty()) 0 else 1} len=${newToken.length}"
         )
 
-        // If the token changed (e.g. a real account token was pasted, or logout),
+        // If the token changed (e.g. switching connection method or login/logout),
         // reconnect the WebSocket. IDENTIFY authenticates at handshake time, so
         // updating the in-memory token alone is not enough on an open socket.
-        val tokenChanged = accountToken != token
-        token = accountToken
+        val tokenChanged = newToken != token
+        token = newToken
 
         if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
             logger.d("KizzyRPC", "Token changed, reconnecting WebSocket with new token")
@@ -285,7 +282,14 @@ class KizzyRPC @Inject constructor(
         // not fall through to the desktop identify.
         val platform = Prefs[Prefs.MANUAL_RPC_PLATFORM, "android"]
             .takeIf { it.isNotBlank() } ?: "android"
-        val (browser, os, device) = Constants.spoofIdentifyProperties(platform)
+        val (browser, os, spooferDevice) = Constants.spoofIdentifyProperties(platform)
+        // The Social SDK expects the application id as `device` on IDENTIFY.
+        val device = if (isOAuth2Method) {
+            Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, "1571063796418744412"]
+                .ifBlank { spooferDevice }
+        } else {
+            spooferDevice
+        }
         if (discordWebSocket is DiscordWebSocketImpl) {
             discordWebSocket.refreshIdentifyProperties(token, browser, os, device)
         }

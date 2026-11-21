@@ -76,11 +76,6 @@ fun UserScreen(
     var oauth2Error by remember { mutableStateOf("") }
     var isAuthorizing by remember { mutableStateOf(false) }
 
-    // Gateway RPC needs a real account token; an OAuth2-only login does not have
-    // one, so offer the token field on the profile even while logged in.
-    val prefs by Prefs.prefsState.collectAsState(initial = emptyMap())
-    val hasAccountToken = (prefs[Prefs.TOKEN] as? String ?: "").isNotBlank()
-
     val discordAuth = remember(ctx, authTabLauncher) {
         DiscordOAuth2Auth(context = ctx, authTabLauncher = authTabLauncher)
     }
@@ -231,11 +226,9 @@ fun UserScreen(
                             Spacer(Modifier.height(8.dp))
                             Text(text = oauth2Error, color = MaterialTheme.colorScheme.error)
                         }
-                        if (!hasAccountToken) {
-                            Spacer(Modifier.height(16.dp))
-                            TokenLoginSection()
-                            Spacer(Modifier.height(24.dp))
-                        }
+                        Spacer(Modifier.height(16.dp))
+                        TokenLoginSection()
+                        Spacer(Modifier.height(24.dp))
                     }
                 }
 
@@ -256,13 +249,6 @@ fun UserScreen(
                             rpcConfig = state.rpcConfig,
                             onAvatarClick = { onNavigateToRpcPreview() }
                         )
-
-                        if (!hasAccountToken) {
-                            Spacer(Modifier.height(16.dp))
-                            TokenLoginSection(
-                                title = "Gateway RPC needs your Discord account token. Paste it below."
-                            )
-                        }
 
                         Spacer(Modifier.height(16.dp))
                         Column(
@@ -301,9 +287,7 @@ fun UserScreen(
  * avatar/bio appear as soon as the user is logged in.
  */
 @Composable
-private fun TokenLoginSection(
-    title: String = "Or paste your Discord account token:",
-) {
+private fun TokenLoginSection() {
     var token by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
@@ -316,7 +300,7 @@ private fun TokenLoginSection(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = title,
+            text = "Or paste your Discord account token:",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
