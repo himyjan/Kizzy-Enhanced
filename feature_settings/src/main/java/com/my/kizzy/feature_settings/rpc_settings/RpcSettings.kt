@@ -109,7 +109,7 @@ fun RpcSettings(
     // when _prefsState is primed from disk.
     val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap())
     var connectionMethod by remember(prefsMap) {
-        mutableStateOf(prefsMap[Prefs.RPC_CONNECTION_METHOD] as? String ?: Prefs.RPC_CONNECTION_METHOD_GATEWAY)
+        mutableStateOf(prefsMap[Prefs.RPC_CONNECTION_METHOD] as? String ?: Prefs.RPC_CONNECTION_METHOD_OAUTH2)
     }
 
     val discordAuth = remember(context, scope, authTabLauncher) {

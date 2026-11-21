@@ -250,7 +250,7 @@ class KizzyRPC @Inject constructor(
         // The two are never mixed, so switching methods always uses the right one.
         val accountToken = Prefs[Prefs.TOKEN, ""]
         val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
-        val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
+        val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_OAUTH2]
 
         val isOAuth2Method = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH2
         // Social SDK OAuth2 tokens are sent as "Bearer <token>" in IDENTIFY,
