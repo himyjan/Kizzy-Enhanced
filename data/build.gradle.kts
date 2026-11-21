@@ -10,6 +10,7 @@ android {
     namespace = "com.my.kizzy.data"
     defaultConfig {
         buildConfigFieldFromGradleProperty("BASE_URL", "BASE_URL")
+        buildConfigFieldFromGradleProperty("GAMES_API_URL", "GAMES_API_URL")
         buildConfigFieldFromGradleProperty("DISCORD_API_BASE_URL", "DISCORD_API_URL")
         buildConfigFieldFromGradleProperty("GITHUB_API_BASE_URL", "GITHUB_API_URL")
         buildConfigField("String", "IMGUR_API_BASE_URL", "\"https://api.imgur.com/3\"")

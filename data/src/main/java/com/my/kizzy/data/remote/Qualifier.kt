@@ -29,3 +29,7 @@ annotation class Github
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class Imgur
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class GamesApi

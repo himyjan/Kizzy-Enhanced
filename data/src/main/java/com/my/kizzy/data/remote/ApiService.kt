@@ -22,6 +22,7 @@ class ApiService @Inject constructor(
     private val client: HttpClient,
     @Base private val baseUrl: String,
     @Github private val githubBaseUrl: String,
+    @GamesApi private val gamesApiUrl: String,
 ) {
     suspend fun getImage(url: String) = runCatching {
         client.get {
@@ -51,7 +52,7 @@ class ApiService @Inject constructor(
 
     suspend fun getGames() = runCatching {
         client.get {
-            url("$baseUrl/games")
+            url(gamesApiUrl)
         }
     }
 

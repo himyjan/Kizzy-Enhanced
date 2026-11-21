@@ -15,6 +15,7 @@ package com.my.kizzy.data.di
 import com.my.kizzy.data.BuildConfig
 import com.my.kizzy.data.remote.Base
 import com.my.kizzy.data.remote.Discord
+import com.my.kizzy.data.remote.GamesApi
 import com.my.kizzy.data.remote.Github
 import com.my.kizzy.data.remote.Imgur
 import com.my.kizzy.data.repository.KizzyRepositoryImpl
@@ -42,6 +43,11 @@ object AppModule {
     @Singleton
     @Base
     fun provideBaseUrl(): String = BuildConfig.BASE_URL
+
+    @Provides
+    @Singleton
+    @GamesApi
+    fun provideGamesApiUrl(): String = BuildConfig.GAMES_API_URL
 
     @Provides
     @Singleton
