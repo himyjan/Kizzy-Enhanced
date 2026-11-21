@@ -840,6 +840,7 @@ class ManualRpc : Service() {
             commonRpc = commonRpc,
             enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true],
             status = manualStatus.takeIf { it.isNotEmpty() } ?: "online",
+            forceRefresh = true,
         )
 
         // Remember the presence for the RPC preview.

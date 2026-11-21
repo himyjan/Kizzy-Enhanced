@@ -1369,7 +1369,11 @@ class MediaRpcService : Service() {
             }
         }
 
-        kizzyRPC.updateRPC(commonRpc, enableTimestamps)
+        // forceRefresh = true: MediaRPC's own dedup above already determined the
+        // content changed (new track, new artwork, seek, etc.). Tell KizzyRPC to
+        // send it even if its hash-based dedup would otherwise drop it as
+        // "content unchanged" - that keeps the RPC from freezing on the old song.
+        kizzyRPC.updateRPC(commonRpc, enableTimestamps, forceRefresh = true)
         updateNotificationPauseButton()
     }
 
