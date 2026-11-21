@@ -25,9 +25,9 @@ If applicable, add screenshots to help explain your problem.
 
 
 **Please complete the following information:**
- - Device: [e.g. OnePlus 7]
- - OS: [e.g. android 12]
- - Kizzy Version [3.2]
+ - Device: [e.g. Samsung Tab s9 fe]
+ - OS: [e.g. android 17 OneUI 8.5]
+ - Kizzy Enhance Version [6.2]
 
 **Additional context**
 Add any other context about the problem here.
