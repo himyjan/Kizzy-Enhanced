@@ -29,11 +29,14 @@ import com.my.kizzy.preference.Prefs
 import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import jakarta.inject.Inject
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.io.File
 
 class KizzyRepositoryImpl @Inject constructor(
     private val api: ApiService,
     private val imgurApi: ImgurApiService,
+    private val json: Json,
 ) : KizzyRepository {
 
     override suspend fun getImage(url: String): String? {
@@ -54,8 +57,10 @@ class KizzyRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getGames(): List<Game> {
-        return api.getGames().getOrNull()?.body<List<GamesResponse>>()?.map { it.toGame() }
-            ?: emptyList()
+        return api.getGames().getOrNull()?.let { response ->
+            val body = response.bodyAsText()
+            json.decodeFromString<List<GamesResponse>>(body).map { it.toGame() }
+        } ?: emptyList()
     }
 
     override suspend fun getUser(userid: String): User {

@@ -618,12 +618,13 @@ private fun RpcTextFieldsColumn(
             // Do NOT overwrite the Custom RPC tab's Activity Platform field.
             // Console presets set consolePlatform (Console RPC tab) only.
             // The Custom RPC tab keeps its own Activity Platform setting.
-            largeImg = if (preset.coverArt) preset.largeCoverArtUrl else "",
-            smallImg = if (preset.coverArt) preset.smallCoverArtUrl else "",
-            button1 = "",
-            button1link = "",
-            button2 = "",
-            button2link = "",
+            largeImg = if (preset.coverArt) preset.largeCoverArtUrl else uiState.rpcConfig.largeImg,
+            smallImg = if (preset.coverArt) preset.smallCoverArtUrl else uiState.rpcConfig.smallImg,
+            // Preserve existing button values instead of clearing them
+            button1 = uiState.rpcConfig.button1,
+            button1link = uiState.rpcConfig.button1link,
+            button2 = uiState.rpcConfig.button2,
+            button2link = uiState.rpcConfig.button2link,
         )))
 
         persistConsoleSettings()
