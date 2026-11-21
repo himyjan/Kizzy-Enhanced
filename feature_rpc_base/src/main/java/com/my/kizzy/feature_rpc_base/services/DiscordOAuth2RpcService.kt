@@ -17,6 +17,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.my.kizzy.data.rpc.KizzyRPC
+import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.preference.Prefs
@@ -35,8 +36,10 @@ import kotlinx.coroutines.launch // <-- Added missing import for launch extensio
 @AndroidEntryPoint
 class DiscordOAuth2RpcService : Service() {
 
+    private var kizzyRPC: KizzyRPC? = null
+
     @Inject
-    lateinit var kizzyRPC: KizzyRPC
+    lateinit var multiRpc: MultiRpcManager
 
     @Inject
     lateinit var scope: CoroutineScope
@@ -51,6 +54,8 @@ class DiscordOAuth2RpcService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand")
+        // Wire OAuth2 RPC to slot "1" (default application token)
+        kizzyRPC = multiRpc.session("1")
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.DiscordOAuth2Rpc.name
 
         // Refresh the gateway token and identify properties from prefs.
@@ -58,7 +63,7 @@ class DiscordOAuth2RpcService : Service() {
         // Unlike build() which sends an empty presence, updateRPC() reuses the
         // existing presence object which may already contain user data.
         scope.launch {
-            kizzyRPC.refreshFromPrefs()
+            kizzyRPC?.refreshFromPrefs()
         }
 
         return Service.START_STICKY
@@ -69,7 +74,7 @@ class DiscordOAuth2RpcService : Service() {
         Log.d(TAG, "onDestroy")
         AppUtils.unregisterRpcService(this)
         if (!AppUtils.isAnotherRpcServiceActive(this)) {
-            kizzyRPC.closeRPC()
+            kizzyRPC?.closeRPC()
         }
     }
 

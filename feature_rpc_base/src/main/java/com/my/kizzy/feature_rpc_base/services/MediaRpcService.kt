@@ -26,6 +26,7 @@ import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.*
+import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.data.utils.toUrlString
 import com.my.kizzy.data.work.RpcRecoveryHiltWorker
 import com.my.kizzy.domain.interfaces.Logger
@@ -62,8 +63,10 @@ private val rpcButtonsJson = Json { ignoreUnknownKeys = true }
 @AndroidEntryPoint
 class MediaRpcService : Service() {
 
+    private var kizzyRPC: KizzyRPC? = null
+
     @Inject
-    lateinit var kizzyRPC: KizzyRPC
+    lateinit var multiRpc: MultiRpcManager
 
     @Inject
     lateinit var scope: CoroutineScope
@@ -339,7 +342,7 @@ class MediaRpcService : Service() {
                 // does not need 1-second precision, and the presence update is
                 // deduplicated anyway - only a real seek is sent to the gateway.
                 delay(3000)
-                if (!isPaused && kizzyRPC.isRpcRunning()) {
+                if (!isPaused && kizzyRPC?.isRpcRunning() == true) {
                     withWakeLock {
                         updatePresence()
                     }
@@ -437,7 +440,7 @@ class MediaRpcService : Service() {
                             val details = if (isGameApp) "Playing game" else if (isAiApp) "Chatting with AI" else null
                             val state = if (isGameApp) "In-game" else if (isAiApp) "Thinking..." else null
                             logger.d("MediaRPC", "App detection FOUND: ${runningApp.packageName} (label=$appLabel, isGame=$isGameApp, isAI=$isAiApp)")
-                            kizzyRPC.apply {
+                            kizzyRPC?.apply {
                                 setName(appLabel)
                                 setDetails(details)
                                 setState(state)
@@ -446,7 +449,7 @@ class MediaRpcService : Service() {
                                 setLargeImage(runningApp.largeImage)
                                 clearButtons()
                             }
-                            kizzyRPC.updateRPC(
+                            kizzyRPC?.updateRPC(
                                 CommonRpc(
                                     name = appLabel,
                                     type = ActivityTypeResolver.resolve(
@@ -465,11 +468,11 @@ class MediaRpcService : Service() {
                             )
                         } else if (currentPackageName != "") {
                             currentPackageName = ""
-                            scope.launch { kizzyRPC.clearPresence() }
+                            scope.launch { kizzyRPC?.clearPresence() }
                         }
                     } else if (runningApp.name.isEmpty() && currentPackageName != "") {
                         currentPackageName = ""
-                        scope.launch { kizzyRPC.clearPresence() }
+                        scope.launch { kizzyRPC?.clearPresence() }
                         logger.d("MediaRPC", "App detection: foreground app cleared")
                     }
                 } catch (e: CancellationException) {
@@ -926,7 +929,7 @@ class MediaRpcService : Service() {
                     val details = if (isGameApp) "Playing game" else if (isAiApp) "Chatting with AI" else null
                     val state = if (isGameApp) "In-game" else if (isAiApp) "Thinking..." else null
                     logger.d("MediaRPC", "App detection found while paused: ${runningApp.packageName} (label=$appLabel, isGame=$isGameApp, isAI=$isAiApp)")
-                    kizzyRPC.apply {
+                    kizzyRPC?.apply {
                         setName(appLabel)
                         setDetails(details)
                         setState(state)
@@ -935,7 +938,7 @@ class MediaRpcService : Service() {
                         setLargeImage(runningApp.largeImage)
                         clearButtons()
                     }
-                    kizzyRPC.updateRPC(
+                    kizzyRPC?.updateRPC(
                         CommonRpc(
                             name = appLabel,
                             type = ActivityTypeResolver.resolve(
@@ -972,7 +975,7 @@ class MediaRpcService : Service() {
                         val details = if (isGameApp) "Playing game" else if (isAiApp) "Chatting with AI" else null
                         val state = if (isGameApp) "In-game" else if (isAiApp) "Thinking..." else null
                         logger.d("MediaRPC", "Sending app RPC for: ${runningApp.packageName} (label=$appLabel, isGame=$isGameApp, isAI=$isAiApp)")
-                        kizzyRPC.apply {
+                        kizzyRPC?.apply {
                             setName(appLabel)
                             setDetails(details)
                             setState(state)
@@ -981,7 +984,7 @@ class MediaRpcService : Service() {
                             setLargeImage(runningApp.largeImage)
                             clearButtons()
                         }
-                        kizzyRPC.updateRPC(
+                        kizzyRPC?.updateRPC(
                             CommonRpc(
                                 name = appLabel,
                                 type = ActivityTypeResolver.resolve(
@@ -1018,7 +1021,7 @@ class MediaRpcService : Service() {
                 stateRepository.setConnected(false)
                 stateRepository.clearTrackInfo()
                 stopTimelineUpdates()
-                scope.launch { kizzyRPC.clearPresence() }
+                scope.launch { kizzyRPC?.clearPresence() }
                 Trace.endSection()
                 return
             }
@@ -1188,7 +1191,7 @@ class MediaRpcService : Service() {
             stateRepository.setConnected(false)
             stateRepository.clearTrackInfo()
             stopTimelineUpdates()
-            kizzyRPC.clearPresence()
+            kizzyRPC?.clearPresence()
             return
         }
 
@@ -1301,7 +1304,7 @@ class MediaRpcService : Service() {
         // The buttons are cleared on every update. Without that the buttons of a
         // previous track (or of a setting that has been switched off) would stay
         // on the profile.
-        kizzyRPC.clearButtons()
+        kizzyRPC?.clearButtons()
         if (mediaButtonEnabled) {
             // Prefer the URL already resolved by GetCurrentlyPlayingMedia,
             // then the direct resolver, then a plain metadata search.
@@ -1323,7 +1326,7 @@ class MediaRpcService : Service() {
                 )
             val url = candidateUrl?.let { YouTubeResolver.toRpcUrl(it) ?: it }
             if (url != null) {
-                kizzyRPC.setButton1(
+                kizzyRPC?.setButton1(
                     MediaServiceResolver.mediaLinkLabel(
                         url,
                         playingMedia.appPackage,
@@ -1340,7 +1343,7 @@ class MediaRpcService : Service() {
                 // made here and not inside the listener callback.
                 val artistUrl = MetadataResolver.getArtistUrl(metadata, playingMedia.appPackage)
                 artistUrl?.let { url ->
-                    kizzyRPC.setButton2(
+                    kizzyRPC?.setButton2(
                         MediaServiceResolver.artistButtonLabel(playingMedia.appPackage),
                         url,
                     )
@@ -1359,12 +1362,12 @@ class MediaRpcService : Service() {
                 )
             }.getOrNull()
             if (saved != null) {
-                kizzyRPC.clearButtons()
+                kizzyRPC?.clearButtons()
                 if (saved.button1.isNotBlank() && saved.button1Url.isNotBlank()) {
-                    kizzyRPC.setButton1(saved.button1, saved.button1Url)
+                    kizzyRPC?.setButton1(saved.button1, saved.button1Url)
                 }
                 if (saved.button2.isNotBlank() && saved.button2Url.isNotBlank()) {
-                    kizzyRPC.setButton2(saved.button2, saved.button2Url)
+                    kizzyRPC?.setButton2(saved.button2, saved.button2Url)
                 }
             }
         }
@@ -1375,7 +1378,7 @@ class MediaRpcService : Service() {
         // "content unchanged" - that keeps the RPC from freezing on the old song.
         // Priority 3 (Media): user-configured Custom/Manual RPC (priority 1/2)
         // takes precedence over automatic Media RPC.
-        kizzyRPC.updateRPC(commonRpc, enableTimestamps, forceRefresh = true, priority = 3)
+        kizzyRPC?.updateRPC(commonRpc, enableTimestamps, forceRefresh = true, priority = 3)
         updateNotificationPauseButton()
     }
 
@@ -1686,6 +1689,10 @@ class MediaRpcService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Wire Media RPC to slot "1" (default token). If no token is configured,
+        // kizzyRPC stays null and no presence is sent.
+        kizzyRPC = multiRpc.session("1")
+
         val ac = intent?.action
         when (ac) {
             Constants.ACTION_STOP_SERVICE -> {
@@ -1717,7 +1724,7 @@ class MediaRpcService : Service() {
                     scope.launch { updatePresence() }
                 } else {
                     stopTimelineUpdates()
-                    scope.launch { kizzyRPC.clearPresence() }
+                    scope.launch { kizzyRPC?.clearPresence() }
                     stateRepository.setConnected(false)
                 }
             }
@@ -1807,7 +1814,7 @@ class MediaRpcService : Service() {
         // RPC service is still using it.
         AppUtils.unregisterRpcService(this)
         if (!AppUtils.isAnotherRpcServiceActive(this)) {
-            kizzyRPC.closeRPC()
+            kizzyRPC?.closeRPC()
         }
         stateRepository.setConnected(false)
         stateRepository.setPaused(false)

@@ -399,6 +399,17 @@ object Prefs {
     const val DISCORD_OAUTH2_USER_ID = "discord_oauth_user_id"
     const val DISCORD_OAUTH2_USERNAME = "discord_oauth_username"
 
+    // --- Multi-session RPC: up to 3 independent Discord application connections ---
+    // Each session has its own application ID + OAuth2 token and its own gateway
+    // WebSocket connection, so all enabled sessions send presence simultaneously
+    // (Discord shows one activity per application ID).
+    const val DISCORD_OAUTH2_ACCESS_TOKEN_2 = "discord_oauth_access_token_2"
+    const val DISCORD_OAUTH2_ACCESS_TOKEN_3 = "discord_oauth_access_token_3"
+    const val DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2 = "discord_oauth2_client_id_2"
+    const val DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3 = "discord_oauth2_client_id_3"
+    const val RPC_SESSION_2_ENABLED = "rpc_session_2_enabled"
+    const val RPC_SESSION_3_ENABLED = "rpc_session_3_enabled"
+
     // Last.fm scrobbling settings
     const val LASTFM_API_KEY = "lastfm_api_key"
     const val LASTFM_SECRET = "lastfm_secret"

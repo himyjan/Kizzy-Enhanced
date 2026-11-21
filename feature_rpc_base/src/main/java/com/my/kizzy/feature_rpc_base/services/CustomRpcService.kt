@@ -23,9 +23,12 @@ import android.os.PowerManager.WakeLock
 import android.graphics.drawable.Icon
 import android.util.Log
 import com.my.kizzy.data.get_current_data.app.GetForegroundPackage
+import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.rpc.ActiveGameTracker
 import com.my.kizzy.data.rpc.ConsoleAppRegistry
 import com.my.kizzy.data.rpc.ConsoleGameCatalog
+import com.my.kizzy.data.rpc.KizzyRPC
+import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
@@ -45,8 +48,10 @@ class CustomRpcService : Service() {
     private var rpcData: RpcConfig? = null
     private var wakeLock: WakeLock? = null
 
+    private var kizzyRPC: com.my.kizzy.data.rpc.KizzyRPC? = null
+
     @Inject
-    lateinit var kizzyRPC: com.my.kizzy.data.rpc.KizzyRPC
+    lateinit var multiRpc: MultiRpcManager
 
     @Inject
     lateinit var foregroundPackage: GetForegroundPackage
@@ -74,6 +79,9 @@ class CustomRpcService : Service() {
     @SuppressLint("WakelockTimeout")
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Wire Custom RPC to slot "2" (second application ID + token)
+        kizzyRPC = multiRpc.session("2")
+
         intent?.let { readConsoleMode(it) }
 
         if (intent?.action == Constants.ACTION_STOP_SERVICE) {
@@ -323,7 +331,7 @@ class CustomRpcService : Service() {
             }
 
             rpcDataToUse.let {
-                kizzyRPC.apply {
+                kizzyRPC?.apply {
                     setName(it.name.ifEmpty { "" })
                     setDetails(it.details.ifEmpty { null })
                     setState(it.state.ifEmpty { null })
@@ -352,9 +360,9 @@ class CustomRpcService : Service() {
                         it.smallText
                     )
                     setStreamUrl(it.url.ifEmpty { null })
-                    Log.d("CustomRpcService", "Calling kizzyRPC.build(forceRefresh=$forceRefresh, priority=2)")
+                    Log.d("CustomRpcService", "Calling kizzyRPC?.build(forceRefresh=$forceRefresh, priority=2)")
                     build(forceRefresh = forceRefresh, priority = 2) // Custom/Console RPC: user-configured, priority 2
-                    Log.d("CustomRpcService", "kizzyRPC.build() completed")
+                    Log.d("CustomRpcService", "kizzyRPC?.build() completed")
                 }
             }
         }
@@ -370,7 +378,7 @@ class CustomRpcService : Service() {
         // sent its presence, leaving Discord with an empty activity list.
         AppUtils.unregisterRpcService(this)
         if (!AppUtils.isAnotherRpcServiceActive(this)) {
-            kizzyRPC.closeRPC()
+            kizzyRPC?.closeRPC()
         }
         scope.cancel()
         wakeLock?.let {

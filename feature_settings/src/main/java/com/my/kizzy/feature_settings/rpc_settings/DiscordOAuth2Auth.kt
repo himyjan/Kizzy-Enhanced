@@ -55,6 +55,8 @@ class DiscordOAuth2Auth(
         private const val REDIRECT_SCHEME = "kizzy"
 
         private const val DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID = "1571063796418744412"
+        private const val DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2 = "1573725984845201438"
+        private const val DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3 = "1573728208854065293"
     }
 
     data class DiscordOAuth2Result(
@@ -80,14 +82,19 @@ class DiscordOAuth2Auth(
     private var pendingAuth: PendingAuth? = null
 
     private data class PendingAuth(
+        val slot: String,
         val clientId: String,
         val redirectUri: String,
         val pkce: PkcePair,
         val state: String
     )
 
-    suspend fun authorize(activity: Activity): DiscordOAuth2Result {
-        val clientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID]
+    suspend fun authorize(activity: Activity, slot: String = "1"): DiscordOAuth2Result {
+        val clientId = when (slot) {
+            "2" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2 }
+            "3" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3 }
+            else -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID }
+        }
         if (clientId.isBlank()) {
             throw DiscordOAuth2Exception.InvalidClientId()
         }
@@ -104,7 +111,7 @@ class DiscordOAuth2Auth(
             )
             val authUri = authUrl.toUri()
 
-            pendingAuth = PendingAuth(clientId, REDIRECT_URI, pkce, state)
+            pendingAuth = PendingAuth(slot, clientId, REDIRECT_URI, pkce, state)
 
             val browserPackage = CustomTabsClient.getPackageName(activity, null)
             val launcher = authTabLauncher
@@ -213,7 +220,8 @@ class DiscordOAuth2Auth(
                             code = code,
                             verifier = auth.pkce.verifier,
                             redirectUri = auth.redirectUri,
-                            clientId = auth.clientId
+                            clientId = auth.clientId,
+                            slot = auth.slot
                         )
                         if (cont.isActive) {
                             cont.resume(result)
@@ -254,6 +262,7 @@ class DiscordOAuth2Auth(
         verifier: String,
         redirectUri: String,
         clientId: String,
+        slot: String = "1"
     ): DiscordOAuth2Result {
         val params = mapOf(
             "client_id" to clientId,
@@ -262,20 +271,24 @@ class DiscordOAuth2Auth(
             "redirect_uri" to redirectUri,
             "code_verifier" to verifier
         )
-        return performTokenExchange(params)
+        return performTokenExchange(params, slot)
     }
 
-    suspend fun refresh(refreshToken: String): DiscordOAuth2Result {
-        val clientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID]
+    suspend fun refresh(refreshToken: String, slot: String = "1"): DiscordOAuth2Result {
+        val clientId = when (slot) {
+            "2" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2 }
+            "3" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3 }
+            else -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID }
+        }
         val params = mapOf(
             "client_id" to clientId,
             "grant_type" to "refresh_token",
             "refresh_token" to refreshToken
         )
-        return performTokenExchange(params)
+        return performTokenExchange(params, slot)
     }
 
-    private suspend fun performTokenExchange(params: Map<String, String>): DiscordOAuth2Result {
+    private suspend fun performTokenExchange(params: Map<String, String>, slot: String = "1"): DiscordOAuth2Result {
         return withContext(Dispatchers.IO) {
             HttpClient(OkHttp) {
                 install(HttpTimeout) {
@@ -304,13 +317,25 @@ class DiscordOAuth2Auth(
                     val expiresIn = json.optLong("expires_in", 0L)
                     val scope = json.optString("scope", DISCORD_SCOPES)
 
-                    Log.d(TAG, "token exchange: success")
+                    Log.d(TAG, "token exchange: success for slot $slot")
 
-                    Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
-                    if (refreshToken.isNotEmpty()) {
-                        Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
+                    when (slot) {
+                        "2" -> {
+                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2] = accessToken
+                            Prefs[Prefs.RPC_SESSION_2_ENABLED] = true
+                        }
+                        "3" -> {
+                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3] = accessToken
+                            Prefs[Prefs.RPC_SESSION_3_ENABLED] = true
+                        }
+                        else -> {
+                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
+                            if (refreshToken.isNotEmpty()) {
+                                Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
+                            }
+                            Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
+                        }
                     }
-                    Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
 
                     DiscordOAuth2Result(
                         accessToken = accessToken,
@@ -375,26 +400,35 @@ class DiscordOAuth2Auth(
         )
     }
 
-    fun hasValidToken(): Boolean {
-        val token = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
-        return token.isNotEmpty() && !isTokenExpired()
+    fun hasValidToken(slot: String = "1"): Boolean {
+        val token = when (slot) {
+            "2" -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2, ""]
+            "3" -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3, ""]
+            else -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+        }
+        return token.isNotEmpty() && !isTokenExpired(slot)
     }
 
-    fun isTokenExpired(): Boolean {
+    fun isTokenExpired(slot: String = "1"): Boolean {
+        if (slot != "1") return false
         val expiresAt = Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT, 0L]
         return expiresAt > 0L && System.currentTimeMillis() >= expiresAt
     }
 
-    suspend fun getValidAccessToken(): String? {
-        val token = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+    suspend fun getValidAccessToken(slot: String = "1"): String? {
+        val token = when (slot) {
+            "2" -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2, ""]
+            "3" -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3, ""]
+            else -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+        }
         if (token.isEmpty()) return null
-        if (!isTokenExpired()) return token
+        if (!isTokenExpired(slot)) return token
         val refreshToken = Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN, ""]
         if (refreshToken.isEmpty()) return token
         try {
-            val refreshed = refresh(refreshToken)
+            val refreshed = refresh(refreshToken, slot)
             return refreshed.accessToken
-        } catch (e: DiscordOAuth2Exception) {
+        } catch (e: Exception) {
             Log.w(TAG, "getValidAccessToken: refresh failed", e)
             return token
         }

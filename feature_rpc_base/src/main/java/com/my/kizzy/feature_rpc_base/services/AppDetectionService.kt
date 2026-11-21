@@ -30,6 +30,7 @@ import android.os.IBinder
 import android.util.Log
 
 import com.my.kizzy.data.rpc.*
+import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.AppUtils
@@ -48,8 +49,10 @@ import kotlin.time.Duration.Companion.milliseconds
 @SuppressLint("MissingPermission")
 class AppDetectionService : Service() {
 
+    private var kizzyRPC: KizzyRPC? = null
+
     @Inject
-    lateinit var kizzyRPC: KizzyRPC
+    lateinit var multiRpc: MultiRpcManager
 
     @Inject
     lateinit var scope: CoroutineScope
@@ -76,6 +79,9 @@ class AppDetectionService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Wire App Detection to slot "4"
+        kizzyRPC = multiRpc.session("4")
+
         when (intent?.action) {
             Constants.ACTION_STOP_SERVICE -> {
                 // Explicit stop: the next cold start must not bring it back.
@@ -100,7 +106,7 @@ class AppDetectionService : Service() {
         // RPC service is still using it.
         AppUtils.unregisterRpcService(this)
         if (!AppUtils.isAnotherRpcServiceActive(this)) {
-            kizzyRPC.closeRPC()
+            kizzyRPC?.closeRPC()
         }
         super.onDestroy()
     }
@@ -294,7 +300,7 @@ class AppDetectionService : Service() {
         // "not connected yet" path. Previously the update path silently dropped the
         // buttons and the status, so the presence changed depending on whether the
         // gateway happened to be connected already.
-        kizzyRPC.apply {
+        kizzyRPC?.apply {
             setName(appLabel)
             setDetails(details)
             setState(state)
@@ -316,7 +322,7 @@ class AppDetectionService : Service() {
         // internally. Previously we skipped sending when isRpcRunning() was false,
         // which meant the presence was never sent if the WebSocket hadn't connected
         // yet when the app first came to the foreground.
-        kizzyRPC.updateRPC(
+        kizzyRPC?.updateRPC(
             CommonRpc(
                 name = appLabel,
                 type = ActivityTypeResolver.resolve(
@@ -344,11 +350,11 @@ class AppDetectionService : Service() {
     }
 
     private suspend fun handleDisabledPackage() {
-        if (kizzyRPC.isRpcRunning()) {
+        if (kizzyRPC?.isRpcRunning() == true) {
             // Clear the activity instead of tearing down the gateway connection. Closing it
             // meant the next app switch had to reconnect from scratch, and the reconnect
             // could fail, leaving Discord stuck showing the previous app.
-            kizzyRPC.clearPresence()
+            kizzyRPC?.clearPresence()
         }
         notificationManager.notify(Constants.NOTIFICATION_ID, createDefaultNotification())
     }

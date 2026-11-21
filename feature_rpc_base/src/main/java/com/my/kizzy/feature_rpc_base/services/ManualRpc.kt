@@ -31,6 +31,7 @@ import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMediaAll
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.*
+import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcConfig
@@ -56,8 +57,10 @@ class ManualRpc : Service() {
     @Inject
     lateinit var scope: CoroutineScope
 
+    private var kizzyRPC: KizzyRPC? = null
+
     @Inject
-    lateinit var kizzyRPC: KizzyRPC
+    lateinit var multiRpc: MultiRpcManager
 
     @Inject
     lateinit var getCurrentPlayingMediaAll: GetCurrentPlayingMediaAll
@@ -250,6 +253,9 @@ class ManualRpc : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Wire Manual RPC to slot "3" (third application ID + token)
+        kizzyRPC = multiRpc.session("3")
+
         if (intent?.action.equals(Constants.ACTION_STOP_SERVICE)) {
             // Explicit stop: the next cold start must not bring it back.
             Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
@@ -395,7 +401,7 @@ class ManualRpc : Service() {
         // can deliver presence. Without connect(), the socket is never opened and every
         // presence update times out with "Socket not connected within timeout".
         scope.launch {
-            kizzyRPC.build(priority = 1) // Manual RPC: highest priority
+            kizzyRPC?.build(priority = 1) // Manual RPC: highest priority
         }
 
         return super.onStartCommand(intent, flags, startId)
@@ -474,7 +480,7 @@ class ManualRpc : Service() {
         if (richMediaInfo == null && appInfo == null) {
             if (lastHadPresence) {
                 logger.d(TAG, "No media data available - clearing Discord presence")
-                scope.launch { kizzyRPC.clearPresence() }
+                scope.launch { kizzyRPC?.clearPresence() }
             }
             return
         }
@@ -501,10 +507,10 @@ class ManualRpc : Service() {
         ) {
             if (useAppsRpc) {
                 startAppDetectionCoroutine()
-            } else if (kizzyRPC.isRpcRunning()) {
+            } else if (kizzyRPC?.isRpcRunning() == true) {
                 // Clear the activity but keep the gateway connection alive, so playback can
                 // resume instantly instead of having to reconnect from scratch.
-                kizzyRPC.clearPresence()
+                kizzyRPC?.clearPresence()
                 val stopIntent = Intent(this, ManualRpc::class.java)
                 stopIntent.action = Constants.ACTION_STOP_SERVICE
                 val stopPendingIntent = PendingIntent.getService(
@@ -652,10 +658,10 @@ class ManualRpc : Service() {
 
         if (rpcDataIsEmpty) {
             logger.d(TAG, "Calculated RPC data is empty, clearing presence.")
-            if (kizzyRPC.isRpcRunning()) {
+            if (kizzyRPC?.isRpcRunning() == true) {
                 // Clear the activity but keep the connection, so the next track shows up
                 // immediately.
-                kizzyRPC.clearPresence()
+                kizzyRPC?.clearPresence()
                 val stopIntent = Intent(this, ManualRpc::class.java)
                 stopIntent.action = Constants.ACTION_STOP_SERVICE
                 val stopPendingIntent = PendingIntent.getService(
@@ -787,17 +793,17 @@ class ManualRpc : Service() {
         // Apply the buttons and the custom application id that the user configured in the
         // Manual RPC screen. They were stored in the preferences but never actually
         // applied to the presence.
-        kizzyRPC.clearButtons()
+        kizzyRPC?.clearButtons()
         if (Prefs[Prefs.MANUAL_RPC_USE_BUTTONS, false]) {
             val button1Text = Prefs[Prefs.MANUAL_RPC_BUTTON1_TEXT, ""]
             val button1Url = Prefs[Prefs.MANUAL_RPC_BUTTON1_URL, ""]
             val button2Text = Prefs[Prefs.MANUAL_RPC_BUTTON2_TEXT, ""]
             val button2Url = Prefs[Prefs.MANUAL_RPC_BUTTON2_URL, ""]
             if (button1Text.isNotEmpty() && button1Url.isNotEmpty()) {
-                kizzyRPC.setButton1(button1Text, button1Url)
+                kizzyRPC?.setButton1(button1Text, button1Url)
             }
             if (button2Text.isNotEmpty() && button2Url.isNotEmpty()) {
-                kizzyRPC.setButton2(button2Text, button2Url)
+                kizzyRPC?.setButton2(button2Text, button2Url)
             }
         } else {
             // The Manual RPC did not have any link at all when the user did
@@ -813,7 +819,7 @@ class ManualRpc : Service() {
                 finalName.takeIf { !it.isNullOrBlank() } ?: finalDetails,
             )
             mediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
-                kizzyRPC.setButton1(
+                kizzyRPC?.setButton1(
                     MediaServiceResolver.mediaLinkLabel(
                         url,
                         effectivePackageName,
@@ -824,7 +830,7 @@ class ManualRpc : Service() {
             }
             rawMediaMetadata?.let { metadata ->
                 MetadataResolver.getArtistUrl(metadata, richMediaInfo?.packageName)?.let { url ->
-                    kizzyRPC.setButton2(
+                    kizzyRPC?.setButton2(
                         MediaServiceResolver.artistButtonLabel(effectivePackageName),
                         url,
                     )
@@ -832,11 +838,11 @@ class ManualRpc : Service() {
             }
         }
         if (Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false]) {
-            kizzyRPC.setApplicationId(Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""])
+            kizzyRPC?.setApplicationId(Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""])
         }
-        kizzyRPC.setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
+        kizzyRPC?.setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
 
-        kizzyRPC.updateRPC(
+        kizzyRPC?.updateRPC(
             commonRpc = commonRpc,
             enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true],
             status = manualStatus.takeIf { it.isNotEmpty() } ?: "online",
@@ -848,7 +854,8 @@ class ManualRpc : Service() {
         // The image urls are the ones that were actually resolved (and uploaded) for the
         // presence above. Without them the preview of the Manual RPC had no cover
         // art, even though Discord showed it.
-        val (resolvedLargeImage, resolvedSmallImage) = kizzyRPC.currentImageUrls()
+        val (resolvedLargeImage, resolvedSmallImage) = kizzyRPC?.currentImageUrls()
+            ?: (null to null)
         val rpcConfig = RpcConfig(
             name = finalName.orEmpty(),
             details = finalDetails.orEmpty(),
@@ -864,10 +871,10 @@ class ManualRpc : Service() {
             smallUrl = commonRpc.smallUrl.orEmpty(),
             largeImg = resolvedLargeImage.orEmpty(),
             smallImg = resolvedSmallImage.orEmpty(),
-            button1 = kizzyRPC.currentButtons()?.getOrNull(0)?.label.orEmpty(),
-            button1link = kizzyRPC.currentButtons()?.getOrNull(0)?.url.orEmpty(),
-            button2 = kizzyRPC.currentButtons()?.getOrNull(1)?.label.orEmpty(),
-            button2link = kizzyRPC.currentButtons()?.getOrNull(1)?.url.orEmpty(),
+            button1 = kizzyRPC?.currentButtons()?.getOrNull(0)?.label.orEmpty(),
+            button1link = kizzyRPC?.currentButtons()?.getOrNull(0)?.url.orEmpty(),
+            button2 = kizzyRPC?.currentButtons()?.getOrNull(1)?.label.orEmpty(),
+            button2link = kizzyRPC?.currentButtons()?.getOrNull(1)?.url.orEmpty(),
             // Advanced settings from Manual RPC UI
             status = manualStatus.takeIf { it.isNotEmpty() } ?: "online",
             url = manualStreamUrl.takeIf { it.isNotEmpty() } ?: "",
@@ -1111,7 +1118,7 @@ class ManualRpc : Service() {
         // RPC service is still using it.
         AppUtils.unregisterRpcService(this)
         if (!AppUtils.isAnotherRpcServiceActive(this)) {
-            kizzyRPC.closeRPC()
+            kizzyRPC?.closeRPC()
         }
         // Schedule RPC recovery via WorkManager so presence can be restored after
         // aggressive task removal or process termination by the system.

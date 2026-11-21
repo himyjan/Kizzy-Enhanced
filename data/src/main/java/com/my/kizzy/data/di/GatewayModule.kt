@@ -14,6 +14,7 @@ package com.my.kizzy.data.di
 
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.data.rpc.KizzyRPC
+import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
 import com.my.kizzy.preference.Prefs
@@ -66,4 +67,13 @@ object GatewayModule {
         discordWebSocket: DiscordWebSocket,
         logger: Logger
     ) = KizzyRPC(Prefs[Prefs.TOKEN, ""], kizzyRepository, discordWebSocket, logger)
+
+    @Provides
+    @Singleton
+    fun provideMultiRpcManager(
+        kizzyRepository: KizzyRepository,
+        logger: Logger
+    ) = MultiRpcManager(kizzyRepository, logger).also {
+        it.loadSessionsFromPrefs()
+    }
 }
