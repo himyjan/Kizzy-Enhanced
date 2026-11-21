@@ -1,7 +1,7 @@
 ## 📋 Changelog
 
 ### ✨ Features
-_None_
+- **rpc**: multi-application OAuth2 — authenticate up to 3 Discord application IDs independently (slots 1, 2, 3) and open 3 parallel gateway WebSocket sessions simultaneously (each slot shows its own Rich Presence on Discord)
 
 ### 🐛 Bug Fixes
 - **workflow**:  restore release note details deleted in chore simplify workflow (5bda9d7d)
