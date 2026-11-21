@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.utils.getInstalledApps
+import com.my.kizzy.domain.use_case.upload_galleryImage.UploadGalleryImageUseCase
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.services.ManualRpc
@@ -30,10 +31,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 
 @HiltViewModel
 class ManualRpcViewmodel @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val uploadGalleryImageUseCase: UploadGalleryImageUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         UiState(
@@ -63,6 +66,8 @@ class ManualRpcViewmodel @Inject constructor(
             customTimestampEnd = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_END, ""],
             showSongAsTitle = Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE, false],
             showAppNameInDetails = Prefs[Prefs.MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS, false],
+            showChannelIcon = Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON, false],
+            useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, false],
             titleSource = Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE, "title"],
 
             // Advanced settings
@@ -364,6 +369,18 @@ class ManualRpcViewmodel @Inject constructor(
                     restartServiceIfRunning()
                 }
 
+                is UiEvent.ToggleShowChannelIcon -> {
+                    Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON] = event.enabled
+                    _uiState.update { it.copy(showChannelIcon = event.enabled) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.ToggleUseAppsRpc -> {
+                    Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC] = event.enabled
+                    _uiState.update { it.copy(useAppsRpc = event.enabled) }
+                    restartServiceIfRunning()
+                }
+
                 is UiEvent.SetTitleSource -> {
                     Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE] = event.value
                     _uiState.update { it.copy(titleSource = event.value, titleSourceExpanded = false) }
@@ -405,6 +422,16 @@ class ManualRpcViewmodel @Inject constructor(
                     Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE] = event.value
                     _uiState.update { it.copy(smallImage = event.value) }
                     restartServiceIfRunning()
+                }
+
+                is UiEvent.UploadImage -> {
+                    viewModelScope.launch {
+                        val result = uploadGalleryImageUseCase(event.file)
+                        result?.let { uploadedUrl ->
+                            _uiState.update { it.copy(largeImage = uploadedUrl) }
+                            event.callback(uploadedUrl)
+                        }
+                    }
                 }
 
                 is UiEvent.SetLargeText -> {

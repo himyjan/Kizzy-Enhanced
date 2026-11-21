@@ -47,6 +47,8 @@ sealed interface UiEvent {
     data class SetCustomTimestampEnd(val value: String) : UiEvent
     data class ToggleShowSongAsTitle(val enabled: Boolean) : UiEvent
     data class ToggleShowAppNameInDetails(val enabled: Boolean) : UiEvent
+    data class ToggleShowChannelIcon(val enabled: Boolean) : UiEvent
+    data class ToggleUseAppsRpc(val enabled: Boolean) : UiEvent
     data class SetTitleSource(val value: String) : UiEvent
     object TriggerTitleSourceDropDown : UiEvent
 
@@ -62,4 +64,5 @@ sealed interface UiEvent {
     data class SetStreamUrl(val value: String) : UiEvent
     data class SetPartyCurrentSize(val value: String) : UiEvent
     data class SetPartyMaxSize(val value: String) : UiEvent
+    data class UploadImage(val file: java.io.File, val callback: (String) -> Unit) : UiEvent
 }

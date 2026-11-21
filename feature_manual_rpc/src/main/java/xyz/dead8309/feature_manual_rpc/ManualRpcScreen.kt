@@ -52,6 +52,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.lazy.LazyColumn
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Gamepad
 
 import androidx.compose.material.icons.filled.AppsOutage
 
@@ -78,6 +80,16 @@ import androidx.compose.material.icons.outlined.Audiotrack
 import androidx.compose.material.icons.outlined.Image
 
 import androidx.compose.material.icons.outlined.Info
+
+import androidx.compose.foundation.shape.RoundedCornerShape
+
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+
+import androidx.compose.material.icons.outlined.BrokenImage
+
+import coil3.compose.AsyncImage
+
+
 
 import androidx.compose.material.icons.outlined.Title
 
@@ -261,7 +273,6 @@ fun ManualRpcScreen(
         canScroll = { true }
 
     )
-
 
 
     Scaffold(
@@ -625,7 +636,53 @@ fun ManualRpcScreen(
 
                 }
 
-                // 5. Enable timestamps
+                // 5. Show channel icon
+                item {
+
+                    PreferenceSwitch(
+
+                        title = stringResource(R.string.show_channel_icon),
+
+                        description = stringResource(R.string.show_channel_icon_desc),
+
+                        isChecked = state.showChannelIcon,
+
+                        onClick = {
+
+                            onEvent(UiEvent.ToggleShowChannelIcon(!state.showChannelIcon))
+
+                        },
+
+                        icon = Icons.Outlined.AccountCircle,
+
+                    )
+
+                }
+
+                // 6. Show apps & games
+                item {
+
+                    PreferenceSwitch(
+
+                        title = stringResource(R.string.media_rpc_use_apps_rpc),
+
+                        description = stringResource(R.string.media_rpc_use_apps_rpc_desc),
+
+                        icon = Icons.Outlined.Gamepad,
+
+                        isChecked = state.useAppsRpc,
+
+                        onClick = {
+
+                            onEvent(UiEvent.ToggleUseAppsRpc(!state.useAppsRpc))
+
+                        },
+
+                    )
+
+                }
+
+                // 7. Enable timestamps
                 item {
 
                     PreferenceSwitch(
