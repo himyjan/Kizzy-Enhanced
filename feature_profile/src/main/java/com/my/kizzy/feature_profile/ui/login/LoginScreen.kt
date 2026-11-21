@@ -1,33 +1,43 @@
 /*
  *
- *  *****************************************************************
+ *  ******************************************************************
  *  *  * Copyright (C) 2022
  *  *  * LoginScreen.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
+ *  *  * permission of yzziK(Vaizhav)
+ *  *  ******************************************************************
  *
  *
  */
 
 package com.my.kizzy.feature_profile.ui.login
 
+import android.app.Activity
+import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.my.kizzy.feature_profile.fetchUserInfo
-import com.my.kizzy.feature_profile.ui.component.DiscordAuthView
-import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
+import com.my.kizzy.feature_settings.rpc_settings.DiscordOAuth2Auth
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.ui.components.BackButton
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -38,23 +48,22 @@ fun LoginScreen(
     onCompleted: () -> Unit,
     onBackPressed: () -> Unit
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val discordAuth = remember { DiscordOAuth2Auth(context, scope) }
+
     // Check if user is already logged in before showing anything
     val prefsState by remember { Prefs.prefsState }.collectAsState()
     val token = prefsState[Prefs.TOKEN] as? String ?: ""
-    
+
     // If user is already logged in, navigate back immediately
     if (token.isNotEmpty()) {
         onCompleted()
-        return
+        return@LoginScreen
     }
-    
-    var showWebView by remember { mutableStateOf(true) }
-    var isSaving by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(showWebView) {
-        if (showWebView) delay(100)
-    }
+    var isAuthorizing by remember { mutableStateOf(false) }
+    var oauth2Error by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -63,11 +72,7 @@ fun LoginScreen(
                 title = { },
                 navigationIcon = {
                     BackButton {
-                        if (showWebView) {
-                            showWebView = false
-                        } else {
-                            onBackPressed()
-                        }
+                        onBackPressed()
                     }
                 }
             )
@@ -79,33 +84,83 @@ fun LoginScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            if (showWebView) {
-                DiscordAuthView(
-                    onLoginCompleted = { token ->
-                        // Save the account token, then fetch the user ID from
-                        // Discord's REST API immediately so the setup screen
-                        // shows the Discord ID instead of just "Logged in".
-                        Prefs[Prefs.TOKEN] = token
-                        showWebView = false
-                        isSaving = true
-                        scope.launch {
-                            // Fetch user ID via REST API right away (doesn't
-                            // depend on gateway READY). Fall back to gateway
-                            // READY fetch below if this fails.
-                            fetchDiscordUserId(token)?.let { userId ->
-                                Prefs[Prefs.USER_ID] = userId
-                            }
-                            fetchUserInfo(token)
-                            isSaving = false
-                            onCompleted()
-                        }
+            if (oauth2Error.isNotEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "OAuth2 Error",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = oauth2Error,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TextButton(onClick = { oauth2Error = "" }) {
+                        Text(text = "Retry")
                     }
-                )
+                }
             } else {
-                DiscordLoginButton(
-                    onClick = { showWebView = true },
-                    enabled = !isSaving
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Discord Login",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = if (isAuthorizing) "Authorizing..." else "Login with Discord",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .clickable {
+                                oauth2Error = ""
+                                isAuthorizing = true
+                                scope.launch {
+                                    try {
+                                        // Safely get Activity from context
+                                        val activity = context as? Activity
+                                            ?: throw DiscordOAuth2Auth.DiscordOAuth2Exception.NoBrowser()
+
+                                        val result = discordAuth.authorize(activity)
+
+                                        // Save OAuth2 access token as the gateway token
+                                        Prefs[Prefs.TOKEN] = result.accessToken
+                                        Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = result.accessToken
+                                        if (result.refreshToken.isNotEmpty()) {
+                                            Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = result.refreshToken
+                                        }
+                                        if (result.expiresInSec > 0) {
+                                            Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] =
+                                                System.currentTimeMillis() + result.expiresInSec * 1000
+                                        }
+
+                                        // Fetch user ID via REST API right away
+                                        fetchDiscordUserId(result.accessToken)?.let { userId ->
+                                            Prefs[Prefs.USER_ID] = userId
+                                        }
+                                        fetchUserInfo(result.accessToken)
+
+                                        isAuthorizing = false
+                                        onCompleted()
+                                    } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
+                                        isAuthorizing = false
+                                        oauth2Error = e.message ?: "Authorization failed"
+                                    } catch (e: Exception) {
+                                        isAuthorizing = false
+                                        oauth2Error = "Unexpected error: ${e.message}"
+                                    }
+                                }
+                            }
+                    )
+                }
             }
         }
     }
