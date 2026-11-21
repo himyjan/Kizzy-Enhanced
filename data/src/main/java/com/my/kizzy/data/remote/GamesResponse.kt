@@ -35,7 +35,7 @@ fun GamesResponse.toGame() : Game {
             "nintendo-switch-2" -> Constants.NINTENDO_SWITCH_2
             "wii" -> Constants.WII_U
             "nintendo-3ds" -> Constants.NINTENDO_3DS
-            else -> Constants.XBOX
+            else -> Constants.ANDROID_LINK
         },
         small_image = when (label) {
             "nintendo" -> Constants.NINTENDO_LINK

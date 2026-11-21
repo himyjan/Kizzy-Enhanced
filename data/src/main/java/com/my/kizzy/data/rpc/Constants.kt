@@ -22,9 +22,7 @@ object Constants {
     const val WII_U_LINK =
         "https://media.discordapp.net/attachments/948828217312178227/1020010414576255017/default.png"
     const val XBOX_LINK =
-        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/1670332610733.png"
-    const val XBOX_2026_LINK =
-        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/xbox-2026.png"
+        "https://thumbs4.imgbox.com/ef/0c/08oxh57r_t.png"
     const val PS5_LINK =
         "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/ps5-2026.png"
     const val PS4_LINK =
@@ -38,7 +36,7 @@ object Constants {
     const val IOS_LINK =
         "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/ios-2026.png"
     const val ANDROID_LINK =
-        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/android-2026.png"
+        "https://www.gstatic.com/devrel-devsite/prod/vc11e4c9d4c060345ba98585d538d4546e842f4a6ee5c5f9e85be4bd345767217/androidsource/images/touchicon-180.png"
     const val N3DS_LINK =
         "https://media.discordapp.net/attachments/948828217312178227/1040885415864967279/3ds.png"
     const val NINTENDO = "Nintendo Switch"
@@ -46,6 +44,7 @@ object Constants {
     const val NINTENDO_3DS = "Nintendo-3DS"
     const val WII_U = "Wii-U"
     const val XBOX = "Xbox"
+    const val ANDROID = "Android"
     const val DROIDDECK = "DroidDeck"
     const val EDEN = "Eden"
     const val APPLICATION_ID = "1522589499903840448"
