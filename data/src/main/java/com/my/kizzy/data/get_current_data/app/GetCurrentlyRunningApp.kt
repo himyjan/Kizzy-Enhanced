@@ -15,6 +15,7 @@ package com.my.kizzy.data.get_current_data.app
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.RpcImage
@@ -25,6 +26,15 @@ import java.util.*
 class GetCurrentlyRunningApp @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
+    // MOVE_TO_FOREGROUND is deprecated on API 29+ in favour of ACTIVITY_RESUMED.
+    private val foregroundEventType: Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            UsageEvents.Event.ACTIVITY_RESUMED
+        } else {
+            @Suppress("DEPRECATION")
+            UsageEvents.Event.MOVE_TO_FOREGROUND
+        }
+
     operator fun invoke(beginTime: Long = System.currentTimeMillis() - 30000): CommonRpc {
         val usageStatsManager =
             context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
@@ -40,8 +50,7 @@ class GetCurrentlyRunningApp @Inject constructor(
         while (events.hasNextEvent()) {
             events.getNextEvent(event)
             eventCount++
-            val isForegroundEvent = event.eventType == UsageEvents.Event.ACTIVITY_RESUMED ||
-                event.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND
+            val isForegroundEvent = event.eventType == foregroundEventType
             if (!isForegroundEvent) continue
             if (event.timeStamp >= latestTimestamp) {
                 latestTimestamp = event.timeStamp
