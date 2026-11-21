@@ -1100,7 +1100,9 @@ private fun RpcTextFieldsColumn(
 
                                                 uiState.rpcConfig.copy(
 
-                                                    platform = value
+                                                    platform = value,
+
+                                                    smallImg = platformLogoUrl(value)
 
                                                 )
 
@@ -1912,6 +1914,65 @@ private fun RpcTextFieldsColumn(
                 }
             }
 
+            // ===== Console RPC Presets =====
+            item {
+                Text(
+                    text = stringResource(id = R.string.console_presets_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+
+            item {
+                // Built-in presets first, then the ones the user created. The
+                // list is rebuilt from the state so a new preset appears here
+                // without leaving the tab.
+                val presets = ConsolePresetStore.builtIns() + consoleCustomPresets
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    presets.forEach { preset ->
+                        val presetName = if (preset.nameRes != 0) stringResource(preset.nameRes) else preset.name
+                        val presetAppliedMessage = stringResource(R.string.console_preset_applied)
+                        ConsolePresetChip(
+                            preset = preset,
+                            selected = consoleSelectedPresetId == preset.id,
+                            onClick = {
+                                consoleSelectedPresetId = preset.id
+                                ConsolePresetStore.select(preset.id)
+                                applyConsolePreset(preset, presetName)
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(presetAppliedMessage)
+                                }
+                            },
+                            onEdit = if (preset.builtIn) null else ({
+                                consolePresetBeingEdited = preset
+                                consolePresetEditorOpen = true
+                            })
+                        )
+                    }
+                }
+            }
+
+            item {
+                androidx.compose.material3.OutlinedButton(
+                    onClick = {
+                        consolePresetBeingEdited = ConsolePresetStore.newPreset()
+                        consolePresetEditorOpen = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(text = stringResource(id = R.string.console_preset_new))
+                }
+            }
+
             item {
                 Text(
                     text = stringResource(id = R.string.console_options_title),
@@ -2296,4 +2357,19 @@ private fun coverArtPreviewUrl(url: String?): String? {
             "https://media.discordapp.net/$withoutMp"
         else -> withoutMp
     }
+}
+
+
+/** Returns the cover art logo URL for a given platform value, or empty string if none. */
+private fun platformLogoUrl(platform: String): String = when (platform) {
+    "xbox" -> Constants.XBOX_LINK
+    "ps5" -> Constants.PS5_LINK
+    "ps4" -> Constants.PS4_LINK
+    "nintendo-switch-2" -> Constants.NINTENDO_SWITCH_2_LINK
+    "android" -> Constants.ANDROID_LINK
+    "ios" -> Constants.IOS_LINK
+    "samsung" -> Constants.SAMSUNG_LINK
+    "droideck" -> Constants.DROIDDECK_LINK
+    "eden" -> Constants.EDEN_LINK
+    else -> ""
 }
