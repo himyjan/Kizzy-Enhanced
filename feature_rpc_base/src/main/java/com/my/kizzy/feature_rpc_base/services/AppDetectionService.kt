@@ -136,7 +136,10 @@ class AppDetectionService : Service() {
                         })
 
                     if (packageName != null && packageName !in EXCLUDED_APPS) {
+                        Log.d(TAG, "Foreground package: $packageName (enabled=${packageName in enabledPackages}, game=${dynamicActivityDetectionEngine.identifyGame(packageName) != null}, ai=${dynamicActivityDetectionEngine.identifyAiApp(packageName) != null})")
                         handleValidPackage(packageName, enabledPackages, rpcButtons)
+                    } else if (packageName == null) {
+                        Log.d(TAG, "No foreground package detected in last ${EVENT_LOOKBACK_MS / 1000}s")
                     }
 
                     // Also check the active assistant (power-button / "Hey Google" triggers)
@@ -264,11 +267,12 @@ class AppDetectionService : Service() {
         val isAiApp = aiApp != null
         val isGameApp = gameApp != null
         val displayName = if (isAiApp) aiApp.displayName else if (isGameApp) gameApp.displayName else null
-        val iconUrl = if (isAiApp) aiApp.iconUrl else if (isGameApp) gameApp.iconUrl else null
         val appLabel = displayName
             ?: this.packageManager.getApplicationLabel(
                 this.packageManager.getApplicationInfo(packageName, 0)
             ).toString()
+        Log.d(TAG, "Sending RPC for: $packageName (label=$appLabel, isGame=$isGameApp, isAI=$isAiApp)")
+        val iconUrl = if (isAiApp) aiApp.iconUrl else if (isGameApp) gameApp.iconUrl else null
         val details = if (isAiApp) "Chatting with AI" else if (isGameApp) "Playing game" else null
         val state = if (isAiApp) "Thinking..." else if (isGameApp) "In-game" else null
         val largeImage = iconUrl?.let { RpcImage.ExternalImage(it) }
@@ -367,7 +371,7 @@ class AppDetectionService : Service() {
          * Long enough to survive a short trip to another app, short enough that switching
          * apps is picked up quickly.
          */
-        private const val EVENT_LOOKBACK_MS = 5000L
+        private const val EVENT_LOOKBACK_MS = 30000L
 
         val EXCLUDED_APPS = listOf("com.my.kizzy", "com.my.kizzy.enhanced", "com.discord")
 

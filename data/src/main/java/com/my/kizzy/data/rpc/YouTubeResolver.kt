@@ -19,6 +19,7 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import android.util.Log
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.ConcurrentHashMap
@@ -85,8 +86,15 @@ object YouTubeResolver {
     private val CHANNEL_ID_PATTERN = Regex("""(?:"channelId"\s*:\s*"|itemprop=["']channelId["']\s+content=["'])(UC[A-Za-z0-9_-]{22})""")
     // Uploader avatar + channel name from the watch page. The first "avatar" block
     // paired with an "a11yLabel":"Go to channel <name>" is the video's owner.
-    private val CHANNEL_AVATAR_PATTERN = Regex(
-        "\"avatar\"\\s*:\\s*\\{[\\s\\S]{0,400}?\\{[\\s\\S]{0,200}?\"url\"\\s*:\\s*\"(https://yt3[^\"]+)\"[\\s\\S]{0,400}?\"a11yLabel\"\\s*:\\s*\"Go to channel ([^\"]+)\""
+    // Multiple patterns to extract channel avatar from YouTube watch page HTML.
+    // YouTube's HTML varies by region, client, and A/B test, so we try several.
+    private val CHANNEL_AVATAR_PATTERNS = listOf(
+        // Pattern 1: avatar object with a11yLabel "Go to channel"
+        "\"avatar\"\\s*:\\s*\\{[\\s\\S]{0,500}?\"url\"\\s*:\\s*\"(https://yt3[^\"]+)\"[\\s\\S]{0,500}?\"a11yLabel\"\\s*:\\s*\"Go to channel",
+        // Pattern 2: any avatarViewModel image source
+        "\"avatarViewModel\"\\s*:\\s*\\{[\\s\\S]{0,300}?\"sources\"\\s*:\\s*\\[\\{[\\s\\S]{0,100}?\"url\"\\s*:\\s*\"(https://yt3[^\"]+)\"",
+        // Pattern 3: any yt3.ggpht.com URL near "avatar" keyword
+        "avatar[\\s\\S]{0,300}?(https://yt3[^\"]+)",
     )
     private val YMUSIC_HOST = Regex("(?i)^(?:https?://)?(?:www\\.)?ymusicapp\\.com")
 
@@ -446,9 +454,22 @@ object YouTubeResolver {
                 headers.append("User-Agent", USER_AGENT)
                 headers.append("Accept-Language", "en-US,en;q=0.9")
             }.bodyAsText()
-            val avatar = CHANNEL_AVATAR_PATTERN.find(body)?.groupValues?.getOrNull(1)
-            if (avatar != null) avatarCache[videoId] = avatar
-            avatar
+            Log.d("YouTubeResolver", "lookupChannelAvatar $videoId: watch page body length=${body.length}")
+            // Try multiple patterns - YouTube's HTML varies by region/client
+            for (patternStr in CHANNEL_AVATAR_PATTERNS) {
+                val matchResult = patternStr.toRegex().find(body)
+                val avatar = matchResult?.groupValues?.getOrNull(1)
+                if (avatar != null) {
+                    // Strip YouTube size parameters (e.g., =s88-c-k-c0x00ffffff-no-rj)
+                    // so Discord's server can fetch the image reliably
+                    val cleanAvatar = avatar.substringBefore('=')
+                    Log.d("YouTubeResolver", "lookupChannelAvatar $videoId: pattern matched, raw=$avatar clean=$cleanAvatar")
+                    avatarCache[videoId] = cleanAvatar
+                    return cleanAvatar
+                }
+            }
+            Log.d("YouTubeResolver", "lookupChannelAvatar $videoId: no pattern matched, body snippet=${body.take(200)}")
+            null
         } catch (_: Exception) {
             null
         }

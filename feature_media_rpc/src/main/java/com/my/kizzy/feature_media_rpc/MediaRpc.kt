@@ -63,6 +63,7 @@ import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_NAME
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_HIDE_ON_PAUSE
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_USE_APPS_RPC
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.ActivityTypeChip
 import com.my.kizzy.ui.components.ActivityTypePreference
@@ -78,6 +79,7 @@ import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Audiotrack
 import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.PlayCircle
@@ -115,6 +117,7 @@ fun MediaRPC(
     var isCoverArtEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_COVER_ART, true]) }
     var isAppIconEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_APP_ICON, false]) }
     var isChannelIconEnabled by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false]) }
+    var useAppsRpc by remember { mutableStateOf(Prefs[MEDIA_RPC_USE_APPS_RPC, false]) }
     var isTimestampsEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]) }
     var hideOnPause by remember { mutableStateOf(Prefs[MEDIA_RPC_HIDE_ON_PAUSE, false]) }
     var isShowPlaybackState by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE, false]) }
@@ -182,6 +185,11 @@ fun MediaRPC(
                 Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = false
             }
         },
+        useAppsRpc = useAppsRpc,
+        onUseAppsRpcChanged = {
+            useAppsRpc = !useAppsRpc
+            Prefs[MEDIA_RPC_USE_APPS_RPC] = useAppsRpc
+        },
         isTimestampsEnabled = isTimestampsEnabled,
         onTimestampsEnabledChanged = { isTimestampsEnabled = !isTimestampsEnabled; Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS] = isTimestampsEnabled },
         isShowPlaybackState = isShowPlaybackState,
@@ -247,6 +255,8 @@ fun MediaRPCContent(
     onShowSongAsTitleChanged: () -> Unit,
     showAppNameInDetails: Boolean,
     onShowAppNameInDetailsChanged: () -> Unit,
+    useAppsRpc: Boolean,
+    onUseAppsRpcChanged: () -> Unit,
     isAutoActivityTypeEnabled: Boolean,
     onAutoActivityTypeEnabledChanged: () -> Unit,
     activityType: Int,
@@ -367,6 +377,14 @@ fun MediaRPCContent(
                         icon = Icons.Outlined.AccountCircle,
                         isChecked = isChannelIconEnabled,
                     ) { onChannelIconEnabledChanged() }
+                }
+                item {
+                    PreferenceSwitch(
+                        title = stringResource(id = R.string.media_rpc_use_apps_rpc),
+                        description = stringResource(id = R.string.media_rpc_use_apps_rpc_desc),
+                        icon = Icons.Outlined.Gamepad,
+                        isChecked = useAppsRpc,
+                    ) { onUseAppsRpcChanged() }
                 }
                 item {
                     PreferenceSwitch(
@@ -542,6 +560,8 @@ fun MediaRPCLightPreview() {
                 onShowSongAsTitleChanged = {},
                 showAppNameInDetails = true,
                 onShowAppNameInDetailsChanged = {},
+                useAppsRpc = false,
+                onUseAppsRpcChanged = {},
                 isAutoActivityTypeEnabled = true,
                 onAutoActivityTypeEnabledChanged = {},
                 activityType = 3,
@@ -613,6 +633,8 @@ fun MediaRPCDarkPreview() {
                 onShowSongAsTitleChanged = {},
                 showAppNameInDetails = true,
                 onShowAppNameInDetailsChanged = {},
+                useAppsRpc = false,
+                onUseAppsRpcChanged = {},
                 isAutoActivityTypeEnabled = true,
                 onAutoActivityTypeEnabledChanged = {},
                 activityType = 3,

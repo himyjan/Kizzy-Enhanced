@@ -387,6 +387,8 @@
     <string name="show_song_as_title">Show Song as Title</string>
     <string name="show_app_name_in_details">Show App Name in Details</string>
     <string name="show_app_name_in_details_desc">Append \" • app name\" to the details line (line 2) of media RPC presence</string>
+    <string name="media_rpc_use_apps_rpc">Show Apps &amp; Games</string>
+    <string name="media_rpc_use_apps_rpc_desc">When no media is playing, show the currently open app or game as your Discord activity</string>
     <string name="use_youtube_button">Add Media Button</string>
     <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
         Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>

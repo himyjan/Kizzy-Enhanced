@@ -21,6 +21,7 @@ import androidx.work.ExistingWorkPolicy
 import com.my.kizzy.feature_rpc_base.BuildConfig
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.CommonRpc
@@ -77,6 +78,12 @@ class MediaRpcService : Service() {
 
     @Inject
     lateinit var kizzyRepository: com.my.kizzy.domain.repository.KizzyRepository
+
+    @Inject
+    lateinit var getCurrentlyRunningApp: GetCurrentlyRunningApp
+
+    @Inject
+    lateinit var dynamicActivityDetectionEngine: DynamicActivityDetectionEngine
 
     private var wakeLock: WakeLock? = null
 
@@ -770,6 +777,51 @@ class MediaRpcService : Service() {
             lastKnownTrackArtist = null
             stateRepository.setPaused(false)
         } else if (playingPkg == null) {
+            // No media session active - try app detection if enabled
+            if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]) {
+                val runningApp = getCurrentlyRunningApp()
+                if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
+                    val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
+                    val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
+                    val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+                    val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
+                    if (shouldShow) {
+                        val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
+                        val details = if (isGameApp) "Playing game" else if (isAiApp) "Chatting with AI" else null
+                        val state = if (isGameApp) "In-game" else if (isAiApp) "Thinking..." else null
+                        logger.d("MediaRPC", "Sending app RPC for: ${runningApp.packageName} (label=$appLabel, isGame=$isGameApp, isAI=$isAiApp)")
+                        kizzyRPC.apply {
+                            setName(appLabel)
+                            setDetails(details)
+                            setState(state)
+                            setStartTimestamps(System.currentTimeMillis())
+                            setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
+                            setLargeImage(runningApp.largeImage)
+                            clearButtons()
+                        }
+                        kizzyRPC.updateRPC(
+                            CommonRpc(
+                                name = appLabel,
+                                type = ActivityTypeResolver.resolve(
+                                    packageName = runningApp.packageName,
+                                    fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                                    useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+                                ),
+                                details = details,
+                                state = state,
+                                largeImage = runningApp.largeImage,
+                                time = Timestamps(start = System.currentTimeMillis()),
+                                packageName = runningApp.packageName,
+                                appPackage = runningApp.packageName
+                            ),
+                            enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
+                        )
+                        Trace.endSection()
+                        return
+                    }
+                }
+            }
+            // No media and no valid app detected - clear presence
             if (currentPackageName != null) {
                 currentPackageName = null
                 isPaused = false
@@ -869,6 +921,7 @@ class MediaRpcService : Service() {
             null
         }
         val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
+        logger.d("MediaRPC", "Small image resolved: original=${playingMedia.smallImage} resolved=$smallImageUrl smallImageChannelUrl=${playingMedia.smallImageChannelUrl}")
         stateRepository.setImageUrls(largeImageUrl, smallImageUrl)
 
         sendPresenceUpdate(playingMedia, enableTimestamps, showCoverArt)

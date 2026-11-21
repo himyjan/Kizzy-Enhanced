@@ -362,6 +362,7 @@ object Prefs {
     const val MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS = "media_rpc_show_app_name_in_details"
     const val MEDIA_RPC_MEDIA_BUTTON = "media_rpc_media_button"
     const val MEDIA_RPC_ARTIST_LINK = "media_rpc_artist_link"
+    const val MEDIA_RPC_USE_APPS_RPC = "media_rpc_use_apps"
     const val MEDIA_RPC_ENABLED = "media_rpc_enabled"
     const val LAST_RUN_MEDIA_RPC = "last_run_media_rpc"
     const val LAST_RUN_MANUAL_RPC = "last_run_manual_rpc"

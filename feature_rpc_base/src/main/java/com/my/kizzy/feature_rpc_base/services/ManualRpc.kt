@@ -67,6 +67,9 @@ class ManualRpc : Service() {
     lateinit var getCurrentlyRunningApp: GetCurrentlyRunningApp
 
     @Inject
+    lateinit var dynamicActivityDetectionEngine: DynamicActivityDetectionEngine
+
+    @Inject
     lateinit var logger: Logger
 
     @Inject
@@ -418,16 +421,24 @@ class ManualRpc : Service() {
 
                     val currentApp = getCurrentlyRunningApp()
 
-                    if (
-                        currentApp.name.isNotEmpty() &&
-                        currentApp.packageName != currentPackageName &&
-                        enabledExperimentalApps.contains(currentApp.packageName)
-                    ) {
-                        currentPackageName = currentApp.packageName
-                        updatePresence(appInfo = currentApp.copy(time = startTimestamps))
-                    } else if (currentApp.name.isNotEmpty() && currentApp.packageName != currentPackageName) {
-                        currentPackageName = ""
-                        if (!isMediaSessionActive || !useMediaRpc) {
+                    if (currentApp.name.isNotEmpty() && currentApp.packageName != currentPackageName) {
+                        val isGameApp = dynamicActivityDetectionEngine.identifyGame(currentApp.packageName) != null
+                        val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(currentApp.packageName) != null
+                        val shouldShow = isGameApp || isAiApp || enabledExperimentalApps.contains(currentApp.packageName)
+                        if (shouldShow) {
+                            currentPackageName = currentApp.packageName
+                            val displayName = if (isAiApp) {
+                                dynamicActivityDetectionEngine.identifyAiApp(currentApp.packageName)?.displayName
+                            } else if (isGameApp) {
+                                dynamicActivityDetectionEngine.identifyGame(currentApp.packageName)?.displayName
+                            } else null
+                            val appInfo = currentApp.copy(
+                                name = displayName?.takeIf { it.isNotBlank() } ?: currentApp.name,
+                                time = startTimestamps
+                            )
+                            updatePresence(appInfo = appInfo)
+                        } else if (!isMediaSessionActive || !useMediaRpc) {
+                            currentPackageName = ""
                             updatePresence(CommonRpc())
                         }
                     }

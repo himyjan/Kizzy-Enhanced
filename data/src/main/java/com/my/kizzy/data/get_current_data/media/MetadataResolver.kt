@@ -1383,22 +1383,30 @@ class MetadataResolver @Inject constructor(
 
     /**
      * Channel avatar URL for the "Show Channel Icon" small-image option.
-     * Only for YouTube-family clients with a SINGLE artist/channel — a
-     * collaboration (multiple artists) has no single channel to represent.
+     * Resolves the uploader's channel avatar from the YouTube watch page.
+     * Works for single-artist and multi-artist tracks alike.
      */
     suspend fun getChannelAvatarUrl(
         metadata: MediaMetadata,
         packageName: String?,
     ): String? {
         if (!MediaServiceResolver.isYouTube(packageName)) return null
-        // Single channel only: skip collaborations / multi-artist tracks.
-        if (getAllArtists(metadata).size > 1) return null
-        val raw = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)
-            ?: metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR)
-        if (!raw.isNullOrBlank() && splitArtists(raw).size > 1) return null
-        val video = resolveYouTubeVideo(metadata) ?: return null
-        val id = YouTubeResolver.extractVideoId(video.watchUrl) ?: return null
-        return YouTubeResolver.lookupChannelAvatar(id)
+        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: "unknown"
+        val artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?: "unknown"
+        val video = resolveYouTubeVideo(metadata)
+        if (video == null) {
+            logger.d("MediaImage", "Channel avatar: resolveYouTubeVideo returned null for '$title' by $artist")
+            return null
+        }
+        val id = YouTubeResolver.extractVideoId(video.watchUrl)
+        if (id == null) {
+            logger.d("MediaImage", "Channel avatar: extractVideoId returned null for watchUrl=${video.watchUrl}")
+            return null
+        }
+        logger.d("MediaImage", "Channel avatar: videoId=$id watchUrl=${video.watchUrl} title=$title artist=$artist")
+        val avatar = YouTubeResolver.lookupChannelAvatar(id)
+        logger.d("MediaImage", "Channel avatar for $id: ${avatar ?: "null - no avatar found in watch page HTML"}")
+        return avatar
     }
 
     /**
