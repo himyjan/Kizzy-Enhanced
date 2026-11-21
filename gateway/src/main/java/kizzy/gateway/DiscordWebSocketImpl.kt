@@ -313,11 +313,10 @@ open class DiscordWebSocketImpl(
                 // A successful handshake ends the current reconnect cycle.
                 reconnectAttempts = 0
                 _connectionState.value = ConnectionState.Connected
-                if (!handshakeUsedResume) {
-                    // A fresh IDENTIFY creates an empty session; Discord does not
-                    // carry the previous activity over. Ask the owner to re-apply it.
-                    onPresenceDropped?.invoke()
-                }
+                // Always re-apply presence after reconnect, whether IDENTIFY or RESUME
+                // was used. Presence updates queued while the socket was down were
+                // never sent, so they must be re-sent after any reconnect.
+                onPresenceDropped?.invoke()
                 return
             }
             "RESUMED" -> {
