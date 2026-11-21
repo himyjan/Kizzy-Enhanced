@@ -101,6 +101,10 @@ fun RpcSettings(
     }
     var showClientIdDialog by remember { mutableStateOf(false) }
     var editingClientId22 by remember { mutableStateOf("") }
+    var showClientIdDialog2 by remember { mutableStateOf(false) }
+    var editingClientId2 by remember { mutableStateOf("") }
+    var showClientIdDialog3 by remember { mutableStateOf(false) }
+    var editingClientId3 by remember { mutableStateOf("") }
     var showUserLogin by remember { mutableStateOf(false) }
 
     // Collect from DataStore state flow so OAuth2 selection persists across cold boots.
@@ -281,13 +285,35 @@ fun RpcSettings(
                     }
                 }
             }
+            item(key = "oauth2_client_id_slot2") {
+                val appId2 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, ""]
+                SettingItem(
+                    title = stringResource(id = R.string.discord_oauth2_client_id),
+                    description = stringResource(id = R.string.discord_oauth2_client_id_desc) + (if (appId2.isNotEmpty()) "  •  $appId2" else "  •  (optional)"),
+                    icon = Icons.Outlined.Person,
+                ) {
+                    editingClientId2 = appId2
+                    showClientIdDialog2 = true
+                }
+            }
+            item(key = "oauth2_client_id_slot3") {
+                val appId3 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, ""]
+                SettingItem(
+                    title = stringResource(id = R.string.discord_oauth2_client_id),
+                    description = stringResource(id = R.string.discord_oauth2_client_id_desc) + (if (appId3.isNotEmpty()) "  •  $appId3" else "  •  (optional)"),
+                    icon = Icons.Outlined.Person,
+                ) {
+                    editingClientId3 = appId3
+                    showClientIdDialog3 = true
+                }
+            }
             item(key = "multi_rpc_header") {
                 Subtitle(text = "Multiple RPC Applications")
             }
             item(key = "oauth2_authorize_slot2") {
-                val token2 = prefsMap[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2] as? String ?: ""
+                val token2 = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2, ""]
                 val appId2 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "1573725984845201438"]
-                val enabled2 = prefsMap[Prefs.RPC_SESSION_2_ENABLED] as? Boolean ?: false
+                val enabled2 = Prefs[Prefs.RPC_SESSION_2_ENABLED, false]
                 SettingItem(
                     title = "RPC App 2" + if (enabled2) "  (on)" else "",
                     description = if (token2.isNotEmpty()) "Authorized • app $appId2" else "Tap to authorize app $appId2",
@@ -308,9 +334,9 @@ fun RpcSettings(
                 }
             }
             item(key = "oauth2_authorize_slot3") {
-                val token3 = prefsMap[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3] as? String ?: ""
+                val token3 = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3, ""]
                 val appId3 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, "1573728208854065293"]
-                val enabled3 = prefsMap[Prefs.RPC_SESSION_3_ENABLED] as? Boolean ?: false
+                val enabled3 = Prefs[Prefs.RPC_SESSION_3_ENABLED, false]
                 SettingItem(
                     title = "RPC App 3" + if (enabled3) "  (on)" else "",
                     description = if (token3.isNotEmpty()) "Authorized • app $appId3" else "Tap to authorize app $appId3",
@@ -887,12 +913,77 @@ fun RpcSettings(
                     TextButton(
                         onClick = {
                             if (discordOAuth2ClientId.isBlank()) {
-                                // Keep existing value if empty
                                 discordOAuth2ClientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""]
                             } else {
                                 Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID] = discordOAuth2ClientId
                             }
                             showClientIdDialog = false
+                        }
+                    ) {
+                        Text(stringResource(R.string.save))
+                    }
+                },
+            )
+        }
+
+        if (showClientIdDialog2) {
+            AlertDialog(
+                onDismissRequest = { showClientIdDialog2 = false },
+                title = { Text(stringResource(R.string.discord_oauth2_client_id)) },
+                text = {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        RpcField(
+                            value = editingClientId2,
+                            label = R.string.discord_oauth2_client_id,
+                            onValueChange = { newText ->
+                                editingClientId2 = newText
+                            }
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            if (editingClientId2.isBlank()) {
+                                editingClientId2 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, ""]
+                            } else {
+                                Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2] = editingClientId2
+                            }
+                            showClientIdDialog2 = false
+                        }
+                    ) {
+                        Text(stringResource(R.string.save))
+                    }
+                },
+            )
+        }
+
+        if (showClientIdDialog3) {
+            AlertDialog(
+                onDismissRequest = { showClientIdDialog3 = false },
+                title = { Text(stringResource(R.string.discord_oauth2_client_id)) },
+                text = {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        RpcField(
+                            value = editingClientId3,
+                            label = R.string.discord_oauth2_client_id,
+                            onValueChange = { newText ->
+                                editingClientId3 = newText
+                            }
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            if (editingClientId3.isBlank()) {
+                                editingClientId3 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, ""]
+                            } else {
+                                Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3] = editingClientId3
+                            }
+                            showClientIdDialog3 = false
                         }
                     ) {
                         Text(stringResource(R.string.save))
