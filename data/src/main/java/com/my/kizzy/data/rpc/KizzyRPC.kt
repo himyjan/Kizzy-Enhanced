@@ -244,51 +244,37 @@ class KizzyRPC @Inject constructor(
      * ensures a late login still works without restarting the service.
      */
     suspend fun refreshFromPrefs() {
-        // Discord's Gateway IDENTIFY accepts both account tokens
-        // (user_id.timestamp.hmac) and OAuth2 bearer tokens. Try the stored
-        // account token first; fall back to the OAuth2 token if it's available.
-        // Discord is the authority on whether the token is valid — let IDENTIFY
-        // fail naturally rather than pre-emptively blocking.
-        val accountToken = Prefs[Prefs.TOKEN, ""]
-        val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+        // Discord's gateway IDENTIFY requires a real account token
+        // ("user_id.timestamp.hmac"). OAuth2 bearer tokens are rejected with
+        // 4004 Authentication failed, so never feed one to the gateway. The
+        // OAuth2 token is kept separately for the OAuth2 connection method.
+        val stored = Prefs[Prefs.TOKEN, ""]
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_GATEWAY]
 
         val isAccountToken: (String) -> Boolean = { value ->
-            // Account tokens are "<base64-ish id>.<timestamp>.<hmac>";
-            // OAuth2 access tokens (JWT-like / opaque) have no such structure.
             val parts = value.split(".")
-            parts.size >= 3 && parts[0].isNotBlank() &&
-                    parts[1].toLongOrNull() != null || value.startsWith("mfa.")
+            (parts.size >= 3 && parts[0].isNotBlank() && parts[1].toLongOrNull() != null) ||
+                value.startsWith("mfa.")
         }
-        val newToken = when {
-            accountToken.isNotBlank() -> accountToken
-            oauthToken.isNotBlank() -> {
-                // Keep the gateway and the account-token pref in sync.
-                Prefs[Prefs.TOKEN] = oauthToken
-                oauthToken
-            }
-            else -> ""
+
+        val accountToken = stored.takeIf(isAccountToken).orEmpty()
+        // A previous OAuth2 login may have written a bearer token into TOKEN.
+        // Drop it so the gateway never retries IDENTIFY with an invalid token.
+        if (stored.isNotBlank() && accountToken.isEmpty()) {
+            Prefs.remove(Prefs.TOKEN)
         }
-        token = newToken
 
-        logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod tokenLen=${token.length}")
-
-        // Never mutate/delete the stored token here. refreshFromPrefs() runs on every
-        // service start and settings change; deleting a freshly obtained OAuth2 token
-        // caused an endless "authorize -> token cleared" loop. Discord is the only
-        // authority on whether a token is valid, so let IDENTIFY fail naturally.
+        logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod tokenLen=${accountToken.length}")
         logger.d(
             "KizzyRPC",
-            "token shape: parts=${newToken.count { it == '.' } + if (newToken.isEmpty()) 0 else 1} len=${newToken.length}"
+            "token shape: parts=${accountToken.count { it == '.' } + if (accountToken.isEmpty()) 0 else 1} len=${accountToken.length}"
         )
 
-        // If the token changed (e.g. OAuth2 login after bot-token session, or logout),
-        // reconnect the WebSocket with the new token. Discord authenticates based on
-        // the IDENTIFY handshake token, so simply updating the in-memory token is not
-        // enough on an already-open socket. updateTokenAndReconnect() closes the old
-        // socket and establishes a new one with the new token.
-        val tokenChanged = newToken != token
-        token = newToken
+        // If the token changed (e.g. a real account token was pasted, or logout),
+        // reconnect the WebSocket. IDENTIFY authenticates at handshake time, so
+        // updating the in-memory token alone is not enough on an open socket.
+        val tokenChanged = accountToken != token
+        token = accountToken
 
         if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
             logger.d("KizzyRPC", "Token changed, reconnecting WebSocket with new token")

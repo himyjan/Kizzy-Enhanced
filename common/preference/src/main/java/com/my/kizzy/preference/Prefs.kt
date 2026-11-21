@@ -374,6 +374,17 @@ object Prefs {
      */
     const val ACTIVE_RPC_TYPE = "active_rpc_type"
 
+    /**
+     * All RPC types the user currently has enabled, as a comma-separated list of
+     * `RpcManager.RpcType` names. Multiple RPCs run in parallel, so a single
+     * [ACTIVE_RPC_TYPE] cannot represent the real state. This is the source of
+     * truth for restoring state and for the on/off switches.
+     */
+    const val ACTIVE_RPC_TYPES = "active_rpc_types"
+
+    /** Whether the running CustomRpcService is in Console RPC mode. */
+    const val CUSTOM_RPC_CONSOLE_MODE = "custom_rpc_console_mode"
+
     // Discord RPC connection method: "gateway" (default) or "oauth"
     const val RPC_CONNECTION_METHOD = "rpc_connection_method"
     const val RPC_CONNECTION_METHOD_GATEWAY = "gateway"

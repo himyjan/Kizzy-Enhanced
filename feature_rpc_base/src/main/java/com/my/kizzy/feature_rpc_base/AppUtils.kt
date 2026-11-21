@@ -89,13 +89,16 @@ object AppUtils {
     }
 
     fun customRpcRunning(): Boolean {
+        // Several RPCs can run at once, so ACTIVE_RPC_TYPE (a single "primary"
+        // type) cannot be trusted here. The service is alive and its persisted
+        // mode tells us whether this is a Custom or Console session.
         return checkForRunningService<CustomRpcService>()
-            && Prefs[Prefs.ACTIVE_RPC_TYPE, ""] == RpcManager.RpcType.CustomRpc.name
+            && !Prefs[Prefs.CUSTOM_RPC_CONSOLE_MODE, false]
     }
 
     fun consoleRpcRunning(): Boolean {
         return checkForRunningService<CustomRpcService>()
-            && Prefs[Prefs.ACTIVE_RPC_TYPE, ""] == RpcManager.RpcType.ConsoleRpc.name
+            && Prefs[Prefs.CUSTOM_RPC_CONSOLE_MODE, false]
     }
 
     fun ManualRpcRunning(): Boolean {

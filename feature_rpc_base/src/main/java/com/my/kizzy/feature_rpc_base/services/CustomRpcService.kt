@@ -167,6 +167,9 @@ class CustomRpcService : Service() {
             // session, so the watcher has to be switched off.
             consoleMode = false
         }
+        // Persist the mode so AppUtils can tell Custom from Console without
+        // relying on a single ACTIVE_RPC_TYPE (several RPCs run in parallel).
+        Prefs[Prefs.CUSTOM_RPC_CONSOLE_MODE] = consoleMode
         if (!consoleMode) {
             consoleDetectionJob?.cancel()
             consoleDetectionJob = null

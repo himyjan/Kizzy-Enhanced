@@ -82,7 +82,12 @@ class UserViewModel @Inject constructor(
     private fun observeLoginState() {
         Prefs.prefsState
             .map { state ->
-                val token = state[Prefs.TOKEN] as? String ?: ""
+                // Either credential means the user is logged in: the gateway
+                // account token or the OAuth2 bearer token (gateway rejects the
+                // latter, but REST /users/@me accepts it for the profile).
+                val token = (state[Prefs.TOKEN] as? String ?: "").ifBlank {
+                    state[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] as? String ?: ""
+                }
                 val userId = state[Prefs.USER_ID] as? String ?: ""
                 val cached = state[Prefs.USER_DATA] as? String ?: ""
                 Triple(token, userId, cached)
@@ -116,11 +121,16 @@ class UserViewModel @Inject constructor(
             return
         }
 
-        // Prefer the cached identity (instant, no flicker). Otherwise fetch the
-        // full user via REST /users/@me - unlike the gateway READY payload this
-        // works with OAuth2 bearer tokens and saves USER_DATA (avatar/bio/banner).
-        val fresh = cachedUser?.takeIf { !it.id.isNullOrBlank() }
+        // Prefer a complete cached identity (instant, no flicker). A cached user
+        // saved by the old gateway-only login has no bio/avatar, so refresh from
+        // REST /users/@me in that case. Unlike the READY payload, REST accepts the
+        // OAuth2 bearer token and saves USER_DATA (avatar/bio/banner).
+        val cachedComplete = cachedUser?.takeIf {
+            !it.id.isNullOrBlank() && !it.bio.isNullOrBlank()
+        }
+        val fresh = cachedComplete
             ?: fetchDiscordUser(token)
+            ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }
             ?: fetchUserInfo(token)
         if (fresh != null) {
             _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())

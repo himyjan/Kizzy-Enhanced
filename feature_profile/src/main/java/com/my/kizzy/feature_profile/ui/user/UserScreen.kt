@@ -76,6 +76,11 @@ fun UserScreen(
     var oauth2Error by remember { mutableStateOf("") }
     var isAuthorizing by remember { mutableStateOf(false) }
 
+    // Gateway RPC needs a real account token; an OAuth2-only login does not have
+    // one, so offer the token field on the profile even while logged in.
+    val prefs by Prefs.prefsState.collectAsState(initial = emptyMap())
+    val hasAccountToken = (prefs[Prefs.TOKEN] as? String ?: "").isNotBlank()
+
     val discordAuth = remember(ctx, authTabLauncher) {
         DiscordOAuth2Auth(context = ctx, authTabLauncher = authTabLauncher)
     }
@@ -93,7 +98,9 @@ fun UserScreen(
         scope.launch {
             try {
                 val result = discordAuth.authorize(ctx as Activity)
-                Prefs[Prefs.TOKEN] = result.accessToken
+                // Never write an OAuth2 bearer token into TOKEN: the gateway
+                // rejects it with 4004. TOKEN is reserved for the real account
+                // token used by the Gateway connection method.
                 Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = result.accessToken
                 if (result.refreshToken.isNotEmpty()) {
                     Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = result.refreshToken
@@ -224,9 +231,11 @@ fun UserScreen(
                             Spacer(Modifier.height(8.dp))
                             Text(text = oauth2Error, color = MaterialTheme.colorScheme.error)
                         }
-                        Spacer(Modifier.height(16.dp))
-                        TokenLoginSection()
-                        Spacer(Modifier.height(24.dp))
+                        if (!hasAccountToken) {
+                            Spacer(Modifier.height(16.dp))
+                            TokenLoginSection()
+                            Spacer(Modifier.height(24.dp))
+                        }
                     }
                 }
 
@@ -247,6 +256,13 @@ fun UserScreen(
                             rpcConfig = state.rpcConfig,
                             onAvatarClick = { onNavigateToRpcPreview() }
                         )
+
+                        if (!hasAccountToken) {
+                            Spacer(Modifier.height(16.dp))
+                            TokenLoginSection(
+                                title = "Gateway RPC needs your Discord account token. Paste it below."
+                            )
+                        }
 
                         Spacer(Modifier.height(16.dp))
                         Column(
@@ -285,7 +301,9 @@ fun UserScreen(
  * avatar/bio appear as soon as the user is logged in.
  */
 @Composable
-private fun TokenLoginSection() {
+private fun TokenLoginSection(
+    title: String = "Or paste your Discord account token:",
+) {
     var token by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
@@ -298,7 +316,7 @@ private fun TokenLoginSection() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Or paste your Discord account token:",
+            text = title,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -328,9 +346,9 @@ private fun TokenLoginSection() {
                     if (user == null) {
                         Prefs.remove(Prefs.TOKEN)
                         error = "Invalid token or network error"
-                    } else {
-                        Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = value
                     }
+                    // A pasted account token belongs only in TOKEN; never overwrite
+                    // the OAuth2 bearer used by the OAuth2 connection method.
                     isSubmitting = false
                 }
             },
