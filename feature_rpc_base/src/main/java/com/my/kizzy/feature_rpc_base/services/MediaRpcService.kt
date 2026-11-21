@@ -43,6 +43,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.time.Duration.Companion.milliseconds
 import com.my.kizzy.feature_rpc_base.R as FeatureRpcR
 
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
@@ -84,6 +85,9 @@ class MediaRpcService : Service() {
 
     @Inject
     lateinit var dynamicActivityDetectionEngine: DynamicActivityDetectionEngine
+
+    @Inject
+    lateinit var rpcManager: RpcManager
 
     private var wakeLock: WakeLock? = null
 
@@ -233,6 +237,7 @@ class MediaRpcService : Service() {
     private var lastSentProgressSec: Int = -1
 
     private val timelineTickerJob = MutableStateFlow<Job?>(null)
+    private var appDetectionJob: Job? = null
 
 
     private fun createNotificationChannel() {
@@ -271,6 +276,8 @@ class MediaRpcService : Service() {
         Prefs[Prefs.MEDIA_RPC_ENABLED] = true
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.MediaRpc.name
         setupWakeLock()
+        logger.d("MediaRPC", "onCreate: starting app detection coroutine, useAppsRpc=${Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]}")
+        startAppDetectionCoroutine()
 
         val stopIntent = Intent(this, MediaRpcService::class.java)
         stopIntent.action = Constants.ACTION_STOP_SERVICE
@@ -357,6 +364,123 @@ class MediaRpcService : Service() {
     private fun stopHeartbeat() {
         heartbeatJob.value?.cancel()
         heartbeatJob.value = null
+    }
+
+    private fun startAppDetectionCoroutine() {
+        if (appDetectionJob?.isActive == true) {
+            logger.d("MediaRPC", "App detection coroutine already running")
+            return
+        }
+        logger.d("MediaRPC", "Starting app detection coroutine")
+
+        val startTimestamps = Timestamps(start = System.currentTimeMillis())
+
+        appDetectionJob = scope.launch {
+            var currentPackageName = ""
+            var cycleCount = 0
+            while (isActive) {
+                cycleCount++
+                try {
+                    // Do not override Custom RPC or Manual RPC presence with app detection
+                    val activeRpcTypes = rpcManager.activeRpc.value
+                    val customOrManualRpcActive = activeRpcTypes.contains(RpcManager.RpcType.CustomRpc) ||
+                        activeRpcTypes.contains(RpcManager.RpcType.ConsoleRpc) ||
+                        activeRpcTypes.contains(RpcManager.RpcType.ManualRpc)
+                    if (customOrManualRpcActive) {
+                        if (cycleCount % 6 == 1) {
+                            logger.d("MediaRPC", "App detection loop running but Custom/Manual RPC is active - skipping app detection")
+                        }
+                        delay(5000.milliseconds)
+                        continue
+                    }
+
+                    val useAppsRpc = Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]
+                    if (!useAppsRpc) {
+                        if (cycleCount % 6 == 1) {
+                            logger.d("MediaRPC", "App detection loop running but MEDIA_RPC_USE_APPS_RPC is false - enabling not set")
+                        }
+                        delay(5000.milliseconds)
+                        continue
+                    }
+
+                    logger.d("MediaRPC", "App detection cycle #$cycleCount: checking for foreground app")
+                    val runningApp = getCurrentlyRunningApp()
+
+                    if (runningApp.name.isEmpty()) {
+                        if (cycleCount % 6 == 1) {
+                            logger.d("MediaRPC", "App detection: no foreground app found (getCurrentlyRunningApp returned empty)")
+                        }
+                    } else {
+                        logger.d("MediaRPC", "App detection: found foreground app=${runningApp.packageName} label=${runningApp.name}")
+                    }
+
+                    if (
+                        runningApp.name.isNotEmpty() &&
+                        runningApp.packageName != currentPackageName &&
+                        runningApp.packageName !in AppDetectionService.EXCLUDED_APPS
+                    ) {
+                        logger.d("MediaRPC", "App detection: new app detected=${runningApp.packageName}, checking if should show")
+                        val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
+                        val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
+                        val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+                        val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
+
+                        logger.d("MediaRPC", "App detection: ${runningApp.packageName} isGame=$isGameApp isAI=$isAiApp inEnabledApps=${runningApp.packageName in enabledApps} shouldShow=$shouldShow")
+
+                        if (shouldShow) {
+                            currentPackageName = runningApp.packageName
+                            val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
+                            val details = if (isGameApp) "Playing game" else if (isAiApp) "Chatting with AI" else null
+                            val state = if (isGameApp) "In-game" else if (isAiApp) "Thinking..." else null
+                            logger.d("MediaRPC", "App detection FOUND: ${runningApp.packageName} (label=$appLabel, isGame=$isGameApp, isAI=$isAiApp)")
+                            kizzyRPC.apply {
+                                setName(appLabel)
+                                setDetails(details)
+                                setState(state)
+                                setStartTimestamps(System.currentTimeMillis())
+                                setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
+                                setLargeImage(runningApp.largeImage)
+                                clearButtons()
+                            }
+                            kizzyRPC.updateRPC(
+                                CommonRpc(
+                                    name = appLabel,
+                                    type = ActivityTypeResolver.resolve(
+                                        packageName = runningApp.packageName,
+                                        fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                                        useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+                                    ),
+                                    details = details,
+                                    state = state,
+                                    largeImage = runningApp.largeImage,
+                                    time = Timestamps(start = System.currentTimeMillis()),
+                                    packageName = runningApp.packageName,
+                                    appPackage = runningApp.packageName
+                                ),
+                                enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
+                            )
+                        } else if (currentPackageName != "") {
+                            currentPackageName = ""
+                            scope.launch { kizzyRPC.clearPresence() }
+                        }
+                    } else if (runningApp.name.isEmpty() && currentPackageName != "") {
+                        currentPackageName = ""
+                        scope.launch { kizzyRPC.clearPresence() }
+                        logger.d("MediaRPC", "App detection: foreground app cleared")
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logger.e("MediaRPC", "App detection cycle failed: ${e.message}")
+                }
+                delay(5000.milliseconds)
+            }
+        }
+    }
+
+    private fun stopAppDetectionCoroutine() {
+        appDetectionJob?.cancel()
+        appDetectionJob = null
     }
 
     /**
@@ -776,7 +900,61 @@ class MediaRpcService : Service() {
             lastKnownTrackTitle = null
             lastKnownTrackArtist = null
             stateRepository.setPaused(false)
-        } else if (playingPkg == null) {
+        }
+
+        // Check if media is paused - if so, try app detection (show game instead of paused music)
+        // But don't override Custom RPC or Manual RPC presence
+        val activeRpcTypes = rpcManager.activeRpc.value
+        val customOrManualRpcActive = activeRpcTypes.contains(RpcManager.RpcType.CustomRpc) ||
+            activeRpcTypes.contains(RpcManager.RpcType.ConsoleRpc) ||
+            activeRpcTypes.contains(RpcManager.RpcType.ManualRpc)
+        val mediaPaused = isPaused
+        if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false] && !customOrManualRpcActive && mediaPaused && playingPkg != null) {
+            val runningApp = getCurrentlyRunningApp()
+            if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
+                val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
+                val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
+                val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+                val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
+                if (shouldShow && runningApp.packageName != currentPackageName) {
+                    currentPackageName = runningApp.packageName
+                    val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
+                    val details = if (isGameApp) "Playing game" else if (isAiApp) "Chatting with AI" else null
+                    val state = if (isGameApp) "In-game" else if (isAiApp) "Thinking..." else null
+                    logger.d("MediaRPC", "App detection found while paused: ${runningApp.packageName} (label=$appLabel, isGame=$isGameApp, isAI=$isAiApp)")
+                    kizzyRPC.apply {
+                        setName(appLabel)
+                        setDetails(details)
+                        setState(state)
+                        setStartTimestamps(System.currentTimeMillis())
+                        setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
+                        setLargeImage(runningApp.largeImage)
+                        clearButtons()
+                    }
+                    kizzyRPC.updateRPC(
+                        CommonRpc(
+                            name = appLabel,
+                            type = ActivityTypeResolver.resolve(
+                                packageName = runningApp.packageName,
+                                fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                                useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+                            ),
+                            details = details,
+                            state = state,
+                            largeImage = runningApp.largeImage,
+                            time = Timestamps(start = System.currentTimeMillis()),
+                            packageName = runningApp.packageName,
+                            appPackage = runningApp.packageName
+                        ),
+                        enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
+                    )
+                    Trace.endSection()
+                    return
+                }
+            }
+        }
+
+        if (playingPkg == null) {
             // No media session active - try app detection if enabled
             if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]) {
                 val runningApp = getCurrentlyRunningApp()
@@ -855,7 +1033,10 @@ class MediaRpcService : Service() {
         // Keep the 1-second timeline ticker running while media is playing. It is what
         // refreshes the Discord progress bar and the notification. It was previously
         // defined but never started, so the timeline never advanced.
-        if (trackName != null && !isPaused) {
+        // Keep timeline ticker running when app detection is enabled even if paused,
+        // so it can keep checking for foreground apps (games).
+        val shouldKeepTimelineRunning = trackName != null && (!isPaused || Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false])
+        if (shouldKeepTimelineRunning) {
             if (timelineJob.value?.isActive != true) {
                 startTimelineUpdates()
             }
@@ -1570,6 +1751,7 @@ class MediaRpcService : Service() {
     override fun onDestroy() {
         stopTimelineUpdates()
         stopHeartbeat()
+        stopAppDetectionCoroutine()
         mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         scope.cancel()
