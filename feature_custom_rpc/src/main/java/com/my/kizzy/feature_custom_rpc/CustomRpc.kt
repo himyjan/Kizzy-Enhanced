@@ -1912,65 +1912,6 @@ private fun RpcTextFieldsColumn(
                 }
             }
 
-            // ===== Console RPC Presets =====
-            item {
-                Text(
-                    text = stringResource(id = R.string.console_presets_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-            }
-
-            item {
-                // Built-in presets first, then the ones the user created. The
-                // list is rebuilt from the state so a new preset appears here
-                // without leaving the tab.
-                val presets = ConsolePresetStore.builtIns() + consoleCustomPresets
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    presets.forEach { preset ->
-                        val presetName = if (preset.nameRes != 0) stringResource(preset.nameRes) else preset.name
-                        val presetAppliedMessage = stringResource(R.string.console_preset_applied)
-                        ConsolePresetChip(
-                            preset = preset,
-                            selected = consoleSelectedPresetId == preset.id,
-                            onClick = {
-                                consoleSelectedPresetId = preset.id
-                                ConsolePresetStore.select(preset.id)
-                                applyConsolePreset(preset, presetName)
-                                scope.launch {
-                                    snackBarHostState.showSnackbar(presetAppliedMessage)
-                                }
-                            },
-                            onEdit = if (preset.builtIn) null else ({
-                                consolePresetBeingEdited = preset
-                                consolePresetEditorOpen = true
-                            })
-                        )
-                    }
-                }
-            }
-
-            item {
-                androidx.compose.material3.OutlinedButton(
-                    onClick = {
-                        consolePresetBeingEdited = ConsolePresetStore.newPreset()
-                        consolePresetEditorOpen = true
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Text(text = stringResource(id = R.string.console_preset_new))
-                }
-            }
-
             item {
                 Text(
                     text = stringResource(id = R.string.console_options_title),
