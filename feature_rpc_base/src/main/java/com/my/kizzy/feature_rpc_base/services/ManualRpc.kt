@@ -1113,6 +1113,11 @@ class ManualRpc : Service() {
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         stopHeartbeat()
         stopMediaRefresh()
+        // Clear Discord presence before closing the gateway so old manual RPC
+        // doesn't keep showing on Discord after Manual RPC is turned off.
+        scope.launch {
+            kizzyRPC?.clearPresence()
+        }
         scope.cancel()
         // The gateway is a process-wide singleton: only close it when no other
         // RPC service is still using it.

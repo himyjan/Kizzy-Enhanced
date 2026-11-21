@@ -407,16 +407,19 @@ class CustomRpcService : Service() {
     override fun onDestroy() {
         consoleDetectionJob?.cancel()
         consoleDetectionJob = null
+        // Clear Discord presence before closing the gateway so old custom RPC
+        // doesn't keep showing on Discord after Custom RPC is turned off.
+        scope.launch {
+            kizzyRPC?.clearPresence()
+        }
+        scope.cancel()
         // KizzyRPC and its Discord gateway are process-wide singletons, so this
         // service must not tear them down while another RPC service still uses
-        // them. The old code cleared the presence on a detached coroutine; that
-        // clear waited for the socket and arrived AFTER a restarted service had
-        // sent its presence, leaving Discord with an empty activity list.
+        // them.
         AppUtils.unregisterRpcService(this)
         if (!AppUtils.isAnotherRpcServiceActive(this)) {
             kizzyRPC?.closeRPC()
         }
-        scope.cancel()
         wakeLock?.let {
             if (it.isHeld) it.release()
         }

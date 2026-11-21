@@ -101,6 +101,11 @@ class AppDetectionService : Service() {
     }
 
     override fun onDestroy() {
+        // Clear Discord presence before closing the gateway so old app detection
+        // RPC doesn't keep showing on Discord after App Detection is turned off.
+        scope.launch {
+            kizzyRPC?.clearPresence()
+        }
         scope.cancel()
         // The gateway is a process-wide singleton: only close it when no other
         // RPC service is still using it.

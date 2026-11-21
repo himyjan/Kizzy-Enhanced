@@ -1100,7 +1100,13 @@ fun RpcSettings(
                                         scope.launch {
                                             Prefs[Prefs.LASTFM_SESSION_KEY] = ""
                                             Prefs[Prefs.LASTFM_PASSWORD] = ""
+                                            Prefs[Prefs.LASTFM_USERNAME] = ""
+                                            Prefs[Prefs.LASTFM_API_KEY] = ""
+                                            Prefs[Prefs.LASTFM_SECRET] = ""
                                             lastfmPassword = ""
+                                            lastfmUsername = ""
+                                            lastfmApiKey = ""
+                                            lastfmSecret = ""
                                         }
                                     }
                                 ) {
