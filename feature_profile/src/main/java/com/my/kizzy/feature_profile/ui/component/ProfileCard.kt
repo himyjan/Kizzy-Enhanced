@@ -351,10 +351,19 @@ fun ProfileCard(
             }
 
             // --- Bio (collapsible, with Discord blue clickable links) -----
+            // Always show the ABOUT ME section; use a placeholder when the
+            // account has no bio so the area never looks missing.
             val bio = user.bio?.takeIf { it.isNotBlank() }
-            if (bio != null) {
-                Spacer(Modifier.height(16.dp))
-                SectionHeader(text = stringResource(id = R.string.user_profile_bio))
+            Spacer(Modifier.height(16.dp))
+            SectionHeader(text = stringResource(id = R.string.user_profile_bio))
+            if (bio == null) {
+                Text(
+                    text = stringResource(id = R.string.user_profile_no_bio),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            } else {
                 var bioExpanded by remember { mutableStateOf(false) }
                 var bioOverflow by remember { mutableStateOf(false) }
                 val linkColor = MaterialTheme.colorScheme.primary
