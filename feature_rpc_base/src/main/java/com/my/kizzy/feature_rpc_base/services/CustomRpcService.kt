@@ -21,6 +21,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import android.graphics.drawable.Icon
+import android.util.Log
 import com.my.kizzy.data.get_current_data.app.GetForegroundPackage
 import com.my.kizzy.data.rpc.ActiveGameTracker
 import com.my.kizzy.data.rpc.ConsoleAppRegistry
@@ -82,6 +83,8 @@ class CustomRpcService : Service() {
                 else RpcManager.RpcType.CustomRpc.name
         }
 
+        Log.d("CustomRpcService", "onStartCommand: intent action=${intent?.action}, hasRPCExtra=${intent?.getStringExtra("RPC")?.isNotBlank() == true}")
+
         // Call startForeground() immediately and synchronously so Android doesn't
         // kill the service for not calling startForeground() within 5 seconds.
         // The full notification (with buttons, etc.) is built below inside the
@@ -116,9 +119,11 @@ class CustomRpcService : Service() {
                     rpcData = try {
                         Json.decodeFromString(it)
                     } catch (e: Exception) {
+                        Log.e("CustomRpcService", "Failed to parse RPC config JSON: ${e.message}")
                         null
                     }
                 }
+                Log.d("CustomRpcService", "ACTION_RESTART_SERVICE: rpcData=${rpcData?.name ?: "null"}")
                 sendPresenceAndNotification(forceRefresh = true)
                 startConsoleDetectionIfNeeded()
                 return super.onStartCommand(intent, flags, startId)
@@ -130,10 +135,12 @@ class CustomRpcService : Service() {
             rpcData = try {
                 Json.decodeFromString(it)
             } catch (e: Exception) {
+                Log.e("CustomRpcService", "Failed to parse RPC config JSON: ${e.message}")
                 null
             }
         }
 
+        Log.d("CustomRpcService", "onStartCommand: rpcData=${rpcData?.name ?: "null"}, details=${rpcData?.details ?: "null"}")
         sendPresenceAndNotification()
         startConsoleDetectionIfNeeded()
         return super.onStartCommand(intent, flags, startId)
@@ -238,6 +245,8 @@ class CustomRpcService : Service() {
             null
         } ?: RpcConfig()
 
+        Log.d("CustomRpcService", "sendPresenceAndNotification: forceRefresh=$forceRefresh, rpcDataToUse.name=${rpcDataToUse.name}, rpcDataToUse.details=${rpcDataToUse.details}, rpcDataToUse.state=${rpcDataToUse.state}")
+
         val stopIntent = Intent(this, CustomRpcService::class.java)
         stopIntent.action = Constants.ACTION_STOP_SERVICE
         val pendingIntent: PendingIntent = PendingIntent.getService(
@@ -280,7 +289,7 @@ class CustomRpcService : Service() {
             // replaced the notification entirely, removing its click intent and buttons.
             val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
                 .setContentTitle(getString(R.string.custom_rpc_running))
-                .setContentText(rpcDataToUse.name ?: "")
+                .setContentText(rpcDataToUse.name)
                 .setSmallIcon(R.drawable.ic_rpc_placeholder)
                 .setContentIntent(appPendingIntent)
                 .addAction(
@@ -297,7 +306,7 @@ class CustomRpcService : Service() {
                         pendingIntent
                     ).build()
                 )
-                .setLargeIcon(rpcDataToUse.largeImg?.toRpcImage(), this@CustomRpcService)
+                .setLargeIcon(rpcDataToUse.largeImg.toRpcImage(), this@CustomRpcService)
                 .build()
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -306,7 +315,7 @@ class CustomRpcService : Service() {
                 startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
             }
 
-            rpcDataToUse?.let {
+            rpcDataToUse.let {
                 kizzyRPC.apply {
                     setName(it.name.ifEmpty { "" })
                     setDetails(it.details.ifEmpty { null })
@@ -336,7 +345,9 @@ class CustomRpcService : Service() {
                         it.smallText
                     )
                     setStreamUrl(it.url.ifEmpty { null })
+                    Log.d("CustomRpcService", "Calling kizzyRPC.build(forceRefresh=$forceRefresh)")
                     build(forceRefresh = forceRefresh)
+                    Log.d("CustomRpcService", "kizzyRPC.build() completed")
                 }
             }
         }

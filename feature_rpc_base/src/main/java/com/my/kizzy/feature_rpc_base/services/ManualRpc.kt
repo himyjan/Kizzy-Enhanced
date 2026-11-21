@@ -585,7 +585,7 @@ class ManualRpc : Service() {
                                 RpcImage.ExternalImage(avatarUrl)
                             } else null
                         } else null
-                    } ?: null
+                    }
 
                 // 2. Playback state icon
                 Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE, true] ->

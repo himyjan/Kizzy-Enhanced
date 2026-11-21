@@ -128,6 +128,7 @@ class DynamicActivityDetectionEngine @Inject constructor(
             // 2. FLAG_IS_GAME — set by Samsung Game Hub, Xiaomi Game Turbo,
             //    Google Play Games, OnePlus Games, and many individual games
             //    that do not set CATEGORY_GAME.
+            @Suppress("DEPRECATION")
             val isGameFlag = if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
                 (appInfo.flags and ApplicationInfo.FLAG_IS_GAME) != 0
             } else false
