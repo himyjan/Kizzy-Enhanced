@@ -234,10 +234,11 @@ jobs:
             echo ""
             echo "## 📲 Installation"
             echo ""
-            echo "1. Download **KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk** (or universal.apk if unsure of CPU)."
+            echo "1. Download **KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk** (or choose the appropriate APK for your device architecture)."
             echo "2. Open the APK file on your Android device."
             echo "3. If prompted, allow 'Install from unknown sources'."
             echo "4. If upgrading from an older build signed with a different key, uninstall the previous version first."
+            echo ""
           } > release-notes.md
 
       - name: Commit JDK version change
