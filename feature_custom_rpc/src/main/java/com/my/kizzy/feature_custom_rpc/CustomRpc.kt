@@ -615,9 +615,9 @@ private fun RpcTextFieldsColumn(
             status = preset.status,
             timestampsStart = startTs,
             timestampsStop = endTs,
-            platform = preset.platform,
-            // Use the preset's cover art URLs when cover art is enabled,
-            // otherwise clear the images.
+            // Do NOT overwrite the Custom RPC tab's Activity Platform field.
+            // Console presets set consolePlatform (Console RPC tab) only.
+            // The Custom RPC tab keeps its own Activity Platform setting.
             largeImg = if (preset.coverArt) preset.largeCoverArtUrl else "",
             smallImg = if (preset.coverArt) preset.smallCoverArtUrl else "",
             button1 = "",
@@ -650,7 +650,8 @@ private fun RpcTextFieldsColumn(
             details = game.game_title,
             timestampsStart = startTs,
             timestampsStop = endTs,
-            platform = game.platform,
+            // Do NOT overwrite the Custom RPC tab's Activity Platform field.
+            // Console games set consolePlatform (Console RPC tab) only.
             largeImg = if (consoleShowCoverArt) game.large_image.orEmpty() else "",
             smallImg = if (consoleShowCoverArt) game.small_image.orEmpty() else "",
         )))
