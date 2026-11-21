@@ -1,78 +1,34 @@
 # ============================================================
-# Attributes & Stack Traces
+# Stack Traces, Attributes & Coroutines (R8 Full Mode)
 # ============================================================
--keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod,SourceFile,LineNumberTable
--allowaccessmodification
+-keepattributes SourceFile,LineNumberTable,InnerClasses,EnclosingMethod,Signature
+-keep class kotlin.coroutines.Continuation
 
 # ============================================================
-# kotlinx.serialization Models & Companions
+# kotlinx.serialization (Named Companions Only, if used)
 # ============================================================
--keep @kotlinx.serialization.Serializable class * {
-    public <init>(...);
-    public static kotlinx.serialization.KSerializer serializer(...);
-}
--keepclassmembers class **$Companion {
-    kotlinx.serialization.KSerializer serializer(...);
-}
-
-# Domain, Remote & Gateway Data Models
--keepclassmembers class com.my.kizzy.domain.model.** {
-    public <init>(...);
-    public <fields>;
-    public <methods>;
-}
--keepclassmembers class com.my.kizzy.data.remote.** {
-    public <init>(...);
-    public <fields>;
-    public <methods>;
-}
--keepclassmembers class kizzy.gateway.entities.** {
-    public <init>(...);
-    public <fields>;
-    public <methods>;
-}
+# Standard @Serializable classes & companions are covered by kotlinx-serialization's
+# consumer rules. Only add -if rules for specific classes with NAMED companion objects:
+# -if @kotlinx.serialization.Serializable class com.my.kizzy.path.ToNamedCompanionClass {
+#     public static ** NamedCompanion;
+# }
+# -keep class com.my.kizzy.path.ToNamedCompanionClass$NamedCompanion {
+#     public kotlinx.serialization.KSerializer serializer(...);
+# }
 
 # ============================================================
-# Hilt / Dagger DI & ViewModels
+# Dynamic Activity Detection (Reflection / Dynamic Lookup)
 # ============================================================
--keep @interface dagger.hilt.android.HiltAndroidApp
--keep @interface dagger.hilt.android.AndroidEntryPoint
--keep @interface dagger.hilt.EntryPoint
-
--keep @dagger.hilt.EntryPoint class * {
-    <methods>;
-}
--keep @dagger.hilt.android.lifecycle.HiltViewModel class * {
-    <init>(...);
-    <fields>;
-    <methods>;
-}
--keepclassmembers class * extends androidx.lifecycle.ViewModel {
+# Note: Only keep classes/members here that are instantiated or invoked dynamically
+# (e.g., via reflection or external/dynamic callers) rather than normal direct calls.
+-keepclassmembers,allowobfuscation class com.my.kizzy.feature_rpc_base.services.DetectedAiApp {
     <init>(...);
 }
-
-# ============================================================
-# Dynamic Activity Detection & Tink Crypto
-# ============================================================
--keepclassmembers class com.my.kizzy.feature_rpc_base.services.DetectedAiApp {
+-keepclassmembers,allowobfuscation class com.my.kizzy.feature_rpc_base.services.DetectedGameApp {
     <init>(...);
-    <fields>;
-    <methods>;
 }
--keepclassmembers class com.my.kizzy.feature_rpc_base.services.DetectedGameApp {
+-keepclassmembers,allowobfuscation class com.my.kizzy.feature_rpc_base.services.DynamicActivityDetectionEngine {
     <init>(...);
-    <fields>;
-    <methods>;
-}
--keepclassmembers class com.my.kizzy.feature_rpc_base.services.DynamicActivityDetectionEngine {
-    <init>(...);
-    <fields>;
-    <methods>;
-}
-
--keepclassmembers class com.google.crypto.tink.** {
-    public <init>(...);
-    public <methods>;
 }
 
 # ============================================================
@@ -96,9 +52,11 @@
 -dontnote jakarta.annotation.processing.Processor
 
 # ============================================================
-# Release Build Analysis Reports (Optional - keep for R8 tuning)
+# Release Mapping & Optional Tuning Dumps
 # ============================================================
--printconfiguration build/outputs/mapping/release/configuration.txt
 -printmapping build/outputs/mapping/release/mapping.txt
--printseeds build/outputs/mapping/release/seeds.txt
--printusage build/outputs/mapping/release/usage.txt
+
+# Uncomment temporarily when tuning or auditing R8 rules:
+# -printconfiguration build/outputs/mapping/release/configuration.txt
+# -printseeds build/outputs/mapping/release/seeds.txt
+# -printusage build/outputs/mapping/release/usage.txt
