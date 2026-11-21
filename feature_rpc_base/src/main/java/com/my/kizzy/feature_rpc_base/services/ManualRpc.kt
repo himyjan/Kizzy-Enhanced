@@ -113,6 +113,7 @@ class ManualRpc : Service() {
 
     private var isMediaSessionActive = false
     private var lastSentPresenceKey: List<String?>? = null
+    private var lastHadPresence: Boolean = false
     private var currentMediaProgressSec: Int = 0
     private var currentMediaDurationSec: Int = 0
 
@@ -457,12 +458,14 @@ class ManualRpc : Service() {
         richMediaInfo: RichMediaMetadata? = null,
         rawMediaMetadata: MediaMetadata? = null,
     ) {
-        // If no media data at all, don't touch Discord at all - just return.
-        // Sending empty presence would clear Discord's display and close the RPC.
+        // If no media data at all, clear Discord presence if we had one before.
         // When media loads later, MediaControllerCallback will trigger updatePresence
         // with real data.
         if (richMediaInfo == null && appInfo == null) {
-            logger.d(TAG, "No media data available - skipping presence update, waiting for media to load")
+            if (lastHadPresence) {
+                logger.d(TAG, "No media data available - clearing Discord presence")
+                scope.launch { kizzyRPC.clearPresence() }
+            }
             return
         }
 
@@ -471,10 +474,14 @@ class ManualRpc : Service() {
         val finalState: String?
         var finalLargeImage: RpcImage?
         var finalSmallImage: RpcImage?
+        var finalSmallImageChannelUrl: String? = null
         var finalLargeText: String?
         var finalSmallText: String?
         var finalTimestamps: Timestamps?
         var effectivePackageName: String?
+
+        // Channel icon for small image when enabled
+        val showChannelIcon = Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON, false]
 
         // Hide media on pause if enabled
         if (richMediaInfo != null &&
@@ -565,9 +572,26 @@ class ManualRpc : Service() {
             }
 
             finalSmallImage = when {
+                // 1. Channel icon (highest priority)
+                Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON, false] &&
+                Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false ->
+                    // Resolve channel avatar from YouTube watch URL
+                    richMediaInfo.mediaUrl?.let { url ->
+                        val videoId = YouTubeResolver.extractVideoId(url)
+                        if (videoId != null) {
+                            val avatarUrl = YouTubeResolver.lookupChannelAvatar(videoId)
+                            if (avatarUrl != null) {
+                                finalSmallImageChannelUrl = richMediaInfo.channelUrl
+                                RpcImage.ExternalImage(avatarUrl)
+                            } else null
+                        } else null
+                    } ?: null
+
+                // 2. Playback state icon
                 Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE, true] ->
                     richMediaInfo.playbackStateIcon
 
+                // 3. App icon
                 Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON, false] &&
                 Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false && finalLargeImage != richMediaInfo.appIcon ->
                     richMediaInfo.appIcon
@@ -712,6 +736,7 @@ class ManualRpc : Service() {
             stateUrl = stateUrl,
             largeImage = finalLargeImage,
             smallImage = finalSmallImage,
+            smallImageChannelUrl = finalSmallImageChannelUrl,
             largeUrl = finalLargeUrl,
             largeText = manualLargeText.takeIf { it.isNotEmpty() } ?: finalLargeText,
             smallText = manualSmallText.takeIf { it.isNotEmpty() } ?: finalSmallText,
