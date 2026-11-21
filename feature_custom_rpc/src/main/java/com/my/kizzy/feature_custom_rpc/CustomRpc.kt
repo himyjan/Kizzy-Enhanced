@@ -2097,7 +2097,11 @@ private fun RpcTextFieldsColumn(
                             }
                         }
                     } else {
-                        items(games, key = { it.game_title }) { game ->
+                        // game_title is not unique (e.g. "Call of Duty: Modern Warfare II"
+                        // can appear multiple times in the catalog), so do not use it as
+                        // the LazyColumn key — a duplicate key crashes with
+                        // IllegalArgumentException. Use index-based keys (the default).
+                        items(games) { game ->
                             val gameSelectedText = stringResource(R.string.console_game_selected, game.game_title)
                             ConsoleGameItem(
                                 game = game,

@@ -1160,7 +1160,19 @@ fun ManualRpcScreen(
 
                         stringResource(R.string.platform_ios) to "ios",
 
+                        stringResource(R.string.platform_samsung) to "samsung",
+
                         stringResource(R.string.platform_xbox) to "xbox",
+
+                        stringResource(R.string.platform_ps4) to "ps4",
+
+                        stringResource(R.string.platform_ps5) to "ps5",
+
+                        stringResource(R.string.platform_nintendo_switch_2) to "nintendo-switch-2",
+
+                        stringResource(R.string.platform_droideck) to "droideck",
+
+                        stringResource(R.string.platform_eden) to "eden",
 
                         stringResource(R.string.platform_playstation) to "playstation",
 

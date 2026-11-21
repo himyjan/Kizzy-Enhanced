@@ -17,16 +17,37 @@ import com.my.kizzy.resources.R
 object Constants {
     const val NINTENDO_LINK =
         "https://media.discordapp.net/attachments/948828217312178227/1018855932496719932/default.png"
+    const val NINTENDO_SWITCH_2_LINK =
+        "https://media.discordapp.net/attachments/948828217312178227/1018855932496719932/nintendo-switch-2-2026.png"
     const val WII_U_LINK =
         "https://media.discordapp.net/attachments/948828217312178227/1020010414576255017/default.png"
     const val XBOX_LINK =
         "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/1670332610733.png"
+    const val XBOX_2026_LINK =
+        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/xbox-2026.png"
+    const val PS5_LINK =
+        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/ps5-2026.png"
+    const val PS4_LINK =
+        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/ps4-2026.png"
+    const val DROIDDECK_LINK =
+        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/droideck-2026.png"
+    const val EDEN_LINK =
+        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/eden-2026.png"
+    const val SAMSUNG_LINK =
+        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/samsung-2026.png"
+    const val IOS_LINK =
+        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/ios-2026.png"
+    const val ANDROID_LINK =
+        "https://media.discordapp.net/attachments/1009061802593763398/1049675792952598599/android-2026.png"
     const val N3DS_LINK =
         "https://media.discordapp.net/attachments/948828217312178227/1040885415864967279/3ds.png"
     const val NINTENDO = "Nintendo Switch"
+    const val NINTENDO_SWITCH_2 = "Nintendo Switch 2"
     const val NINTENDO_3DS = "Nintendo-3DS"
     const val WII_U = "Wii-U"
     const val XBOX = "Xbox"
+    const val DROIDDECK = "DroidDeck"
+    const val EDEN = "Eden"
     const val APPLICATION_ID = "1522589499903840448"
     const val IMGUR_CLIENT_ID = "d70305e7c3ac5c6"
     const val APP_DIRECTORY = "App Directory"
@@ -55,8 +76,11 @@ object Constants {
     val ACTIVITY_PLATFORMS = mapOf(
         "Android" to "android",
         "Desktop" to "desktop",
+        "DroidDeck" to "droideck",
+        "Eden" to "eden",
         "Embedded" to "embedded",
         "IOS" to "ios",
+        "Nintendo Switch 2" to "nintendo-switch-2",
         "PlayStation 4" to "ps4",
         "PlayStation 5" to "ps5",
         "Samsung" to "samsung",
@@ -100,7 +124,13 @@ object Constants {
         "web" -> Triple("Discord Web", "Windows", "ktor")
         "android" -> Triple("Discord Android", "Android", "Discord Android")
         "ios" -> Triple("Discord iOS", "iOS", "Discord iOS")
+        "samsung" -> Triple("Discord Android", "Android", "Samsung")
         "xbox" -> Triple("Discord Embedded", "Windows", "ktor")
+        "ps4" -> Triple("Discord Embedded", "Windows", "ktor")
+        "ps5" -> Triple("Discord Embedded", "Windows", "ktor")
+        "nintendo-switch-2" -> Triple("Discord Embedded", "Windows", "ktor")
+        "droideck" -> Triple("Discord Android", "Android", "DroidDeck")
+        "eden" -> Triple("Discord Embedded", "Windows", "ktor")
         "playstation" -> Triple("Discord Embedded", "Windows", "ktor")
         "vr" -> Triple("Discord VR", "Windows", "ktor")
         else -> Triple("Discord Client", "Windows", "ktor")

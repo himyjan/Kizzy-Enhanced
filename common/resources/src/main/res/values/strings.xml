@@ -99,6 +99,7 @@
     <string name="console_preset_xbox">Xbox</string>
     <string name="console_preset_playstation">PlayStation</string>
     <string name="console_preset_nintendo">Nintendo</string>
+    <string name="console_preset_nintendo_switch_2">Nintendo Switch 2</string>
     <string name="console_preset_desktop">Desktop</string>
     <string name="rpc_tab_custom_settings">Custom RPC</string>
     <string name="rpc_tab_console_presets">Console RPC</string>
@@ -409,6 +410,12 @@
     <string name="platform_xbox">Xbox</string>
     <string name="platform_playstation">Playstation</string>
     <string name="platform_vr">VR</string>
+    <string name="platform_samsung">Samsung</string>
+    <string name="platform_ps4">PlayStation 4</string>
+    <string name="platform_ps5">PlayStation 5</string>
+    <string name="platform_nintendo_switch_2">Nintendo Switch 2</string>
+    <string name="platform_droideck">DroidDeck</string>
+    <string name="platform_eden">Eden</string>
     <string name="timestamp_mode_default">Media / App (default)</string>
     <string name="timestamp_mode_current">Same as current time of day</string>
     <string name="timestamp_mode_custom">Custom</string>

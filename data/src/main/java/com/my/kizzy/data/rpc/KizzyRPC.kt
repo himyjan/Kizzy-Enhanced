@@ -922,7 +922,7 @@ class KizzyRPC @Inject constructor(
                 delay(500)
             }
         }
-        discordWebSocket.sendActivity(presence)?.let { sent ->
+        discordWebSocket.sendActivity(presence).let { sent ->
             if (sent) lastSuccessfulSendTimeMs = System.currentTimeMillis()
         }
     }

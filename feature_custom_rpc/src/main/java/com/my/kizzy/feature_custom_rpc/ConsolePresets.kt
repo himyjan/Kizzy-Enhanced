@@ -79,15 +79,15 @@ object ConsolePresetStore {
         builtIn("xbox", R.string.console_preset_xbox, "xbox"),
         builtIn("ps5", R.string.console_preset_ps5, "ps5"),
         builtIn("ps4", R.string.console_preset_ps4, "ps4"),
-        builtIn("nintendo", R.string.console_preset_nintendo, "nintendo"),
+        builtIn("nintendo-switch-2", R.string.console_preset_nintendo_switch_2, "nintendo-switch-2"),
         builtIn("desktop", R.string.console_preset_desktop, "desktop"),
         builtIn("android", R.string.console_preset_android, "android"),
         builtIn("ios", R.string.console_preset_ios, "ios"),
         builtIn("samsung", R.string.console_preset_samsung, "samsung"),
         builtIn("embedded", R.string.console_preset_embedded, "embedded"),
         // DroidDeck runs PC games in a Linux container, Eden emulates a Switch.
-        builtIn("droideck", R.string.console_preset_droideck, "desktop"),
-        builtIn("eden", R.string.console_preset_eden, "nintendo"),
+        builtIn("droideck", R.string.console_preset_droideck, "droideck"),
+        builtIn("eden", R.string.console_preset_eden, "eden"),
     )
 
     private fun builtIn(id: String, nameRes: Int, platform: String) = ConsolePreset(
@@ -170,5 +170,9 @@ fun consolePresetIcon(preset: ConsolePreset): ImageVector = when (preset.platfor
     "desktop", "embedded" -> Icons.Filled.DesktopWindows
     "android", "ios", "samsung" -> Icons.Filled.PhoneAndroid
     "ps4", "ps5" -> Icons.Filled.Tv
+    "xbox" -> Icons.Filled.SportsEsports
+    "droideck" -> Icons.Filled.DesktopWindows
+    "eden" -> Icons.Filled.Tv
+    "nintendo-switch-2" -> Icons.Filled.Tv
     else -> Icons.Filled.SportsEsports
 }
