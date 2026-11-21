@@ -281,6 +281,55 @@ fun RpcSettings(
                     }
                 }
             }
+            item(key = "multi_rpc_header") {
+                Subtitle(text = "Multiple RPC Applications")
+            }
+            item(key = "oauth2_authorize_slot2") {
+                val token2 = prefsMap[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2] as? String ?: ""
+                val appId2 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "1573725984845201438"]
+                val enabled2 = prefsMap[Prefs.RPC_SESSION_2_ENABLED] as? Boolean ?: false
+                SettingItem(
+                    title = "RPC App 2" + if (enabled2) "  (on)" else "",
+                    description = if (token2.isNotEmpty()) "Authorized • app $appId2" else "Tap to authorize app $appId2",
+                    icon = Icons.AutoMirrored.Filled.Login,
+                ) {
+                    oauth2Error = ""
+                    scope.launch {
+                        try {
+                            val result = discordAuth.authorize(activity, "2")
+                            Log.d("RpcSettings", "OAuth2 slot 2 authorized: len=${result.accessToken.length}")
+                            Toast.makeText(context, "RPC App 2 authorized", Toast.LENGTH_SHORT).show()
+                        } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
+                            oauth2Error = e.message ?: "Authorization failed"
+                        } catch (e: Exception) {
+                            oauth2Error = "Unexpected error: ${e.message}"
+                        }
+                    }
+                }
+            }
+            item(key = "oauth2_authorize_slot3") {
+                val token3 = prefsMap[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3] as? String ?: ""
+                val appId3 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, "1573728208854065293"]
+                val enabled3 = prefsMap[Prefs.RPC_SESSION_3_ENABLED] as? Boolean ?: false
+                SettingItem(
+                    title = "RPC App 3" + if (enabled3) "  (on)" else "",
+                    description = if (token3.isNotEmpty()) "Authorized • app $appId3" else "Tap to authorize app $appId3",
+                    icon = Icons.AutoMirrored.Filled.Login,
+                ) {
+                    oauth2Error = ""
+                    scope.launch {
+                        try {
+                            val result = discordAuth.authorize(activity, "3")
+                            Log.d("RpcSettings", "OAuth2 slot 3 authorized: len=${result.accessToken.length}")
+                            Toast.makeText(context, "RPC App 3 authorized", Toast.LENGTH_SHORT).show()
+                        } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
+                            oauth2Error = e.message ?: "Authorization failed"
+                        } catch (e: Exception) {
+                            oauth2Error = "Unexpected error: ${e.message}"
+                        }
+                    }
+                }
+            }
             item(key = "rpc_hide_cover_art") {
                 var hideCoverArt by remember(prefsMap) {
                     mutableStateOf(prefsMap[Prefs.RPC_HIDE_COVER_ART] as? Boolean ?: false)
