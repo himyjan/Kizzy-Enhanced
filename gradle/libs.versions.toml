@@ -6,12 +6,11 @@ version-code = "14"
 
 # app level
 activity-compose = "1.14.0-alpha03"
-agp = "9.6.0-alpha04"
+agp = "9.6.0-alpha05"
 androidx-baselineprofile = "1.6.0-alpha02"
 androidx-browser = "1.10.0"
 androidx-material = "1.14.0"
 androidx-profileinstaller = "1.4.1"
-androidx-webkit = "1.19.0-alpha02"
 androidxMacroBenchmark = "1.6.0-alpha02"
 app-compat = "1.8.0"
 coil = "3.6.3"
@@ -43,7 +42,6 @@ androidx-macro-benchmark = { module = "androidx.benchmark:benchmark-macro-junit4
 androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
 androidx-test-ext-junit = "androidx.test.ext:junit:1.4.0-alpha04"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.4.1"
-androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
 app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
 baselineprofile = { module = "androidx.baselineprofile:androidx.baselineprofile.gradle.plugin", version.ref = "androidx-baselineprofile" }
 # Third-party libraries

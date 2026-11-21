@@ -1,11 +1,14 @@
 package com.my.kizzy.feature_settings.rpc_settings
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,9 +19,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Cached
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Code
@@ -30,19 +35,22 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material.icons.outlined.SmartButton
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,8 +58,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
@@ -69,18 +77,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.collectAsState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import android.util.Log
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.RemoveRedEye
-import androidx.compose.material.icons.automirrored.filled.Login
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RpcSettings(onBackPressed: () -> Unit) {
+fun RpcSettings(
+    onBackPressed: () -> Unit,
+    authTabLauncher: ActivityResultLauncher<Intent>? = null,
+    onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
+) {
     val context = LocalContext.current
     val activity = context as Activity
     val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
@@ -106,14 +112,31 @@ fun RpcSettings(onBackPressed: () -> Unit) {
         mutableStateOf(prefsMap[Prefs.RPC_CONNECTION_METHOD] as? String ?: Prefs.RPC_CONNECTION_METHOD_GATEWAY)
     }
 
-    val discordAuth = remember<DiscordOAuth2Auth> { DiscordOAuth2Auth(context, scope) }
+    val discordAuth = remember(context, scope, authTabLauncher) {
+        DiscordOAuth2Auth(
+            context = context,
+            scope = scope,
+            authTabLauncher = authTabLauncher,
+        )
+    }
+
+    // Bind this screen's callback into the hosting Activity while RpcSettings is active,
+    // and clear it on disposal so stale screens don't intercept results.
+    DisposableEffect(discordAuth, onBindAuthTabCallback) {
+        onBindAuthTabCallback?.invoke { resultCode, callbackIntent ->
+            discordAuth.onActivityResult(resultCode, callbackIntent)
+        }
+        onDispose {
+            onBindAuthTabCallback?.invoke { _, _ -> }
+        }
+    }
 
     var useButtonConfigs by remember { mutableStateOf(Prefs[Prefs.USE_RPC_BUTTONS, false]) }
     var useYoutubeButton by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_MEDIA_BUTTON, false]) }
     var linkToArtistChannel by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_ARTIST_LINK, false]) }
     var showButtonsConfigDialog by remember { mutableStateOf(false) }
     var rpcButtons by remember {
-        mutableStateOf(Json.decodeFromString<RpcButtons>(Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]))
+        mutableStateOf<RpcButtons>(Json.decodeFromString(Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]))
     }
     var customActivityStatus by remember {
         mutableStateOf(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
@@ -223,16 +246,16 @@ fun RpcSettings(onBackPressed: () -> Unit) {
                     SettingItem(
                         title = stringResource(id = R.string.discord_oauth2_authorize),
                         description = stringResource(id = R.string.discord_oauth2_authorize_desc)
-                            + if (oauth2Error.isNotEmpty()) "  •  Error: $oauth2Error" else "  •  $oauthStatus",
+                                + if (oauth2Error.isNotEmpty()) "  •  Error: $oauth2Error" else "  •  $oauthStatus",
                         icon = Icons.AutoMirrored.Filled.Login,
                     ) {
                         oauth2Error = ""
                         scope.launch {
                             try {
                                 // OAuth 2.1 Authorization Code flow with PKCE S256.
-                                // discordAuth.authorize() opens the system browser for
-                                // user consent, exchanges the authorization code for
-                                // bearer + refresh tokens, and stores them internally.
+                                // discordAuth.authorize() launches AuthTabIntent (or
+                                // CustomTabsIntent fallback) using the launcher passed
+                                // into DiscordOAuth2Auth, exchanges the code, and stores tokens.
                                 val result = discordAuth.authorize(activity)
                                 Log.d("RpcSettings", "OAuth2 authorized: bearer_token len=${result.accessToken.length}, refresh_token len=${result.refreshToken.length}, expires_in=${result.expiresInSec}s")
 
@@ -286,10 +309,10 @@ fun RpcSettings(onBackPressed: () -> Unit) {
                     value = defaultLargeCoverArt,
                     label = R.string.rpc_default_cover_art_large,
                     trailingIcon = {
-                        androidx.compose.material3.IconButton(
+                        IconButton(
                             onClick = { pickLargeCoverArt.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }
                         ) {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 imageVector = Icons.Outlined.Image,
                                 contentDescription = "Pick image"
                             )
@@ -313,10 +336,10 @@ fun RpcSettings(onBackPressed: () -> Unit) {
                     value = defaultSmallCoverArt,
                     label = R.string.rpc_default_cover_art_small,
                     trailingIcon = {
-                        androidx.compose.material3.IconButton(
+                        IconButton(
                             onClick = { pickSmallCoverArt.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }
                         ) {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 imageVector = Icons.Outlined.Image,
                                 contentDescription = "Pick image"
                             )
@@ -379,7 +402,6 @@ fun RpcSettings(onBackPressed: () -> Unit) {
                 ) {
                     showActivityTypeDialog = true
                 }
-
             }
             item(key = "custom_activity_status") {
                 SettingItem(
@@ -1013,9 +1035,9 @@ fun RpcSettings(onBackPressed: () -> Unit) {
                     TextButton(onClick = {
                         val credentialsChanged =
                             Prefs[Prefs.LIBREFM_API_KEY, ""] != librefmApiKey ||
-                                Prefs[Prefs.LIBREFM_SECRET, ""] != librefmSecret ||
-                                Prefs[Prefs.LIBREFM_USERNAME, ""] != librefmUsername ||
-                                Prefs[Prefs.LIBREFM_PASSWORD, ""] != librefmPassword
+                                    Prefs[Prefs.LIBREFM_SECRET, ""] != librefmSecret ||
+                                    Prefs[Prefs.LIBREFM_USERNAME, ""] != librefmUsername ||
+                                    Prefs[Prefs.LIBREFM_PASSWORD, ""] != librefmPassword
                         Prefs[Prefs.LIBREFM_API_KEY] = librefmApiKey
                         Prefs[Prefs.LIBREFM_SECRET] = librefmSecret
                         Prefs[Prefs.LIBREFM_USERNAME] = librefmUsername

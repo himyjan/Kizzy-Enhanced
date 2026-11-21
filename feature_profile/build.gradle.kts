@@ -17,14 +17,14 @@ dependencies {
     implementation(projects.featureLogs)
     implementation(projects.featureSettings)
     implementation(projects.data)
+
     implementation(libs.coil)
     implementation(libs.coil.network)
-
+    implementation(libs.bundles.network.ktor)
     implementation(libs.activity.compose)
     implementation(libs.compose.navigation)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.browser)
-    implementation(libs.androidx.webkit)
     implementation(libs.material.icons.extended)
 
     // Hilt annotation processor required for @HiltViewModel

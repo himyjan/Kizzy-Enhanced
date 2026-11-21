@@ -70,6 +70,18 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES"/>
             </intent-filter>
+            <!-- OAuth2 redirect for the CustomTabs fallback path (AuthTabIntent
+                 unsupported). AuthTabIntent results arrive via the Activity
+                 ResultLauncher; CustomTabs redirects land here instead. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="kizzy"
+                    android:host="oauth2"
+                    android:path="/callback" />
+            </intent-filter>
             <meta-data android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
@@ -98,19 +110,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.my.kizzy.feature_settings.rpc_settings.DiscordOAuth2Activity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:theme="@style/ActivityTranslucent">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="kizzy" android:host="oauth2" android:path="/callback" />
-            </intent-filter>
-        </activity>
-
         <service
             android:name="com.my.kizzy.feature_rpc_base.services.AppDetectionService"
             android:foregroundServiceType="mediaPlayback"

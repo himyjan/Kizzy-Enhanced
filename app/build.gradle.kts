@@ -111,6 +111,7 @@ dependencies {
     implementation(projects.common.resources)
 
     // Extras
+    implementation(libs.androidx.browser)
     implementation(libs.app.compat)
     implementation(libs.compose.navigation)
     implementation(libs.kotlinx.serialization.json)

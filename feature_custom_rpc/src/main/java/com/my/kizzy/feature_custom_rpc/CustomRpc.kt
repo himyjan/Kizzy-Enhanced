@@ -647,8 +647,10 @@ private fun RpcTextFieldsColumn(
     fun applyConsoleGame(game: com.my.kizzy.domain.model.Game, startTs: String, endTs: String) {
         consolePlatform = game.platform
         onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(
-            name = game.platform,
-            details = game.game_title,
+            // The game title belongs in Activity Name (not Activity Details).
+            // The platform goes into Activity Details so no information is lost.
+            name = game.game_title,
+            details = game.platform,
             timestampsStart = startTs,
             timestampsStop = endTs,
             // Do NOT overwrite the Custom RPC tab's Activity Platform field.

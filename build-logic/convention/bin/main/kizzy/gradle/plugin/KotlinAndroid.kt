@@ -3,7 +3,6 @@ package kizzy.gradle.plugin
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -14,20 +13,13 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 private fun Project.configureCommonAndroid(commonExtension: CommonExtension) {
     commonExtension.compileSdk {
         version = release(37) {
-            minorApiLevel = 1
+            minorApiLevel = 2
         }
     }
 
     commonExtension.defaultConfig.minSdk = 26
 
     commonExtension.buildFeatures.buildConfig = true
-
-    commonExtension.compileOptions.sourceCompatibility = JavaVersion.VERSION_27
-    commonExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_27
-
-    configure<KotlinAndroidProjectExtension> {
-        jvmToolchain(27)
-    }
 }
 
 // Overload entry point for Application modules

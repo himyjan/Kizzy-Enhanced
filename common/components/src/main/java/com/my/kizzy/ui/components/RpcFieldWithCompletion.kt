@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -79,6 +80,12 @@ fun RpcFieldWithCompletions(
     completionList: List<Pair<String, ResourceId>> = emptyList(),
 ) {
     val textFieldState = rememberTextFieldState(initialText = value)
+
+    // Keep the callback current for the snapshotFlow collector below: it is keyed on
+    // textFieldState only, so a captured lambda would go stale and overwrite other
+    // fields with values from an older composition.
+    val onValueChangeState = rememberUpdatedState(onValueChange)
+
     var showSuggestions by remember { mutableStateOf(false) }
     var filteredPlaceholders by remember { mutableStateOf<List<Pair<String, ResourceId>>>(emptyList()) }
     var lastTemplateCursorPosition by rememberSaveable { mutableIntStateOf(-1) }
@@ -122,7 +129,7 @@ fun RpcFieldWithCompletions(
             .drop(1)
             .distinctUntilChanged()
             .collect { updated ->
-                onValueChange(updated)
+                onValueChangeState.value(updated)
                 refreshSuggestions()
             }
     }

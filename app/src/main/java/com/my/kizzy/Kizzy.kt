@@ -13,6 +13,8 @@
 package com.my.kizzy
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,6 +79,12 @@ internal fun Kizzy(
     usageAccessStatus: MutableState<Boolean>,
     notificationListenerAccess: MutableState<Boolean>,
     batteryOptimizationStatus: MutableState<Boolean>,
+    // ActivityResultLauncher registered in MainActivity for AuthTabIntent launches.
+    authTabLauncher: ActivityResultLauncher<Intent>? = null,
+    // Allows active screens (RpcSettings / LoginScreen) to register a normalized
+    // (resultCode, callbackIntent) handler with MainActivity without `:app` needing
+    // direct access to `AuthTabIntent.AuthResult`.
+    onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
 ) {
     Scaffold()
     {
@@ -282,14 +290,23 @@ internal fun Kizzy(
                 }
             }
             composable(Routes.RPC_SETTINGS) {
-                RpcSettings { goBack() }
+                // Pass named `onBackPressed` alongside AuthTab launcher & callback binder.
+                RpcSettings(
+                    onBackPressed = { goBack() },
+                    authTabLauncher = authTabLauncher,
+                    onBindAuthTabCallback = onBindAuthTabCallback,
+                )
             }
             composable(Routes.LOGIN) { navBackStackEntry ->
+                // Forward AuthTab launcher & callback binder to LoginScreen so OAuth2
+                // authorization in login flow also receives browser results.
                 LoginScreen(
                     onBackPressed = { goBack() },
                     onCompleted = {
                         goBack()
                     },
+                    authTabLauncher = authTabLauncher,
+                    onBindAuthTabCallback = onBindAuthTabCallback,
                 )
             }
             composable(Routes.LOGS_SCREEN) { navBackStackEntry ->

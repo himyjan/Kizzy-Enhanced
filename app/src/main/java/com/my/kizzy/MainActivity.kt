@@ -1,16 +1,21 @@
 package com.my.kizzy
 
+import android.app.Activity
 import android.app.AppOpsManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.browser.auth.AuthTabIntent
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.MutableState
@@ -32,6 +37,24 @@ class MainActivity : AppCompatActivity() {
     private lateinit var usageAccessStatus: MutableState<Boolean>
     private lateinit var notificationListenerAccess: MutableState<Boolean>
     private lateinit var batteryOptimizationStatus: MutableState<Boolean>
+
+    // Holds the currently active screen's callback: (resultCode, callbackIntent) -> Unit.
+    // Screens (RpcSettings / LoginScreen) register via Kizzy(onBindAuthTabCallback).
+    private var activeAuthTabCallback: ((Int, Intent?) -> Unit)? = null
+
+    // A deep link can arrive before the composable has bound its callback (cold start).
+    // Hold it here and replay it as soon as a callback is registered.
+    private var pendingOAuthCallbackIntent: Intent? = null
+
+    // Registered as a field so it is ready before the activity reaches STARTED.
+    // AuthTabIntent results are normalized into (resultCode, ACTION_VIEW Intent) so the
+    // active screen's DiscordOAuth2Auth.onActivityResult handles both browser paths.
+    private val authTabLauncher: ActivityResultLauncher<Intent> =
+        AuthTabIntent.registerActivityResultLauncher(this) { result ->
+            Log.d(TAG, "AuthTab result: code=${result.resultCode}, uri=${result.resultUri}")
+            val callbackIntent = result.resultUri?.let { uri -> Intent(Intent.ACTION_VIEW, uri) }
+            deliverOAuthResult(result.resultCode, callbackIntent)
+        }
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,9 +88,46 @@ class MainActivity : AppCompatActivity() {
                         usageAccessStatus = usageAccessStatus,
                         notificationListenerAccess = notificationListenerAccess,
                         batteryOptimizationStatus = batteryOptimizationStatus,
+                        authTabLauncher = authTabLauncher,
+                        onBindAuthTabCallback = { callback -> bindAuthTabCallback(callback) },
                     )
                 }
             }
+        }
+        // Cold start via the kizzy://oauth2/callback deep link (no onNewIntent call).
+        handleOAuthCallbackIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // Warm start / existing singleTask activity: route the fallback deep link
+        // through the same normalized callback used by AuthTabIntent results.
+        handleOAuthCallbackIntent(intent)
+    }
+
+    private fun handleOAuthCallbackIntent(intent: Intent?) {
+        val uri = intent?.data ?: return
+        if (uri.scheme == "kizzy" && uri.host == "oauth2") {
+            Log.d(TAG, "Received OAuth2 deep link intent: $uri")
+            deliverOAuthResult(Activity.RESULT_OK, Intent(Intent.ACTION_VIEW, uri))
+        }
+    }
+
+    private fun deliverOAuthResult(resultCode: Int, callbackIntent: Intent?) {
+        val callback = activeAuthTabCallback
+        if (callback != null) {
+            callback(resultCode, callbackIntent)
+        } else if (resultCode == Activity.RESULT_OK && callbackIntent != null) {
+            pendingOAuthCallbackIntent = callbackIntent
+        }
+    }
+
+    private fun bindAuthTabCallback(callback: (Int, Intent?) -> Unit) {
+        activeAuthTabCallback = callback
+        pendingOAuthCallbackIntent?.let { pending ->
+            pendingOAuthCallbackIntent = null
+            callback(Activity.RESULT_OK, pending)
         }
     }
 
@@ -108,6 +168,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val TAG = "MainActivity"
+
         fun setLanguage(locale: String) {
             val localeListCompat =
                 if (locale.isEmpty()) LocaleListCompat.getEmptyLocaleList()

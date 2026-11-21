@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -39,6 +40,13 @@ fun RpcField(
 ) {
     val textFieldState: TextFieldState = rememberTextFieldState(initialText = value)
 
+    // The collector below is keyed on textFieldState only, so it would otherwise keep
+    // using the onValueChange lambda from the first composition. That stale lambda
+    // captures an old `value`/config and wipes every other field when this field is
+    // edited. rememberUpdatedState keeps the callback current without restarting the
+    // snapshotFlow (which would re-emit and cause a sync loop).
+    val onValueChangeState = rememberUpdatedState(onValueChange)
+
     // Sync external value changes without re-triggering onValueChange
     LaunchedEffect(value) {
         if (value != textFieldState.text.toString()) {
@@ -52,7 +60,7 @@ fun RpcField(
             .drop(1)
             .distinctUntilChanged()
             .collect { updated ->
-                onValueChange(updated)
+                onValueChangeState.value(updated)
             }
     }
 

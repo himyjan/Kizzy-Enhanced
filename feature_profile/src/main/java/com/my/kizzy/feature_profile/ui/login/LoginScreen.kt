@@ -13,11 +13,13 @@
 package com.my.kizzy.feature_profile.ui.login
 
 import android.app.Activity
-import android.content.Context
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -26,7 +28,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,11 +50,36 @@ import kotlinx.coroutines.Dispatchers
 @Composable
 fun LoginScreen(
     onCompleted: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    // Activity-registered AuthTabIntent launcher passed down from MainActivity -> Kizzy.
+    authTabLauncher: ActivityResultLauncher<Intent>? = null,
+    // Callback binder receiving a normalized (resultCode, callbackIntent) handler so
+    // `:feature_profile` and `:app` stay decoupled from `AuthTabIntent.AuthResult`.
+    onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val discordAuth = remember { DiscordOAuth2Auth(context, scope) }
+
+    // Recreate DiscordOAuth2Auth when context, scope, or authTabLauncher changes so it
+    // always holds a valid launcher reference.
+    val discordAuth = remember(context, scope, authTabLauncher) {
+        DiscordOAuth2Auth(
+            context = context,
+            scope = scope,
+            authTabLauncher = authTabLauncher,
+        )
+    }
+
+    // Bind this screen's `onActivityResult` handler to the hosting Activity while
+    // LoginScreen is active; clear on dispose so stale screens do not intercept results.
+    DisposableEffect(discordAuth, onBindAuthTabCallback) {
+        onBindAuthTabCallback?.invoke { resultCode, callbackIntent ->
+            discordAuth.onActivityResult(resultCode, callbackIntent)
+        }
+        onDispose {
+            onBindAuthTabCallback?.invoke { _, _ -> }
+        }
+    }
 
     // Check if user is already logged in before showing anything
     val prefsState by remember { Prefs.prefsState }.collectAsState()
@@ -64,6 +93,7 @@ fun LoginScreen(
 
     var isAuthorizing by remember { mutableStateOf(false) }
     var oauth2Error by remember { mutableStateOf("") }
+    var manualToken by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -125,10 +155,8 @@ fun LoginScreen(
                                 isAuthorizing = true
                                 scope.launch {
                                     try {
-                                        // Safely get Activity from context
-                                        val activity = context as? Activity
-                                            ?: throw DiscordOAuth2Auth.DiscordOAuth2Exception.NoBrowser()
-
+                                        val activity = context as Activity
+                                        // `authTabLauncher` is already provided to `discordAuth`.
                                         val result = discordAuth.authorize(activity)
 
                                         // Save OAuth2 access token as the gateway token
@@ -160,6 +188,62 @@ fun LoginScreen(
                                 }
                             }
                     )
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Divider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Or paste your Discord account token manually:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    TextField(
+                        value = manualToken,
+                        onValueChange = { manualToken = it },
+                        label = { Text("Account Token") },
+                        placeholder = { Text("Paste your Discord account token here") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        maxLines = 1,
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    TextButton(
+                        onClick = {
+                            val token = manualToken.trim()
+                            if (token.isEmpty()) {
+                                oauth2Error = "Please paste a valid Discord account token"
+                                return@TextButton
+                            }
+                            isAuthorizing = true
+                            scope.launch {
+                                try {
+                                    val token = manualToken.trim()
+                                    Prefs[Prefs.TOKEN] = token
+                                    Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = token
+
+                                    fetchDiscordUserId(token)?.let { userId ->
+                                        Prefs[Prefs.USER_ID] = userId
+                                    }
+                                    fetchUserInfo(token)
+
+                                    isAuthorizing = false
+                                    onCompleted()
+                                } catch (e: Exception) {
+                                    isAuthorizing = false
+                                    oauth2Error = "Failed to validate token: ${e.message}"
+                                }
+                            }
+                        }
+                    ) {
+                        Text(text = if (isAuthorizing) "Validating..." else "Login with Token")
+                    }
                 }
             }
         }

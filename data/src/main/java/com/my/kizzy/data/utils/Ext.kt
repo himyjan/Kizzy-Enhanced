@@ -1,11 +1,11 @@
 /*
  *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * Ext.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
+-  ******************************************************************
+-  *  * Copyright (C) 2022
+-  *  * Ext.kt is part of Kizzy
+-  *  *  and can not be copied and/or distributed without the express
+-  *  * permission of yzziK(Vaibhav)
+-  *  *****************************************************************
  *
  *
  */
@@ -21,7 +21,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
 import android.util.DisplayMetrics
-import android.webkit.MimeTypeMap
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import com.my.kizzy.data.remote.ApiResponse
@@ -34,6 +33,21 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import java.io.File
 import java.io.FileOutputStream
+
+private val MIME_TO_EXTENSION = mapOf(
+    "image/jpeg" to "jpg",
+    "image/jpg" to "jpg",
+    "image/png" to "png",
+    "image/webp" to "webp",
+    "image/gif" to "gif",
+    "image/heic" to "heic",
+    "image/heif" to "heif",
+    "image/bmp" to "bmp",
+    "text/plain" to "txt",
+    "application/json" to "json",
+    "application/pdf" to "pdf",
+    "application/zip" to "zip",
+)
 
 suspend fun HttpResponse.toImageURL(): String? {
     return try {
@@ -69,13 +83,13 @@ suspend fun HttpResponse.toAttachmentAsset(): String? {
 }
 
 /**
- * Converts Bitmap to file
- * @param context Context
- * @param outputPathFolder Folder name for storing the image file eg (images, media, custom)
- * @param compressFormat PNG keeps transparency (app icons); JPEG is much smaller and is
- *        used for album art. A 500x500 PNG cover was ~400 KB and blocked the presence
- *        update on a slow connection for almost two seconds.
- * @param quality compression quality for lossy formats
+- Converts Bitmap to file
+- @param context Context
+- @param outputPathFolder Folder name for storing the image file eg (images, media, custom)
+- @param compressFormat PNG keeps transparency (app icons); JPEG is much smaller and is
+-        used for album art. A 500x500 PNG cover was ~400 KB and blocked the presence
+-        update on a slow connection for almost two seconds.
+- @param quality compression quality for lossy formats
  */
 fun Bitmap?.toFile(
     context: Context,
@@ -94,10 +108,10 @@ fun Bitmap?.toFile(
 }
 
 /**
- * Scales the bitmap down so its largest side is at most [maxDimension].
+- Scales the bitmap down so its largest side is at most [maxDimension].
  *
- * Album art is shown at a few dozen pixels in Discord, so uploading a full-size
- * YouTube thumbnail (1280x720) wastes bandwidth and delays the presence update.
+- Album art is shown at a few dozen pixels in Discord, so uploading a full-size
+- YouTube thumbnail (1280x720) wastes bandwidth and delays the presence update.
  */
 fun Bitmap.scaleToMaxDimension(maxDimension: Int): Bitmap {
     val largest = maxOf(width, height)
@@ -139,6 +153,7 @@ fun ApplicationInfo.toBitmap(context: Context): Bitmap? {
     }
     return bitmap
 }
+
 fun String.toRpcImage(): RpcImage? {
     return if (this.isBlank())
         null
@@ -149,10 +164,10 @@ fun String.toRpcImage(): RpcImage? {
 }
 
 /**
- * Extracts the URL/identifier string from an [RpcImage] without resolving or uploading it.
- * Returns the raw string for [RpcImage.DiscordImage] and [RpcImage.ExternalImage];
- * returns null for [RpcImage.ApplicationIcon] and [RpcImage.BitmapImage] since those
- * require async resolution/upload to obtain a URL.
+- Extracts the URL/identifier string from an [RpcImage] without resolving or uploading it.
+- Returns the raw string for [RpcImage.DiscordImage] and [RpcImage.ExternalImage];
+- returns null for [RpcImage.ApplicationIcon] and [RpcImage.BitmapImage] since those
+- require async resolution/upload to obtain a URL.
  */
 fun RpcImage.toUrlString(): String? = when (this) {
     is RpcImage.DiscordImage -> image
@@ -163,15 +178,23 @@ fun RpcImage.toUrlString(): String? = when (this) {
 
 fun Context.getFileName(uri: Uri): String = "temp_file.${getFileExtension(this, uri)}"
 
-private fun getFileExtension(context: Context, uri: Uri): String? =
+private fun getFileExtension(context: Context, uri: Uri): String? {
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
-        MimeTypeMap.getSingleton().getExtensionFromMimeType(context.contentResolver.getType(uri))
-    } else {
-        uri.path?.let { MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(File(it)).toString()) }
+        val normalizedMime = Intent.normalizeMimeType(context.contentResolver.getType(uri))
+        if (normalizedMime != null) {
+            MIME_TO_EXTENSION[normalizedMime]?.let { return it }
+            val subtype = normalizedMime.substringAfter('/', "").substringBefore('+')
+            if (subtype.isNotBlank()) return subtype
+        }
     }
+    val path = uri.path ?: return null
+    val dotIndex = path.lastIndexOf('.')
+    if (dotIndex < 0 || dotIndex == path.lastIndex) return null
+    return path.substring(dotIndex + 1).lowercase()
+}
 
 fun Context.uriToFile(uri: Uri): File {
-    val file = File(cacheDir,getFileName(uri))
+    val file = File(cacheDir, getFileName(uri))
     val inputStream = contentResolver.openInputStream(uri)
     inputStream?.use { input ->
         file.outputStream().use { out ->

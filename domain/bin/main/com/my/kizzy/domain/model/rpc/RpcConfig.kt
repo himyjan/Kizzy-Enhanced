@@ -50,6 +50,16 @@ data class RpcConfig(
     val smallText: String = "",
     @SerialName("url")
     val url: String = "",
+    // Clickable field URLs (Discord Social SDK / rich presence). The profile
+    // preview uses these to make details/state/image tappable.
+    @SerialName("detailsUrl")
+    val detailsUrl: String = "",
+    @SerialName("stateUrl")
+    val stateUrl: String = "",
+    @SerialName("largeUrl")
+    val largeUrl: String = "",
+    @SerialName("smallUrl")
+    val smallUrl: String = "",
     @SerialName("partyCurrentSize")
     val partyCurrentSize: String = "",
     @SerialName("partyMaxSize")

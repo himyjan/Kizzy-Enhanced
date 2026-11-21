@@ -2,8 +2,11 @@ package com.my.kizzy.feature_settings.rpc_settings
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.Base64
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.browser.auth.AuthTabIntent
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
@@ -12,24 +15,32 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.*
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
+import java.io.IOException
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.SecureRandom
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class DiscordOAuth2Auth(
     private val context: Context,
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+    private val authTabLauncher: ActivityResultLauncher<Intent>? = null,
 ) {
 
     companion object {
@@ -38,6 +49,7 @@ class DiscordOAuth2Auth(
         private const val DISCORD_OAUTH2_TOKEN = "https://discord.com/api/v10/oauth2/token"
         private const val DISCORD_SCOPES = "identify guilds"
         private const val REDIRECT_URI = "kizzy://oauth2/callback"
+        private const val REDIRECT_SCHEME = "kizzy"
 
         private const val DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID = "1571063796418744412"
     }
@@ -60,6 +72,16 @@ class DiscordOAuth2Auth(
         class InvalidClientId(message: String = "Invalid or missing Client ID") : DiscordOAuth2Exception(message)
     }
 
+    private var continuation: CancellableContinuation<DiscordOAuth2Result>? = null
+    private var pendingAuth: PendingAuth? = null
+
+    private data class PendingAuth(
+        val clientId: String,
+        val redirectUri: String,
+        val pkce: PkcePair,
+        val state: String
+    )
+
     suspend fun authorize(activity: Activity): DiscordOAuth2Result {
         val clientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID]
         if (clientId.isBlank()) {
@@ -76,46 +98,134 @@ class DiscordOAuth2Auth(
                 state = state,
                 challenge = pkce.challenge,
             )
+            val authUri = authUrl.toUri()
 
-            Log.d(TAG, "authorize: launching OAuth2 URL via Custom Tabs")
+            pendingAuth = PendingAuth(clientId, REDIRECT_URI, pkce, state)
 
-            val customTabsIntent = CustomTabsIntent.Builder()
-                .setShowTitle(true)
-                .setEphemeralBrowsingEnabled(true)
-                .build()
+            val browserPackage = CustomTabsClient.getPackageName(activity, null)
+            val launcher = authTabLauncher
+            val authTabSupported = launcher != null &&
+                browserPackage != null &&
+                CustomTabsClient.isAuthTabSupported(activity, browserPackage)
 
-            // 1. Start listening for the deferred callback FIRST before firing the intent
-            val deferred = DiscordOAuth2Activity.startAuthorization()
-
-            try {
-                // 2. Launch the Custom Tab second
-                customTabsIntent.launchUrl(activity, authUrl.toUri())
-            } catch (e: Exception) {
-                Log.e(TAG, "authorize: Custom Tabs failed", e)
-                throw DiscordOAuth2Exception.NetworkFailure(e)
-            }
-
-            // 3. Await the callback result with timeout (30 seconds)
-            val callback = withTimeoutOrNull(30_000) {
-                deferred.await()
-            } ?: throw DiscordOAuth2Exception.NetworkFailure(java.io.IOException("Authorization timeout"))
-
-            if (callback.state != state) {
-                Log.w(TAG, "authorize: state mismatch")
-                throw DiscordOAuth2Exception.StateMismatch()
-            }
-
-            return exchangeAuthorizationCode(
-                code = callback.code,
-                verifier = pkce.verifier,
-                redirectUri = REDIRECT_URI,
-                clientId = clientId,
+            Log.d(
+                TAG,
+                "authorize: browserPackage=$browserPackage, launcherNull=${launcher == null}, authTabSupported=$authTabSupported"
             )
+
+            if (authTabSupported && launcher != null) {
+                Log.d(TAG, "authorize: launching OAuth2 URL via AuthTabIntent (ephemeral)")
+                val authTabIntent = AuthTabIntent.Builder()
+                    .setEphemeralBrowsingEnabled(true)
+                    .build()
+                authTabIntent.launch(launcher, authUri, REDIRECT_SCHEME)
+            } else {
+                Log.d(TAG, "authorize: launching OAuth2 URL via CustomTabsIntent fallback")
+                val customTabsIntent = CustomTabsIntent.Builder()
+                    .setShowTitle(true)
+                    .build()
+                customTabsIntent.launchUrl(activity, authUri)
+            }
+
+            return suspendCancellableCoroutine { cont ->
+                continuation = cont
+                cont.invokeOnCancellation {
+                    if (continuation === cont) {
+                        continuation = null
+                        pendingAuth = null
+                    }
+                }
+            }
         } catch (e: DiscordOAuth2Exception) {
+            pendingAuth = null
+            throw e
+        } catch (e: CancellationException) {
+            pendingAuth = null
             throw e
         } catch (e: Exception) {
+            pendingAuth = null
             Log.e(TAG, "authorize: unexpected failure", e)
             throw DiscordOAuth2Exception.NetworkFailure(e)
+        }
+    }
+
+    fun onActivityResult(resultCode: Int, data: Intent?) {
+        val cont = this.continuation
+        val auth = this.pendingAuth
+        Log.d(TAG, "onActivityResult: resultCode=$resultCode, uri=${data?.data}, hasCont=${cont != null}, hasPending=${auth != null}")
+
+        if (cont == null) return
+        this.continuation = null
+        this.pendingAuth = null
+
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                if (auth == null) {
+                    if (cont.isActive) {
+                        cont.resumeWithException(DiscordOAuth2Exception.NetworkFailure(IOException("Missing pending auth state")))
+                    }
+                    return
+                }
+
+                val callbackUri = data?.data
+                val code = callbackUri?.getQueryParameter("code")
+                val state = callbackUri?.getQueryParameter("state")
+
+                if (state != auth.state) {
+                    Log.w(TAG, "onActivityResult: state mismatch expected=${auth.state} actual=$state")
+                    if (cont.isActive) {
+                        cont.resumeWithException(DiscordOAuth2Exception.StateMismatch())
+                    }
+                    return
+                }
+
+                if (code.isNullOrBlank()) {
+                    Log.w(TAG, "onActivityResult: missing authorization code in uri=$callbackUri")
+                    if (cont.isActive) {
+                        cont.resumeWithException(DiscordOAuth2Exception.NetworkFailure(IOException("Missing code")))
+                    }
+                    return
+                }
+
+                scope.launch {
+                    try {
+                        val result = exchangeAuthorizationCode(
+                            code = code,
+                            verifier = auth.pkce.verifier,
+                            redirectUri = auth.redirectUri,
+                            clientId = auth.clientId
+                        )
+                        if (cont.isActive) {
+                            cont.resume(result)
+                        }
+                    } catch (e: CancellationException) {
+                        if (cont.isActive) {
+                            cont.cancel(e)
+                        }
+                        throw e
+                    } catch (e: DiscordOAuth2Exception) {
+                        if (cont.isActive) {
+                            cont.resumeWithException(e)
+                        }
+                    } catch (e: Exception) {
+                        if (cont.isActive) {
+                            cont.resumeWithException(DiscordOAuth2Exception.NetworkFailure(e))
+                        }
+                    }
+                }
+            }
+
+            Activity.RESULT_CANCELED -> {
+                if (cont.isActive) {
+                    cont.resumeWithException(DiscordOAuth2Exception.UserCancelled())
+                }
+            }
+
+            else -> {
+                if (cont.isActive) {
+                    cont.resumeWithException(DiscordOAuth2Exception.NetworkFailure(IOException("Unknown result code: $resultCode")))
+                }
+            }
         }
     }
 
@@ -147,7 +257,7 @@ class DiscordOAuth2Auth(
 
     private suspend fun performTokenExchange(params: Map<String, String>): DiscordOAuth2Result {
         return withContext(Dispatchers.IO) {
-            val client = HttpClient(OkHttp) {
+            HttpClient(OkHttp) {
                 install(HttpTimeout) {
                     connectTimeoutMillis = 15_000
                     requestTimeoutMillis = 15_000
@@ -156,47 +266,47 @@ class DiscordOAuth2Auth(
                 defaultRequest {
                     url(DISCORD_OAUTH2_TOKEN)
                 }
-            }
-            val postData = params.entries.joinToString("&") { (key, value) ->
-                "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
-            }
-            val response = client.post {
-                contentType(ContentType.Application.FormUrlEncoded)
-                setBody(postData)
-            }
-            val responseCode = response.status.value
-            val responseBody = response.bodyAsText()
-
-            if (responseCode in 200..299) {
-                val json = JSONObject(responseBody)
-                val accessToken = json.getString("access_token")
-                val refreshToken = json.optString("refresh_token", "")
-                val expiresIn = json.optLong("expires_in", 0L)
-                val scope = json.optString("scope", DISCORD_SCOPES)
-
-                Log.d(TAG, "token exchange: success")
-
-                Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
-                if (refreshToken.isNotEmpty()) {
-                    Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
+            }.use { client ->
+                val postData = params.entries.joinToString("&") { (key, value) ->
+                    "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
                 }
-                Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
+                val response = client.post {
+                    contentType(ContentType.Application.FormUrlEncoded)
+                    setBody(postData)
+                }
+                val responseCode = response.status.value
+                val responseBody = response.bodyAsText()
 
-                return@withContext DiscordOAuth2Result(
-                    accessToken = accessToken,
-                    refreshToken = refreshToken,
-                    expiresInSec = expiresIn,
-                    scope = scope,
-                )
-            } else {
-                // Try to parse Discord's error response for better error messages
-                val errorMsg = runCatching {
+                if (responseCode in 200..299) {
                     val json = JSONObject(responseBody)
-                    json.getString("error") + (json.optString("error_description").let { if (it.isNotEmpty()) ": $it" else "" })
-                }.getOrElse { responseBody }
+                    val accessToken = json.getString("access_token")
+                    val refreshToken = json.optString("refresh_token", "")
+                    val expiresIn = json.optLong("expires_in", 0L)
+                    val scope = json.optString("scope", DISCORD_SCOPES)
 
-                Log.w(TAG, "token exchange: HTTP $responseCode error body=$responseBody")
-                throw DiscordOAuth2Exception.NetworkFailure(java.io.IOException("HTTP $responseCode: $errorMsg"))
+                    Log.d(TAG, "token exchange: success")
+
+                    Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
+                    if (refreshToken.isNotEmpty()) {
+                        Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
+                    }
+                    Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
+
+                    DiscordOAuth2Result(
+                        accessToken = accessToken,
+                        refreshToken = refreshToken,
+                        expiresInSec = expiresIn,
+                        scope = scope,
+                    )
+                } else {
+                    val errorMsg = runCatching {
+                        val json = JSONObject(responseBody)
+                        json.getString("error") + (json.optString("error_description").let { if (it.isNotEmpty()) ": $it" else "" })
+                    }.getOrElse { responseBody }
+
+                    Log.w(TAG, "token exchange: HTTP $responseCode error body=$responseBody")
+                    throw DiscordOAuth2Exception.NetworkFailure(IOException("HTTP $responseCode: $errorMsg"))
+                }
             }
         }
     }
@@ -218,7 +328,6 @@ class DiscordOAuth2Auth(
             append("&state=").append(state)
             append("&code_challenge_method=S256")
             append("&code_challenge=").append(challenge)
-            // Force login screen so user can switch accounts after logout
             append("&prompt=login")
         }
     }
