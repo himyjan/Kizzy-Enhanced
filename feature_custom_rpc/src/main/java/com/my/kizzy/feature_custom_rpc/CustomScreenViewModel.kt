@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import java.io.File
 
 @SuppressLint("StaticFieldLeak")
@@ -88,6 +89,9 @@ class CustomScreenViewModel @Inject constructor(
         when (event) {
             is UiEvent.SetFieldsFromConfig -> {
                 _uiState.value = _uiState.value.copy(rpcConfig = event.config)
+                // Persist immediately so the RPC config survives navigation away
+                // and re-open of the screen.
+                Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = Json.encodeToString(event.config)
             }
 
             UiEvent.TriggerBottomSheet -> {
