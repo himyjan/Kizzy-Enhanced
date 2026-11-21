@@ -549,4 +549,8 @@
     <string name="permissionNot_granted">Permission not granted</string>
     <string name="set_previous_run_config_in_custom_rpcDesc">Automatically set custom RPC fields from previous run</string>
     <string name="setupDesc">Setup</string>
+    <string name="copy_to_custom_rpc">Copy to Custom RPC</string>
+    <string name="copy_to_custom_rpc_desc">Copy the current media/manual presence to the Custom RPC editor</string>
+    <string name="copied_to_custom_rpc">Copied to Custom RPC config</string>
+    <string name="copy_to_custom_rpc_no_presence">No presence to copy</string>
 </resources>

@@ -21,6 +21,7 @@ import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.feature_rpc_base.services.DiscordOAuth2RpcService
 import com.my.kizzy.feature_rpc_base.services.ManualRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
+import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 /**
  * Centralized RPC state manager.
@@ -81,6 +83,26 @@ class RpcManager @Inject constructor(
     /** Currently active RPC types. Observed by all RPC screens. */
     private val _activeRpc = MutableStateFlow<Set<RpcType>>(emptySet())
     val activeRpc: StateFlow<Set<RpcType>> = _activeRpc.asStateFlow()
+
+    /** The most recent presence config built by any RPC service (Media/Manual). */
+    private val _currentPresenceConfig = MutableStateFlow<RpcConfig?>(null)
+    val currentPresenceConfig: StateFlow<RpcConfig?> = _currentPresenceConfig.asStateFlow()
+
+    /**
+     * Updates [currentPresenceConfig] with the latest presence built by an RPC service.
+     * Called by MediaRpcService and ManualRpc after they assemble their CommonRpc.
+     */
+    fun setCurrentPresenceConfig(config: RpcConfig) {
+        _currentPresenceConfig.value = config
+    }
+
+    /**
+     * Copies an [RpcConfig] to [Prefs.LAST_RUN_CUSTOM_RPC] so it becomes available
+     * in the Custom RPC screen, without starting any RPC service.
+     */
+    fun copyToCustomRpc(config: RpcConfig) {
+        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = Json.encodeToString(config)
+    }
 
     init {
         // Seed from the persisted choice first: on a cold start the service is
@@ -184,12 +206,20 @@ class RpcManager @Inject constructor(
             ignoreServiceDetectionUntil = System.currentTimeMillis() + 1500
         }
 
-        // Update prefs so AppUtils reflects the new state
+        // Update prefs so AppUtils reflects the new state. With add=true only the
+        // RPC type being started may update its saved config; the other one keeps
+        // its own config because it is still running.
         val customRpc = rpcTypes.filter { it == RpcType.CustomRpc || it == RpcType.ConsoleRpc }
         val mediaRpc = RpcType.MediaRpc in rpcTypes
-        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = if (customRpc.any { it == RpcType.CustomRpc }) rpcConfigString else ""
-        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = if (customRpc.any { it == RpcType.ConsoleRpc }) rpcConfigString else ""
-        Prefs[Prefs.MEDIA_RPC_ENABLED] = mediaRpc
+        if (customRpc.any { it == RpcType.CustomRpc }) {
+            Prefs[Prefs.LAST_RUN_CUSTOM_RPC] =
+                rpcConfigString ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+        }
+        if (customRpc.any { it == RpcType.ConsoleRpc }) {
+            Prefs[Prefs.LAST_RUN_CONSOLE_RPC] =
+                rpcConfigString ?: Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""]
+        }
+        Prefs[Prefs.MEDIA_RPC_ENABLED] = mediaRpc || (add && RpcType.MediaRpc in previous)
         Prefs[Prefs.ACTIVE_RPC_TYPE] = if (rpcTypes.isEmpty() || rpcTypes == setOf(RpcType.None)) ""
         else rpcTypes.first { it != RpcType.None }.name
         // Only set connection method when explicitly switching to DiscordOAuth2Rpc.
@@ -303,8 +333,6 @@ class RpcManager @Inject constructor(
                 RpcType.None -> Unit
             }
         }
-        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
-        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
         Prefs[Prefs.MEDIA_RPC_ENABLED] = false
         Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
         AppUtils.invalidateRunningServicesCache()
@@ -322,8 +350,6 @@ class RpcManager @Inject constructor(
         context.stopService(Intent(context, AppDetectionService::class.java))
         context.stopService(Intent(context, DiscordOAuth2RpcService::class.java))
 
-        Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
-        Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
         Prefs[Prefs.MEDIA_RPC_ENABLED] = false
         Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
         AppUtils.invalidateRunningServicesCache()
@@ -362,7 +388,17 @@ class RpcManager @Inject constructor(
         val types = mutableSetOf<RpcType>()
         val stored = Prefs[Prefs.ACTIVE_RPC_TYPE, ""]
         if (stored.isNotEmpty()) {
-            runCatching { RpcType.valueOf(stored) }.getOrNull()?.let { types.add(it) }
+            runCatching { RpcType.valueOf(stored) }.getOrNull()?.let { type ->
+                // Custom/Console need a saved config. Without one the service
+                // would publish an activity with an empty name, which Discord
+                // silently drops (and the re-apply loop then runs forever).
+                val hasConfig = when (type) {
+                    RpcType.CustomRpc -> Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty()
+                    RpcType.ConsoleRpc -> Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isNotEmpty()
+                    else -> true
+                }
+                if (hasConfig) types.add(type)
+            }
         }
         if (Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isNotEmpty()) types.add(RpcType.ConsoleRpc)
         if (Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty()) types.add(RpcType.CustomRpc)

@@ -213,6 +213,12 @@ class KizzyRPC @Inject constructor(
     // Remember the last presence so we can re-apply after reconnect (fresh IDENTIFY
     // creates a brand-new, empty session; the previously-set activity is gone).
     private var lastPresence: Presence? = null
+    // Time of the last successful presence send. Used to avoid re-applying on
+    // SESSIONS_REPLACE events that arrive while Discord is still processing our
+    // presence, or when another client (Discord desktop) is active and takes
+    // display priority.
+    @Volatile
+    private var lastSuccessfulSendTimeMs: Long = 0L
 
     /**
      * Called by the connect flow right after [connect] has been requested.
@@ -312,6 +318,19 @@ class KizzyRPC @Inject constructor(
         if (lastPresence == null) return
         withContext(Dispatchers.IO) {
             val now = System.currentTimeMillis()
+            // If we successfully sent presence recently, Discord is likely still
+            // processing it or another client (e.g. Discord desktop) is taking
+            // display priority. Re-applying immediately just burns the rate limit
+            // and causes an echo loop with SESSIONS_REPLACE.
+            val recentSendThresholdMs = 15_000L
+            if (now - lastSuccessfulSendTimeMs < recentSendThresholdMs) {
+                logger.d(
+                    "KizzyRPC",
+                    "Skipping presence re-apply: sent ${now - lastSuccessfulSendTimeMs}ms ago " +
+                        "(within ${recentSendThresholdMs}ms recent-send window)"
+                )
+                return@withContext
+            }
             if (now - lastReapplyTimeMs < REAPPLY_COOLDOWN_MS) {
                 logger.d(
                     "KizzyRPC",
@@ -795,6 +814,14 @@ class KizzyRPC @Inject constructor(
         explicit?.takeIf { it.isNotBlank() } ?: status?.takeIf { it.isNotBlank() } ?: "online"
 
     suspend fun build(forceRefresh: Boolean = false) {
+        // Discord drops activities whose name is empty (the whole activity is
+        // rejected, so it never shows up in SESSIONS_REPLACE and the re-apply
+        // logic loops forever). This happened when the service was restored from
+        // prefs without a saved config. Do not publish an empty card.
+        if (activityName.isNullOrBlank()) {
+            logger.w("KizzyRPC", "Skipping presence: activity name is empty")
+            return
+        }
         val cleanButtons = sanitizeButtons(buttons.takeIf { buttons.isNotEmpty() })
 
         presence = Presence(
@@ -880,9 +907,11 @@ class KizzyRPC @Inject constructor(
         // Don't reconnect if already connected - prevents multiple concurrent WebSocket connections
         // that cause Discord 4003 Not authenticated errors. When forceRefresh is true
         // (e.g. notification restart), we still send the presence on the existing connection.
-        if (discordWebSocket.isWebSocketConnected() && !forceRefresh) {
-            logger.d("KizzyRPC", "WebSocket already connected, skipping connect")
-            return
+        if (discordWebSocket.isWebSocketConnected()) {
+            logger.d("KizzyRPC", "WebSocket already connected, sending presence on existing connection")
+            val sent = discordWebSocket.sendActivity(presence)
+            if (sent) lastSuccessfulSendTimeMs = System.currentTimeMillis()
+            if (!forceRefresh) return
         }
         if (!discordWebSocket.isWebSocketConnected()) {
             discordWebSocket.connect()
@@ -893,7 +922,9 @@ class KizzyRPC @Inject constructor(
                 delay(500)
             }
         }
-        discordWebSocket.sendActivity(presence)
+        discordWebSocket.sendActivity(presence)?.let { sent ->
+            if (sent) lastSuccessfulSendTimeMs = System.currentTimeMillis()
+        }
     }
 
     suspend fun updateRPC(commonRpc: CommonRpc, enableTimestamps: Boolean? = true, status: String? = null, forceRefresh: Boolean = false) {
@@ -1090,7 +1121,9 @@ class KizzyRPC @Inject constructor(
                 status = effectiveStatus(status)
             )
             val sent = discordWebSocket.sendActivity(presence)
-            if (!sent) {
+            if (sent) {
+                lastSuccessfulSendTimeMs = System.currentTimeMillis()
+            } else {
                 // The socket was not ready. Record the presence anyway so that
                 // launchReapplyPresence() can re-send it once the WebSocket
                 // reconnects (onPresenceDropped → READY → onPresenceDropped).

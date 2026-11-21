@@ -17,6 +17,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.my.kizzy.data.rpc.KizzyRPC
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +45,7 @@ class DiscordOAuth2RpcService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        AppUtils.registerRpcService(this)
         Log.d(TAG, "onCreate")
     }
 
@@ -65,7 +67,10 @@ class DiscordOAuth2RpcService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        kizzyRPC.closeRPC()
+        AppUtils.unregisterRpcService(this)
+        if (!AppUtils.isAnotherRpcServiceActive(this)) {
+            kizzyRPC.closeRPC()
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

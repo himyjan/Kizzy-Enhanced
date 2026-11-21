@@ -374,8 +374,11 @@ open class DiscordWebSocketImpl(
         if (appId == null && name == null) return false
         val sessions = runCatching {
             json.decodeFromString<PayloadData<List<SessionReplaceEntry>>>(jsonString).d
-        }.getOrNull() ?: return false
-        return sessions.any { session ->
+        }.getOrNull() ?: run {
+            logger.w("Gateway", "SESSIONS_REPLACE decode failed: ${jsonString.take(500)}")
+            return false
+        }
+        val found = sessions.any { session ->
             session.activities.any { activity ->
                 // type 4 is a Custom Status, never our Rich Presence.
                 activity.type != CUSTOM_STATUS_TYPE &&
@@ -383,6 +386,18 @@ open class DiscordWebSocketImpl(
                         (name != null && activity.name == name))
             }
         }
+        if (!found) {
+            logger.d(
+                "Gateway",
+                "SESSIONS_REPLACE mismatch: want appId=$appId name=$name, " +
+                    "sessions=" + sessions.joinToString { s ->
+                        "${s.sessionId}:[" + s.activities.joinToString { a ->
+                            "${a.name}/${a.type}/${a.applicationId}"
+                        } + "]"
+                    }
+            )
+        }
+        return found
     }
 
     protected fun decodeReady(jsonString: String): Ready? {

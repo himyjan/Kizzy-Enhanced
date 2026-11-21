@@ -33,7 +33,9 @@ import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
+import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
@@ -77,6 +79,9 @@ class ManualRpc : Service() {
 
     @Inject
     lateinit var notificationBuilder: Notification.Builder
+
+    @Inject
+    lateinit var rpcManager: RpcManager
 
     private lateinit var mediaSessionManager: MediaSessionManager
 
@@ -237,6 +242,11 @@ class ManualRpc : Service() {
         Json.decodeFromString(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
     } catch (_: Exception) {
         emptyList()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        AppUtils.registerRpcService(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -837,33 +847,35 @@ class ManualRpc : Service() {
         // presence above. Without them the preview of the Manual RPC had no cover
         // art, even though Discord showed it.
         val (resolvedLargeImage, resolvedSmallImage) = kizzyRPC.currentImageUrls()
-        LastPresence.rememberExperimental(
-            com.my.kizzy.domain.model.rpc.RpcConfig(
-                name = finalName.orEmpty(),
-                details = finalDetails.orEmpty(),
-                state = finalState.orEmpty(),
-                type = (commonRpc.type ?: 0).toString(),
-                timestampsStart = finalTimestamps?.start?.toString().orEmpty(),
-                timestampsStop = finalTimestamps?.end?.toString().orEmpty(),
-                largeText = finalLargeText.orEmpty(),
-                smallText = finalSmallText.orEmpty(),
-                detailsUrl = commonRpc.detailsUrl.orEmpty(),
-                stateUrl = commonRpc.stateUrl.orEmpty(),
-                largeUrl = commonRpc.largeUrl.orEmpty(),
-                smallUrl = commonRpc.smallUrl.orEmpty(),
-                largeImg = resolvedLargeImage.orEmpty(),
-                smallImg = resolvedSmallImage.orEmpty(),
-                button1 = kizzyRPC.currentButtons()?.getOrNull(0)?.label.orEmpty(),
-                button1link = kizzyRPC.currentButtons()?.getOrNull(0)?.url.orEmpty(),
-                button2 = kizzyRPC.currentButtons()?.getOrNull(1)?.label.orEmpty(),
-                button2link = kizzyRPC.currentButtons()?.getOrNull(1)?.url.orEmpty(),
-                // Advanced settings from Manual RPC UI
-                status = manualStatus.takeIf { it.isNotEmpty() } ?: "online",
-                url = manualStreamUrl.takeIf { it.isNotEmpty() } ?: "",
-                partyCurrentSize = manualPartyCurrentSize.takeIf { it.isNotEmpty() } ?: "",
-                partyMaxSize = manualPartyMaxSize.takeIf { it.isNotEmpty() } ?: "",
-            )
+        val rpcConfig = RpcConfig(
+            name = finalName.orEmpty(),
+            details = finalDetails.orEmpty(),
+            state = finalState.orEmpty(),
+            type = (commonRpc.type ?: 0).toString(),
+            timestampsStart = finalTimestamps?.start?.toString().orEmpty(),
+            timestampsStop = finalTimestamps?.end?.toString().orEmpty(),
+            largeText = finalLargeText.orEmpty(),
+            smallText = finalSmallText.orEmpty(),
+            detailsUrl = commonRpc.detailsUrl.orEmpty(),
+            stateUrl = commonRpc.stateUrl.orEmpty(),
+            largeUrl = commonRpc.largeUrl.orEmpty(),
+            smallUrl = commonRpc.smallUrl.orEmpty(),
+            largeImg = resolvedLargeImage.orEmpty(),
+            smallImg = resolvedSmallImage.orEmpty(),
+            button1 = kizzyRPC.currentButtons()?.getOrNull(0)?.label.orEmpty(),
+            button1link = kizzyRPC.currentButtons()?.getOrNull(0)?.url.orEmpty(),
+            button2 = kizzyRPC.currentButtons()?.getOrNull(1)?.label.orEmpty(),
+            button2link = kizzyRPC.currentButtons()?.getOrNull(1)?.url.orEmpty(),
+            // Advanced settings from Manual RPC UI
+            status = manualStatus.takeIf { it.isNotEmpty() } ?: "online",
+            url = manualStreamUrl.takeIf { it.isNotEmpty() } ?: "",
+            partyCurrentSize = manualPartyCurrentSize.takeIf { it.isNotEmpty() } ?: "",
+            partyMaxSize = manualPartyMaxSize.takeIf { it.isNotEmpty() } ?: "",
         )
+        LastPresence.rememberExperimental(rpcConfig)
+        // Expose the current presence so the Manual RPC screen can offer
+        // a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
+        rpcManager.setCurrentPresenceConfig(rpcConfig)
 
         val notifTitle = finalName.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.app_name_full)
         val notifText = if (currentMediaDurationSec > 0) {
@@ -1093,7 +1105,12 @@ class ManualRpc : Service() {
         stopHeartbeat()
         stopMediaRefresh()
         scope.cancel()
-        kizzyRPC.closeRPC()
+        // The gateway is a process-wide singleton: only close it when no other
+        // RPC service is still using it.
+        AppUtils.unregisterRpcService(this)
+        if (!AppUtils.isAnotherRpcServiceActive(this)) {
+            kizzyRPC.closeRPC()
+        }
         // Schedule RPC recovery via WorkManager so presence can be restored after
         // aggressive task removal or process termination by the system.
         WorkManagerHelper.scheduleRpcRecovery(this)

@@ -30,6 +30,8 @@ import android.content.Intent
 
 import android.provider.Settings
 
+import android.widget.Toast
+
 import androidx.compose.animation.AnimatedVisibility
 
 import androidx.compose.foundation.clickable
@@ -44,7 +46,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 
 import androidx.compose.foundation.layout.padding
 
+import androidx.compose.foundation.layout.Spacer
+
+import androidx.compose.foundation.layout.Row
+
 import androidx.compose.foundation.layout.size
+
+import androidx.compose.foundation.layout.width
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
@@ -113,6 +121,8 @@ import androidx.compose.material3.Scaffold
 
 import androidx.compose.material3.Text
 
+import androidx.compose.material3.TextButton
+
 import androidx.compose.material3.TopAppBarDefaults
 
 import androidx.compose.material3.rememberTopAppBarState
@@ -148,6 +158,8 @@ import androidx.compose.ui.unit.dp
 import com.my.kizzy.data.rpc.Constants
 
 import com.my.kizzy.data.rpc.TemplateKeys
+
+import com.my.kizzy.domain.model.rpc.RpcConfig
 
 import com.my.kizzy.feature_rpc_base.AppUtils
 
@@ -191,6 +203,8 @@ import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.launch
 
 import androidx.compose.material.icons.outlined.AppsOutage
+
+import androidx.compose.material.icons.outlined.ContentCopy
 
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 
@@ -264,6 +278,13 @@ fun ManualRpcScreen(
     var ManualRpcRunning by remember { mutableStateOf(RpcType.ManualRpc in rpcManager.activeRpc.value) }
     LaunchedEffect(rpcManager.activeRpc) {
         ManualRpcRunning = RpcType.ManualRpc in rpcManager.activeRpc.value
+    }
+
+    // Observe the latest presence config built by ManualRpc so we can offer
+    // a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
+    var copyConfig by remember { mutableStateOf<RpcConfig?>(null) }
+    LaunchedEffect(rpcManager.currentPresenceConfig) {
+        copyConfig = rpcManager.currentPresenceConfig.value
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -390,6 +411,39 @@ fun ManualRpcScreen(
                     }
                 }
 
+            }
+
+            // Copy current manual presence to the Custom RPC editor.
+            val currentConfig = copyConfig
+            if (currentConfig != null) {
+                val copyToast = stringResource(id = R.string.copied_to_custom_rpc)
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    TextButton(
+                        onClick = {
+                            rpcManager.copyToCustomRpc(currentConfig)
+                            Toast.makeText(
+                                context,
+                                copyToast,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Outlined.ContentCopy,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(id = R.string.copy_to_custom_rpc),
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                    }
+                }
             }
 
             LazyColumn {

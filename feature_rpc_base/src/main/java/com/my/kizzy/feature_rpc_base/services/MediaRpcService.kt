@@ -26,9 +26,12 @@ import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.*
+import com.my.kizzy.data.utils.toUrlString
 import com.my.kizzy.data.work.RpcRecoveryHiltWorker
 import com.my.kizzy.domain.interfaces.Logger
+import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.preference.Prefs
@@ -253,6 +256,7 @@ class MediaRpcService : Service() {
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
         super.onCreate()
+        AppUtils.registerRpcService(this)
         createNotificationChannel()
         val basicNotification = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_media_rpc)
@@ -1284,6 +1288,14 @@ class MediaRpcService : Service() {
             mediaUrl = playingMedia.mediaUrl
         )
 
+        // Expose the current presence as an RpcConfig so the Media/Manual RPC screens
+        // can offer a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
+        try {
+            rpcManager.setCurrentPresenceConfig(commonRpcToRpcConfig(commonRpc))
+        } catch (e: Exception) {
+            logger.e("MediaRPC", "Failed to expose current presence config: ${e.message}")
+        }
+
         val mediaButtonEnabled = Prefs[MEDIA_RPC_MEDIA_BUTTON, false]
         val artistLinkEnabled = Prefs[MEDIA_RPC_ARTIST_LINK, false]
         // The buttons are cleared on every update. Without that the buttons of a
@@ -1359,6 +1371,36 @@ class MediaRpcService : Service() {
 
         kizzyRPC.updateRPC(commonRpc, enableTimestamps)
         updateNotificationPauseButton()
+    }
+
+    /**
+     * Converts the current [CommonRpc] presence into an [RpcConfig] so it can be
+     * copied to the Custom RPC editor. Fields that require async resolution
+     * (e.g. cover art upload) are left blank - the user can fill them manually.
+     */
+    private fun commonRpcToRpcConfig(commonRpc: CommonRpc): RpcConfig {
+        val timestamps = commonRpc.time
+        return RpcConfig(
+            name = commonRpc.name,
+            details = commonRpc.details.orEmpty(),
+            state = commonRpc.state.orEmpty(),
+            type = commonRpc.type?.toString().orEmpty(),
+            timestampsStart = timestamps?.start?.toString().orEmpty(),
+            timestampsStop = timestamps?.end?.toString().orEmpty(),
+            largeImg = commonRpc.largeImage?.toUrlString().orEmpty(),
+            smallImg = commonRpc.smallImage?.toUrlString().orEmpty(),
+            largeText = commonRpc.largeText.orEmpty(),
+            smallText = commonRpc.smallText.orEmpty(),
+            detailsUrl = commonRpc.detailsUrl.orEmpty(),
+            stateUrl = commonRpc.stateUrl.orEmpty(),
+            largeUrl = commonRpc.largeUrl.orEmpty(),
+            smallUrl = commonRpc.smallUrl.orEmpty(),
+            partyCurrentSize = commonRpc.partyCurrentSize?.toString().orEmpty(),
+            partyMaxSize = commonRpc.partyMaxSize?.toString().orEmpty(),
+            status = "online",
+            platform = commonRpc.platform.orEmpty(),
+            url = commonRpc.mediaUrl.orEmpty(),
+        )
     }
 
     private val mediaControllerCallback = object : MediaController.Callback() {
@@ -1755,7 +1797,12 @@ class MediaRpcService : Service() {
         mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         scope.cancel()
-        kizzyRPC.closeRPC()
+        // The gateway is a process-wide singleton: only close it when no other
+        // RPC service is still using it.
+        AppUtils.unregisterRpcService(this)
+        if (!AppUtils.isAnotherRpcServiceActive(this)) {
+            kizzyRPC.closeRPC()
+        }
         stateRepository.setConnected(false)
         stateRepository.setPaused(false)
         stateRepository.clearTrackInfo()

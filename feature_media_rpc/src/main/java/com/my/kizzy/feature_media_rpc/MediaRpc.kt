@@ -14,6 +14,7 @@ package com.my.kizzy.feature_media_rpc
 
 import android.content.Intent
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
@@ -51,11 +55,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.data.rpc.ActivityTypeResolver
+import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.ui.theme.KizzyTheme
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.Prefs.LAST_RUN_CUSTOM_RPC
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ALBUM_NAME
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_APP_ICON
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_COVER_ART
@@ -76,6 +82,7 @@ import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import com.my.kizzy.ui.components.preference.PreferencesHint
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.AccountCircle
@@ -271,6 +278,14 @@ fun MediaRPCContent(
     var searchText by remember { mutableStateOf("") }
     var isSearchBarVisible by remember { mutableStateOf(false) }
 
+    // Observe the latest presence config built by MediaRpcService so we can offer
+    // a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
+    val rpcManager = RpcManager.getInstance(context)
+    var copyConfig by remember { mutableStateOf<RpcConfig?>(null) }
+    LaunchedEffect(rpcManager.currentPresenceConfig) {
+        copyConfig = rpcManager.currentPresenceConfig.value
+    }
+
     val filteredApps = remember(state.apps, searchText) {
         if (searchText.isEmpty()) {
             state.apps
@@ -340,6 +355,40 @@ fun MediaRPCContent(
                 isChecked = mediaRpcRunning,
                 enabled = hasNotificationAccess && !AppUtils.ManualRpcRunning(),
             ) { onMediaRpcRunningChanged() }
+
+            // Copy current media presence to the Custom RPC editor.
+            val currentConfig = copyConfig
+            if (currentConfig != null) {
+                val copyToast = stringResource(id = R.string.copied_to_custom_rpc)
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    TextButton(
+                        onClick = {
+                            rpcManager.copyToCustomRpc(currentConfig)
+                            Toast.makeText(
+                                context,
+                                copyToast,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Outlined.ContentCopy,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(id = R.string.copy_to_custom_rpc),
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                    }
+                }
+            }
+
             LazyColumn {
                 item {
                     PreferenceSwitch(

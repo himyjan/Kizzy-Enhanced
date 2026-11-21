@@ -29,6 +29,7 @@ import com.my.kizzy.data.rpc.ConsoleGameCatalog
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
@@ -65,6 +66,11 @@ class CustomRpcService : Service() {
     @Inject
     lateinit var notificationManager: NotificationManager
 
+    override fun onCreate() {
+        super.onCreate()
+        AppUtils.registerRpcService(this)
+    }
+
     @SuppressLint("WakelockTimeout")
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -73,8 +79,6 @@ class CustomRpcService : Service() {
         if (intent?.action == Constants.ACTION_STOP_SERVICE) {
             // Explicit stop: the next cold start must not bring it back.
             Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
-            Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
-            Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
             stopSelf()
             return super.onStartCommand(intent, flags, startId)
         } else {
@@ -323,7 +327,7 @@ class CustomRpcService : Service() {
                     setPartySize(it.partyCurrentSize.toIntOrNull(), it.partyMaxSize.toIntOrNull())
                     setStatus(it.status.ifEmpty { "online" })
                     setType(it.type.toIntOrNull() ?: 0)
-                    setPlatform(it.platform.ifEmpty { null })
+                    setPlatform(if (consoleMode) it.platform.ifEmpty { null } else null)
                     setStartTimestamps(it.timestampsStart.toLongOrNull())
                     setStopTimestamps(it.timestampsStop.toLongOrNull())
                     setButton1(it.button1.ifEmpty { null }, it.button1link.ifEmpty { null })
@@ -356,13 +360,16 @@ class CustomRpcService : Service() {
     override fun onDestroy() {
         consoleDetectionJob?.cancel()
         consoleDetectionJob = null
-        // Clear Discord presence before closing the WebSocket so the activity
-        // card is removed from the user's profile
-        CoroutineScope(Dispatchers.IO).launch {
-            kizzyRPC.clearPresence()
+        // KizzyRPC and its Discord gateway are process-wide singletons, so this
+        // service must not tear them down while another RPC service still uses
+        // them. The old code cleared the presence on a detached coroutine; that
+        // clear waited for the socket and arrived AFTER a restarted service had
+        // sent its presence, leaving Discord with an empty activity list.
+        AppUtils.unregisterRpcService(this)
+        if (!AppUtils.isAnotherRpcServiceActive(this)) {
+            kizzyRPC.closeRPC()
         }
         scope.cancel()
-        kizzyRPC.closeRPC()
         wakeLock?.let {
             if (it.isHeld) it.release()
         }

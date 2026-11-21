@@ -48,6 +48,28 @@ object AppUtils {
     }
 
     /**
+     * Names of the RPC services that are alive in this process.
+     *
+     * KizzyRPC and its Discord gateway are process-wide singletons, so a service
+     * that is being destroyed must not close the gateway (or clear the activity)
+     * while another RPC service is still using it.
+     */
+    private val activeRpcServices: MutableSet<String> =
+        java.util.concurrent.ConcurrentHashMap.newKeySet()
+
+    fun registerRpcService(service: Any) {
+        activeRpcServices.add(service.javaClass.name)
+    }
+
+    fun unregisterRpcService(service: Any) {
+        activeRpcServices.remove(service.javaClass.name)
+    }
+
+    /** True when an RPC service other than [service] is still alive. */
+    fun isAnotherRpcServiceActive(service: Any): Boolean =
+        activeRpcServices.any { it != service.javaClass.name }
+
+    /**
      * Drops the cached list of running services.
      *
      * Called after starting or stopping an RPC so the next check does not
@@ -67,13 +89,13 @@ object AppUtils {
     }
 
     fun customRpcRunning(): Boolean {
-        return Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""].isNotEmpty()
-            && Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isEmpty()
-            && checkForRunningService<CustomRpcService>()
+        return checkForRunningService<CustomRpcService>()
+            && Prefs[Prefs.ACTIVE_RPC_TYPE, ""] == RpcManager.RpcType.CustomRpc.name
     }
 
     fun consoleRpcRunning(): Boolean {
-        return Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""].isNotEmpty() && checkForRunningService<CustomRpcService>()
+        return checkForRunningService<CustomRpcService>()
+            && Prefs[Prefs.ACTIVE_RPC_TYPE, ""] == RpcManager.RpcType.ConsoleRpc.name
     }
 
     fun ManualRpcRunning(): Boolean {

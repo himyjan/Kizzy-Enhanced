@@ -692,14 +692,16 @@ private fun RpcTextFieldsColumn(
                     isCustomRpcEnabled = newValue
                     when (newValue) {
                         true -> {
-                            persistConsoleSettings()
-                            val consoleConfig = buildConsoleConfig()
+                            // Send the config the user typed on the Custom RPC tab.
+                            // This used to send buildConsoleConfig(), so the service
+                            // always received "Console RPC / Console RPC running".
+                            val customConfig = uiState.rpcConfig
                             scope.launch {
                                 // Add Custom RPC without stopping Console RPC or other RPCs.
                                 rpcManager.switchTo(
                                     setOf(RpcType.CustomRpc),
                                     add = true,
-                                    rpcConfigString = Json.encodeToString(consoleConfig),
+                                    rpcConfigString = Json.encodeToString(customConfig),
                                     isConsoleRpc = false
                                 )
                             }

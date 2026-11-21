@@ -32,6 +32,7 @@ import android.util.Log
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
@@ -68,6 +69,12 @@ class AppDetectionService : Service() {
 
     private var runningPackage = ""
     override fun onBind(intent: Intent): IBinder? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        AppUtils.registerRpcService(this)
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             Constants.ACTION_STOP_SERVICE -> {
@@ -89,7 +96,12 @@ class AppDetectionService : Service() {
 
     override fun onDestroy() {
         scope.cancel()
-        kizzyRPC.closeRPC()
+        // The gateway is a process-wide singleton: only close it when no other
+        // RPC service is still using it.
+        AppUtils.unregisterRpcService(this)
+        if (!AppUtils.isAnotherRpcServiceActive(this)) {
+            kizzyRPC.closeRPC()
+        }
         super.onDestroy()
     }
 

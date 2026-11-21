@@ -148,6 +148,19 @@ fun String.toRpcImage(): RpcImage? {
         RpcImage.ExternalImage(this)
 }
 
+/**
+ * Extracts the URL/identifier string from an [RpcImage] without resolving or uploading it.
+ * Returns the raw string for [RpcImage.DiscordImage] and [RpcImage.ExternalImage];
+ * returns null for [RpcImage.ApplicationIcon] and [RpcImage.BitmapImage] since those
+ * require async resolution/upload to obtain a URL.
+ */
+fun RpcImage.toUrlString(): String? = when (this) {
+    is RpcImage.DiscordImage -> image
+    is RpcImage.ExternalImage -> image
+    is RpcImage.ApplicationIcon -> null
+    is RpcImage.BitmapImage -> null
+}
+
 fun Context.getFileName(uri: Uri): String = "temp_file.${getFileExtension(this, uri)}"
 
 private fun getFileExtension(context: Context, uri: Uri): String? =
