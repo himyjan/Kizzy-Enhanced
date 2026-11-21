@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -94,8 +95,10 @@ class DiscordOAuth2Auth(
                 throw DiscordOAuth2Exception.NetworkFailure(e)
             }
 
-            // 3. Await the callback result
-            val callback = deferred.await()
+            // 3. Await the callback result with timeout (30 seconds)
+            val callback = withTimeoutOrNull(30_000) {
+                deferred.await()
+            } ?: throw DiscordOAuth2Exception.NetworkFailure(java.io.IOException("Authorization timeout"))
 
             if (callback.state != state) {
                 Log.w(TAG, "authorize: state mismatch")
@@ -186,8 +189,14 @@ class DiscordOAuth2Auth(
                     scope = scope,
                 )
             } else {
+                // Try to parse Discord's error response for better error messages
+                val errorMsg = runCatching {
+                    val json = JSONObject(responseBody)
+                    json.getString("error") + (json.optString("error_description").let { if (it.isNotEmpty()) ": $it" else "" })
+                }.getOrElse { responseBody }
+
                 Log.w(TAG, "token exchange: HTTP $responseCode error body=$responseBody")
-                throw DiscordOAuth2Exception.NetworkFailure(java.io.IOException("HTTP $responseCode:$responseBody"))
+                throw DiscordOAuth2Exception.NetworkFailure(java.io.IOException("HTTP $responseCode: $errorMsg"))
             }
         }
     }
