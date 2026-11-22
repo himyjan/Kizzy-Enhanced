@@ -2,11 +2,11 @@ name: Test Build
 
 on:
   push:
-    branches: ['master']
+    branches: [ "master" ]
     paths-ignore:
       - 'metadata/**'
   pull_request:
-    branches: ['master']
+    branches: [ "master" ]
     paths-ignore:
       - 'metadata/**'
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Assemble Debug
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --no-daemon --max-workers=2
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
