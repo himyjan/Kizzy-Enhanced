@@ -24,8 +24,9 @@ android {
             useSupportLibrary = true
         }
         ndk {
-            // Ship only 64-bit ABIs to reduce APK size.
-            abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
+            // Ship all major ABIs so bundletool generates per-architecture split APKs
+            // (arm64-v8a, x86_64, armeabi-v7a, x86) instead of a single universal APK.
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
     }
     signingConfigs {
