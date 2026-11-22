@@ -33,7 +33,7 @@ jobs:
           cache: gradle
 
       - name: Cache Gradle wrapper and caches
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/wrapper
