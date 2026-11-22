@@ -12,6 +12,7 @@
 
 package com.my.kizzy.feature_settings.rpc_settings
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,10 +44,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.data.rpc.CustomRpcBoardItem
 import com.my.kizzy.feature_rpc_base.CustomRpcBoardManager
+import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.resources.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +59,7 @@ fun CustomRpcBoardScreen(
     onBackPressed: () -> Unit,
     boardManager: CustomRpcBoardManager = CustomRpcBoardManager.getInstance(LocalContext.current.applicationContext)
 ) {
+    val context = LocalContext.current
     val scope = remember { CoroutineScope(Dispatchers.Main) }
     var showEditorDialog by remember { mutableStateOf(false) }
     var editingBoard: CustomRpcBoardItem? by remember { mutableStateOf(null) }
@@ -68,13 +71,18 @@ fun CustomRpcBoardScreen(
         activeBoardId = boardManager.getActiveBoardId()
     }
 
-    // Refresh boards state whenever DataStore changes externally.
-    LaunchedEffect(boardManager) {
-        // No observable DataStream exposed; rely on manual refresh after each mutation below.
-    }
-
     fun refreshBoards() {
         boards = boardManager.loadBoards()
+    }
+
+    fun startCustomRpcService() {
+        val intent = Intent(context, CustomRpcService::class.java)
+        intent.putExtra("RPC", "")
+        context.startForegroundService(intent)
+    }
+
+    fun stopCustomRpcService() {
+        context.stopService(Intent(context, CustomRpcService::class.java))
     }
 
     @Composable
@@ -162,10 +170,12 @@ fun CustomRpcBoardScreen(
                                 boardManager.deactivateBoard()
                                 activeBoardId = null
                                 refreshBoards()
+                                stopCustomRpcService()
                             } else {
                                 boardManager.activateBoard(board)
                                 activeBoardId = board.id
                                 refreshBoards()
+                                startCustomRpcService()
                             }
                         }
                     },
@@ -178,6 +188,7 @@ fun CustomRpcBoardScreen(
                             boardManager.deleteBoard(board.id)
                             if (board.id == activeBoardId) {
                                 activeBoardId = null
+                                stopCustomRpcService()
                             }
                             refreshBoards()
                         }
