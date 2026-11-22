@@ -265,17 +265,17 @@ class UserViewModel @Inject constructor(
         mediaFlow.flatMapLatest { it }.onEach { newRpcConfig ->
             viewModelScope.launch(Dispatchers.Main) {
                 val current = _state.value
-                // While still loading, ignore media updates: rendering the
-                // profile with an EMPTY user caused a visible jump on open.
+                // While still loading, ignore media updates.
                 if (current is UserState.Loading) return@launch
-                if (current is UserState.LoadingCompleted && current.rpcConfig == newRpcConfig) {
+                // NEVER overwrite a logged-out state (UserState.Error) with
+                // an empty user - that would wrongly show Logout instead of
+                // Login.
+                if (current !is UserState.LoadingCompleted) return@launch
+                if (current.rpcConfig == newRpcConfig) {
                     return@launch
                 }
                 _state.value = UserState.LoadingCompleted(
-                    when (current) {
-                        is UserState.LoadingCompleted -> current.user
-                        is UserState.Error -> current.user
-                    },
+                    current.user,
                     newRpcConfig
                 )
             }
