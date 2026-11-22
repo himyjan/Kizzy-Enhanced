@@ -85,26 +85,43 @@ jobs:
       - name: Analyze R8 Configuration
         run: ./gradlew :app:analyzeReleaseR8Config
 
-      - name: Rename Release APKs and App Bundle
+      - name: Download bundletool
         run: |
-          APK_DIR="app/build/outputs/apk/release"
-          AAB_DIR="app/build/outputs/bundle/release"
+          curl -L "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
+
+      - name: Generate Split APKs for All Device Targets from App Bundle
+        run: |
+          AAB="app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
+          OUT_DIR="app/build/outputs/apk/release"
           RUN="${{ github.run_number }}"
 
-          if [ -f "$APK_DIR/app-arm64-v8a-release.apk" ]; then
-            mv "$APK_DIR/app-arm64-v8a-release.apk" "$APK_DIR/KizzyEnhanced-${RUN}-arm64-v8a.apk"
-          fi
-          if [ -f "$APK_DIR/app-x86_64-release.apk" ]; then
-            mv "$APK_DIR/app-x86_64-release.apk" "$APK_DIR/KizzyEnhanced-${RUN}-x86_64.apk"
-          fi
-          if [ -f "$APK_DIR/app-release.apk" ]; then
-            mv "$APK_DIR/app-release.apk" "$APK_DIR/KizzyEnhanced-${RUN}-universal.apk"
-          fi
-          if [ -f "$AAB_DIR/app-release.aab" ]; then
-            mv "$AAB_DIR/app-release.aab" "$AAB_DIR/KizzyEnhanced-${RUN}.aab"
-          fi
+          # Generate split APKs for all targets (all ABIs, densities, languages) from the .aab
+          # Using --mode=default creates the complete matrix of split APKs inside app.apks
+          java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
+            --bundle="$AAB" \
+            --output="$RUNNER_TEMP/app.apks" \
+            --ks="$RUNNER_TEMP/release.keystore" \
+            --ks-pass=pass:${KEYSTORE_PASSWORD} \
+            --ks-key-alias=${KEY_ALIAS} \
+            --key-pass=pass:${KEY_PASSWORD} \
+            --mode=default
 
-          ls -la "$APK_DIR/KizzyEnhanced-${RUN}-"*.apk "$AAB_DIR/KizzyEnhanced-${RUN}.aab" 2>/dev/null || true
+          # Extract all generated split APKs
+          mkdir -p "$RUNNER_TEMP/splits"
+          unzip -o -q "$RUNNER_TEMP/app.apks" -d "$RUNNER_TEMP/splits"
+
+          # Copy base APK (universal - works on all devices)
+          cp "$RUNNER_TEMP/splits/splits/base-master.apk" "$OUT_DIR/KizzyEnhanced-${RUN}-universal.apk"
+
+          # Copy per-ABI split APKs
+          for ABI_APK in "$RUNNER_TEMP/splits/splits"/base-*-*.apk; do
+            [ -f "$ABI_APK" ] || continue
+            ABI_NAME=$(basename "$ABI_APK" .apk | sed 's/base-//; s/.apk//')
+            cp "$ABI_APK" "$OUT_DIR/KizzyEnhanced-${RUN}-${ABI_NAME}.apk"
+          done
+
+          echo "=== Generated APKs ==="
+          ls -la "$OUT_DIR/KizzyEnhanced-${RUN}-"*.apk
 
       - name: Generate Performance Reports
         run: |
@@ -224,9 +241,18 @@ jobs:
           name: Kizzy Enhanced ${{ github.run_number }}
           body_path: release-notes.md
           files: |
-            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
-            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk
             app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-arm64_v8a.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-armeabi_v7a.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-x86.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-x86_64.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-mdpi.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-hdpi.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-xhdpi.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-xxhdpi.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-xxxhdpi.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-en.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-base-zh.apk
             app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab
             app/build/reports/r8/**/*.html
             app/build/reports/r8/**/*.json
