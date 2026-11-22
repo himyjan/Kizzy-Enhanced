@@ -9,6 +9,9 @@ plugins {
 
 // Fetch the libs version catalog instance safely
 val libsCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+val enableAbiSplits = providers.gradleProperty("enableAbiSplits")
+    .map { it.toBoolean() }
+    .orElse(true)
 
 android {
     namespace = "com.my.kizzy"
@@ -31,10 +34,10 @@ android {
     }
     splits {
         abi {
-            isEnable = true
+            isEnable = enableAbiSplits.get()
             reset()
             include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
+            isUniversalApk = enableAbiSplits.get()
         }
     }
     signingConfigs {
