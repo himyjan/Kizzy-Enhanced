@@ -61,11 +61,20 @@ fun CustomRpcBoardScreen(
     var showEditorDialog by remember { mutableStateOf(false) }
     var editingBoard: CustomRpcBoardItem? by remember { mutableStateOf(null) }
 
-    val boards by remember { mutableStateOf(boardManager.loadBoards()) }
+    var boards by remember { mutableStateOf(boardManager.loadBoards()) }
     var activeBoardId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         activeBoardId = boardManager.getActiveBoardId()
+    }
+
+    // Refresh boards state whenever DataStore changes externally.
+    LaunchedEffect(boardManager) {
+        // No observable DataStream exposed; rely on manual refresh after each mutation below.
+    }
+
+    fun refreshBoards() {
+        boards = boardManager.loadBoards()
     }
 
     @Composable
@@ -152,9 +161,11 @@ fun CustomRpcBoardScreen(
                             if (isActive) {
                                 boardManager.deactivateBoard()
                                 activeBoardId = null
+                                refreshBoards()
                             } else {
                                 boardManager.activateBoard(board)
                                 activeBoardId = board.id
+                                refreshBoards()
                             }
                         }
                     },
@@ -168,6 +179,7 @@ fun CustomRpcBoardScreen(
                             if (board.id == activeBoardId) {
                                 activeBoardId = null
                             }
+                            refreshBoards()
                         }
                     },
                 )
@@ -195,6 +207,7 @@ fun CustomRpcBoardScreen(
                         } else {
                             boardManager.updateBoard(board)
                         }
+                        refreshBoards()
                     }
                     showEditorDialog = false
                     editingBoard = null
