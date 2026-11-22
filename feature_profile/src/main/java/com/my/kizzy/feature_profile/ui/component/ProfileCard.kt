@@ -392,17 +392,26 @@ fun ProfileCard(
                     buildAnnotatedBio(bio, linkColor, textColor)
                 }
 
-                Text(
+                ClickableText(
                     text = annotatedBio,
-                    color = { textColor },
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = if (bioExpanded) Int.MAX_VALUE else 5,
                     overflow = TextOverflow.Ellipsis,
                     onTextLayout = { res: TextLayoutResult -> bioOverflow = res.hasVisualOverflow },
-                    modifier = Modifier.padding(top = 4.dp)
-                        .clickable {
-                            Regex("https?://[^\\s]+").find(bio)?.value?.let { uriHandler.openUri(it) }
-                        },
+                    modifier = Modifier.padding(top = 4.dp),
+                    onClick = { offset ->
+                        val urlRegex = Regex("https?://[^\\s]+")
+                        var lastIndex = 0
+                        urlRegex.findAll(annotatedBio.text).forEach { matchResult ->
+                            val start = matchResult.range.first
+                            val end = matchResult.range.last + 1
+                            if (offset in start until end) {
+                                val url = annotatedBio.text.substring(start, end)
+                                uriHandler.openUri(url)
+                            }
+                            lastIndex = end
+                        }
+                    },
                 )
                 if (bioOverflow) {
                     Text(
