@@ -80,7 +80,7 @@ jobs:
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
+        run: ./gradlew --no-daemon --max-workers=2 clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
 
       - name: Analyze R8 Configuration
         run: ./gradlew :app:analyzeReleaseR8Config
