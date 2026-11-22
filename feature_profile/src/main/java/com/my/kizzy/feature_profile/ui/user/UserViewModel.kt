@@ -10,6 +10,7 @@ import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
 import com.my.kizzy.feature_profile.fetchDiscordUser
+import com.my.kizzy.feature_profile.fetchDiscordUserProfile
 import com.my.kizzy.feature_profile.fetchUserInfo
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
@@ -135,14 +136,19 @@ class UserViewModel @Inject constructor(
         val isAccountToken = (parts.size >= 3 && parts[1].toLongOrNull() != null) ||
             token.startsWith("mfa.")
         if (!isAccountToken) {
-            // OAuth2: go straight to REST /users/@me, skip the gateway entirely.
+            // OAuth2: /users/@me gives the profile quickly, then best-effort
+            // fetch /users/@me/profile for bio/about-me and merge it.
             val fresh = fetchDiscordUser(token)
             if (fresh != null) {
-                _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())
+                val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
+                    fresh.copy(bio = profileBio)
+                } ?: fresh
+                Prefs[Prefs.USER_DATA] = Json.encodeToString(withBio)
+                _state.value = UserState.LoadingCompleted(withBio, currentRpcConfig())
                 return
             }
         } else {
-            // Account token: try the gateway READY payload first, fall back to REST.
+            // Account token: gateway READY includes bio. Fall back to REST.
             val fresh = fetchUserInfo(token)
                 ?: fetchDiscordUser(token)
                 ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }

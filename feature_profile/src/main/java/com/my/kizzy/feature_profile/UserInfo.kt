@@ -166,3 +166,48 @@ suspend fun fetchDiscordUser(token: String): User? {
     }
     return null
 }
+
+/**
+ * Best-effort fetch of the current user's client profile, which can contain
+ * the About Me/bio field. Discord's public /users/@me endpoint does not return
+ * bio, but the client profile endpoint may return it for OAuth2 bearer tokens.
+ * Any failure is ignored so the normal profile load still succeeds.
+ */
+suspend fun fetchDiscordUserProfile(token: String): String? {
+    if (token.isBlank()) return null
+
+    val authHeaders = if (token.count { it == '.' } >= 2) {
+        listOf(token, "Bearer $token")
+    } else {
+        listOf("Bearer $token", token)
+    }
+
+    HttpClient(OkHttp) {
+        install(HttpTimeout) {
+            connectTimeoutMillis = 8_000
+            requestTimeoutMillis = 8_000
+            socketTimeoutMillis = 8_000
+        }
+    }.use { client ->
+        for (auth in authHeaders) {
+            val body = try {
+                val response = client.get("https://discord.com/api/v10/users/@me/profile") {
+                    header("Authorization", auth)
+                    header("Accept", "application/json")
+                }
+                if (response.status == HttpStatusCode.OK) response.bodyAsText() else null
+            } catch (_: Exception) {
+                null
+            } ?: continue
+
+            val bio = runCatching {
+                val obj = restJson.parseToJsonElement(body) as? JsonObject ?: return@runCatching null
+                (obj["bio"] as? JsonPrimitive)?.content
+                    ?: (obj["about_me"] as? JsonPrimitive)?.content
+            }.getOrNull()
+
+            if (!bio.isNullOrBlank()) return bio
+        }
+    }
+    return null
+}

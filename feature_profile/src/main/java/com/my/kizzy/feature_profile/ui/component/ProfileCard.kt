@@ -377,7 +377,7 @@ fun ProfileCard(
             SectionHeader(text = stringResource(id = R.string.user_profile_bio))
             if (bio == null) {
                 Text(
-                    text = stringResource(id = R.string.user_profile_no_bio),
+                    text = stringResource(id = R.string.user_profile_bio_oauth_note),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp),
