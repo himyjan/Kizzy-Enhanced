@@ -112,6 +112,7 @@ jobs:
           OUT_DIR="$GITHUB_WORKSPACE/app/build/outputs/apk/release"
           mkdir -p "$OUT_DIR"
 
+          # Universal APK (all ABIs)
           java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
             --bundle="$AAB" \
             --output="$RUNNER_TEMP/universal.apks" \
@@ -123,23 +124,28 @@ jobs:
           unzip -o -q "$RUNNER_TEMP/universal.apks" "universal.apk" -d "$RUNNER_TEMP/out-universal"
           cp "$RUNNER_TEMP/out-universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-universal.apk"
 
-          java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
-            --bundle="$AAB" \
-            --output="$RUNNER_TEMP/splits.apks" \
-            --ks="$RUNNER_TEMP/release.keystore" \
-            --ks-pass=pass:kizzyfork \
-            --ks-key-alias=kizzyfork \
-            --key-pass=pass:kizzyfork
-          unzip -o -q "$RUNNER_TEMP/splits.apks" "splits/*" -d "$RUNNER_TEMP/out-splits"
-
+          # Standalone per-ABI APKs (full app + target ABI split)
           for ABI in arm64-v8a x86_64; do
-            ABI_SLUG="${ABI//-/_}"
-            SPLIT_APK=$(find "$RUNNER_TEMP/out-splits/splits" -name "*${ABI_SLUG}*.apk" | head -n 1)
-            if [ -n "$SPLIT_APK" ] && [ -f "$SPLIT_APK" ]; then
-              cp "$SPLIT_APK" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
-            else
-              cp "$RUNNER_TEMP/out-universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
-            fi
+            SPEC_JSON="$RUNNER_TEMP/spec-${ABI}.json"
+            cat <<EOF > "$SPEC_JSON"
+          {
+            "supportedAbis": ["${ABI}"],
+            "supportedLocales": ["en", "zh"],
+            "screenDensity": 420,
+            "sdkVersion": 35
+          }
+          EOF
+            java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
+              --bundle="$AAB" \
+              --output="$RUNNER_TEMP/${ABI}.apks" \
+              --device-spec="$SPEC_JSON" \
+              --ks="$RUNNER_TEMP/release.keystore" \
+              --ks-pass=pass:kizzyfork \
+              --ks-key-alias=kizzyfork \
+              --key-pass=pass:kizzyfork \
+              --mode=universal
+            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "universal.apk" -d "$RUNNER_TEMP/out-${ABI}"
+            cp "$RUNNER_TEMP/out-${ABI}/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
           done
 
       - name: Generate changelog
