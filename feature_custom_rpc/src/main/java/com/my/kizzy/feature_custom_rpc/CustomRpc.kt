@@ -1872,7 +1872,35 @@ private fun RpcTextFieldsColumn(
                     }
 
                 }
-
+                // RPC Link Fields - Discord Social SDK URLs
+                RpcField(
+                    value = detailsUrl,
+                    label = R.string.rpc_details_url,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                ) {
+                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(detailsUrl = it)))
+                }
+                RpcField(
+                    value = stateUrl,
+                    label = R.string.rpc_state_url,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                ) {
+                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(stateUrl = it)))
+                }
+                RpcField(
+                    value = largeUrl,
+                    label = R.string.rpc_large_url,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                ) {
+                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeUrl = it)))
+                }
+                RpcField(
+                    value = smallUrl,
+                    label = R.string.rpc_small_url,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                ) {
+                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallUrl = it)))
+                }
                 Spacer(modifier = Modifier.size(100.dp))
 
             }
