@@ -32,16 +32,6 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Cache Gradle wrapper and caches
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~/.gradle/wrapper
-            ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', '**/gradle/libs.versions.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Generate signing keystore
         run: |
           keytool -genkeypair -v \
@@ -54,45 +44,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Check current JDK version
-        id: current-jdk
-        run: |
-          CURRENT_VERSION=$(grep 'java-version:' .github/workflows/release.yml | grep -oP "'[0-9]+'" | tr -d "'")
-          echo "current=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Check latest JDK version (Eclipse Temurin)
-        id: latest-jdk
-        env:
-          CURRENT_VERSION: ${{ steps.current-jdk.outputs.current }}
-        run: |
-          # Ask Adoptium for the most recent *released* feature version. This is a
-          # GA release, unlike `tip_version`, which may be an early-access build
-          # that actions/setup-java cannot install.
-          LATEST_VERSION="$(curl -fsSL --retry 3 --retry-delay 2 \
-            "https://api.adoptium.net/v3/info/available_releases" 2>/dev/null \
-            | jq -r '.most_recent_feature_release // empty' 2>/dev/null)" || true
-
-          if [ -z "$LATEST_VERSION" ]; then
-            echo "::warning::Could not query the Adoptium API; keeping the configured JDK version."
-            LATEST_VERSION="$CURRENT_VERSION"
-          fi
-
-          # Never downgrade if the API reports an older feature release.
-          if [ -n "$CURRENT_VERSION" ] && [ -n "$LATEST_VERSION" ] \
-              && [ "$LATEST_VERSION" -lt "$CURRENT_VERSION" ]; then
-            LATEST_VERSION="$CURRENT_VERSION"
-          fi
-
-          echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Update version metadata and JDK version
+      - name: Update version metadata
         run: |
           sed -i 's/version-name = ".*"/version-name = "6.2-enhanced-${{ github.run_number }}"/' gradle/libs.versions.toml
           sed -i 's/version-code = ".*"/version-code = "${{ github.run_number }}"/' gradle/libs.versions.toml
-          if [ "${{ steps.current-jdk.outputs.current }}" != "${{ steps.latest-jdk.outputs.latest }}" ]; then
-            echo "Updating JDK from ${{ steps.current-jdk.outputs.current }} to ${{ steps.latest-jdk.outputs.latest }}"
-            sed -i "s/java-version: '${{ steps.current-jdk.outputs.current }}'/java-version: '${{ steps.latest-jdk.outputs.latest }}'/" .github/workflows/release.yml
-          fi
 
       - name: Update app icon
         run: |
@@ -125,10 +80,10 @@ jobs:
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew --max-workers=2 --no-daemon clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
+        run: ./gradlew clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
 
       - name: Analyze R8 Configuration
-        run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
+        run: ./gradlew :app:analyzeReleaseR8Config
 
       - name: Rename Base APK and App Bundle
         run: |
@@ -149,15 +104,14 @@ jobs:
 
       - name: Download bundletool
         run: |
-          curl -fsSL "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
+          curl -L "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
 
-      - name: Build Universal & Split APKs from App Bundle
+      - name: Extract Universal & Per-ABI APKs from App Bundle
         run: |
           AAB="app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
           OUT_DIR="$GITHUB_WORKSPACE/app/build/outputs/apk/release"
           mkdir -p "$OUT_DIR"
 
-          # 1. Universal standalone APK (contains all ABIs/densities/languages)
           java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
             --bundle="$AAB" \
             --output="$RUNNER_TEMP/universal.apks" \
@@ -169,7 +123,6 @@ jobs:
           unzip -o -q "$RUNNER_TEMP/universal.apks" "universal.apk" -d "$RUNNER_TEMP/out-universal"
           cp "$RUNNER_TEMP/out-universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-universal.apk"
 
-          # 2. Split APKs archive so we can extract ABI-specific split APKs when present
           java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
             --bundle="$AAB" \
             --output="$RUNNER_TEMP/splits.apks" \
@@ -185,7 +138,6 @@ jobs:
             if [ -n "$SPLIT_APK" ] && [ -f "$SPLIT_APK" ]; then
               cp "$SPLIT_APK" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
             else
-              # Pure Kotlin/Compose or non-split bundle has no ABI-specific native split
               cp "$RUNNER_TEMP/out-universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
             fi
           done
@@ -194,7 +146,10 @@ jobs:
         run: chmod +x .github/scripts/generate-changelog.sh && .github/scripts/generate-changelog.sh
 
       - name: Generate Release Notes Body
+        id: release_notes
         run: |
+          # Build the download table inline (asset names & checksums) so nothing
+          # depends on fragile cross-step multiline output interpolation.
           {
             echo "| File | Architecture / Type | Size | SHA-256 |"
             echo "| :--- | :--- | :--- | :--- |"
@@ -210,8 +165,8 @@ jobs:
               SIZE=$(du -h "$FILE" | cut -f1)
               HASH=$(sha256sum "$FILE" | cut -d' ' -f1)
               case "$NAME" in
-                *arm64-v8a*) ARCH="ARM64 split (or universal if no native split)" ;;
-                *x86_64*) ARCH="x86_64 split (or universal if no native split)" ;;
+                *arm64-v8a*) ARCH="ARM64 (Recommended for modern phones)" ;;
+                *x86_64*) ARCH="x86_64 (Emulators & Chromebooks)" ;;
                 *universal*) ARCH="Universal (All architectures)" ;;
                 *.aab*) ARCH="Android App Bundle (Play Store / bundletool)" ;;
               esac
@@ -222,6 +177,8 @@ jobs:
           {
             echo "## 🚀 Kizzy Enhanced ${{ github.run_number }}"
             echo ""
+            # Use the user-provided notes when given, otherwise fall back to the
+            # auto-generated changelog so the release body is never empty.
             NOTES="${{ github.event.inputs.notes_en }}"
             if [ -n "$NOTES" ]; then
               echo "$NOTES"
@@ -278,17 +235,6 @@ jobs:
             echo "See [docs/RELEASE_FEATURES.md](docs/RELEASE_FEATURES.md) for the complete list of features, bug fixes, and dependency changes."
             echo ""
           } > release-notes.md
-
-      - name: Commit JDK version change
-        if: steps.current-jdk.outputs.current != steps.latest-jdk.outputs.latest
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .github/workflows/release.yml
-          if ! git diff --staged --quiet; then
-            git commit -m "chore: update JDK version to ${{ steps.latest-jdk.outputs.latest }}"
-            git push origin "HEAD:${{ github.ref_name }}"
-          fi
 
       - name: Upload All Release APKs
         uses: actions/upload-artifact@v7
