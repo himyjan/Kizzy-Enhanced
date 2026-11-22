@@ -24,17 +24,14 @@
 
 package xyz.dead8309.feature_manual_rpc
 
-
-
 import android.content.Intent
-
 import android.provider.Settings
-
 import android.widget.Toast
-
 import androidx.compose.animation.AnimatedVisibility
-
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.clip
+import com.my.kizzy.data.utils.uriToFile
+import xyz.dead8309.feature_manual_rpc.components.ImagePicker
 
 import androidx.compose.foundation.layout.Arrangement
 
@@ -1544,68 +1541,126 @@ fun ManualRpcScreen(
 
                 // Large Image
                 item {
+                    var openPickerDialog by remember { mutableStateOf(false) }
+                    var showProgress by remember { mutableStateOf(false) }
 
                     RpcField(
-
                         value = state.largeImage,
-
                         label = R.string.activity_large_image,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                         trailingIcon = {
-
                             Icon(
-
                                 imageVector = Icons.Outlined.Image,
-
-                                contentDescription = null,
-
-                                modifier = Modifier.size(20.dp)
-
+                                contentDescription = "openGallery",
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable { openPickerDialog = true }
                             )
-
                         },
-
+                        content = {
+                            ImagePicker(
+                                visible = openPickerDialog,
+                                onDismiss = { openPickerDialog = false },
+                                showProgress = showProgress
+                            ) { uri ->
+                                showProgress = true
+                                onEvent(UiEvent.UploadImage(context.uriToFile(uri)) { result ->
+                                    showProgress = false
+                                    openPickerDialog = false
+                                    onEvent(UiEvent.SetLargeImage(result))
+                                })
+                            }
+                        }
                     ) {
-
                         onEvent(UiEvent.SetLargeImage(it))
-
                     }
+                }
 
+                item {
+                    AnimatedVisibility(visible = state.largeImage.isNotBlank()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp, 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.activity_large_image_preview),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            AsyncImage(
+                                model = coverArtPreviewUrl(state.largeImage),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                placeholder = rememberVectorPainter(Icons.Outlined.Image),
+                                error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                            )
+                        }
+                    }
                 }
 
                 // Small Image
                 item {
+                    var openPickerDialog by remember { mutableStateOf(false) }
+                    var showProgress by remember { mutableStateOf(false) }
 
                     RpcField(
-
                         value = state.smallImage,
-
                         label = R.string.activity_small_image,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                         trailingIcon = {
-
                             Icon(
-
                                 imageVector = Icons.Outlined.Image,
-
-                                contentDescription = null,
-
-                                modifier = Modifier.size(20.dp)
-
+                                contentDescription = "openGallery",
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable { openPickerDialog = true }
                             )
-
                         },
-
+                        content = {
+                            ImagePicker(
+                                visible = openPickerDialog,
+                                onDismiss = { openPickerDialog = false },
+                                showProgress = showProgress
+                            ) { uri ->
+                                showProgress = true
+                                onEvent(UiEvent.UploadImage(context.uriToFile(uri)) { result ->
+                                    showProgress = false
+                                    openPickerDialog = false
+                                    onEvent(UiEvent.SetSmallImage(result))
+                                })
+                            }
+                        }
                     ) {
-
                         onEvent(UiEvent.SetSmallImage(it))
-
                     }
+                }
 
+                item {
+                    AnimatedVisibility(visible = state.smallImage.isNotBlank()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp, 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.activity_small_image_preview),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            AsyncImage(
+                                model = coverArtPreviewUrl(state.smallImage),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                placeholder = rememberVectorPainter(Icons.Outlined.Image),
+                                error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                            )
+                        }
+                    }
                 }
 
                 // Large Text (hover text for large image)
@@ -1962,24 +2017,26 @@ fun ManualRpcScreenDarkPreview() {
     ) {
 
         ManualRpcScreen(
-
             onBackPressed = {},
-
             state = uiState,
-
             hasUsageAccess = true,
-
             hasNotificationAccess = true,
-
             navigateToAppSelection = {},
-
             onEvent = {},
-
         )
-
     }
-
 }
+
+private fun coverArtPreviewUrl(url: String?): String? {
+    val trimmed = url?.trim() ?: return null
+    val withoutMp = trimmed.removePrefix("mp:")
+    return when {
+        withoutMp.startsWith("attachments") || withoutMp.startsWith("external") ->
+            "https://media.discordapp.net/$withoutMp"
+        else -> withoutMp
+    }
+}
+
 
 
 

@@ -32,6 +32,8 @@ import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.rpc.MultiRpcManager
+import com.my.kizzy.data.utils.toRpcImage
+import com.my.kizzy.data.utils.toUrlString
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcConfig
@@ -228,12 +230,14 @@ class ManualRpc : Service() {
         Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
 
     // Advanced settings (matching Custom RPC / RpcConfig fields)
+    // Read fresh each updatePresence() call so manual edits in the UI take effect
+    // immediately without restarting the service.
     private var manualActivityType = Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE, ""]
     private var manualStatus = Prefs[Prefs.MANUAL_RPC_STATUS, "online"]
-    private var manualLargeImage = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""]
-    private var manualSmallImage = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""]
     private var manualLargeText = Prefs[Prefs.MANUAL_RPC_LARGE_TEXT, ""]
     private var manualSmallText = Prefs[Prefs.MANUAL_RPC_SMALL_TEXT, ""]
+    private var manualLargeImage = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""]
+    private var manualSmallImage = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""]
     private var manualStreamUrl = Prefs[Prefs.MANUAL_RPC_STREAM_URL, ""]
     private var manualPartyCurrentSize = Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE, ""]
     private var manualPartyMaxSize = Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE, ""]
@@ -485,6 +489,21 @@ class ManualRpc : Service() {
             return
         }
 
+        val manualActivityType = Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE, ""]
+        val manualStatus = Prefs[Prefs.MANUAL_RPC_STATUS, "online"]
+        val manualLargeImageStr = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""]
+        val manualSmallImageStr = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""]
+        val manualLargeTextStr = Prefs[Prefs.MANUAL_RPC_LARGE_TEXT, ""]
+        val manualSmallTextStr = Prefs[Prefs.MANUAL_RPC_SMALL_TEXT, ""]
+        val manualStreamUrl = Prefs[Prefs.MANUAL_RPC_STREAM_URL, ""]
+        val manualPartyCurrentSize = Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE, ""]
+        val manualPartyMaxSize = Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE, ""]
+        val templateName = Prefs[Prefs.MANUAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
+        val templateDetails = Prefs[Prefs.MANUAL_RPC_TEMPLATE_DETAILS, TemplateKeys.MEDIA_TITLE]
+        val templateState = Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
+        val useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
+        val useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
+
         val finalName: String?
         val finalDetails: String?
         val finalState: String?
@@ -729,7 +748,15 @@ class ManualRpc : Service() {
         // download page so the cover art is always clickable when an image
         // is shown.
         val finalLargeUrl = largeUrl ?: smallUrl
-        
+
+        // Apply custom large/small image overrides if specified by the user
+        if (manualLargeImageStr.isNotBlank()) {
+            finalLargeImage = manualLargeImageStr.toRpcImage()
+        }
+        if (manualSmallImageStr.isNotBlank()) {
+            finalSmallImage = manualSmallImageStr.toRpcImage()
+        }
+
         // Build the CommonRpc once - this is what we want to send to Discord
         val commonRpc = CommonRpc(
             name = finalName ?: "",
@@ -754,8 +781,8 @@ class ManualRpc : Service() {
             smallImage = finalSmallImage,
             smallImageChannelUrl = finalSmallImageChannelUrl,
             largeUrl = finalLargeUrl,
-            largeText = manualLargeText.takeIf { it.isNotEmpty() } ?: finalLargeText,
-            smallText = manualSmallText.takeIf { it.isNotEmpty() } ?: finalSmallText,
+            largeText = manualLargeTextStr.takeIf { it.isNotEmpty() } ?: finalLargeText,
+            smallText = manualSmallTextStr.takeIf { it.isNotEmpty() } ?: finalSmallText,
             time = finalTimestamps,
             packageName = effectivePackageName ?: "",
             playbackState = richMediaInfo?.playbackState,
@@ -777,12 +804,28 @@ class ManualRpc : Service() {
             finalName,
             finalDetails,
             finalState,
-            finalLargeText,
-            finalSmallText,
+            manualLargeTextStr.takeIf { it.isNotEmpty() } ?: finalLargeText,
+            manualSmallTextStr.takeIf { it.isNotEmpty() } ?: finalSmallText,
+            finalLargeImage?.toUrlString() ?: finalLargeImage?.toString(),
+            finalSmallImage?.toUrlString() ?: finalSmallImage?.toString(),
             finalTimestamps?.start?.toString(),
             finalTimestamps?.end?.toString(),
             effectivePackageName,
             richMediaInfo?.playbackState?.toString(),
+            manualActivityType,
+            manualStatus,
+            manualLargeImageStr,
+            manualSmallImageStr,
+            manualStreamUrl,
+            manualPartyCurrentSize,
+            manualPartyMaxSize,
+            Prefs[Prefs.MANUAL_RPC_USE_BUTTONS, false].toString(),
+            Prefs[Prefs.MANUAL_RPC_BUTTON1_TEXT, ""],
+            Prefs[Prefs.MANUAL_RPC_BUTTON1_URL, ""],
+            Prefs[Prefs.MANUAL_RPC_BUTTON2_TEXT, ""],
+            Prefs[Prefs.MANUAL_RPC_BUTTON2_URL, ""],
+            Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false].toString(),
+            Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""],
         )
         if (presenceKey == lastSentPresenceKey) {
             logger.d(TAG, "Presence unchanged, skipping redundant update")
@@ -839,6 +882,9 @@ class ManualRpc : Service() {
         }
         if (Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false]) {
             kizzyRPC?.setApplicationId(Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""])
+        }
+        if (manualStreamUrl.isNotBlank()) {
+            kizzyRPC?.setStreamUrl(manualStreamUrl)
         }
         kizzyRPC?.setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
 

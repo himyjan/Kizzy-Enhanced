@@ -428,7 +428,6 @@ class ManualRpcViewmodel @Inject constructor(
                     viewModelScope.launch {
                         val result = uploadGalleryImageUseCase(event.file)
                         result?.let { uploadedUrl ->
-                            _uiState.update { it.copy(largeImage = uploadedUrl) }
                             event.callback(uploadedUrl)
                         }
                     }
