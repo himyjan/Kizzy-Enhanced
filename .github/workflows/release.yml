@@ -74,23 +74,21 @@ jobs:
           convert "$SRC" -resize 324x324 -colorspace gray app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.png
           convert "$SRC" -resize 432x432 -colorspace gray app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.png
 
-      - name: Assemble Release APKs
-        env:
-          KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
-          KEYSTORE_PASSWORD: kizzyfork
-          KEY_ALIAS: kizzyfork
-          KEY_PASSWORD: kizzyfork
-        run: ./gradlew --no-daemon --max-workers=2 clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease
-
       - name: Build Release App Bundle
         env:
           KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: |
-          rm -rf app/build/intermediates/shrunk_resources_proto_format
-          ./gradlew --no-daemon --max-workers=2 :app:bundleRelease --rerun-tasks
+        run: ./gradlew --no-daemon --max-workers=2 clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:bundleRelease
+
+      - name: Assemble Release APKs (splits.abi)
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
+          KEYSTORE_PASSWORD: kizzyfork
+          KEY_ALIAS: kizzyfork
+          KEY_PASSWORD: kizzyfork
+        run: ./gradlew --no-daemon --max-workers=2 :app:assembleRelease
 
       - name: Analyze R8 Configuration
         run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
