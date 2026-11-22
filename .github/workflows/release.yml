@@ -148,8 +148,6 @@ jobs:
       - name: Generate Release Notes Body
         id: release_notes
         run: |
-          # Build the download table inline (asset names & checksums) so nothing
-          # depends on fragile cross-step multiline output interpolation.
           {
             echo "| File | Architecture / Type | Size | SHA-256 |"
             echo "| :--- | :--- | :--- | :--- |"
@@ -170,70 +168,47 @@ jobs:
                 *universal*) ARCH="Universal (All architectures)" ;;
                 *.aab*) ARCH="Android App Bundle (Play Store / bundletool)" ;;
               esac
-              echo "| \`$NAME\` | $ARCH | $SIZE | \`$HASH\` |"
+              printf '| `%s` | %s | %s | `%s` |\n' "$NAME" "$ARCH" "$SIZE" "$HASH"
             done
           } > download-table.md
 
+          NOTES="${{ github.event.inputs.notes_en }}"
+          if [ -z "$NOTES" ]; then
+            NOTES=$(cat changelog.md)
+          fi
+
           {
-            echo "## 🚀 Kizzy Enhanced ${{ github.run_number }}"
-            echo ""
-            # Use the user-provided notes when given, otherwise fall back to the
-            # auto-generated changelog so the release body is never empty.
-            NOTES="${{ github.event.inputs.notes_en }}"
-            if [ -n "$NOTES" ]; then
-              echo "$NOTES"
-            else
-              cat changelog.md
-            fi
-            echo ""
-            echo "---"
-            echo ""
-            echo "## 📦 Downloads"
-            echo ""
+            printf '## 🚀 Kizzy Enhanced %s\n\n' "${{ github.run_number }}"
+            printf '%s\n\n' "$NOTES"
+            printf -- '---\n\n'
+            printf '## 📦 Downloads\n\n'
             cat download-table.md
-            echo ""
-            echo "---"
-            echo ""
-            echo "## 📊 R8 Configuration Analysis Report"
-            echo ""
-            echo "The R8 optimization analysis report has been generated and is available as a release asset below."
-            echo "Download the HTML report to review R8 configuration analysis results including kept/removed classes, obfuscation stats, and optimization recommendations."
-            echo ""
-            echo "---"
-            echo ""
-            echo "## 📋 Changelog"
-            echo ""
+            printf '\n---\n\n'
+            printf '## 📊 R8 Configuration Analysis Report\n\n'
+            printf 'The R8 optimization analysis report has been generated and is available as a release asset below.\n'
+            printf 'Download the HTML report to review R8 configuration analysis results including kept/removed classes, obfuscation stats, and optimization recommendations.\n\n'
+            printf -- '---\n\n'
             cat changelog.md
-            echo ""
-            echo "---"
-            echo ""
-            echo "## 📊 Release Summary"
-            echo ""
-            echo "| Field | Value |"
-            echo "| :--- | :--- |"
-            echo "| Package | `com.my.kizzy.enhanced` |"
-            echo "| Version | `6.2-enhanced-${{ github.run_number }}` |"
-            echo "| Version Code | `${{ github.run_number }}` |"
-            echo "| Base Project | Kizzy by dead8309 |"
-            echo "| Base Commit | `5e494d94a2c05e4d56b75ac80aae51dba4436905` |"
-            echo "| Full Feature List | [docs/RELEASE_FEATURES.md](docs/RELEASE_FEATURES.md) |"
-            echo "| Compare to Base | [himyjan/Kizzy-Enhanced → master](https://github.com/himyjan/Kizzy-Enhanced/compare/ac7338da99ba2f4b95fa588d9b1cfd0ecfc4b919...master) |"
-            echo ""
-            echo "---"
-            echo ""
-            echo "## 📲 Installation"
-            echo ""
-            echo "1. Download **KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk** (or `universal.apk` if you are unsure of your device's CPU)."
-            echo "2. Open the APK file on your Android device."
-            echo "3. If prompted, allow \"Install from unknown sources\"."
-            echo "4. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand)."
-            echo ""
-            echo "---"
-            echo ""
-            echo "## 📖 Full Feature History"
-            echo ""
-            echo "See [docs/RELEASE_FEATURES.md](docs/RELEASE_FEATURES.md) for the complete list of features, bug fixes, and dependency changes."
-            echo ""
+            printf '\n---\n\n'
+            printf '## 📊 Release Summary\n\n'
+            printf '| Field | Value |\n'
+            printf '| :--- | :--- |\n'
+            printf '| Package | `com.my.kizzy.enhanced` |\n'
+            printf '| Version | `6.2-enhanced-%s` |\n' "${{ github.run_number }}"
+            printf '| Version Code | `%s` |\n' "${{ github.run_number }}"
+            printf '| Base Project | Kizzy by dead8309 |\n'
+            printf '| Base Commit | `5e494d94a2c05e4d56b75ac80aae51dba4436905` |\n'
+            printf '| Full Feature List | [docs/RELEASE_FEATURES.md](docs/RELEASE_FEATURES.md) |\n'
+            printf '| Compare to Base | [himyjan/Kizzy-Enhanced → master](https://github.com/himyjan/Kizzy-Enhanced/compare/ac7338da99ba2f4b95fa588d9b1cfd0ecfc4b919...master) |\n\n'
+            printf -- '---\n\n'
+            printf '## 📲 Installation\n\n'
+            printf '1. Download **KizzyEnhanced-%s-arm64-v8a.apk** (or `universal.apk` if you are unsure of your device'\''s CPU).\n' "${{ github.run_number }}"
+            printf '2. Open the APK file on your Android device.\n'
+            printf '3. If prompted, allow "Install from unknown sources".\n'
+            printf '4. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand).\n\n'
+            printf -- '---\n\n'
+            printf '## 📖 Full Feature History\n\n'
+            printf 'See [docs/RELEASE_FEATURES.md](docs/RELEASE_FEATURES.md) for the complete list of features, bug fixes, and dependency changes.\n\n'
           } > release-notes.md
 
       - name: Upload All Release APKs
