@@ -90,7 +90,7 @@ jobs:
           KEY_PASSWORD: kizzyfork
         run: |
           rm -rf app/build/intermediates/shrunk_resources_proto_format
-          ./gradlew --no-daemon --max-workers=2 :app:bundleRelease
+          ./gradlew --no-daemon --max-workers=2 :app:bundleRelease --rerun-tasks
 
       - name: Analyze R8 Configuration
         run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
@@ -111,12 +111,12 @@ jobs:
           AAB_DIR="app/build/outputs/bundle/release"
           mkdir -p "$APK_DIR" "$RUNNER_TEMP/splits"
 
-          # 1. Rename standalone APKs produced by :app:assembleRelease (if splits.abi is enabled)
+          # 1. Rename standalone APKs produced by :app:assembleRelease (splits.abi)
           for APK in "$APK_DIR"/app-*-release.apk; do
             [ -f "$APK" ] || continue
-            BASE_NAME=$(basename "$APK" .apk)      # app-arm64-v8a-release
-            TARGET="${BASE_NAME#app-}"             # arm64-v8a-release
-            TARGET="${TARGET%-release}"            # arm64-v8a / armeabi-v7a / x86 / x86_64 / universal
+            BASE_NAME=$(basename "$APK" .apk)      # e.g. app-arm64-v8a-release / app-universal-release
+            TARGET="${BASE_NAME#app-}"             # e.g. arm64-v8a-release / universal-release
+            TARGET="${TARGET%-release}"            # e.g. arm64-v8a / armeabi-v7a / x86 / x86_64 / universal
             cp "$APK" "$APK_DIR/KizzyEnhanced-${RUN}-${TARGET}.apk"
           done
 
