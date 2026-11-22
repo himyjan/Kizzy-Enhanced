@@ -193,18 +193,25 @@ fun StartUp(
                         description = stringResource(id = R.string.usage_access_desc),
                         status = usageAccessStatus.value
                     ) {
-                        // Open App Info first so user can tap ⋮ → Allow restricted settings
-                        // (required on Android 13+ for sideloaded apps).
+                        // Step 1: Open App Info so user can tap ⋮ → Allow restricted settings
                         val appInfoIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                             data = Uri.fromParts("package", context.packageName, null)
                         }
                         try {
                             context.startActivity(appInfoIntent)
                         } catch (_: android.content.ActivityNotFoundException) {
-                            // Fallback to general Usage Access settings list.
-                            val fallbackIntent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                            context.startActivity(fallbackIntent)
+                            context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                         }
+                    }
+                }
+                item {
+                    SetupCard(
+                        title = stringResource(id = R.string.allow_usage_access),
+                        description = stringResource(id = R.string.allow_usage_access_desc),
+                        status = usageAccessStatus.value
+                    ) {
+                        // Step 2: Open Usage Access settings to toggle ON
+                        context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                     }
                 }
                 item {
