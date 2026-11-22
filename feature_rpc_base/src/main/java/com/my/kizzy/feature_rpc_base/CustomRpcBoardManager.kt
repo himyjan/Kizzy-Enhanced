@@ -125,6 +125,22 @@ class CustomRpcBoardManager @Inject constructor(
     }
 
     /**
+     * Moves the board with [boardId] by [delta] positions (-1 = up, +1 = down)
+     * within the board list and persists the new order.
+     */
+    suspend fun moveBoard(boardId: String, delta: Int) {
+        val index = _boards.indexOfFirst { it.id == boardId }
+        if (index < 0 || delta == 0) return
+        val newIndex = (index + delta).coerceIn(0, _boards.lastIndex)
+        if (newIndex == index) return
+        val mutable = _boards.toMutableList()
+        val board = mutable.removeAt(index)
+        mutable.add(newIndex, board)
+        _boards = mutable.toList()
+        persistBoards(_boards)
+    }
+
+    /**
      * Returns the board with the given id, or null if not found.
      */
     fun getBoard(boardId: String): CustomRpcBoardItem? = _boards.firstOrNull { it.id == boardId }

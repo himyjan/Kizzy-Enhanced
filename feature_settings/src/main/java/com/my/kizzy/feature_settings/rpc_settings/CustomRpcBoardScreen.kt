@@ -86,7 +86,7 @@ fun CustomRpcBoardScreen(
     }
 
     @Composable
-    fun BoardCard(board: CustomRpcBoardItem, isActive: Boolean, onToggle: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
+    fun BoardCard(board: CustomRpcBoardItem, isActive: Boolean, onToggle: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit, onMoveUp: () -> Unit, onMoveDown: () -> Unit) {
         Card(
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         ) {
@@ -121,17 +121,33 @@ fun CustomRpcBoardScreen(
                 }
                 Spacer(modifier = Modifier.size(12.dp))
                 Column(
-                    modifier = Modifier.width(84.dp),
+                    modifier = Modifier.width(110.dp),
                 ) {
                     Switch(
                         checked = isActive,
                         onCheckedChange = { onToggle() },
                     )
-                    TextButton(onClick = onEdit) {
-                        Text(text = stringResource(R.string.custom_rpc_board_edit))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        TextButton(onClick = onEdit) {
+                            Text(text = stringResource(R.string.custom_rpc_board_edit))
+                        }
+                        TextButton(onClick = onDelete) {
+                            Text(text = stringResource(R.string.custom_rpc_board_delete))
+                        }
                     }
-                    TextButton(onClick = onDelete) {
-                        Text(text = stringResource(R.string.custom_rpc_board_delete))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        TextButton(onClick = onMoveUp) {
+                            Text(text = "▲")
+                        }
+                        TextButton(onClick = onMoveDown) {
+                            Text(text = "▼")
+                        }
                     }
                 }
             }
@@ -190,6 +206,18 @@ fun CustomRpcBoardScreen(
                                 activeBoardId = null
                                 stopCustomRpcService()
                             }
+                            refreshBoards()
+                        }
+                    },
+                    onMoveUp = {
+                        scope.launch {
+                            boardManager.moveBoard(board.id, -1)
+                            refreshBoards()
+                        }
+                    },
+                    onMoveDown = {
+                        scope.launch {
+                            boardManager.moveBoard(board.id, +1)
                             refreshBoards()
                         }
                     },

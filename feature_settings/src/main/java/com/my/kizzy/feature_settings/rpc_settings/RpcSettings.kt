@@ -162,9 +162,11 @@ fun RpcSettings(
     var imgurClientId by remember { mutableStateOf(Prefs[Prefs.IMGUR_CLIENT_ID, Constants.IMGUR_CLIENT_ID]) }
 
     // Last.fm scrobbling settings
+    // API key and secret use hardcoded defaults so they are optional;
+    // user only needs to provide username + password.
     var showLastFmDialog by remember { mutableStateOf(false) }
-    var lastfmApiKey by remember { mutableStateOf(Prefs[Prefs.LASTFM_API_KEY, ""]) }
-    var lastfmSecret by remember { mutableStateOf(Prefs[Prefs.LASTFM_SECRET, ""]) }
+    val lastfmApiKey = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
+    val lastfmSecret = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
     var lastfmUsername by remember { mutableStateOf(Prefs[Prefs.LASTFM_USERNAME, ""]) }
     var lastfmPassword by remember { mutableStateOf(Prefs[Prefs.LASTFM_PASSWORD, ""]) }
     var lastfmPasswordVisible by remember { mutableStateOf(false) }
@@ -583,8 +585,6 @@ fun RpcSettings(
                     title = stringResource(id = R.string.lastfm_settings_title),
                     description = stringResource(id = R.string.lastfm_enabled) + "  •  $lastFmStatus",
                 ) {
-                    lastfmApiKey = Prefs[Prefs.LASTFM_API_KEY, ""]
-                    lastfmSecret = Prefs[Prefs.LASTFM_SECRET, ""]
                     lastfmUsername = Prefs[Prefs.LASTFM_USERNAME, ""]
                     lastfmPassword = Prefs[Prefs.LASTFM_PASSWORD, ""]
                     lastfmShowTimestamps = Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS, true]
@@ -1035,8 +1035,6 @@ fun RpcSettings(
                 onDismissRequest = { showLastFmDialog = false },
                 confirmButton = {
                     TextButton(onClick = {
-                        Prefs[Prefs.LASTFM_API_KEY] = lastfmApiKey
-                        Prefs[Prefs.LASTFM_SECRET] = lastfmSecret
                         Prefs[Prefs.LASTFM_USERNAME] = lastfmUsername
                         Prefs[Prefs.LASTFM_PASSWORD] = lastfmPassword
                         Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS] = lastfmShowTimestamps
@@ -1059,20 +1057,6 @@ fun RpcSettings(
                             isChecked = isLastFmEnabled,
                         ) {
                             isLastFmEnabled = !isLastFmEnabled
-                        }
-
-                        RpcField(
-                            value = lastfmApiKey,
-                            label = R.string.lastfm_api_key,
-                        ) {
-                            lastfmApiKey = it
-                        }
-
-                        RpcField(
-                            value = lastfmSecret,
-                            label = R.string.lastfm_secret,
-                        ) {
-                            lastfmSecret = it
                         }
 
                         RpcField(
@@ -1123,8 +1107,6 @@ fun RpcSettings(
                                             Prefs[Prefs.LASTFM_SECRET] = ""
                                             lastfmPassword = ""
                                             lastfmUsername = ""
-                                            lastfmApiKey = ""
-                                            lastfmSecret = ""
                                         }
                                     }
                                 ) {
@@ -1135,8 +1117,6 @@ fun RpcSettings(
                                     onClick = {
                                         if (lastfmUsername.isBlank() || lastfmPassword.isBlank()) {
                                             Toast.makeText(context, "Enter username and password first", Toast.LENGTH_SHORT).show()
-                                        } else if (lastfmApiKey.isBlank() || lastfmSecret.isBlank()) {
-                                            Toast.makeText(context, "Enter API key and secret first", Toast.LENGTH_SHORT).show()
                                         } else {
                                             scope.launch {
                                                 LastFM.init(lastfmApiKey, lastfmSecret)
