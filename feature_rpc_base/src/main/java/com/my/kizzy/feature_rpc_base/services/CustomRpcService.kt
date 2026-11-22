@@ -407,12 +407,13 @@ class CustomRpcService : Service() {
     override fun onDestroy() {
         consoleDetectionJob?.cancel()
         consoleDetectionJob = null
+        // Cancel all pending coroutines first
+        scope.cancel()
         // Clear Discord presence before closing the gateway so old custom RPC
         // doesn't keep showing on Discord after Custom RPC is turned off.
-        scope.launch {
+        runBlocking {
             kizzyRPC?.clearPresence()
         }
-        scope.cancel()
         // KizzyRPC and its Discord gateway are process-wide singletons, so this
         // service must not tear them down while another RPC service still uses
         // them.

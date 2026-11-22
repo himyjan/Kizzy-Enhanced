@@ -50,9 +50,21 @@ class MultiRpcManager @Inject constructor(
 
     private val sessions = mutableMapOf<String, RpcSession>()
 
-    /** Returns the [KizzyRPC] for [slotId], creating it lazily on first use. */
+    /** Returns the [KizzyRPC] for [slotId], creating it lazily on first use.
+     *
+     * If the existing session's WebSocket is no longer connected (e.g. after
+     * an RPC service was destroyed), the old session is discarded and a fresh
+     * one is created so that toggling a switch off then on again actually
+     * reconnects instead of silently returning a dead session.
+     */
     fun session(slotId: String): KizzyRPC? {
-        return sessions[slotId]?.kizzyRpc ?: createSession(slotId)?.kizzyRpc
+        val existing = sessions[slotId]
+        if (existing != null && existing.kizzyRpc.isRpcRunning()) {
+            return existing.kizzyRpc
+        }
+        // Session is missing, disabled, or WebSocket is dead — remove it and recreate.
+        sessions.remove(slotId)
+        return createSession(slotId)?.kizzyRpc
     }
 
     /** Returns true if [slotId] is enabled and its WebSocket is connected. */

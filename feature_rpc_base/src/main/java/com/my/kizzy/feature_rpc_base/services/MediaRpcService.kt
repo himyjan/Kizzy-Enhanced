@@ -1823,12 +1823,13 @@ class MediaRpcService : Service() {
         stopAppDetectionCoroutine()
         mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
         currentMediaController?.unregisterCallback(mediaControllerCallback)
+        // Cancel all pending coroutines first
+        scope.cancel()
         // Clear Discord presence before closing the gateway so old music RPC
         // doesn't keep showing on Discord after Media RPC is turned off.
-        scope.launch {
+        runBlocking {
             kizzyRPC?.clearPresence()
         }
-        scope.cancel()
         // The gateway is a process-wide singleton: only close it when no other
         // RPC service is still using it.
         AppUtils.unregisterRpcService(this)
