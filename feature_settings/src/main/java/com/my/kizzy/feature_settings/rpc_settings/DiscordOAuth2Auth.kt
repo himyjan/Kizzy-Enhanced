@@ -124,7 +124,7 @@ class DiscordOAuth2Auth(
                 "authorize: browserPackage=$browserPackage, launcherNull=${launcher == null}, authTabSupported=$authTabSupported"
             )
 
-            if (authTabSupported && launcher != null) {
+            if (authTabSupported) {
                 Log.d(TAG, "authorize: launching OAuth2 URL via AuthTabIntent (ephemeral)")
                 val authTabIntent = AuthTabIntent.Builder()
                     .setEphemeralBrowsingEnabled(true)
@@ -187,7 +187,7 @@ class DiscordOAuth2Auth(
                 // instead of the misleading "Missing code" network error.
                 val oauthError = callbackUri?.getQueryParameter("error")
                 if (!oauthError.isNullOrBlank()) {
-                    val description = callbackUri?.getQueryParameter("error_description")
+                    val description = callbackUri.getQueryParameter("error_description")
                         ?.replace("+", " ")
                         ?.let { ": $it" }.orEmpty()
                     val message = "$oauthError$description"

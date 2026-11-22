@@ -295,6 +295,8 @@ private fun CustomRpcBoardEditorDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("DEPRECATION")
 @Composable
 private fun TextFieldRow(
     label: String,
@@ -305,7 +307,6 @@ private fun TextFieldRow(
         value = value,
         onValueChange = onValueChange,
         label = { Text(text = label) },
-        singleLine = true,
         modifier = Modifier.fillMaxWidth(),
     )
 }

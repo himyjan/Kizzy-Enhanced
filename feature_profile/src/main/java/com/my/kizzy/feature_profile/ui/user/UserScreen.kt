@@ -10,6 +10,8 @@
  */
 
 
+@file:Suppress("DEPRECATION")
+
 package com.my.kizzy.feature_profile.ui.user
 
 import android.app.Activity
@@ -291,6 +293,7 @@ fun UserScreen(
  * Validates by fetching the REST identity, which also persists USER_DATA so the
  * avatar/bio appear as soon as the user is logged in.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TokenLoginSection() {
     var token by remember { mutableStateOf("") }
