@@ -128,20 +128,18 @@ class RpcManager @Inject constructor(
         if (System.currentTimeMillis() < ignoreServiceDetectionUntil) return
 
         val running = runningRpcTypes()
-        // Merge running services with existing active set so toggling one RPC
-        // on never removes another RPC from the active state.
-        val mergedTypes = _activeRpc.value + running
-        if (_activeRpc.value != mergedTypes) {
-            Log.d(TAG, "Synced RPC state: ${_activeRpc.value} -> $mergedTypes")
-            _activeRpc.value = mergedTypes
-        }
-        // Persist what is actually running so Home and RPC screens agree.
-        persistActiveRpcTypes(mergedTypes)
 
-        // Self-heal: an enabled RPC whose service died is started again.
-        val toStart = restorableRpcTypes().filter { it !in mergedTypes }
+        // NEVER remove types from _activeRpc.value based on running services.
+        // User toggles via switchTo()/stopRpcTypes() are the source of truth.
+        // running may still report a just-stopped service due to ActivityManager's
+        // 1-second cache, which would resurrect it incorrectly.
+        val wasActive = _activeRpc.value
+
+        // Self-heal: for each type the user enabled, check if its service is
+        // actually running. If not (system killed it), restart it.
+        val toStart = wasActive.filter { it != RpcType.None && it !in running }
         for (rpcType in toStart) {
-            Log.d(TAG, "RPC $rpcType is enabled but not running, starting it")
+            Log.d(TAG, "RPC $rpcType is enabled but not running, restarting it")
             startRpcService(rpcType, rpcConfigString = null, isConsoleRpc = rpcType == RpcType.ConsoleRpc)
         }
     }
