@@ -34,8 +34,12 @@ jobs:
 
       - name: Decode release signing keystore from secret
         run: |
-          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.keystore"
-          echo "KEYSTORE_FILE=$RUNNER_TEMP/release.keystore" >> $GITHUB_ENV
+          if [ -z "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" ]; then
+            echo "Missing RELEASE_KEYSTORE_BASE64 secret" >&2
+            exit 1
+          fi
+          printf '%s' "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | tr -d '[:space:]' | base64 -d > "$RUNNER_TEMP/release.keystore"
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -81,23 +85,26 @@ jobs:
       - name: Analyze R8 Configuration
         run: ./gradlew :app:analyzeReleaseR8Config
 
-      - name: Rename Release APKs
+      - name: Rename Release APKs and App Bundle
         run: |
-          OUT_DIR="app/build/outputs/apk/release"
+          APK_DIR="app/build/outputs/apk/release"
+          AAB_DIR="app/build/outputs/bundle/release"
           RUN="${{ github.run_number }}"
-          
-          # With abiFilters, AGP produces per-ABI APKs. Rename them for release.
-          if [ -f "$OUT_DIR/app-arm64-v8a-release.apk" ]; then
-            mv "$OUT_DIR/app-arm64-v8a-release.apk" "$OUT_DIR/KizzyEnhanced-${RUN}-arm64-v8a.apk"
+
+          if [ -f "$APK_DIR/app-arm64-v8a-release.apk" ]; then
+            mv "$APK_DIR/app-arm64-v8a-release.apk" "$APK_DIR/KizzyEnhanced-${RUN}-arm64-v8a.apk"
           fi
-          if [ -f "$OUT_DIR/app-x86_64-release.apk" ]; then
-            mv "$OUT_DIR/app-x86_64-release.apk" "$OUT_DIR/KizzyEnhanced-${RUN}-x86_64.apk"
+          if [ -f "$APK_DIR/app-x86_64-release.apk" ]; then
+            mv "$APK_DIR/app-x86_64-release.apk" "$APK_DIR/KizzyEnhanced-${RUN}-x86_64.apk"
           fi
-          if [ -f "$OUT_DIR/app-release.apk" ]; then
-            mv "$OUT_DIR/app-release.apk" "$OUT_DIR/KizzyEnhanced-${RUN}-universal.apk"
+          if [ -f "$APK_DIR/app-release.apk" ]; then
+            mv "$APK_DIR/app-release.apk" "$APK_DIR/KizzyEnhanced-${RUN}-universal.apk"
           fi
-          
-          ls -la "$OUT_DIR/KizzyEnhanced-${RUN}-"*.apk
+          if [ -f "$AAB_DIR/app-release.aab" ]; then
+            mv "$AAB_DIR/app-release.aab" "$AAB_DIR/KizzyEnhanced-${RUN}.aab"
+          fi
+
+          ls -la "$APK_DIR/KizzyEnhanced-${RUN}-"*.apk "$AAB_DIR/KizzyEnhanced-${RUN}.aab" 2>/dev/null || true
 
       - name: Generate Performance Reports
         run: |
