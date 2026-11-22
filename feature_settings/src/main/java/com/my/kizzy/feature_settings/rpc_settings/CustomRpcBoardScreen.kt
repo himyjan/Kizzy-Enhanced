@@ -27,13 +27,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -134,7 +129,7 @@ fun CustomRpcBoardScreen(
                 Text(text = context.getString(R.string.custom_rpc_board_open))
             },
             navigationIcon = {
-                IconButton(onClick = onBackPressed) {
+                androidx.compose.material3.IconButton(onClick = onBackPressed) {
                     Text(
                         text = "◀",
                         style = MaterialTheme.typography.titleMedium,
@@ -249,12 +244,7 @@ private fun CustomRpcBoardEditorDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 TextFieldRow(label = context.getString(R.string.custom_rpc_board_label), value = label, onValueChange = { label = it })
                 TextFieldRow(label = context.getString(R.string.custom_rpc_board_application_id), value = applicationId, onValueChange = { applicationId = it })
-                DropdownMenuRow(
-                    label = context.getString(R.string.custom_rpc_board_activity_type),
-                    items = listOf("0", "1", "2", "3", "5"),
-                    labels = listOf("Playing", "Streaming", "Listening", "Watching", "Competing"),
-                    onValueChange = { activityType = it },
-                )
+                TextFieldRow(label = "Activity Type", value = activityType, onValueChange = { activityType = it })
                 TextFieldRow(label = context.getString(R.string.custom_rpc_board_name), value = name, onValueChange = { name = it })
                 TextFieldRow(label = context.getString(R.string.custom_rpc_board_details), value = details, onValueChange = { details = it })
                 TextFieldRow(label = context.getString(R.string.custom_rpc_board_state), value = state, onValueChange = { state = it })
@@ -318,38 +308,4 @@ private fun TextFieldRow(
         singleLine = true,
         modifier = Modifier.fillMaxWidth(),
     )
-}
-
-@Composable
-private fun DropdownMenuRow(
-    label: String,
-    items: List<String>,
-    labels: List<String>,
-    onValueChange: (Int, String) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf(0) }
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
-    ) {
-        items.forEachIndexed { index ->
-            DropdownMenuItem(
-                text = { Text(text = labels[index]) },
-                onClick = {
-                    selectedIndex = index
-                    onValueChange(items[index])
-                    expanded = false
-                },
-            )
-        }
-    }
-
-    TextButton(onClick = { expanded = !expanded }) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = labels[selectedIndex])
-            Text(text = "▾")
-        }
-    }
 }
