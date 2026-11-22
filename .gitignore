@@ -5,6 +5,8 @@
 .externalNativeBuild
 .cxx
 /app/Kizzy.keystore
+*.keystore
+*.jks
 /app/debug/
 /buildSrc/build/
 /tmp
