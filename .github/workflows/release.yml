@@ -74,13 +74,21 @@ jobs:
           convert "$SRC" -resize 324x324 -colorspace gray app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.png
           convert "$SRC" -resize 432x432 -colorspace gray app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.png
 
-      - name: Assemble Release APK and App Bundle
+      - name: Assemble Release APKs
         env:
           KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew --no-daemon --max-workers=2 clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
+        run: ./gradlew --no-daemon --max-workers=2 clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease
+
+      - name: Build Release App Bundle
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
+          KEYSTORE_PASSWORD: kizzyfork
+          KEY_ALIAS: kizzyfork
+          KEY_PASSWORD: kizzyfork
+        run: ./gradlew --no-daemon --max-workers=2 :app:bundleRelease
 
       - name: Analyze R8 Configuration
         run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
@@ -89,68 +97,59 @@ jobs:
         run: |
           curl -fsSL "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
 
-      - name: Generate Split and Universal APKs from App Bundle
+      - name: Collect Release APKs, Bundle, and Bundletool Splits
         env:
           KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
         run: |
-          AAB_DIR="app/build/outputs/bundle/release"
-          if [ -f "$AAB_DIR/app-release.aab" ]; then
-            mv "$AAB_DIR/app-release.aab" "$AAB_DIR/KizzyEnhanced-${{ github.run_number }}.aab"
-          fi
-
-          AAB="$AAB_DIR/KizzyEnhanced-${{ github.run_number }}.aab"
-          OUT_DIR="app/build/outputs/apk/release"
           RUN="${{ github.run_number }}"
-          mkdir -p "$OUT_DIR" "$RUNNER_TEMP/splits" "$RUNNER_TEMP/universal"
+          APK_DIR="app/build/outputs/apk/release"
+          AAB_DIR="app/build/outputs/bundle/release"
+          mkdir -p "$APK_DIR" "$RUNNER_TEMP/splits"
 
-          # 1. Default split APKs for all targets
-          java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
-            --bundle="$AAB" \
-            --output="$RUNNER_TEMP/app.apks" \
-            --ks="$KEYSTORE_FILE" \
-            --ks-pass=pass:${KEYSTORE_PASSWORD} \
-            --ks-key-alias=${KEY_ALIAS} \
-            --key-pass=pass:${KEY_PASSWORD} \
-            --mode=default \
-            --overwrite
-
-          unzip -o -q "$RUNNER_TEMP/app.apks" -d "$RUNNER_TEMP/splits"
-          echo "=== Raw splits in bundletool output ==="
-          ls -la "$RUNNER_TEMP/splits/splits"
-
-          if [ -f "$RUNNER_TEMP/splits/splits/base-master.apk" ]; then
-            cp "$RUNNER_TEMP/splits/splits/base-master.apk" "$OUT_DIR/KizzyEnhanced-${RUN}-base-master.apk"
-          fi
-
-          for SPLIT_APK in "$RUNNER_TEMP/splits/splits"/base-*.apk; do
-            [ -f "$SPLIT_APK" ] || continue
-            BASE_NAME=$(basename "$SPLIT_APK" .apk)
-            [ "$BASE_NAME" = "base-master" ] && continue
-            TARGET_NAME="${BASE_NAME#base-}"
-            cp "$SPLIT_APK" "$OUT_DIR/KizzyEnhanced-${RUN}-${TARGET_NAME}.apk"
+          # 1. Rename standalone APKs produced by :app:assembleRelease (if splits.abi is enabled)
+          for APK in "$APK_DIR"/app-*-release.apk; do
+            [ -f "$APK" ] || continue
+            BASE_NAME=$(basename "$APK" .apk)      # app-arm64-v8a-release
+            TARGET="${BASE_NAME#app-}"             # arm64-v8a-release
+            TARGET="${TARGET%-release}"            # arm64-v8a / armeabi-v7a / x86 / x86_64 / universal
+            cp "$APK" "$APK_DIR/KizzyEnhanced-${RUN}-${TARGET}.apk"
           done
 
-          # 2. Standalone universal APK (installable on any device without split tools)
-          java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
-            --bundle="$AAB" \
-            --output="$RUNNER_TEMP/universal.apks" \
-            --ks="$KEYSTORE_FILE" \
-            --ks-pass=pass:${KEYSTORE_PASSWORD} \
-            --ks-key-alias=${KEY_ALIAS} \
-            --key-pass=pass:${KEY_PASSWORD} \
-            --mode=universal \
-            --overwrite
+          # 2. Rename .aab output
+          if [ -f "$AAB_DIR/app-release.aab" ]; then
+            mv "$AAB_DIR/app-release.aab" "$AAB_DIR/KizzyEnhanced-${RUN}.aab"
+          fi
+          AAB="$AAB_DIR/KizzyEnhanced-${RUN}.aab"
 
-          unzip -o -q "$RUNNER_TEMP/universal.apks" -d "$RUNNER_TEMP/universal"
-          if [ -f "$RUNNER_TEMP/universal/universal.apk" ]; then
-            cp "$RUNNER_TEMP/universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${RUN}-universal.apk"
+          # 3. Generate split APKs from .aab via bundletool
+          if [ -f "$AAB" ]; then
+            java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
+              --bundle="$AAB" \
+              --output="$RUNNER_TEMP/app.apks" \
+              --ks="$KEYSTORE_FILE" \
+              --ks-pass=pass:${KEYSTORE_PASSWORD} \
+              --ks-key-alias=${KEY_ALIAS} \
+              --key-pass=pass:${KEY_PASSWORD} \
+              --mode=default \
+              --overwrite
+
+            unzip -o -q "$RUNNER_TEMP/app.apks" -d "$RUNNER_TEMP/splits"
+            echo "=== Raw splits in bundletool output ==="
+            ls -la "$RUNNER_TEMP/splits/splits" 2>/dev/null || true
+
+            for SPLIT_APK in "$RUNNER_TEMP/splits/splits"/base-*.apk; do
+              [ -f "$SPLIT_APK" ] || continue
+              SPLIT_BASE=$(basename "$SPLIT_APK" .apk) # e.g. base-master or base-arm64_v8a
+              SPLIT_NAME="${SPLIT_BASE#base-}"
+              cp "$SPLIT_APK" "$APK_DIR/KizzyEnhanced-${RUN}-split-${SPLIT_NAME}.apk"
+            done
           fi
 
-          echo "=== Generated APKs ==="
-          ls -la "$OUT_DIR/KizzyEnhanced-${RUN}-"*.apk
+          echo "=== Final Release APKs ==="
+          ls -la "$APK_DIR"/KizzyEnhanced-${RUN}-*.apk 2>/dev/null || true
 
       - name: Generate Performance Reports
         run: |
@@ -175,9 +174,10 @@ jobs:
             echo "| File | Architecture / Type | Size | SHA-256 |"
             echo "| :--- | :--- | :--- | :--- |"
             for FILE in \
-              "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-arm64_v8a.apk" \
-              "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-armeabi_v7a.apk" \
+              "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-arm64-v8a.apk" \
+              "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-armeabi-v7a.apk" \
               "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-x86_64.apk" \
+              "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-x86.apk" \
               "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-universal.apk" \
               "app/build/outputs/bundle/release/KizzyEnhanced-${RUN}.aab"
             do
@@ -186,12 +186,13 @@ jobs:
               SIZE=$(du -h "$FILE" | cut -f1)
               HASH=$(sha256sum "$FILE" | cut -d' ' -f1)
               case "$NAME" in
-                *arm64_v8a*) ARCH="ARM64 Split (arm64_v8a)" ;;
-                *armeabi_v7a*) ARCH="ARMv7 Split (armeabi_v7a)" ;;
-                *x86_64*) ARCH="x86_64 Split (x86_64)" ;;
-                *universal*) ARCH="Universal (Standalone, all ABIs)" ;;
+                *arm64-v8a*) ARCH="ARM64 (Recommended for modern phones)" ;;
+                *armeabi-v7a*) ARCH="ARMv7 (32-bit ARM devices)" ;;
+                *x86_64*) ARCH="x86_64 (64-bit emulators & Chromebooks)" ;;
+                *x86*) ARCH="x86 (32-bit emulators)" ;;
+                *universal*) ARCH="Universal (Standalone, all architectures)" ;;
                 *.aab*) ARCH="Android App Bundle (Play Store / bundletool)" ;;
-                *) ARCH="Split APK" ;;
+                *) ARCH="Release Package" ;;
               esac
               printf '| `%s` | %s | %s | `%s` |\n' "$NAME" "$ARCH" "$SIZE" "$HASH"
             done
@@ -199,7 +200,7 @@ jobs:
 
           NOTES="${{ github.event.inputs.notes_en }}"
           if [ -z "$NOTES" ]; then
-            NOTES=$(cat changelog.md)
+            NOTES="Automated release build #${RUN}."
           fi
 
           {
@@ -227,7 +228,7 @@ jobs:
             printf '| Compare to Base | [himyjan/Kizzy-Enhanced → master](https://github.com/himyjan/Kizzy-Enhanced/compare/ac7338da99ba2f4b95fa588d9b1cfd0ecfc4b919...master) |\n\n'
             printf -- '---\n\n'
             printf '## 📲 Installation\n\n'
-            printf '1. Download **KizzyEnhanced-%s-universal.apk** for a standalone install on any device, or use `bundletool` with the split APKs.\n' "$RUN"
+            printf '1. Download **KizzyEnhanced-%s-arm64-v8a.apk** (or `universal.apk` if you are unsure of your device'\''s CPU).\n' "$RUN"
             printf '2. Open the APK file on your Android device.\n'
             printf '3. If prompted, allow "Install from unknown sources".\n'
             printf '4. If upgrading from an older build signed with a different key, uninstall the previous version first (export your RPC configs beforehand).\n\n'
@@ -266,15 +267,24 @@ jobs:
           name: changelog
           path: changelog.md
 
-      - name: Collect Release Assets Safely
+      - name: Stage GitHub Release Assets
         run: |
-          mkdir -p "$RUNNER_TEMP/release-assets"
-          cp app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-*.apk "$RUNNER_TEMP/release-assets/" 2>/dev/null || true
-          cp "app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab" "$RUNNER_TEMP/release-assets/" 2>/dev/null || true
-          find app/build/reports/r8 -type f \( -name "*.html" -o -name "*.json" -o -name "*.txt" \) 2>/dev/null | while read -r report; do
-            cp "$report" "$RUNNER_TEMP/release-assets/"
+          STAGE_DIR="$RUNNER_TEMP/gh-release-assets"
+          mkdir -p "$STAGE_DIR"
+
+          for f in \
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-*.apk \
+            "app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
+          do
+            [ -f "$f" ] && cp "$f" "$STAGE_DIR/"
           done
-          ls -la "$RUNNER_TEMP/release-assets"
+
+          find app/build/reports/r8 build/reports -type f \( -name "*.html" -o -name "*.json" -o -name "*.txt" \) 2>/dev/null | while read -r report; do
+            cp "$report" "$STAGE_DIR/"
+          done
+
+          echo "=== Staged Release Assets ==="
+          ls -la "$STAGE_DIR"
 
       - name: Publish to Releases
         uses: softprops/action-gh-release@v3
@@ -283,6 +293,6 @@ jobs:
           name: Kizzy Enhanced ${{ github.run_number }}
           body_path: release-notes.md
           files: |
-            ${{ runner.temp }}/release-assets/*
+            ${{ runner.temp }}/gh-release-assets/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
