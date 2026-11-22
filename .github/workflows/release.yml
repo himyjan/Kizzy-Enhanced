@@ -97,7 +97,7 @@ jobs:
         run: |
           curl -fsSL "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
 
-      - name: Collect Release APKs, Bundle, and Bundletool Splits
+      - name: Collect Release APKs and Bundle
         env:
           KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
           KEYSTORE_PASSWORD: kizzyfork
@@ -107,7 +107,8 @@ jobs:
           RUN="${{ github.run_number }}"
           APK_DIR="app/build/outputs/apk/release"
           AAB_DIR="app/build/outputs/bundle/release"
-          mkdir -p "$APK_DIR" "$RUNNER_TEMP/splits"
+          BUNDLETOOL_OUT="$RUNNER_TEMP/bundletool-out"
+          mkdir -p "$APK_DIR" "$BUNDLETOOL_OUT"
 
           # 1. Rename standalone APKs produced by :app:assembleRelease (splits.abi)
           for APK in "$APK_DIR"/app-*-release.apk; do
@@ -124,31 +125,20 @@ jobs:
           fi
           AAB="$AAB_DIR/KizzyEnhanced-${RUN}.aab"
 
-          # 3. Generate split APKs from .aab via bundletool
+          # 3. Validate bundletool against .aab into $RUNNER_TEMP without extracting loose split APKs
           if [ -f "$AAB" ]; then
             java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
               --bundle="$AAB" \
-              --output="$RUNNER_TEMP/app.apks" \
+              --output="$BUNDLETOOL_OUT/KizzyEnhanced-${RUN}.apks" \
               --ks="$KEYSTORE_FILE" \
               --ks-pass=pass:${KEYSTORE_PASSWORD} \
               --ks-key-alias=${KEY_ALIAS} \
               --key-pass=pass:${KEY_PASSWORD} \
               --mode=default \
               --overwrite
-
-            unzip -o -q "$RUNNER_TEMP/app.apks" -d "$RUNNER_TEMP/splits"
-            echo "=== Raw splits in bundletool output ==="
-            ls -la "$RUNNER_TEMP/splits/splits" 2>/dev/null || true
-
-            for SPLIT_APK in "$RUNNER_TEMP/splits/splits"/base-*.apk; do
-              [ -f "$SPLIT_APK" ] || continue
-              SPLIT_BASE=$(basename "$SPLIT_APK" .apk) # e.g. base-master or base-arm64_v8a
-              SPLIT_NAME="${SPLIT_BASE#base-}"
-              cp "$SPLIT_APK" "$APK_DIR/KizzyEnhanced-${RUN}-split-${SPLIT_NAME}.apk"
-            done
           fi
 
-          echo "=== Final Release APKs ==="
+          echo "=== Final Standalone Release APKs ==="
           ls -la "$APK_DIR"/KizzyEnhanced-${RUN}-*.apk 2>/dev/null || true
 
       - name: Generate Performance Reports
@@ -237,11 +227,16 @@ jobs:
             printf 'See [docs/RELEASE_FEATURES.md](docs/RELEASE_FEATURES.md) for the complete list of features, bug fixes, and dependency changes.\n\n'
           } > release-notes.md
 
-      - name: Upload All Release APKs
+      - name: Upload Standalone Release APKs
         uses: actions/upload-artifact@v7
         with:
           name: apks-release
-          path: app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-*.apk
+          path: |
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-arm64-v8a.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-armeabi-v7a.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86_64.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-x86.apk
+            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-universal.apk
 
       - name: Upload App Bundle
         uses: actions/upload-artifact@v7
@@ -270,11 +265,16 @@ jobs:
       - name: Stage GitHub Release Assets
         run: |
           STAGE_DIR="$RUNNER_TEMP/gh-release-assets"
+          RUN="${{ github.run_number }}"
           mkdir -p "$STAGE_DIR"
 
           for f in \
-            app/build/outputs/apk/release/KizzyEnhanced-${{ github.run_number }}-*.apk \
-            "app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
+            "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-arm64-v8a.apk" \
+            "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-armeabi-v7a.apk" \
+            "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-x86_64.apk" \
+            "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-x86.apk" \
+            "app/build/outputs/apk/release/KizzyEnhanced-${RUN}-universal.apk" \
+            "app/build/outputs/bundle/release/KizzyEnhanced-${RUN}.aab"
           do
             [ -f "$f" ] && cp "$f" "$STAGE_DIR/"
           done
