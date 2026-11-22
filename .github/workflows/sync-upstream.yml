@@ -22,17 +22,24 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: sync-upstream-${{ inputs.branch || 'master' }}
+  cancel-in-progress: true
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      TARGET_BRANCH: ${{ inputs.branch || 'master' }}
+      STRATEGY: ${{ inputs.strategy || 'manual' }}
 
     steps:
       - name: Checkout your fork
         uses: actions/checkout@v4
         with:
           repository: himyjan/Kizzy-Enhanced
-          ref: ${{ github.event.inputs.branch || 'master' }}
+          ref: ${{ env.TARGET_BRANCH }}
           token: ${{ secrets.SYNC_PAT }}
           fetch-depth: 0
 
@@ -40,27 +47,26 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add upstream https://github.com/dead8309/Kizzy.git
+          git remote add -f upstream https://github.com/dead8309/Kizzy.git
 
       - name: Fetch upstream
-        run: git fetch upstream
+        run: git fetch upstream master
 
       - name: Check for upstream changes
         id: check_changes
         run: |
-          COMMIT_COUNT=$(git rev-list --count origin/${{ github.event.inputs.branch || 'master' }}..upstream/master)
-          echo "Upstream commits not in origin: $COMMIT_COUNT"
-          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+          COMMIT_COUNT=$(git rev-list --count "origin/${TARGET_BRANCH}..upstream/master")
+          echo "Upstream commits not in origin/${TARGET_BRANCH}: $COMMIT_COUNT"
+          echo "commit_count=$COMMIT_COUNT" >> "$GITHUB_OUTPUT"
           if [ "$COMMIT_COUNT" -gt 0 ]; then
             echo "=== Upstream commits ==="
-            git log --oneline origin/${{ github.event.inputs.branch || 'master' }}..upstream/master | head -30
+            git log --oneline "origin/${TARGET_BRANCH}..upstream/master" | head -30
           fi
 
       - name: Rebase onto upstream/master
         if: steps.check_changes.outputs.commit_count > 0
         run: |
           set -e
-          STRATEGY="${{ github.event.inputs.strategy }}"
           if [ "$STRATEGY" = "theirs" ]; then
             git rebase -X theirs upstream/master
           elif [ "$STRATEGY" = "ours" ]; then
@@ -72,7 +78,7 @@ jobs:
       - name: Push to origin
         if: steps.check_changes.outputs.commit_count > 0
         run: |
-          git push --force-with-lease origin ${{ github.event.inputs.branch || 'master' }}
+          git push --force-with-lease origin "HEAD:${TARGET_BRANCH}"
 
       - name: Verify
         run: |
