@@ -67,7 +67,7 @@
   {
     "label": "xbox",
     "title": "Minecraft",
-    "link": "https://cdn.icon-icons.com/icons2/2699/PNG/512/minecraft_logo_icon_168974.png"
+    "link": "https://play-lh.googleusercontent.com/tI4StRSPVhpGJH5R013naszLUawOjao1ya8FvyaNO7XY_cJFHFqo1EFaEJv_7zz3rRJ5lEpLiw14ZqQLCOYc"
   },
   {
     "label": "xbox",
@@ -97,7 +97,7 @@
   {
     "label": "xbox",
     "title": "Fortnite",
-    "link": "https://image.api.playstation.com/vulcan/ap/rnd/202311/2801/803e41fee0edf8f8ed1de518e6eac60ddf30ac485b9a16a2.png"
+    "link": "https://play-lh.googleusercontent.com/on6jel4w7S9PtUVpPEeNhO7RRKg6y-FFkg6pr9cvcEJfuunJKX-hcJOlGZlTQO-B_E13zZMvGuE8yL_d_VU5ug"
   },
   {
     "label": "xbox",
@@ -1071,11 +1071,6 @@
   },
   {
     "label": "android",
-    "title": "Minecraft",
-    "link": "https://cdn.icon-icons.com/icons2/2699/PNG/512/minecraft_logo_icon_168974.png"
-  },
-  {
-    "label": "android",
     "title": "Genshin Impact",
     "link": "https://play-lh.googleusercontent.com/YQqyKaXX-63krqsfIzUEJWUWLINxcb5tbS6QVySdxbS7eZV7YB2dUjUvX27xA0TIGtfxQ5v-tQjwlT5tTB-O=s512"
   },
@@ -1153,5 +1148,45 @@
     "label": "android",
     "title": "Block Blast!",
     "link": "https://play-lh.googleusercontent.com/5FLR-EBlfNvoV9ydZkOMDqRF10nV64XcKdZzW_oQzmz2e8Me9PS5Zncnvviki0J3XumjO2a_lg6_IdwOqwnV=s512"
+  },
+  {
+    "label": "android",
+    "title": "Wuthering Waves",
+    "link": "https://play-lh.googleusercontent.com/S4HjezIFmL17FpPu7Z8VzxZvFMABYUjfLkcrDSEKxpjCYIL3tWLQK76_16SDOTiZlVHm_KeoMawvC7BPcyW_"
+  },
+  {
+    "label": "android",
+    "title": "Arena of Valor (AOV)",
+    "link": "https://play-lh.googleusercontent.com/a7vbOHF4UZx0mAg4akh6zL95xdAuIfF_LAZgQCF1bdAuW1UHU52qqwE3x_cfca4p5SP160NsKGSq2jVZcOf3wg"
+  },
+  {
+    "label": "android",
+    "title": "Azur Lane",
+    "link": "https://play-lh.googleusercontent.com/3Yg8H1F9bsSTJI4-DQhJJYYokT3kEUaNG5h2JBP4Qxbzter1Q9iu3nsvepVZzMpX-VpSEgZc-UbS34TwBybQsWg"
+  },
+  {
+    "label": "android",
+    "title": "Endfield",
+    "link": "https://play-lh.googleusercontent.com/l6FVNa293RykBWy88TqEhUakIcGSC8bRygSnKOBgztln48JX-WzMWnrBAETrKZsxDNC4HhwCsvfle_UI7rBE"
+  },
+  {
+    "label": "android",
+    "title": "PUBG Mobile",
+    "link": "https://play-lh.googleusercontent.com/9pRTJHOqXcaUe-rS2Xno41PTKFz_S0Jue4GDQawm32PneoM8pszqH9ayY2BDFzFnKE6pLePqJWViAw4vosUT"
+  },
+  {
+    "label": "android",
+    "title": "NIKKE: Goddess of Victory",
+    "link": "https://play-lh.googleusercontent.com/Sslrcaebh6rQ257vPZrXmt1vSdmUOAtIExZginE0T4iuLlDu-ZuS4kTtDHpeHZIxdqKHuuWMu9lzhR7BmHW4"
+  },
+  {
+    "label": "android",
+    "title": "Naraka: Bladepoint Mobile",
+    "link": "https://play-lh.googleusercontent.com/wVU3lUgOZ4eb_Wqlcs6y_fjrxs0RY0dVpUzTC1-xUZB9pH_ekm3pGKy6bWLOkaoYga3dAjnOxlUNagRpXhBX0Q"
+  },
+  {
+    "label": "android",
+    "title": "Blue Archive",
+    "link": "https://play-lh.googleusercontent.com/GnRkc6gDw7cPYrK1AvQNy7S_R4B7Atq6ncuJGf14CGaG0K8j_ayp0jrkIzuIfMHjP2Mb6ku5yeph3hHA6MLt7b0=w240-h480-rw"
   }
 ]
