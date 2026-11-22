@@ -25,9 +25,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -135,9 +135,9 @@ fun CustomRpcBoardScreen(
             },
             navigationIcon = {
                 IconButton(onClick = onBackPressed) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBackArrowBack,
-                        contentDescription = null,
+                    Text(
+                        text = "◀",
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 }
             },
@@ -325,7 +325,7 @@ private fun DropdownMenuRow(
     label: String,
     items: List<String>,
     labels: List<String>,
-    onValueChange: (String) -> Unit,
+    onValueChange: (Int, String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf(0) }
