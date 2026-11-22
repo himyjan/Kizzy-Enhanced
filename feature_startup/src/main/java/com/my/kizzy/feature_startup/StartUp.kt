@@ -193,17 +193,17 @@ fun StartUp(
                         description = stringResource(id = R.string.usage_access_desc),
                         status = usageAccessStatus.value
                     ) {
-                        // Open per-app Usage Access toggle screen directly (Android 8+).
-                        // One tap flips the toggle; no need to scroll through a list.
-                        // Falls back to the general Usage Access list on ROMs that
-                        // don't support package: routing.
-                        val perAppIntent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
+                        // Open App Info first so user can tap ⋮ → Allow restricted settings
+                        // (required on Android 13+ for sideloaded apps).
+                        val appInfoIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                             data = Uri.fromParts("package", context.packageName, null)
                         }
                         try {
-                            context.startActivity(perAppIntent)
+                            context.startActivity(appInfoIntent)
                         } catch (_: android.content.ActivityNotFoundException) {
-                            context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                            // Fallback to general Usage Access settings list.
+                            val fallbackIntent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                            context.startActivity(fallbackIntent)
                         }
                     }
                 }
