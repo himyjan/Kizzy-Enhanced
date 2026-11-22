@@ -272,9 +272,10 @@ fun StartUp(
                 item {
                     SetupCard(title = stringResource(id = R.string.account),
                         description = when {
-                            (prefsState[Prefs.TOKEN] as? String)?.isNotEmpty() == true ->
+                            (prefsState[Prefs.TOKEN] as? String)?.isNotEmpty() == true ||
+                            (prefsState[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] as? String)?.isNotEmpty() == true ->
                                 (prefsState[Prefs.USER_ID] as? String)
-                                    ?: extractUserIdFromToken(prefsState[Prefs.TOKEN] as? String ?: "")
+                                    ?: extractUserIdFromToken(prefsState[Prefs.TOKEN] as? String ?: prefsState[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] as? String ?: "")
                                     ?: stringResource(id = R.string.logged_in)
                             else -> stringResource(id = R.string.login_with_discord)
                         }
@@ -296,11 +297,12 @@ fun StartUp(
             val allMandatoryComplete = batteryOptimizationStatus.value && notificationPostingPerm && usageAccessStatus.value && mediaControlStatus.value
 
             // Fetch Discord user ID via REST API if we have a token but no USER_ID yet
-            LaunchedEffect(prefsState[Prefs.TOKEN] as? String) {
-                val token = prefsState[Prefs.TOKEN] as? String
+            val anyToken = (prefsState[Prefs.TOKEN] as? String)
+                ?: (prefsState[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] as? String)
+            LaunchedEffect(anyToken) {
                 val userId = prefsState[Prefs.USER_ID] as? String
-                if (token?.isNotEmpty() == true && (userId == null || userId.isEmpty())) {
-                    fetchDiscordUserId(token)?.let { fetchedUserId ->
+                if (anyToken?.isNotEmpty() == true && (userId == null || userId.isEmpty())) {
+                    fetchDiscordUserId(anyToken)?.let { fetchedUserId ->
                         Prefs[Prefs.USER_ID] = fetchedUserId
                     }
                 }
