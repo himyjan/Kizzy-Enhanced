@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.data.rpc.CustomRpcBoardItem
 import com.my.kizzy.feature_rpc_base.CustomRpcBoardManager
@@ -48,7 +50,6 @@ import com.my.kizzy.resources.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +57,6 @@ fun CustomRpcBoardScreen(
     onBackPressed: () -> Unit,
     boardManager: CustomRpcBoardManager = CustomRpcBoardManager.getInstance(LocalContext.current.applicationContext)
 ) {
-    val context = LocalContext.current
     val scope = remember { CoroutineScope(Dispatchers.Main) }
     var showEditorDialog by remember { mutableStateOf(false) }
     var editingBoard: CustomRpcBoardItem? by remember { mutableStateOf(null) }
@@ -84,7 +84,7 @@ fun CustomRpcBoardScreen(
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = board.label.ifBlank { board.name.ifBlank { context.getString(R.string.custom_rpc_board_label) } },
+                        text = board.label.ifBlank { board.name.ifBlank { stringResource(R.string.custom_rpc_board_label) } },
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -111,10 +111,10 @@ fun CustomRpcBoardScreen(
                         onCheckedChange = { onToggle() },
                     )
                     TextButton(onClick = onEdit) {
-                        Text(text = context.getString(R.string.custom_rpc_board_edit))
+                        Text(text = stringResource(R.string.custom_rpc_board_edit))
                     }
                     TextButton(onClick = onDelete) {
-                        Text(text = context.getString(R.string.custom_rpc_board_delete))
+                        Text(text = stringResource(R.string.custom_rpc_board_delete))
                     }
                 }
             }
@@ -126,7 +126,7 @@ fun CustomRpcBoardScreen(
     ) {
         androidx.compose.material3.TopAppBar(
             title = {
-                Text(text = context.getString(R.string.custom_rpc_board_open))
+                Text(text = stringResource(R.string.custom_rpc_board_open))
             },
             navigationIcon = {
                 androidx.compose.material3.IconButton(onClick = onBackPressed) {
@@ -181,7 +181,7 @@ fun CustomRpcBoardScreen(
             },
             modifier = Modifier.padding(16.dp),
         ) {
-            Text(text = context.getString(R.string.custom_rpc_board_add))
+            Text(text = stringResource(R.string.custom_rpc_board_add))
         }
 
         if (showEditorDialog) {
@@ -211,7 +211,6 @@ private fun CustomRpcBoardEditorDialog(
     onDismiss: () -> Unit,
     onSave: (CustomRpcBoardItem) -> Unit,
 ) {
-    val context = LocalContext.current
     val scope = remember { CoroutineScope(Dispatchers.Main) }
 
     var id by remember { mutableStateOf(board?.id ?: java.util.UUID.randomUUID().toString()) }
@@ -234,7 +233,7 @@ private fun CustomRpcBoardEditorDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = if (board == null) context.getString(R.string.custom_rpc_board_add) else context.getString(R.string.custom_rpc_board_edit)) },
+        title = { Text(text = if (board == null) stringResource(R.string.custom_rpc_board_add) else stringResource(R.string.custom_rpc_board_edit)) },
         text = {
             Column(
                 modifier = Modifier
@@ -242,20 +241,20 @@ private fun CustomRpcBoardEditorDialog(
                     .height(400.dp),
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_label), value = label, onValueChange = { label = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_application_id), value = applicationId, onValueChange = { applicationId = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_label), value = label, onValueChange = { label = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_application_id), value = applicationId, onValueChange = { applicationId = it })
                 TextFieldRow(label = "Activity Type", value = activityType, onValueChange = { activityType = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_name), value = name, onValueChange = { name = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_details), value = details, onValueChange = { details = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_state), value = state, onValueChange = { state = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_large_image), value = largeImage, onValueChange = { largeImage = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_small_image), value = smallImage, onValueChange = { smallImage = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_large_text), value = largeText, onValueChange = { largeText = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_small_text), value = smallText, onValueChange = { smallText = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_button1_label), value = button1Label, onValueChange = { button1Label = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_button1_url), value = button1Url, onValueChange = { button1Url = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_button2_label), value = button2Label, onValueChange = { button2Label = it })
-                TextFieldRow(label = context.getString(R.string.custom_rpc_board_button2_url), value = button2Url, onValueChange = { button2Url = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_name), value = name, onValueChange = { name = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_details), value = details, onValueChange = { details = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_state), value = state, onValueChange = { state = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_large_image), value = largeImage, onValueChange = { largeImage = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_small_image), value = smallImage, onValueChange = { smallImage = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_large_text), value = largeText, onValueChange = { largeText = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_small_text), value = smallText, onValueChange = { smallText = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_button1_label), value = button1Label, onValueChange = { button1Label = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_button1_url), value = button1Url, onValueChange = { button1Url = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_button2_label), value = button2Label, onValueChange = { button2Label = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_button2_url), value = button2Url, onValueChange = { button2Url = it })
                 TextFieldRow(label = "Timestamp Mode", value = timestampMode, onValueChange = { timestampMode = it })
                 TextFieldRow(label = "Custom Start (ms)", value = customStartMs, onValueChange = { customStartMs = it })
             }
