@@ -95,6 +95,11 @@ jobs:
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
         run: |
+          # Rename app-release.aab to KizzyEnhanced-${{ github.run_number }}.aab
+          if [ -f "app/build/outputs/bundle/release/app-release.aab" ]; then
+            mv "app/build/outputs/bundle/release/app-release.aab" "app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
+          fi
+
           AAB="app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
           OUT_DIR="app/build/outputs/apk/release"
           RUN="${{ github.run_number }}"
