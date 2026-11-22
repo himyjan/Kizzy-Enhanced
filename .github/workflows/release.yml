@@ -88,7 +88,9 @@ jobs:
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew --no-daemon --max-workers=2 :app:bundleRelease
+        run: |
+          rm -rf app/build/intermediates/shrunk_resources_proto_format
+          ./gradlew --no-daemon --max-workers=2 :app:bundleRelease
 
       - name: Analyze R8 Configuration
         run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
