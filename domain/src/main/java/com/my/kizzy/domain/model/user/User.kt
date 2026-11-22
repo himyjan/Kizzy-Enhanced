@@ -84,6 +84,15 @@ val globalName: String? = null
         return "$DISCORD_CDN/banners/${id}/${banner}.png?size=480"
     }
 
+    fun getAvatarDecorationImage(): String? {
+        val decoration = avatarDecoration
+        if (decoration.isNullOrEmpty()) return null
+        if (decoration.startsWith("a_")) {
+            return "$DISCORD_CDN/app-assets/${id}/avatar-decorations/${decoration}.gif?size=512"
+        }
+        return "$DISCORD_CDN/app-assets/${id}/avatar-decorations/${decoration}.png?size=512"
+    }
+
     fun getAllBadges(): List<Badge> {
         val result = mutableListOf<Badge>()
         val flags = publicFlags ?: 0

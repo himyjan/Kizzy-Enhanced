@@ -253,6 +253,25 @@ fun ProfileCard(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+                // Avatar decoration (Nitro badge)
+                val avatarDecoration = user.avatarDecoration
+                if (avatarDecoration != null) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 4.dp, end = 4.dp)
+                        ,
+                    ) {
+                        AsyncImage(
+                            model = user.getAvatarDecorationImage(),
+                            placeholder = painterResource(id = R.drawable.broken_image),
+                            error = painterResource(id = R.drawable.error_avatar),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.size(32.dp),
+                        )
+                    }
+                }
                 }
 
                 // Presence badge - driven by the RPC activity status.
