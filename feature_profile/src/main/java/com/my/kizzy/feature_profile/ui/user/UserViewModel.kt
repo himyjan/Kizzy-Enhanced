@@ -121,15 +121,35 @@ class UserViewModel @Inject constructor(
             return
         }
 
-        // Match the 0703aa45 profile display: the gateway READY payload is the
-        // primary source of USER_DATA (avatar/banner/bio/badges). REST /users/@me
-        // is the fallback for OAuth2 sessions where the gateway is unavailable.
-        val fresh = fetchUserInfo(token)
-            ?: fetchDiscordUser(token)
-            ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }
-        if (fresh != null) {
-            _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())
+        // If we already have persisted user data from a previous OAuth2 login,
+        // show it immediately without any network round-trip.
+        if (cachedUser != null && cachedUser.id?.isNotBlank() == true) {
+            _state.value = UserState.LoadingCompleted(cachedUser, currentRpcConfig())
             return
+        }
+
+        // OAuth2 bearer tokens cannot open a Discord gateway connection, so the
+        // READY payload never arrives and fetchUserInfo always times out.
+        // Detect token shape: account tokens contain dots and a numeric timestamp.
+        val parts = token.split(".")
+        val isAccountToken = (parts.size >= 3 && parts[1].toLongOrNull() != null) ||
+            token.startsWith("mfa.")
+        if (!isAccountToken) {
+            // OAuth2: go straight to REST /users/@me, skip the gateway entirely.
+            val fresh = fetchDiscordUser(token)
+            if (fresh != null) {
+                _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())
+                return
+            }
+        } else {
+            // Account token: try the gateway READY payload first, fall back to REST.
+            val fresh = fetchUserInfo(token)
+                ?: fetchDiscordUser(token)
+                ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }
+            if (fresh != null) {
+                _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())
+                return
+            }
         }
 
         // Everything failed: fall back to the profile API, but NEVER report
