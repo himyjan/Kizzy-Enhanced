@@ -80,7 +80,7 @@ jobs:
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew --no-daemon --max-workers=2 clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:bundleRelease
+        run: ./gradlew --no-daemon --max-workers=2 clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:bundleRelease -PenableAbiSplits=false
 
       - name: Assemble Release APKs (splits.abi)
         env:
@@ -88,7 +88,7 @@ jobs:
           KEYSTORE_PASSWORD: kizzyfork
           KEY_ALIAS: kizzyfork
           KEY_PASSWORD: kizzyfork
-        run: ./gradlew --no-daemon --max-workers=2 :app:assembleRelease
+        run: ./gradlew --no-daemon --max-workers=2 :app:assembleRelease -PenableAbiSplits=true
 
       - name: Analyze R8 Configuration
         run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
