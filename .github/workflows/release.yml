@@ -85,13 +85,14 @@ jobs:
 
           echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Update JDK version in release.yml
-        if: steps.current-jdk.outputs.current != steps.latest-jdk.outputs.latest
+      - name: Update version metadata and JDK version
         run: |
-          echo "Updating JDK from ${{ steps.current-jdk.outputs.current }} to ${{ steps.latest-jdk.outputs.latest }}"
-          sed -i "s/java-version: '${{ steps.current-jdk.outputs.current }}'/java-version: '${{ steps.latest-jdk.outputs.latest }}'/" .github/workflows/release.yml
           sed -i 's/version-name = ".*"/version-name = "6.2-enhanced-${{ github.run_number }}"/' gradle/libs.versions.toml
           sed -i 's/version-code = ".*"/version-code = "${{ github.run_number }}"/' gradle/libs.versions.toml
+          if [ "${{ steps.current-jdk.outputs.current }}" != "${{ steps.latest-jdk.outputs.latest }}" ]; then
+            echo "Updating JDK from ${{ steps.current-jdk.outputs.current }} to ${{ steps.latest-jdk.outputs.latest }}"
+            sed -i "s/java-version: '${{ steps.current-jdk.outputs.current }}'/java-version: '${{ steps.latest-jdk.outputs.latest }}'/" .github/workflows/release.yml
+          fi
 
       - name: Update app icon
         run: |
@@ -106,7 +107,7 @@ jobs:
           convert "$SRC" -resize 162x162 app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png
           convert "$SRC" -resize 216x216 app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png
           convert "$SRC" -resize 324x324 app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png
-          convert "$SRC" -resize 432x432 app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          convert "$SRC" -resize 432x432 app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png
           convert -size 108x108 xc:"#BF1527" app/src/main/res/mipmap-mdpi/ic_launcher_background.png
           convert -size 162x162 xc:"#BF1527" app/src/main/res/mipmap-hdpi/ic_launcher_background.png
           convert -size 216x216 xc:"#BF1527" app/src/main/res/mipmap-xhdpi/ic_launcher_background.png
@@ -127,7 +128,7 @@ jobs:
         run: ./gradlew --max-workers=2 --no-daemon clean :data:kspReleaseKotlin :feature_rpc_base:kspReleaseKotlin :app:assembleRelease :app:bundleRelease
 
       - name: Analyze R8 Configuration
-        run: ./gradlew :app:analyzeReleaseR8Config
+        run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
 
       - name: Rename Base APK and App Bundle
         run: |
@@ -136,6 +137,7 @@ jobs:
 
       - name: Generate Performance Reports
         run: |
+          mkdir -p "$GITHUB_WORKSPACE/build/reports"
           find app/build/outputs/mapping/release -name "mapping.txt" -o -name "usage.txt" 2>/dev/null | while read f; do
             echo "R8 Report: $f"
             cp "$f" "$GITHUB_WORKSPACE/build/reports/r8-$(basename "$f")" 2>/dev/null || true
@@ -147,12 +149,15 @@ jobs:
 
       - name: Download bundletool
         run: |
-          curl -L "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
+          curl -fsSL "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
 
-      - name: Extract Universal & Per-ABI APKs from App Bundle
+      - name: Build Universal & Split APKs from App Bundle
         run: |
           AAB="app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
           OUT_DIR="$GITHUB_WORKSPACE/app/build/outputs/apk/release"
+          mkdir -p "$OUT_DIR"
+
+          # 1. Universal standalone APK (contains all ABIs/densities/languages)
           java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
             --bundle="$AAB" \
             --output="$RUNNER_TEMP/universal.apks" \
@@ -163,27 +168,33 @@ jobs:
             --mode=universal
           unzip -o -q "$RUNNER_TEMP/universal.apks" "universal.apk" -d "$RUNNER_TEMP/out-universal"
           cp "$RUNNER_TEMP/out-universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-universal.apk"
+
+          # 2. Split APKs archive so we can extract ABI-specific split APKs when present
+          java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
+            --bundle="$AAB" \
+            --output="$RUNNER_TEMP/splits.apks" \
+            --ks="$RUNNER_TEMP/release.keystore" \
+            --ks-pass=pass:kizzyfork \
+            --ks-key-alias=kizzyfork \
+            --key-pass=pass:kizzyfork
+          unzip -o -q "$RUNNER_TEMP/splits.apks" "splits/*" -d "$RUNNER_TEMP/out-splits"
+
           for ABI in arm64-v8a x86_64; do
-            java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
-              --bundle="$AAB" \
-              --output="$RUNNER_TEMP/${ABI}.apks" \
-              --ks="$RUNNER_TEMP/release.keystore" \
-              --ks-pass=pass:kizzyfork \
-              --ks-key-alias=kizzyfork \
-              --key-pass=pass:kizzyfork \
-              --mode=universal
-            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "universal.apk" -d "$RUNNER_TEMP/out-${ABI}"
-            cp "$RUNNER_TEMP/out-${ABI}/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+            ABI_SLUG="${ABI//-/_}"
+            SPLIT_APK=$(find "$RUNNER_TEMP/out-splits/splits" -name "*${ABI_SLUG}*.apk" | head -n 1)
+            if [ -n "$SPLIT_APK" ] && [ -f "$SPLIT_APK" ]; then
+              cp "$SPLIT_APK" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+            else
+              # Pure Kotlin/Compose or non-split bundle has no ABI-specific native split
+              cp "$RUNNER_TEMP/out-universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+            fi
           done
 
       - name: Generate changelog
         run: chmod +x .github/scripts/generate-changelog.sh && .github/scripts/generate-changelog.sh
 
       - name: Generate Release Notes Body
-        id: release_notes
         run: |
-          # Build the download table inline (asset names & checksums) so nothing
-          # depends on fragile cross-step multiline output interpolation.
           {
             echo "| File | Architecture / Type | Size | SHA-256 |"
             echo "| :--- | :--- | :--- | :--- |"
@@ -199,8 +210,8 @@ jobs:
               SIZE=$(du -h "$FILE" | cut -f1)
               HASH=$(sha256sum "$FILE" | cut -d' ' -f1)
               case "$NAME" in
-                *arm64-v8a*) ARCH="ARM64 (Recommended for modern phones)" ;;
-                *x86_64*) ARCH="x86_64 (Emulators & Chromebooks)" ;;
+                *arm64-v8a*) ARCH="ARM64 split (or universal if no native split)" ;;
+                *x86_64*) ARCH="x86_64 split (or universal if no native split)" ;;
                 *universal*) ARCH="Universal (All architectures)" ;;
                 *.aab*) ARCH="Android App Bundle (Play Store / bundletool)" ;;
               esac
@@ -211,8 +222,6 @@ jobs:
           {
             echo "## 🚀 Kizzy Enhanced ${{ github.run_number }}"
             echo ""
-            # Use the user-provided notes when given, otherwise fall back to the
-            # auto-generated changelog so the release body is never empty.
             NOTES="${{ github.event.inputs.notes_en }}"
             if [ -n "$NOTES" ]; then
               echo "$NOTES"
@@ -276,8 +285,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .github/workflows/release.yml
-          git commit -m "chore: update JDK version to ${{ steps.latest-jdk.outputs.latest }}"
-          git push
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update JDK version to ${{ steps.latest-jdk.outputs.latest }}"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
 
       - name: Upload All Release APKs
         uses: actions/upload-artifact@v7

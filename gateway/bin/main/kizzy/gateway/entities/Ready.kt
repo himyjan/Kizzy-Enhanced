@@ -24,7 +24,21 @@ data class Ready(
     val sessionId: String? = null,
     @SerialName("user")
     val user: ReadyUser? = null,
+    @SerialName("user_settings")
+    val userSettings: ReadyUserSettings? = null,
 )
+
+@Serializable
+data class ReadyUserSettings(
+    @SerialName("custom_status")
+    val customStatus: ReadyCustomStatus? = null,
+) {
+    @Serializable
+    data class ReadyCustomStatus(
+        @SerialName("text")
+        val text: String? = null,
+    )
+}
 
 @Serializable
 data class ReadyUser(
