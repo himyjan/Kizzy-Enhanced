@@ -589,6 +589,7 @@ private fun RpcTextFieldsColumn(
         scope.launch {
             rpcManager.switchTo(
                 RpcType.ConsoleRpc,
+                add = true,
                 rpcConfigString = Json.encodeToString(buildConsoleConfig()),
                 isConsoleRpc = true
             )
@@ -634,6 +635,7 @@ private fun RpcTextFieldsColumn(
             scope.launch {
                 rpcManager.switchTo(
                     RpcType.ConsoleRpc,
+                    add = true,
                     rpcConfigString = Json.encodeToString(buildConsoleConfig()),
                     isConsoleRpc = true
                 )
@@ -665,6 +667,7 @@ private fun RpcTextFieldsColumn(
             scope.launch {
                 rpcManager.switchTo(
                     RpcType.ConsoleRpc,
+                    add = true,
                     rpcConfigString = Json.encodeToString(buildConsoleConfig()),
                     isConsoleRpc = true
                 )
