@@ -90,6 +90,10 @@ jobs:
           curl -L "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" -o "$RUNNER_TEMP/bundletool.jar"
 
       - name: Generate Split APKs for All Device Targets from App Bundle
+        env:
+          KEYSTORE_PASSWORD: kizzyfork
+          KEY_ALIAS: kizzyfork
+          KEY_PASSWORD: kizzyfork
         run: |
           AAB="app/build/outputs/bundle/release/KizzyEnhanced-${{ github.run_number }}.aab"
           OUT_DIR="app/build/outputs/apk/release"
