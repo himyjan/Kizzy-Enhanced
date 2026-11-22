@@ -176,14 +176,14 @@ class MultiRpcManager @Inject constructor(
         if (token.isBlank()) return null
 
         val discordWebSocket = createDiscordWebSocket(slotId, appId, token)
-        val kizzyRpc = KizzyRPC(token, kizzyRepository, discordWebSocket, logger)
+        val kizzyRpc = KizzyRPC(token, kizzyRepository, discordWebSocket, logger, appId.takeIf { it.isNotEmpty() })
         sessions[slotId] = RpcSession(slotId, appId, kizzyRpc, discordWebSocket, true)
         return sessions[slotId]
     }
 
     private fun createKizzyRpc(slotId: String, appId: String, token: String): KizzyRPC {
         val ws = createDiscordWebSocket(slotId, appId, token)
-        return KizzyRPC(token, kizzyRepository, ws, logger)
+        return KizzyRPC(token, kizzyRepository, ws, logger, appId.takeIf { it.isNotEmpty() })
     }
 
     private fun createDiscordWebSocket(slotId: String, appId: String, token: String): DiscordWebSocketImpl {

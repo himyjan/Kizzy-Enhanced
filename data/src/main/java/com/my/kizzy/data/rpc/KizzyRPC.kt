@@ -32,7 +32,8 @@ class KizzyRPC @Inject constructor(
     private var token: String,
     private val kizzyRepository: KizzyRepository,
     private val discordWebSocket: DiscordWebSocket,
-    private val logger: Logger
+    private val logger: Logger,
+    private val applicationId: String? = null
 ) {
     private val rpcScope = CoroutineScope(Dispatchers.IO + kotlinx.coroutines.SupervisorJob())
     // Re-apply the presence when Discord reports that our activity is no longer
@@ -52,7 +53,7 @@ class KizzyRPC @Inject constructor(
         status = null
     )
     private var activityName: String? = null
-    private var applicationIdNumber = Prefs[Prefs.CUSTOM_ACTIVITY_APPLICATION_ID, Constants.APPLICATION_ID]
+    private var applicationIdNumber = applicationId?.takeIf { it.isNotEmpty() } ?: Prefs[Prefs.CUSTOM_ACTIVITY_APPLICATION_ID, Constants.APPLICATION_ID]
     private var details: String? = null
     private var state: String? = null
     private var party: Party? = null
