@@ -112,6 +112,10 @@ jobs:
           OUT_DIR="$GITHUB_WORKSPACE/app/build/outputs/apk/release"
           mkdir -p "$OUT_DIR"
 
+          BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)
+          ZIPALIGN="$BUILD_TOOLS/zipalign"
+          APKSIGNER="$BUILD_TOOLS/apksigner"
+
           # Universal APK (all ABIs)
           java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
             --bundle="$AAB" \
@@ -124,7 +128,7 @@ jobs:
           unzip -o -q "$RUNNER_TEMP/universal.apks" "universal.apk" -d "$RUNNER_TEMP/out-universal"
           cp "$RUNNER_TEMP/out-universal/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-universal.apk"
 
-          # Standalone per-ABI APKs (full app + target ABI split)
+          # Standalone per-ABI APKs (no --mode=universal with --device-spec)
           for ABI in arm64-v8a x86_64; do
             SPEC_JSON="$RUNNER_TEMP/spec-${ABI}.json"
             cat <<EOF > "$SPEC_JSON"
@@ -142,10 +146,35 @@ jobs:
               --ks="$RUNNER_TEMP/release.keystore" \
               --ks-pass=pass:kizzyfork \
               --ks-key-alias=kizzyfork \
-              --key-pass=pass:kizzyfork \
-              --mode=universal
-            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "universal.apk" -d "$RUNNER_TEMP/out-${ABI}"
-            cp "$RUNNER_TEMP/out-${ABI}/universal.apk" "$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+              --key-pass=pass:kizzyfork
+
+            SPLIT_DIR="$RUNNER_TEMP/merge-${ABI}"
+            WORK_DIR="$RUNNER_TEMP/merged-work-${ABI}"
+            rm -rf "$SPLIT_DIR" "$WORK_DIR"
+            mkdir -p "$SPLIT_DIR" "$WORK_DIR"
+            unzip -o -q "$RUNNER_TEMP/${ABI}.apks" "splits/*" -d "$SPLIT_DIR"
+
+            BASE_APK=$(find "$SPLIT_DIR/splits" -name "base-master*.apk" | head -n 1)
+            unzip -o -q "$BASE_APK" -d "$WORK_DIR"
+            for SPLIT in "$SPLIT_DIR"/splits/*.apk; do
+              [ "$SPLIT" = "$BASE_APK" ] && continue
+              unzip -o -q "$SPLIT" -d "$WORK_DIR"
+            done
+            rm -rf "$WORK_DIR/META-INF"
+
+            UNSIGNED_APK="$RUNNER_TEMP/${ABI}-unsigned.apk"
+            ALIGNED_APK="$RUNNER_TEMP/${ABI}-aligned.apk"
+            FINAL_APK="$OUT_DIR/KizzyEnhanced-${{ github.run_number }}-${ABI}.apk"
+
+            (cd "$WORK_DIR" && zip -r -q "$UNSIGNED_APK" .)
+            "$ZIPALIGN" -p -f 4 "$UNSIGNED_APK" "$ALIGNED_APK"
+            "$APKSIGNER" sign \
+              --ks "$RUNNER_TEMP/release.keystore" \
+              --ks-key-alias kizzyfork \
+              --ks-pass pass:kizzyfork \
+              --key-pass pass:kizzyfork \
+              --out "$FINAL_APK" \
+              "$ALIGNED_APK"
           done
 
       - name: Generate changelog
