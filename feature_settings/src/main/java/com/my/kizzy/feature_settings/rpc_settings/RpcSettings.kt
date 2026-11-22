@@ -162,11 +162,11 @@ fun RpcSettings(
     var imgurClientId by remember { mutableStateOf(Prefs[Prefs.IMGUR_CLIENT_ID, Constants.IMGUR_CLIENT_ID]) }
 
     // Last.fm scrobbling settings
-    // API key and secret use hardcoded defaults so they are optional;
-    // user only needs to provide username + password.
+    // API key and secret default to Kizzy's built-in values, but are optional
+    // and can be overridden by the user if they have their own Last.fm API credentials.
     var showLastFmDialog by remember { mutableStateOf(false) }
-    val lastfmApiKey = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
-    val lastfmSecret = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
+    var lastfmApiKey by remember { mutableStateOf(Prefs[Prefs.LASTFM_API_KEY, com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY]) }
+    var lastfmSecret by remember { mutableStateOf(Prefs[Prefs.LASTFM_SECRET, com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET]) }
     var lastfmUsername by remember { mutableStateOf(Prefs[Prefs.LASTFM_USERNAME, ""]) }
     var lastfmPassword by remember { mutableStateOf(Prefs[Prefs.LASTFM_PASSWORD, ""]) }
     var lastfmPasswordVisible by remember { mutableStateOf(false) }
@@ -1035,6 +1035,8 @@ fun RpcSettings(
                 onDismissRequest = { showLastFmDialog = false },
                 confirmButton = {
                     TextButton(onClick = {
+                        Prefs[Prefs.LASTFM_API_KEY] = lastfmApiKey
+                        Prefs[Prefs.LASTFM_SECRET] = lastfmSecret
                         Prefs[Prefs.LASTFM_USERNAME] = lastfmUsername
                         Prefs[Prefs.LASTFM_PASSWORD] = lastfmPassword
                         Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS] = lastfmShowTimestamps
@@ -1057,6 +1059,20 @@ fun RpcSettings(
                             isChecked = isLastFmEnabled,
                         ) {
                             isLastFmEnabled = !isLastFmEnabled
+                        }
+
+                        RpcField(
+                            value = lastfmApiKey,
+                            label = R.string.lastfm_api_key,
+                        ) {
+                            lastfmApiKey = it
+                        }
+
+                        RpcField(
+                            value = lastfmSecret,
+                            label = R.string.lastfm_secret,
+                        ) {
+                            lastfmSecret = it
                         }
 
                         RpcField(
@@ -1096,23 +1112,25 @@ fun RpcSettings(
                                 color = if (isAuthenticated) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
                             )
-                            if (isAuthenticated) {
-                                TextButton(
-                                    onClick = {
-                                        scope.launch {
-                                            Prefs[Prefs.LASTFM_SESSION_KEY] = ""
-                                            Prefs[Prefs.LASTFM_PASSWORD] = ""
-                                            Prefs[Prefs.LASTFM_USERNAME] = ""
-                                            Prefs[Prefs.LASTFM_API_KEY] = ""
-                                            Prefs[Prefs.LASTFM_SECRET] = ""
-                                            lastfmPassword = ""
-                                            lastfmUsername = ""
-                                        }
+                            // Logout always available so user can clear credentials at any time
+                            TextButton(
+                                onClick = {
+                                    scope.launch {
+                                        Prefs[Prefs.LASTFM_SESSION_KEY] = ""
+                                        Prefs[Prefs.LASTFM_PASSWORD] = ""
+                                        Prefs[Prefs.LASTFM_USERNAME] = ""
+                                        Prefs[Prefs.LASTFM_API_KEY] = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
+                                        Prefs[Prefs.LASTFM_SECRET] = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
+                                        lastfmPassword = ""
+                                        lastfmUsername = ""
+                                        lastfmApiKey = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
+                                        lastfmSecret = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
                                     }
-                                ) {
-                                    Text(text = stringResource(R.string.lastfm_logout))
                                 }
-                            } else {
+                            ) {
+                                Text(text = stringResource(R.string.lastfm_logout))
+                            }
+                            if (!isAuthenticated) {
                                 TextButton(
                                     onClick = {
                                         if (lastfmUsername.isBlank() || lastfmPassword.isBlank()) {
@@ -1256,25 +1274,25 @@ fun RpcSettings(
                                 color = if (isAuthenticated) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
                             )
-                            if (isAuthenticated) {
-                                TextButton(
-                                    onClick = {
-                                        scope.launch {
-                                            Prefs[Prefs.LIBREFM_SESSION_KEY] = ""
-                                            Prefs[Prefs.LIBREFM_PASSWORD] = ""
-                                            librefmPassword = ""
-                                        }
+                            // Logout always available so user can clear credentials at any time
+                            TextButton(
+                                onClick = {
+                                    scope.launch {
+                                        Prefs[Prefs.LIBREFM_SESSION_KEY] = ""
+                                        Prefs[Prefs.LIBREFM_PASSWORD] = ""
+                                        Prefs[Prefs.LIBREFM_USERNAME] = ""
+                                        librefmPassword = ""
+                                        librefmUsername = ""
                                     }
-                                ) {
-                                    Text(text = stringResource(R.string.lastfm_logout))
                                 }
-                            } else {
+                            ) {
+                                Text(text = stringResource(R.string.lastfm_logout))
+                            }
+                            if (!isAuthenticated) {
                                 TextButton(
                                     onClick = {
                                         if (librefmUsername.isBlank() || librefmPassword.isBlank()) {
                                             Toast.makeText(context, "Enter username and password first", Toast.LENGTH_SHORT).show()
-                                        } else if (librefmApiKey.isBlank() || librefmSecret.isBlank()) {
-                                            Toast.makeText(context, "Enter API key and secret first", Toast.LENGTH_SHORT).show()
                                         } else {
                                             scope.launch {
                                                 LibreFM.init(librefmApiKey, librefmSecret)
