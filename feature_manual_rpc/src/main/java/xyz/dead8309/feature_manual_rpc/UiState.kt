@@ -71,6 +71,12 @@ data class UiState(
     val partyCurrentSize: String = "",   // Party current size
     val partyMaxSize: String = "",       // Party max size
 
+    // RPC link fields (details_url, state_url, large_url, small_url)
+    val detailsUrl: String = "",         // Details URL (button / link under details line)
+    val stateUrl: String = "",           // State URL (button / link under state line)
+    val largeUrl: String = "",           // Large URL (clickable link on large image)
+    val smallUrl: String = "",           // Small URL (clickable link on small image)
+
     // Dropdown expansion states
     val activityTypeIsExpanded: Boolean = false,
     val statusIsExpanded: Boolean = false,

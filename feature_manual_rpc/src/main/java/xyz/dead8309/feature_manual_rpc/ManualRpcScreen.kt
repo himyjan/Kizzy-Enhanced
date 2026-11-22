@@ -1720,6 +1720,82 @@ fun ManualRpcScreen(
 
                 }
 
+                // Details URL
+                item {
+
+                    RpcField(
+
+                        value = state.detailsUrl,
+
+                        label = R.string.rpc_details_url,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    ) {
+
+                        onEvent(UiEvent.SetDetailsUrl(it))
+
+                    }
+
+                }
+
+                // State URL
+                item {
+
+                    RpcField(
+
+                        value = state.stateUrl,
+
+                        label = R.string.rpc_state_url,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    ) {
+
+                        onEvent(UiEvent.SetStateUrl(it))
+
+                    }
+
+                }
+
+                // Large URL (clickable link on large image)
+                item {
+
+                    RpcField(
+
+                        value = state.largeUrl,
+
+                        label = R.string.rpc_large_url,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    ) {
+
+                        onEvent(UiEvent.SetLargeUrl(it))
+
+                    }
+
+                }
+
+                // Small URL (clickable link on small image)
+                item {
+
+                    RpcField(
+
+                        value = state.smallUrl,
+
+                        label = R.string.rpc_small_url,
+
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    ) {
+
+                        onEvent(UiEvent.SetSmallUrl(it))
+
+                    }
+
+                }
+
                 // Party Current Size
                 item {
 

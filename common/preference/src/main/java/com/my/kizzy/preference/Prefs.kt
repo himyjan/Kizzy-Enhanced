@@ -553,6 +553,12 @@ object Prefs {
     const val MANUAL_RPC_PARTY_CURRENT_SIZE = "manual_rpc_party_current_size"
     const val MANUAL_RPC_PARTY_MAX_SIZE = "manual_rpc_party_max_size"
 
+    // RPC link fields (details_url, state_url, large_url, small_url)
+    const val MANUAL_RPC_DETAILS_URL = "manual_rpc_details_url"
+    const val MANUAL_RPC_STATE_URL = "manual_rpc_state_url"
+    const val MANUAL_RPC_LARGE_URL = "manual_rpc_large_url"
+    const val MANUAL_RPC_SMALL_URL = "manual_rpc_small_url"
+
     fun saveAppActivityType(packageName: String, activityType: Int) {
         val map = getAppActivityTypes().toMutableMap()
         map[packageName] = activityType

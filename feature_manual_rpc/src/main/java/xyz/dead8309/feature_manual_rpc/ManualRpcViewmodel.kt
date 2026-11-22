@@ -462,6 +462,31 @@ class ManualRpcViewmodel @Inject constructor(
                     _uiState.update { it.copy(partyMaxSize = event.value) }
                     restartServiceIfRunning()
                 }
+
+                // RPC link URL handlers
+                is UiEvent.SetDetailsUrl -> {
+                    Prefs[Prefs.MANUAL_RPC_DETAILS_URL] = event.value
+                    _uiState.update { it.copy(detailsUrl = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetStateUrl -> {
+                    Prefs[Prefs.MANUAL_RPC_STATE_URL] = event.value
+                    _uiState.update { it.copy(stateUrl = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetLargeUrl -> {
+                    Prefs[Prefs.MANUAL_RPC_LARGE_URL] = event.value
+                    _uiState.update { it.copy(largeUrl = event.value) }
+                    restartServiceIfRunning()
+                }
+
+                is UiEvent.SetSmallUrl -> {
+                    Prefs[Prefs.MANUAL_RPC_SMALL_URL] = event.value
+                    _uiState.update { it.copy(smallUrl = event.value) }
+                    restartServiceIfRunning()
+                }
             }
         }
     }

@@ -65,4 +65,10 @@ sealed interface UiEvent {
     data class SetPartyCurrentSize(val value: String) : UiEvent
     data class SetPartyMaxSize(val value: String) : UiEvent
     data class UploadImage(val file: java.io.File, val callback: (String) -> Unit) : UiEvent
+
+    // RPC link fields (details_url, state_url, large_url, small_url)
+    data class SetDetailsUrl(val value: String) : UiEvent
+    data class SetStateUrl(val value: String) : UiEvent
+    data class SetLargeUrl(val value: String) : UiEvent
+    data class SetSmallUrl(val value: String) : UiEvent
 }

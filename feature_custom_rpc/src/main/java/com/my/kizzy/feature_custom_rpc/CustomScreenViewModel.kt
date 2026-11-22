@@ -13,6 +13,7 @@
 package com.my.kizzy.feature_custom_rpc
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.domain.model.rpc.RpcConfig
@@ -21,7 +22,11 @@ import com.my.kizzy.domain.use_case.get_games.GetGamesUseCase
 import com.my.kizzy.domain.use_case.upload_galleryImage.UploadGalleryImageUseCase
 import com.my.kizzy.data.rpc.ConsoleGameCatalog
 import com.my.kizzy.feature_custom_rpc.components.sheet.stringToData
+import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.preference.Prefs
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -33,10 +38,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.io.File
+import android.content.Context
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class CustomScreenViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val uploadGalleryImageUseCase: UploadGalleryImageUseCase,
     private val getGamesUseCase: GetGamesUseCase,
 ) : ViewModel() {
@@ -92,6 +99,18 @@ class CustomScreenViewModel @Inject constructor(
                 // Persist immediately so the RPC config survives navigation away
                 // and re-open of the screen.
                 Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = Json.encodeToString(event.config)
+                // Restart running Custom RPC service so field changes apply live
+                // without the user having to close and reopen the app.
+                viewModelScope.launch {
+                    if (AppUtils.customRpcRunning()) {
+                        val intent = Intent(context, CustomRpcService::class.java).apply {
+                            action = Constants.ACTION_RESTART_SERVICE
+                            putExtra("RPC", Json.encodeToString(event.config))
+                            putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, false)
+                        }
+                        context.startService(intent)
+                    }
+                }
             }
 
             UiEvent.TriggerBottomSheet -> {
