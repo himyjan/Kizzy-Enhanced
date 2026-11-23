@@ -100,6 +100,17 @@ android {
     }
 }
 
+// Baseline profile generation.
+//
+// saveInSrc keeps the generated profile in source control so every release ships
+// it (profileinstaller applies it at install time). It is generated on demand by
+// `./gradlew :app:generateReleaseBaselineProfile` from the :macrobenchmark module,
+// not on every build, so a normal build never depends on a connected device.
+baselineProfile {
+    saveInSrc = true
+    automaticGenerationDuringBuild = false
+}
+
 dependencies {
     implementation(projects.domain)
     implementation(projects.data)

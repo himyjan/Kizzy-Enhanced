@@ -9,7 +9,11 @@ kotlin {
 
 android {
     namespace = "com.my.kizzy.macrobenchmark"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 2
+        }
+    }
 
     defaultConfig {
         minSdk = 28
@@ -27,8 +31,15 @@ android {
 
     buildTypes {
         create("benchmark") {
+            // Benchmark the R8-optimized, non-debuggable app. Falling back to the
+            // app's "debug" variant made the target package debuggable, which the
+            // benchmark framework rejects (and which would make every number
+            // meaningless). :app defines its own "benchmark" build type derived
+            // from release with isProfileable = true, so prefer it and release,
+            // never debug.
             initWith(getByName("debug"))
-            matchingFallbacks.add("debug")
+            matchingFallbacks.addAll(listOf("benchmark", "release"))
+            isDebuggable = false
         }
     }
     compileSdkMinor = 1
