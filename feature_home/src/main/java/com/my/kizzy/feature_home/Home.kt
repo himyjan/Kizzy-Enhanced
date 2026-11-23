@@ -50,7 +50,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -104,16 +103,10 @@ fun Home(
     val ctx = LocalContext.current
 
     // Configuration-aware string resources
-    val mediaRpcTitle = stringResource(R.string.main_mediaRpc)
-    val ManualRpcTitle = stringResource(R.string.main_ManualRpc)
-    val customRpcTitle = stringResource(R.string.main_customRpc)
     val updateCheckText = stringResource(R.string.update_check_for_update)
     val noUpdatesText = stringResource(R.string.update_no_updates_available)
     val qsTileLabel = stringResource(R.string.qs_tile_label)
 
-    var homeItems by remember {
-        mutableStateOf(features)
-    }
     var showUpdateDialog by remember {
         mutableStateOf(false)
     }
@@ -126,25 +119,13 @@ fun Home(
             rememberTopAppBarState(),
             canScroll = { false })
 
-    // Keep homeItems in sync with features so that enabling a feature from its
-    // own screen (e.g. Media RPC screen) is immediately reflected in the home
-    // switch state when the user returns to the home screen.
-    LaunchedEffect(features) {
-        homeItems = features
-    }
-
+    // `features` is now derived directly from RpcManager.activeRpc (see
+    // homeFeaturesProvider), so the switch state can be read from it without
+    // keeping a second, easily-stale copy in local state.
     val rpcManager = RpcManager.getInstance(ctx)
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
             rpcManager.refreshFromServices()
-            homeItems = features.map { item ->
-                when (item.title) {
-                    mediaRpcTitle -> item.copy(isChecked = RpcType.MediaRpc in rpcManager.activeRpc.value)
-                    ManualRpcTitle -> item.copy(isChecked = RpcType.ManualRpc in rpcManager.activeRpc.value)
-                    customRpcTitle -> item.copy(isChecked = RpcType.CustomRpc in rpcManager.activeRpc.value)
-                    else -> item
-                }
-            }
         }
     }
 
@@ -300,19 +281,10 @@ fun Home(
                     )
                 }
                 item {
-                    Features(homeItems) {
-                        homeItems = homeItems.mapIndexed { j, item ->
-                            if (it == j) {
-                                item.copy(isChecked = !item.isChecked)
-                            } else {
-                                if (item.isChecked) {
-                                    item.copy(isChecked = false)
-                                } else {
-                                    item
-                                }
-                            }
-                        }
-                    }
+                    // No local list copy: RpcManager is the single source of truth and
+                    // `features` recomposes from it, so the switch always shows the real
+                    // running state. onValueUpdate is intentionally a no-op.
+                    Features(features) { }
                 }
             }
             when (state) {

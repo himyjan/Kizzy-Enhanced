@@ -34,8 +34,8 @@ import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 
@@ -66,23 +66,22 @@ fun homeFeaturesProvider(
     LaunchedEffect(Unit) {
         rpcManager.refreshFromServices()
     }
-    val mediaRpcRunning = remember { mutableStateOf(RpcType.MediaRpc in rpcManager.activeRpc.value) }
-    val customRpcRunning = remember { mutableStateOf(RpcType.CustomRpc in rpcManager.activeRpc.value) }
-    val ManualRpcRunning = remember { mutableStateOf(RpcType.ManualRpc in rpcManager.activeRpc.value) }
-    val appDetectionRunning = remember { mutableStateOf(RpcType.AppDetectionRpc in rpcManager.activeRpc.value) }
-    LaunchedEffect(rpcManager.activeRpc) {
-        mediaRpcRunning.value = RpcType.MediaRpc in rpcManager.activeRpc.value
-        ManualRpcRunning.value = RpcType.ManualRpc in rpcManager.activeRpc.value
-        customRpcRunning.value = RpcType.CustomRpc in rpcManager.activeRpc.value
-        appDetectionRunning.value = RpcType.AppDetectionRpc in rpcManager.activeRpc.value
-    }
+
+    // Observe RpcManager directly instead of copying its value into remembered
+    // state. The old code only read activeRpc.value once per LaunchedEffect key,
+    // so the switches could show a state that no longer matched RpcManager and
+    // flipped back on after the screen resumed.
+    val activeRpc by rpcManager.activeRpc.collectAsState()
+    val mediaRpcRunning = RpcType.MediaRpc in activeRpc
+    val customRpcRunning = RpcType.CustomRpc in activeRpc
+    val ManualRpcRunning = RpcType.ManualRpc in activeRpc
 
     return listOf(
         HomeFeature(
             title = stringResource(id = R.string.main_mediaRpc),
             icon = R.drawable.ic_media_rpc,
             route = Routes.MEDIA_RPC,
-            isChecked = mediaRpcRunning.value,
+            isChecked = mediaRpcRunning,
             showSwitch = true,
 
             onClick = {
@@ -115,7 +114,7 @@ fun homeFeaturesProvider(
             icon = R.drawable.ic_dev_rpc,
             route = Routes.MANUAL_RPC,
             onClick = { navigateTo(it) },
-            isChecked = ManualRpcRunning.value,
+            isChecked = ManualRpcRunning,
 
             onCheckedChange = {
                 scope.launch {
@@ -142,7 +141,7 @@ fun homeFeaturesProvider(
             title = stringResource(id = R.string.main_customRpc),
             icon = R.drawable.ic_rpc_placeholder,
             route = Routes.CUSTOM_RPC,
-            isChecked = customRpcRunning.value,
+            isChecked = customRpcRunning,
 
             onClick = {
 
