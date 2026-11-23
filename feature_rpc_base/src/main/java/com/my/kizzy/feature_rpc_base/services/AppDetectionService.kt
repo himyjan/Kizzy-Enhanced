@@ -55,6 +55,9 @@ class AppDetectionService : Service() {
     lateinit var multiRpc: MultiRpcManager
 
     @Inject
+    lateinit var rpcManager: RpcManager
+
+    @Inject
     lateinit var scope: CoroutineScope
 
     @Inject
@@ -86,6 +89,16 @@ class AppDetectionService : Service() {
             Constants.ACTION_STOP_SERVICE -> {
                 // Explicit stop: the next cold start must not bring it back.
                 Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+                // Remove AppDetectionRpc from ACTIVE_RPC_TYPES so a cold start doesn't restore it.
+                val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
+                    .split(',')
+                    .mapNotNull { runCatching { RpcManager.RpcType.valueOf(it.trim()) }.getOrNull() }
+                    .filter { it != RpcManager.RpcType.AppDetectionRpc }
+                    .joinToString(",") { it.name }
+                Prefs[Prefs.ACTIVE_RPC_TYPES] = remainingTypes
+                // Also clear RpcManager's active set so refreshFromServices() doesn't
+                // resurrect this service when the screen resumes.
+                rpcManager.stopRpcTypes(setOf(RpcManager.RpcType.AppDetectionRpc))
                 stopSelf()
             }
             Constants.ACTION_RESTART_SERVICE -> {
