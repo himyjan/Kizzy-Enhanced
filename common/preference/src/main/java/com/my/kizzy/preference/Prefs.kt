@@ -454,6 +454,15 @@ object Prefs {
     // Global switch to hide cover art images across all RPC types (show text only)
     const val RPC_HIDE_COVER_ART = "rpc_hide_cover_art"
 
+    // Discord Server Leaderboard settings
+    const val DISCORD_LEADERBOARD_ENABLED = "discord_leaderboard_enabled"
+    const val DISCORD_LEADERBOARD_BOT_TOKEN = "discord_leaderboard_bot_token"
+    const val DISCORD_LEADERBOARD_CHANNEL_ID = "discord_leaderboard_channel_id"
+    const val DISCORD_LEADERBOARD_UPDATE_INTERVAL_MIN = "discord_leaderboard_update_interval_min"
+    const val DISCORD_LEADERBOARD_MAX_ENTRIES = "discord_leaderboard_max_entries"
+    const val DISCORD_LEADERBOARD_TITLE = "discord_leaderboard_title"
+    const val DISCORD_LEADERBOARD_DESCRIPTION = "discord_leaderboard_description"
+
     const val DARK_THEME = "dark_theme_value"
     const val HIGH_CONTRAST = "high_contrast"
     const val DYNAMIC_COLOR = "dynamic_color"
