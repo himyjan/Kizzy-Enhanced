@@ -135,9 +135,9 @@ class AppDetectionService : Service() {
 
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            startForeground(Constants.NOTIFICATION_ID, createDefaultNotification())
+            startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification())
         } else {
-            startForeground(Constants.NOTIFICATION_ID, createDefaultNotification(), FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+            startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification(), FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
         }
 
         scope.launch {
@@ -354,7 +354,7 @@ class AppDetectionService : Service() {
         )
 
         notificationManager.notify(
-            Constants.NOTIFICATION_ID, notificationBuilder
+            Constants.NOTIFICATION_ID_APP_DETECTION, notificationBuilder
                 .setContentText(displayName ?: packageName)
                 .setLargeIcon(largeImage, this@AppDetectionService)
                 .build()
@@ -368,7 +368,7 @@ class AppDetectionService : Service() {
             // could fail, leaving Discord stuck showing the previous app.
             kizzyRPC?.clearPresence()
         }
-        notificationManager.notify(Constants.NOTIFICATION_ID, createDefaultNotification())
+        notificationManager.notify(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification())
     }
 
     private fun createDefaultNotification(): Notification {

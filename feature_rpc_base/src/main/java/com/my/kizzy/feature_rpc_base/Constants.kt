@@ -17,7 +17,18 @@ object Constants {
     const val NOTIFICATION_CHANNEL_ID = "kizzy.media_rpc_channel"
     const val CHANNEL_NAME = "Kizzy Enhanced RPC"
     const val CHANNEL_DESCRIPTION = "Background Service notification which runs rpc"
-    const val NOTIFICATION_ID = 2022_03_04
+
+    // Unique foreground notification IDs per service so Android OS never
+    // replaces or cancels another service's foreground notification when
+    // multiple RPC services run concurrently.
+    const val NOTIFICATION_ID_MEDIA_RPC = 2022_03_01
+    const val NOTIFICATION_ID_CUSTOM_RPC = 2022_03_02
+    const val NOTIFICATION_ID_MANUAL_RPC = 2022_03_03
+    const val NOTIFICATION_ID_APP_DETECTION = 2022_03_04
+    const val NOTIFICATION_ID_OAUTH2_RPC = 2022_03_05
+
+    @Deprecated("Use per-service NOTIFICATION_ID_* instead", ReplaceWith("NOTIFICATION_ID_MEDIA_RPC"))
+    const val NOTIFICATION_ID = NOTIFICATION_ID_MEDIA_RPC
     const val ACTION_STOP_SERVICE = "Stop Service"
     const val ACTION_RESTART_SERVICE = "Restart Service"
     const val ACTION_TOGGLE = "Toggle Playback"

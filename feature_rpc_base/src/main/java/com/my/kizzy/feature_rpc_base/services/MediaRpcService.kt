@@ -274,9 +274,9 @@ class MediaRpcService : Service() {
             .build()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            startForeground(Constants.NOTIFICATION_ID, basicNotification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+            startForeground(Constants.NOTIFICATION_ID_MEDIA_RPC, basicNotification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
         } else {
-            startForeground(Constants.NOTIFICATION_ID, basicNotification)
+            startForeground(Constants.NOTIFICATION_ID_MEDIA_RPC, basicNotification)
         }
 
         val token = Prefs[TOKEN, ""]
@@ -322,7 +322,7 @@ class MediaRpcService : Service() {
             )
             .build()
 
-        notificationManager.notify(Constants.NOTIFICATION_ID, notification)
+        notificationManager.notify(Constants.NOTIFICATION_ID_MEDIA_RPC, notification)
 
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(activeSessionsChangedListener, ComponentName(this, NotificationListener::class.java))
@@ -1526,7 +1526,7 @@ class MediaRpcService : Service() {
             durationSec = currentMediaDurationSec,
             paused = isPaused
         )
-        notificationManager.notify(Constants.NOTIFICATION_ID, notification)
+        notificationManager.notify(Constants.NOTIFICATION_ID_MEDIA_RPC, notification)
     }
 
     /**

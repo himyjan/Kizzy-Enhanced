@@ -182,7 +182,7 @@ class RpcManager @Inject constructor(
      */
     fun switchTo(
         rpcTypes: Set<RpcType>,
-        add: Boolean = false,
+        add: Boolean = true,
         rpcConfigString: String? = null,
         isConsoleRpc: Boolean = false
     ) {
@@ -200,9 +200,15 @@ class RpcManager @Inject constructor(
         }
 
         val typesToStart = rpcTypes - setOf(RpcType.None)
-        // With add=true the requested RPCs join the ones already running; each
-        // keeps its own config and only the started type gets a new one.
-        val finalTypes = if (add) previous + typesToStart else typesToStart
+
+        // Custom RPC and Console RPC share CustomRpcService, so they are mutually exclusive.
+        val previousWithoutMutualExclusions = if (RpcType.ConsoleRpc in typesToStart) {
+            previous - RpcType.CustomRpc
+        } else if (RpcType.CustomRpc in typesToStart) {
+            previous - RpcType.ConsoleRpc
+        } else previous
+
+        val finalTypes = if (add) previousWithoutMutualExclusions + typesToStart else typesToStart
 
         if (RpcType.CustomRpc in typesToStart) {
             Prefs[Prefs.LAST_RUN_CUSTOM_RPC] =
@@ -232,7 +238,7 @@ class RpcManager @Inject constructor(
      */
     fun switchTo(
         rpcType: RpcType,
-        add: Boolean = false,
+        add: Boolean = true,
         rpcConfigString: String? = null,
         isConsoleRpc: Boolean = false
     ) {

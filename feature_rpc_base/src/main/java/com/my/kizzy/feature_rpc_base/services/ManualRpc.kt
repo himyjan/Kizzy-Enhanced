@@ -307,9 +307,9 @@ class ManualRpc : Service() {
                 .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), pendingIntent)
                 .build()
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                startForeground(Constants.NOTIFICATION_ID, notification)
+                startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, notification)
             } else {
-                startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+                startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
             }
 
 
@@ -541,7 +541,7 @@ class ManualRpc : Service() {
                     this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
                 )
                 notificationManager.notify(
-                    Constants.NOTIFICATION_ID,
+                    Constants.NOTIFICATION_ID_MANUAL_RPC,
                     Notification.Builder(this, Constants.CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_dev_rpc)
                         .setContentTitle(getString(R.string.service_enabled))
@@ -692,7 +692,7 @@ class ManualRpc : Service() {
                     this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
                 )
                 notificationManager.notify(
-                    Constants.NOTIFICATION_ID,
+                    Constants.NOTIFICATION_ID_MANUAL_RPC,
                     Notification.Builder(this, Constants.CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_dev_rpc)
                         .setContentTitle(getString(R.string.service_enabled))
@@ -954,7 +954,7 @@ class ManualRpc : Service() {
             this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
         )
         notificationManager.notify(
-            Constants.NOTIFICATION_ID,
+            Constants.NOTIFICATION_ID_MANUAL_RPC,
             Notification.Builder(this, Constants.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_dev_rpc)
                 .setContentTitle(notifTitle)

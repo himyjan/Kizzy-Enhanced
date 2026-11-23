@@ -123,7 +123,7 @@ class CustomRpcService : Service() {
             .setSmallIcon(R.drawable.ic_rpc_placeholder)
             .setContentIntent(appPendingIntent)
             .build()
-        startForeground(Constants.NOTIFICATION_ID, initialNotification)
+        startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, initialNotification)
 
         intent?.action?.let { ac ->
             if (ac == Constants.ACTION_RESTART_SERVICE) {
@@ -357,9 +357,9 @@ class CustomRpcService : Service() {
                 .build()
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                startForeground(Constants.NOTIFICATION_ID, notification)
+                startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, notification)
             } else {
-                startForeground(Constants.NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+                startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
             }
 
             rpcDataToUse.let {
