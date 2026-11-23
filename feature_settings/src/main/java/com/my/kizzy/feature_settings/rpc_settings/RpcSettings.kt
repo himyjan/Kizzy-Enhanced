@@ -109,6 +109,7 @@ fun RpcSettings(
     var showClientIdDialog3 by remember { mutableStateOf(false) }
     var editingClientId3 by remember { mutableStateOf("") }
     var showUserLogin by remember { mutableStateOf(false) }
+    var gatewayTokenMode by remember { mutableStateOf(false) }
 
     // Collect from DataStore state flow so OAuth2 selection persists across cold boots.
     // DataStore priming is async (Dispatchers.IO), so Prefs[...] may return the default
@@ -269,9 +270,10 @@ fun RpcSettings(
                                 Log.d("RpcSettings", "OAuth2 authorized: bearer_token len=${result.accessToken.length}, refresh_token len=${result.refreshToken.length}, expires_in=${result.expiresInSec}s")
 
                                 // Discord's OAuth2 returns a bearer token, which the
-                                // gateway rejects with 4004. We still need the real
-                                // account token (user_id.timestamp.hmac) for the gateway,
-                                // so open the WebView login to capture it from page storage.
+                                // The OAuth2 bearer token is stored by authorize().
+                                // Open the manual login only to capture the real account
+                                // token (user_id.timestamp.hmac) needed by the gateway.
+                                gatewayTokenMode = true
                                 showUserLogin = true
                                 oauth2Error = ""
                                 Toast.makeText(
@@ -677,6 +679,8 @@ fun RpcSettings(
                             connectionMethod = Prefs.RPC_CONNECTION_METHOD_GATEWAY
                             Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_GATEWAY
                             showConnectionMethodDialog = false
+                            gatewayTokenMode = true
+                            showUserLogin = true
                         }
                         SingleChoiceItem(
                             text = stringResource(id = R.string.rpc_connection_method_oauth2),
@@ -1013,14 +1017,21 @@ fun RpcSettings(
         if (showUserLogin) {
             DiscordUserLoginDialog(
                 token = "",
-                onDismiss = { showUserLogin = false },
+                onDismiss = { showUserLogin = false; gatewayTokenMode = false },
                 onConfirm = { token ->
-                    Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = token
-                    Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH2
-                    connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH2
+                    if (gatewayTokenMode) {
+                        Prefs[Prefs.TOKEN] = token
+                        Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_GATEWAY
+                        connectionMethod = Prefs.RPC_CONNECTION_METHOD_GATEWAY
+                        Toast.makeText(context, "Discord gateway account token saved", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = token
+                        Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH2
+                        connectionMethod = Prefs.RPC_CONNECTION_METHOD_OAUTH2
+                        Toast.makeText(context, "Discord account connected", Toast.LENGTH_SHORT).show()
+                    }
                     showUserLogin = false
                     oauth2Error = ""
-                    Toast.makeText(context, "Discord account connected", Toast.LENGTH_SHORT).show()
                     Log.d("RpcSettings", "Account token saved (len=${token.length}, parts=${token.count { it == '.' } + 1})")
                     // Do NOT start DiscordOAuth2RpcService here. It builds an empty
                     // presence (name/state/details = null) that overwrites the real
