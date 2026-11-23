@@ -61,6 +61,13 @@ class ManualRpc : Service() {
 
     private var kizzyRPC: KizzyRPC? = null
 
+    /**
+     * True when the user explicitly stopped the service via the notification "Exit" action.
+     * In that case we must NOT schedule RPC recovery, since the user intentionally turned
+     * RPC off. Recovery is still scheduled for onTaskRemoved (system killed the app).
+     */
+    private var explicitStop = false
+
     @Inject
     lateinit var multiRpc: MultiRpcManager
 
@@ -260,11 +267,22 @@ class ManualRpc : Service() {
         // Wire Manual RPC to slot "3" (third application ID + token)
         kizzyRPC = multiRpc.session("3")
 
-        if (intent?.action.equals(Constants.ACTION_STOP_SERVICE)) {
+        if (intent?.action == Constants.ACTION_STOP_SERVICE) {
             // Explicit stop: the next cold start must not bring it back.
+            explicitStop = true
             Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+            // Remove ManualRpc from ACTIVE_RPC_TYPES so a cold start doesn't restore it.
+            val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
+                .split(',')
+                .mapNotNull { runCatching { RpcManager.RpcType.valueOf(it.trim()) }.getOrNull() }
+                .filter { it != RpcManager.RpcType.ManualRpc }
+                .joinToString(",") { it.name }
+            Prefs[Prefs.ACTIVE_RPC_TYPES] = remainingTypes
+            // Also clear RpcManager's active set so refreshFromServices() doesn't
+            // resurrect this service when the screen resumes.
+            rpcManager.stopRpcTypes(setOf(RpcManager.RpcType.ManualRpc))
             stopSelf()
-        } else if (intent?.action.equals(Constants.ACTION_RESTART_SERVICE)) {
+        } else if (intent?.action == Constants.ACTION_RESTART_SERVICE) {
             stopSelf()
             startService(Intent(this, ManualRpc::class.java))
         } else {
@@ -1174,9 +1192,13 @@ class ManualRpc : Service() {
                 rpc.closeRPC()
             }
         }
-        // Schedule RPC recovery via WorkManager so presence can be restored after
-        // aggressive task removal or process termination by the system.
-        WorkManagerHelper.scheduleRpcRecovery(this)
+        // Schedule RPC recovery only when the system killed the app (onTaskRemoved)
+        // or crashed it, not when stopRpcTypes() already removed ManualRpc from
+        // RpcManager.activeRpc.value (explicit user stop).
+        val manualStillEnabled = RpcManager.RpcType.ManualRpc in rpcManager.activeRpc.value
+        if (!explicitStop && manualStillEnabled) {
+            WorkManagerHelper.scheduleRpcRecovery(this)
+        }
         super.onDestroy()
     }
 
