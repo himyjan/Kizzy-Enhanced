@@ -112,12 +112,12 @@
         </activity>
         <service
             android:name="com.my.kizzy.feature_rpc_base.services.AppDetectionService"
-            android:foregroundServiceType="mediaPlayback"
+            android:foregroundServiceType="dataSync"
             android:exported="false" />
         <service
             android:name="com.my.kizzy.feature_rpc_base.services.MediaRpcService"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback|dataSync" />
+            android:foregroundServiceType="mediaPlayback" />
         <service
             android:name="com.my.kizzy.feature_rpc_base.services.KizzyRpcService"
             android:exported="false"
@@ -132,7 +132,7 @@
         </service>
         <service
             android:name="com.my.kizzy.feature_rpc_base.services.CustomRpcService"
-            android:foregroundServiceType="mediaPlayback"
+            android:foregroundServiceType="dataSync"
             android:exported="false" >
         </service>
 
@@ -146,12 +146,12 @@
         </service>
 
         <service android:name=".feature_rpc_base.services.ManualRpc"
-            android:foregroundServiceType="mediaPlayback"
+            android:foregroundServiceType="dataSync"
             android:exported="false"/>
 
         <service
             android:name=".feature_rpc_base.services.DiscordOAuth2RpcService"
-            android:foregroundServiceType="mediaPlayback"
+            android:foregroundServiceType="dataSync"
             android:exported="false" />
 
         <service

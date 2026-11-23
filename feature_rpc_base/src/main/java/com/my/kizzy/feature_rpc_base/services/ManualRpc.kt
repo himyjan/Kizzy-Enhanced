@@ -18,7 +18,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -306,10 +306,10 @@ class ManualRpc : Service() {
                 )
                 .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), pendingIntent)
                 .build()
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, notification)
             } else {
-                startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+                startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
             }
 
 

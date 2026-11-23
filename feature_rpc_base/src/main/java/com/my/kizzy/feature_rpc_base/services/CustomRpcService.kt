@@ -15,7 +15,7 @@ package com.my.kizzy.feature_rpc_base.services
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
@@ -356,10 +356,10 @@ class CustomRpcService : Service() {
                 .setLargeIcon(rpcDataToUse.largeImg.toRpcImage(), this@CustomRpcService)
                 .build()
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, notification)
             } else {
-                startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+                startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
             }
 
             rpcDataToUse.let {

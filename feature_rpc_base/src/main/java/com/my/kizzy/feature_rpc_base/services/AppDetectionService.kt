@@ -24,7 +24,7 @@ import android.app.usage.UsageEvents
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -134,10 +134,10 @@ class AppDetectionService : Service() {
             .addAction(R.drawable.ic_apps, getString(R.string.exit), pendingIntent)
 
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification())
         } else {
-            startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification(), FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+            startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification(), FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         }
 
         scope.launch {
