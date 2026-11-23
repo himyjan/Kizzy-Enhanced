@@ -1715,9 +1715,9 @@ class MediaRpcService : Service() {
 
         val ac = intent?.action
         when (ac) {
-            Constants.ACTION_STOP_SERVICE -> {
-                // The user stopped the RPC on purpose, so forget the enabled
-                // state as well - otherwise the next cold start would restore it.
+            Constants.ACTION_STOP_SERVICE, null -> {
+                // null means stopService() was called with no action (e.g. from
+                // RpcManager.stopRpcTypes()). Treat as explicit user stop.
                 Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
                 // Remove MediaRpc from ACTIVE_RPC_TYPES so a cold start doesn't restore it.
                 val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
@@ -1736,6 +1736,7 @@ class MediaRpcService : Service() {
                     }
                 }
                 stopSelf()
+                return super.onStartCommand(intent, flags, startId)
             }
             Constants.ACTION_RESTART_SERVICE -> {
                 // The service must NOT be stopped first. stopSelf() tears the
