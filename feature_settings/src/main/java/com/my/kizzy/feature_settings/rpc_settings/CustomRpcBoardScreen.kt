@@ -172,7 +172,7 @@ fun CustomRpcBoardScreen(
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(8.dp),
+            modifier = Modifier.fillMaxWidth().weight(1f).padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(boards, key = { it.id }) { board ->
