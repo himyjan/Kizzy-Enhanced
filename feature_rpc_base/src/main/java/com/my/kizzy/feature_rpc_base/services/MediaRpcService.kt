@@ -29,6 +29,7 @@ import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.data.utils.toUrlString
 import com.my.kizzy.data.work.RpcRecoveryHiltWorker
+import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.Constants
@@ -1713,6 +1714,16 @@ class MediaRpcService : Service() {
                 // The user stopped the RPC on purpose, so forget the enabled
                 // state as well - otherwise the next cold start would restore it.
                 Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+                // Remove MediaRpc from ACTIVE_RPC_TYPES so a cold start doesn't restore it.
+                val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
+                    .split(',')
+                    .mapNotNull { runCatching { RpcManager.RpcType.valueOf(it.trim()) }.getOrNull() }
+                    .filter { it != RpcManager.RpcType.MediaRpc }
+                    .joinToString(",") { it.name }
+                Prefs[Prefs.ACTIVE_RPC_TYPES] = remainingTypes
+                // Also clear RpcManager's active set so refreshFromServices() doesn't
+                // resurrect this service when the screen resumes.
+                rpcManager.stopRpcTypes(setOf(RpcManager.RpcType.MediaRpc))
                 // Move DataStore write off main thread to avoid StrictMode DiskReadViolation
                 scope.launch {
                     withContext(Dispatchers.IO) {
@@ -1743,8 +1754,8 @@ class MediaRpcService : Service() {
                 }
             }
             null -> {
-                // Normal start (no action): the user wants the Media RPC running.
-                // Mark it as enabled so the watchdog knows it should stay alive.
+                // Normal start (no action): mark as enabled so the watchdog knows
+                // it should stay alive.
                 scope.launch {
                     withContext(Dispatchers.IO) {
                         Prefs[Prefs.MEDIA_RPC_ENABLED] = true
@@ -1843,6 +1854,12 @@ class MediaRpcService : Service() {
         stateRepository.clearTrackInfo()
         wakeLock?.let {
             if (it.isHeld) it.release()
+        }
+        // Schedule recovery only if MediaRpc is still in RpcManager.activeRpc.value
+        // (system kill), not when stopRpcTypes() already removed it (explicit user stop).
+        val mediaStillEnabled = RpcManager.RpcType.MediaRpc in rpcManager.activeRpc.value
+        if (mediaStillEnabled) {
+            WorkManagerHelper.scheduleRpcRecovery(this)
         }
         super.onDestroy()
     }
