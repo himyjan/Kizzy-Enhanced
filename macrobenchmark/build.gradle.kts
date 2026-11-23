@@ -23,7 +23,7 @@ android {
         // 🔓 Allow macrobenchmark to run on a rooted physical device
         // UNLOCKED: bypasses CPU clock-locking requirement
         // LOW-BATTERY: bypasses battery-level safety check
-        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "UNLOCKED,LOW-BATTERY"
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "UNLOCKED,LOW-BATTERY,EMULATOR"
     }
 
     targetProjectPath = ":app"

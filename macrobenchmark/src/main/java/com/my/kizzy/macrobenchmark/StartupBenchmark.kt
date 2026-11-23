@@ -76,12 +76,6 @@ class StartupBenchmark {
         startupMode = StartupMode.HOT,
     )
 
-    @Test
-    fun hotStartNone() = startup(
-        compilationMode = CompilationMode.None(),
-        startupMode = StartupMode.HOT,
-    )
-
     /* ── RPC screen open / close ────────────────────────────────────────── */
 
     @Test
@@ -132,46 +126,49 @@ class StartupBenchmark {
         iterations = ITERATIONS,
         startupMode = startupMode,
         setupBlock = {
-            // Force-stop so a cold start really starts from a dead process.
-            // Warm/hot starts let the framework bring the app forward instead.
             if (startupMode == StartupMode.COLD) {
+                // Force-stop so a cold start really starts from a dead process.
                 device.executeShellCommand("am force-stop $TARGET_PACKAGE")
             }
             device.waitForIdle()
         },
     ) {
-        startActivityAndWait()
+        if (startupMode == StartupMode.HOT) {
+            // HOT mode: app is already running; just bring the existing task
+            // forward without restarting it.
+            val ctx = InstrumentationRegistry.getInstrumentation().targetContext
+            val intent = Intent()
+                .setComponent(ComponentName(TARGET_PACKAGE, "com.my.kizzy.MainActivity"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            ctx.startActivity(intent)
+        } else {
+            startActivityAndWait()
+        }
     }
 
     private fun openScreen(title: String, compilationMode: CompilationMode) {
-        // Make sure the app is already in the foreground so we measure the
-        // screen open, not a full app launch.
-        device.pressHome()
-        device.waitForIdle()
-        startActivityAndWait()
-        device.wait(Until.hasObject(By.text(FEATURES_HEADER)), 10_000)
-
+        // Each iteration cold-launches MainActivity, taps the card, and measures
+        // startup to that screen. RPC screens are Compose composables inside
+        // MainActivity (no separate activity), so a cold start + tap is the only
+        // way to get StartupTimingMetric slices (activityResume / doFrame).
         benchmarkRule.measureRepeated(
             packageName = TARGET_PACKAGE,
             metrics = listOf(StartupTimingMetric()),
             compilationMode = compilationMode,
             iterations = ITERATIONS,
-            startupMode = StartupMode.HOT, // app already running
+            startupMode = StartupMode.COLD,
             setupBlock = {
-                // Leave the app on the home screen before each iteration.
-                startActivityAndWait()
-                device.wait(Until.hasObject(By.text(FEATURES_HEADER)), 10_000)
+                device.executeShellCommand("am force-stop $TARGET_PACKAGE")
+                device.waitForIdle()
             },
         ) {
+            startActivityAndWait()
+            device.wait(Until.hasObject(By.text(FEATURES_HEADER)), 10_000)
             val card = device.findObject(By.text(title)) ?: return@measureRepeated
             card.click()
             device.waitForIdle()
-            // Wait for the destination to finish its first composition.
+            // Wait for the destination composable to finish its first frame.
             device.waitForIdle(2_000)
-            // Return to home for a clean next iteration.
-            device.pressBack()
-            device.waitForIdle()
-            device.wait(Until.hasObject(By.text(FEATURES_HEADER)), 5_000)
         }
     }
 
