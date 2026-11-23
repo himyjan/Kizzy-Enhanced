@@ -55,7 +55,7 @@ class DiscordOAuth2RpcService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand")
         // Wire OAuth2 RPC to slot "1" (default application token)
-        kizzyRPC = multiRpc.session("1")
+        kizzyRPC = multiRpc.session("5")
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.DiscordOAuth2Rpc.name
 
         // Refresh the gateway token and identify properties from prefs.
@@ -73,9 +73,7 @@ class DiscordOAuth2RpcService : Service() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
         AppUtils.unregisterRpcService(this)
-        if (!AppUtils.isAnotherRpcServiceActive(this)) {
-            kizzyRPC?.closeRPC()
-        }
+        kizzyRPC?.closeRPC()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

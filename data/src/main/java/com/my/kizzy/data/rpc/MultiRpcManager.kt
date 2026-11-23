@@ -164,6 +164,7 @@ class MultiRpcManager @Inject constructor(
             "2" -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2, ""].takeIf { it.isNotBlank() } ?: mainToken
             "3" -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3, ""].takeIf { it.isNotBlank() } ?: mainToken
             "4" -> mainToken
+            "5" -> mainToken
             else -> return null
         }
         val appId = when (slotId) {
@@ -171,6 +172,7 @@ class MultiRpcManager @Inject constructor(
             "2" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, ""].takeIf { it.isNotBlank() } ?: "1573725984845201438"
             "3" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, ""].takeIf { it.isNotBlank() } ?: "1573728208854065293"
             "4" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""].takeIf { it.isNotBlank() } ?: "1571063796418744412"
+            "5" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""].takeIf { it.isNotBlank() } ?: "1573730101810331718"
             else -> ""
         }
         if (token.isBlank()) return null
