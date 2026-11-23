@@ -92,8 +92,11 @@ class CustomRpcService : Service() {
 
         intent?.let { readConsoleMode(it) }
 
-        if (intent?.action == Constants.ACTION_STOP_SERVICE) {
+        val ac = intent?.action
+        if (ac == Constants.ACTION_STOP_SERVICE || ac == null) {
             // Explicit stop: the next cold start must not bring it back.
+            // null means stopService() was called with no action (e.g. from
+            // RpcManager.stopRpcTypes()). Treat as explicit user stop.
             Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
             // Remove Custom/Console RPC from ACTIVE_RPC_TYPES so a cold start doesn't restore it.
             val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
