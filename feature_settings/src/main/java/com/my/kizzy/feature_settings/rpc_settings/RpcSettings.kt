@@ -681,6 +681,7 @@ fun RpcSettings(
                             showConnectionMethodDialog = false
                             gatewayTokenMode = true
                             showUserLogin = true
+                            discordAuth.launchGatewayLogin(activity)
                         }
                         SingleChoiceItem(
                             text = stringResource(id = R.string.rpc_connection_method_oauth2),

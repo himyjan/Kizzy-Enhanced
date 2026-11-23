@@ -1163,7 +1163,6 @@ class ManualRpc : Service() {
         scope.cancel()
         val rpc = kizzyRPC
         AppUtils.unregisterRpcService(this)
-        val shouldClose = !AppUtils.isAnotherRpcServiceActive(this)
         if (rpc != null) {
             CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
                 try {
@@ -1172,7 +1171,7 @@ class ManualRpc : Service() {
                     throw e
                 } catch (_: Exception) {
                 }
-                if (shouldClose) rpc.closeRPC()
+                rpc.closeRPC()
             }
         }
         // Schedule RPC recovery via WorkManager so presence can be restored after

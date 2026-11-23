@@ -160,6 +160,34 @@ class DiscordOAuth2Auth(
         }
     }
 
+    /**
+     * Opens Discord's login page in an ephemeral AuthTab so the user can sign in
+     * before pasting their account token for the Gateway connection method.
+     * Gateway still requires the real account token (user_id.timestamp.hmac);
+     * this just makes the login step private and browser-isolated.
+     */
+    fun launchGatewayLogin(activity: Activity) {
+        val launcher = authTabLauncher
+        val browserPackage = CustomTabsClient.getPackageName(activity, null)
+        val authTabSupported = launcher != null &&
+            browserPackage != null &&
+            CustomTabsClient.isAuthTabSupported(activity, browserPackage)
+
+        if (authTabSupported) {
+            val authTabIntent = AuthTabIntent.Builder()
+                .setEphemeralBrowsingEnabled(true)
+                .build()
+            authTabIntent.launch(launcher, "https://discord.com/login".toUri(), REDIRECT_SCHEME)
+            Log.d(TAG, "launchGatewayLogin: opened Discord login via AuthTabIntent (ephemeral)")
+        } else {
+            val customTabsIntent = CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
+            customTabsIntent.launchUrl(activity, "https://discord.com/login".toUri())
+            Log.d(TAG, "launchGatewayLogin: opened Discord login via CustomTabs fallback")
+        }
+    }
+
     fun onActivityResult(resultCode: Int, data: Intent?) {
         val cont = this.continuation
         val auth = this.pendingAuth

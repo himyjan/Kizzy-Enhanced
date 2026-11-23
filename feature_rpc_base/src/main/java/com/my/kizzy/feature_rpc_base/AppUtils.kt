@@ -107,10 +107,14 @@ object AppUtils {
     private fun isActivityManagerInitialized(): Boolean = ::activityManager.isInitialized
 
     private inline fun <reified T : Any> checkForRunningService(): Boolean {
+        val className = T::class.java.name
+        if (activeRpcServices.contains(className)) {
+            return true
+        }
         if (!isActivityManagerInitialized()) {
             return false
         }
-        return runningServiceNames().contains(T::class.java.name)
+        return runningServiceNames().contains(className)
     }
 
     /**
@@ -123,7 +127,8 @@ object AppUtils {
             return cached
         }
         val names = try {
-            activityManager.getRunningServices(Int.MAX_VALUE)
+            // Fetch running services with a reasonable limit to avoid expensive system IPC
+            activityManager.getRunningServices(50)
                 .map { it.service.className }
         } catch (_: Exception) {
             emptyList()
