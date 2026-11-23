@@ -112,7 +112,7 @@ jobs:
           LATEST_VERSION=$(curl -fsSL "https://search.maven.org/solrsearch/select?q=g:org.jetbrains.kotlin%20AND%20a:kotlin-gradle-plugin&core=gav&rows=20&wt=json" 2>/dev/null \
             | grep -oP '"v":"[^"]+"' \
             | grep -oP '[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' \
-            | grep -vE -- '-(alpha|beta|rc|m|dev|eap)' \
+            | grep -vE -- '-(m|dev|eap)' \
             | sort -V \
             | tail -1) || true
           if [ -z "$LATEST_VERSION" ]; then
