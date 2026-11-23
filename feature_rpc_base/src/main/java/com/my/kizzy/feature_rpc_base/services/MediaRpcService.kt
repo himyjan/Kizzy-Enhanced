@@ -513,8 +513,11 @@ class MediaRpcService : Service() {
         auth.mutex.withLock {
         if (!Prefs[auth.enabledPreference, false]) return@withLock false
 
-        // Use hardcoded default API key + secret (like Morphe / YouTube Music)
-        // Users only need to enter username + password
+        // Use user-configured API key/secret if set; otherwise fall back to
+        // hardcoded defaults (like Morphe / YouTube Music) so users only need
+        // to enter username + password.
+        val configuredKey = Prefs[auth.apiKeyPreference, ""]
+        val configuredSecret = Prefs[auth.secretPreference, ""]
         val defaultKey = when (auth.client::class.simpleName) {
             "LastFM" -> DEFAULT_LASTFM_API_KEY
             "LibreFM" -> DEFAULT_LIBREFM_API_KEY
@@ -525,17 +528,19 @@ class MediaRpcService : Service() {
             "LibreFM" -> DEFAULT_LIBREFM_SECRET
             else -> ""
         }
-        if (defaultKey.isBlank() || defaultSecret.isBlank()) {
+        val apiKey = configuredKey.takeIf { it.isNotBlank() } ?: defaultKey
+        val apiSecret = configuredSecret.takeIf { it.isNotBlank() } ?: defaultSecret
+        if (apiKey.isBlank() || apiSecret.isBlank()) {
             auth.client.sessionKey = null
             if (!auth.missingConfigLogged) {
-                logger.w(auth.name, "Scrobbling is enabled, but default API key or secret is not configured")
+                logger.w(auth.name, "Scrobbling is enabled, but API key or secret is not configured")
                 auth.missingConfigLogged = true
             }
             return@withLock false
         }
 
         auth.missingConfigLogged = false
-        auth.client.init(defaultKey, defaultSecret)
+        auth.client.init(apiKey, apiSecret)
         val savedSessionKey = Prefs[auth.sessionKeyPreference, ""]
         if (savedSessionKey.isNotBlank()) {
             auth.client.sessionKey = savedSessionKey
