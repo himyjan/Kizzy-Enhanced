@@ -23,7 +23,7 @@ versionCatalogUpdate {
 allprojects {
     configurations.all {
         resolutionStrategy {
-            force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.5.0-RC")
+            force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.2.0-RC3")
         }
     }
 }
