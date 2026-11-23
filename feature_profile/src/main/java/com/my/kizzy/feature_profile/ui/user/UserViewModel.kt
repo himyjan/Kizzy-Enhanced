@@ -95,7 +95,9 @@ class UserViewModel @Inject constructor(
             }
             .distinctUntilChanged()
             .onEach { (token, userId, cachedJson) ->
-                val key = "$token|$userId|$cachedJson"
+                // Do not include cachedJson in the key: our own profile writes
+                // would otherwise retrigger and cancel the in-flight bio fetch.
+                val key = "$token|$userId"
                 if (key == lastIdentityKey) return@onEach
                 lastIdentityKey = key
 
@@ -105,6 +107,28 @@ class UserViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    /**
+     * Best-effort background refresh of the About Me/bio for OAuth2 sessions.
+     * Faster cached UI is shown first; if the profile endpoint returns bio,
+     * persist and emit the merged user.
+     */
+    private fun refreshBioInBackground(token: String, baseUser: User) {
+        viewModelScope.launch {
+            val bio = fetchDiscordUserProfile(token) ?: return@launch
+            if (bio.isBlank()) return@launch
+            val current = _state.value
+            val currentUser = when (current) {
+                is UserState.LoadingCompleted -> current.user
+                is UserState.Error -> current.user
+                UserState.Loading -> baseUser
+            }
+            if (currentUser?.bio == bio) return@launch
+            val merged = (currentUser ?: baseUser).copy(bio = bio)
+            Prefs[Prefs.USER_DATA] = Json.encodeToString(merged)
+            _state.value = UserState.LoadingCompleted(merged, currentRpcConfig())
+        }
     }
 
     private suspend fun loadIdentity(token: String, userId: String, cachedJson: String) {
@@ -122,10 +146,14 @@ class UserViewModel @Inject constructor(
             return
         }
 
-        // If we already have persisted user data from a previous OAuth2 login,
-        // show it immediately without any network round-trip.
+        // If we already have persisted user data, show it immediately.
+        // If bio is missing, refresh it in the background so OAuth2 users
+        // still get About Me from the profile endpoint.
         if (cachedUser != null && cachedUser.id?.isNotBlank() == true) {
             _state.value = UserState.LoadingCompleted(cachedUser, currentRpcConfig())
+            if (cachedUser.bio.isNullOrBlank()) {
+                refreshBioInBackground(token, cachedUser)
+            }
             return
         }
 
