@@ -56,6 +56,9 @@ class CustomRpcService : Service() {
     lateinit var multiRpc: MultiRpcManager
 
     @Inject
+    lateinit var rpcManager: RpcManager
+
+    @Inject
     lateinit var foregroundPackage: GetForegroundPackage
 
     @Inject
@@ -92,6 +95,16 @@ class CustomRpcService : Service() {
         if (intent?.action == Constants.ACTION_STOP_SERVICE) {
             // Explicit stop: the next cold start must not bring it back.
             Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+            // Remove Custom/Console RPC from ACTIVE_RPC_TYPES so a cold start doesn't restore it.
+            val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
+                .split(',')
+                .mapNotNull { runCatching { RpcManager.RpcType.valueOf(it.trim()) }.getOrNull() }
+                .filter { it != RpcManager.RpcType.CustomRpc && it != RpcManager.RpcType.ConsoleRpc }
+                .joinToString(",") { it.name }
+            Prefs[Prefs.ACTIVE_RPC_TYPES] = remainingTypes
+            // Also clear RpcManager's active set so refreshFromServices() doesn't
+            // resurrect this service when the screen resumes.
+            rpcManager.stopRpcTypes(setOf(RpcManager.RpcType.CustomRpc, RpcManager.RpcType.ConsoleRpc))
             stopSelf()
             return super.onStartCommand(intent, flags, startId)
         } else {
