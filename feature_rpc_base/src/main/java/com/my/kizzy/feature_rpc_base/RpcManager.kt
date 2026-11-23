@@ -307,6 +307,18 @@ class RpcManager @Inject constructor(
         val typesToStop = rpcTypes - setOf(RpcType.None)
         if (typesToStop.isEmpty()) return
         Log.d(TAG, "Stopping RPC services: $typesToStop")
+
+        // Update state FIRST so the UI switch responds instantly. Service teardown
+        // continues off the main thread below.
+        ignoreServiceDetectionUntil = System.currentTimeMillis() + 1500
+        val effectiveStops = if (typesToStop.any {
+                it == RpcType.CustomRpc || it == RpcType.ConsoleRpc
+            }
+        ) typesToStop + setOf(RpcType.CustomRpc, RpcType.ConsoleRpc) else typesToStop
+        val remaining = _activeRpc.value - effectiveStops
+        persistActiveRpcTypes(remaining)
+        _activeRpc.value = remaining
+
         for (rpcType in typesToStop.toList()) {
             when (rpcType) {
                 RpcType.MediaRpc -> context.stopService(Intent(context, MediaRpcService::class.java))
@@ -320,14 +332,6 @@ class RpcManager @Inject constructor(
                 RpcType.None -> Unit
             }
         }
-        // Custom and Console share one service: stopping either stops both.
-        val effectiveStops = if (typesToStop.any {
-                it == RpcType.CustomRpc || it == RpcType.ConsoleRpc
-            }
-        ) typesToStop + setOf(RpcType.CustomRpc, RpcType.ConsoleRpc) else typesToStop
-        val remaining = _activeRpc.value - effectiveStops
-        persistActiveRpcTypes(remaining)
-        _activeRpc.value = remaining
     }
 
     /**

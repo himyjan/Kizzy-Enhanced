@@ -1159,18 +1159,21 @@ class ManualRpc : Service() {
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         stopHeartbeat()
         stopMediaRefresh()
-        // Cancel all pending coroutines first
+        // Cancel pending work first, then clear/close off the main thread.
         scope.cancel()
-        // Clear Discord presence before closing the gateway so old manual RPC
-        // doesn't keep showing on Discord after Manual RPC is turned off.
-        runBlocking {
-            kizzyRPC?.clearPresence()
-        }
-        // The gateway is a process-wide singleton: only close it when no other
-        // RPC service is still using it.
+        val rpc = kizzyRPC
         AppUtils.unregisterRpcService(this)
-        if (!AppUtils.isAnotherRpcServiceActive(this)) {
-            kizzyRPC?.closeRPC()
+        val shouldClose = !AppUtils.isAnotherRpcServiceActive(this)
+        if (rpc != null) {
+            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                try {
+                    rpc.clearPresence()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                }
+                if (shouldClose) rpc.closeRPC()
+            }
         }
         // Schedule RPC recovery via WorkManager so presence can be restored after
         // aggressive task removal or process termination by the system.
