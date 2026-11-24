@@ -1097,9 +1097,10 @@ fun RpcSettings(
                         }
 
                         RpcField(
-                            value = if (lastfmPasswordVisible) lastfmPassword else lastfmPassword.replace(Regex("."), "*"),
+                            value = lastfmPassword,
                             label = R.string.lastfm_password,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                            password = !lastfmPasswordVisible,
                             trailingIcon = {
                                 IconButton(onClick = { lastfmPasswordVisible = !lastfmPasswordVisible }) {
                                     Icon(
@@ -1316,9 +1317,10 @@ fun RpcSettings(
                         }
 
                         RpcField(
-                            value = if (librefmPasswordVisible) librefmPassword else librefmPassword.replace(Regex("."), "*"),
+                            value = librefmPassword,
                             label = R.string.librefm_password,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                            password = !librefmPasswordVisible,
                             trailingIcon = {
                                 IconButton(onClick = { librefmPasswordVisible = !librefmPasswordVisible }) {
                                     Icon(

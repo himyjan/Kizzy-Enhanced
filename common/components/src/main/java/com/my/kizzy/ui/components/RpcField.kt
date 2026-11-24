@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -25,6 +26,16 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 
+/**
+ * Masks every character as an asterisk for display only. The actual [TextFieldState]
+ * is never modified, so onValueChange always receives the real password text.
+ */
+private val PasswordOutputTransformation = OutputTransformation {
+    if (length > 0) {
+        replace(0, length, "*".repeat(length))
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RpcField(
@@ -35,6 +46,9 @@ fun RpcField(
     isError: Boolean = false,
     errorMessage: String = "",
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    // When true, mask the input for display only. The real value is never altered,
+    // so onValueChange always receives the actual text (critical for passwords).
+    password: Boolean = false,
     content: @Composable (() -> Unit) = {},
     onValueChange: (String) -> Unit = {}
 ) {
@@ -74,6 +88,7 @@ fun RpcField(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             keyboardOptions = keyboardOptions,
+            outputTransformation = if (password) PasswordOutputTransformation else null,
             label = { Text(stringResource(id = label)) },
             trailingIcon = trailingIcon,
             isError = isError
