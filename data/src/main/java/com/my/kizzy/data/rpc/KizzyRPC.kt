@@ -16,7 +16,6 @@ import android.media.session.PlaybackState
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
 import com.my.kizzy.preference.Prefs
-import com.my.kizzy.preference.Prefs.CUSTOM_ACTIVITY_TYPE
 import jakarta.inject.Inject
 import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
@@ -1120,7 +1119,7 @@ class KizzyRPC @Inject constructor(
             // Media RPC uses type 2/3 (Listening/Watching), so its mediaUrl must NOT
             // be placed here - a non-null url with a non-streaming type makes Discord
             // silently drop the whole activity. The mediaUrl goes into the buttons.
-            val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.LISTENING]
+            val activityType = this.type
             // Discord privacy-filters Custom Status (type 4) for users with private
             // profiles — never use it for Rich Presence. Use Playing/Listening/
             // Watching instead.
