@@ -293,8 +293,26 @@ class ManualRpc : Service() {
     }
 
     private suspend fun updateScrobblers(playingMedia: CommonRpc) {
-        // Scrobbling logic - Last.fm, Libre.fm, ListenBrainz
-        // Executes independently of Discord RPC connection status
+        val client = lastFmAuth.client
+        if (!client.isAuthenticated) return
+
+        val artist = playingMedia.state ?: playingMedia.name ?: ""
+        val track = playingMedia.details ?: playingMedia.name ?: ""
+        val timestamp = System.currentTimeMillis() / 1000
+        val url = playingMedia.mediaUrl ?: playingMedia.detailsUrl
+
+        client.scrobble(
+            artist = artist,
+            track = track,
+            timestamp = timestamp,
+            url = url
+        )
+
+        client.updateNowPlaying(
+            artist = artist,
+            track = track,
+            url = url
+        )
     }
 
     private fun updateNotificationPauseButton() {

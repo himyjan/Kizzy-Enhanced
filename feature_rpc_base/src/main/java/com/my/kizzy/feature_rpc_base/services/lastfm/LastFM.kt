@@ -225,7 +225,8 @@ open class LastFmApiClient(
         timestamp: Long,
         album: String? = null,
         trackNumber: Int? = null,
-        duration: Int? = null
+        duration: Int? = null,
+        url: String? = null
     ): Boolean = apiCallWithRetry {
         val currentSession = sessionKey ?: return@apiCallWithRetry false
         val response = client.post {
@@ -242,6 +243,7 @@ open class LastFmApiClient(
                         album?.let { put("album[0]", it) }
                         trackNumber?.let { put("trackNumber[0]", it.toString()) }
                         duration?.let { put("duration[0]", duration.toString()) }
+                        url?.let { put("url[0]", it) }
                     }
                 )
             )
@@ -259,7 +261,8 @@ open class LastFmApiClient(
         track: String,
         album: String? = null,
         trackNumber: Int? = null,
-        duration: Int? = null
+        duration: Int? = null,
+        url: String? = null
     ): Boolean = apiCallWithRetry {
         val currentSession = sessionKey ?: return@apiCallWithRetry false
         val response = client.post {
@@ -275,6 +278,7 @@ open class LastFmApiClient(
                         album?.let { put("album", it) }
                         trackNumber?.let { put("trackNumber", it.toString()) }
                         duration?.let { put("duration", it.toString()) }
+                        url?.let { put("url", it) }
                     }
                 )
             )
