@@ -202,8 +202,10 @@ suspend fun fetchDiscordUserProfile(token: String): String? {
 
             val bio = runCatching {
                 val obj = restJson.parseToJsonElement(body) as? JsonObject ?: return@runCatching null
-                (obj["bio"] as? JsonPrimitive)?.content
-                    ?: (obj["about_me"] as? JsonPrimitive)?.content
+                val userObj = obj["user"] as? JsonObject
+                val bioField = userObj?.get("bio") as? JsonPrimitive
+                val aboutMeField = userObj?.get("about_me") as? JsonPrimitive
+                bioField?.content ?: aboutMeField?.content
             }.getOrNull()
 
             if (!bio.isNullOrBlank()) return bio
