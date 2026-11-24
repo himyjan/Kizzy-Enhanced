@@ -2,6 +2,7 @@ package com.my.kizzy.feature_settings.rpc_settings
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -170,6 +171,7 @@ fun RpcSettings(
     var lastfmSecret by remember { mutableStateOf(Prefs[Prefs.LASTFM_SECRET, com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET]) }
     var lastfmUsername by remember { mutableStateOf(Prefs[Prefs.LASTFM_USERNAME, ""]) }
     var lastfmPassword by remember { mutableStateOf(Prefs[Prefs.LASTFM_PASSWORD, ""]) }
+    var lastfmPendingToken by remember { mutableStateOf<String?>(null) }
     var lastfmPasswordVisible by remember { mutableStateOf(false) }
     var lastfmShowTimestamps by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLE_TIMESTAMPS, true]) }
     var lastfmShowCoverArt by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_COVER_ART, true]) }
@@ -1143,30 +1145,86 @@ fun RpcSettings(
                                 Text(text = stringResource(R.string.lastfm_logout))
                             }
                             if (!isAuthenticated) {
-                                TextButton(
-                                    onClick = {
-                                        if (lastfmUsername.isBlank() || lastfmPassword.isBlank()) {
-                                            Toast.makeText(context, "Enter username and password first", Toast.LENGTH_SHORT).show()
-                                        } else {
-                                            scope.launch {
-                                                LastFM.init(lastfmApiKey, lastfmSecret)
-                                                val session = try {
-                                                    LastFM.getMobileSession(lastfmUsername, lastfmPassword)
-                                                } catch (e: Exception) {
-                                                    Toast.makeText(context, "Last.fm login failed: ${e.message}", Toast.LENGTH_LONG).show()
-                                                    null
-                                                }
-                                                if (session != null && session.key.isNotEmpty()) {
-                                                    Prefs[Prefs.LASTFM_SESSION_KEY] = session.key
-                                                    Toast.makeText(context, "Logged in to Last.fm", Toast.LENGTH_SHORT).show()
-                                                } else {
-                                                    Toast.makeText(context, "Last.fm login failed", Toast.LENGTH_SHORT).show()
+                                Column {
+                                    // Step 1: Get request token from Last.fm
+                                    TextButton(
+                                        onClick = {
+                                            if (lastfmApiKey.isBlank() || lastfmSecret.isBlank()) {
+                                                Toast.makeText(context, "Enter API key and secret first", Toast.LENGTH_SHORT).show()
+                                            } else {
+                                                scope.launch {
+                                                    LastFM.init(lastfmApiKey, lastfmSecret)
+                                                    val token = try {
+                                                        LastFM.getToken()
+                                                    } catch (e: Exception) {
+                                                        Toast.makeText(context, "Last.fm get token failed: ${e.message}", Toast.LENGTH_LONG).show()
+                                                        null
+                                                    }
+                                                    if (token?.token?.isNotEmpty() == true) {
+                                                        lastfmPendingToken = token.token
+                                                        val authUrl = "https://www.last.fm/api/auth/?api_key=$lastfmApiKey&token=${token.token}"
+                                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)))
+                                                        Toast.makeText(context, "Authorize in browser, then click Get Session", Toast.LENGTH_LONG).show()
+                                                    }
                                                 }
                                             }
                                         }
+                                    ) {
+                                        Text(text = stringResource(R.string.lastfm_get_token))
                                     }
-                                ) {
-                                    Text(text = stringResource(R.string.lastfm_login))
+
+                                    // Step 2: Exchange token for session key after user authorizes in browser
+                                    if (lastfmPendingToken != null) {
+                                        TextButton(
+                                            onClick = {
+                                                scope.launch {
+                                                    LastFM.init(lastfmApiKey, lastfmSecret)
+                                                    val session = try {
+                                                        LastFM.getSession(lastfmPendingToken!!)
+                                                    } catch (e: Exception) {
+                                                        Toast.makeText(context, "Last.fm get session failed: ${e.message}", Toast.LENGTH_LONG).show()
+                                                        null
+                                                    }
+                                                    if (session != null && session.key.isNotEmpty()) {
+                                                        Prefs[Prefs.LASTFM_SESSION_KEY] = session.key
+                                                        lastfmPendingToken = null
+                                                        Toast.makeText(context, "Logged in to Last.fm", Toast.LENGTH_SHORT).show()
+                                                    } else {
+                                                        Toast.makeText(context, "Last.fm login failed", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                            }
+                                        ) {
+                                            Text(text = stringResource(R.string.lastfm_get_session))
+                                        }
+                                    }
+
+                                    // Direct username/password login via auth.getMobileSession
+                                    TextButton(
+                                        onClick = {
+                                            if (lastfmUsername.isBlank() || lastfmPassword.isBlank()) {
+                                                Toast.makeText(context, "Enter username and password first", Toast.LENGTH_SHORT).show()
+                                            } else {
+                                                scope.launch {
+                                                    LastFM.init(lastfmApiKey, lastfmSecret)
+                                                    val session = try {
+                                                        LastFM.getMobileSession(lastfmUsername, lastfmPassword)
+                                                    } catch (e: Exception) {
+                                                        Toast.makeText(context, "Last.fm login failed: ${e.message}", Toast.LENGTH_LONG).show()
+                                                        null
+                                                    }
+                                                    if (session != null && session.key.isNotEmpty()) {
+                                                        Prefs[Prefs.LASTFM_SESSION_KEY] = session.key
+                                                        Toast.makeText(context, "Logged in to Last.fm as ${session.name}", Toast.LENGTH_SHORT).show()
+                                                    } else {
+                                                        Toast.makeText(context, "Last.fm login failed", Toast.LENGTH_LONG).show()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ) {
+                                        Text(text = "Login with Username/Password")
+                                    }
                                 }
                             }
                         }
