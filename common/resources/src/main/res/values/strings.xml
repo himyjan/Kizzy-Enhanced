@@ -488,6 +488,8 @@
     <string name="lastfm_show_party_max">Show Party Max Size</string>
     <string name="lastfm_login">Log in</string>
     <string name="lastfm_logout">Log out</string>
+    <string name="lastfm_get_token">Get Token</string>
+    <string name="lastfm_get_session">Get Session</string>
     <string name="lastfm_authenticated">Authenticated</string>
     <string name="lastfm_not_authenticated">Not authenticated</string>
     <string name="lastfm_show_password">Show password</string>
