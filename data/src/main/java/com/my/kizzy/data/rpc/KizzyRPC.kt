@@ -26,6 +26,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.math.abs
+import java.util.concurrent.atomic.AtomicLong
 
 class KizzyRPC @Inject constructor(
     private var token: String,
@@ -209,7 +210,7 @@ class KizzyRPC @Inject constructor(
     private var lastPresenceTimeMs: Long = 0L
     private var lastPresenceHash: Int = -1
     // Timestamp of the last presence re-apply, used to break the SESSIONS_REPLACE loop.
-    private var lastReapplyTimeMs: Long = 0L
+    private val lastReapplyTimeMs = AtomicLong(0L)
     // Connection state tracking for reliable RPC
     @Volatile
     private var isConnected = false
@@ -338,16 +339,10 @@ class KizzyRPC @Inject constructor(
                 )
                 return@withContext
             }
-            if (now - lastReapplyTimeMs < REAPPLY_COOLDOWN_MS) {
-                logger.d(
-                    "KizzyRPC",
-                    "Skipping presence re-apply (within ${REAPPLY_COOLDOWN_MS}ms cooldown)"
-                )
+            if (!lastReapplyTimeMs.compareAndSet(lastReapplyTimeMs.get(), now)) {
+                logger.d("KizzyRPC", "Skipping presence re-apply: within ${REAPPLY_COOLDOWN_MS}ms cooldown or claimed by another coroutine")
                 return@withContext
             }
-            // Claim the slot before the first delay so two callers (the connect
-            // flow and the gateway's READY callback) cannot both start a re-apply.
-            lastReapplyTimeMs = now
             var attempt = 0
             val maxAttempts = 3
             var attemptedSend = false
@@ -377,7 +372,7 @@ class KizzyRPC @Inject constructor(
             if (!attemptedSend) {
                 // The gateway never reached READY in time. Release the cooldown so
                 // the READY callback can re-apply the presence as soon as it arrives.
-                lastReapplyTimeMs = 0L
+                lastReapplyTimeMs.set(0L)
                 logger.d("KizzyRPC", "Presence re-apply postponed: gateway not ready yet")
             } else {
                 logger.e("KizzyRPC", "Presence re-apply gave up after $maxAttempts attempts")
