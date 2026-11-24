@@ -869,7 +869,7 @@ class MediaRpcService : Service() {
         rpcManager.setCurrentPresenceConfig(commonRpcToRpcConfig(commonRpc))
 
         kizzyRPC?.clearButtons()
-        kizzyRPC?.updateRPC(commonRpc, enableTimestamps, forceRefresh = true, priority = 1)
+        kizzyRPC?.updateRPC(commonRpc, enableTimestamps, forceRefresh = true, priority = 3)
         updateNotificationPauseButton()
     }
 }
