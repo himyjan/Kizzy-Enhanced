@@ -79,6 +79,18 @@ class AppDetectionService : Service() {
     override fun onCreate() {
         super.onCreate()
         AppUtils.registerRpcService(this)
+        // Start foreground immediately so Android doesn't kill the service
+        // for not calling startForeground() within 5 seconds.
+        val basicNotification = Notification.Builder(this, Constants.CHANNEL_ID)
+            .setContentTitle(getString(R.string.service_enabled))
+            .setContentText("")
+            .setSmallIcon(R.drawable.ic_apps)
+            .build()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, basicNotification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        } else {
+            startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, basicNotification)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

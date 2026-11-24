@@ -575,6 +575,9 @@ class MediaRpcService : Service() {
             kizzyRPC?.updateRPC(commonRpc, enableTimestamps, forceRefresh = forceRefresh, priority = 1)
 
             // Scrobble to Last.fm independently of Discord RPC presence
+            // Read the latest token from prefs each time to ensure we use the
+            // most recent auth state even if the service was started before login
+            LastFM.sessionKey = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
             if (lastFmAuth.client.isAuthenticated) {
                 val artist = playingMedia.state ?: playingMedia.name ?: ""
                 val track = playingMedia.details ?: playingMedia.name ?: ""

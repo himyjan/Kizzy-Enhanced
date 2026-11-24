@@ -158,11 +158,16 @@ suspend fun fetchDiscordUser(token: String): User? {
 
             if (user.id.isNullOrBlank()) continue
 
-            Prefs[USER_ID] = user.id
-            Prefs[USER_BIO] = user.bio
-            Prefs[USER_NITRO] = user.nitro
-            Prefs[USER_DATA] = restJson.encodeToString(user)
-            return user
+            // Also fetch the custom status (About Me) from /users/@me/profile
+            // since /users/@me does not return bio.
+            val profileBio = fetchDiscordUserProfile(token)
+            val userWithBio = user.copy(bio = profileBio?.takeIf { it.isNotBlank() } ?: user.bio)
+
+            Prefs[USER_ID] = userWithBio.id
+            Prefs[USER_BIO] = userWithBio.bio
+            Prefs[USER_NITRO] = userWithBio.nitro
+            Prefs[USER_DATA] = restJson.encodeToString(userWithBio)
+            return userWithBio
         }
     }
     return null
@@ -212,10 +217,10 @@ suspend fun fetchDiscordUserViaRest(token: String): User? {
             }.getOrNull()
             if (user?.id.isNullOrBlank() == true) continue
 
-            Prefs[USER_ID] = user.id
-            Prefs[USER_BIO] = user.bio
-            Prefs[USER_NITRO] = user.nitro
-            Prefs[USER_DATA] = restJson.encodeToString(user)
+            Prefs[USER_ID] = user!!.id
+            Prefs[USER_BIO] = user!!.bio
+            Prefs[USER_NITRO] = user!!.nitro
+            Prefs[USER_DATA] = restJson.encodeToString(user!!)
             return user
         }
     }
