@@ -133,6 +133,8 @@ class ManualRpc : Service() {
     private var lastHadPresence: Boolean = false
     private var currentMediaProgressSec: Int = 0
     private var currentMediaDurationSec: Int = 0
+    private var currentMediaPositionMs: Long = 0L
+    private var isPaused: Boolean = false
 
     // Periodic refresh to catch position changes that happen between onPlaybackStateChanged
     // callbacks (e.g., during drag scrubbing when the player may not fire callbacks for every
@@ -503,6 +505,7 @@ class ManualRpc : Service() {
             if (lastHadPresence) {
                 logger.d(TAG, "No media data available - clearing Discord presence")
                 scope.launch { kizzyRPC?.clearPresence() }
+                lastHadPresence = false
             }
             return
         }
@@ -548,6 +551,7 @@ class ManualRpc : Service() {
                 // Clear the activity but keep the gateway connection alive, so playback can
                 // resume instantly instead of having to reconnect from scratch.
                 kizzyRPC?.clearPresence()
+                lastHadPresence = false
                 val stopIntent = Intent(this, ManualRpc::class.java)
                 stopIntent.action = Constants.ACTION_STOP_SERVICE
                 val stopPendingIntent = PendingIntent.getService(
@@ -591,25 +595,37 @@ class ManualRpc : Service() {
         if (currentContextIsMedia) {
             effectivePackageName = richMediaInfo.packageName
 
-            currentMediaProgressSec = (richMediaInfo.position / 1000).toInt().coerceIn(0, (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0))
+            currentMediaProgressSec = (richMediaInfo.position / 1000).toInt()
+                .coerceIn(0, (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0))
             currentMediaDurationSec = (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0)
+            currentMediaPositionMs = richMediaInfo.position.coerceAtLeast(0L)
+            isPaused = richMediaInfo.playbackState != PlaybackState.STATE_PLAYING &&
+                    richMediaInfo.playbackState != PlaybackState.STATE_BUFFERING &&
+                    richMediaInfo.playbackState != PlaybackState.STATE_CONNECTING
 
             logger.d(TAG, "Processing Rich Media Context")
             if (Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE, false]) {
                 val titleSource = Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE, "title"]
                 finalName = if (titleSource == "artist") richMediaInfo.artist else richMediaInfo.title
-                finalDetails = resolveTemplateValue(processor.process(templateDetails),
+                finalDetails = resolveTemplateValue(
+                    processor.process(templateDetails),
                     richMediaInfo.appName
                 )
-                finalState = resolveTemplateValue(processor.process(templateState), richMediaInfo.state.takeIf { titleSource != "artist" })
+                finalState = resolveTemplateValue(
+                    processor.process(templateState),
+                    richMediaInfo.state.takeIf { titleSource != "artist" }
+                )
             } else {
-                finalName = resolveTemplateValue(processor.process(templateName),
+                finalName = resolveTemplateValue(
+                    processor.process(templateName),
                     richMediaInfo.appName
                 )
-                finalDetails = resolveTemplateValue(processor.process(templateDetails),
+                finalDetails = resolveTemplateValue(
+                    processor.process(templateDetails),
                     richMediaInfo.title
                 )
-                finalState = resolveTemplateValue(processor.process(templateState),
+                finalState = resolveTemplateValue(
+                    processor.process(templateState),
                     richMediaInfo.state
                 )
             }
@@ -690,6 +706,7 @@ class ManualRpc : Service() {
             finalTimestamps = null
             effectivePackageName = null
         }
+
         val rpcDataIsEmpty =
             finalName.isNullOrEmpty() && finalDetails.isNullOrEmpty() && finalState.isNullOrEmpty()
 
@@ -699,6 +716,7 @@ class ManualRpc : Service() {
                 // Clear the activity but keep the connection, so the next track shows up
                 // immediately.
                 kizzyRPC?.clearPresence()
+                lastHadPresence = false
                 val stopIntent = Intent(this, ManualRpc::class.java)
                 stopIntent.action = Constants.ACTION_STOP_SERVICE
                 val stopPendingIntent = PendingIntent.getService(
@@ -871,7 +889,7 @@ class ManualRpc : Service() {
             // not configure the buttons by hand. When a media session is
             // playing, the link of the track and of the artist are used instead,
             // so the presence links to the music like the Media RPC does.
-            val mediaUrl = rawMediaMetadata?.let {
+            val buttonMediaUrl = rawMediaMetadata?.let {
                 MetadataResolver.getMediaUrl(it, richMediaInfo?.packageName)
             } ?: MediaServiceResolver.mediaSearchUrl(
                 effectivePackageName,
@@ -879,7 +897,7 @@ class ManualRpc : Service() {
             ) ?: MediaServiceResolver.browserSearchUrl(
                 finalName.takeIf { !it.isNullOrBlank() } ?: finalDetails,
             )
-            mediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
+            buttonMediaUrl?.takeIf { it.isNotBlank() }?.let { url ->
                 kizzyRPC?.setButton1(
                     MediaServiceResolver.mediaLinkLabel(
                         url,
@@ -913,6 +931,7 @@ class ManualRpc : Service() {
             forceRefresh = true,
             priority = 1, // Manual RPC: highest priority - user explicitly configured
         )
+        lastHadPresence = true
 
         // Remember the presence for the RPC preview.
         // The image urls are the ones that were actually resolved (and uploaded) for the
@@ -1022,6 +1041,9 @@ class ManualRpc : Service() {
                     Prefs.isMediaAppEnabled(it.packageName)
             }
             currentMediaController?.registerCallback(mediaControllerCallback)
+            isMediaSessionActive = currentMediaController != null
+        } else {
+            isMediaSessionActive = false
         }
 
         launchPresenceUpdate {
