@@ -655,6 +655,10 @@ private fun RpcTextFieldsColumn(
             details = game.platform,
             timestampsStart = startTs,
             timestampsStop = endTs,
+            // 4th line (Activity Large Text) shows the game title again, clickable via largeUrl.
+            largeText = game.game_title,
+            // No URL field available in Game model yet for clickable link.
+            largeUrl = "",
             // Do NOT overwrite the Custom RPC tab's Activity Platform field.
             // Console games set consolePlatform (Console RPC tab) only.
             largeImg = if (consoleShowCoverArt) game.large_image.orEmpty() else "",
