@@ -370,9 +370,9 @@ fun ProfileCard(
             }
 
             // --- Bio (collapsible, with Discord blue clickable links) -----
-            // Always show the ABOUT ME section; use a placeholder when the
-            // account has no bio so the area never looks missing.
-            val bio = user.bio?.takeIf { it.isNotBlank() }
+            // Always show the "Bio" section; show the custom status text first,
+            // then fall back to the account bio if set.
+            val bio = user.special?.takeIf { it.isNotBlank() } ?: user.bio?.takeIf { it.isNotBlank() }
             Spacer(Modifier.height(16.dp))
             SectionHeader(text = stringResource(id = R.string.user_profile_bio))
             if (bio == null) {

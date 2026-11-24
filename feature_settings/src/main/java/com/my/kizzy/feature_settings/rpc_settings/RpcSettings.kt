@@ -69,6 +69,7 @@ import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
 import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFM
+import com.my.kizzy.feature_rpc_base.services.listenbrainz.ListenBrainz
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.RpcField
@@ -1357,6 +1358,8 @@ fun RpcSettings(
                                         Prefs[Prefs.LIBREFM_USERNAME] = ""
                                         librefmPassword = ""
                                         librefmUsername = ""
+                                        Prefs[Prefs.LISTENBRAINZ_USER_TOKEN] = ""
+                                        listenbrainzUserToken = ""
                                     }
                                 }
                             ) {
@@ -1377,6 +1380,7 @@ fun RpcSettings(
                                                     null
                                                 }
                                                 if (session != null && session.key.isNotEmpty()) {
+                                                    LibreFM.sessionKey = session.key
                                                     Prefs[Prefs.LIBREFM_SESSION_KEY] = session.key
                                                     Toast.makeText(context, "Logged in to Libre.fm", Toast.LENGTH_SHORT).show()
                                                 } else {
@@ -1407,6 +1411,7 @@ fun RpcSettings(
                 onDismissRequest = { showListenBrainzDialog = false },
                 confirmButton = {
                     TextButton(onClick = {
+                        ListenBrainz.setUserToken(listenbrainzUserToken)
                         Prefs[Prefs.LISTENBRAINZ_USER_TOKEN] = listenbrainzUserToken
                         Prefs[Prefs.LISTENBRAINZ_ENABLED] = listenbrainzEnabled
                         Prefs[Prefs.LISTENBRAINZ_ENABLE_TIMESTAMPS] = listenbrainzShowTimestamps
