@@ -295,26 +295,97 @@ class ManualRpc : Service() {
     }
 
     private suspend fun updateScrobblers(playingMedia: CommonRpc) {
-        val client = lastFmAuth.client
-        if (!client.isAuthenticated) return
+        val songName = playingMedia.details?.takeIf { it.isNotBlank() } ?: playingMedia.name
+        val artistName = playingMedia.state?.takeIf { it.isNotBlank() }
+        if (songName.isBlank() || artistName.isNullOrBlank()) return
 
-        val artist = playingMedia.state ?: playingMedia.name ?: ""
-        val track = playingMedia.details ?: playingMedia.name ?: ""
-        val timestamp = System.currentTimeMillis() / 1000
-        val url = playingMedia.mediaUrl ?: playingMedia.detailsUrl
+        val currentTrackIdentity = "$artistName - $songName"
 
-        client.scrobble(
-            artist = artist,
-            track = track,
-            timestamp = timestamp,
-            url = url
-        )
+        // Ensure session keys and API keys are initialized from preferences
+        val lastFmApiKey = Prefs[Prefs.LASTFM_API_KEY, DEFAULT_LASTFM_API_KEY]
+        val lastFmSecret = Prefs[Prefs.LASTFM_SECRET, DEFAULT_LASTFM_SECRET]
+        LastFM.init(lastFmApiKey, lastFmSecret)
+        LastFM.sessionKey = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
 
-        client.updateNowPlaying(
-            artist = artist,
-            track = track,
-            url = url
-        )
+        val libreFmApiKey = Prefs[Prefs.LIBREFM_API_KEY, DEFAULT_LIBREFM_API_KEY]
+        val libreFmSecret = Prefs[Prefs.LIBREFM_SECRET, DEFAULT_LIBREFM_SECRET]
+        LibreFM.init(libreFmApiKey, libreFmSecret)
+        LibreFM.sessionKey = Prefs[Prefs.LIBREFM_SESSION_KEY, ""]
+
+        ListenBrainz.setUserToken(Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""])
+
+        val isLastFmEnabled = Prefs[Prefs.LASTFM_ENABLED, false] && LastFM.isAuthenticated
+        val isLibreFmEnabled = Prefs[Prefs.LIBREFM_ENABLED, false] && LibreFM.isAuthenticated
+        val isListenBrainzEnabled = Prefs[Prefs.LISTENBRAINZ_ENABLED, false] && ListenBrainz.isAuthenticated
+
+        if (!isLastFmEnabled && !isLibreFmEnabled && !isListenBrainzEnabled) return
+
+        val nowSec = System.currentTimeMillis() / 1000
+
+        // 1. Now Playing update when track changes
+        if (currentTrackIdentity != lastFmNowPlayingIdentity) {
+            lastFmNowPlayingIdentity = currentTrackIdentity
+            lastFmTrackStartTimestamp = nowSec
+            lastFmScrobbledIdentity = null // Reset so new track can be scrobbled
+
+            scope.launch(Dispatchers.IO) {
+                if (isLastFmEnabled) {
+                    try {
+                        LastFM.updateNowPlaying(artist = artistName, track = songName, url = playingMedia.mediaUrl)
+                    } catch (e: Exception) {
+                        logger.e(TAG, "Last.fm now playing failed: ${e.message}")
+                    }
+                }
+                if (isLibreFmEnabled) {
+                    try {
+                        LibreFM.updateNowPlaying(artist = artistName, track = songName, url = playingMedia.mediaUrl)
+                    } catch (e: Exception) {
+                        logger.e(TAG, "Libre.fm now playing failed: ${e.message}")
+                    }
+                }
+                if (isListenBrainzEnabled) {
+                    try {
+                        ListenBrainz.updateNowPlaying(artist = artistName, track = songName)
+                    } catch (e: Exception) {
+                        logger.e(TAG, "ListenBrainz now playing failed: ${e.message}")
+                    }
+                }
+            }
+        }
+
+        // 2. Scrobble update after playing for >= 30 seconds
+        val elapsedSec = nowSec - lastFmTrackStartTimestamp
+        if (elapsedSec >= 30 && lastFmScrobbledIdentity != currentTrackIdentity) {
+            lastFmScrobbledIdentity = currentTrackIdentity
+            val scrobbleTimestamp = lastFmTrackStartTimestamp
+
+            scope.launch(Dispatchers.IO) {
+                if (isLastFmEnabled) {
+                    try {
+                        val success = LastFM.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp, url = playingMedia.mediaUrl)
+                        if (success) logger.i(TAG, "Scrobbled to Last.fm: $currentTrackIdentity")
+                    } catch (e: Exception) {
+                        logger.e(TAG, "Last.fm scrobble failed: ${e.message}")
+                    }
+                }
+                if (isLibreFmEnabled) {
+                    try {
+                        val success = LibreFM.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp, url = playingMedia.mediaUrl)
+                        if (success) logger.i(TAG, "Scrobbled to Libre.fm: $currentTrackIdentity")
+                    } catch (e: Exception) {
+                        logger.e(TAG, "Libre.fm scrobble failed: ${e.message}")
+                    }
+                }
+                if (isListenBrainzEnabled) {
+                    try {
+                        val success = ListenBrainz.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp)
+                        if (success) logger.i(TAG, "Scrobbled to ListenBrainz: $currentTrackIdentity")
+                    } catch (e: Exception) {
+                        logger.e(TAG, "ListenBrainz scrobble failed: ${e.message}")
+                    }
+                }
+            }
+        }
     }
 
     private fun updateNotificationPauseButton() {
