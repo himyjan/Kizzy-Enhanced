@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_profile.fetchDiscordUser
+import com.my.kizzy.feature_profile.fetchDiscordUserProfile
 import com.my.kizzy.feature_settings.rpc_settings.DiscordOAuth2Auth
 import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
 import com.my.kizzy.feature_profile.ui.component.ProfileCard
@@ -113,6 +114,8 @@ fun UserScreen(
                 }
                 // Persist avatar/bio/banner before the profile switches to logged-in.
                 fetchDiscordUser(result.accessToken)
+                // Also fetch bio/about me from REST (gateway READY doesn't include bio)
+                fetchDiscordUserProfile(result.accessToken)
             } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
                 oauth2Error = e.message ?: "Authorization failed"
             } catch (e: Exception) {
@@ -338,6 +341,12 @@ private fun TokenLoginSection() {
                     if (user == null) {
                         Prefs.remove(Prefs.TOKEN)
                         error = "Invalid token or network error"
+                    } else {
+                        // Also fetch bio/about me from REST client profile endpoint
+                        val bio = fetchDiscordUserProfile(value)
+                        val userWithBio = user.copy(bio = bio?.takeIf { it.isNotBlank() } ?: user.bio)
+                        Prefs[Prefs.USER_DATA] = kotlinx.serialization.json.Json.encodeToString(userWithBio)
+                        error = ""
                     }
                     // A pasted account token belongs only in TOKEN; never overwrite
                     // the OAuth2 bearer used by the OAuth2 connection method.
