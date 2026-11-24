@@ -27,11 +27,20 @@ object ListenBrainz {
 
     const val API_BASE_URL = "https://api.listenbrainz.org/1/"
 
-    private var userToken: String = ""
+    private var _userToken: String = ""
+
+    /** Whether the user has configured a ListenBrainz token */
+    val userToken: String
+        get() = _userToken
 
     /** Whether the user has configured a ListenBrainz token */
     val isAuthenticated: Boolean
-        get() = userToken.isNotEmpty()
+        get() = _userToken.isNotEmpty()
+
+    /** Set the user token after login */
+    fun setUserToken(token: String) {
+        _userToken = token
+    }
 
     private val json = Json {
         isLenient = true
@@ -92,7 +101,7 @@ object ListenBrainz {
      * Called once during app initialization.
      */
     fun init(userToken: String) {
-        this.userToken = userToken
+        _userToken = userToken
     }
 
     fun isInitialized(): Boolean = userToken.isNotEmpty()
