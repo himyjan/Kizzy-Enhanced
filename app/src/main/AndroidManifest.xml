@@ -146,7 +146,7 @@
         </service>
 
         <service android:name=".feature_rpc_base.services.ManualRpc"
-            android:foregroundServiceType="dataSync"
+            android:foregroundServiceType="mediaPlayback"
             android:exported="false"/>
 
         <service
