@@ -1153,6 +1153,7 @@ fun RpcSettings(
                                                 val session = try {
                                                     LastFM.getMobileSession(lastfmUsername, lastfmPassword)
                                                 } catch (e: Exception) {
+                                                    Toast.makeText(context, "Last.fm login failed: ${e.message}", Toast.LENGTH_LONG).show()
                                                     null
                                                 }
                                                 if (session != null && session.key.isNotEmpty()) {
@@ -1311,6 +1312,7 @@ fun RpcSettings(
                                                 val session = try {
                                                     LibreFM.getMobileSession(librefmUsername, librefmPassword)
                                                 } catch (e: Exception) {
+                                                    Toast.makeText(context, "Libre.fm login failed: ${e.message}", Toast.LENGTH_LONG).show()
                                                     null
                                                 }
                                                 if (session != null && session.key.isNotEmpty()) {
