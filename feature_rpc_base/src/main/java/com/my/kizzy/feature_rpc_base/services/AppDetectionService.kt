@@ -99,10 +99,8 @@ class AppDetectionService : Service() {
 
         val ac = intent?.action
         when (ac) {
-            Constants.ACTION_STOP_SERVICE, null -> {
+            Constants.ACTION_STOP_SERVICE -> {
                 // Explicit stop: the next cold start must not bring it back.
-                // null means stopService() was called with no action (e.g. from
-                // RpcManager.stopRpcTypes()). Treat as explicit user stop.
                 Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
                 // Remove AppDetectionRpc from ACTIVE_RPC_TYPES so a cold start doesn't restore it.
                 val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
