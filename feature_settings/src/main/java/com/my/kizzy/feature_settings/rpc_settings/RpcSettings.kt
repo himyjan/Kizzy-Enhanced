@@ -1187,6 +1187,7 @@ fun RpcSettings(
                                                         null
                                                     }
                                                     if (session != null && session.key.isNotEmpty()) {
+                                                        LastFM.sessionKey = session.key
                                                         Prefs[Prefs.LASTFM_SESSION_KEY] = session.key
                                                         lastfmPendingToken = null
                                                         Toast.makeText(context, "Logged in to Last.fm", Toast.LENGTH_SHORT).show()
