@@ -60,9 +60,6 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 composeRuntimeTracing = { module = "androidx.compose.runtime:runtime-tracing" }
-# In-process Perfetto tracing used by macrobenchmark fullTracing (composition traces)
-tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-tracing" }
-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing" }
 # Androidx
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
@@ -99,6 +96,9 @@ material3-adaptive = "androidx.compose.material3.adaptive:adaptive:1.4.0-alpha03
 material3-windows-size = { module = "androidx.compose.material3:material3-window-size-class" }
 profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileinstaller" }
 tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tink-android" }
+# In-process Perfetto tracing used by macrobenchmark fullTracing (composition traces)
+tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-tracing" }
+tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workmanager" }
 
 [plugins]
