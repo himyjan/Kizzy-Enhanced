@@ -274,6 +274,9 @@ class MediaRpcService : Service() {
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.MediaRpc.name
         setupWakeLock()
 
+        // Restore saved Last.fm session key so scrobbling works after app restart
+        LastFM.sessionKey = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
+
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(activeSessionsChangedListener, ComponentName(this, NotificationListener::class.java))
 
@@ -570,6 +573,27 @@ class MediaRpcService : Service() {
 
             kizzyRPC?.clearButtons()
             kizzyRPC?.updateRPC(commonRpc, enableTimestamps, forceRefresh = forceRefresh, priority = 1)
+
+            // Scrobble to Last.fm independently of Discord RPC presence
+            if (lastFmAuth.client.isAuthenticated) {
+                val artist = playingMedia.state ?: playingMedia.name ?: ""
+                val track = playingMedia.details ?: playingMedia.name ?: ""
+                val timestamp = System.currentTimeMillis() / 1000
+                val url = playingMedia.mediaUrl ?: playingMedia.detailsUrl
+
+                lastFmAuth.client.scrobble(
+                    artist = artist,
+                    track = track,
+                    timestamp = timestamp,
+                    url = url
+                )
+
+                lastFmAuth.client.updateNowPlaying(
+                    artist = artist,
+                    track = track,
+                    url = url
+                )
+            }
         }
     }
 

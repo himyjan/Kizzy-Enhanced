@@ -380,6 +380,9 @@ class ManualRpc : Service() {
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.ManualRpc.name
         setupWakeLock()
 
+        // Restore saved Last.fm session key so scrobbling works after app restart
+        LastFM.sessionKey = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
+
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(activeSessionsChangedListener, ComponentName(this, NotificationListener::class.java))
 
