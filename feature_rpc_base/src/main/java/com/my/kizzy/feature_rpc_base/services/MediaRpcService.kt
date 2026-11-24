@@ -225,7 +225,9 @@ class MediaRpcService : Service() {
         get() = Prefs[Prefs.MEDIA_RPC_ENABLED, true]
 
     private val enabledExperimentalApps: List<String>
-        get() = Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, emptyList()]
+        get() = runCatching {
+            Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+        }.getOrDefault(emptyList())
 
     private val useAppsRpc: Boolean
         get() = Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]
