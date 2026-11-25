@@ -276,6 +276,9 @@ private fun CustomRpcBoardEditorDialog(
     onSave: (CustomRpcBoardItem) -> Unit,
 ) {
     val scope = remember { CoroutineScope(Dispatchers.Main) }
+    var activityTypeError by remember { mutableStateOf("") }
+    val invalidTypeError = stringResource(R.string.custom_rpc_board_activity_type_invalid)
+    val notRichPresenceError = stringResource(R.string.custom_rpc_board_activity_type_not_rich_presence)
 
     var id by remember { mutableStateOf(board?.id ?: java.util.UUID.randomUUID().toString()) }
     var label by remember { mutableStateOf(board?.label ?: "") }
@@ -308,7 +311,15 @@ private fun CustomRpcBoardEditorDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 TextFieldRow(label = stringResource(R.string.custom_rpc_board_label), value = label, onValueChange = { label = it })
                 TextFieldRow(label = stringResource(R.string.custom_rpc_board_application_id), value = applicationId, onValueChange = { applicationId = it })
-                TextFieldRow(label = "Activity Type", value = activityType, onValueChange = { activityType = it })
+                TextFieldRow(label = stringResource(R.string.custom_rpc_board_activity_type), value = activityType, onValueChange = { activityType = it })
+                if (activityTypeError.isNotEmpty()) {
+                    Text(
+                        text = activityTypeError,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp, start = 4.dp),
+                    )
+                }
                 TextFieldRow(label = stringResource(R.string.custom_rpc_board_name), value = name, onValueChange = { name = it })
                 TextFieldRow(label = stringResource(R.string.custom_rpc_board_details), value = details, onValueChange = { details = it })
                 TextFieldRow(label = stringResource(R.string.custom_rpc_board_state), value = state, onValueChange = { state = it })
@@ -326,12 +337,30 @@ private fun CustomRpcBoardEditorDialog(
         },
         confirmButton = {
             TextButton(onClick = {
+                val parsed = activityType.toIntOrNull()
+                val valid = when (parsed) {
+                    null -> {
+                        activityTypeError = invalidTypeError
+                        false
+                    }
+                    0, 1, 2, 3, 5 -> true
+                    4, 6 -> {
+                        activityTypeError = notRichPresenceError
+                        false
+                    }
+                    else -> {
+                        activityTypeError = invalidTypeError
+                        false
+                    }
+                }
+                if (!valid) return@TextButton
+                activityTypeError = ""
                 onSave(
                     CustomRpcBoardItem(
                         id = id,
                         label = label,
                         applicationId = applicationId,
-                        activityType = activityType.toIntOrNull() ?: 0,
+                        activityType = parsed ?: 0,
                         name = name,
                         details = details,
                         state = state,

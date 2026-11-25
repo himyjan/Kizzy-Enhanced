@@ -585,6 +585,8 @@
     <string name="custom_rpc_board_label">Board Label</string>
     <string name="custom_rpc_board_application_id">Application ID</string>
     <string name="custom_rpc_board_activity_type">Activity Type</string>
+    <string name="custom_rpc_board_activity_type_invalid">Enter a valid activity type (0-5, excluding 4)</string>
+    <string name="custom_rpc_board_activity_type_not_rich_presence">Custom Status (4) and Hang Status (6) are not rendered as Rich Presence cards</string>
     <string name="custom_rpc_board_name">Activity Name</string>
     <string name="custom_rpc_board_details">Activity Details</string>
     <string name="custom_rpc_board_state">Activity State</string>

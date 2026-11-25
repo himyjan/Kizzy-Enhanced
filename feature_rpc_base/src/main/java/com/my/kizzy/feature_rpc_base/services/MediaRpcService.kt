@@ -427,7 +427,7 @@ class MediaRpcService : Service() {
                         logger.d(MEDIA_RPC, "App detection: new app detected=${runningApp.packageName}, checking if should show")
                         val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
                         val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
-                        val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+                        val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_APPS, "[]"])
                         val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
 
                         logger.d(MEDIA_RPC, "App detection: ${runningApp.packageName} isGame=$isGameApp isAI=$isAiApp inEnabledApps=${runningApp.packageName in enabledApps} shouldShow=$shouldShow")
@@ -935,7 +935,7 @@ class MediaRpcService : Service() {
                 if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
                     val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
                     val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
-                    val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+                    val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_APPS, "[]"])
                     val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
                     if (shouldShow && runningApp.packageName != currentPackageName) {
                         currentPackageName = runningApp.packageName
@@ -981,7 +981,7 @@ class MediaRpcService : Service() {
                     if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
                         val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
                         val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
-                        val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+                        val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_APPS, "[]"])
                         val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
                         if (shouldShow) {
                             val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
