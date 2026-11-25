@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -35,6 +36,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -155,7 +157,9 @@ fun CustomRpcBoardScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 16.dp),
     ) {
         androidx.compose.material3.TopAppBar(
             title = {
@@ -172,7 +176,14 @@ fun CustomRpcBoardScreen(
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = 8.dp,
+                    top = 8.dp,
+                    end = 8.dp,
+                    bottom = 100.dp,
+                ),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(boards, key = { it.id }) { board ->
@@ -230,7 +241,14 @@ fun CustomRpcBoardScreen(
                 editingBoard = null
                 showEditorDialog = true
             },
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    top = 12.dp,
+                    end = 16.dp,
+                    bottom = 48.dp,
+                ),
         ) {
             Text(text = stringResource(R.string.custom_rpc_board_add))
         }
