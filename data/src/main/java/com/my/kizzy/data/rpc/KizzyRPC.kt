@@ -1138,6 +1138,7 @@ class KizzyRPC @Inject constructor(
             // fall back to it so the small image links to the channel page.
             val smallUrlFallback = commonRpc.smallUrl.takeIf { it?.isNotEmpty() == true }
                 ?: commonRpc.smallImageChannelUrl.takeIf { it?.isNotEmpty() == true }
+                ?: commonRpc.stateUrl.takeIf { it?.isNotEmpty() == true }
 
             val presence = Presence(
                 activities = listOf(
@@ -1225,6 +1226,7 @@ class KizzyRPC @Inject constructor(
         // ManualRpc sets smallImageChannelUrl instead of smallUrl; fall back to it.
         val smallUrlForConfig = commonRpc.smallUrl.takeIf { it?.isNotEmpty() == true }
             ?: commonRpc.smallImageChannelUrl.takeIf { it?.isNotEmpty() == true }
+            ?: commonRpc.stateUrl.takeIf { it?.isNotEmpty() == true }
         val config = com.my.kizzy.domain.model.rpc.RpcConfig(
             name = commonRpc.name,
             details = commonRpc.details.orEmpty(),
