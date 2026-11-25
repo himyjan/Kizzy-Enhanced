@@ -13,6 +13,7 @@
 package com.my.kizzy.feature_settings.rpc_settings
 
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -51,6 +51,7 @@ import com.my.kizzy.data.rpc.CustomRpcBoardItem
 import com.my.kizzy.feature_rpc_base.CustomRpcBoardManager
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.resources.R
+import com.my.kizzy.ui.components.BackButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -157,32 +158,25 @@ fun CustomRpcBoardScreen(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 16.dp),
+        modifier = Modifier.fillMaxSize(),
     ) {
         androidx.compose.material3.TopAppBar(
             title = {
                 Text(text = stringResource(R.string.custom_rpc_board_open))
             },
             navigationIcon = {
-                androidx.compose.material3.IconButton(onClick = onBackPressed) {
-                    Text(
-                        text = "◀",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
+                BackButton(onClick = onBackPressed)
             },
         )
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
                 .padding(
                     start = 8.dp,
                     top = 8.dp,
                     end = 8.dp,
-                    bottom = 100.dp,
+                    bottom = 16.dp,
                 ),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -245,9 +239,9 @@ fun CustomRpcBoardScreen(
                 .fillMaxWidth()
                 .padding(
                     start = 16.dp,
-                    top = 12.dp,
+                    top = 8.dp,
                     end = 16.dp,
-                    bottom = 48.dp,
+                    bottom = 16.dp,
                 ),
         ) {
             Text(text = stringResource(R.string.custom_rpc_board_add))
@@ -301,7 +295,8 @@ private fun CustomRpcBoardEditorDialog(
     var timestampMode by remember { mutableStateOf(board?.timestampMode ?: "NONE") }
     var customStartMs by remember { mutableStateOf(board?.customStartMs?.toString() ?: "") }
 
-    AlertDialog(
+    BackHandler(onBack = onDismiss)
+        AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = if (board == null) stringResource(R.string.custom_rpc_board_add) else stringResource(R.string.custom_rpc_board_edit)) },
         text = {
