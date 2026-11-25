@@ -19,6 +19,6 @@ import com.my.kizzy.domain.model.user.User
 @Stable
 sealed interface UserState {
     object Loading: UserState
-    class Error(val error: String, val user: User?, val rpcConfig: RpcConfig): UserState
-    class LoadingCompleted(val user: User?, val rpcConfig: RpcConfig): UserState
+    class Error(val error: String, val user: User?, val rpcConfigs: List<RpcConfig>): UserState
+    class LoadingCompleted(val user: User?, val rpcConfigs: List<RpcConfig>): UserState
 }

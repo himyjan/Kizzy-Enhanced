@@ -169,7 +169,7 @@ fun ProfileCard(
     backgroundColors: List<Color> = listOf(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.surfaceVariant),
     padding: Dp = 0.dp,
     type: String = stringResource(id = R.string.user_profile_rpc_name),
-    rpcConfig: RpcConfig? = null,
+    rpcConfigs: List<RpcConfig> = emptyList(),
     showTs: Boolean = true,
     onAvatarClick: () -> Unit = {}
 ) {
@@ -274,8 +274,8 @@ fun ProfileCard(
                 }
                 }
 
-                // Presence badge - driven by the RPC activity status.
-                val statusStr = rpcConfig?.status?.takeIf { it.isNotBlank() } ?: "online"
+                // Presence badge - driven by the first RPC activity status.
+                val statusStr = rpcConfigs.firstOrNull()?.status?.takeIf { it.isNotBlank() } ?: "online"
                 DiscordPresenceBadge(
                     status = statusStr,
                     modifier = Modifier.align(Alignment.BottomEnd),
@@ -430,13 +430,18 @@ fun ProfileCard(
             }
 
             // --- Current activity ----------------------------------------
-            if (rpcConfig != null) {
+            if (rpcConfigs.isNotEmpty()) {
                 Spacer(Modifier.height(18.dp))
-                ActivityRow(
-                    rpcConfig = rpcConfig,
-                    showTs = showTs,
-                    special = user.special,
-                )
+                SectionHeader(text = stringResource(R.string.user_profile_rpc_name))
+                Spacer(Modifier.height(8.dp))
+                rpcConfigs.forEachIndexed { index, cfg ->
+                    if (index > 0) Spacer(Modifier.height(12.dp))
+                    ActivityRow(
+                        rpcConfig = cfg,
+                        showTs = showTs,
+                        special = user.special,
+                    )
+                }
             }
         }
     }

@@ -13,7 +13,6 @@ import com.my.kizzy.feature_profile.fetchDiscordUser
 import com.my.kizzy.feature_profile.fetchDiscordUserProfile
 import com.my.kizzy.feature_profile.fetchUserInfo
 import com.my.kizzy.feature_rpc_base.AppUtils
-import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
@@ -53,20 +52,20 @@ class UserViewModel @Inject constructor(
     init {
         observeLoginState()
         observeRpcState()
-        
-        // Immediately load the current RPC config on init so the profile shows
+
+        // Immediately load the current RPC configs on init so the profile shows
         // the real state after a cold boot, not empty/null values
-        val currentConfig = currentRpcConfig()
+        val currentConfigs = currentRpcConfigs()
         val currentState = _state.value
         when (currentState) {
             is UserState.Error -> _state.value = UserState.Error(
                 error = currentState.error,
                 user = currentState.user,
-                rpcConfig = currentConfig
+                rpcConfigs = currentConfigs
             )
             is UserState.LoadingCompleted -> _state.value = UserState.LoadingCompleted(
                 user = currentState.user,
-                rpcConfig = currentConfig
+                rpcConfigs = currentConfigs
             )
             UserState.Loading -> Unit // Keep as Loading, observeRpcState will update
         }
@@ -127,7 +126,7 @@ class UserViewModel @Inject constructor(
             if (currentUser?.bio == bio) return@launch
             val merged = (currentUser ?: baseUser).copy(bio = bio)
             Prefs[Prefs.USER_DATA] = Json.encodeToString(merged)
-            _state.value = UserState.LoadingCompleted(merged, currentRpcConfig())
+            _state.value = UserState.LoadingCompleted(merged, currentRpcConfigs())
         }
     }
 
@@ -141,7 +140,7 @@ class UserViewModel @Inject constructor(
             _state.value = UserState.Error(
                 error = "Not logged in",
                 user = User(),
-                rpcConfig = currentRpcConfig()
+                rpcConfigs = currentRpcConfigs()
             )
             return
         }
@@ -150,7 +149,7 @@ class UserViewModel @Inject constructor(
         // If bio is missing, refresh it in the background so OAuth2 users
         // still get About Me from the profile endpoint.
         if (cachedUser != null && cachedUser.id?.isNotBlank() == true) {
-            _state.value = UserState.LoadingCompleted(cachedUser, currentRpcConfig())
+            _state.value = UserState.LoadingCompleted(cachedUser, currentRpcConfigs())
             if (cachedUser.bio.isNullOrBlank()) {
                 refreshBioInBackground(token, cachedUser)
             }
@@ -172,7 +171,7 @@ class UserViewModel @Inject constructor(
                     fresh.copy(bio = profileBio)
                 } ?: fresh
                 Prefs[Prefs.USER_DATA] = Json.encodeToString(withBio)
-                _state.value = UserState.LoadingCompleted(withBio, currentRpcConfig())
+                _state.value = UserState.LoadingCompleted(withBio, currentRpcConfigs())
                 return
             }
         } else {
@@ -181,7 +180,7 @@ class UserViewModel @Inject constructor(
                 ?: fetchDiscordUser(token)
                 ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }
             if (fresh != null) {
-                _state.value = UserState.LoadingCompleted(fresh, currentRpcConfig())
+                _state.value = UserState.LoadingCompleted(fresh, currentRpcConfigs())
                 return
             }
         }
@@ -198,12 +197,12 @@ class UserViewModel @Inject constructor(
         }.getOrNull()
 
         _state.value = if (fallback != null) {
-            UserState.LoadingCompleted(fallback, currentRpcConfig())
+            UserState.LoadingCompleted(fallback, currentRpcConfigs())
         } else {
             UserState.Error(
                 error = "Could not load profile",
                 user = User(),
-                rpcConfig = currentRpcConfig()
+                rpcConfigs = currentRpcConfigs()
             )
         }
     }
@@ -221,7 +220,7 @@ class UserViewModel @Inject constructor(
             // with the old token; leaving them running keeps a stale session
             // alive and can resurrect the presence after logout.
             // Best-effort stop of all RPC services; ignore failures.
-            if (runCatching { RpcManager.getInstance(ctx).switchTo(RpcManager.RpcType.None) }.isFailure) {
+            if (runCatching { com.my.kizzy.feature_rpc_base.RpcManager.getInstance(ctx).switchTo(com.my.kizzy.feature_rpc_base.RpcManager.RpcType.None) }.isFailure) {
             }
             listOf(
                 MediaRpcService::class.java,
@@ -262,7 +261,7 @@ class UserViewModel @Inject constructor(
             _state.value = UserState.Error(
                 error = "Not logged in",
                 user = User(),
-                rpcConfig = currentRpcConfig()
+                rpcConfigs = currentRpcConfigs()
             )
             logger.info("User logged out successfully")
         }
@@ -281,22 +280,33 @@ class UserViewModel @Inject constructor(
                 stateRepository.currentSmallImageUrl,
                 stateRepository.pausedPositionMs
             ) { largeImg, smallImg, pausedPositionMs ->
-                val currentRpcConfig = currentRpcConfig()
+                // Start from the full set of active RPC configs and only
+                // update the MediaRpc entry with live media state.
+                val configs = currentRpcConfigs().toMutableList()
+                val mediaIdx = configs.indexOfFirst { it.type == "2" }
 
-                currentRpcConfig.copy(
-                    name = currentRpcConfig.name.copyIfNotEmpty(title ?: currentRpcConfig.name),
-                    details = currentRpcConfig.details.copyIfNotEmpty(artist ?: currentRpcConfig.details),
-                    state = currentRpcConfig.state.copyIfNotEmpty(artist ?: currentRpcConfig.state),
-                    timestampsStart = tsStart?.toString() ?: currentRpcConfig.timestampsStart,
-                    timestampsStop = tsStop?.toString() ?: currentRpcConfig.timestampsStop,
-                    largeImg = largeImg ?: currentRpcConfig.largeImg,
-                    smallImg = smallImg ?: currentRpcConfig.smallImg,
+                val mediaEntry = configs.getOrNull(mediaIdx)
+                val updatedMedia = mediaEntry?.copy(
+                    name = mediaEntry.name.copyIfNotEmpty(title),
+                    details = mediaEntry.details.copyIfNotEmpty(artist ?: mediaEntry.details),
+                    state = mediaEntry.state.copyIfNotEmpty(artist ?: mediaEntry.state),
+                    timestampsStart = tsStart?.toString() ?: mediaEntry.timestampsStart,
+                    timestampsStop = tsStop?.toString() ?: mediaEntry.timestampsStop,
+                    largeImg = largeImg ?: mediaEntry.largeImg,
+                    smallImg = smallImg ?: mediaEntry.smallImg,
                     paused = isPaused,
                     pausedPositionMs = pausedPositionMs
                 )
+
+                if (mediaIdx >= 0 && updatedMedia != null) {
+                    configs[mediaIdx] = updatedMedia
+                } else if (updatedMedia != null) {
+                    configs.add(updatedMedia)
+                }
+                configs
             }
         }
-        mediaFlow.flatMapLatest { it }.onEach { newRpcConfig ->
+        mediaFlow.flatMapLatest { it }.onEach { newConfigs ->
             viewModelScope.launch(Dispatchers.Main) {
                 val current = _state.value
                 // While still loading, ignore media updates.
@@ -305,43 +315,55 @@ class UserViewModel @Inject constructor(
                 // an empty user - that would wrongly show Logout instead of
                 // Login.
                 if (current !is UserState.LoadingCompleted) return@launch
-                if (current.rpcConfig == newRpcConfig) {
+                if (current.rpcConfigs == newConfigs) {
                     return@launch
                 }
                 _state.value = UserState.LoadingCompleted(
                     current.user,
-                    newRpcConfig
+                    newConfigs
                 )
             }
         }.launchIn(viewModelScope)
     }
 
     /**
-     * The presence that is shown on Discord right now.
+     * The presence configs that are shown on Discord right now.
      *
      * Every service remembers the presence it sent last, so the preview shows
      * the real data - the name, the details, the timestamps and the buttons -
      * instead of a placeholder. When the service is not running, the memory of
      * the last run is used.
+     *
+     * Multiple RPCs can be active at the same time, so this returns all of
+     * them.
      */
-    private fun currentRpcConfig(): RpcConfig = try {
-        when {
-            AppUtils.customRpcRunning() -> {
-                val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                if (json.isNotBlank()) runCatching { Json.decodeFromString<RpcConfig>(json) }
-                    .getOrDefault(kizzyDefault())
-                else kizzyDefault()
-            }
-            AppUtils.mediaRpcRunning() ->
-                LastPresence.media() ?: RpcConfig(name = "Media RPC", details = "Playing media", type = "2")
-            AppUtils.ManualRpcRunning() ->
-                LastPresence.experimental() ?: RpcConfig(name = "Manual RPC", details = "Active")
-            AppUtils.appDetectionRunning() -> RpcConfig(name = "App Detection", details = "Detecting apps")
-            else -> LastPresence.media() ?: LastPresence.experimental() ?: kizzyDefault()
-        }
-    } catch (e: Exception) { kizzyDefault() }
+    private fun currentRpcConfigs(): List<RpcConfig> = try {
+        val configs = mutableListOf<RpcConfig>()
 
-    private fun kizzyDefault() = RpcConfig(name = "Kizzy", details = "Using Kizzy")
+        if (AppUtils.customRpcRunning()) {
+            val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+            if (json.isNotBlank()) {
+                runCatching { Json.decodeFromString<RpcConfig>(json) }
+                    .getOrDefault(kizzyDefault("Custom RPC"))
+                    .let { configs.add(it) }
+            } else {
+                configs.add(kizzyDefault("Custom RPC"))
+            }
+        }
+        if (AppUtils.mediaRpcRunning()) {
+            LastPresence.media()?.let { configs.add(it) } ?: configs.add(RpcConfig(name = "Media RPC", details = "Playing media", type = "2"))
+        }
+        if (AppUtils.ManualRpcRunning()) {
+            LastPresence.experimental()?.let { configs.add(it) } ?: configs.add(RpcConfig(name = "Manual RPC", details = "Active"))
+        }
+        if (AppUtils.appDetectionRunning()) {
+            configs.add(RpcConfig(name = "App Detection", details = "Detecting apps"))
+        }
+
+        return if (configs.isNotEmpty()) configs else listOf(LastPresence.media() ?: LastPresence.experimental() ?: kizzyDefault())
+    } catch (e: Exception) { listOf(kizzyDefault()) }
+
+    private fun kizzyDefault(name: String = "Kizzy") = RpcConfig(name = name, details = "Using $name")
 
     private fun String?.copyIfNotEmpty(newValue: String?): String {
         if (newValue?.isNotBlank() == true) return newValue

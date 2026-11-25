@@ -224,7 +224,7 @@ fun UserScreen(
                     ) {
                         ProfileCard(
                             state.user,
-                            rpcConfig = state.rpcConfig,
+                            rpcConfigs = state.rpcConfigs,
                             onAvatarClick = { onNavigateToRpcPreview() }
                         )
                         Spacer(Modifier.height(24.dp))
@@ -256,7 +256,7 @@ fun UserScreen(
                     ) {
                         ProfileCard(
                             state.user,
-                            rpcConfig = state.rpcConfig,
+                            rpcConfigs = state.rpcConfigs,
                             onAvatarClick = { onNavigateToRpcPreview() }
                         )
 
@@ -438,19 +438,21 @@ fun UserScreenPreview2() {
         state = UserState.Error(
             error = "No Internet Connection",
             user = fakeUser,
-            rpcConfig = RpcConfig(
-                name = "Lo-fi Beats",
-                details = "Chillhop Music",
-                state = "Jazzhop & Chillhop - September 2024",
-                largeImg = "attachments/123456789/album_art.png",
-                smallImg = "attachments/123456789/artist_icon.png",
-                timestampsStart = "${System.currentTimeMillis() - 30000}",
-                timestampsStop = "${System.currentTimeMillis() + 180000}",
-                type = "2",
-                button1 = "Listen on Spotify",
-                button1link = "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
-                button2 = "View Artist",
-                button2link = "https://open.spotify.com/artist/7dGJo4pcD2V6oG8kP0tJRR"
+            rpcConfigs = listOf(
+                RpcConfig(
+                    name = "Lo-fi Beats",
+                    details = "Chillhop Music",
+                    state = "Jazzhop & Chillhop - September 2024",
+                    largeImg = "attachments/123456789/album_art.png",
+                    smallImg = "attachments/123456789/artist_icon.png",
+                    timestampsStart = "${System.currentTimeMillis() - 30000}",
+                    timestampsStop = "${System.currentTimeMillis() + 180000}",
+                    type = "2",
+                    button1 = "Listen on Spotify",
+                    button1link = "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
+                    button2 = "View Artist",
+                    button2link = "https://open.spotify.com/artist/7dGJo4pcD2V6oG8kP0tJRR"
+                )
             )
         ),
         onBackPressed = {},
@@ -463,7 +465,7 @@ fun UserScreenPreview3() {
     UserScreen(
         state = UserState.LoadingCompleted(
             user = fakeUser,
-            rpcConfig = RpcConfig(name = "Kizzy", details = "Using Kizzy")
+            rpcConfigs = listOf(RpcConfig(name = "Kizzy", details = "Using Kizzy"))
         ),
         onBackPressed = {},
         onLogout = { ctx -> }

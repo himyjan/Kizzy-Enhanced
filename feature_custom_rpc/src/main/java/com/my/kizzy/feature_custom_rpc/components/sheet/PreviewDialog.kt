@@ -34,7 +34,7 @@ fun PreviewDialog(
     }) {
         ProfileCard(
             user = user, padding = 0.dp,
-            rpcConfig = rpc,
+            rpcConfigs = rpc?.let { listOf(it) } ?: emptyList(),
             type = rpc?.type.getType(ctx, rpc?.name),
             showTs = !rpc?.timestampsStart.isNullOrEmpty() || !rpc?.timestampsStop.isNullOrEmpty(),
         )
