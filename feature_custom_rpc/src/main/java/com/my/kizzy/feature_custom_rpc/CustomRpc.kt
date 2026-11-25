@@ -1884,6 +1884,38 @@ private fun RpcTextFieldsColumn(
                     }
 
                 }
+            }
+
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.console_enable_timestamps),
+                    isChecked = customEnableTimestamps,
+                ) {
+                    customEnableTimestamps = !customEnableTimestamps
+                }
+            }
+
+            item {
+                SwitchBar(
+                    title = stringResource(id = R.string.custom_application_id),
+                    isChecked = customUseAppId,
+                ) {
+                    customUseAppId = !customUseAppId
+                }
+            }
+
+            item {
+                AnimatedVisibility(visible = customUseAppId) {
+                    RpcField(
+                        value = Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""],
+                        label = R.string.custom_application_id,
+                    ) {
+                        Prefs[Prefs.MANUAL_RPC_APPLICATION_ID] = it
+                    }
+                }
+            }
+
+            item {
                 // RPC Link Fields - Discord Social SDK URLs
                 RpcField(
                     value = detailsUrl,
@@ -1914,7 +1946,6 @@ private fun RpcTextFieldsColumn(
                     onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallUrl = it)))
                 }
                 Spacer(modifier = Modifier.size(100.dp))
-
             }
 
         }
