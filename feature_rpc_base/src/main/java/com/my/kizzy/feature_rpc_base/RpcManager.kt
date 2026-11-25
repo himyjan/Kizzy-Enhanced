@@ -24,14 +24,18 @@ import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
@@ -42,13 +46,16 @@ import kotlinx.serialization.json.Json
  * state, so toggling one RPC on reliably closes all others and the UI reflects
  * the real running state across screens and page re-entries.
  *
- * Multiple RPC types can be active at the same time - each service sends its
- * own presence to Discord independently. The last presence sent wins on
- * Discord's side (Discord only shows one presence per user).
+ * Multiple RPC types can run simultaneously (parallel). Each service sends its
+ * own presence to Discord independently. RpcManager tracks a presence config
+ * per [RpcType] so the profile page can show every active RPC preview at once.
  *
  * Usage:
  *   RpcManager.getInstance(context).activeRpc.collect { rpcTypes ->
  *       // update UI switches based on which types are in the set
+ *   }
+ *   RpcManager.getInstance(context).presenceConfigs.collect { configs ->
+ *       // configs is a Map<RpcType, RpcConfig> - one entry per active RPC
  *   }
  *   RpcManager.getInstance(context).switchTo(RpcType.MediaRpc, add = true)
  *   RpcManager.getInstance(context).switchTo(RpcType.None) // stop all
@@ -84,16 +91,44 @@ class RpcManager @Inject constructor(
     private val _activeRpc = MutableStateFlow<Set<RpcType>>(emptySet())
     val activeRpc: StateFlow<Set<RpcType>> = _activeRpc.asStateFlow()
 
-    /** The most recent presence config built by any RPC service (Media/Manual). */
-    private val _currentPresenceConfig = MutableStateFlow<RpcConfig?>(null)
-    val currentPresenceConfig: StateFlow<RpcConfig?> = _currentPresenceConfig.asStateFlow()
+    /** Presence configs per active RPC type, keyed by [RpcType]. */
+    private val _presenceConfigs = MutableStateFlow<MutableMap<RpcType, RpcConfig>>(mutableMapOf())
+    val presenceConfigs: StateFlow<Map<RpcType, RpcConfig>> = _presenceConfigs.asStateFlow()
+
+    /** Backwards-compatible single-config accessor: the highest-priority non-empty config. */
+    private val _singleConfig = _presenceConfigs
+        .map { configs -> configs.values.firstOrNull() }
+        .distinctUntilChanged()
+    val currentPresenceConfig: StateFlow<RpcConfig?> = _singleConfig
+        .stateIn(scope, SharingStarted.Eagerly, null)
 
     /**
-     * Updates [currentPresenceConfig] with the latest presence built by an RPC service.
-     * Called by MediaRpcService and ManualRpc after they assemble their CommonRpc.
+     * Registers the presence config for [rpcType] so the profile preview can
+     * display it. Each RPC type keeps its own entry - they run in parallel
+     * and do not overwrite each other.
+     *
+     * Called by each RPC service after it assembles its CommonRpc.
      */
-    fun setCurrentPresenceConfig(config: RpcConfig) {
-        _currentPresenceConfig.value = config
+    fun setCurrentPresenceConfig(config: RpcConfig, rpcType: RpcType) {
+        _presenceConfigs.value = _presenceConfigs.value.toMutableMap().apply {
+            this[rpcType] = config
+        }
+    }
+
+    /**
+     * Removes the presence config for [rpcType] when its service stops.
+     */
+    fun removePresenceConfig(rpcType: RpcType) {
+        _presenceConfigs.value = _presenceConfigs.value.toMutableMap().apply {
+            this.remove(rpcType)
+        }
+    }
+
+    /**
+     * Clears all presence configs (used on logout / full stop).
+     */
+    fun clearAllPresenceConfigs() {
+        _presenceConfigs.value = mutableMapOf()
     }
 
     /**
@@ -293,11 +328,7 @@ class RpcManager @Inject constructor(
             RpcType.None -> return
         }
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
+            context.startForegroundService(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start ${intent.component?.className}", e)
             // Best-effort fallback start; ignore failures.
@@ -325,6 +356,11 @@ class RpcManager @Inject constructor(
         persistActiveRpcTypes(remaining)
         _activeRpc.value = remaining
 
+        // Remove presence configs for stopped types.
+        for (rpcType in typesToStop) {
+            removePresenceConfig(rpcType)
+        }
+
         for (rpcType in typesToStop.toList()) {
             when (rpcType) {
                 RpcType.MediaRpc -> context.stopService(Intent(context, MediaRpcService::class.java))
@@ -351,6 +387,7 @@ class RpcManager @Inject constructor(
         context.stopService(Intent(context, AppDetectionService::class.java))
         context.stopService(Intent(context, DiscordOAuth2RpcService::class.java))
 
+        clearAllPresenceConfigs()
         persistActiveRpcTypes(emptySet())
         _activeRpc.value = emptySet()
     }
