@@ -512,6 +512,14 @@ private fun RpcTextFieldsColumn(
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false])
     }
 
+    // Custom RPC advanced settings
+    var customEnableTimestamps by remember {
+        mutableStateOf(Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true])
+    }
+    var customUseAppId by remember {
+        mutableStateOf(Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false])
+    }
+
     // Console RPC game list state
     var consoleSearchText by remember { mutableStateOf("") }
     val consoleSearchTextState = rememberTextFieldState(initialText = "")

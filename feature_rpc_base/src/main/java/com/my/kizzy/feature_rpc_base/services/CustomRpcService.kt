@@ -382,14 +382,23 @@ class CustomRpcService : Service() {
                     setState(it.state.ifEmpty { null })
                     setPartySize(it.partyCurrentSize.toIntOrNull(), it.partyMaxSize.toIntOrNull())
                     setStatus(it.status.ifEmpty { "online" })
-                    // Use the board's applicationId when an active board is present
-                    if (activeBoard != null && activeBoard.applicationId.isNotBlank()) {
+                    // Apply custom application ID when user configured it
+                    val useCustomAppId = Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false]
+                    val customAppId = Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""]
+                    if (useCustomAppId && customAppId.isNotBlank()) {
+                        setApplicationId(customAppId)
+                    } else if (activeBoard != null && activeBoard.applicationId.isNotBlank()) {
                         setApplicationId(activeBoard.applicationId)
                     }
                     setType(it.type.toIntOrNull() ?: 0)
-                    setPlatform(if (consoleMode) it.platform.ifEmpty { null } else null)
-                    setStartTimestamps(it.timestampsStart.toLongOrNull())
-                    setStopTimestamps(it.timestampsStop.toLongOrNull())
+                    // Platform applies to both Custom and Console RPC
+                    setPlatform(it.platform.takeIf { it.isNotBlank() })
+                    // Only set timestamps when enabled
+                    val enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true]
+                    if (enableTimestamps) {
+                        setStartTimestamps(it.timestampsStart.toLongOrNull())
+                        setStopTimestamps(it.timestampsStop.toLongOrNull())
+                    }
                     setButton1(it.button1.ifEmpty { null }, it.button1link.ifEmpty { null })
                     setButton2(it.button2.ifEmpty { null }, it.button2link.ifEmpty { null })
                     setLargeImage(
@@ -408,7 +417,7 @@ class CustomRpcService : Service() {
                         },
                         it.smallText
                     )
-                    setStreamUrl(it.url.ifEmpty { null })
+                    setStreamUrl(it.url.takeIf { it.isNotBlank() })
                     Log.d("CustomRpcService", "Calling kizzyRPC?.build(forceRefresh=$forceRefresh, priority=2)")
                     build(forceRefresh = forceRefresh, priority = 2) // Custom/Console RPC: user-configured, priority 2
                     Log.d("CustomRpcService", "kizzyRPC?.build() completed")
