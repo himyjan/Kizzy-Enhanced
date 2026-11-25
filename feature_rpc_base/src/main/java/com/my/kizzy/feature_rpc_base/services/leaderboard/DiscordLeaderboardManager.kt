@@ -4,10 +4,9 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.my.kizzy.preference.Prefs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -39,9 +38,8 @@ private val Context.leaderboardStoreDataStore: DataStore<Preferences> by prefere
     name = "leaderboard_store"
 )
 
-private val Context.leaderboardPrefsDataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "leaderboard_prefs"
-)
+private const val DEFAULT_INTERVAL_MINUTES = 5L
+private const val DEFAULT_MAX_ENTRIES = 10
 
 class DiscordLeaderboardManager private constructor(
     private val appContext: Context
@@ -205,6 +203,10 @@ class DiscordLeaderboardManager private constructor(
     suspend fun submitScore(playerName: String, score: Int, gameId: String = "default") {
         LeaderboardStore.getInstance(appContext).submitScore(playerName, score, gameId)
     }
+
+    /** Returns the top leaderboard entries, sorted by score descending. */
+    suspend fun getTopEntries(limit: Int): List<LeaderboardEntry> =
+        prefs.getTopEntries(limit)
 }
 
 @Serializable
@@ -277,56 +279,55 @@ class LeaderboardStore private constructor(
 }
 
 class LeaderboardPrefs(private val context: Context) {
-    private val dataStore = context.leaderboardPrefsDataStore
 
     suspend fun getBotToken(): String =
-        dataStore.data.first()[BOT_TOKEN_KEY].orEmpty()
+        Prefs[Prefs.DISCORD_LEADERBOARD_BOT_TOKEN, ""]
 
     suspend fun setBotToken(value: String) {
-        dataStore.edit { it[BOT_TOKEN_KEY] = value }
+        Prefs[Prefs.DISCORD_LEADERBOARD_BOT_TOKEN] = value
     }
 
     suspend fun getChannelId(): String =
-        dataStore.data.first()[CHANNEL_ID_KEY].orEmpty()
+        Prefs[Prefs.DISCORD_LEADERBOARD_CHANNEL_ID, ""]
 
     suspend fun setChannelId(value: String) {
-        dataStore.edit { it[CHANNEL_ID_KEY] = value }
+        Prefs[Prefs.DISCORD_LEADERBOARD_CHANNEL_ID] = value
     }
 
     suspend fun getIntervalMinutes(): Long =
-        dataStore.data.first()[INTERVAL_KEY] ?: 5L
+        Prefs[Prefs.DISCORD_LEADERBOARD_UPDATE_INTERVAL_MIN, DEFAULT_INTERVAL_MINUTES]
 
     suspend fun setIntervalMinutes(value: Long) {
-        dataStore.edit { it[INTERVAL_KEY] = value }
+        Prefs[Prefs.DISCORD_LEADERBOARD_UPDATE_INTERVAL_MIN] = value
     }
 
     suspend fun getMaxEntries(): Int =
-        dataStore.data.first()[MAX_ENTRIES_KEY] ?: 10
+        Prefs[Prefs.DISCORD_LEADERBOARD_MAX_ENTRIES, DEFAULT_MAX_ENTRIES]
 
     suspend fun setMaxEntries(value: Int) {
-        dataStore.edit { it[MAX_ENTRIES_KEY] = value }
+        Prefs[Prefs.DISCORD_LEADERBOARD_MAX_ENTRIES] = value
     }
 
     suspend fun getTitle(): String =
-        dataStore.data.first()[TITLE_KEY] ?: "🏆 Kizzy Leaderboard"
+        Prefs[Prefs.DISCORD_LEADERBOARD_TITLE, "🏆 Kizzy Leaderboard"]
 
     suspend fun setTitle(value: String) {
-        dataStore.edit { it[TITLE_KEY] = value }
+        Prefs[Prefs.DISCORD_LEADERBOARD_TITLE] = value
     }
 
     suspend fun getDescription(): String =
-        dataStore.data.first()[DESCRIPTION_KEY].orEmpty()
+        Prefs[Prefs.DISCORD_LEADERBOARD_DESCRIPTION, ""]
 
     suspend fun setDescription(value: String) {
-        dataStore.edit { it[DESCRIPTION_KEY] = value }
+        Prefs[Prefs.DISCORD_LEADERBOARD_DESCRIPTION] = value
     }
 
-    private companion object {
-        private val BOT_TOKEN_KEY = stringPreferencesKey("discord_leaderboard_bot_token")
-        private val CHANNEL_ID_KEY = stringPreferencesKey("discord_leaderboard_channel_id")
-        private val INTERVAL_KEY = longPreferencesKey("discord_leaderboard_update_interval_min")
-        private val MAX_ENTRIES_KEY = intPreferencesKey("discord_leaderboard_max_entries")
-        private val TITLE_KEY = stringPreferencesKey("discord_leaderboard_title")
-        private val DESCRIPTION_KEY = stringPreferencesKey("discord_leaderboard_description")
+    /** The top leaderboard entries, sorted by score descending. */
+    suspend fun getTopEntries(limit: Int): List<LeaderboardEntry> =
+        LeaderboardStore.getInstance(context).getTopEntries(limit)
+
+    /** Submits or updates a score for a player in a game. */
+    suspend fun submitScore(playerName: String, score: Int, gameId: String = "default") {
+        LeaderboardStore.getInstance(context).submitScore(playerName, score, gameId)
     }
 }

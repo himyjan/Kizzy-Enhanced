@@ -34,6 +34,7 @@ import androidx.compose.material.icons.outlined.HighQuality
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material.icons.outlined.RemoveRedEye
@@ -90,6 +91,7 @@ fun RpcSettings(
     authTabLauncher: ActivityResultLauncher<Intent>? = null,
     onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
     navigateToCustomRpcBoardScreen: (() -> Unit)? = null,
+    navigateToLeaderboardScreen: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val activity = context as Activity
@@ -331,6 +333,20 @@ fun RpcSettings(
                     icon = ImageVector.vectorResource(id = R.drawable.ic_custom_rpc_board),
                 ) {
                     navigateToCustomRpcBoardScreen?.invoke()
+                }
+            }
+
+            // Discord Leaderboard section
+            item(key = "discord_leaderboard_section") {
+                Subtitle(text = stringResource(id = R.string.discord_leaderboard))
+            }
+            item(key = "discord_leaderboard_open") {
+                SettingItem(
+                    title = stringResource(id = R.string.discord_leaderboard),
+                    description = stringResource(id = R.string.discord_leaderboard_desc),
+                    icon = Icons.Outlined.List,
+                ) {
+                    navigateToLeaderboardScreen?.invoke()
                 }
             }
 

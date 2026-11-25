@@ -27,5 +27,6 @@ dependencies {
     implementation(projects.color)
     implementation(projects.theme)
     implementation(projects.featureRpcBase)
+    implementation(projects.common.components)
     implementation(libs.hilt.navigation.compose)
 }

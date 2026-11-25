@@ -60,6 +60,7 @@ import com.my.kizzy.feature_profile.ui.user.UserState
 import com.my.kizzy.feature_profile.ui.user.UserViewModel
 import com.my.kizzy.feature_settings.language.Language
 import com.my.kizzy.feature_settings.rpc_settings.CustomRpcBoardScreen
+import com.my.kizzy.feature_settings.rpc_settings.LeaderboardSettings
 import com.my.kizzy.feature_settings.rpc_settings.RpcSettings
 import com.my.kizzy.feature_settings.style.Appearance
 import com.my.kizzy.feature_settings.style.DarkThemePreferences
@@ -298,7 +299,14 @@ internal fun Kizzy(
                     navigateToCustomRpcBoardScreen = {
                         navController.navigate(Routes.CUSTOM_RPC_BOARD)
                     },
+                    navigateToLeaderboardScreen = {
+                        navController.navigate(Routes.LEADERBOARD)
+                    },
                 )
+            }
+
+            composable(Routes.LEADERBOARD) {
+                LeaderboardSettings(onBackPressed = { goBack() })
             }
 
             composable(Routes.CUSTOM_RPC_BOARD) {

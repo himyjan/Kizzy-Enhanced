@@ -616,4 +616,21 @@
     <string name="discord_leaderboard_description_desc">Embed description</string>
     <string name="discord_leaderboard_submit_score">Submit Score</string>
     <string name="discord_leaderboard_submit_score_desc">Manually submit a leaderboard score</string>
+    <string name="discord_leaderboard_connection">Connection</string>
+    <string name="discord_leaderboard_embed">Embed</string>
+    <string name="discord_leaderboard_updates">Updates</string>
+    <string name="discord_leaderboard_top_entries">Top Entries</string>
+    <string name="discord_leaderboard_no_entries">No scores submitted yet.</string>
+    <string name="discord_leaderboard_post_now">Post Now</string>
+    <string name="discord_leaderboard_post_now_desc">Send the current leaderboard to the configured channel</string>
+    <string name="discord_leaderboard_post_success">Leaderboard posted</string>
+    <string name="discord_leaderboard_post_failed">Could not post the leaderboard. Check the bot token, channel ID and permissions.</string>
+    <string name="discord_leaderboard_no_scores">No scores to post yet.</string>
+    <string name="discord_leaderboard_config_missing">Add a bot token and channel ID to start posting</string>
+    <string name="discord_leaderboard_invalid_value">Enter a valid value</string>
+    <string name="discord_leaderboard_player_name">Player Name</string>
+    <string name="discord_leaderboard_score">Score</string>
+    <string name="discord_leaderboard_game_id_optional">Game ID (optional)</string>
+    <string name="discord_leaderboard_score_saved">Score submitted</string>
+    <string name="discord_leaderboard_entry_points">%1$d pts</string>
 </resources>
