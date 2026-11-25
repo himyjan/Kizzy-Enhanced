@@ -253,7 +253,7 @@ fun CustomRpcBoardScreen(
                 onDismiss = { showEditorDialog = false; editingBoard = null },
                 onSave = { board ->
                     scope.launch {
-                        if (board.id.isBlank()) {
+                        if (editingBoard == null) {
                             boardManager.addBoard(board)
                         } else {
                             boardManager.updateBoard(board)
