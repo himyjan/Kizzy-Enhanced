@@ -1134,6 +1134,11 @@ class KizzyRPC @Inject constructor(
             }
             val cleanButtons = sanitizeButtons(buttonsSnapshot)
 
+            // ManualRpc sets smallImageChannelUrl (channel URL) instead of smallUrl;
+            // fall back to it so the small image links to the channel page.
+            val smallUrlFallback = commonRpc.smallUrl.takeIf { it?.isNotEmpty() == true }
+                ?: commonRpc.smallImageChannelUrl.takeIf { it?.isNotEmpty() == true }
+
             val presence = Presence(
                 activities = listOf(
                     Activity(
@@ -1152,7 +1157,7 @@ class KizzyRPC @Inject constructor(
                             largeText = commonRpc.largeText?.sanitize(),
                             smallText = commonRpc.smallText?.sanitize(),
                             largeUrl = sanitizeFieldUrl(commonRpc.largeUrl),
-                            smallUrl = sanitizeFieldUrl(commonRpc.smallUrl)
+                            smallUrl = sanitizeFieldUrl(smallUrlFallback)
                         ).takeIf { finalLargeImageWithDefault != null || finalSmallImageWithDefault != null },
                         party = party.takeIf { party != null },
                         // Client-presence format: labels in buttons, urls in metadata.
@@ -1217,6 +1222,9 @@ class KizzyRPC @Inject constructor(
     ) {
         val button1 = buttonsSnapshot?.getOrNull(0)
         val button2 = buttonsSnapshot?.getOrNull(1)
+        // ManualRpc sets smallImageChannelUrl instead of smallUrl; fall back to it.
+        val smallUrlForConfig = commonRpc.smallUrl.takeIf { it?.isNotEmpty() == true }
+            ?: commonRpc.smallImageChannelUrl.takeIf { it?.isNotEmpty() == true }
         val config = com.my.kizzy.domain.model.rpc.RpcConfig(
             name = commonRpc.name,
             details = commonRpc.details.orEmpty(),
@@ -1231,7 +1239,7 @@ class KizzyRPC @Inject constructor(
             detailsUrl = commonRpc.detailsUrl.orEmpty(),
             stateUrl = commonRpc.stateUrl.orEmpty(),
             largeUrl = commonRpc.largeUrl.orEmpty(),
-            smallUrl = commonRpc.smallUrl.orEmpty(),
+            smallUrl = smallUrlForConfig.orEmpty(),
             button1 = button1?.label.orEmpty(),
             button1link = button1?.url.orEmpty(),
             button2 = button2?.label.orEmpty(),
