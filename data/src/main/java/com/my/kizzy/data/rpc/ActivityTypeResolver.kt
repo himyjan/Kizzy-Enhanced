@@ -96,6 +96,7 @@ object ActivityTypeResolver {
      * Video streaming services and video players.
      */
     val VIDEO_APPS: Set<String> = setOf(
+        // YouTube & YouTube ecosystem
         "com.google.android.youtube",
         "com.google.android.apps.youtube.kids",
         "com.google.android.apps.youtube.unplugged",
@@ -104,33 +105,59 @@ object ActivityTypeResolver {
         "com.google.android.youtube.vr",
         "com.google.android.apps.mediashell",
         "com.google.android.videos",
+        "com.google.android.apps.youtube.music.pipe",
         "app.morphe.android.youtube",
         "anddea.youtube",
+        "org.schabi.newpipe",
+
+        // Global & regional VOD / streaming platforms
         "com.netflix.mediaclient",
         "com.amazon.avod",
         "com.amazon.amazonvideo.livingroom",
         "com.disney.disneyplus",
         "com.hulu.plus",
         "com.hbo.hbonow",
+        "com.wbd.stream", // Max
+        "tv.twitch.android.app",
+        "com.plexapp.android",
+        "org.jellyfin.mobile",
+
+        // Anime & Asian / regional video platforms
         "com.crunchyroll.crunchyroll",
-        "com.mxtech.videoplayer.ad",
-        "com.mxtech.videoplayer.pro",
-        "org.videolan.vlc",
-        "org.schabi.newpipe",
+        "jp.nicovideo.android",
+        "tv.danmaku.bili",
+        "com.bilibili.app.in",
+        "com.iqiyi.i18n",
+        "com.wetv.tv",
+        "com.viki.android",
+        "air.tv.abema.abemaTV",
+
+        // Short-form video & social video
         "com.zhiliaoapp.musically",
         "com.ss.android.ugc.trill",
         "com.instagram.android",
-        "com.google.android.apps.youtube.music.pipe",
+
+        // Local & network video players
+        "com.mxtech.videoplayer.ad",
+        "com.mxtech.videoplayer.pro",
+        "org.videolan.vlc",
+        "is.xyz.mpv",
+        "com.brouken.player", // Just Player
     )
 
     /**
      * Live streaming platforms. Discord draws these with the broadcast card.
      */
     val LIVESTREAM_APPS: Set<String> = setOf(
+        // Twitch & Kick
         "tv.twitch.android.app",
         "tv.twitch.android.viewer",
         "com.kick.mobile",
         "com.kick.android",
+
+        // Video / Live platforms with confirmed package IDs in this thread
+        "jp.nicovideo.android",
+        "com.google.android.youtube",
     )
 
     /**
@@ -139,7 +166,60 @@ object ActivityTypeResolver {
      * both "com.google..." and "app.morphe..."), so the name is matched as well.
      */
     private val MUSIC_SIGNATURES = listOf(
+        // YouTube / YouTube Music wrappers & ecosystem clients
         "youtube.music",
+        "kapp.youtube",
+        "metrolist",
+        "archivetune",
+        "natune",
+        "intertune",
+        "astertune",
+        "metrofuse",
+        "innertune",
+        "outertune",
+        "mist",
+        "meld",
+        "bitchord",
+        "bitcord",
+        "lastwave",
+        "convx",
+        "vivimusic",
+        "dollbloom",
+        "limusic",
+        "sekaitune",
+        "lunartune",
+        "smusic",
+        "simpletube",
+        "kreate",
+        "vitune",
+        "simpmusic",
+        "ymusic",
+        "ymusicapp",
+        "harmony",
+        "harmonymusic",
+        "gyawun",
+        "musify",
+        "namida",
+        "bloomee",
+        "vimusic",
+        "spotube",
+
+        // Morphe / AndDea / ReVanced & full YouTube / extractor clients
+        "morphe",
+        "anddea",
+        "revanced",
+        "newpipe",
+        "pipepipe",
+        "tubular",
+        "libretube",
+        "clipious",
+        "skytube",
+        "grayjay",
+        "noutube",
+        "freetube",
+        "bravepipe",
+
+        // Other music players & streaming services
         "spotify",
         "soundcloud",
         "deezer",
@@ -150,23 +230,11 @@ object ActivityTypeResolver {
         "mixcloud",
         "poweramp",
         "musicolet",
-        "vimusic",
-        "ymusicapp",
-        "kapp.youtube",
         "amazon.mp3",
         "amazon.music",
         "apple.android.music",
         "google.android.music",
         "music",
-        // YouTube Music wrapper / alternative clients - all play YouTube Music content
-        "mist",
-        "metrolist",
-        "meld",
-        "bitchord",
-        "archivetune",
-        "simpmusic",
-        "ymusic",
-        // Other music streaming services
         "streetvoice",
         "nicobox",
     )

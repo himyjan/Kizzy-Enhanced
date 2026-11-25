@@ -596,4 +596,24 @@
     <string name="custom_rpc_board_button1_url">Button 1 URL</string>
     <string name="custom_rpc_board_button2_label">Button 2 Label</string>
     <string name="custom_rpc_board_button2_url">Button 2 URL</string>
+
+    <!-- Discord Leaderboard Settings -->
+    <string name="discord_leaderboard">Discord Leaderboard</string>
+    <string name="discord_leaderboard_desc">Post leaderboard to Discord channel</string>
+    <string name="discord_leaderboard_enabled">Enable Discord Leaderboard</string>
+    <string name="discord_leaderboard_enabled_desc">Post leaderboard updates to Discord channel</string>
+    <string name="discord_leaderboard_bot_token">Bot Token</string>
+    <string name="discord_leaderboard_bot_token_desc">Discord bot token with channel access</string>
+    <string name="discord_leaderboard_channel_id">Channel ID</string>
+    <string name="discord_leaderboard_channel_id_desc">Discord channel ID for leaderboard posts</string>
+    <string name="discord_leaderboard_interval">Update Interval (minutes)</string>
+    <string name="discord_leaderboard_interval_desc">How often to post leaderboard updates</string>
+    <string name="discord_leaderboard_max_entries">Max Entries</string>
+    <string name="discord_leaderboard_max_entries_desc">Maximum number of entries per post</string>
+    <string name="discord_leaderboard_title">Leaderboard Title</string>
+    <string name="discord_leaderboard_title_desc">Embed title</string>
+    <string name="discord_leaderboard_description">Description</string>
+    <string name="discord_leaderboard_description_desc">Embed description</string>
+    <string name="discord_leaderboard_submit_score">Submit Score</string>
+    <string name="discord_leaderboard_submit_score_desc">Manually submit a leaderboard score</string>
 </resources>

@@ -38,6 +38,7 @@ class Routes {
         const val LANGUAGES = "languages"
         const val STYLE_AND_APPEARANCE = "style_and_appearance"
         const val RPC_SETTINGS = "rpc_settings"
+        const val LEADERBOARD = "leaderboard"
 
         /* Custom RPC Board */
         const val CUSTOM_RPC_BOARD = "custom_rpc_board"

@@ -96,15 +96,17 @@ object MediaServiceResolver {
     private val YOUTUBE_WRAPPER_SIGNATURES = listOf(
         // InnerTune / OuterTune / Metrolist ecosystem
         "metrolist", "archivetune", "natune", "intertune", "astertune", "metrofuse",
-        "innertune", "outertune", "mist", "meld", "bitchord",
+        "innertune", "outertune", "mist", "meld", "bitchord", "bitcord",
+        "lastwave", "convx", "vivimusic", "dollbloom", "limusic",
+        "sekaitune", "lunartune", "smusic", "simpletube",
 
         // ViMusic / RiMusic ecosystem & YT Music clients
         "kreate", "vitune", "simpmusic", "ymusic", "ymusicapp", "harmony", "harmonymusic",
         "gyawun", "musify", "namida", "bloomee", "vimusic", "spotube",
 
-        // Morphe / AndDea Revanced - YouTube clients that publish their own
+        // Morphe / AndDea / ReVanced - YouTube clients that publish their own
         // metadata but may not use standard YouTube media ID fields
-        "morphe", "anddea",
+        "morphe", "anddea", "revanced",
 
         // Full YouTube video / extractor clients
         "newpipe", "pipepipe", "tubular", "libretube", "clipious", "skytube",
