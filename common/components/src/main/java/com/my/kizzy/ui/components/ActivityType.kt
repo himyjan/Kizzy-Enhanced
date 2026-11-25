@@ -62,20 +62,39 @@ object ActivityType {
     const val STREAMING = 1
     const val LISTENING = 2
     const val WATCHING = 3
+
+    /** Valid SDK id, but a profile status rather than a Rich Presence activity. */
+    const val CUSTOM_STATUS = 4
     const val COMPETING = 5
+
+    /** Valid SDK id, only rendered while the user has an active voice/hang state. */
+    const val HANG_STATUS = 6
 
     /** Sentinel meaning "let the automatic detection decide". Mirrors Prefs.ACTIVITY_TYPE_AUTO. */
     const val AUTO = -1
 
-    /** Every type in the order Discord shows them. */
+    /**
+     * Every type the user may pick for a media/app presence. [CUSTOM_STATUS] and
+     * [HANG_STATUS] are deliberately excluded: Discord does not render them as a
+     * Rich Presence card, so picking one would make the activity disappear.
+     */
     val ALL = listOf(PLAYING, STREAMING, LISTENING, WATCHING, COMPETING)
+
+    /** Every id defined by `discordpp::ActivityTypes`, including non-presence ones. */
+    val KNOWN: Set<Int> = setOf(
+        PLAYING, STREAMING, LISTENING, WATCHING, CUSTOM_STATUS, COMPETING, HANG_STATUS,
+    )
+
+    fun isKnown(type: Int): Boolean = type in KNOWN
 
     fun label(type: Int): String = when (type) {
         PLAYING -> "Playing"
         STREAMING -> "Streaming"
         LISTENING -> "Listening"
         WATCHING -> "Watching"
+        CUSTOM_STATUS -> "Custom Status"
         COMPETING -> "Competing"
+        HANG_STATUS -> "Hang Status"
         else -> "Auto"
     }
 
@@ -85,7 +104,9 @@ object ActivityType {
         STREAMING -> Icons.Outlined.LiveTv
         LISTENING -> Icons.Outlined.Headphones
         WATCHING -> Icons.Outlined.Visibility
+        CUSTOM_STATUS -> Icons.Outlined.Edit
         COMPETING -> Icons.Outlined.SportsMma
+        HANG_STATUS -> Icons.Outlined.Headphones
         else -> Icons.Outlined.Edit
     }
 
@@ -95,7 +116,9 @@ object ActivityType {
         STREAMING -> Color(0xFF9C27B0)
         LISTENING -> Color(0xFF43A047)
         WATCHING -> Color(0xFFFF9800)
+        CUSTOM_STATUS -> Color(0xFF607D8B)
         COMPETING -> Color(0xFFF44336)
+        HANG_STATUS -> Color(0xFF00897B)
         else -> MaterialTheme.colorScheme.primary
     }
 }

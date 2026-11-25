@@ -633,14 +633,19 @@ class KizzyRPC @Inject constructor(
      * 1: Streaming
      * 2: Listening
      * 3: Watching
+     * 4: Custom Status
      * 5: Competing
+     * 6: Hang Status
+     *
+     * 4 and 6 are accepted because they are valid `discordpp::ActivityTypes`
+     * ids, but they are not Rich Presence card types.
      *
      * @param type
      * @return
      */
 
     fun setType(type: Int): KizzyRPC {
-        if (type in 0..5)
+        if (type in Constants.KNOWN_ACTIVITY_TYPES)
             this.type = type
         else this.type = 0
         return this
@@ -1122,14 +1127,18 @@ class KizzyRPC @Inject constructor(
             // silently drop the whole activity. The mediaUrl goes into the buttons.
             val activityType = commonRpc.type ?: Prefs[CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.LISTENING]
             // Discord privacy-filters Custom Status (type 4) for users with private
-            // profiles — never use it for Rich Presence. Use Playing/Listening/
-            // Watching instead.
-            if (activityType == 4) {
+            // profiles, and Hang Status (type 6) only renders during an active voice
+            // state — never use either for Rich Presence. Use Playing/Listening/
+            // Watching/Streaming instead.
+            if (activityType == ActivityTypeResolver.CUSTOM_STATUS ||
+                activityType == ActivityTypeResolver.HANG_STATUS
+            ) {
                 logger.w(
                     "KizzyRPC",
-                    "Activity type 4 (Custom Status) is privacy-filtered by Discord for users " +
-                        "with private profiles. Use Playing (0), Listening (2), Watching (3), " +
-                        "or Competing (5) instead."
+                    "Activity type $activityType is not a Rich Presence type. Custom Status (4) " +
+                        "is privacy-filtered for users with private profiles and Hang Status (6) " +
+                        "only renders during a voice session. Use Playing (0), Streaming (1), " +
+                        "Listening (2), Watching (3), or Competing (5) instead."
                 )
             }
             val cleanButtons = sanitizeButtons(buttonsSnapshot)

@@ -57,6 +57,12 @@ object Constants {
     */
     val MAX_APPLICATION_ID_LENGTH_RANGE = 18..19
 
+    /*
+     * The pickers only offer the types Discord renders as a Rich Presence card.
+     * Custom Status (4) and Hang Status (6) are valid discordpp::ActivityTypes
+     * ids but are not media presence types, so they are accepted by validation
+     * (see KNOWN_ACTIVITY_TYPES) without being offered in the UI.
+     */
     val ACTIVITY_TYPE = mapOf(
         "Playing" to 0,
         "Streaming" to 1,
@@ -64,6 +70,10 @@ object Constants {
         "Watching" to 3,
         "Competing" to 5
     )
+
+    /** Every id defined by `discordpp::ActivityTypes`. */
+    val KNOWN_ACTIVITY_TYPES = setOf(0, 1, 2, 3, 4, 5, 6)
+
     val ACTIVITY_STATUS = mapOf(
         R.string.status_online to "online",
         R.string.status_idle to "idle",

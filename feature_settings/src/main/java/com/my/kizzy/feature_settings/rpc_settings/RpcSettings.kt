@@ -806,7 +806,7 @@ fun RpcSettings(
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        if (customActivityType.toIntOrNull() in 0..5) {
+                        if (customActivityType.toIntOrNull() in Constants.KNOWN_ACTIVITY_TYPES) {
                             Prefs[Prefs.CUSTOM_ACTIVITY_TYPE] = customActivityType.toInt()
                             showActivityTypeDialog = false
                         }

@@ -37,7 +37,33 @@ object ActivityTypeResolver {
     const val STREAMING = 1
     const val LISTENING = 2
     const val WATCHING = 3
+
+    /**
+     * Custom status is part of `discordpp::ActivityTypes`, but it is a profile
+     * setting rather than a Rich Presence activity. Discord privacy-filters it
+     * for users with private profiles, so it is never used for media RPC; the
+     * id is still accepted so presets and imported boards are not rejected.
+     */
+    const val CUSTOM_STATUS = 4
     const val COMPETING = 5
+
+    /**
+     * Hang status only renders while the user has an active voice/hang state.
+     * Like [CUSTOM_STATUS] it is a valid SDK id but not a media presence type.
+     */
+    const val HANG_STATUS = 6
+
+    /**
+     * Every id defined by `discordpp::ActivityTypes`. Used to validate raw ids
+     * coming from presets, imports and stored boards so valid SDK values are
+     * not silently replaced.
+     */
+    val KNOWN_TYPES: Set<Int> = setOf(
+        PLAYING, STREAMING, LISTENING, WATCHING, CUSTOM_STATUS, COMPETING, HANG_STATUS,
+    )
+
+    /** Whether [type] is a valid `discordpp::ActivityTypes` id. */
+    fun isKnownType(type: Int): Boolean = type in KNOWN_TYPES
 
     /**
      * Used when neither the app nor its media session reveal anything. Media
