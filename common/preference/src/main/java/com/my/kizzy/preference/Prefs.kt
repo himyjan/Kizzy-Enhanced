@@ -322,6 +322,7 @@ object Prefs {
     }
 
     const val USER_DATA = "user"
+    const val USER_PROFILE_SYNCED_AT = "user-profile-synced-at"
     const val TOKEN = "token"
     const val USER_ID = "user-id"
     const val USER_BIO = "user-bio"

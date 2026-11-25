@@ -53,11 +53,9 @@ suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
     withTimeoutOrNull(timeoutMs) {
         // The READY payload is the only place Discord exposes `bio`. The token
         // passed here can be either a gateway account token (id.timestamp.hmac)
-        // or an OAuth2 token. Detect by shape: account tokens have a numeric
-        // timestamp as their 2nd part; OAuth2 tokens do not and need "Bearer ".
-        val parts = token.split(".")
-        val isAccountToken = (parts.size >= 3 && parts[1].toLongOrNull() != null) ||
-            token.startsWith("mfa.")
+        // or an OAuth2 token. Account tokens contain two dots; OAuth2 tokens do
+        // not and need "Bearer ".
+        val isAccountToken = token.count { it == '.' } >= 2 || token.startsWith("mfa.")
         val identifyToken = if (token.isNotBlank() && !isAccountToken) "Bearer $token" else token
         val deferred = CompletableDeferred<User?>()
         val socket: DiscordWebSocket = object : DiscordWebSocketImpl(identifyToken) {

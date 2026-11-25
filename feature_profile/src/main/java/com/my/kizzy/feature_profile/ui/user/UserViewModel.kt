@@ -49,6 +49,11 @@ class UserViewModel @Inject constructor(
     @Volatile
     private var lastIdentityKey: String? = null
 
+    private companion object {
+        /** How often the gateway identity may be re-read to refresh the custom status. */
+        const val IDENTITY_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000L
+    }
+
     init {
         observeLoginState()
         observeRpcState()
@@ -130,6 +135,47 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    /**
+     * The custom status is only exposed in the gateway READY payload. A profile
+     * written by the REST token login therefore has no custom status, and the
+     * cached branch below would never fetch it again. Refresh the identity from
+     * the gateway for account tokens, at most once per
+     * [IDENTITY_REFRESH_INTERVAL_MS], so the Bio section does not stay stuck on
+     * the "No bio yet" placeholder.
+     */
+    private fun shouldRefreshIdentity(): Boolean {
+        val last = Prefs[Prefs.USER_PROFILE_SYNCED_AT, 0L]
+        return System.currentTimeMillis() - last >= IDENTITY_REFRESH_INTERVAL_MS
+    }
+
+    private fun refreshIdentityInBackground(token: String, baseUser: User) {
+        // OAuth2 bearer tokens are rejected by the gateway; only account tokens
+        // (id.timestamp.hmac, two dots) can read the READY payload.
+        val isAccountToken = token.count { it == '.' } >= 2 || token.startsWith("mfa.")
+        if (!isAccountToken) return
+
+        viewModelScope.launch {
+            val fresh = fetchUserInfo(token) ?: return@launch
+            Prefs[Prefs.USER_PROFILE_SYNCED_AT] = System.currentTimeMillis()
+
+            val current = _state.value
+            val currentUser = when (current) {
+                is UserState.LoadingCompleted -> current.user
+                is UserState.Error -> current.user
+                UserState.Loading -> baseUser
+            } ?: baseUser
+
+            // READY is authoritative for the identity and the custom status,
+            // but keep a locally fetched bio when the payload does not carry one.
+            val merged = fresh.copy(
+                bio = fresh.bio?.takeIf { it.isNotBlank() } ?: currentUser.bio,
+            )
+            if (merged == currentUser) return@launch
+            Prefs[Prefs.USER_DATA] = Json.encodeToString(merged)
+            _state.value = UserState.LoadingCompleted(merged, currentRpcConfigs())
+        }
+    }
+
     private suspend fun loadIdentity(token: String, userId: String, cachedJson: String) {
         val cachedUser = runCatching {
             if (cachedJson.isNotBlank()) Json.decodeFromString<User>(cachedJson) else null
@@ -153,15 +199,16 @@ class UserViewModel @Inject constructor(
             if (cachedUser.bio.isNullOrBlank()) {
                 refreshBioInBackground(token, cachedUser)
             }
+            if (shouldRefreshIdentity()) {
+                refreshIdentityInBackground(token, cachedUser)
+            }
             return
         }
 
         // OAuth2 bearer tokens cannot open a Discord gateway connection, so the
         // READY payload never arrives and fetchUserInfo always times out.
-        // Detect token shape: account tokens contain dots and a numeric timestamp.
-        val parts = token.split(".")
-        val isAccountToken = (parts.size >= 3 && parts[1].toLongOrNull() != null) ||
-            token.startsWith("mfa.")
+        // Account tokens contain two dots; OAuth2 tokens do not.
+        val isAccountToken = token.count { it == '.' } >= 2 || token.startsWith("mfa.")
         if (!isAccountToken) {
             // OAuth2: /users/@me gives the profile quickly, then best-effort
             // fetch /users/@me/profile for the bio and merge it.
