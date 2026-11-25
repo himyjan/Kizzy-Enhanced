@@ -291,9 +291,9 @@
     <string name="user_profile_error">Could not Update User Profile:</string>
     <string name="no_internet_user_profile">No Internet connection. Try again later.</string>
     <string name="user_profile_rpc_name">USING KIZZY RICH PRESENCE</string>
-    <string name="user_profile_bio">ABOUT ME</string>
+    <string name="user_profile_bio">Bio</string>
     <string name="user_profile_no_bio" tools:ignore="MissingTranslation">No bio yet.</string>
-    <string name="user_profile_bio_oauth_note" tools:ignore="MissingTranslation">About Me is not available through Discord OAuth2. Log in with an account token to display it.</string>
+    <string name="user_profile_bio_oauth_note" tools:ignore="MissingTranslation">Bio is not available through Discord OAuth2. Log in with an account token to display it.</string>
     <string name="profile_view_full_bio" tools:ignore="MissingTranslation">View Full Bio</string>
     <string name="profile_show_less" tools:ignore="MissingTranslation">Show Less</string>
     <string name="profile_open_rpc_preview" tools:ignore="MissingTranslation">Open RPC Preview</string>

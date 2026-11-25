@@ -75,8 +75,8 @@ suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
                     banner = readyUser.banner,
                     bannerColor = readyUser.bannerColor,
                     bio = readyUser.bio,
-                    // Custom status ("About Me") lives under user_settings in the
-                    // READY payload, not under user.bio.
+                    // Custom status lives under user_settings in the READY
+                    // payload, not under user.bio.
                     special = ready.userSettings?.customStatus?.text.orEmpty().takeIf { it.isNotBlank() },
                     nitro = readyUser.premiumType in 1..3,
                     publicFlags = readyUser.publicFlags,
@@ -169,8 +169,8 @@ suspend fun fetchDiscordUser(token: String): User? {
 
 /**
  * Best-effort fetch of the current user's client profile, which can contain
- * the About Me/bio field. Discord's public /users/@me endpoint does not return
- * bio, but the client profile endpoint may return it for OAuth2 bearer tokens.
+ * the bio field. Discord's public /users/@me endpoint does not return bio, but
+ * the client profile endpoint may return it for OAuth2 bearer tokens.
  * Any failure is ignored so the normal profile load still succeeds.
  */
 suspend fun fetchDiscordUserProfile(token: String): String? {

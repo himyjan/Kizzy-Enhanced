@@ -109,8 +109,8 @@ class UserViewModel @Inject constructor(
     }
 
     /**
-     * Best-effort background refresh of the About Me/bio for OAuth2 sessions.
-     * Faster cached UI is shown first; if the profile endpoint returns bio,
+     * Best-effort background refresh of the bio for OAuth2 sessions.
+     * Faster cached UI is shown first; if the profile endpoint returns a bio,
      * persist and emit the merged user.
      */
     private fun refreshBioInBackground(token: String, baseUser: User) {
@@ -147,7 +147,7 @@ class UserViewModel @Inject constructor(
 
         // If we already have persisted user data, show it immediately.
         // If bio is missing, refresh it in the background so OAuth2 users
-        // still get About Me from the profile endpoint.
+        // still get the bio from the profile endpoint.
         if (cachedUser != null && cachedUser.id?.isNotBlank() == true) {
             _state.value = UserState.LoadingCompleted(cachedUser, currentRpcConfigs())
             if (cachedUser.bio.isNullOrBlank()) {
@@ -164,7 +164,7 @@ class UserViewModel @Inject constructor(
             token.startsWith("mfa.")
         if (!isAccountToken) {
             // OAuth2: /users/@me gives the profile quickly, then best-effort
-            // fetch /users/@me/profile for bio/about-me and merge it.
+            // fetch /users/@me/profile for the bio and merge it.
             val fresh = fetchDiscordUser(token)
             if (fresh != null) {
                 val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
