@@ -1557,9 +1557,14 @@ class MetadataResolver @Inject constructor(
         val artist = MetadataResolverArtistName(metadata)
         if (artist.isNullOrEmpty()) return null
         val artists = getAllArtists(metadata)
+        // Use blank-safe fall-through so an empty ARTIST field still resolves the
+        // AUTHOR / ALBUM_ARTIST below, keeping parsedCollaborators consistent with
+        // the multi-artist detection in `artists`.
         val rawArtistString = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)
+            ?.takeIf { it.isNotBlank() }
             ?: metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR)
-            ?: metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+                ?.takeIf { it.isNotBlank() }
+                ?: metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
         val parsedCollaborators = parseCollaboratingArtists(rawArtistString)
         val isMultiArtist = artists.size > 1 || parsedCollaborators.size > 1
         val pkg = packageName?.lowercase().orEmpty()
