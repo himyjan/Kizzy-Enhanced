@@ -20,8 +20,10 @@ class MetadataResolver @Inject constructor(
     fun getCoverArt(metadata: MediaMetadata): Bitmap? {
         val albumArt = metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
         val art = metadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
-        val displayIcon = metadata.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
-        return albumArt ?: art ?: displayIcon
+        // Do NOT fall through to DISPLAY_ICON: that is typically the app icon
+        // (e.g. Spotify's green logo), not the album art. Returning the app icon
+        // as cover art makes every track show the same wrong image.
+        return albumArt ?: art
     }
 
     fun getArtworkUri(metadata: MediaMetadata): String? {

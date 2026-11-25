@@ -174,39 +174,44 @@ class GetCurrentPlayingMedia @Inject constructor(
 
             var coverArt: RpcImage? = null
             if (showCoverArt) {
-                val bitmap = metadata.let { MetadataResolver.getCoverArt(it) }
-                if (bitmap != null) {
-                    coverArt = RpcImage.BitmapImage(
-                        context = context,
-                        bitmap = bitmap,
-                        packageName = mediaController.packageName,
-                        title = "${metadata.let { MetadataResolver.getAlbumArtists(it) }}|${metadata.let { MetadataResolver.getAlbum(it) }?: "unknown"}|${title}"
-                    )
-                    logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from ALBUM_ART/ART/DISPLAY_ICON)")
-                } else {
-                    val artworkUri = metadata.let { MetadataResolver.getArtworkUri(it) }
-                    if (artworkUri != null) {
-                        val parsedUri = Uri.parse(artworkUri)
-                        if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
-                            val bmp = runCatching {
-                                context.contentResolver.openInputStream(parsedUri)?.use { BitmapFactory.decodeStream(it) }
-                            }.getOrNull()
-                            if (bmp != null) {
-                                coverArt = RpcImage.BitmapImage(
-                                    context = context,
-                                    bitmap = bmp,
-                                    packageName = mediaController.packageName,
-                                    title = "${metadata.let { MetadataResolver.getAlbumArtists(it) }}|${metadata.let { MetadataResolver.getAlbum(it) }?: "unknown"}|${title}"
-                                )
-                                logger.d("MediaImage", "YT '$title': coverBitmap=decodedBitmap(from artworkUri=$artworkUri), chosenCover=BitmapImage(decoded)")
-                            } else {
-                                coverArt = artworkUri.toRpcImage()
-                                logger.d("MediaImage", "YT '$title': coverBitmap=artworkUri(artworkUri=$artworkUri), chosenCover=ImageUrl")
-                            }
+                // Try the artwork URI first: it points to the actual album art file
+                // (content://... or https://...), which is more reliable than the
+                // embedded bitmap that may be the app icon (e.g. Spotify's logo)
+                // instead of the album art.
+                val artworkUri = metadata.let { MetadataResolver.getArtworkUri(it) }
+                if (artworkUri != null) {
+                    val parsedUri = Uri.parse(artworkUri)
+                    if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
+                        val bmp = runCatching {
+                            context.contentResolver.openInputStream(parsedUri)?.use { BitmapFactory.decodeStream(it) }
+                        }.getOrNull()
+                        if (bmp != null) {
+                            coverArt = RpcImage.BitmapImage(
+                                context = context,
+                                bitmap = bmp,
+                                packageName = mediaController.packageName,
+                                title = "${metadata.let { MetadataResolver.getAlbumArtists(it) }}|${metadata.let { MetadataResolver.getAlbum(it) }?: "unknown"}|${title}"
+                            )
+                            logger.d("MediaImage", "YT '$title': coverBitmap=decodedBitmap(from artworkUri=$artworkUri), chosenCover=BitmapImage(decoded)")
                         } else {
                             coverArt = artworkUri.toRpcImage()
-                            logger.d("MediaImage", "YT '$title': coverBitmap=null, artworkUri=$artworkUri, chosenCover=ImageUrl")
+                            logger.d("MediaImage", "YT '$title': coverBitmap=artworkUri(artworkUri=$artworkUri), chosenCover=ImageUrl")
                         }
+                    } else {
+                        coverArt = artworkUri.toRpcImage()
+                        logger.d("MediaImage", "YT '$title': coverBitmap=null, artworkUri=$artworkUri, chosenCover=ImageUrl")
+                    }
+                } else {
+                    // Fall back to the embedded bitmap (ALBUM_ART / ART only, not DISPLAY_ICON)
+                    val bitmap = metadata.let { MetadataResolver.getCoverArt(it) }
+                    if (bitmap != null) {
+                        coverArt = RpcImage.BitmapImage(
+                            context = context,
+                            bitmap = bitmap,
+                            packageName = mediaController.packageName,
+                            title = "${metadata.let { MetadataResolver.getAlbumArtists(it) }}|${metadata.let { MetadataResolver.getAlbum(it) }?: "unknown"}|${title}"
+                        )
+                        logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from ALBUM_ART/ART)")
                     } else {
                         logger.d("MediaImage", "YT '$title': coverBitmap=null, chosenCover=null")
                     }
