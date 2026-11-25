@@ -644,8 +644,16 @@ class ManualRpc : Service() {
                 // 1. Channel icon (highest priority)
                 Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON, false] &&
                 Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false ->
-                    // Resolve channel avatar from YouTube watch URL
-                    richMediaInfo.mediaUrl?.let { url ->
+                    // Resolve channel avatar from channel URL (more reliable than
+                    // scraping the watch page, which may match unrelated avatars)
+                    richMediaInfo.channelUrl?.let { channelUrl ->
+                        val avatarUrl = YouTubeResolver.lookupChannelAvatarByChannelUrl(channelUrl)
+                        if (avatarUrl != null) {
+                            finalSmallImageChannelUrl = richMediaInfo.channelUrl
+                            RpcImage.ExternalImage(avatarUrl)
+                        } else null
+                    } ?: richMediaInfo.mediaUrl?.let { url ->
+                        // Fall back to watch page scraping when no channel URL available
                         val videoId = YouTubeResolver.extractVideoId(url)
                         if (videoId != null) {
                             val avatarUrl = YouTubeResolver.lookupChannelAvatar(videoId)

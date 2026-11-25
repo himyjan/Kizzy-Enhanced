@@ -440,12 +440,17 @@ object YouTubeResolver {
     }
 
     private val avatarCache = ConcurrentHashMap<String, String>()
+    private val channelAvatarCache = ConcurrentHashMap<String, String>()
 
     /**
      * Returns the uploader's avatar URL (yt3.ggpht.com) for a video, or null.
      * Scrapes the watch page once and caches by video id. The avatar of the
      * video owner is the first "avatar" block paired with a
      * "Go to channel <name>" a11y label.
+     *
+     * NOTE: YouTube's watch page HTML can contain multiple avatar blocks (related
+     * videos, comments, etc.), so this may match the wrong avatar. Prefer
+     * [lookupChannelAvatarByChannelUrl] when a channel URL is available.
      */
     suspend fun lookupChannelAvatar(videoId: String): String? {
         avatarCache[videoId]?.let { return it.takeIf { s -> s.isNotEmpty() } }
@@ -469,6 +474,41 @@ object YouTubeResolver {
                 }
             }
             Log.d("YouTubeResolver", "lookupChannelAvatar $videoId: no pattern matched, body snippet=${body.take(200)}")
+            null
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Returns the channel's avatar URL (yt3.ggpht.com) by scraping the channel page.
+     * This is more reliable than scraping the watch page because the channel page
+     * has a single canonical avatar element.
+     *
+     * Caches by channel URL.
+     */
+    suspend fun lookupChannelAvatarByChannelUrl(channelUrl: String?): String? {
+        if (channelUrl.isNullOrBlank()) return null
+        channelAvatarCache[channelUrl]?.let { return it.takeIf { s -> s.isNotEmpty() } }
+        return try {
+            val body = client.get(channelUrl) {
+                headers.append("User-Agent", USER_AGENT)
+                headers.append("Accept-Language", "en-US,en;q=0.9")
+            }.bodyAsText()
+            Log.d("YouTubeResolver", "lookupChannelAvatarByChannelUrl $channelUrl: channel page body length=${body.length}")
+            // The channel page header avatar is in an "avatar" object paired with
+            // a "Go to channel" a11y label.
+            for (patternStr in CHANNEL_AVATAR_PATTERNS) {
+                val matchResult = patternStr.toRegex().find(body)
+                val avatar = matchResult?.groupValues?.getOrNull(1)
+                if (avatar != null) {
+                    val cleanAvatar = avatar.substringBefore('=')
+                    Log.d("YouTubeResolver", "lookupChannelAvatarByChannelUrl $channelUrl: matched, raw=$avatar clean=$cleanAvatar")
+                    channelAvatarCache[channelUrl] = cleanAvatar
+                    return cleanAvatar
+                }
+            }
+            Log.d("YouTubeResolver", "lookupChannelAvatarByChannelUrl $channelUrl: no pattern matched")
             null
         } catch (_: Exception) {
             null
