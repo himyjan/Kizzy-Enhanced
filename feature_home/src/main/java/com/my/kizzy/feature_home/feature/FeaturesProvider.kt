@@ -1,35 +1,15 @@
 /*
-
  *
-
  *  ******************************************************************
-
  *  *  * Copyright (C) 2022
-
  *  *  * FeaturesProvider.kt is part of Kizzy
-
  *  *  *  and can not be copied and/or distributed without the express
-
  *  *  * permission of yzziK(Vaibhav)
-
- *  *  *****************************************************************
-
+ *  ******************************************************************
  *
-
- *
-
  */
 
-
-
 package com.my.kizzy.feature_home.feature
-
-
-
-import androidx.compose.foundation.shape.RoundedCornerShape
-
-import com.my.kizzy.feature_rpc_base.RpcManager
-import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,15 +23,16 @@ import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.res.stringResource
 
-import androidx.compose.ui.unit.dp
-
 import com.my.kizzy.navigation.Routes
 
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.BUILT_IN_INSTANCES
+import com.my.kizzy.preference.RpcInstance
 
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
+import com.my.kizzy.feature_home.feature.ToolTipContent
 import com.my.kizzy.resources.R
-
-
 
 @Composable
 fun homeFeaturesProvider(
@@ -59,6 +40,9 @@ fun homeFeaturesProvider(
     hasUsageAccess: MutableState<Boolean>,
     hasNotificationAccess: MutableState<Boolean>,
     userVerified: Boolean,
+    onAddInstance: (RpcInstance) -> Unit = {},
+    onDeleteInstance: (String) -> Unit = {},
+    onReorder: (List<RpcInstance>) -> Unit = {},
 ): List<HomeFeature> {
     val ctx = LocalContext.current
     val rpcManager = RpcManager.getInstance(ctx)
@@ -67,117 +51,84 @@ fun homeFeaturesProvider(
         rpcManager.refreshFromServices()
     }
 
-    // Observe RpcManager directly instead of copying its value into remembered
-    // state. The old code only read activeRpc.value once per LaunchedEffect key,
-    // so the switches could show a state that no longer matched RpcManager and
-    // flipped back on after the screen resumed.
+    val instances = Prefs.getHomeRpcInstances()
+
     val activeRpc by rpcManager.activeRpc.collectAsState()
-    val mediaRpcRunning = RpcType.MediaRpc in activeRpc
-    val customRpcRunning = RpcType.CustomRpc in activeRpc
-    val ManualRpcRunning = RpcType.ManualRpc in activeRpc
 
-    return listOf(
+    val builtInIds = BUILT_IN_INSTANCES.map { it.id }.toSet()
+
+    return instances.map { instance ->
+        val route = when (instance.type) {
+            "media_rpc" -> Routes.MEDIA_RPC
+            "manual_rpc" -> Routes.MANUAL_RPC
+            "custom_rpc" -> Routes.CUSTOM_RPC
+            else -> null
+        }
+        val rpcType = when (instance.type) {
+            "media_rpc" -> RpcType.MediaRpc
+            "manual_rpc" -> RpcType.ManualRpc
+            "custom_rpc" -> RpcType.CustomRpc
+            else -> null
+        }
+        val isRunning = rpcType != null && rpcType in activeRpc
+
         HomeFeature(
-            title = stringResource(id = R.string.main_mediaRpc),
-            icon = R.drawable.ic_media_rpc,
-            route = Routes.MEDIA_RPC,
-            isChecked = mediaRpcRunning,
-            showSwitch = true,
-
+            title = instance.label,
+            route = route,
+            instanceId = instance.id,
+            isChecked = isRunning,
+            isDeletable = instance.id !in builtInIds,
             onClick = {
-
                 navigateTo(it)
-
             },
-
-            onCheckedChange = {
+            onCheckedChange = { enabled ->
                 scope.launch {
-                    if (it) {
-                        // Add Media RPC without stopping Custom RPC or other RPCs.
-                        rpcManager.switchTo(setOf(RpcType.MediaRpc), add = true)
-                    } else {
-                        // Stop only Media RPC, leave Custom RPC and others running.
-                        rpcManager.stopRpcTypes(setOf(RpcType.MediaRpc))
-                    }
-                }
-            },
-
-            shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
-
-            tooltipText = stringResource(id = R.string.main_mediaRpc_details),
-
-            featureDocsLink = ToolTipContent.MEDIA_RPC_DOCS_LINK
-
-        ),
-        HomeFeature(
-            title = stringResource(id = R.string.main_ManualRpc),
-            icon = R.drawable.ic_dev_rpc,
-            route = Routes.MANUAL_RPC,
-            onClick = { navigateTo(it) },
-            isChecked = ManualRpcRunning,
-
-            onCheckedChange = {
-                scope.launch {
-                    if (it) {
-                        // Add Manual RPC without stopping Custom RPC or other RPCs.
-                        rpcManager.switchTo(setOf(RpcType.ManualRpc), add = true)
-                    } else {
-                        // Stop only Manual RPC, leave Custom RPC and others running.
-                        rpcManager.stopRpcTypes(setOf(RpcType.ManualRpc))
-                    }
-                }
-            },
-
-            shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-
-            showSwitch = true,
-
-            tooltipText = stringResource(id = R.string.main_ManualRpc_details),
-
-            featureDocsLink = ToolTipContent.MANUAL_RPC_DOCS_LINK
-
-        ),
-        HomeFeature(
-            title = stringResource(id = R.string.main_customRpc),
-            icon = R.drawable.ic_rpc_placeholder,
-            route = Routes.CUSTOM_RPC,
-            isChecked = customRpcRunning,
-
-            onClick = {
-
-                navigateTo(it)
-
-            },
-
-            onCheckedChange = {
-                scope.launch {
-                    if (it) {
-                        val lastRpc = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                        // Add Custom RPC without stopping Media RPC or other RPCs.
+                    if (enabled && rpcType != null) {
+                        val configString = when (instance.type) {
+                            "custom_rpc" -> Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                            else -> ""
+                        }
                         rpcManager.switchTo(
-                            setOf(RpcType.CustomRpc),
+                            setOf(rpcType),
                             add = true,
-                            rpcConfigString = lastRpc,
+                            rpcConfigString = if (configString.isNotBlank()) configString else null,
                             isConsoleRpc = false
                         )
-                    } else {
-                        // Stop only Custom RPC, leave Media RPC and others running.
-                        rpcManager.stopRpcTypes(setOf(RpcType.CustomRpc))
+                    } else if (!enabled && rpcType != null) {
+                        rpcManager.stopRpcTypes(setOf(rpcType))
                     }
                 }
             },
-
-            shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
-
             showSwitch = true,
-
-            tooltipText = stringResource(id = R.string.main_customRpc_details),
-
-            featureDocsLink = ToolTipContent.CUSTOM_RPC_DOCS_LINK
-
+            tooltipText = when (instance.type) {
+                "media_rpc" -> stringResource(R.string.main_mediaRpc_details)
+                "manual_rpc" -> stringResource(R.string.main_ManualRpc_details)
+                "custom_rpc" -> stringResource(R.string.main_customRpc_details)
+                else -> ""
+            },
+            featureDocsLink = when (instance.type) {
+                "media_rpc" -> ToolTipContent.MEDIA_RPC_DOCS_LINK
+                "manual_rpc" -> ToolTipContent.MANUAL_RPC_DOCS_LINK
+                "custom_rpc" -> ToolTipContent.CUSTOM_RPC_DOCS_LINK
+                else -> ""
+            },
+            onDelete = {
+                scope.launch {
+                    onDeleteInstance(instance.id)
+                    if (rpcType != null && isRunning) {
+                        rpcManager.stopRpcTypes(setOf(rpcType))
+                    }
+                }
+            },
         )
-
+    } + listOf(
+        HomeFeature(
+            title = "Add RPC",
+            route = null,
+            isChecked = false,
+            showSwitch = false,
+            isAddButton = true,
+            tooltipText = "Add a new RPC instance (Media, Manual, or Custom)",
+        )
     )
-
 }
-

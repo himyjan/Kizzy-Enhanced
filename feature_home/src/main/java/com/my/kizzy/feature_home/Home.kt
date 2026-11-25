@@ -28,7 +28,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Person
@@ -37,6 +38,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -80,10 +82,13 @@ import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.feature_rpc_base.services.KizzyTileService
 import com.my.kizzy.feature_settings.SettingsDrawer
+import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.RpcInstance
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.ChipSection
 import com.my.kizzy.ui.components.UpdateDialog
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,6 +128,11 @@ fun Home(
     // homeFeaturesProvider), so the switch state can be read from it without
     // keeping a second, easily-stale copy in local state.
     val rpcManager = RpcManager.getInstance(ctx)
+
+    // Read user-created RPC instances from DataStore (built-ins + clones).
+    val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
+    val homeRpcInstances = Prefs.getHomeRpcInstances()
+
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
             rpcManager.refreshFromServices()
@@ -283,8 +293,30 @@ fun Home(
                 item {
                     // No local list copy: RpcManager is the single source of truth and
                     // `features` recomposes from it, so the switch always shows the real
-                    // running state. onValueUpdate is intentionally a no-op.
-                    Features(features) { }
+                    // running state.
+                    Features(
+                        homeItems = features,
+                        instances = homeRpcInstances,
+                        onAddInstance = { instance ->
+                            // Save clone to prefs and start its service
+                            Prefs.addHomeRpcInstance(instance)
+                            val rpcType = when (instance.type) {
+                                "media_rpc" -> RpcType.MediaRpc
+                                "manual_rpc" -> RpcType.ManualRpc
+                                "custom_rpc" -> RpcType.CustomRpc
+                                else -> null
+                            }
+                            if (rpcType != null) {
+                                rpcManager.switchTo(setOf(rpcType), add = true)
+                            }
+                        },
+                        onDeleteInstance = { instanceId ->
+                            Prefs.deleteHomeRpcInstance(instanceId)
+                        },
+                        onReorder = { orderedInstances ->
+                            Prefs.reorderHomeRpcInstances(orderedInstances)
+                        },
+                    )
                 }
             }
             when (state) {
@@ -360,31 +392,30 @@ fun HomeScreenPreview() {
 val fakeFeatures = listOf(
     HomeFeature(
         title = "Media RPC",
-        icon = R.drawable.ic_media_rpc,
+        route = "media_rpc_route",
         shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
         tooltipText = ToolTipContent.MEDIA_RPC_DOCS
     ),
     HomeFeature(
         title = "App Detection",
-        icon = R.drawable.ic_apps,
+        route = "app_detection_route",
         shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
         tooltipText = ToolTipContent.APP_DETECTION_DOCS
     ),
     HomeFeature(
         title = "Manual RPC",
-        icon = R.drawable.ic_dev_rpc,
+        route = "manual_rpc_route",
         shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
         tooltipText = ToolTipContent.MANUAL_RPC_DOCS
     ),
     HomeFeature(
         title = "Custom RPC",
-        icon = R.drawable.ic_rpc_placeholder,
+        route = "custom_rpc_route",
         shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
         tooltipText = ToolTipContent.CUSTOM_RPC_DOCS
     ),
     HomeFeature(
         title = "Coming Soon",
-        icon = R.drawable.ic_info,
         shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
         showSwitch = false
     )

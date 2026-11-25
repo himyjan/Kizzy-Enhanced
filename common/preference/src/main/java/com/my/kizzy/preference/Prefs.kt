@@ -383,6 +383,14 @@ object Prefs {
      */
     const val ACTIVE_RPC_TYPES = "active_rpc_types"
 
+    /**
+     * User-created RPC instances on the home screen, stored as a JSON array of
+     * RpcInstance objects. The 3 built-in instances (Media RPC, Manual RPC,
+     * Custom RPC) are always present and are not stored here - only clones
+     * the user creates.
+     */
+    const val HOME_RPC_INSTANCES = "home_rpc_instances"
+
     /** Whether the running CustomRpcService is in Console RPC mode. */
     const val CUSTOM_RPC_CONSOLE_MODE = "custom_rpc_console_mode"
 
@@ -597,6 +605,60 @@ object Prefs {
         Json.decodeFromString<Map<String, Int>>(jsonString)
     } catch (_: Exception) {
         emptyMap()
+    }
+
+    /**
+     * All RPC instances shown on the home screen: the 3 built-ins (always present,
+     * not deletable) plus user-created clones (persisted here).
+     */
+    fun getHomeRpcInstances(): List<RpcInstance> {
+        val json = get(HOME_RPC_INSTANCES, "")
+        val clones = if (json.isNotBlank()) {
+            try {
+                Json.decodeFromString<List<RpcInstance>>(json)
+            } catch (_: Exception) {
+                emptyList()
+            }
+        } else emptyList()
+        // Built-ins always come first and are never removed from the stored list.
+        val builtInIds = BUILT_IN_INSTANCES.map { it.id }.toSet()
+        val storedClones = clones.filter { it.id !in builtInIds }
+        return BUILT_IN_INSTANCES + storedClones
+    }
+
+    /**
+     * Persists only the user-created clones (built-ins are implicit and always
+     * prepended on read). Called after add/delete/reorder of clones.
+     */
+    fun saveHomeRpcInstances(instances: List<RpcInstance>) {
+        val builtInIds = BUILT_IN_INSTANCES.map { it.id }.toSet()
+        val clones = instances.filter { it.id !in builtInIds }
+        set(HOME_RPC_INSTANCES, Json.encodeToString(clones))
+    }
+
+    /**
+     * Adds a clone of an existing instance type with a new label and id.
+     */
+    fun addHomeRpcInstance(instance: RpcInstance) {
+        val current = getHomeRpcInstances()
+        saveHomeRpcInstances(current + instance)
+    }
+
+    /**
+     * Deletes a user-created clone by id. Built-ins are never deleted.
+     */
+    fun deleteHomeRpcInstance(instanceId: String) {
+        val builtInIds = BUILT_IN_INSTANCES.map { it.id }.toSet()
+        if (instanceId in builtInIds) return
+        val current = getHomeRpcInstances()
+        saveHomeRpcInstances(current.filter { it.id != instanceId })
+    }
+
+    /**
+     * Reorders the instances (built-ins stay first, clones keep relative order).
+     */
+    fun reorderHomeRpcInstances(instances: List<RpcInstance>) {
+        saveHomeRpcInstances(instances)
     }
 
     fun isExperimentalAppEnabled(packageName: String?): Boolean {
