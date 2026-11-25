@@ -218,13 +218,17 @@ class AppDetectionService : Service() {
     }
 
     private fun getUsageStats(): List<UsageStats>? {
-        val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
-        val currentTimeMillis = System.currentTimeMillis()
-        return usageStatsManager.queryUsageStats(
-            UsageStatsManager.INTERVAL_DAILY,
-            currentTimeMillis - 10000,
-            currentTimeMillis
-        )
+        return try {
+            val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
+            val currentTimeMillis = System.currentTimeMillis()
+            usageStatsManager.queryUsageStats(
+                UsageStatsManager.INTERVAL_DAILY,
+                currentTimeMillis - 10000,
+                currentTimeMillis
+            )
+        } catch (_: Exception) {
+            null
+        }
     }
 
     /**
@@ -237,26 +241,30 @@ class AppDetectionService : Service() {
      * right now — this is what makes the apps list actually switch between apps.
      */
     private fun getForegroundPackage(): String? {
-        val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
-        val currentTimeMillis = System.currentTimeMillis()
-        val events = usageStatsManager.queryEvents(
-            currentTimeMillis - EVENT_LOOKBACK_MS,
-            currentTimeMillis
-        )
-        val event = UsageEvents.Event()
-        var latestPackage: String? = null
-        var latestTimestamp = 0L
-        while (events.hasNextEvent()) {
-            events.getNextEvent(event)
-            val isForegroundEvent = event.eventType == UsageEvents.Event.ACTIVITY_RESUMED ||
-                event.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND
-            if (!isForegroundEvent) continue
-            if (event.timeStamp >= latestTimestamp) {
-                latestTimestamp = event.timeStamp
-                latestPackage = event.packageName
+        return try {
+            val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
+            val currentTimeMillis = System.currentTimeMillis()
+            val events = usageStatsManager.queryEvents(
+                currentTimeMillis - EVENT_LOOKBACK_MS,
+                currentTimeMillis
+            )
+            val event = UsageEvents.Event()
+            var latestPackage: String? = null
+            var latestTimestamp = 0L
+            while (events.hasNextEvent()) {
+                events.getNextEvent(event)
+                val isForegroundEvent = event.eventType == UsageEvents.Event.ACTIVITY_RESUMED ||
+                    event.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND
+                if (!isForegroundEvent) continue
+                if (event.timeStamp >= latestTimestamp) {
+                    latestTimestamp = event.timeStamp
+                    latestPackage = event.packageName
+                }
             }
+            latestPackage
+        } catch (_: Exception) {
+            null
         }
-        return latestPackage
     }
 
     private fun getLatestPackageName(usageStats: List<UsageStats>): String? {

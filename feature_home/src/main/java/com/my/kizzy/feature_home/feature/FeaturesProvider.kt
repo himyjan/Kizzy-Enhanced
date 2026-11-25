@@ -11,6 +11,9 @@
 
 package com.my.kizzy.feature_home.feature
 
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -44,7 +47,7 @@ fun homeFeaturesProvider(
     onDeleteInstance: (String) -> Unit = {},
     onReorder: (List<RpcInstance>) -> Unit = {},
 ): List<HomeFeature> {
-    val ctx = LocalContext.current
+    val ctx: Context = LocalContext.current
     val rpcManager = RpcManager.getInstance(ctx)
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
@@ -72,6 +75,9 @@ fun homeFeaturesProvider(
         }
         val isRunning = rpcType != null && rpcType in activeRpc
 
+        // App Detection requires Usage Access permission; gate the toggle
+        val requiresUsageAccess = rpcType == RpcType.AppDetectionRpc
+
         HomeFeature(
             title = instance.label,
             route = route,
@@ -82,20 +88,29 @@ fun homeFeaturesProvider(
                 navigateTo(it)
             },
             onCheckedChange = { enabled ->
-                scope.launch {
-                    if (enabled && rpcType != null) {
-                        val configString = when (instance.type) {
-                            "custom_rpc" -> Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                            else -> ""
+                if (enabled && requiresUsageAccess && !hasUsageAccess.value) {
+                    Toast.makeText(
+                        ctx,
+                        ctx.getString(R.string.usage_access_required_for_app_detection),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                    ctx.startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                } else {
+                    scope.launch {
+                        if (enabled && rpcType != null) {
+                            val configString = when (instance.type) {
+                                "custom_rpc" -> Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                                else -> ""
+                            }
+                            rpcManager.switchTo(
+                                setOf(rpcType),
+                                add = true,
+                                rpcConfigString = if (configString.isNotBlank()) configString else null,
+                                isConsoleRpc = false
+                            )
+                        } else if (!enabled && rpcType != null) {
+                            rpcManager.stopRpcTypes(setOf(rpcType))
                         }
-                        rpcManager.switchTo(
-                            setOf(rpcType),
-                            add = true,
-                            rpcConfigString = if (configString.isNotBlank()) configString else null,
-                            isConsoleRpc = false
-                        )
-                    } else if (!enabled && rpcType != null) {
-                        rpcManager.stopRpcTypes(setOf(rpcType))
                     }
                 }
             },
@@ -104,12 +119,14 @@ fun homeFeaturesProvider(
                 "media_rpc" -> stringResource(R.string.main_mediaRpc_details)
                 "manual_rpc" -> stringResource(R.string.main_ManualRpc_details)
                 "custom_rpc" -> stringResource(R.string.main_customRpc_details)
+                "app_detection_rpc" -> stringResource(R.string.main_appDetection_details)
                 else -> ""
             },
             featureDocsLink = when (instance.type) {
                 "media_rpc" -> ToolTipContent.MEDIA_RPC_DOCS_LINK
                 "manual_rpc" -> ToolTipContent.MANUAL_RPC_DOCS_LINK
                 "custom_rpc" -> ToolTipContent.CUSTOM_RPC_DOCS_LINK
+                "app_detection_rpc" -> ToolTipContent.APP_DETECTION_DOCS_LINK
                 else -> ""
             },
             onDelete = {

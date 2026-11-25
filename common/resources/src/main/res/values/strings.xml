@@ -77,6 +77,7 @@
     <string name="usage_access_desc">Step 1: Open App Info (⋮ → Allow restricted settings), then Step 2: togg le Usage Access ON.</string>
     <string name="allow_usage_access">Allow Usage Access</string>
     <string name="allow_usage_access_desc">Step 2: Open Usage Access settings and toggle Kizzy-Enhanced ON.</string>
+    <string name="usage_access_required_for_app_detection">Usage Access is required for App Detection. Please grant it in Settings.</string>
     <string name="logged_in">Logged in</string>
     <string name="enable_mediaRpc">Enable Media RPC</string>
     <string name="permission_required">Permission Required</string>
