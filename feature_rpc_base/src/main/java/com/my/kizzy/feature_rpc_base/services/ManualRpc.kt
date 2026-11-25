@@ -331,21 +331,21 @@ class ManualRpc : Service() {
             scope.launch(Dispatchers.IO) {
                 if (isLastFmEnabled) {
                     try {
-                        LastFM.updateNowPlaying(artist = artistName, track = songName, url = playingMedia.mediaUrl)
+                        LastFM.updateNowPlaying(artist = artistName, track = songName)
                     } catch (e: Exception) {
                         logger.e(TAG, "Last.fm now playing failed: ${e.message}")
                     }
                 }
                 if (isLibreFmEnabled) {
                     try {
-                        LibreFM.updateNowPlaying(artist = artistName, track = songName, url = playingMedia.mediaUrl)
+                        LibreFM.updateNowPlaying(artist = artistName, track = songName)
                     } catch (e: Exception) {
                         logger.e(TAG, "Libre.fm now playing failed: ${e.message}")
                     }
                 }
                 if (isListenBrainzEnabled) {
                     try {
-                        ListenBrainz.updateNowPlaying(artist = artistName, track = songName)
+                        ListenBrainz.updateNowPlaying(artist = artistName, track = songName, url = playingMedia.mediaUrl)
                     } catch (e: Exception) {
                         logger.e(TAG, "ListenBrainz now playing failed: ${e.message}")
                     }
@@ -362,7 +362,7 @@ class ManualRpc : Service() {
             scope.launch(Dispatchers.IO) {
                 if (isLastFmEnabled) {
                     try {
-                        val success = LastFM.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp, url = playingMedia.mediaUrl)
+                        val success = LastFM.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp)
                         if (success) logger.i(TAG, "Scrobbled to Last.fm: $currentTrackIdentity")
                     } catch (e: Exception) {
                         logger.e(TAG, "Last.fm scrobble failed: ${e.message}")
@@ -370,7 +370,7 @@ class ManualRpc : Service() {
                 }
                 if (isLibreFmEnabled) {
                     try {
-                        val success = LibreFM.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp, url = playingMedia.mediaUrl)
+                        val success = LibreFM.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp)
                         if (success) logger.i(TAG, "Scrobbled to Libre.fm: $currentTrackIdentity")
                     } catch (e: Exception) {
                         logger.e(TAG, "Libre.fm scrobble failed: ${e.message}")
@@ -378,7 +378,7 @@ class ManualRpc : Service() {
                 }
                 if (isListenBrainzEnabled) {
                     try {
-                        val success = ListenBrainz.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp)
+                        val success = ListenBrainz.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp, url = playingMedia.mediaUrl)
                         if (success) logger.i(TAG, "Scrobbled to ListenBrainz: $currentTrackIdentity")
                     } catch (e: Exception) {
                         logger.e(TAG, "ListenBrainz scrobble failed: ${e.message}")

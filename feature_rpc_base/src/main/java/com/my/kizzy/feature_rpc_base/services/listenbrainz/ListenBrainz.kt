@@ -133,15 +133,31 @@ object ListenBrainz {
     /**
      * Scrobble a track to ListenBrainz.
      */
+    /**
+     * Check whether [url] is a valid http(s) origin URL suitable for ListenBrainz origin_url.
+     * Returns null when empty, blank, or not a web page URL.
+     */
+    private fun validOriginUrl(url: String?): String? {
+        val trimmed = url?.trim() ?: return null
+        if (trimmed.isEmpty()) return null
+        if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) return null
+        return trimmed
+    }
+
+    /**
+     * Scrobble a track to ListenBrainz.
+     */
     suspend fun scrobble(
         artist: String,
         track: String,
         timestamp: Long,
         album: String? = null,
         duration: Int? = null,
-        songId: String? = null
+        url: String? = null
     ): Boolean = apiCallWithRetry {
         if (userToken.isEmpty()) return@apiCallWithRetry false
+
+        val originUrl = validOriginUrl(url)
 
         val payload = buildMap {
             put("listened_at", timestamp)
@@ -151,7 +167,7 @@ object ListenBrainz {
                 album?.let { put("release_name", it) }
                 put("additional_info", buildMap {
                     duration?.let { put("duration_ms", it * 1000L) }
-                    songId?.let { put("origin_url", "https://music.youtube.com/watch?v=$songId") }
+                    originUrl?.let { put("origin_url", it) }
                     put("submission_client", "Kizzy")
                     put("submission_client_version", "1.0")
                 })
@@ -181,9 +197,11 @@ object ListenBrainz {
         track: String,
         album: String? = null,
         duration: Int? = null,
-        songId: String? = null
+        url: String? = null
     ): Boolean = apiCallWithRetry {
         if (userToken.isEmpty()) return@apiCallWithRetry false
+
+        val originUrl = validOriginUrl(url)
 
         val payload = buildMap {
             put("track_metadata", buildMap {
@@ -192,7 +210,7 @@ object ListenBrainz {
                 album?.let { put("release_name", it) }
                 put("additional_info", buildMap {
                     duration?.let { put("duration_ms", it * 1000L) }
-                    songId?.let { put("origin_url", "https://music.youtube.com/watch?v=$songId") }
+                    originUrl?.let { put("origin_url", it) }
                     put("submission_client", "Kizzy")
                     put("submission_client_version", "1.0")
                 })
