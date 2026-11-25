@@ -31,7 +31,9 @@ import android.util.Log
 
 import com.my.kizzy.data.rpc.*
 import com.my.kizzy.data.rpc.MultiRpcManager
+import com.my.kizzy.data.utils.toUrlString
 import com.my.kizzy.domain.model.rpc.RpcButtons
+import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
@@ -364,6 +366,25 @@ class AppDetectionService : Service() {
             ),
             enableTimestamps = true,
             priority = 4, // App Detection: lower priority than user-configured RPCs
+        )
+
+        // Expose the presence config so the profile preview shows it.
+        val detectedType = ActivityTypeResolver.resolve(
+            packageName = packageName,
+            fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+            useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+        )
+        rpcManager.setCurrentPresenceConfig(
+            RpcConfig(
+                name = appLabel,
+                details = details.orEmpty(),
+                state = state.orEmpty(),
+                type = detectedType.toString(),
+                timestampsStart = System.currentTimeMillis().toString(),
+                timestampsStop = "",
+                largeImg = largeImage.toUrlString().orEmpty(),
+            ),
+            RpcManager.RpcType.AppDetectionRpc
         )
 
         notificationManager.notify(

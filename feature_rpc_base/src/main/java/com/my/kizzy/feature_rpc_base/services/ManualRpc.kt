@@ -967,7 +967,7 @@ class ManualRpc : Service() {
         LastPresence.rememberExperimental(rpcConfig)
         // Expose the current presence so the Manual RPC screen can offer
         // a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
-        rpcManager.setCurrentPresenceConfig(rpcConfig)
+        rpcManager.setCurrentPresenceConfig(rpcConfig, RpcManager.RpcType.ManualRpc)
 
         val notifTitle = finalName.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.app_name_full)
         val notifText = if (currentMediaDurationSec > 0) {

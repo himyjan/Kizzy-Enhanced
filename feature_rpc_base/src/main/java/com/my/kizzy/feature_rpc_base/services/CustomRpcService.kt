@@ -412,6 +412,9 @@ class CustomRpcService : Service() {
                     Log.d("CustomRpcService", "Calling kizzyRPC?.build(forceRefresh=$forceRefresh, priority=2)")
                     build(forceRefresh = forceRefresh, priority = 2) // Custom/Console RPC: user-configured, priority 2
                     Log.d("CustomRpcService", "kizzyRPC?.build() completed")
+
+                    val rpcType = if (consoleMode) RpcManager.RpcType.ConsoleRpc else RpcManager.RpcType.CustomRpc
+                    rpcManager.setCurrentPresenceConfig(rpcDataToUse, rpcType)
                 }
             }
         }

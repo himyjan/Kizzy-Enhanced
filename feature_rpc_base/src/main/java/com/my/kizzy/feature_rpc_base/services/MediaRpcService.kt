@@ -1306,7 +1306,7 @@ class MediaRpcService : Service() {
         // Expose the current presence as an RpcConfig so the Media/Manual RPC screens
         // can offer a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
         try {
-            rpcManager.setCurrentPresenceConfig(commonRpcToRpcConfig(commonRpc))
+            rpcManager.setCurrentPresenceConfig(commonRpcToRpcConfig(commonRpc), RpcManager.RpcType.MediaRpc)
         } catch (e: Exception) {
             logger.e(MEDIA_RPC, "Failed to expose current presence config: ${e.message}")
         }
