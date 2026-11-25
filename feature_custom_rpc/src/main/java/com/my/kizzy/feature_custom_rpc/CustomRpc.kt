@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -1911,6 +1912,32 @@ private fun RpcTextFieldsColumn(
                         label = R.string.custom_application_id,
                     ) {
                         Prefs[Prefs.MANUAL_RPC_APPLICATION_ID] = it
+                    }
+                }
+            }
+
+            // ===== Copy Current RPC =====
+            item {
+                androidx.compose.material3.OutlinedButton(
+                    onClick = {
+                        val mediaCfg = rpcManager.presenceConfigs.value[RpcType.MediaRpc]
+                        val manualCfg = rpcManager.presenceConfigs.value[RpcType.ManualRpc]
+                        val source = mediaCfg ?: manualCfg
+                        if (source != null) {
+                            onEvent(UiEvent.SetFieldsFromConfig(source))
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = stringResource(R.string.copy_to_custom_rpc),
+                            modifier = Modifier.weight(1f),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
                 }
             }
