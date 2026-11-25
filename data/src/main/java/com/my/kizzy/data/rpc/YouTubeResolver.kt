@@ -533,4 +533,57 @@ object YouTubeResolver {
         val encoded = java.net.URLEncoder.encode(query, StandardCharsets.UTF_8.toString())
         return "https://www.youtube.com/results?search_query=$encoded"
     }
+
+    /**
+     * Normalized YouTube metadata.
+     *
+     * [hostingChannel] is the channel that uploads/publishes the video (e.g. a record label channel).
+     * [primaryArtistOrChannel] is the artist name or channel name to show as primary credit.
+     * [isMultiChannelHint] is true when the title contains collab indicators
+     * ("feat.", "ft.", "x", "vs.", "&", ",").
+     */
+    data class NormalizedYouTubeMeta(
+        val title: String? = null,
+        val primaryArtistOrChannel: String? = null,
+        val hostingChannel: String? = null,
+        val isMultiChannelHint: Boolean = false,
+    )
+
+    /**
+     * Normalizes raw YouTube metadata into a structured [NormalizedYouTubeMeta].
+     *
+     * - Strips "- Topic" suffixes from artist names.
+     * - Detects collab separators (feat./ft./x/vs./&/,) to flag multi-channel tracks.
+     * - Falls back to hostingChannel when no artist is available.
+     */
+    fun normalizeYouTubeMetadata(
+        rawTitle: String?,
+        rawArtist: String?,
+        rawChannel: String?,
+        rawUploader: String?,
+    ): NormalizedYouTubeMeta {
+        val cleanTitle = rawTitle?.trim()?.takeIf { it.isNotEmpty() }
+        val hostingChannel = (rawChannel ?: rawUploader)?.trim()?.takeIf { it.isNotEmpty() }
+        val cleanArtist = rawArtist
+            ?.trim()
+            ?.removeSuffix(" - Topic")
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+
+        val combinedText = listOfNotNull(cleanTitle, cleanArtist, hostingChannel).joinToString(" ")
+        val hasCollabSeparator = Regex(
+            """\b(feat\.?|ft\.?|x|vs\.?)\b|[&,]""",
+            RegexOption.IGNORE_CASE,
+        ).containsMatchIn(combinedText)
+
+        val primaryArtistOrChannel = cleanArtist
+            ?: hostingChannel?.removeSuffix(" - Topic")?.trim()?.takeIf { it.isNotEmpty() }
+
+        return NormalizedYouTubeMeta(
+            title = cleanTitle,
+            primaryArtistOrChannel = primaryArtistOrChannel,
+            hostingChannel = hostingChannel,
+            isMultiChannelHint = hasCollabSeparator,
+        )
+    }
 }

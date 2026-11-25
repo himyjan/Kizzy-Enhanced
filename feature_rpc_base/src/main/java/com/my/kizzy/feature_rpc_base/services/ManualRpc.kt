@@ -678,7 +678,10 @@ class ManualRpc : Service() {
             // Line 4: album name, or the playlist name when there is no album.
             finalLargeText = richMediaInfo.album ?: richMediaInfo.playlistName
             finalSmallText =
-                if (finalSmallImage == richMediaInfo.appIcon) richMediaInfo.appName else null
+                if (finalSmallImage == richMediaInfo.appIcon) richMediaInfo.appName
+                // When showing channel avatar, smallText shows the channel name
+                else if (finalSmallImageChannelUrl != null) richMediaInfo.state?.takeIf { it.isNotEmpty() }
+                else null
 
             finalTimestamps = if (richMediaInfo.playbackState == PlaybackState.STATE_PLAYING) {
                 resolveTimestamps(richMediaInfo.timestamps)
@@ -852,6 +855,7 @@ class ManualRpc : Service() {
             manualSmallTextStr.takeIf { it.isNotEmpty() } ?: finalSmallText,
             finalLargeImage?.toUrlString() ?: finalLargeImage?.toString(),
             finalSmallImage?.toUrlString() ?: finalSmallImage?.toString(),
+            finalSmallImageChannelUrl, // Channel avatar URL — switching channels updates presence
             finalTimestamps?.start?.toString(),
             finalTimestamps?.end?.toString(),
             effectivePackageName,
