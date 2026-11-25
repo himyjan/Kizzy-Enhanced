@@ -382,6 +382,12 @@ object Prefs {
      */
     const val ACTIVE_RPC_TYPES = "active_rpc_types"
 
+    /**
+     * User-defined precedence for parallel RPCs, as a comma-separated list of
+     * RpcManager.RpcType names. First entry wins the Discord presence slot.
+     */
+    const val RPC_PRIORITY_ORDER = "rpc_priority_order"
+
     /** Whether the running CustomRpcService is in Console RPC mode. */
     const val CUSTOM_RPC_CONSOLE_MODE = "custom_rpc_console_mode"
 

@@ -12,6 +12,7 @@
 
 package com.my.kizzy.data.rpc
 
+import android.R.attr.priority
 import android.media.session.PlaybackState
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
@@ -83,6 +84,18 @@ class KizzyRPC @Inject constructor(
     // Presence update deduplication + throttling to prevent flooding Discord gateway
     // (rapid SESSIONS_REPLACE events used to cause connection closures / INVALID_SESSION)
     companion object {
+        /**
+         * Global presence-slot owner shared across all KizzyRPC instances.
+         * Multi-RPC runs multiple gateways but Discord shows one presence per account;
+         * this lock ensures lower-priority RPCs cannot overwrite higher-priority ones.
+         */
+        @Volatile
+        var globalActiveRpcPriority: Int? = null
+
+        /** Tracks which logical RPC type currently owns [globalActiveRpcPriority]. */
+        @Volatile
+        var globalActiveRpcName: String? = null
+
         /**
          * Discord allows 5 presence updates per 20 seconds per session. 1500 ms
          * allowed ~13, so a busy media session could exceed the limit and have
@@ -492,6 +505,10 @@ class KizzyRPC @Inject constructor(
             lastResolvedSmallImage = null
             // Release the presence slot so another enabled RPC can become the owner.
             activeRpcPriority = null
+            if (globalActiveRpcPriority == priority) {
+                globalActiveRpcPriority = null
+                globalActiveRpcName = null
+            }
         }
     }
 
@@ -828,7 +845,7 @@ class KizzyRPC @Inject constructor(
         }
         // Priority-based presence: if a higher-priority RPC already owns the
         // presence slot, don't overwrite it (unless forceRefresh).
-        val currentOwner = activeRpcPriority
+        val currentOwner = globalActiveRpcPriority
         if (currentOwner != null && priority > currentOwner && !forceRefresh) {
             logger.d(
                 "KizzyRPC",
@@ -837,6 +854,7 @@ class KizzyRPC @Inject constructor(
             return
         }
         activeRpcPriority = priority
+        globalActiveRpcPriority = priority
         val cleanButtons = sanitizeButtons(buttons.takeIf { buttons.isNotEmpty() })
 
         presence = Presence(
@@ -1033,7 +1051,7 @@ class KizzyRPC @Inject constructor(
             // forceRefresh only bypasses content-dedup, NOT priority - a lower-priority
             // RPC cannot overwrite a higher-priority one even with forceRefresh.
             val callerPriority = priority
-            val currentOwner = activeRpcPriority
+            val currentOwner = globalActiveRpcPriority
             if (currentOwner != null && callerPriority > currentOwner) {
                 logger.d(
                     "KizzyRPC",
@@ -1043,6 +1061,7 @@ class KizzyRPC @Inject constructor(
             }
             // This caller becomes (or remains) the presence owner.
             activeRpcPriority = callerPriority
+            globalActiveRpcPriority = callerPriority
 
             // Deduplication.
             //

@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.graphics.Bitmap
+import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
@@ -15,7 +16,11 @@ import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import android.os.Trace
 import androidx.core.app.NotificationCompat
+import androidx.core.graphics.drawable.IconCompat
+import androidx.work.ExistingWorkPolicy
 import com.my.kizzy.feature_rpc_base.BuildConfig
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.get_current_data.media.MetadataResolver
@@ -25,6 +30,8 @@ import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.data.rpc.MultiRpcManager
 import com.my.kizzy.data.rpc.YouTubeResolver
 import com.my.kizzy.data.rpc.*
+import com.my.kizzy.data.utils.toUrlString
+import com.my.kizzy.data.work.RpcRecoveryHiltWorker
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcConfig
@@ -33,7 +40,10 @@ import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
+import com.my.kizzy.preference.Prefs.TOKEN
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
@@ -42,15 +52,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration.Companion.milliseconds
-import java.util.concurrent.atomic.AtomicLong
-import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
-import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
+import com.my.kizzy.feature_rpc_base.R as FeatureRpcR
+
 import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LIBREFM_API_KEY
 import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LIBREFM_SECRET
+import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
+import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFmApiClient
+import com.my.kizzy.feature_rpc_base.services.lastfm.LastFmException
 import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFM
 import com.my.kizzy.feature_rpc_base.services.listenbrainz.ListenBrainz
+import com.my.kizzy.feature_rpc_base.services.listenbrainz.ListenBrainzException
 import kotlinx.serialization.json.Json
 
 private const val TAG = "MediaRpcService"
@@ -110,7 +123,7 @@ class MediaRpcService : Service() {
     private val timelineJob = MutableStateFlow<Job?>(null)
     private var appDetectionJob: Job? = null
 
-    private val activeScrobbleTrack = AtomicLong(0L)
+    private var activeScrobbleTrack: String? = null
     private var lastFmScrobbledIdentity: String? = null
     private var listenBrainzScrobbledIdentity: String? = null
     private var lastFmNowPlayingIdentity: String? = null
@@ -195,10 +208,13 @@ class MediaRpcService : Service() {
     private var lastSentLargeImageUrl: String? = null
     private var lastSentPackageName: String? = null
     private var lastPresenceUpdateTime: Long = 0L
-    private val PRESENCE_MIN_INTERVAL_MS = 1500L
+    private val PRESENCE_UPDATE_MIN_INTERVAL_MS = 1500L
 
     private var lastNotificationUpdateTime: Long = 0L
     private val NOTIFICATION_UPDATE_MIN_INTERVAL_MS = 1000L
+
+    private var lastPlaybackStateCode: Int? = null
+    private var lastMetadataSignature: String? = null
 
     private val TIMELINE_JUMP_TOLERANCE_MS = 3000L
 
@@ -230,6 +246,8 @@ class MediaRpcService : Service() {
 
     private fun activeSessionsListener(sessions: List<MediaController>) {
         // Handle media session changes
+        currentMediaController = sessions.firstOrNull()
+        scope.launch { updatePresence(forceRefresh = true) }
     }
 
     private val useMediaRpc: Boolean
@@ -244,6 +262,11 @@ class MediaRpcService : Service() {
         get() = Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]
 
     private suspend fun fetchPlayingMediaWithRetry(): CommonRpc {
+        repeat(3) { attempt ->
+            val media = getCurrentPlayingMedia()
+            if (media.name.isNotBlank()) return media
+            if (attempt < 2) delay(300)
+        }
         return CommonRpc(
             name = "",
             type = null,
@@ -257,6 +280,7 @@ class MediaRpcService : Service() {
     }
 
     private fun startHeartbeat() {
+        heartbeatJob.value?.cancel()
         heartbeatJob.value = scope.launch {
             while (isActive) {
                 delay(30_000)
@@ -265,10 +289,11 @@ class MediaRpcService : Service() {
     }
 
     private fun startMediaRefresh() {
+        timelineJob.value?.cancel()
         timelineJob.value = scope.launch {
             while (isActive) {
                 delay(5_000)
-                scope.launch { updatePresence() }
+                updatePresence()
             }
         }
     }
@@ -311,6 +336,8 @@ class MediaRpcService : Service() {
             lastFmNowPlayingIdentity = currentTrackIdentity
             lastFmTrackStartTimestamp = nowSec
             lastFmScrobbledIdentity = null // Reset so new track can be scrobbled
+            libreFmScrobbledIdentity = null
+            listenBrainzScrobbledIdentity = null
 
             scope.launch(Dispatchers.IO) {
                 if (isLastFmEnabled) {
@@ -339,12 +366,12 @@ class MediaRpcService : Service() {
 
         // 2. Scrobble update after playing for >= 30 seconds
         val elapsedSec = nowSec - lastFmTrackStartTimestamp
-        if (elapsedSec >= 30 && lastFmScrobbledIdentity != currentTrackIdentity) {
-            lastFmScrobbledIdentity = currentTrackIdentity
+        if (elapsedSec >= 30) {
             val scrobbleTimestamp = lastFmTrackStartTimestamp
 
             scope.launch(Dispatchers.IO) {
-                if (isLastFmEnabled) {
+                if (isLastFmEnabled && lastFmScrobbledIdentity != currentTrackIdentity) {
+                    lastFmScrobbledIdentity = currentTrackIdentity
                     try {
                         val success = LastFM.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp)
                         if (success) logger.i(TAG, "Scrobbled to Last.fm: $currentTrackIdentity")
@@ -352,7 +379,8 @@ class MediaRpcService : Service() {
                         logger.e(TAG, "Last.fm scrobble failed: ${e.message}")
                     }
                 }
-                if (isLibreFmEnabled) {
+                if (isLibreFmEnabled && libreFmScrobbledIdentity != currentTrackIdentity) {
+                    libreFmScrobbledIdentity = currentTrackIdentity
                     try {
                         val success = LibreFM.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp)
                         if (success) logger.i(TAG, "Scrobbled to Libre.fm: $currentTrackIdentity")
@@ -360,7 +388,8 @@ class MediaRpcService : Service() {
                         logger.e(TAG, "Libre.fm scrobble failed: ${e.message}")
                     }
                 }
-                if (isListenBrainzEnabled) {
+                if (isListenBrainzEnabled && listenBrainzScrobbledIdentity != currentTrackIdentity) {
+                    listenBrainzScrobbledIdentity = currentTrackIdentity
                     try {
                         val success = ListenBrainz.scrobble(artist = artistName, track = songName, timestamp = scrobbleTimestamp, url = playingMedia.mediaUrl)
                         if (success) logger.i(TAG, "Scrobbled to ListenBrainz: $currentTrackIdentity")
@@ -390,8 +419,8 @@ class MediaRpcService : Service() {
             ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
         appIntent.addFlags(
             Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
         )
         val appPendingIntent = PendingIntent.getActivity(
             this, 0, appIntent,
@@ -417,6 +446,10 @@ class MediaRpcService : Service() {
         notificationManager.notify(Constants.NOTIFICATION_ID_MEDIA_RPC, notification)
     }
 
+    private suspend fun resolveActivityType(playingMedia: CommonRpc): Int? {
+        return playingMedia.type
+    }
+
     private fun commonRpcToRpcConfig(commonRpc: CommonRpc): RpcConfig {
         return RpcConfig(
             name = commonRpc.name,
@@ -431,7 +464,7 @@ class MediaRpcService : Service() {
             timestampsStart = commonRpc.time?.start?.toString() ?: "",
             timestampsStop = commonRpc.time?.end?.toString() ?: "",
             url = commonRpc.mediaUrl ?: "",
-            platform = commonRpc.packageName,
+            platform = commonRpc.packageName ?: "",
             paused = isPaused,
             pausedPositionMs = if (isPaused && currentMediaDurationSec > 0) currentMediaPositionMs else null,
             largeText = commonRpc.largeText ?: "",
@@ -445,44 +478,24 @@ class MediaRpcService : Service() {
         )
     }
 
+    private fun resolveDirectMediaUrl(): String? {
+        return null
+    }
+
+    private val candidateUrl: String?
+        get() = null
+
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
         super.onCreate()
         AppUtils.registerRpcService(this)
         createNotificationChannel()
-        setupWakeLock()
-
-        val stopIntent = Intent(this, MediaRpcService::class.java).apply {
-            action = Constants.ACTION_STOP_SERVICE
-        }
-        val stopPendingIntent = PendingIntent.getService(
-            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        val restartIntent = Intent(this, MediaRpcService::class.java).apply {
-            action = Constants.ACTION_RESTART_SERVICE
-        }
-        val restartPendingIntent = PendingIntent.getService(
-            this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val appIntent = packageManager.getLaunchIntentForPackage(packageName)
-            ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
-        appIntent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
-        )
-        val appPendingIntent = PendingIntent.getActivity(
-            this, 0, appIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val basicNotification = Notification.Builder(this, Constants.CHANNEL_ID)
+        val basicNotification = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_dev_rpc)
-            .setContentTitle(getString(R.string.service_enabled))
-            .setContentIntent(appPendingIntent)
-            .addAction(R.drawable.ic_dev_rpc, getString(R.string.restart), restartPendingIntent)
-            .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), stopPendingIntent)
+            .setContentTitle("Media RPC")
+            .setContentText("Starting...")
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -492,9 +505,13 @@ class MediaRpcService : Service() {
         }
 
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.MediaRpc.name
+        setupWakeLock()
 
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
-        mediaSessionManager.addOnActiveSessionsChangedListener(activeSessionsChangedListener, ComponentName(this, NotificationListener::class.java))
+        mediaSessionManager.addOnActiveSessionsChangedListener(
+            activeSessionsChangedListener,
+            ComponentName(this, NotificationListener::class.java)
+        )
 
         val initialMediaSessions = try {
             mediaSessionManager.getActiveSessions(
@@ -508,7 +525,7 @@ class MediaRpcService : Service() {
         if (useMediaRpc && initialMediaSessions.isNotEmpty()) {
             val firstActiveMediaController = initialMediaSessions.firstOrNull {
                 enabledExperimentalApps.contains(it.packageName) ||
-                    Prefs.isMediaAppEnabled(it.packageName)
+                        Prefs.isMediaAppEnabled(it.packageName)
             }
             if (firstActiveMediaController != null) {
                 mediaActiveInitially = true
@@ -537,7 +554,7 @@ class MediaRpcService : Service() {
         startMediaRefresh()
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
@@ -559,22 +576,37 @@ class MediaRpcService : Service() {
         } else if (intent?.action == Constants.ACTION_RESTART_SERVICE) {
             stopSelf()
             startService(Intent(this, MediaRpcService::class.java))
-        } else {
-            Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.MediaRpc.name
-            updateNotification()
+            return START_NOT_STICKY
         }
+
+        Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.MediaRpc.name
+        updateNotification()
 
         startHeartbeat()
         startMediaRefresh()
         return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun onTaskRemoved(intent: Intent) {
+    override fun onTaskRemoved(intent: Intent?) {
         super.onTaskRemoved(intent)
         if (!explicitStop) {
             logger.d(TAG, "onTaskRemoved: user swiped app from Recents")
             WorkManagerHelper.scheduleRpcRecovery(this)
         }
+    }
+
+    override fun onDestroy() {
+        stopTimelineUpdates()
+        stopAppDetectionCoroutine()
+        heartbeatJob.value?.cancel()
+        heartbeatJob.value = null
+        runCatching {
+            mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
+        }
+        if (wakeLock?.isHeld == true) {
+            wakeLock?.release()
+        }
+        super.onDestroy()
     }
 
     private fun startAppDetectionCoroutine() {
@@ -584,15 +616,25 @@ class MediaRpcService : Service() {
         }
         logger.d(TAG, "Starting app detection coroutine")
 
+        val startTimestamps = Timestamps(start = System.currentTimeMillis())
+
         appDetectionJob = scope.launch {
-            var currentPackageName = ""
+            var trackedPackageName = ""
             var cycleCount = 0
             while (isActive) {
                 cycleCount++
                 try {
                     val currentApp = getCurrentlyRunningApp()
 
-                    if (currentApp.name.isNotEmpty() && currentApp.packageName != currentPackageName &&
+                    if (currentApp.name.isEmpty()) {
+                        if (cycleCount % 6 == 1) {
+                            logger.d(TAG, "App detection: no foreground app found")
+                        }
+                    } else {
+                        logger.d(TAG, "App detection: found foreground app=${currentApp.packageName}")
+                    }
+
+                    if (currentApp.name.isNotEmpty() && currentApp.packageName != trackedPackageName &&
                         currentApp.packageName !in AppDetectionService.EXCLUDED_APPS
                     ) {
                         val isGameApp = dynamicActivityDetectionEngine.identifyGame(currentApp.packageName) != null
@@ -601,12 +643,19 @@ class MediaRpcService : Service() {
                         val shouldShow = isGameApp || isAiApp || currentApp.packageName in enabledApps
 
                         if (shouldShow) {
+                            trackedPackageName = currentApp.packageName
                             currentPackageName = currentApp.packageName
+                            val appInfo = currentApp.copy(
+                                name = dynamicActivityDetectionEngine.identifyAiApp(currentApp.packageName)?.displayName
+                                    ?: dynamicActivityDetectionEngine.identifyGame(currentApp.packageName)?.displayName
+                                    ?: currentApp.name
+                            )
                             updatePresence()
                         }
-                    } else if (currentApp.name.isEmpty() && currentPackageName != "") {
+                    } else if (currentApp.name.isEmpty() && trackedPackageName.isNotEmpty()) {
+                        trackedPackageName = ""
                         currentPackageName = ""
-                        scope.launch { kizzyRPC?.clearPresence() }
+                        kizzyRPC?.clearPresence()
                     }
                 } catch (e: CancellationException) {
                     throw e
@@ -631,164 +680,188 @@ class MediaRpcService : Service() {
 
     private suspend fun updatePresenceLocked(forceRefresh: Boolean = false) {
         if (BuildConfig.DEBUG) Trace.beginSection("MediaRpcService.updatePresence")
-        val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
-        val showCoverArt = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true]
-        val playingMedia = getCurrentPlayingMedia()
+        try {
+            val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
+            val showCoverArt = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true]
+            val playingMedia = getCurrentPlayingMedia()
 
-        currentMediaTitle = playingMedia.name.takeIf { it.isNotBlank() }
-        currentMediaArtist = playingMedia.state?.takeIf { it.isNotBlank() }
+            currentMediaTitle = playingMedia.name.takeIf { it.isNotBlank() }
+            currentMediaArtist = playingMedia.state?.takeIf { it.isNotBlank() }
 
-        updateScrobblers(playingMedia)
+            updateScrobblers(playingMedia)
 
-        val showCoverArtGlobal = Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false
-        currentMediaCoverArt = if (showCoverArtGlobal && showCoverArt) {
-            playingMedia.largeImage?.let {
-                (it as? com.my.kizzy.data.rpc.RpcImage.BitmapImage)?.bitmap
-            }
-        } else {
-            null
-        }
-
-        playingMedia.time?.let { time ->
-            val start = time.start ?: 0L
-            val end = time.end ?: 0L
-            currentMediaDurationSec = ((end - start) / 1000).toInt().coerceAtLeast(0)
-            val elapsedMs = System.currentTimeMillis() - start
-            currentMediaPositionMs = elapsedMs.coerceIn(0L, currentMediaDurationSec * 1000L)
-            currentMediaProgressSec = (currentMediaPositionMs / 1000).toInt().coerceIn(0, currentMediaDurationSec)
-        } ?: run {
-            currentMediaDurationSec = 0
-            currentMediaProgressSec = 0
-            currentMediaPositionMs = 0L
-        }
-
-        stateRepository.setPausedPosition(
-            if (isPaused && currentMediaDurationSec > 0) currentMediaPositionMs else null
-        )
-
-        val playingPkg = playingMedia.appPackage.takeIf { it.isNotBlank() }
-
-        if (playingPkg != null && playingPkg != currentPackageName) {
-            logger.d(TAG, "Session switched: $currentPackageName -> $playingPkg")
-            currentPackageName = playingPkg
-            isPaused = false
-            lastKnownTrackTitle = null
-            lastKnownTrackArtist = null
-            stateRepository.setPaused(false)
-        }
-
-        val activeRpcTypes = rpcManager.activeRpc.value
-        val customOrManualRpcActive = activeRpcTypes.contains(RpcManager.RpcType.CustomRpc) ||
-            activeRpcTypes.contains(RpcManager.RpcType.ConsoleRpc) ||
-            activeRpcTypes.contains(RpcManager.RpcType.ManualRpc)
-
-        val mediaPaused = isPaused
-        if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false] && !customOrManualRpcActive && mediaPaused && playingPkg != null) {
-            val runningApp = getCurrentlyRunningApp()
-            if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
-                val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
-                val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
-                val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
-                val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
-                if (shouldShow && runningApp.packageName != currentPackageName) {
-                    currentPackageName = runningApp.packageName
-                    updatePresence()
-                    return
+            val showCoverArtGlobal = Prefs[Prefs.RPC_HIDE_COVER_ART, false] == false
+            currentMediaCoverArt = if (showCoverArtGlobal && showCoverArt) {
+                playingMedia.largeImage?.let {
+                    (it as? com.my.kizzy.data.rpc.RpcImage.BitmapImage)?.bitmap
                 }
-            } else if (runningApp.name.isEmpty() && currentPackageName != "") {
-                currentPackageName = ""
-                scope.launch { kizzyRPC?.clearPresence() }
+            } else {
+                null
             }
-        }
 
-        if (playingPkg == null) {
-            if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]) {
+            playingMedia.time?.let { time ->
+                val start = time.start ?: 0L
+                val end = time.end ?: 0L
+                currentMediaDurationSec = ((end - start) / 1000).toInt().coerceAtLeast(0)
+                val elapsedMs = System.currentTimeMillis() - start
+                currentMediaPositionMs = elapsedMs.coerceIn(0L, currentMediaDurationSec * 1000L)
+                currentMediaProgressSec = (currentMediaPositionMs / 1000).toInt().coerceIn(0, currentMediaDurationSec)
+            } ?: run {
+                currentMediaDurationSec = 0
+                currentMediaProgressSec = 0
+                currentMediaPositionMs = 0L
+            }
+
+            stateRepository.setPausedPosition(
+                if (isPaused && currentMediaDurationSec > 0) currentMediaPositionMs else null
+            )
+
+            val playingPkg = playingMedia.appPackage.takeIf { it.isNotBlank() }
+
+            if (playingPkg != null && playingPkg != currentPackageName) {
+                logger.d(TAG, "Session switched: $currentPackageName -> $playingPkg")
+                currentPackageName = playingPkg
+                isPaused = false
+                lastKnownTrackTitle = null
+                lastKnownTrackArtist = null
+                stateRepository.setPaused(false)
+            }
+
+            val activeRpcTypes = rpcManager.activeRpc.value
+            val customOrManualRpcActive = activeRpcTypes.contains(RpcManager.RpcType.CustomRpc) ||
+                    activeRpcTypes.contains(RpcManager.RpcType.ConsoleRpc) ||
+                    activeRpcTypes.contains(RpcManager.RpcType.ManualRpc)
+
+            val mediaPaused = isPaused
+            if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false] && !customOrManualRpcActive && mediaPaused && playingPkg != null) {
                 val runningApp = getCurrentlyRunningApp()
                 if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
                     val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
                     val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
                     val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
                     val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
-                    if (shouldShow) {
+                    if (shouldShow && runningApp.packageName != currentPackageName) {
+                        currentPackageName = runningApp.packageName
+                        val appInfo = runningApp.copy(
+                            name = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName)?.displayName
+                                ?: dynamicActivityDetectionEngine.identifyGame(runningApp.packageName)?.displayName
+                                ?: runningApp.name
+                        )
                         updatePresence()
-                        if (BuildConfig.DEBUG) Trace.endSection()
                         return
                     }
+                } else if (runningApp.name.isEmpty() && currentPackageName != "") {
+                    currentPackageName = ""
+                    kizzyRPC?.clearPresence()
                 }
             }
-            if (currentPackageName != null) {
-                currentPackageName = null
-                isPaused = false
-                lastKnownTrackTitle = null
-                lastKnownTrackArtist = null
-                currentMediaTitle = null
-                currentMediaArtist = null
-                currentMediaCoverArt = null
-                activeScrobbleTrack.set(0L)
-                lastFmNowPlayingIdentity = null
-                listenBrainzNowPlayingIdentity = null
-                stateRepository.setConnected(false)
-                stateRepository.clearTrackInfo()
-                stopTimelineUpdates()
-                scope.launch { kizzyRPC?.clearPresence() }
-                if (BuildConfig.DEBUG) Trace.endSection()
+
+            if (playingPkg == null) {
+                if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]) {
+                    val runningApp = getCurrentlyRunningApp()
+                    if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
+                        val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
+                        val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
+                        val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+                        val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
+                        if (shouldShow) {
+                            val appInfo = runningApp.copy(
+                                name = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName)?.displayName
+                                    ?: dynamicActivityDetectionEngine.identifyGame(runningApp.packageName)?.displayName
+                                    ?: runningApp.name
+                            )
+                            updatePresence()
+                            return
+                        }
+                    }
+                }
+                if (currentPackageName != null) {
+                    currentPackageName = null
+                    isPaused = false
+                    lastKnownTrackTitle = null
+                    lastKnownTrackArtist = null
+                    currentMediaTitle = null
+                    currentMediaArtist = null
+                    currentMediaCoverArt = null
+                    activeScrobbleTrack = null
+                    lastFmNowPlayingIdentity = null
+                    listenBrainzNowPlayingIdentity = null
+                    libreFmNowPlayingIdentity = null
+                    stateRepository.setConnected(false)
+                    stateRepository.clearTrackInfo()
+                    stopTimelineUpdates()
+                    kizzyRPC?.clearPresence()
+                    return
+                }
+            }
+
+            val trackName = playingMedia.name.takeIf { it.isNotBlank() }
+            stateRepository.setTrackInfo(
+                title = trackName,
+                artist = playingMedia.state,
+                album = null
+            )
+            lastKnownTrackTitle = trackName
+            lastKnownTrackArtist = playingMedia.state
+
+            updateScrobblers(playingMedia)
+
+            val now = System.currentTimeMillis()
+            if (now - lastNotificationUpdateTime >= NOTIFICATION_UPDATE_MIN_INTERVAL_MS) {
+                lastNotificationUpdateTime = now
+                updateNotification()
+            }
+
+            val currentName = playingMedia.name.takeIf { it.isNotBlank() }
+            val currentDetails = playingMedia.details
+            val currentState = playingMedia.state
+            val currentLargeImageUrl = if (showCoverArt) {
+                playingMedia.largeImage?.let {
+                    (it as? com.my.kizzy.data.rpc.RpcImage.BitmapImage)?.title ?: it.toString()
+                }
+            } else {
+                null
+            }
+
+            val packageChanged = playingPkg != null && playingPkg != lastSentPackageName
+
+            val currentStart = playingMedia.time?.start
+            val timelineJumped = currentStart != null && lastSentStartTimestamps != null &&
+                    kotlin.math.abs(currentStart - lastSentStartTimestamps!!) > TIMELINE_JUMP_TOLERANCE_MS
+
+            val contentChanged = currentName != lastSentName ||
+                    currentDetails != lastSentDetails ||
+                    currentState != lastSentState ||
+                    currentLargeImageUrl != lastSentLargeImageUrl
+
+            if (!forceRefresh && !packageChanged && !contentChanged && !timelineJumped) {
+                logger.d(TAG, "Presence unchanged, skipping redundant update")
                 return
             }
-        }
 
-        val trackName = playingMedia.name.takeIf { it.isNotBlank() }
-        stateRepository.setTrackInfo(
-            title = trackName,
-            artist = playingMedia.state,
-            album = null
-        )
-        lastKnownTrackTitle = trackName
-        lastKnownTrackArtist = playingMedia.state
+            stateRepository.setTimestamps(playingMedia.time?.start, playingMedia.time?.end)
 
-        updateScrobblers(playingMedia)
-
-        val currentName = playingMedia.name.takeIf { it.isNotBlank() }
-        val currentDetails = playingMedia.details
-        val currentState = playingMedia.state
-        val currentLargeImageUrl = if (showCoverArt) {
-            playingMedia.largeImage?.let {
-                (it as? com.my.kizzy.data.rpc.RpcImage.BitmapImage)?.title ?: it.toString()
+            val largeImageUrl = if (showCoverArt) {
+                playingMedia.largeImage?.resolveImage(kizzyRepository)
+            } else {
+                null
             }
-        } else {
-            null
-        }
+            val smallImageUrl = playingMedia.smallImage?.resolveImage(kizzyRepository)
 
-        val packageChanged = playingPkg != null && playingPkg != lastSentPackageName
+            sendPresenceUpdate(playingMedia, enableTimestamps, showCoverArt)
 
-        val currentStart = playingMedia.time?.start
-        val timelineJumped = currentStart != null && lastSentStartTimestamps != null &&
-            kotlin.math.abs(currentStart - lastSentStartTimestamps!!) > TIMELINE_JUMP_TOLERANCE_MS
-
-        val contentChanged = currentName != lastSentName ||
-            currentDetails != lastSentDetails ||
-            currentState != lastSentState ||
-            currentLargeImageUrl != lastSentLargeImageUrl
-
-        if (!forceRefresh && !packageChanged && !contentChanged && !timelineJumped) {
-            logger.d(TAG, "Presence unchanged, skipping redundant update")
+            lastSentName = currentName
+            lastSentDetails = currentDetails
+            lastSentState = currentState
+            lastSentStartTimestamps = currentStart
+            lastSentStopTimestamps = playingMedia.time?.end
+            lastSentLargeImageUrl = currentLargeImageUrl
+            lastSentPackageName = playingPkg
+            lastSentProgressSec = currentMediaProgressSec
+            lastPresenceUpdateTime = now
+        } finally {
             if (BuildConfig.DEBUG) Trace.endSection()
-            return
         }
-
-        stateRepository.setTimestamps(playingMedia.time?.start, playingMedia.time?.end)
-
-        sendPresenceUpdate(playingMedia, enableTimestamps, showCoverArt)
-
-        lastSentName = currentName
-        lastSentDetails = currentDetails
-        lastSentState = currentState
-        lastSentStartTimestamps = currentStart
-        lastSentStopTimestamps = playingMedia.time?.end
-        lastSentLargeImageUrl = currentLargeImageUrl
-        lastSentPackageName = playingPkg
-        lastSentProgressSec = currentMediaProgressSec
-        lastPresenceUpdateTime = System.currentTimeMillis()
-        if (BuildConfig.DEBUG) Trace.endSection()
     }
 
     private suspend fun sendPresenceUpdate(
@@ -858,15 +931,9 @@ class MediaRpcService : Service() {
 
         val finalLargeUrl = largeUrl ?: smallUrl
 
-        val activityType = ActivityTypeResolver.resolve(
-            packageName = playingMedia.appPackage,
-            isMusicMetadata = playingMedia.isMusicMetadata,
-            fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.LISTENING]
-        )
-
         val commonRpc = CommonRpc(
             name = rpcName,
-            type = activityType,
+            type = resolveActivityType(playingMedia),
             details = rpcDetails,
             state = rpcState,
             detailsUrl = detailsUrl,
@@ -891,8 +958,6 @@ class MediaRpcService : Service() {
 
         kizzyRPC?.clearButtons()
         kizzyRPC?.updateRPC(commonRpc, enableTimestamps, forceRefresh = true, priority = 3)
-
-        val notifText = listOfNotNull(rpcName, rpcDetails).filter { it.isNotBlank() }.joinToString(" - ")
-        updateNotification(title = getString(R.string.service_enabled), text = notifText)
+        updateNotification()
     }
 }
