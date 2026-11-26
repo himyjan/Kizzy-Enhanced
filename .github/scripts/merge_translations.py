@@ -20,9 +20,13 @@ def load(p):
         return dict(re.findall(r'<string\s+name="([^"]+)"[^>]*>(.*?)</string>', f.read(), re.S))
 
 def encode(v):
-    # v comes from LLM as plain text; encode for Android XML
+    # v comes from LLM as plain text; encode for Android XML.
+    # Android string resources need a backslash-escaped apostrophe. &apos; is
+    # decoded to a bare ' by AGP's merger, which aapt2 rejects with
+    # "Invalid unicode escape sequence in string".
+    v = v.replace('\\&apos;', "'").replace('\\\'', "'")
     return (v.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-             .replace('"', '&quot;').replace("'", '&apos;'))
+             .replace('"', '&quot;').replace("'", "\\'"))
 
 base = load(BASE)
 base_order = list(base.keys())

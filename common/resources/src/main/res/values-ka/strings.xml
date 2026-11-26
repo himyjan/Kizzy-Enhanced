@@ -205,7 +205,7 @@
     <string name="custom_application_id">მორგალური აქტივობის აპლიკაციის ID</string>
     <string name="custom_application_id_desc">ნაგულისხმავ Discord აპლიკაციის ID-ს ცვლის</string>
     <string name="use_a_vpn_desc">Discord-ის შესვლა თქვენს ქვეყანაში VPN/DPI-ის გამო შეიძლება არ მუშაობდეს. გამოიყენეთ VPN/DPI წინ.</string>
-    <string name="rpc_templates_note">&amp;quot;გამოიყენეთ მაგალითები მაგრმან &amp;apos;{{&amp;apos;;app_name}}&amp;apos;&amp;apos;, &amp;apos;{{&amp;apos;;media_title}}&amp;apos;&amp;apos; და ა.შ.&amp;#10;        ცარიელი ველები გამოიყენება ნაგულისხმავი ქცევას ან გამოტოვება.&amp;quot;</string>
+    <string name="rpc_templates_note">&amp;quot;გამოიყენეთ მაგალითები მაგრმან \'{{\';app_name}}\'\', \'{{\';media_title}}\'\' და ა.შ.&amp;#10;        ცარიელი ველები გამოიყენება ნაგულისხმავი ქცევას ან გამოტოვება.&amp;quot;</string>
     <string name="manual_rpc_detect_apps">მიერთ უფლება Manual RPC-ს აღმოჩენოს მოქმედი აპლიკაციები</string>
     <string name="manual_rpc_detect_media">მიერთ უფლება Manual RPC-ს აღმოჩენოს მედიის დაკვრაფა</string>
     <string name="app_preferences">აპლიკაციის პარამეტრები</string>
@@ -236,7 +236,7 @@
     <string name="manual_rpc_title_toggle_desc">აქტივობის სათაურში აპლიკაციის ნაცვლედ სიმღერთის ინფორმაციის ჩვენება</string>
     <string name="title_source_song">სიმღერთის სახელი</string>
     <string name="title_source_artist">შესრულებელი</string>
-    <string name="type_to_insert_variable">ცვლადის ჩასასმენად დაწერეთ &amp;apos;{{&amp;apos;</string>
+    <string name="type_to_insert_variable">ცვლადის ჩასასმენად დაწერეთ \'{{\'</string>
     <string name="app_selection">აპლიკაციის არჩევა</string>
     <string name="platform_none_desktop">არაფერი (კომპიუტერი)</string>
     <string name="platform_desktop">კომპიუტერი</string>

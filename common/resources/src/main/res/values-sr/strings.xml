@@ -236,7 +236,7 @@
     <string name="manual_rpc_title_toggle_desc">Покажи информације о песми у заголовку активности под називом aplikacije</string>
     <string name="title_source_song">Наслов песне</string>
     <string name="title_source_artist">Изворник</string>
-    <string name="type_to_insert_variable">Упишите &amp;apos;{{&amp;apos; да уметнете променљиву</string>
+    <string name="type_to_insert_variable">Упишите \'{{\' да уметнете променљиву</string>
     <string name="app_selection">Изаберите апликацију</string>
     <string name="platform_none_desktop">Ништа (десктоп)</string>
     <string name="platform_desktop">Десктоп</string>

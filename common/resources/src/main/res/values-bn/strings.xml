@@ -233,7 +233,7 @@
     <string name="manual_rpc_title_toggle_desc">গান টাইটেলে বাঁজন গান টাইটেল দিবে</string>
     <string name="title_source_song">গানের নাম</string>
     <string name="title_source_artist">শিল্পী</string>
-    <string name="type_to_insert_variable">একটি ভ্যারিয়েবল ঢোকাতে &amp;apos;{{&amp;apos; টাইপ করুন</string>
+    <string name="type_to_insert_variable">একটি ভ্যারিয়েবল ঢোকাতে \'{{\' টাইপ করুন</string>
     <string name="app_selection">অ্যাপ সিলেকশন</string>
     <string name="platform_none_desktop">নেই (ডেস্কটপ)</string>
     <string name="platform_desktop">ডেস্কটপ</string>
