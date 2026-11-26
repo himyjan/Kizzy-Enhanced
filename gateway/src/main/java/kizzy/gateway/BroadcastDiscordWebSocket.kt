@@ -26,6 +26,7 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
         val instanceId: String,
         val appId: String,
         val socket: DiscordWebSocketImpl,
+        val nameSuffix: String,
     )
 
     private val lock = Any()
@@ -36,12 +37,17 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
 
     override var onPresenceDropped: (() -> Unit)? = null
 
-    fun addSocket(instanceId: String, appId: String, socket: DiscordWebSocketImpl) {
+    fun addSocket(
+        instanceId: String,
+        appId: String,
+        socket: DiscordWebSocketImpl,
+        nameSuffix: String = "",
+    ) {
         val callback: () -> Unit = { onPresenceDropped?.invoke() }
         synchronized(lock) {
             entries.remove(instanceId)?.socket?.close()
             socket.onPresenceDropped = callback
-            entries[instanceId] = Entry(instanceId, appId, socket)
+            entries[instanceId] = Entry(instanceId, appId, socket, nameSuffix)
         }
     }
 
@@ -90,10 +96,16 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
             async {
                 runCatching {
                     entry.socket.sendActivity(
-                        if (entry.appId.isBlank()) presence
-                        else presence.copy(
+                        presence.copy(
                             activities = presence.activities?.map { activity ->
-                                activity?.copy(applicationId = entry.appId)
+                                activity?.copy(
+                                    applicationId = entry.appId.ifBlank { activity.applicationId },
+                                    // Discord de-duplicates activities with the same
+                                    // name, so a clone needs its own display name.
+                                    name = if (entry.nameSuffix.isBlank()) activity.name
+                                    else listOfNotNull(activity.name, entry.nameSuffix)
+                                        .joinToString(" • "),
+                                )
                             },
                         ),
                     )

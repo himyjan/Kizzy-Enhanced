@@ -102,7 +102,13 @@ class MultiRpcManager @Inject constructor(
         // visible at the same time.
         val appId = assignAppId(instanceId)
         val socket = createSocket(credential, instanceId)
-        group.broadcast.addSocket(instanceId, appId, socket)
+        val label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
+        val nameSuffix = if (instanceId == builtInInstanceId(slotId) || label.isNullOrBlank()) {
+            ""
+        } else {
+            label
+        }
+        group.broadcast.addSocket(instanceId, appId, socket, nameSuffix)
         group.instances[instanceId] = credential
         // Discord rate-limits IDENTIFYs from the same client; stagger them so
         // every parallel socket actually reaches READY.

@@ -155,6 +155,17 @@ class CustomRpcService : Service() {
                 if (!instanceId.isNullOrBlank()) {
                     val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
                     multiRpc.addInstance("2", instanceId, oauthIndex)
+                    // The instance's own RpcConfig travels in the intent. Without
+                    // reading it here the service falls back to the old global
+                    // config (or an empty activity), so edits never show up.
+                    intent.getStringExtra("RPC")?.takeIf { it.isNotBlank() }?.let { raw ->
+                        rpcData = try {
+                            Json.decodeFromString(raw)
+                        } catch (e: Exception) {
+                            Log.e("CustomRpcService", "Failed to parse instance RPC config: ${e.message}")
+                            null
+                        }
+                    }
                     scope.launch { sendPresenceAndNotification(forceRefresh = true) }
                     startPresenceRefresh()
                 }
