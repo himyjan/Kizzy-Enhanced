@@ -13,24 +13,31 @@ package com.my.kizzy.feature_settings.rpc_settings
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.PostAdd
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,6 +58,7 @@ import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.SettingItem
 import com.my.kizzy.ui.components.Subtitle
+import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -141,21 +149,21 @@ fun LeaderboardSettings(
             },
         )
 
-        androidx.compose.material3.Scaffold() { paddingValues ->
+        Scaffold(modifier = Modifier.weight(1f)) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(paddingValues),
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 item {
                     Subtitle(text = stringResource(R.string.discord_leaderboard_connection))
                 }
                 item(key = "leaderboard_enabled") {
-                    com.my.kizzy.ui.components.preference.PreferenceSwitch(
+                    PreferenceSwitch(
                         title = stringResource(R.string.discord_leaderboard_enabled),
                         description = stringResource(R.string.discord_leaderboard_enabled_desc),
-                        icon = Icons.Outlined.List,
+                        icon = Icons.AutoMirrored.Outlined.List,
                         isChecked = isEnabled,
                     ) {
                         isEnabled = !isEnabled
@@ -170,8 +178,8 @@ fun LeaderboardSettings(
                 item(key = "leaderboard_bot_token") {
                     SettingItem(
                         title = stringResource(R.string.discord_leaderboard_bot_token),
-                        description = stringResource(R.string.discord_leaderboard_bot_token_desc) + "  •  ${botToken.ifEmpty { "(not set)" } }",
-                        icon = Icons.Outlined.List,
+                        description = stringResource(R.string.discord_leaderboard_bot_token_desc) + "  •  ${botToken.ifEmpty { "(not set)" }}",
+                        icon = Icons.AutoMirrored.Outlined.List,
                     ) {
                         draftBotToken = botToken
                         showBotTokenDialog = true
@@ -180,8 +188,8 @@ fun LeaderboardSettings(
                 item(key = "leaderboard_channel_id") {
                     SettingItem(
                         title = stringResource(R.string.discord_leaderboard_channel_id),
-                        description = stringResource(R.string.discord_leaderboard_channel_id_desc) + "  •  ${channelId.ifEmpty { "(not set)" } }",
-                        icon = Icons.Outlined.List,
+                        description = stringResource(R.string.discord_leaderboard_channel_id_desc) + "  •  ${channelId.ifEmpty { "(not set)" }}",
+                        icon = Icons.AutoMirrored.Outlined.List,
                     ) {
                         draftChannelId = channelId
                         showChannelIdDialog = true
@@ -208,7 +216,7 @@ fun LeaderboardSettings(
                     SettingItem(
                         title = stringResource(R.string.discord_leaderboard_title),
                         description = stringResource(R.string.discord_leaderboard_title_desc) + "  •  $title",
-                        icon = Icons.Outlined.List,
+                        icon = Icons.AutoMirrored.Outlined.List,
                     ) {
                         draftTitle = title
                         showTitleDialog = true
@@ -218,7 +226,7 @@ fun LeaderboardSettings(
                     SettingItem(
                         title = stringResource(R.string.discord_leaderboard_description),
                         description = stringResource(R.string.discord_leaderboard_description_desc) + (if (description.isNotEmpty()) "  •  $description" else "  •  (not set)"),
-                        icon = Icons.Outlined.List,
+                        icon = Icons.AutoMirrored.Outlined.List,
                     ) {
                         draftDescription = description
                         showDescriptionDialog = true
@@ -242,7 +250,7 @@ fun LeaderboardSettings(
                     SettingItem(
                         title = stringResource(R.string.discord_leaderboard_max_entries),
                         description = stringResource(R.string.discord_leaderboard_max_entries_desc) + "  •  $maxEntries",
-                        icon = Icons.Outlined.List,
+                        icon = Icons.AutoMirrored.Outlined.List,
                     ) {
                         draftMaxEntries = maxEntries.toString()
                         showMaxEntriesDialog = true
@@ -254,8 +262,10 @@ fun LeaderboardSettings(
                 }
                 if (entries.isEmpty()) {
                     item {
-                        androidx.compose.foundation.layout.Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp),
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 16.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -266,15 +276,18 @@ fun LeaderboardSettings(
                         }
                     }
                 } else {
-                    items(entries, key = { it.playerId }) { entry ->
-                        androidx.compose.foundation.layout.Row(
+                    itemsIndexed(
+                        items = entries,
+                        key = { index, entry -> "${entry.playerId}_$index" },
+                    ) { index, entry ->
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                text = "#${entries.indexOf(entry) + 1}",
+                                text = "#${index + 1}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -282,7 +295,7 @@ fun LeaderboardSettings(
                                 text = entry.name,
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.weight(1f),
                             )
                             Text(
                                 text = stringResource(R.string.discord_leaderboard_entry_points, entry.score),
@@ -312,97 +325,109 @@ fun LeaderboardSettings(
                 }
             }
         }
+    }
 
-        // --- Dialogs (rendered here so they run in a Compose context) ---------
+    // --- Dialogs (rendered here so they run in a Compose context) ---------
 
-        @Composable
-    fun textDialog(titleRes: Int, draft: () -> String, onSave: (String) -> Unit, visible: Boolean, onDismiss: () -> Unit) {
-            if (!visible) return
-            var text by remember { mutableStateOf(draft()) }
-            AlertDialog(
-                onDismissRequest = { onDismiss(); text = draft() },
-                title = { Text(text = stringResource(titleRes)) },
-                text = {
-                    androidx.compose.material3.TextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        label = { Text(text = stringResource(titleRes)) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        onDismiss()
-                        onSave(text)
-                    }) {
-                        Text(text = stringResource(R.string.save))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = onDismiss) {
-                        Text(text = stringResource(R.string.cancel))
-                    }
-                },
-            )
+    @Composable
+    fun textDialog(
+        titleRes: Int,
+        draft: () -> String,
+        onSave: (String) -> Unit,
+        visible: Boolean,
+        onDismiss: () -> Unit,
+    ) {
+        if (!visible) return
+        val initialDraft = draft()
+        val textFieldState = rememberTextFieldState(initialText = initialDraft)
+
+        // Sync draft whenever the dialog becomes visible or the draft value changes.
+        LaunchedEffect(visible, initialDraft) {
+            if (visible && textFieldState.text.toString() != initialDraft) {
+                textFieldState.setTextAndPlaceCursorAtEnd(initialDraft)
+            }
         }
 
-        // Note: the dialog lambdas capture `text` via remember, but the draft is
-        // reset when the dialog opens (see onClick handlers above).
-
-        textDialog(
-            titleRes = R.string.discord_leaderboard_bot_token,
-            draft = { draftBotToken },
-            onSave = { botToken = it; Prefs[Prefs.DISCORD_LEADERBOARD_BOT_TOKEN] = botToken },
-            visible = showBotTokenDialog,
-            onDismiss = { showBotTokenDialog = false },
-        )
-        textDialog(
-            titleRes = R.string.discord_leaderboard_channel_id,
-            draft = { draftChannelId },
-            onSave = { channelId = it; Prefs[Prefs.DISCORD_LEADERBOARD_CHANNEL_ID] = channelId },
-            visible = showChannelIdDialog,
-            onDismiss = { showChannelIdDialog = false },
-        )
-        textDialog(
-            titleRes = R.string.discord_leaderboard_title,
-            draft = { draftTitle },
-            onSave = { title = it; Prefs[Prefs.DISCORD_LEADERBOARD_TITLE] = title },
-            visible = showTitleDialog,
-            onDismiss = { showTitleDialog = false },
-        )
-        textDialog(
-            titleRes = R.string.discord_leaderboard_description,
-            draft = { draftDescription },
-            onSave = { description = it; Prefs[Prefs.DISCORD_LEADERBOARD_DESCRIPTION] = description },
-            visible = showDescriptionDialog,
-            onDismiss = { showDescriptionDialog = false },
-        )
-        textDialog(
-            titleRes = R.string.discord_leaderboard_interval,
-            draft = { draftInterval },
-            onSave = {
-                val parsed = it.toIntOrNull() ?: 5
-                intervalMinutes = parsed.coerceAtLeast(1)
-                Prefs[Prefs.DISCORD_LEADERBOARD_UPDATE_INTERVAL_MIN] = intervalMinutes.toLong()
-                if (isEnabled) {
-                    manager.startPeriodicUpdates(intervalMinutes.toLong())
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(text = stringResource(titleRes)) },
+            text = {
+                TextField(
+                    state = textFieldState,
+                    label = { Text(text = stringResource(titleRes)) },
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val value = textFieldState.text.toString()
+                    onDismiss()
+                    onSave(value)
+                }) {
+                    Text(text = stringResource(R.string.save))
                 }
             },
-            visible = showIntervalDialog,
-            onDismiss = { showIntervalDialog = false },
-        )
-        textDialog(
-            titleRes = R.string.discord_leaderboard_max_entries,
-            draft = { draftMaxEntries },
-            onSave = {
-                val parsed = it.toIntOrNull() ?: 10
-                maxEntries = parsed.coerceAtLeast(1).coerceAtMost(25)
-                Prefs[Prefs.DISCORD_LEADERBOARD_MAX_ENTRIES] = maxEntries
-                refreshKey = System.currentTimeMillis()
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(text = stringResource(R.string.cancel))
+                }
             },
-            visible = showMaxEntriesDialog,
-            onDismiss = { showMaxEntriesDialog = false },
         )
     }
+
+    textDialog(
+        titleRes = R.string.discord_leaderboard_bot_token,
+        draft = { draftBotToken },
+        onSave = { botToken = it; Prefs[Prefs.DISCORD_LEADERBOARD_BOT_TOKEN] = botToken },
+        visible = showBotTokenDialog,
+        onDismiss = { showBotTokenDialog = false },
+    )
+    textDialog(
+        titleRes = R.string.discord_leaderboard_channel_id,
+        draft = { draftChannelId },
+        onSave = { channelId = it; Prefs[Prefs.DISCORD_LEADERBOARD_CHANNEL_ID] = channelId },
+        visible = showChannelIdDialog,
+        onDismiss = { showChannelIdDialog = false },
+    )
+    textDialog(
+        titleRes = R.string.discord_leaderboard_title,
+        draft = { draftTitle },
+        onSave = { title = it; Prefs[Prefs.DISCORD_LEADERBOARD_TITLE] = title },
+        visible = showTitleDialog,
+        onDismiss = { showTitleDialog = false },
+    )
+    textDialog(
+        titleRes = R.string.discord_leaderboard_description,
+        draft = { draftDescription },
+        onSave = { description = it; Prefs[Prefs.DISCORD_LEADERBOARD_DESCRIPTION] = description },
+        visible = showDescriptionDialog,
+        onDismiss = { showDescriptionDialog = false },
+    )
+    textDialog(
+        titleRes = R.string.discord_leaderboard_interval,
+        draft = { draftInterval },
+        onSave = {
+            val parsed = it.toIntOrNull() ?: 5
+            intervalMinutes = parsed.coerceAtLeast(1)
+            Prefs[Prefs.DISCORD_LEADERBOARD_UPDATE_INTERVAL_MIN] = intervalMinutes.toLong()
+            if (isEnabled) {
+                manager.startPeriodicUpdates(intervalMinutes.toLong())
+            }
+        },
+        visible = showIntervalDialog,
+        onDismiss = { showIntervalDialog = false },
+    )
+    textDialog(
+        titleRes = R.string.discord_leaderboard_max_entries,
+        draft = { draftMaxEntries },
+        onSave = {
+            val parsed = it.toIntOrNull() ?: 10
+            maxEntries = parsed.coerceAtLeast(1).coerceAtMost(25)
+            Prefs[Prefs.DISCORD_LEADERBOARD_MAX_ENTRIES] = maxEntries
+            refreshKey = System.currentTimeMillis()
+        },
+        visible = showMaxEntriesDialog,
+        onDismiss = { showMaxEntriesDialog = false },
+    )
 }
