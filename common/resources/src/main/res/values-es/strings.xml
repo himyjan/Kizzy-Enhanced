@@ -8,7 +8,7 @@
     <string name="activity_state">Estado de la Actividad</string>
     <string name="activity_start_timestamps">Temporizadores de Inicio</string>
     <string name="activity_stop_timestamps">Temporizadores de Detención</string>
-    <string name="activity_status_online_idle_dnd">Estado de Actividad (&quot;en línea&quot;, &quot;inactivo&quot;, &quot;no molestar&quot;)</string>
+    <string name="activity_status_online_idle_dnd">Estado de Actividad (&amp;quot;en línea&amp;quot;, &amp;quot;inactivo&amp;quot;, &amp;quot;no molestar&amp;quot;)</string>
     <string name="activity_button1_text">Texto del Botón 1</string>
     <string name="activity_button2_text">Texto del Botón 2</string>
     <string name="activity_button1_url">URL del Botón 1</string>
@@ -32,7 +32,7 @@
     <string name="rich_presence_active">Rich Presence activo</string>
     <string name="github_readme">README</string>
     <string name="github_readme_desc">Ver el repositorio de GitHub</string>
-    <string name="github_latest_release">&quot;Última Versión &quot;</string>
+    <string name="github_latest_release">&amp;quot;Última Versión &amp;quot;</string>
     <string name="github_latest_release_desc">Buscar Nueva Versión y Registro de Cambios</string>
     <string name="github_issue">Problema de GitHub</string>
     <string name="github_issue_desc">Enviar una incidencia para informar de un error o solicitar una función</string>
@@ -130,11 +130,11 @@
     <string name="discord_step1_title">Paso 1: Abre los ajustes de privacidad</string>
     <string name="discord_step1_content">Abre la app de Discord → toca tu icono «Tú» (foto de perfil) → toca Configuración (⚙️) → baja y toca «Contenido y social» (o «Privacidad de la actividad» en versiones antiguas de la app).</string>
     <string name="discord_step2_title">Paso 2: Activa el uso compartido de actividad</string>
-    <string name="discord_step2_content">Busca "Compartir mi actividad" y actívalo. En "Dónde comparto actividad", elige "Compartir en todos los servidores". Desplázate hasta "Mis servidores" y activa los servidores donde quieras que se vea tu estado.</string>
+    <string name="discord_step2_content">Busca &quot;Compartir mi actividad&quot; y actívalo. En &quot;Dónde comparto actividad&quot;, elige &quot;Compartir en todos los servidores&quot;. Desplázate hasta &quot;Mis servidores&quot; y activa los servidores donde quieras que se vea tu estado.</string>
     <string name="discord_step3_title">Paso 3: Comprueba tu estado en línea</string>
     <string name="discord_step3_content">Toca tu Estado (debajo de tu nombre de usuario) y elige En línea, Inactivo o No molestar. ⚠️ No uses Invisible: Discord oculta la actividad de Kizzy cuando estás Invisible.</string>
-    <string name="discord_tip_title">¿No encuentras "Compartir mi actividad"?</string>
-    <string name="discord_tip_content">Algunas versiones móviles de Discord ocultan este conmutador. Abre discord.com en Chrome → activa "Sitio de escritorio" → inicia sesión → Configuración (⚙️) → Privacidad de la actividad → activa "Compartir mi actividad".</string>
+    <string name="discord_tip_title">¿No encuentras &quot;Compartir mi actividad&quot;?</string>
+    <string name="discord_tip_content">Algunas versiones móviles de Discord ocultan este conmutador. Abre discord.com en Chrome → activa &quot;Sitio de escritorio&quot; → inicia sesión → Configuración (⚙️) → Privacidad de la actividad → activa &quot;Compartir mi actividad&quot;.</string>
     <string name="permission_granted">Concedido</string>
     <string name="permission_not_granted">No Concedido, Haga clic para Permitir</string>
     <string name="activity_large_text">Texto Grande de la Actividad</string>
@@ -315,13 +315,13 @@
     <string name="upload_image">Subir Imagen</string>
     <string name="save">Guardar</string>
     <string name="set_timestamps">Establecer Temporizadores</string>
-    <string name="saved_config_toast">Guardado "&quot;%1$s&quot; exitosamente</string>
+    <string name="saved_config_toast">Guardado &quot;&amp;quot;%1$s&amp;quot; exitosamente</string>
     <string name="error_saving_config_toast">Error al guardar configuración</string>
     <string name="config_name">Nombre de la configuración</string>
     <string name="delete">Eliminar</string>
     <string name="mandatory">Obligatorio</string>
     <string name="optional">Opcional</string>
-    <string name="general_settings">General</string>
+    <string name="general_settings">Ajustes generales</string>
     <string name="activity_playing_title">Jugando un juego</string>
     <string name="activity_listening_title">Escuchando %1$s</string>
     <string name="activity_watching_title">Viendo %1$s</string>
@@ -352,7 +352,7 @@
     <string name="custom_application_id">ID de Aplicación de Actividad Personalizado</string>
     <string name="custom_application_id_desc">Anula el ID de Aplicación Discord predeterminado</string>
     <string name="use_a_vpn_desc">El inicio de sesión de Discord puede no funcionar en tu país sin una VPN/DPI. Por favor, usa una VPN/DPI para continuar.</string>
-    <string name="rpc_templates_note">&quot;Usa marcadores de posición como \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc. Los campos vacíos usarán el comportamiento predeterminado o se omitirán.&quot;</string>
+    <string name="rpc_templates_note">"&amp;quot;Usa marcadores de posición como \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc. Los campos vacíos usarán el comportamiento predeterminado o se omitirán.&amp;quot;"</string>
     <string name="manual_rpc_detect_apps">Permitir que Manual RPC detecte aplicaciones en ejecución</string>
     <string name="manual_rpc_detect_media">Permitir que Manual RPC detecte reproducción de medios</string>
     <string name="manual_rpc_detect_artist">Permitir que RPC manual muestre el nombre del artista</string>
@@ -378,7 +378,7 @@
     <string name="set_imgur_client_id_desc">Si las imágenes no se muestran usando Imgur, puedes intentar establecer tu propio ID de Cliente</string>
     <string name="show_song_as_title">Mostrar Canción como Título</string>
     <string name="show_app_name_in_details">Mostrar nombre de la aplicación en los detalles</string>
-    <string name="show_app_name_in_details_desc">Añadir \&quot; • nombre de la aplicación\&quot; a la línea de detalles (línea 2) de la presencia de RPC multimedia</string>
+    <string name="show_app_name_in_details_desc">Añadir \&amp;quot; • nombre de la aplicación\&amp;quot; a la línea de detalles (línea 2) de la presencia de RPC multimedia</string>
     <string name="media_rpc_use_apps_rpc">Mostrar aplicaciones y juegos</string>
     <string name="media_rpc_use_apps_rpc_desc">Cuando no se esté reproduciendo nada, mostrar la aplicación o el juego abierto actualmente como tu actividad de Discord</string>
     <string name="use_youtube_button">Agregar Botón de Medios</string>
@@ -389,7 +389,7 @@
     <string name="manual_rpc_title_toggle_desc">Mostrar información de la canción en el título de la actividad en lugar del nombre de la app</string>
     <string name="title_source_song">Nombre de la Canción</string>
     <string name="title_source_artist">Artista</string>
-    <string name="type_to_insert_variable">Escribe &quot;{{apos; para insertar una variable</string>
+    <string name="type_to_insert_variable">Escribe &amp;quot;{{apos; para insertar una variable</string>
     <string name="app_selection">Selección de App</string>
     <string name="platform_none_desktop">Ninguno (Escritorio)</string>
     <string name="platform_desktop">Escritorio</string>

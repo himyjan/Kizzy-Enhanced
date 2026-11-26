@@ -8,7 +8,7 @@
     <string name="activity_state">Keadaan aktiviti</string>
     <string name="activity_start_timestamps">Cap masa mula</string>
     <string name="activity_stop_timestamps">Cap masa berhenti</string>
-    <string name="activity_status_online_idle_dnd">Status aktiviti (&quot;online&quot;, &quot;idle&quot;, &quot;dnd&quot;)</string>
+    <string name="activity_status_online_idle_dnd">Status aktiviti (&amp;quot;online&amp;quot;, &amp;quot;idle&amp;quot;, &amp;quot;dnd&amp;quot;)</string>
     <string name="activity_button1_text">Teks butang aktiviti 1</string>
     <string name="activity_button2_text">Teks butang aktiviti 2</string>
     <string name="activity_button1_url">URL butang 1</string>
@@ -32,7 +32,7 @@
     <string name="rich_presence_active">Rich Presence aktif</string>
     <string name="github_readme">README</string>
     <string name="github_readme_desc">Semak repositori Github</string>
-    <string name="github_latest_release">&quot;Keluaran terkini &quot;</string>
+    <string name="github_latest_release">&amp;quot;Keluaran terkini &amp;quot;</string>
     <string name="github_latest_release_desc">Cari versi baharu dan log perubahan</string>
     <string name="github_issue">Isu Github</string>
     <string name="github_issue_desc">Hantar isu untuk laporan pepijat atau permintaan ciri</string>
@@ -135,13 +135,13 @@
     <string name="discord_setup_title">Sebelum anda mula</string>
     <string name="discord_setup_desc">Pastikan Discord membenarkan aktiviti anda dipaparkan pada profil anda.</string>
     <string name="discord_step1_title">Langkah 1: Buka Tetapan Privasi</string>
-    <string name="discord_step1_content">Buka aplikasi Discord → ketik ikon Anda (gambar profil) → ketik Tetapan (⚙️) → skrol ke bawah dan ketik Kandungan &amp; Sosial (atau Privasi Aktiviti pada versi aplikasi lama).</string>
+    <string name="discord_step1_content">Buka aplikasi Discord → ketik ikon Anda (gambar profil) → ketik Tetapan (⚙️) → skrol ke bawah dan ketik Kandungan &amp;amp; Sosial (atau Privasi Aktiviti pada versi aplikasi lama).</string>
     <string name="discord_step2_title">Langkah 2: Hidupkan Perkongsian Aktiviti</string>
-    <string name="discord_step2_content">Cari "Kongsi aktiviti saya" dan hidupkan. Di bawah "Di mana saya Kongsi Aktiviti", pilih "Kongsi di semua pelayan" dayakan. Skrol ke "Pelayan Saya" dan hidupkan pelayan tempat anda mahu status anda kelihatan.</string>
+    <string name="discord_step2_content">Cari &quot;Kongsi aktiviti saya&quot; dan hidupkan. Di bawah &quot;Di mana saya Kongsi Aktiviti&quot;, pilih &quot;Kongsi di semua pelayan&quot; dayakan. Skrol ke &quot;Pelayan Saya&quot; dan hidupkan pelayan tempat anda mahu status anda kelihatan.</string>
     <string name="discord_step3_title">Langkah 3: Semak status dalam talian anda</string>
     <string name="discord_step3_content">Ketik Status anda (di bawah nama pengguna anda) dan pilih Dalam Talian, Tiada Aktiviti, atau Jangan Ganggu. ⚠️ Jangan gunakan Tidak Tampak — Discord menyembunyikan aktiviti Kizzy apabila anda Tidak Tampak.</string>
-    <string name="discord_tip_title">Tidak menemui "Kongsi aktiviti saya"?</string>
-    <string name="discord_tip_content">Sesetengah versi mudah alih Discord menyembunyikan Togol ini. Buka discord.com dalam Chrome → dayakan Laman Desktop → log masuk → Tetapan (⚙️) → Privasi Aktiviti → hidupkan "Kongsi aktiviti saya".</string>
+    <string name="discord_tip_title">Tidak menemui &quot;Kongsi aktiviti saya&quot;?</string>
+    <string name="discord_tip_content">Sesetengah versi mudah alih Discord menyembunyikan Togol ini. Buka discord.com dalam Chrome → dayakan Laman Desktop → log masuk → Tetapan (⚙️) → Privasi Aktiviti → hidupkan &quot;Kongsi aktiviti saya&quot;.</string>
     <string name="permission_granted">Diberikan</string>
     <string name="permission_not_granted">Belum diberikan, ketik untuk membenarkan</string>
     <string name="activity_large_text">Teks aktiviti besar</string>
@@ -331,7 +331,7 @@
     <string name="upload_image">Muat naik imej</string>
     <string name="save">Simpan</string>
     <string name="set_timestamps">Tetapkan cap masa</string>
-    <string name="saved_config_toast">&quot;%1$s&quot; berjaya disimpan</string>
+    <string name="saved_config_toast">&amp;quot;%1$s&amp;quot; berjaya disimpan</string>
     <string name="error_saving_config_toast">Ralat menyimpan konfigurasi</string>
     <string name="config_name">Nama konfigurasi</string>
     <string name="delete">Padam</string>
@@ -369,8 +369,8 @@
     <string name="custom_application_id_desc">Mengatasi ID aplikasi Discord lalai</string>
     <string name="use_a_vpn_desc">Log masuk Discord mungkin tidak berfungsi di negara anda tanpa VPN/DPI.
         Sila guna VPN/DPI untuk teruskan.</string>
-    <string name="rpc_templates_note">"\"Guna pemegang tempat seperti \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', dan sebagainya.
-        Medan kosong akan menggunakan kelakuan lalai atau ditinggalkan.\""</string>
+    <string name="rpc_templates_note">"\"\\"Guna pemegang tempat seperti \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', dan sebagainya.
+        Medan kosong akan menggunakan kelakuan lalai atau ditinggalkan.\\"\""</string>
     <string name="manual_rpc_detect_apps">Benarkan Manual RPC mengesan aplikasi yang berjalan</string>
     <string name="manual_rpc_detect_media">Benarkan Manual RPC mengesan main semula media</string>
     <string name="manual_rpc_detect_artist">Benarkan RPC Manual menunjukkan nama artis</string>
@@ -397,8 +397,8 @@
         menetapkan ID Klien anda sendiri</string>
     <string name="show_song_as_title">Papar lagu sebagai tajuk</string>
     <string name="show_app_name_in_details">Tunjuk Nama Apl dalam Butiran</string>
-    <string name="show_app_name_in_details_desc">Tambah \&quot; • nama apl\&quot; pada baris butiran (baris 2) kehadiran RPC media</string>
-    <string name="media_rpc_use_apps_rpc">Tunjuk Apl &amp; Permainan</string>
+    <string name="show_app_name_in_details_desc">Tambah \&amp;quot; • nama apl\&amp;quot; pada baris butiran (baris 2) kehadiran RPC media</string>
+    <string name="media_rpc_use_apps_rpc">Tunjuk Apl &amp;amp; Permainan</string>
     <string name="media_rpc_use_apps_rpc_desc">Apabila tiada media sedang dimainkan, tunjukkan apl atau permainan yang sedang dibuka sebagai aktiviti Discord anda</string>
     <string name="use_youtube_button">Tambah Butang Media</string>
     <string name="use_youtube_button_desc">Tambah butang boleh klik secara automatik (YouTube, Spotify,
@@ -410,7 +410,7 @@
         dan bukannya nama apl</string>
     <string name="title_source_song">Nama lagu</string>
     <string name="title_source_artist">Seniman</string>
-    <string name="type_to_insert_variable">"Taip \'{{\' untuk memasukkan pembolehubah"</string>
+    <string name="type_to_insert_variable">"\"Taip \'{{\' untuk memasukkan pembolehubah\""</string>
     <string name="app_selection">Pemilihan aplikasi</string>
     <string name="platform_none_desktop">Tiada (Desktop)</string>
     <string name="platform_desktop">Komputer Meja</string>
@@ -459,7 +459,7 @@
     <string name="console_preset_embedded">Terbenam</string>
     <string name="console_preset_droideck">DroidDeck</string>
     <string name="console_preset_eden">Eden (Switch)</string>
-    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_edit">Edit pretermukan</string>
     <string name="console_preset_ios">iOS</string>
     <string name="console_preset_name">Nama preset</string>
     <string name="console_preset_new">Preset baharu</string>

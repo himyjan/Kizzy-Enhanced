@@ -8,7 +8,7 @@
     <string name="activity_state">Xaaladda Dhaqdhaqaaqa</string>
     <string name="activity_start_timestamps">Bilowga xilliyada</string>
     <string name="activity_stop_timestamps">Joojinta xilliyada</string>
-    <string name="activity_status_online_idle_dnd">Xaaladda firfircoonida (&quot;online&quot;, &quot;idle&quot;, &quot;dnd&quot;)</string>
+    <string name="activity_status_online_idle_dnd">Xaaladda firfircoonida (&amp;quot;online&amp;quot;, &amp;quot;idle&amp;quot;, &amp;quot;dnd&amp;quot;)</string>
     <string name="activity_button1_text">Qoraalka badhan 1</string>
     <string name="activity_button2_text">Qoraalka badhan 2</string>
     <string name="activity_button1_url">URL-ga badhan 1</string>
@@ -32,7 +32,7 @@
     <string name="rich_presence_active">Rich Presence waa shaqeeyaa</string>
     <string name="github_readme">AKHRISO (README)</string>
     <string name="github_readme_desc">Fiiri Kaydka GitHub</string>
-    <string name="github_latest_release">&quot;Sii daynta ugu dambeysa &quot;</string>
+    <string name="github_latest_release">&amp;quot;Sii daynta ugu dambeysa &amp;quot;</string>
     <string name="github_latest_release_desc">Raadi nooc cusub iyo log isbeddelada</string>
     <string name="github_issue">Dhibaoto GitHub</string>
     <string name="github_issue_desc">U dir dhibaato warbixin khalad ama codsasho hawl</string>
@@ -128,13 +128,13 @@
     <string name="discord_setup_title">Ka hor bilow</string>
     <string name="discord_setup_desc">Hubi in Discord u ogolaado in xaaladaada lagu soo bandhigo profilkaaga.</string>
     <string name="discord_step1_title">Talla 1: Fur dejinta asturnaanta</string>
-    <string name="discord_step1_content">Samee codsiga Discord → sii astaanta "Adiga" (sawirka profilka) → sii Dejinta (⚙️) → sii hoos u wareeg oo sii "Isku dhafan iyo bulshada" (ama "Asturnaanta waxa aan qabto" noocyada hore uu codsiga).</string>
+    <string name="discord_step1_content">Samee codsiga Discord → sii astaanta &quot;Adiga&quot; (sawirka profilka) → sii Dejinta (⚙️) → sii hoos u wareeg oo sii &quot;Isku dhafan iyo bulshada&quot; (ama &quot;Asturnaanta waxa aan qabto&quot; noocyada hore uu codsiga).</string>
     <string name="discord_step2_title">Talla 2: Fur wadaaga waxa aan qabto</string>
-    <string name="discord_step2_content">Raadi "Wadaag waxa aan sameeyay" oo fur. Hoos waxa "Halkee aan waxaaga wadaago" ku dooro "Wadaag server kasta". Sii hoos u wareeg "Server-yadaada" oo server-yada aad rabto in xaaladaadu ka muuqato fur.</string>
+    <string name="discord_step2_content">Raadi &quot;Wadaag waxa aan sameeyay&quot; oo fur. Hoos waxa &quot;Halkee aan waxaaga wadaago&quot; ku dooro &quot;Wadaag server kasta&quot;. Sii hoos u wareeg &quot;Server-yadaada&quot; oo server-yada aad rabto in xaaladaadu ka muuqato fur.</string>
     <string name="discord_step3_title">Talla 3: Hubi xaaladaadaada on-leey</string>
     <string name="discord_step3_content">Taabeeji xaaladaada (ka hoos ka magaca isticmaale) oo dooro On-leey, Areesan ama Ha uga muhiim. ⚠️ Ha isticmaalin Astaanta ma la muuqaan karo — Discord wuxuu qarsoonaya dhaqdhaqaaqii Kizzy markii aad ma la muuqaan karo.</string>
-    <string name="discord_tip_title">Ma heli karto "Wadaag waxa aan sameeyay"?</string>
-    <string name="discord_tip_content">Noocyada moobil ee Discord qaar ayaa tus qarsoonaya. Samee discord.com Chrome ka → fur Desktop site → gal → Dejinta (⚙️) → Asturnaanta waxa aan qabto → fur "Wadaag waxa aan sameeyay".</string>
+    <string name="discord_tip_title">Ma heli karto &quot;Wadaag waxa aan sameeyay&quot;?</string>
+    <string name="discord_tip_content">Noocyada moobil ee Discord qaar ayaa tus qarsoonaya. Samee discord.com Chrome ka → fur Desktop site → gal → Dejinta (⚙️) → Asturnaanta waxa aan qabto → fur &quot;Wadaag waxa aan sameeyay&quot;.</string>
     <string name="permission_granted">La siiyay</string>
     <string name="permission_not_granted">Lama siiyay, Riix si aad u ogolaato</string>
     <string name="activity_large_text">Qoraal weyn oo firfircoonida</string>
@@ -262,11 +262,11 @@
     <string name="exit">Ka bax</string>
     <string name="logs">Diiwaannada</string>
     <string name="drawer_subtitle_help">CAWI</string>
-    <string name="drawer_faq">"Su'aalo"</string>
+    <string name="drawer_faq">"\"Su'aalo\""</string>
     <string name="go_to_profile">U gudub profile</string>
     <string name="version">Nooca</string>
     <string name="try_again">Isku day mar kale</string>
-    <string name="request_for_notification_access">Helitaanka ogeysiisyada waa u baahan yahay si barnaamijku u soo saaro macluumaadka maadada. Liiska dejinta ee furmaya, raadi oo riix &quot;Kizzy-Enhanced&quot;, kadibna daawo furaha.</string>
+    <string name="request_for_notification_access">Helitaanka ogeysiisyada waa u baahan yahay si barnaamijku u soo saaro macluumaadka maadada. Liiska dejinta ee furmaya, raadi oo riix &amp;quot;Kizzy-Enhanced&amp;quot;, kadibna daawo furaha.</string>
     <string name="update_check_for_update">Wuxuu hubinayaa cusboonaysiin…</string>
     <string name="update_no_updates_available">Cusboonaysiin ma jiro</string>
     <string name="compact_mode">Hab kooban</string>
@@ -275,7 +275,7 @@
     <string name="user_profile_error">Waa lama cusboonaysiin karin profile-ka isticmaalaha:</string>
     <string name="no_internet_user_profile">Ma jiro xiriir internet. Isku day mar dambe.</string>
     <string name="user_profile_rpc_name">ISTICmaalaya KIZZY RICH PRESENCE</string>
-    <string name="user_profile_bio">Bio</string>
+    <string name="user_profile_bio">Qoyska</string>
     <string name="user_profile_no_bio">Weli bio ma jiro.</string>
     <string name="user_profile_bio_oauth_note">Bio lama heli karo Discord OAuth2. Gal akoon token si aad u muujiso.</string>
     <string name="profile_view_full_bio">Eeg bio buuxda</string>
@@ -290,7 +290,7 @@
     <string name="status_online">Online</string>
     <string name="status_idle">Daal</string>
     <string name="status_dnd">Ha I dhibin</string>
-    <string name="status_invisible_offline">"La'aan oo la muujiyay sida khadka-dhexe"</string>
+    <string name="status_invisible_offline">"\"La'aan oo la muujiyay sida khadka-dhexe\""</string>
     <string name="status_offline">Offline</string>
     <string name="notification_access">Ogolaanshaha helitaanka ogeysiisyada</string>
     <string name="post_notification">Daabac ogeysiis</string>
@@ -315,7 +315,7 @@
     <string name="upload_image">Soo rar sawir</string>
     <string name="save">Keydi</string>
     <string name="set_timestamps">Deji xilliyada</string>
-    <string name="saved_config_toast">&quot;%1$s&quot; si guul leh ayaa la keydiyay</string>
+    <string name="saved_config_toast">&amp;quot;%1$s&amp;quot; si guul leh ayaa la keydiyay</string>
     <string name="error_saving_config_toast">Khalad ku keydinta habyada</string>
     <string name="config_name">Magaca habyada</string>
     <string name="delete">Tirtir</string>
@@ -351,8 +351,8 @@
     <string name="application_id">Lambarka codsiga</string>
     <string name="custom_application_id">Lambarka codsiga firfircoonida gaar ah</string>
     <string name="custom_application_id_desc">Wuxuu ka sarreeyaa Lambarka codsiga Discord caadiga ah</string>
-    <string name="use_a_vpn_desc">"Galitaanka Discord-ka wuu u shaqeyn karaa waddanadaaga VPN/DPI la'aan. Fadlan isticmaal VPN/DPI si aad u sii socoto."</string>
-    <string name="rpc_templates_note">"Isticmaal xarfooyin sida '{{app_name}}', '{{media_title}}', iwm. Goobaha madhan waxay isticmaali doonaan dhaqanka caadiga ah ama waa la ka saari doonaa."</string>
+    <string name="use_a_vpn_desc">"\"Galitaanka Discord-ka wuu u shaqeyn karaa waddanadaaga VPN/DPI la'aan. Fadlan isticmaal VPN/DPI si aad u sii socoto.\""</string>
+    <string name="rpc_templates_note">"\"Isticmaal xarfooyin sida '{{app_name}}', '{{media_title}}', iwm. Goobaha madhan waxay isticmaali doonaan dhaqanka caadiga ah ama waa la ka saari doonaa.\""</string>
     <string name="manual_rpc_detect_apps">U ogolow RPC gacmeed inuu ogaado barnaamijyada shaqeynaya</string>
     <string name="manual_rpc_detect_media">U ogolow RPC gacmeed inuu ogaado ciyaarista maadada</string>
     <string name="manual_rpc_detect_artist">U ogolow RPC gacmeed inuu muujiyo magaca fanaanka</string>
@@ -378,7 +378,7 @@
     <string name="set_imgur_client_id_desc">Haddii aan sawirro la muujin Imgur, waad isku dayi kartaa inaad dejiso Lambarkaaga Macmiilka</string>
     <string name="show_song_as_title">Muuji heesta cinwaan ahaan</string>
     <string name="show_app_name_in_details">Muuji magaca barnaamijka faahfaahinta</string>
-    <string name="show_app_name_in_details_desc">Ku dar &quot; • magaca barnaamijka&quot; qoraalka faahfaahinta (qoraalka 2) ee firfircoonida RPC maadad</string>
+    <string name="show_app_name_in_details_desc">Ku dar &amp;quot; • magaca barnaamijka&amp;quot; qoraalka faahfaahinta (qoraalka 2) ee firfircoonida RPC maadad</string>
     <string name="media_rpc_use_apps_rpc">Muuji barnaamijyada iyo ciyaaraha</string>
     <string name="media_rpc_use_apps_rpc_desc">Marka ma jiro maadad la ciyaarayo, muuji barnaamijka ama ciyaarta furan hadda sida firfircoonidaada Discord</string>
     <string name="use_youtube_button">Ku dar badan maadad</string>
@@ -389,7 +389,7 @@
     <string name="manual_rpc_title_toggle_desc">Muuji macluumaadka heesta cinwaanka firfircoonida halkii magaca barnaamijka</string>
     <string name="title_source_song">Magaca heesta</string>
     <string name="title_source_artist">Fanaan</string>
-    <string name="type_to_insert_variable">"Qor '{{' si aad u galiso isbeddel"</string>
+    <string name="type_to_insert_variable">"\"Qor '{{' si aad u galiso isbeddel\""</string>
     <string name="app_selection">Doorashada barnaamijka</string>
     <string name="platform_none_desktop">Midna (Kombuyuutar)</string>
     <string name="platform_desktop">Kombuyuutar</string>

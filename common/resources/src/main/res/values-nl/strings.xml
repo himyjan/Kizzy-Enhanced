@@ -8,7 +8,7 @@
     <string name="activity_state">Activiteitstoestand</string>
     <string name="activity_start_timestamps">Starttijdstempels</string>
     <string name="activity_stop_timestamps">Stoppetijdstempels</string>
-    <string name="activity_status_online_idle_dnd">Activiteitsstatus (&amp;quot;online&amp;quot;, &amp;quot;idle&amp;quot;, &amp;quot;dnd&amp;quot;)</string>
+    <string name="activity_status_online_idle_dnd">Activiteitsstatus (&amp;amp;quot;online&amp;amp;quot;, &amp;amp;quot;idle&amp;amp;quot;, &amp;amp;quot;dnd&amp;amp;quot;)</string>
     <string name="activity_button1_text">Activiteitsknop 1 tekst</string>
     <string name="activity_button2_text">Activiteitsknop 2 tekst</string>
     <string name="activity_button1_url">URL van knop 1</string>
@@ -32,7 +32,7 @@
     <string name="rich_presence_active">Rich Presence actief</string>
     <string name="github_readme">README</string>
     <string name="github_readme_desc">Bekijk de GitHub-repository</string>
-    <string name="github_latest_release">&amp;quot;Laatste versie &amp;quot;</string>
+    <string name="github_latest_release">&amp;amp;quot;Laatste versie &amp;amp;quot;</string>
     <string name="github_latest_release_desc">Zoek naar nieuwe versie en changelog</string>
     <string name="github_issue">GitHub-probleem</string>
     <string name="github_issue_desc">Dien een issue in voor een bugmelding of functieverzoek</string>
@@ -130,20 +130,20 @@
     <string name="discord_setup_title">Voordat je begint</string>
     <string name="discord_setup_desc">Zorg dat Discord toestaat dat je activiteit op je profiel wordt weergegeven.</string>
     <string name="discord_step1_title">Stap 1: Privacy-instellingen openen</string>
-    <string name="discord_step1_content">"Open de Discord-app → tik op je \'Jij\'-pictogram (profielafbeelding) → tik op Instellingen (⚙️) → scrol omlaag en tik op \"Inhoud en sociaal\" (of \"Activiteitsprivacy\" bij oudere appversies)."</string>
+    <string name="discord_step1_content">"\"Open de Discord-app → tik op je \'Jij\'-pictogram (profielafbeelding) → tik op Instellingen (⚙️) → scrol omlaag en tik op \\"Inhoud en sociaal\\" (of \\"Activiteitsprivacy\\" bij oudere appversies).\""</string>
     <string name="discord_step2_title">Stap 2: Delen van activiteit inschakelen</string>
-    <string name="discord_step2_content">Zoek &quot;Mijn activiteit delen&quot; en zet het aan. Kies onder &quot;Waar ik mijn activiteit deel&quot; voor &quot;Delen op alle servers&quot;. Scroll naar &quot;Mijn servers&quot; en zet de servers aan waar je je status zichtbaar wilt hebben.</string>
+    <string name="discord_step2_content">Zoek &amp;quot;Mijn activiteit delen&amp;quot; en zet het aan. Kies onder &amp;quot;Waar ik mijn activiteit deel&amp;quot; voor &amp;quot;Delen op alle servers&amp;quot;. Scroll naar &amp;quot;Mijn servers&amp;quot; en zet de servers aan waar je je status zichtbaar wilt hebben.</string>
     <string name="discord_step3_title">Stap 3: Controleer je online status</string>
     <string name="discord_step3_content">Tik op je Status (onder je gebruikersnaam) en kies Online, Inactief of Niet storen. ⚠️ Gebruik niet Onzichtbaar — Discord verbergt Kizzy-activiteit wanneer je Onzichtbaar bent.</string>
-    <string name="discord_tip_title">Vind je &quot;Mijn activiteit delen&quot; niet?</string>
-    <string name="discord_tip_content">Sommige mobiele versies van Discord verbergen deze schakelaar. Open discord.com in Chrome → schakel de Desktop-site in → log in → Instellingen (⚙️) → Activiteitsprivacy → zet &quot;Mijn activiteit delen&quot; aan.</string>
+    <string name="discord_tip_title">Vind je &amp;quot;Mijn activiteit delen&amp;quot; niet?</string>
+    <string name="discord_tip_content">Sommige mobiele versies van Discord verbergen deze schakelaar. Open discord.com in Chrome → schakel de Desktop-site in → log in → Instellingen (⚙️) → Activiteitsprivacy → zet &amp;quot;Mijn activiteit delen&amp;quot; aan.</string>
     <string name="permission_granted">Toegestaan</string>
     <string name="permission_not_granted">Niet toegestaan, klik om toe te staan</string>
     <string name="activity_large_text">Grote tekst van activiteit</string>
     <string name="activity_small_text">Kleine tekst van activiteit</string>
     <string name="contributors">Bijdragers</string>
     <string name="stream_url">Stream-URL</string>
-    <string name="stream_url_info">"Alleen https://twitch.tv/ en https://youtube.com/ URL's werken."</string>
+    <string name="stream_url_info">"\"Alleen https://twitch.tv/ en https://youtube.com/ URL's werken.\""</string>
     <string name="rpc_details_url">Details-URL</string>
     <string name="rpc_state_url">Status-URL</string>
     <string name="rpc_large_url">URL van grote afbeelding</string>
@@ -217,7 +217,7 @@
     <string name="textAfterPermissionDenied">Tekst nadat toestemming is geweigerd</string>
     <string name="timestampMode">Tijdstempelmodus</string>
     <string name="timestamp_mode_common">Zelfde als huidige tijd</string>
-    <string name="type_toInsertVariable">"Typ \'{{\' om een variabele in te voegen"</string>
+    <string name="type_toInsertVariable">"\"Typ \'{{\' om een variabele in te voegen\""</string>
     <string name="update_check_forUpdate">Controleren op updates…</string>
     <string name="update_noUpdatesAvailable">Geen updates beschikbaar</string>
     <string name="usageAccess">Gebruikstoegang</string>
@@ -275,7 +275,7 @@
     <string name="go_to_profile">Naar profiel gaan</string>
     <string name="version">Versie</string>
     <string name="try_again">Opnieuw proberen</string>
-    <string name="request_for_notification_access">Toegang tot meldingen is nodig om media-informatie op te halen. Zoek in de lijst met instellingen die opent naar \&quot;Kizzy-Enhanced\&quot; en tik erop, en zet daarna de schakelaar aan.</string>
+    <string name="request_for_notification_access">Toegang tot meldingen is nodig om media-informatie op te halen. Zoek in de lijst met instellingen die opent naar \&amp;quot;Kizzy-Enhanced\&amp;quot; en tik erop, en zet daarna de schakelaar aan.</string>
     <string name="update_check_for_update">Controleren op updates…</string>
     <string name="update_no_updates_available">Geen updates beschikbaar</string>
     <string name="compact_mode">Compacte modus</string>
@@ -324,7 +324,7 @@
     <string name="upload_image">Afbeelding uploaden</string>
     <string name="save">Opslaan</string>
     <string name="set_timestamps">Tijdstempels instellen</string>
-    <string name="saved_config_toast">&amp;quot;%1$s&amp;quot; succesvol opgeslagen</string>
+    <string name="saved_config_toast">&amp;amp;quot;%1$s&amp;amp;quot; succesvol opgeslagen</string>
     <string name="error_saving_config_toast">Fout bij opslaan van configuratie</string>
     <string name="config_name">Configuratienaam</string>
     <string name="delete">Verwijderen</string>
@@ -362,7 +362,7 @@
     <string name="custom_application_id_desc">Standaard Discord-applicatie-ID overschrijven</string>
     <string name="use_a_vpn_desc">Discord-aanmelding werkt mogelijk niet in jouw land zonder een VPN/DPI.
         Gebruik een VPN/DPI om door te gaan.</string>
-    <string name="rpc_templates_note">"&amp;quot;Gebruik placeholders zoals \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' enz. Lege velden gebruiken het standaardgedrag of worden overgeslagen.&amp;quot;"</string>
+    <string name="rpc_templates_note">"\"&amp;amp;quot;Gebruik placeholders zoals \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' enz. Lege velden gebruiken het standaardgedrag of worden overgeslagen.&amp;amp;quot;\""</string>
     <string name="manual_rpc_detect_apps">Experimentele RPC toestaan actieve apps te detecteren</string>
     <string name="manual_rpc_detect_media">Experimentele RPC toestaan media-afspeling te detecteren</string>
     <string name="manual_rpc_detect_artist">Handmatige RPC toestaan om artiestennaam te tonen</string>
@@ -388,8 +388,8 @@
     <string name="set_imgur_client_id_desc">Als afbeeldingen niet worden weergegeven met Imgur, kunt u proberen uw eigen client-ID in te stellen</string>
     <string name="show_song_as_title">Lied als titel tonen</string>
     <string name="show_app_name_in_details">Appnaam in details tonen</string>
-    <string name="show_app_name_in_details_desc">Voeg \&quot; • appnaam\&quot; toe aan de detailregel (regel 2) van de media-RPC-aanwezigheid</string>
-    <string name="media_rpc_use_apps_rpc">Apps &amp; games tonen</string>
+    <string name="show_app_name_in_details_desc">Voeg \&amp;quot; • appnaam\&amp;quot; toe aan de detailregel (regel 2) van de media-RPC-aanwezigheid</string>
+    <string name="media_rpc_use_apps_rpc">Apps &amp;amp; games tonen</string>
     <string name="media_rpc_use_apps_rpc_desc">Toon de momenteel geopende app of game als je Discord-activiteit wanneer er geen media wordt afgespeeld</string>
     <string name="use_youtube_button">Mediaknop toevoegen</string>
     <string name="use_youtube_button_desc">Voeg automatisch een klikbare knop toe (YouTube, Spotify,
@@ -400,7 +400,7 @@
     <string name="manual_rpc_title_toggle_desc">Liedinformatie in activiteitstitel weergeven in plaats van app-naam</string>
     <string name="title_source_song">Liedtitel</string>
     <string name="title_source_artist">Artiest</string>
-    <string name="type_to_insert_variable">"Typ \'{{\' om een variabele in te voegen"</string>
+    <string name="type_to_insert_variable">"\"Typ \'{{\' om een variabele in te voegen\""</string>
     <string name="app_selection">App-selectie</string>
     <string name="platform_none_desktop">Geen (desktop)</string>
     <string name="platform_desktop">Bureaublad</string>
@@ -457,7 +457,7 @@
     <string name="console_preset_ps5">PlayStation 5</string>
     <string name="console_preset_samsung">Samsung</string>
     <string name="console_presets_title">Voorinstellingen</string>
-    <string name="console_games_title">Games</string>
+    <string name="console_games_title">Spellen</string>
     <string name="console_options_title">Console RPC-opties</string>
     <string name="console_detected_games">Gedetecteerde games</string>
     <string name="console_game_selected">%1$s geselecteerd voor console-RPC</string>
@@ -503,8 +503,8 @@
     <string name="custom_application_idDesc">Overschrijft de standaard Discord-applicatie-ID</string>
     <string name="custom_rpcDirectory">Map om Custom RPC-configuraties op te slaan</string>
     <string name="custom_rpcRunning">Custom RPC draait</string>
-    <string name="deleteSavedIconUrls">"Opgeslagen icoon-URL's verwijderen"</string>
-    <string name="deleteSavedIconUrlsDesc">"Lokaal opgeslagen aangepaste icoon-URL's verwijderen"</string>
+    <string name="deleteSavedIconUrls">"\"Opgeslagen icoon-URL's verwijderen\""</string>
+    <string name="deleteSavedIconUrlsDesc">"\"Lokaal opgeslagen aangepaste icoon-URL's verwijderen\""</string>
     <string name="delete_config_successfullyToast">%1$s succesvol verwijderd</string>
     <string name="drawer_subtitleHelp">Hulptekst in het zijmenu</string>
     <string name="enableArtistName">Artiestennaam inschakelen</string>

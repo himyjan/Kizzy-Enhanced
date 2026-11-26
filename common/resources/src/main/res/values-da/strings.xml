@@ -8,7 +8,7 @@
     <string name="activity_state">Aktivitetstilstand</string>
     <string name="activity_start_timestamps">Starttidstempler</string>
     <string name="activity_stop_timestamps">Stoppetidstempler</string>
-    <string name="activity_status_online_idle_dnd">Aktivitetstilstand (&amp;quot;online&amp;quot;, &amp;quot;idle&amp;quot;, &amp;quot;dnd&amp;quot;)</string>
+    <string name="activity_status_online_idle_dnd">Aktivitetstilstand (&amp;amp;quot;online&amp;amp;quot;, &amp;amp;quot;idle&amp;amp;quot;, &amp;amp;quot;dnd&amp;amp;quot;)</string>
     <string name="activity_button1_text">Aktivitets knap 1 tekst</string>
     <string name="activity_button2_text">Aktivitets knap 2 tekst</string>
     <string name="activity_button1_url">URL for knap 1</string>
@@ -32,7 +32,7 @@
     <string name="rich_presence_active">Rich Presence aktiv</string>
     <string name="github_readme">README</string>
     <string name="github_readme_desc">Se GitHub-lageret</string>
-    <string name="github_latest_release">&amp;quot;Seneste version &amp;quot;</string>
+    <string name="github_latest_release">&amp;amp;quot;Seneste version &amp;amp;quot;</string>
     <string name="github_latest_release_desc">Find ny version og ændringslog</string>
     <string name="github_issue">GitHub-problem</string>
     <string name="github_issue_desc">Indsend en sag om en fejlrapport eller funktionsanmodning</string>
@@ -130,20 +130,20 @@
     <string name="discord_setup_title">Før du begynder</string>
     <string name="discord_setup_desc">Sørg for, at Discord tillader, at din aktivitet vises på din profil.</string>
     <string name="discord_step1_title">Trin 1: Åbn privatlivsindstillinger</string>
-    <string name="discord_step1_content">Åbn Discord-appen → tryk på dit &quot;Du&quot;-ikon (profilbillede) → tryk på Indstillinger (⚙️) → rul ned og tryk på &quot;Indhold og sociale medier&quot; (eller &quot;Aktivitetsprivatliv&quot; på ældre appversioner).</string>
+    <string name="discord_step1_content">Åbn Discord-appen → tryk på dit &amp;quot;Du&amp;quot;-ikon (profilbillede) → tryk på Indstillinger (⚙️) → rul ned og tryk på &amp;quot;Indhold og sociale medier&amp;quot; (eller &amp;quot;Aktivitetsprivatliv&amp;quot; på ældre appversioner).</string>
     <string name="discord_step2_title">Trin 2: Slå aktivitetsdeling til</string>
-    <string name="discord_step2_content">Find &quot;Del min aktivitet&quot;, og slå den til. Under &quot;Hvor jeg deler aktivitet&quot; vælger du &quot;Del på alle servere&quot;. Rul ned til &quot;Mine servere&quot;, og slå de servere til, hvor du vil have din status vist.</string>
+    <string name="discord_step2_content">Find &amp;quot;Del min aktivitet&amp;quot;, og slå den til. Under &amp;quot;Hvor jeg deler aktivitet&amp;quot; vælger du &amp;quot;Del på alle servere&amp;quot;. Rul ned til &amp;quot;Mine servere&amp;quot;, og slå de servere til, hvor du vil have din status vist.</string>
     <string name="discord_step3_title">Trin 3: Kontrollér din online-status</string>
     <string name="discord_step3_content">Tryk på din Status (under dit brugernavn), og vælg Online, Ledig eller Vil ikke forstyrres. ⚠️ Brug ikke Usynlig — Discord skjuler Kizzy-aktivitet, når du er Usynlig.</string>
-    <string name="discord_tip_title">Kan du ikke finde &quot;Del min aktivitet&quot;?</string>
-    <string name="discord_tip_content">Nogle mobile versioner af Discord skjuler denne kontakt. Åbn discord.com i Chrome → aktivér Desktop-websted → log ind → Indstillinger (⚙️) → Aktivitetsprivatliv → slå &quot;Del min aktivitet&quot; til.</string>
+    <string name="discord_tip_title">Kan du ikke finde &amp;quot;Del min aktivitet&amp;quot;?</string>
+    <string name="discord_tip_content">Nogle mobile versioner af Discord skjuler denne kontakt. Åbn discord.com i Chrome → aktivér Desktop-websted → log ind → Indstillinger (⚙️) → Aktivitetsprivatliv → slå &amp;quot;Del min aktivitet&amp;quot; til.</string>
     <string name="permission_granted">Givet</string>
     <string name="permission_not_granted">Ikke givet – klik for at tillade</string>
     <string name="activity_large_text">Aktivitet – stor tekst</string>
     <string name="activity_small_text">Aktivitet – lille tekst</string>
     <string name="contributors">Bidragsydere</string>
     <string name="stream_url">Stream-URL</string>
-    <string name="stream_url_info">"Kun URL'er fra https://twitch.tv/ og https://youtube.com/ virker."</string>
+    <string name="stream_url_info">"\"Kun URL'er fra https://twitch.tv/ og https://youtube.com/ virker.\""</string>
     <string name="rpc_details_url">Detaljer-URL</string>
     <string name="rpc_state_url">Status-URL</string>
     <string name="rpc_large_url">Stort billede-URL</string>
@@ -217,7 +217,7 @@
     <string name="textAfterPermissionDenied">Tekst efter nægtet tilladelse</string>
     <string name="timestampMode">Tidsstempeltilstand</string>
     <string name="timestamp_mode_common">Som nuværende tid</string>
-    <string name="type_toInsertVariable">"Skriv \'{{\' for at indsætte en variabel"</string>
+    <string name="type_toInsertVariable">"\"Skriv \'{{\' for at indsætte en variabel\""</string>
     <string name="update_check_forUpdate">Søger efter opdateringer…</string>
     <string name="update_noUpdatesAvailable">Ingen opdateringer tilgængelige</string>
     <string name="usageAccess">Brugsadgang</string>
@@ -275,7 +275,7 @@
     <string name="go_to_profile">Gå til profil</string>
     <string name="version">Version</string>
     <string name="try_again">Prøv igen</string>
-    <string name="request_for_notification_access">Der kræves notifikationsadgang for at appen kan udtrække medieoplysninger. Find og tryk på \&quot;Kizzy-Enhanced\&quot; i den åbnede indstillingsliste, og slå kontakten til.</string>
+    <string name="request_for_notification_access">Der kræves notifikationsadgang for at appen kan udtrække medieoplysninger. Find og tryk på \&amp;quot;Kizzy-Enhanced\&amp;quot; i den åbnede indstillingsliste, og slå kontakten til.</string>
     <string name="update_check_for_update">Tjekker for opdatering…</string>
     <string name="update_no_updates_available">Ingen opdateringer tilgængelige</string>
     <string name="compact_mode">Kompakt tilstand</string>
@@ -324,7 +324,7 @@
     <string name="upload_image">Upload billede</string>
     <string name="save">Gem</string>
     <string name="set_timestamps">Indstil tidsstempler</string>
-    <string name="saved_config_toast">&amp;quot;%1$s&amp;quot; gemt succesfuldt</string>
+    <string name="saved_config_toast">&amp;amp;quot;%1$s&amp;amp;quot; gemt succesfuldt</string>
     <string name="error_saving_config_toast">Fejl ved gem af konfiguration</string>
     <string name="config_name">Konfigurationsnavn</string>
     <string name="delete">Slet</string>
@@ -362,7 +362,7 @@
     <string name="custom_application_id_desc">Overskriver standard Discord-applikations-ID</string>
     <string name="use_a_vpn_desc">Discord-login virker muligvis ikke i dit land uden VPN/DPI.
         Brug venligst VPN/DPI for at fortsætte.</string>
-    <string name="rpc_templates_note">"&amp;quot;Brug skabeloner som \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' osv. Tomme felter vil bruge standardadfærd eller blive udeladt.&amp;quot;"</string>
+    <string name="rpc_templates_note">"\"&amp;amp;quot;Brug skabeloner som \'{{\'app_name}}\'\', \'{{\'media_title}}\'\' osv. Tomme felter vil bruge standardadfærd eller blive udeladt.&amp;amp;quot;\""</string>
     <string name="manual_rpc_detect_apps">Tillad Manual RPC at opdage kørende apps</string>
     <string name="manual_rpc_detect_media">Tillad Manual RPC at opdage medieafspilning</string>
     <string name="manual_rpc_detect_artist">Tillad manuel RPC at vise kunstnernavn</string>
@@ -388,8 +388,8 @@
     <string name="set_imgur_client_id_desc">Hvis billeder ikke vises med Imgur, kan du prøve at indstille dit eget klient-ID</string>
     <string name="show_song_as_title">Vis sang som titel</string>
     <string name="show_app_name_in_details">Vis app-navn i detaljer</string>
-    <string name="show_app_name_in_details_desc">Føj \&quot; • app-navn\&quot; til detaljelinjen (linje 2) i medie-RPC-tilstedeværelse</string>
-    <string name="media_rpc_use_apps_rpc">Vis apps &amp; spil</string>
+    <string name="show_app_name_in_details_desc">Føj \&amp;quot; • app-navn\&amp;quot; til detaljelinjen (linje 2) i medie-RPC-tilstedeværelse</string>
+    <string name="media_rpc_use_apps_rpc">Vis apps &amp;amp; spil</string>
     <string name="media_rpc_use_apps_rpc_desc">Når der ikke afspilles medier, vises den åbne app eller det åbne spil som din Discord-aktivitet</string>
     <string name="use_youtube_button">Tilføj medieknap</string>
     <string name="use_youtube_button_desc">Tilføj automatisk en klikbar knap (YouTube, Spotify,
@@ -400,7 +400,7 @@
     <string name="manual_rpc_title_toggle_desc">Vis sanginformation i aktivitetstitel i stedet for appnavn</string>
     <string name="title_source_song">Sangtitel</string>
     <string name="title_source_artist">Kunstner</string>
-    <string name="type_to_insert_variable">"Skriv \'{{\' for at indsætte en variabel"</string>
+    <string name="type_to_insert_variable">"\"Skriv \'{{\' for at indsætte en variabel\""</string>
     <string name="app_selection">App-valg</string>
     <string name="platform_none_desktop">Ingen (skrivebord)</string>
     <string name="platform_desktop">Skrivebord</string>
@@ -503,8 +503,8 @@
     <string name="custom_application_idDesc">Tilsidesætter standard-Discord Application ID</string>
     <string name="custom_rpcDirectory">Mappe til at gemme Custom RPC-konfigurationer</string>
     <string name="custom_rpcRunning">Custom RPC kører</string>
-    <string name="deleteSavedIconUrls">"Slet gemte ikon-URL'er"</string>
-    <string name="deleteSavedIconUrlsDesc">"Slet lokalt gemte brugerdefinerede ikon-URL'er"</string>
+    <string name="deleteSavedIconUrls">"\"Slet gemte ikon-URL'er\""</string>
+    <string name="deleteSavedIconUrlsDesc">"\"Slet lokalt gemte brugerdefinerede ikon-URL'er\""</string>
     <string name="delete_config_successfullyToast">%1$s slettet med succes</string>
     <string name="drawer_subtitleHelp">Hjælp til undertekst i menu</string>
     <string name="enableArtistName">Aktivér kunstnernavn</string>
@@ -610,7 +610,7 @@
     <string name="discord_leaderboard_config_missing">Tilføj en bot-token og et kanal-ID for at begynde at sende</string>
     <string name="discord_leaderboard_invalid_value">Indtast en gyldig værdi</string>
     <string name="discord_leaderboard_player_name">Spillernavn</string>
-    <string name="discord_leaderboard_score">Score</string>
+    <string name="discord_leaderboard_score">Point</string>
     <string name="discord_leaderboard_game_id_optional">Spil-ID (valgfrit)</string>
     <string name="discord_leaderboard_score_saved">Score indsendt</string>
     <string name="discord_leaderboard_entry_points">%1$d point</string>
