@@ -309,7 +309,7 @@ class CustomRpcService : Service() {
         // If there is an active custom RPC board, use its fields to build the
         // presence instead of the stored RpcConfig.
         val activeBoard = boardManager.getActiveBoard()
-        val rpcDataToUse: RpcConfig = if (activeBoard != null) {
+        val rawRpcData: RpcConfig = if (activeBoard != null) {
             Log.d("CustomRpcService", "Using active board: ${activeBoard.id} (${activeBoard.label})")
             RpcConfig(
                 name = activeBoard.name,
@@ -333,6 +333,15 @@ class CustomRpcService : Service() {
             } catch (e: Exception) {
                 null
             } ?: RpcConfig()
+        }
+
+        // Discord drops activities with an empty name. When the user enables
+        // Custom RPC without a saved config, send a valid default activity so
+        // the instance is actually visible alongside the other parallel RPCs.
+        val rpcDataToUse = if (rawRpcData.name.isBlank()) {
+            rawRpcData.copy(name = "Custom RPC", details = "Kizzy Enhanced", state = "")
+        } else {
+            rawRpcData
         }
 
         Log.d("CustomRpcService", "sendPresenceAndNotification: forceRefresh=$forceRefresh, rpcDataToUse.name=${rpcDataToUse.name}, rpcDataToUse.details=${rpcDataToUse.details}, rpcDataToUse.state=${rpcDataToUse.state}")
