@@ -227,7 +227,12 @@ class UserViewModel @Inject constructor(
                 ?: fetchDiscordUser(token)
                 ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }
             if (fresh != null) {
-                _state.value = UserState.LoadingCompleted(fresh, currentRpcConfigs())
+                // Gateway READY includes bio; if it failed, try the profile
+                // endpoint which may return bio for account tokens too.
+                val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
+                    fresh.copy(bio = profileBio)
+                } ?: fresh
+                _state.value = UserState.LoadingCompleted(withBio, currentRpcConfigs())
                 return
             }
         }
@@ -387,16 +392,22 @@ class UserViewModel @Inject constructor(
     private fun currentRpcConfigs(): List<RpcConfig> = try {
         val configs = mutableListOf<RpcConfig>()
 
-        if (AppUtils.customRpcRunning()) {
-            val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+        // Add all enabled Custom RPC instances (built-in + clones), each with
+        // its own per-instance config so clones show their own settings.
+        val instances = Prefs.getHomeRpcInstances()
+        for (instance in instances) {
+            if (instance.type != "custom_rpc") continue
+            if (!AppUtils.customRpcRunning()) continue
+            val json = Prefs.getCustomRpcConfig(instance.id.takeIf { it != "custom_rpc" })
             if (json.isNotBlank()) {
                 runCatching { Json.decodeFromString<RpcConfig>(json) }
-                    .getOrDefault(kizzyDefault("Custom RPC"))
+                    .getOrDefault(kizzyDefault(instance.label))
                     .let { configs.add(it) }
             } else {
-                configs.add(kizzyDefault("Custom RPC"))
+                configs.add(kizzyDefault(instance.label))
             }
         }
+
         if (AppUtils.mediaRpcRunning()) {
             LastPresence.media()?.let { configs.add(it) } ?: configs.add(RpcConfig(name = "Media RPC", details = "Playing media", type = "2"))
         }
