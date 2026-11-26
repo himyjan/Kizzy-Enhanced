@@ -13,6 +13,8 @@ package com.my.kizzy.feature_home.feature
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -71,33 +73,72 @@ fun Features(
             .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        homeItems.forEach { item ->
-            val instance = instances.firstOrNull { it.id == item.instanceId }
-            val idx = homeItems.indexOf(item)
-            val isBuiltIn = !item.isDeletable
-            val canMoveUp = !isBuiltIn && idx > 0 && homeItems[idx - 1].isDeletable
-            val canMoveDown = !isBuiltIn && idx < homeItems.lastIndex - 1 && homeItems[idx + 1].isDeletable
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            items(
+                items = homeItems,
+                key = { it.instanceId },
+            ) { item ->
+                val instance = instances.firstOrNull { it.id == item.instanceId }
+                val idx = homeItems.indexOf(item)
+                val isBuiltIn = !item.isDeletable
+                val canMoveUp = !isBuiltIn && idx > 0 && homeItems[idx - 1].isDeletable
+                val canMoveDown = !isBuiltIn && idx < homeItems.lastIndex - 1 && homeItems[idx + 1].isDeletable
 
-            if (item.tooltipText.isNotBlank()) {
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                        positioning = TooltipAnchorPosition.Above
-                    ),
-                    state = rememberTooltipState(),
-                    tooltip = {
-                        RichTooltip(
-                            title = {
-                                Text(item.title, style = MaterialTheme.typography.titleMedium)
+                if (item.tooltipText.isNotBlank()) {
+                    TooltipBox(
+                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                            positioning = TooltipAnchorPosition.Above
+                        ),
+                        state = rememberTooltipState(),
+                        tooltip = {
+                            RichTooltip(
+                                title = {
+                                    Text(item.title, style = MaterialTheme.typography.titleMedium)
+                                },
+                                text = { Text(item.tooltipText) },
+                                action = {
+                                    TextButton(onClick = { uriHandler.openUri(item.featureDocsLink) }) {
+                                        Text(text = stringResource(R.string.learn_more))
+                                    }
+                                },
+                            )
+                        },
+                    ) {
+                        FeatureCard(
+                            feature = item,
+                            instance = instance,
+                            onToggle = {
+                                item.onCheckedChange(!item.isChecked)
+                                onValueUpdate(idx)
                             },
-                            text = { Text(item.tooltipText) },
-                            action = {
-                                TextButton(onClick = { uriHandler.openUri(item.featureDocsLink) }) {
-                                    Text(text = stringResource(R.string.learn_more))
+                            onDelete = { onDeleteInstance(item.instanceId) },
+                            isDeletable = item.isDeletable,
+                            canMoveUp = canMoveUp,
+                            canMoveDown = canMoveDown,
+                            onMoveUp = {
+                                val newInstances = instances.toMutableList()
+                                val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
+                                if (idx2 > 0) {
+                                    val it = newInstances.removeAt(idx2)
+                                    newInstances.add(idx2 - 1, it)
+                                    onReorder(newInstances)
+                                }
+                            },
+                            onMoveDown = {
+                                val newInstances = instances.toMutableList()
+                                val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
+                                if (idx2 < newInstances.lastIndex) {
+                                    val it = newInstances.removeAt(idx2)
+                                    newInstances.add(idx2 + 1, it)
+                                    onReorder(newInstances)
                                 }
                             },
                         )
-                    },
-                ) {
+                    }
+                } else {
                     FeatureCard(
                         feature = item,
                         instance = instance,
@@ -129,37 +170,6 @@ fun Features(
                         },
                     )
                 }
-            } else {
-                FeatureCard(
-                    feature = item,
-                    instance = instance,
-                    onToggle = {
-                        item.onCheckedChange(!item.isChecked)
-                        onValueUpdate(idx)
-                    },
-                    onDelete = { onDeleteInstance(item.instanceId) },
-                    isDeletable = item.isDeletable,
-                    canMoveUp = canMoveUp,
-                    canMoveDown = canMoveDown,
-                    onMoveUp = {
-                        val newInstances = instances.toMutableList()
-                        val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
-                        if (idx2 > 0) {
-                            val it = newInstances.removeAt(idx2)
-                            newInstances.add(idx2 - 1, it)
-                            onReorder(newInstances)
-                        }
-                    },
-                    onMoveDown = {
-                        val newInstances = instances.toMutableList()
-                        val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
-                        if (idx2 < newInstances.lastIndex) {
-                            val it = newInstances.removeAt(idx2)
-                            newInstances.add(idx2 + 1, it)
-                            onReorder(newInstances)
-                        }
-                    },
-                )
             }
         }
 
