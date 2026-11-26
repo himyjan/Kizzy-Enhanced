@@ -56,11 +56,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.domain.model.rpc.RpcConfig
-import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.ui.theme.KizzyTheme
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.RPC_INSTANCE_MEDIA
 import com.my.kizzy.preference.Prefs.LAST_RUN_CUSTOM_RPC
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ALBUM_NAME
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_APP_ICON
@@ -153,11 +153,16 @@ fun MediaRPC(
             val newValue = !mediaRpcRunning
             mediaRpcRunning = newValue
             scope.launch {
-                // Toggle Media RPC independently — does not stop Custom/Console/Manual RPC.
+                // Toggle only the built-in Media instance's socket. Other
+                // instances (including Media clones) stay connected.
                 if (newValue) {
-                    rpcManager.switchTo(setOf(RpcType.MediaRpc), add = true)
+                    rpcManager.switchToInstance(
+                        instanceId = RPC_INSTANCE_MEDIA,
+                        rpcType = RpcType.MediaRpc,
+                        oauthIndex = 1,
+                    )
                 } else {
-                    rpcManager.stopRpcTypes(setOf(RpcType.MediaRpc))
+                    rpcManager.stopInstance(RPC_INSTANCE_MEDIA, RpcType.MediaRpc)
                 }
             }
         },
@@ -353,7 +358,9 @@ fun MediaRPCContent(
             SwitchBar(
                 title = stringResource(id = R.string.enable_mediaRpc),
                 isChecked = mediaRpcRunning,
-                enabled = hasNotificationAccess && !AppUtils.ManualRpcRunning(),
+                // Media RPC runs in parallel with Manual/Custom RPC. Each has its
+                // own socket, so another service running must not disable this one.
+                enabled = hasNotificationAccess,
             ) { onMediaRpcRunningChanged() }
 
             // Copy current media presence to the Custom RPC editor.

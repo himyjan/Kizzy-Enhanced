@@ -771,6 +771,18 @@ object Prefs {
 
     fun getConfiguredOAuthAppCount(): Int = getConfiguredOAuthApps().size
 
+    /**
+     * Formats a saved token exactly like KizzyRPC.refreshFromPrefs() does:
+     * social-sdk OAuth2 tokens go out as "Bearer <token>", gateway account
+     * tokens are sent raw. Needed by every independent socket because the
+     * broadcast socket cannot refresh its IDENTIFY properties later.
+     */
+    fun formatIdentifyToken(token: String): String {
+        if (token.isBlank() || token.startsWith("Bearer ")) return token
+        val method = get(RPC_CONNECTION_METHOD, RPC_CONNECTION_METHOD_OAUTH2)
+        return if (method == RPC_CONNECTION_METHOD_OAUTH2) "Bearer $token" else token
+    }
+
     /** Picks an app index for the [ordinal]-th instance, cycling through all apps. */
     fun getRoundRobinOAuthIndex(ordinal: Int): Int {
         val apps = getConfiguredOAuthApps()

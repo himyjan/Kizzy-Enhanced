@@ -42,10 +42,25 @@ class MultiRpcManager @Inject constructor(
 
     private val groups = LinkedHashMap<String, RpcGroup>()
 
+    /** Globally unique presence application ID per instance. */
+    private val appIdAssignments = LinkedHashMap<String, String>()
+
+    private fun assignAppId(instanceId: String): String {
+        appIdAssignments[instanceId]?.let { return it }
+        val used = appIdAssignments.values.toSet()
+        val pool = appIdPool()
+        val appId = pool.firstOrNull { it !in used }
+            ?: pool[appIdAssignments.size % pool.size]
+        appIdAssignments[instanceId] = appId
+        return appId
+    }
+
     /** Returns the [KizzyRPC] for a slot, creating its group lazily on first use. */
     fun session(slotId: String): KizzyRPC? {
         val existing = groups[slotId]
-        if (existing != null && existing.broadcast.hasConnectedSocket()) return existing.kizzyRpc
+        // A group with sockets is live even before its first socket finishes
+        // IDENTIFY. Discarding it here loses instances that were just attached.
+        if (existing != null && existing.broadcast.socketCount() > 0) return existing.kizzyRpc
         if (existing != null) stopSession(slotId)
         return createGroup(slotId)?.kizzyRpc
     }
@@ -56,7 +71,7 @@ class MultiRpcManager @Inject constructor(
      */
     fun sessionWithoutBuiltIn(slotId: String): KizzyRPC? {
         val existing = groups[slotId]
-        if (existing != null && existing.broadcast.hasConnectedSocket()) return existing.kizzyRpc
+        if (existing != null && existing.broadcast.socketCount() > 0) return existing.kizzyRpc
         if (existing != null) stopSession(slotId)
         return createGroup(slotId, includeBuiltIn = false)?.kizzyRpc
     }
@@ -82,8 +97,12 @@ class MultiRpcManager @Inject constructor(
             )
         if (credential.token.isBlank()) return
 
+        // Discord shows only one activity per application ID. Give every socket
+        // a globally distinct application ID so all parallel instances are
+        // visible at the same time.
+        val appId = assignAppId(instanceId)
         val socket = createSocket(credential, instanceId)
-        group.broadcast.addSocket(instanceId, credential.appId, socket)
+        group.broadcast.addSocket(instanceId, appId, socket)
         group.instances[instanceId] = credential
         launch { socket.connect() }
     }
@@ -93,6 +112,7 @@ class MultiRpcManager @Inject constructor(
         val group = groups[slotId] ?: return
         group.broadcast.removeSocket(instanceId)
         group.instances.remove(instanceId)
+        appIdAssignments.remove(instanceId)
     }
 
     /** Number of live sockets in a slot (including the built-in instance). */
@@ -105,6 +125,8 @@ class MultiRpcManager @Inject constructor(
     fun stopSession(slotId: String) {
         val group = groups.remove(slotId) ?: return
         group.broadcast.close()
+        group.instances.keys.forEach { appIdAssignments.remove(it) }
+        appIdAssignments.remove(builtInInstanceId(slotId))
         group.instances.clear()
     }
 
@@ -130,7 +152,7 @@ class MultiRpcManager @Inject constructor(
         if (includeBuiltIn) {
             broadcast.addSocket(
                 instanceId = builtInId,
-                appId = credential.appId,
+                appId = assignAppId(builtInId),
                 socket = createSocket(credential, builtInId),
             )
         }
@@ -171,6 +193,21 @@ class MultiRpcManager @Inject constructor(
         else -> Prefs.DEFAULT_OAUTH_APP_ID_1
     }
 
+    /**
+     * Application IDs used for presence on parallel sockets. Configured apps
+     * come first; built-in IDs fill the rest so more instances than configured
+     * apps still get distinct application IDs on Discord.
+     */
+    private fun appIdPool(): List<String> = (
+        Prefs.getConfiguredOAuthApps().map { it.appId } +
+            listOf(
+                Prefs.DEFAULT_OAUTH_APP_ID_1,
+                Prefs.DEFAULT_OAUTH_APP_ID_2,
+                Prefs.DEFAULT_OAUTH_APP_ID_3,
+                "1573730101810331718",
+            )
+        ).distinct()
+
     private fun builtInInstanceId(slotId: String): String = when (slotId) {
         "1" -> "media_rpc"
         "2" -> "custom_rpc"
@@ -183,7 +220,7 @@ class MultiRpcManager @Inject constructor(
         // separate clients instead of reconnecting the same session.
         val device = "${credential.appId}-$instanceId"
         return DiscordWebSocketImpl(
-            token = credential.token,
+            token = Prefs.formatIdentifyToken(credential.token),
             logger = logger,
             identifyBrowser = "Discord Android",
             identifyOs = "Android",
