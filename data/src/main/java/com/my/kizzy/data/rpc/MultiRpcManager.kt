@@ -284,6 +284,10 @@ class MultiRpcManager @Inject constructor(
      * Application IDs used for presence on parallel sockets. Configured apps
      * come first; built-in IDs fill the rest so more instances than configured
      * apps still get distinct application IDs on Discord.
+     *
+     * Discord shows only one activity per application ID, so every parallel
+     * instance needs a unique ID. Only real, authenticated OAuth2 application
+     * IDs are used — fake IDs are rejected by Discord.
      */
     private fun appIdPool(): List<String> = (
         Prefs.getConfiguredOAuthApps().map { it.appId } +
@@ -291,7 +295,6 @@ class MultiRpcManager @Inject constructor(
                 Prefs.DEFAULT_OAUTH_APP_ID_1,
                 Prefs.DEFAULT_OAUTH_APP_ID_2,
                 Prefs.DEFAULT_OAUTH_APP_ID_3,
-                "1573730101810331718",
             )
         ).distinct()
 
