@@ -73,6 +73,9 @@ class CustomRpcService : Service() {
     /** Polls the foreground app while Console RPC should follow DroidDeck/Eden. */
     private var consoleDetectionJob: Job? = null
 
+    /** Keeps the activity alive; Discord drops idle presences after a few seconds. */
+    private var presenceRefreshJob: Job? = null
+
     @Inject
     lateinit var notificationBuilder: Notification.Builder
 
@@ -153,6 +156,7 @@ class CustomRpcService : Service() {
                     val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
                     multiRpc.addInstance("2", instanceId, oauthIndex)
                     scope.launch { sendPresenceAndNotification(forceRefresh = true) }
+                    startPresenceRefresh()
                 }
                 return super.onStartCommand(intent, flags, startId)
             }
@@ -206,6 +210,7 @@ class CustomRpcService : Service() {
         scope.launch {
             sendPresenceAndNotification()
         }
+        startPresenceRefresh()
         startConsoleDetectionIfNeeded()
         return super.onStartCommand(intent, flags, startId)
     }
@@ -233,6 +238,23 @@ class CustomRpcService : Service() {
         if (!consoleMode) {
             consoleDetectionJob?.cancel()
             consoleDetectionJob = null
+        }
+    }
+
+    /** Re-sends the Custom RPC activity periodically so Discord never drops it. */
+    private fun startPresenceRefresh() {
+        if (presenceRefreshJob?.isActive == true) return
+        presenceRefreshJob = scope.launch {
+            while (isActive) {
+                delay(10_000)
+                try {
+                    sendPresenceAndNotification(forceRefresh = true)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // A failed refresh is retried on the next tick.
+                }
+            }
         }
     }
 
@@ -471,6 +493,8 @@ class CustomRpcService : Service() {
     override fun onDestroy() {
         consoleDetectionJob?.cancel()
         consoleDetectionJob = null
+        presenceRefreshJob?.cancel()
+        presenceRefreshJob = null
         // Cancel pending work first, then clear/close off the main thread.
         scope.cancel()
         val rpc = kizzyRPC
