@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.PostAdd
 import androidx.compose.material.icons.outlined.Schedule
@@ -172,7 +171,7 @@ fun LeaderboardSettings(
                     SettingItem(
                         title = stringResource(R.string.discord_leaderboard_bot_token),
                         description = stringResource(R.string.discord_leaderboard_bot_token_desc) + "  •  ${botToken.ifEmpty { "(not set)" } }",
-                        icon = Icons.Outlined.Link,
+                        icon = Icons.Outlined.List,
                     ) {
                         draftBotToken = botToken
                         showBotTokenDialog = true
@@ -182,7 +181,7 @@ fun LeaderboardSettings(
                     SettingItem(
                         title = stringResource(R.string.discord_leaderboard_channel_id),
                         description = stringResource(R.string.discord_leaderboard_channel_id_desc) + "  •  ${channelId.ifEmpty { "(not set)" } }",
-                        icon = Icons.Outlined.Link,
+                        icon = Icons.Outlined.List,
                     ) {
                         draftChannelId = channelId
                         showChannelIdDialog = true

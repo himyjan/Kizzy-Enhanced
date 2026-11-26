@@ -102,7 +102,7 @@ class DiscordLeaderboardManager private constructor(
                 val outcome = withContext(Dispatchers.IO) {
                     client.newCall(request).execute().use { response ->
                         val code = response.code
-                        val body = response.body?.string().orEmpty()
+                        val body = response.body.string()
                         code to body
                     }
                 }
