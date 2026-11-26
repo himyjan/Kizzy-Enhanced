@@ -58,7 +58,6 @@ fun homeFeaturesProvider(
     val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
     val instances = Prefs.getHomeRpcInstances()
 
-    val activeRpc by rpcManager.activeRpc.collectAsState()
     val activeInstances by rpcManager.activeInstances.collectAsState()
 
     val builtInIds = BUILT_IN_INSTANCES.map { it.id }.toSet()
@@ -76,10 +75,10 @@ fun homeFeaturesProvider(
             "custom_rpc" -> RpcType.CustomRpc
             else -> null
         }
-        // Per-instance state: two instances of the same type can be on/off
-        // independently, each with its own Discord socket.
-        val isRunning = instance.id in activeInstances ||
-            (rpcType != null && rpcType in activeRpc && instance.id in builtInIds)
+        // Per-instance state only. Falling back to the type-level activeRpc set
+        // makes every built-in of that type appear on when just one instance
+        // (or a clone) is running.
+        val isRunning = instance.id in activeInstances
 
         // App Detection requires Usage Access permission; gate the toggle
         val requiresUsageAccess = rpcType == RpcType.AppDetectionRpc

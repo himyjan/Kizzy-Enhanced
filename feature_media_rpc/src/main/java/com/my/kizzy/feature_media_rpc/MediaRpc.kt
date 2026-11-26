@@ -112,11 +112,13 @@ fun MediaRPC(
     LaunchedEffect(Unit) {
         rpcManager.refreshFromServices()
     }
+    // Only the built-in Media instance controls this page's switch. A Media
+    // clone being on must not turn this switch on (or keep it on).
     var mediaRpcRunning by remember {
-        mutableStateOf(RpcType.MediaRpc in rpcManager.activeRpc.value)
+        mutableStateOf(RPC_INSTANCE_MEDIA in rpcManager.activeInstances.value)
     }
-    LaunchedEffect(rpcManager.activeRpc) {
-        mediaRpcRunning = RpcType.MediaRpc in rpcManager.activeRpc.value
+    LaunchedEffect(rpcManager.activeInstances) {
+        mediaRpcRunning = RPC_INSTANCE_MEDIA in rpcManager.activeInstances.value
     }
 
     var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, true]) }

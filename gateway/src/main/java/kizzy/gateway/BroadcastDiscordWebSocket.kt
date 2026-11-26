@@ -90,7 +90,10 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
 
     override fun isWebSocketConnected(): Boolean {
         val sockets = snapshot()
-        return sockets.isNotEmpty() && sockets.all { it.socket.isWebSocketConnected() }
+        // Do not block presence for the whole group while one instance is
+        // still doing IDENTIFY (Discord rate-limits simultaneous connects).
+        // Each socket sends independently once it is ready.
+        return sockets.any { it.socket.isWebSocketConnected() }
     }
 
     override fun close() {

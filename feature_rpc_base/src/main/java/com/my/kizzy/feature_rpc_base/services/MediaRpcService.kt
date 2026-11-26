@@ -1725,7 +1725,13 @@ class MediaRpcService : Service() {
             Constants.ACTION_REMOVE_INSTANCE -> {
                 val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
                 if (!instanceId.isNullOrBlank()) multiRpc.removeInstance("1", instanceId)
-                if (multiRpc.instanceCount("1") == 0) stopSelf()
+                if (multiRpc.instanceCount("1") == 0) {
+                    stopSelf()
+                } else {
+                    // The remaining instance still needs a fresh presence on its
+                    // own application ID after the other socket was removed.
+                    restartInPlace()
+                }
             }
             Constants.ACTION_STOP_SERVICE -> {
                 // The user stopped the RPC on purpose, so forget the enabled

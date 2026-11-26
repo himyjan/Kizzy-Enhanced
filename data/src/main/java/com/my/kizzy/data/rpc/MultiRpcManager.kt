@@ -104,7 +104,13 @@ class MultiRpcManager @Inject constructor(
         val socket = createSocket(credential, instanceId)
         group.broadcast.addSocket(instanceId, appId, socket)
         group.instances[instanceId] = credential
-        launch { socket.connect() }
+        // Discord rate-limits IDENTIFYs from the same client; stagger them so
+        // every parallel socket actually reaches READY.
+        val delayMs = 750L * group.instances.size
+        launch {
+            kotlinx.coroutines.delay(delayMs)
+            socket.connect()
+        }
     }
 
     /** Closes and removes only [instanceId]'s socket; other instances keep running. */

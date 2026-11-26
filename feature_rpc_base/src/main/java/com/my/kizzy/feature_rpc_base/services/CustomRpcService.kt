@@ -159,7 +159,11 @@ class CustomRpcService : Service() {
             Constants.ACTION_REMOVE_INSTANCE -> {
                 val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
                 if (!instanceId.isNullOrBlank()) multiRpc.removeInstance("2", instanceId)
-                if (multiRpc.instanceCount("2") == 0) stopSelf()
+                if (multiRpc.instanceCount("2") == 0) {
+                    stopSelf()
+                } else {
+                    scope.launch { sendPresenceAndNotification(forceRefresh = true) }
+                }
                 return super.onStartCommand(intent, flags, startId)
             }
         }
