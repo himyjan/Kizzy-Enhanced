@@ -11,7 +11,9 @@ import kizzy.gateway.DiscordWebSocketImpl
 import kizzy.gateway.entities.presence.Activity
 import kizzy.gateway.entities.presence.Presence
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
@@ -49,6 +51,9 @@ class MultiRpcManager @Inject constructor(
 
     /** Last activity produced by each group, used to build one combined presence. */
     private val lastGroupPresence = LinkedHashMap<String, Presence>()
+    private val throttler = PresenceThrottler()
+    private var lastCombined: Presence? = null
+    private var flushJob: Job? = null
 
     /**
      * Combines the latest activity of every group into one ordered presence and
@@ -58,6 +63,25 @@ class MultiRpcManager @Inject constructor(
      */
     private fun onGroupPresence(slotId: String, presence: Presence) {
         lastGroupPresence[slotId] = presence
+        val combined = buildCombined()
+        lastCombined = combined
+
+        val now = System.currentTimeMillis()
+        val waitMs = throttler.delayFor(now, combined)
+        flushJob?.cancel()
+        if (waitMs <= 0L) {
+            flushJob = null
+            sendCombined(combined, now)
+        } else {
+            flushJob = launch {
+                delay(waitMs)
+                lastCombined?.let { sendCombined(it, System.currentTimeMillis()) }
+                flushJob = null
+            }
+        }
+    }
+
+    private fun buildCombined(): Presence {
         val activities = mutableListOf<Activity>()
         groups.values.forEach { group ->
             val base = lastGroupPresence[group.slotId]?.activities?.firstOrNull()
@@ -66,14 +90,14 @@ class MultiRpcManager @Inject constructor(
                 activities += base.copy(applicationId = appId)
             }
         }
-        val combined = Presence(
-            activities = activities,
-            afk = false,
-            status = "online",
-        )
+        return Presence(activities = activities, afk = false, status = "online")
+    }
+
+    private fun sendCombined(presence: Presence, now: Long) {
         groups.values.forEach { group ->
-            launch { group.broadcast.sendRaw(combined) }
+            launch { group.broadcast.sendRaw(presence) }
         }
+        throttler.markSent(now, presence)
     }
 
     private fun assignAppId(instanceId: String): String {
@@ -168,6 +192,9 @@ class MultiRpcManager @Inject constructor(
     }
 
     fun stopAllSessions() {
+        flushJob?.cancel()
+        flushJob = null
+        lastCombined = null
         groups.keys.toList().forEach { stopSession(it) }
     }
 
