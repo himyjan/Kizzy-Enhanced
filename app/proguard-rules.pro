@@ -48,7 +48,6 @@
 -dontwarn android.app.role.RoleManager
 -dontwarn android.provider.Settings$Secure
 
--dontnote javax.annotation.processing.Processor
 -dontnote jakarta.annotation.processing.Processor
 
 # ============================================================
