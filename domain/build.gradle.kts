@@ -40,7 +40,7 @@ tasks.register("patchJvm28To27") {
     description = "Patch JVM 28 class files (major 72) down to JVM 27 (major 71) for R8 compatibility"
     dependsOn(tasks.named("compileKotlin"))
     doLast {
-        val classesDir = File(project.buildDir, "classes/kotlin/main")
+        val classesDir = File(project.buildDir.toString(), "classes/kotlin/main")
         if (classesDir.exists()) {
             classesDir.walkTopDown().filter { it.extension == "class" }.forEach { file ->
                 patchClassFileMajorVersion(file, 71)
