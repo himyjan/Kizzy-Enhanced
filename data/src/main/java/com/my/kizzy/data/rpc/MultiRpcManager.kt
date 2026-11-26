@@ -173,8 +173,16 @@ class MultiRpcManager @Inject constructor(
         return group
     }
 
-    private fun credentialForSlot(slotId: String): OAuthAppCredential? =
-        Prefs.getOAuthApp(slotIndex(slotId))
+    private fun credentialForSlot(slotId: String): OAuthAppCredential? {
+        val index = slotIndex(slotId)
+        // Keep the old behaviour: a slot whose own OAuth app is not configured
+        // falls back to the main token so built-in types still work when the
+        // user has only one application authenticated.
+        return Prefs.getOAuthApp(index)
+            ?: Prefs.getConfiguredOAuthApps().firstOrNull()
+            ?: OAuthAppCredential(index, mainToken(), defaultAppId(index))
+                .takeIf { it.token.isNotBlank() }
+    }
 
     private fun mainToken(): String = Prefs[Prefs.TOKEN, ""]
         .takeIf { it.isNotBlank() }
