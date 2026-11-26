@@ -147,15 +147,5 @@ fun homeFeaturesProvider(
                 }
             },
         )
-    } + listOf(
-        HomeFeature(
-            title = "Add RPC",
-            icon = R.drawable.ic_home_add_rpc,
-            route = null,
-            isChecked = false,
-            showSwitch = false,
-            isAddButton = true,
-            tooltipText = "Add a new RPC instance (Media, Manual, or Custom)",
-        )
-    )
+    }
 }

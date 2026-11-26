@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Text
@@ -68,14 +69,14 @@ fun Features(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        for (i in homeItems.indices) {
-            val item = homeItems[i]
+        homeItems.forEach { item ->
             val instance = instances.firstOrNull { it.id == item.instanceId }
+            val idx = homeItems.indexOf(item)
             val isBuiltIn = !item.isDeletable
-            val canMoveUp = !isBuiltIn && i > 0 && homeItems[i - 1].isDeletable
-            val canMoveDown = !isBuiltIn && i < homeItems.lastIndex - 1 && homeItems[i + 1].isDeletable
+            val canMoveUp = !isBuiltIn && idx > 0 && homeItems[idx - 1].isDeletable
+            val canMoveDown = !isBuiltIn && idx < homeItems.lastIndex - 1 && homeItems[idx + 1].isDeletable
 
             if (item.tooltipText.isNotBlank()) {
                 TooltipBox(
@@ -102,7 +103,7 @@ fun Features(
                         instance = instance,
                         onToggle = {
                             item.onCheckedChange(!item.isChecked)
-                            onValueUpdate(i)
+                            onValueUpdate(idx)
                         },
                         onDelete = { onDeleteInstance(item.instanceId) },
                         isDeletable = item.isDeletable,
@@ -110,19 +111,19 @@ fun Features(
                         canMoveDown = canMoveDown,
                         onMoveUp = {
                             val newInstances = instances.toMutableList()
-                            val idx = newInstances.indexOfFirst { it.id == item.instanceId }
-                            if (idx > 0) {
-                                val it = newInstances.removeAt(idx)
-                                newInstances.add(idx - 1, it)
+                            val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
+                            if (idx2 > 0) {
+                                val it = newInstances.removeAt(idx2)
+                                newInstances.add(idx2 - 1, it)
                                 onReorder(newInstances)
                             }
                         },
                         onMoveDown = {
                             val newInstances = instances.toMutableList()
-                            val idx = newInstances.indexOfFirst { it.id == item.instanceId }
-                            if (idx < newInstances.lastIndex) {
-                                val it = newInstances.removeAt(idx)
-                                newInstances.add(idx + 1, it)
+                            val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
+                            if (idx2 < newInstances.lastIndex) {
+                                val it = newInstances.removeAt(idx2)
+                                newInstances.add(idx2 + 1, it)
                                 onReorder(newInstances)
                             }
                         },
@@ -134,7 +135,7 @@ fun Features(
                     instance = instance,
                     onToggle = {
                         item.onCheckedChange(!item.isChecked)
-                        onValueUpdate(i)
+                        onValueUpdate(idx)
                     },
                     onDelete = { onDeleteInstance(item.instanceId) },
                     isDeletable = item.isDeletable,
@@ -142,19 +143,19 @@ fun Features(
                     canMoveDown = canMoveDown,
                     onMoveUp = {
                         val newInstances = instances.toMutableList()
-                        val idx = newInstances.indexOfFirst { it.id == item.instanceId }
-                        if (idx > 0) {
-                            val it = newInstances.removeAt(idx)
-                            newInstances.add(idx - 1, it)
+                        val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
+                        if (idx2 > 0) {
+                            val it = newInstances.removeAt(idx2)
+                            newInstances.add(idx2 - 1, it)
                             onReorder(newInstances)
                         }
                     },
                     onMoveDown = {
                         val newInstances = instances.toMutableList()
-                        val idx = newInstances.indexOfFirst { it.id == item.instanceId }
-                        if (idx < newInstances.lastIndex) {
-                            val it = newInstances.removeAt(idx)
-                            newInstances.add(idx + 1, it)
+                        val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
+                        if (idx2 < newInstances.lastIndex) {
+                            val it = newInstances.removeAt(idx2)
+                            newInstances.add(idx2 + 1, it)
                             onReorder(newInstances)
                         }
                     },
@@ -162,6 +163,7 @@ fun Features(
             }
         }
 
+        // Add RPC card at the bottom - aligned right
         FeatureCard(
             feature = HomeFeature(
                 title = "Add RPC",
@@ -240,7 +242,7 @@ private fun FeatureCard(
             }
             .padding(start = 22.dp, end = 18.dp, top = 16.dp, bottom = 16.dp),
     ) {
-        androidx.compose.material3.Icon(
+        Icon(
             painter = painterResource(id = feature.icon),
             contentDescription = null,
             modifier = Modifier.size(40.dp),

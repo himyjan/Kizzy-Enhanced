@@ -275,6 +275,8 @@
         constantly switches between Apps RPC and Media RPC.</string>
     <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
         rich presence for Discord.</string>
+    <string name="add_rpc_title">Add RPC</string>
+    <string name="add_rpc_select_type">Select RPC type:</string>
     <string name="main_comingSoon">Coming Soon</string>
     <string name="exit">Exit</string>
     <string name="logs">Logs</string>
