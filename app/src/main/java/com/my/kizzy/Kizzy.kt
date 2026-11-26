@@ -153,6 +153,7 @@ internal fun Kizzy(
                     ?.toVersion()
                     ?.whetherNeedUpdate(BuildConfig.VERSION_NAME.toVersion())
                     ?: false
+                val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
                 Home(
                     state = state,
                     checkForUpdates = {
@@ -164,6 +165,7 @@ internal fun Kizzy(
                     },
                     showBadge = showBadge,
                     features = homeFeaturesProvider(
+                        prefsMap = prefsMap,
                         navigateTo = { navController.navigate(it) },
                         hasUsageAccess = usageAccessStatus,
                         hasNotificationAccess = notificationListenerAccess,
