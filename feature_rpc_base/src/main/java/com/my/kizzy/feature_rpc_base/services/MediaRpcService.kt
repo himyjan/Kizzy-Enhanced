@@ -1714,7 +1714,12 @@ class MediaRpcService : Service() {
         // kizzyRPC stays null and no presence is sent. A service started only
         // for a user-created instance must not pull in the built-in socket.
         kizzyRPC = if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
-            multiRpc.sessionWithoutBuiltIn("1")
+            val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+            if (!instanceId.isNullOrBlank()) {
+                multiRpc.customSession(instanceId)
+            } else {
+                multiRpc.session("1")
+            }
         } else {
             multiRpc.session("1")
         }

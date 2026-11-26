@@ -270,7 +270,12 @@ class ManualRpc : Service() {
         // A service started only for a user-created instance must not pull in
         // the built-in instance's socket as well.
         kizzyRPC = if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
-            multiRpc.sessionWithoutBuiltIn("3")
+            val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+            if (!instanceId.isNullOrBlank()) {
+                multiRpc.customSession(instanceId)
+            } else {
+                multiRpc.session("3")
+            }
         } else {
             multiRpc.session("3")
         }
