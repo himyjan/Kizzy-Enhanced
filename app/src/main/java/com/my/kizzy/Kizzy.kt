@@ -229,6 +229,20 @@ internal fun Kizzy(
                     updateAppActivityType = viewModel::updateAppActivityType,
                 )
             }
+            composable(Routes.MEDIA_RPC_INSTANCE) { navBackStackEntry ->
+                val instanceId = navBackStackEntry.arguments?.getString("instanceId")
+                val viewModel = hiltViewModel<MediaScreenViewModel>(navBackStackEntry)
+                MediaRPC(
+                    onBackPressed = { goBack() },
+                    state = viewModel.state.collectAsState().value,
+                    hasNotificationAccess = notificationListenerAccess.value,
+                    updateMediaAppEnabled = viewModel::updateMediaAppEnabled,
+                    selectAllMediaApps = viewModel::selectAllMediaApps,
+                    deselectAllMediaApps = viewModel::deselectAllMediaApps,
+                    updateAppActivityType = viewModel::updateAppActivityType,
+                    instanceId = instanceId,
+                )
+            }
             composable(Routes.PROFILE) { navBackStackEntry ->
                 val viewModel = hiltViewModel<UserViewModel>(navBackStackEntry)
                 val state by viewModel.state.collectAsState()
@@ -369,6 +383,19 @@ internal fun Kizzy(
                 )
             }
             composable(Routes.MANUAL_RPC) { navBackStackEntry ->
+                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
+                ManualRpcScreen(
+                    state = experimentalRpcViewModel.uiState.collectAsState().value,
+                    onEvent = experimentalRpcViewModel::onEvent,
+                    onBackPressed = { goBack() },
+                    hasUsageAccess = usageAccessStatus.value,
+                    hasNotificationAccess = notificationListenerAccess.value,
+                    navigateToAppSelection = {
+                        navController.navigate(Routes.MANUAL_RPC_APPS)
+                    },
+                )
+            }
+            composable(Routes.MANUAL_RPC_INSTANCE) { navBackStackEntry ->
                 val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
                 ManualRpcScreen(
                     state = experimentalRpcViewModel.uiState.collectAsState().value,

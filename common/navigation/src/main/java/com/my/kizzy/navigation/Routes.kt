@@ -29,11 +29,13 @@ class Routes {
         /* Rpc Screens */
         const val APPS_DETECTION = "apps_rpc"
         const val MEDIA_RPC = "media_rpc"
+        const val MEDIA_RPC_INSTANCE = "media_rpc/{instanceId}"
         const val CUSTOM_RPC = "custom_rpc"
         /** Custom RPC editor for one home-screen instance (clones keep their own config). */
         const val CUSTOM_RPC_INSTANCE = "custom_rpc/{instanceId}"
         const val CONSOLE_RPC = "console_rpc"
         const val MANUAL_RPC = "manual_rpc"
+        const val MANUAL_RPC_INSTANCE = "manual_rpc/{instanceId}"
         const val MANUAL_RPC_APPS = "manual_rpc_apps"
 
         /* Settings Screens */

@@ -63,9 +63,12 @@ fun homeFeaturesProvider(
     val builtInIds = BUILT_IN_INSTANCES.map { it.id }.toSet()
 
     return instances.map { instance ->
+        val isClone = instance.id !in builtInIds
         val route = when (instance.type) {
-            "media_rpc" -> Routes.MEDIA_RPC
-            "manual_rpc" -> Routes.MANUAL_RPC
+            "media_rpc" ->
+                if (isClone) "media_rpc/${instance.id}" else Routes.MEDIA_RPC
+            "manual_rpc" ->
+                if (isClone) "manual_rpc/${instance.id}" else Routes.MANUAL_RPC
             "custom_rpc" ->
                 if (instance.id in builtInIds) Routes.CUSTOM_RPC
                 else "custom_rpc/${instance.id}"

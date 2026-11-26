@@ -104,7 +104,9 @@ fun MediaRPC(
     selectAllMediaApps: () -> Unit,
     deselectAllMediaApps: () -> Unit,
     updateAppActivityType: (String, Int?) -> Unit = { _, _ -> },
+    instanceId: String? = null,
 ) {
+    fun key(prefKey: String) = Prefs.scopedKey(prefKey, instanceId)
     val context = LocalContext.current
     val rpcManager = RpcManager.getInstance(context)
     val scope = rememberCoroutineScope()
@@ -121,26 +123,26 @@ fun MediaRPC(
         mediaRpcRunning = RPC_INSTANCE_MEDIA in rpcManager.activeInstances.value
     }
 
-    var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, true]) }
-    var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, true]) }
-    var isCoverArtEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_COVER_ART, true]) }
-    var isAppIconEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_APP_ICON, false]) }
-    var isChannelIconEnabled by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false]) }
-    var useAppsRpc by remember { mutableStateOf(Prefs[MEDIA_RPC_USE_APPS_RPC, false]) }
-    var isTimestampsEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]) }
-    var hideOnPause by remember { mutableStateOf(Prefs[MEDIA_RPC_HIDE_ON_PAUSE, false]) }
-    var isShowPlaybackState by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE, false]) }
+    var isArtistEnabled by remember { mutableStateOf(Prefs[key(MEDIA_RPC_ARTIST_NAME), true]) }
+    var isAlbumEnabled by remember { mutableStateOf(Prefs[key(MEDIA_RPC_ALBUM_NAME), true]) }
+    var isCoverArtEnabled by remember { mutableStateOf(Prefs[key(MEDIA_RPC_SHOW_COVER_ART), true]) }
+    var isAppIconEnabled by remember { mutableStateOf(Prefs[key(MEDIA_RPC_APP_ICON), false]) }
+    var isChannelIconEnabled by remember { mutableStateOf(Prefs[key(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON), false]) }
+    var useAppsRpc by remember { mutableStateOf(Prefs[key(MEDIA_RPC_USE_APPS_RPC), false]) }
+    var isTimestampsEnabled by remember { mutableStateOf(Prefs[key(MEDIA_RPC_ENABLE_TIMESTAMPS), true]) }
+    var hideOnPause by remember { mutableStateOf(Prefs[key(MEDIA_RPC_HIDE_ON_PAUSE), false]) }
+    var isShowPlaybackState by remember { mutableStateOf(Prefs[key(MEDIA_RPC_SHOW_PLAYBACK_STATE), false]) }
     var showSongAsTitle by remember {
-        mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true])
+        mutableStateOf(Prefs[key(Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE), true])
     }
     var showAppNameInDetails by remember {
-        mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS, true])
+        mutableStateOf(Prefs[key(Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS), true])
     }
     var isAutoActivityTypeEnabled by remember {
-        mutableStateOf(Prefs[Prefs.AUTO_ACTIVITY_TYPE, true])
+        mutableStateOf(Prefs[key(Prefs.AUTO_ACTIVITY_TYPE), true])
     }
     var activityType by remember {
-        mutableStateOf(Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, Prefs.ACTIVITY_TYPE_AUTO])
+        mutableStateOf(Prefs[key(Prefs.MEDIA_RPC_ACTIVITY_TYPE), Prefs.ACTIVITY_TYPE_AUTO])
     }
 
     MediaRPCContent(
@@ -169,70 +171,70 @@ fun MediaRPC(
             }
         },
         isArtistEnabled = isArtistEnabled,
-        onArtistEnabledChanged = { isArtistEnabled = !isArtistEnabled; Prefs[MEDIA_RPC_ARTIST_NAME] = isArtistEnabled },
+        onArtistEnabledChanged = { isArtistEnabled = !isArtistEnabled; Prefs[key(MEDIA_RPC_ARTIST_NAME)] = isArtistEnabled },
         isAlbumEnabled = isAlbumEnabled,
-        onAlbumEnabledChanged = { isAlbumEnabled = !isAlbumEnabled; Prefs[MEDIA_RPC_ALBUM_NAME] = isAlbumEnabled },
+        onAlbumEnabledChanged = { isAlbumEnabled = !isAlbumEnabled; Prefs[key(MEDIA_RPC_ALBUM_NAME)] = isAlbumEnabled },
         isCoverArtEnabled = isCoverArtEnabled,
         onCoverArtEnabledChanged = {
             isCoverArtEnabled = !isCoverArtEnabled
-            Prefs[MEDIA_RPC_SHOW_COVER_ART] = isCoverArtEnabled
+            Prefs[key(MEDIA_RPC_SHOW_COVER_ART)] = isCoverArtEnabled
         },
         isAppIconEnabled = isAppIconEnabled,
         onAppIconEnabledChanged = {
             isAppIconEnabled = !isAppIconEnabled
-            Prefs[MEDIA_RPC_APP_ICON] = isAppIconEnabled
+            Prefs[key(MEDIA_RPC_APP_ICON)] = isAppIconEnabled
             if (isAppIconEnabled) {
                 isShowPlaybackState = false
-                Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = false
+                Prefs[key(MEDIA_RPC_SHOW_PLAYBACK_STATE)] = false
                 isChannelIconEnabled = false
-                Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = false
+                Prefs[key(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON)] = false
             }
         },
         isChannelIconEnabled = isChannelIconEnabled,
         onChannelIconEnabledChanged = {
             isChannelIconEnabled = !isChannelIconEnabled
-            Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = isChannelIconEnabled
+            Prefs[key(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON)] = isChannelIconEnabled
             if (isChannelIconEnabled) {
                 isAppIconEnabled = false
-                Prefs[MEDIA_RPC_APP_ICON] = false
+                Prefs[key(MEDIA_RPC_APP_ICON)] = false
                 isShowPlaybackState = false
-                Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = false
+                Prefs[key(MEDIA_RPC_SHOW_PLAYBACK_STATE)] = false
             }
         },
         useAppsRpc = useAppsRpc,
         onUseAppsRpcChanged = {
             useAppsRpc = !useAppsRpc
-            Prefs[MEDIA_RPC_USE_APPS_RPC] = useAppsRpc
+            Prefs[key(MEDIA_RPC_USE_APPS_RPC)] = useAppsRpc
         },
         isTimestampsEnabled = isTimestampsEnabled,
-        onTimestampsEnabledChanged = { isTimestampsEnabled = !isTimestampsEnabled; Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS] = isTimestampsEnabled },
+        onTimestampsEnabledChanged = { isTimestampsEnabled = !isTimestampsEnabled; Prefs[key(MEDIA_RPC_ENABLE_TIMESTAMPS)] = isTimestampsEnabled },
         isShowPlaybackState = isShowPlaybackState,
         onShowPlaybackStateChanged = {
             val newValue = !isShowPlaybackState
             isShowPlaybackState = newValue
-            Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = isShowPlaybackState
+            Prefs[key(MEDIA_RPC_SHOW_PLAYBACK_STATE)] = isShowPlaybackState
             if (isShowPlaybackState) {
                 isAppIconEnabled = false
-                Prefs[MEDIA_RPC_APP_ICON] = false
+                Prefs[key(MEDIA_RPC_APP_ICON)] = false
                 isChannelIconEnabled = false
-                Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = false
+                Prefs[key(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON)] = false
             }
         },
         hideOnPause = hideOnPause,
-        onHideOnPauseChanged = { hideOnPause = !hideOnPause; Prefs[MEDIA_RPC_HIDE_ON_PAUSE] = hideOnPause },
+        onHideOnPauseChanged = { hideOnPause = !hideOnPause; Prefs[key(MEDIA_RPC_HIDE_ON_PAUSE)] = hideOnPause },
         showSongAsTitle = showSongAsTitle,
-        onShowSongAsTitleChanged = { showSongAsTitle = !showSongAsTitle; Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE] = showSongAsTitle },
+        onShowSongAsTitleChanged = { showSongAsTitle = !showSongAsTitle; Prefs[key(Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE)] = showSongAsTitle },
         showAppNameInDetails = showAppNameInDetails,
-        onShowAppNameInDetailsChanged = { showAppNameInDetails = !showAppNameInDetails; Prefs[Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS] = showAppNameInDetails },
+        onShowAppNameInDetailsChanged = { showAppNameInDetails = !showAppNameInDetails; Prefs[key(Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS)] = showAppNameInDetails },
         isAutoActivityTypeEnabled = isAutoActivityTypeEnabled,
         onAutoActivityTypeEnabledChanged = {
             isAutoActivityTypeEnabled = !isAutoActivityTypeEnabled
-            Prefs[Prefs.AUTO_ACTIVITY_TYPE] = isAutoActivityTypeEnabled
+            Prefs[key(Prefs.AUTO_ACTIVITY_TYPE)] = isAutoActivityTypeEnabled
         },
         activityType = activityType,
         onActivityTypeChanged = {
             activityType = it
-            Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE] = it
+            Prefs[key(Prefs.MEDIA_RPC_ACTIVITY_TYPE)] = it
         },
         onAppActivityTypeChanged = updateAppActivityType,
     )

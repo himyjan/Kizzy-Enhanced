@@ -777,6 +777,13 @@ object Prefs {
      * tokens are sent raw. Needed by every independent socket because the
      * broadcast socket cannot refresh its IDENTIFY properties later.
      */
+    /**
+     * Instance-scoped preference key. Clones keep their own copy of a setting;
+     * built-ins (null id) keep the original key for backwards compatibility.
+     */
+    fun scopedKey(key: String, instanceId: String?): String =
+        if (instanceId.isNullOrBlank()) key else "${key}__instance_${instanceId}"
+
     /** Custom RPC config key for one home instance (null = built-in). */
     fun customRpcConfigKey(instanceId: String?): String =
         instanceId?.let { "custom_rpc_instance_config_$it" } ?: LAST_RUN_CUSTOM_RPC
