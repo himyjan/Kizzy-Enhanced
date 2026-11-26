@@ -354,12 +354,21 @@ class RpcManager @Inject constructor(
         ignoreServiceDetectionUntil = System.currentTimeMillis() + 1500
         applyActive(_activeInstances.value + instanceId)
         persistActiveRpcTypes(_activeInstances.value.mapNotNull(::typeFor).toSet())
-        // Do NOT save config here - the Custom RPC screen saves clone-specific
-        // config to Prefs.customRpcConfigKey(instanceId) when the user edits it.
-        // Saving here would overwrite a clone's edits with the built-in config
-        // (because config comes from instance.config which is never updated when
-        // editing a clone, falling back to LAST_RUN_CUSTOM_RPC).
-        startInstanceService(instanceId, config, oauthIndex)
+        // For Custom RPC clones, read the instance's own config from Prefs first,
+        // so each clone keeps its own settings instead of sharing the built-in config.
+        val effectiveConfig = if (rpcType == RpcType.CustomRpc) {
+            // Read clone-specific config from Prefs first, so each clone keeps
+            // its own settings instead of sharing the built-in config.
+            Prefs.getCustomRpcConfig(instanceId.takeIf { it != RPC_INSTANCE_CUSTOM })
+                .takeIf { it.isNotBlank() }
+                ?: config
+        } else {
+            config
+        }
+        if (rpcType == RpcType.CustomRpc && effectiveConfig?.isNotBlank() == true) {
+            Prefs[Prefs.customRpcConfigKey(instanceId.takeIf { it != RPC_INSTANCE_CUSTOM })] = effectiveConfig
+        }
+        startInstanceService(instanceId, effectiveConfig, oauthIndex)
     }
 
     /**

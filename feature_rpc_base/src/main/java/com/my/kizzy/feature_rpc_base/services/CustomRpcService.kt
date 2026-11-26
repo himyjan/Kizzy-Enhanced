@@ -313,8 +313,67 @@ class CustomRpcService : Service() {
                 ?.let { RpcImage.ExternalImage(it) },
             data.smallText,
         )
+        rpc.setSmallUrl(data.smallUrl)
         rpc.setStreamUrl(data.url.takeIf { it.isNotBlank() })
         rpc.build(forceRefresh = forceRefresh, priority = 2)
+
+        // Build and show notification for this instance so it has its own
+        // stop/restart buttons instead of sharing the built-in's notification.
+        val stopIntent = Intent(this@CustomRpcService, CustomRpcService::class.java)
+        stopIntent.action = Constants.ACTION_STOP_SERVICE
+        val stopPendingIntent: PendingIntent = PendingIntent.getService(
+            this@CustomRpcService, 0, stopIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val restartIntent = Intent(this@CustomRpcService, CustomRpcService::class.java)
+        restartIntent.action = Constants.ACTION_RESTART_SERVICE
+        restartIntent.putExtra("RPC", Json.encodeToString(data))
+        restartIntent.putExtra(EXTRA_CONSOLE_RPC, consoleMode)
+        val restartPendingIntent: PendingIntent = PendingIntent.getService(
+            this@CustomRpcService, 0, restartIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val appIntent = packageManager.getLaunchIntentForPackage(packageName)
+            ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
+        appIntent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_SINGLE_TOP
+        )
+        val appPendingIntent = PendingIntent.getActivity(
+            this, 0, appIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
+            .setContentTitle(getString(R.string.custom_rpc_running))
+            .setContentText(data.name)
+            .setSmallIcon(R.drawable.ic_rpc_placeholder)
+            .setContentIntent(appPendingIntent)
+            .addAction(
+                Notification.Action.Builder(
+                    Icon.createWithResource(this@CustomRpcService, R.drawable.ic_rpc_placeholder),
+                    getString(R.string.restart),
+                    restartPendingIntent
+                ).build()
+            )
+            .addAction(
+                Notification.Action.Builder(
+                    Icon.createWithResource(this@CustomRpcService, R.drawable.ic_rpc_placeholder),
+                    getString(R.string.exit),
+                    stopPendingIntent
+                ).build()
+            )
+            .setLargeIcon(data.largeImg.toRpcImage(), this@CustomRpcService)
+            .build()
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, notification)
+        } else {
+            startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        }
     }
 
     /** Re-sends the Custom RPC activity periodically so Discord never drops it. */
