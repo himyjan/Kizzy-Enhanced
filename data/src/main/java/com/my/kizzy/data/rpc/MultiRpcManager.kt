@@ -64,10 +64,11 @@ class MultiRpcManager @Inject constructor(
     /** Returns the [KizzyRPC] for a slot, creating its group lazily on first use. */
     fun session(slotId: String): KizzyRPC? {
         val existing = groups[slotId]
-        // A group with sockets is live even before its first socket finishes
-        // IDENTIFY. Discarding it here loses instances that were just attached.
-        if (existing != null && existing.broadcast.socketCount() > 0) return existing.kizzyRpc
-        if (existing != null) stopSession(slotId)
+        if (existing != null) {
+            // Ensure the built-in socket is present even if a clone started first.
+            ensureBuiltInSocket(slotId, existing)
+            return existing.kizzyRpc
+        }
         return createGroup(slotId)?.kizzyRpc
     }
 
@@ -77,8 +78,10 @@ class MultiRpcManager @Inject constructor(
      */
     fun sessionWithoutBuiltIn(slotId: String): KizzyRPC? {
         val existing = groups[slotId]
-        if (existing != null && existing.broadcast.socketCount() > 0) return existing.kizzyRpc
-        if (existing != null) stopSession(slotId)
+        if (existing != null) {
+            ensureBuiltInSocket(slotId, existing)
+            return existing.kizzyRpc
+        }
         return createGroup(slotId, includeBuiltIn = false)?.kizzyRpc
     }
 
@@ -105,6 +108,49 @@ class MultiRpcManager @Inject constructor(
         return rpc
     }
 
+    /**
+     * Ensures the built-in instance's socket exists in [group]'s broadcast,
+     * adding and connecting it if a clone started first.
+     */
+    private fun ensureBuiltInSocket(slotId: String, group: RpcGroup) {
+        val builtInId = builtInInstanceId(slotId)
+        if (group.broadcast.hasSocket(builtInId)) return
+        val credential = credentialForSlot(slotId) ?: return
+        if (credential.token.isBlank()) return
+        val appId = assignAppId(builtInId)
+        val socket = createSocket(credential, builtInId)
+        group.broadcast.addSocket(builtInId, appId, socket)
+        group.instances[builtInId] = credential
+        launch { socket.connect() }
+    }
+
+    /** Adds [instanceId]'s socket to [slotId]'s group and connects it. */
+    private fun addSocketToGroup(
+        slotId: String,
+        instanceId: String,
+        credential: OAuthAppCredential,
+    ) {
+        val group = groups[slotId] ?: return
+        if (group.broadcast.hasSocket(instanceId)) return
+        val appId = assignAppId(instanceId)
+        val label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
+        val nameSuffix = if (instanceId == builtInInstanceId(slotId) || label.isNullOrBlank()) {
+            ""
+        } else {
+            label
+        }
+        val socket = createSocket(credential, instanceId)
+        group.broadcast.addSocket(instanceId, appId, socket, nameSuffix)
+        group.instances[instanceId] = credential
+        // Discord rate-limits IDENTIFYs from the same client; stagger them so
+        // every parallel socket actually reaches READY.
+        val delayMs = 750L * group.instances.size
+        launch {
+            kotlinx.coroutines.delay(delayMs)
+            socket.connect()
+        }
+    }
+
     fun closeCustomSession(instanceId: String) {
         customSessions.remove(instanceId)?.closeRPC()
     }
@@ -119,8 +165,6 @@ class MultiRpcManager @Inject constructor(
     /** Adds an independent socket for [instanceId] to [slotId]'s group. */
     fun addInstance(slotId: String, instanceId: String, oauthIndex: Int) {
         val group = groups[slotId] ?: createGroup(slotId) ?: return
-        if (group.broadcast.hasSocket(instanceId)) return
-
         val credential = Prefs.getOAuthApp(oauthIndex)
             ?: Prefs.getOAuthApp(slotIndex(slotId))
             ?: OAuthAppCredential(
@@ -129,27 +173,7 @@ class MultiRpcManager @Inject constructor(
                 appId = defaultAppId(slotIndex(slotId)),
             )
         if (credential.token.isBlank()) return
-
-        // Discord shows only one activity per application ID. Give every socket
-        // a globally distinct application ID so all parallel instances are
-        // visible at the same time.
-        val appId = assignAppId(instanceId)
-        val socket = createSocket(credential, instanceId)
-        val label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
-        val nameSuffix = if (instanceId == builtInInstanceId(slotId) || label.isNullOrBlank()) {
-            ""
-        } else {
-            label
-        }
-        group.broadcast.addSocket(instanceId, appId, socket, nameSuffix)
-        group.instances[instanceId] = credential
-        // Discord rate-limits IDENTIFYs from the same client; stagger them so
-        // every parallel socket actually reaches READY.
-        val delayMs = 750L * group.instances.size
-        launch {
-            kotlinx.coroutines.delay(delayMs)
-            socket.connect()
-        }
+        addSocketToGroup(slotId, instanceId, credential)
     }
 
     /** Closes and removes only [instanceId]'s socket; other instances keep running. */
@@ -195,13 +219,6 @@ class MultiRpcManager @Inject constructor(
 
         val broadcast = BroadcastDiscordWebSocket()
         val builtInId = builtInInstanceId(slotId)
-        if (includeBuiltIn) {
-            broadcast.addSocket(
-                instanceId = builtInId,
-                appId = assignAppId(builtInId),
-                socket = createSocket(credential, builtInId),
-            )
-        }
         val kizzyRpc = KizzyRPC(
             credential.token,
             kizzyRepository,
@@ -215,6 +232,12 @@ class MultiRpcManager @Inject constructor(
             kizzyRpc = kizzyRpc,
             instances = LinkedHashMap(),
         )
+        if (includeBuiltIn) {
+            val builtInSocket = createSocket(credential, builtInId)
+            broadcast.addSocket(builtInId, assignAppId(builtInId), builtInSocket)
+            group.instances[builtInId] = credential
+            launch { builtInSocket.connect() }
+        }
         groups[slotId] = group
         return group
     }

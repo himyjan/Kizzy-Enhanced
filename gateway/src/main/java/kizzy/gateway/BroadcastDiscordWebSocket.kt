@@ -34,6 +34,9 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
     private val throttler = PresenceThrottler()
     private var pendingPresence: Presence? = null
     private var flushJob: Job? = null
+    /** Sockets whose connect() is already in flight - prevents duplicate connect() calls
+     *  from DiscordWebSocketImpl's mutex skipping them silently. */
+    private val connectingSockets = mutableSetOf<String>()
 
     override var onPresenceDropped: (() -> Unit)? = null
 
@@ -67,8 +70,19 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
     private fun snapshot(): List<Entry> = synchronized(lock) { entries.values.toList() }
 
     override suspend fun connect() {
-        snapshot().forEach { entry ->
-            launch { entry.socket.connect() }
+        // Only call connect() on sockets that aren't already connecting. DiscordWebSocketImpl
+        // silently skips connect() when one is already in progress, so duplicate calls
+        // would leave sockets never connecting.
+        val toConnect = snapshot().filter { !connectingSockets.contains(it.instanceId) }
+        toConnect.forEach { entry ->
+            connectingSockets.add(entry.instanceId)
+            launch {
+                try {
+                    entry.socket.connect()
+                } finally {
+                    connectingSockets.remove(entry.instanceId)
+                }
+            }
         }
     }
 
@@ -79,10 +93,16 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
         flushJob?.cancel()
         if (waitMs <= 0L) {
             flushJob = null
+            // Ensure every socket has connect() called before sending.
+            // DiscordWebSocketImpl.connect() silently skips if one is already
+            // in progress, so calling it again here is safe and guarantees
+            // every socket starts its connection.
+            connect()
             return sendNow(presence, now)
         }
         flushJob = launch {
             delay(waitMs)
+            connect()
             pendingPresence?.let { sendNow(it, System.currentTimeMillis()) }
             flushJob = null
         }

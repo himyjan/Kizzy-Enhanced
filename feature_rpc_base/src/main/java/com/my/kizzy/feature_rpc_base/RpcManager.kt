@@ -411,6 +411,12 @@ class RpcManager @Inject constructor(
         intent.action = Constants.ACTION_ADD_INSTANCE
         intent.putExtra(Constants.EXTRA_INSTANCE_ID, instanceId)
         intent.putExtra(Constants.EXTRA_OAUTH_INDEX, index)
+        // Every instance needs its own notification ID so multiple instances
+        // of the same service type show separate foreground notifications.
+        intent.putExtra(
+            Constants.EXTRA_NOTIFICATION_ID,
+            java.lang.Math.abs(instanceId.hashCode()),
+        )
         try {
             context.startForegroundService(intent)
         } catch (e: Exception) {
@@ -418,6 +424,17 @@ class RpcManager @Inject constructor(
             runCatching { context.startService(intent) }
         }
     }
+
+    /** Stable notification ID for a built-in instance started via the legacy path. */
+    private fun builtInNotificationId(rpcType: RpcType): Int =
+        when (rpcType) {
+            RpcType.MediaRpc -> Constants.NOTIFICATION_ID_MEDIA_RPC
+            RpcType.CustomRpc, RpcType.ConsoleRpc -> Constants.NOTIFICATION_ID_CUSTOM_RPC
+            RpcType.ManualRpc -> Constants.NOTIFICATION_ID_MANUAL_RPC
+            RpcType.AppDetectionRpc -> Constants.NOTIFICATION_ID_APP_DETECTION
+            RpcType.DiscordOAuth2Rpc -> Constants.NOTIFICATION_ID_OAUTH2_RPC
+            RpcType.None -> Constants.NOTIFICATION_ID_MEDIA_RPC
+        }
 
     private fun defaultOauthIndex(type: RpcType): Int = when (type) {
         RpcType.CustomRpc -> 2

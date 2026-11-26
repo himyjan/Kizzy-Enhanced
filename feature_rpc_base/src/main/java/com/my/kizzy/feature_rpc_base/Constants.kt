@@ -38,4 +38,5 @@ object Constants {
     const val ACTION_REMOVE_INSTANCE = "Remove RPC Instance"
     const val EXTRA_INSTANCE_ID = "RPC_INSTANCE_ID"
     const val EXTRA_OAUTH_INDEX = "RPC_OAUTH_INDEX"
+    const val EXTRA_NOTIFICATION_ID = "RPC_NOTIFICATION_ID"
 }
