@@ -183,16 +183,22 @@ class MetadataResolver @Inject constructor(
         // plays a WEB PAGE (e.g. music.apple.com/jp/album/...). The page url
         // is published in one of the metadata string fields, so extract it
         // before applying any app-specific normalisation.
-        // Prefer a supported webpage URL for browsers, including browsers whose
-        // package names are not in the known list. Unknown players are scanned
-        // too, since they may be browser-based media sessions.
-        if (MediaServiceResolver.isBrowser(packageName) || MediaServiceResolver.service(packageName) == null) {
+        if (MediaServiceResolver.isBrowser(packageName)) {
             browserPageUrl(metadata, extraValues)?.let { return it }
         }
+        // YouTube-family clients (incl. wrapper clients like Morphe, AndDea,
+        // Metrolist) must always get YouTube URL extraction, even when
+        // MediaServiceResolver.service(packageName) returns null because the
+        // package is not in the known service list.
         if (MediaServiceResolver.isYouTube(packageName)) {
             extractYouTubeUrl(metadata)?.let { url ->
                 normalizeMediaUrl(url, packageName)?.let { return it }
             }
+        }
+        // Unknown players that are neither browsers nor YouTube-family fall
+        // back to the browser page URL.
+        if (MediaServiceResolver.service(packageName) == null) {
+            browserPageUrl(metadata, extraValues)?.let { return it }
         }
         val sourceUrl = firstMetadataUrl(metadata, extraValues)
         if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
