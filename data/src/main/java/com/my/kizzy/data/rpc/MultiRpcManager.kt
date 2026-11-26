@@ -152,7 +152,17 @@ class MultiRpcManager @Inject constructor(
     }
 
     fun closeCustomSession(instanceId: String) {
-        customSessions.remove(instanceId)?.closeRPC()
+        customSessions.remove(instanceId)?.let { rpc ->
+            // Clear the presence on Discord before closing the socket, otherwise
+            // Discord keeps showing the last known presence until it times out.
+            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                try {
+                    rpc.clearPresence()
+                } catch (_: Exception) {
+                }
+                rpc.closeRPC()
+            }
+        }
     }
 
     fun isSessionActive(slotId: String): Boolean {

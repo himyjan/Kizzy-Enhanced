@@ -253,7 +253,7 @@
     <string name="main_customRpc">自訂 RPC</string>
     <string name="main_consoleRpc">主機 RPC</string>
     <string name="main_consoleRpc_details">Kizzy 允許你使用一些預設預置來設置你在 Discord 上的狀態。</string>
-    <string name="main_ManualRpc">實驗性 RPC</string>
+    <string name="main_ManualRpc">手動 RPC</string>
     <string name="main_ManualRpc_details">Manual RPC 是 Kizzy 的一項功能，會不斷在 Apps RPC 和 Media RPC 之間切換。</string>
     <string name="main_customRpc_details">Kizzy 允許你為 Discord 創建完全可自定義的豐富存在。</string>
     <string name="add_rpc_title">新增 RPC</string>
@@ -412,7 +412,7 @@
     <string name="update_download_error">下載失敗。請重試。</string>
     <string name="save_logs_to_file">將日誌儲存至檔案</string>
     <string name="rpc_hide_cover_art">隱藏專輯封面圖片</string>
-    <string name="rpc_hide_cover_art_desc">在所有 RPC 類型（媒體、自訂、主機、實驗性）中僅顯示文字。封面上不會顯示在 Discord 上。</string>
+    <string name="rpc_hide_cover_art_desc">在所有 RPC 類型（媒體、自訂、主機、手動）中僅顯示文字。封面上不會顯示在 Discord 上。</string>
     <string name="rpc_default_cover_art_large">預設大封面</string>
     <string name="rpc_default_cover_art_large_desc">當通知沒有封面時，作為大封面使用的圖片 URL</string>
     <string name="rpc_default_cover_art_small">預設小封面</string>
