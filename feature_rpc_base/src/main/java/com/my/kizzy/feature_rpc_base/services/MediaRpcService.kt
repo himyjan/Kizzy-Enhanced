@@ -945,7 +945,7 @@ class MediaRpcService : Service() {
                     val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
                     val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_APPS, "[]"])
                     val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
-                    if (shouldShow && runningApp.packageName != currentPackageName) {
+                    if (shouldShow) {
                         currentPackageName = runningApp.packageName
                         val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
                         val details = if (isGameApp) "Playing game" else if (isAiApp) "Chatting with AI" else null
