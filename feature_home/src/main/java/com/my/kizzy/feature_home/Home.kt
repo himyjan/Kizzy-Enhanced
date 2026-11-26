@@ -15,56 +15,75 @@ package com.my.kizzy.feature_home
 import android.content.ComponentName
 import android.os.Build
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material.icons.Icons
+import androidx.compose.material3.rememberTooltipState
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -74,10 +93,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.toVersion
 import com.my.kizzy.domain.model.user.User
-import com.my.kizzy.feature_home.feature.Features
 import com.my.kizzy.feature_home.feature.HomeFeature
 import com.my.kizzy.feature_home.feature.ToolTipContent
-import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.feature_rpc_base.services.KizzyTileService
@@ -85,10 +102,9 @@ import com.my.kizzy.feature_settings.SettingsDrawer
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.RpcInstance
 import com.my.kizzy.resources.R
-import com.my.kizzy.ui.components.ChipSection
+import com.my.kizzy.ui.components.KSwitch
 import com.my.kizzy.ui.components.UpdateDialog
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,15 +122,24 @@ fun Home(
     navigateToLogsScreen: () -> Unit,
 ) {
     val ctx = LocalContext.current
+    val uriHandler = LocalUriHandler.current
 
     // Configuration-aware string resources
     val updateCheckText = stringResource(R.string.update_check_for_update)
     val noUpdatesText = stringResource(R.string.update_no_updates_available)
     val qsTileLabel = stringResource(R.string.qs_tile_label)
+    val mediaRpcLabel = stringResource(R.string.main_mediaRpc)
+    val manualRpcLabel = stringResource(R.string.main_ManualRpc)
+    val customRpcLabel = stringResource(R.string.main_customRpc)
 
     var showUpdateDialog by remember {
         mutableStateOf(false)
     }
+
+    // State for the "Add RPC" type picker dialog opened from the Features header button
+    var showAddRpcDialog by remember { mutableStateOf(false) }
+    var selectedRpcType by remember { mutableStateOf<String?>(null) }
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     var drawerOpen by remember { mutableStateOf(false) }
     var isDrawerAnimating by remember { mutableStateOf(false) }
@@ -122,7 +147,8 @@ fun Home(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState(),
-            canScroll = { false })
+            canScroll = { false }
+        )
 
     // `features` is now derived directly from RpcManager.activeRpc (see
     // homeFeaturesProvider), so the switch state can be read from it without
@@ -166,11 +192,10 @@ fun Home(
                     navigateToLogsScreen = navigateToLogsScreen
                 )
             }
-        }) {
+        }
+    ) {
         Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            modifier = Modifier.fillMaxSize(),
             topBar = {
                 LargeTopAppBar(
                     title = {
@@ -178,7 +203,7 @@ fun Home(
                             text = stringResource(id = R.string.welcome) + ", ${user?.globalName ?: user?.username ?: ""}",
                             style = MaterialTheme.typography.headlineMedium,
                             maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     },
@@ -201,7 +226,8 @@ fun Home(
                             },
                         ) {
                             Icon(
-                                Icons.Outlined.Menu, Icons.Outlined.Menu.name,
+                                Icons.Outlined.Menu,
+                                Icons.Outlined.Menu.name,
                             )
                         }
                     },
@@ -276,31 +302,174 @@ fun Home(
                 )
             }
         ) { paddingValues ->
+            // Single top-level LazyColumn bounded by Scaffold's content constraints.
             LazyColumn(
                 modifier = Modifier
-                    .padding(paddingValues)
-                    .padding(top = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                userScrollEnabled = false
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                item {
-                    Text(
-                        text = stringResource(id = R.string.features),
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 8.dp)
-                    )
+                // Features section header on the left with "Add RPC" aligned to the right.
+                item(key = "features_header") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.features),
+                            style = MaterialTheme.typography.headlineMedium,
+                        )
+                        FilledTonalButton(
+                            onClick = { showAddRpcDialog = true },
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_home_add_rpc),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "Add RPC")
+                        }
+                    }
                 }
-                item {
-                    // No local list copy: RpcManager is the single source of truth and
-                    // `features` recomposes from it, so the switch always shows the real
-                    // running state.
-                    Features(
-                        homeItems = features,
-                        instances = homeRpcInstances,
-                        onAddInstance = { instance ->
+
+                // No local list copy: RpcManager is the single source of truth and
+                // `features` recomposes from it, so the switch always shows the real
+                // running state.
+                items(
+                    items = features,
+                    key = { it.instanceId.ifBlank { "${it.title}_${it.route}" } },
+                ) { item ->
+                    val idx = features.indexOf(item)
+                    val isBuiltIn = !item.isDeletable
+                    val canMoveUp = !isBuiltIn && idx > 0 && features[idx - 1].isDeletable
+                    val canMoveDown = !isBuiltIn && idx < features.lastIndex - 1 && features[idx + 1].isDeletable
+
+                    val moveUp: () -> Unit = {
+                        val updated = homeRpcInstances.toMutableList()
+                        val pos = updated.indexOfFirst { it.id == item.instanceId }
+                        if (pos > 0) {
+                            val moved = updated.removeAt(pos)
+                            updated.add(pos - 1, moved)
+                            Prefs.reorderHomeRpcInstances(updated)
+                        }
+                    }
+
+                    val moveDown: () -> Unit = {
+                        val updated = homeRpcInstances.toMutableList()
+                        val pos = updated.indexOfFirst { it.id == item.instanceId }
+                        if (pos in 0 until updated.lastIndex) {
+                            val moved = updated.removeAt(pos)
+                            updated.add(pos + 1, moved)
+                            Prefs.reorderHomeRpcInstances(updated)
+                        }
+                    }
+
+                    val cardContent: @Composable () -> Unit = {
+                        FeatureCard(
+                            feature = item,
+                            canMoveUp = canMoveUp,
+                            canMoveDown = canMoveDown,
+                            onToggle = {
+                                item.onCheckedChange(!item.isChecked)
+                            },
+                            onDelete = {
+                                Prefs.deleteHomeRpcInstance(item.instanceId)
+                            },
+                            onMoveUp = moveUp,
+                            onMoveDown = moveDown,
+                        )
+                    }
+
+                    if (item.tooltipText.isNotBlank()) {
+                        TooltipBox(
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                positioning = TooltipAnchorPosition.Above,
+                            ),
+                            state = rememberTooltipState(),
+                            tooltip = {
+                                RichTooltip(
+                                    title = {
+                                        Text(item.title, style = MaterialTheme.typography.titleMedium)
+                                    },
+                                    text = { Text(item.tooltipText) },
+                                    action = {
+                                        if (item.featureDocsLink.isNotBlank()) {
+                                            TextButton(onClick = { uriHandler.openUri(item.featureDocsLink) }) {
+                                                Text(text = stringResource(R.string.learn_more))
+                                            }
+                                        }
+                                    },
+                                )
+                            },
+                            content = cardContent,
+                        )
+                    } else {
+                        cardContent()
+                    }
+                }
+            }
+
+            // Add RPC type picker dialog
+            if (showAddRpcDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showAddRpcDialog = false
+                        selectedRpcType = null
+                    },
+                    title = { Text(text = stringResource(R.string.add_rpc_title)) },
+                    text = {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(R.string.add_rpc_select_type),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            RpcTypeRow(
+                                type = "media_rpc",
+                                label = mediaRpcLabel,
+                                selectedRpcType = selectedRpcType,
+                                onSelect = { selectedRpcType = it },
+                            )
+                            RpcTypeRow(
+                                type = "manual_rpc",
+                                label = manualRpcLabel,
+                                selectedRpcType = selectedRpcType,
+                                onSelect = { selectedRpcType = it },
+                            )
+                            RpcTypeRow(
+                                type = "custom_rpc",
+                                label = customRpcLabel,
+                                selectedRpcType = selectedRpcType,
+                                onSelect = { selectedRpcType = it },
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val type = selectedRpcType ?: return@TextButton
+                            showAddRpcDialog = false
+                            selectedRpcType = null
+                            val label = when (type) {
+                                "media_rpc" -> mediaRpcLabel
+                                "manual_rpc" -> manualRpcLabel
+                                "custom_rpc" -> customRpcLabel
+                                else -> type
+                            }
+                            val newInstance = RpcInstance(
+                                id = "${type}_clone_${System.currentTimeMillis()}",
+                                type = type,
+                                label = label,
+                            )
                             // Save clone to prefs and start its service
-                            Prefs.addHomeRpcInstance(instance)
-                            val rpcType = when (instance.type) {
+                            Prefs.addHomeRpcInstance(newInstance)
+                            val rpcType = when (newInstance.type) {
                                 "media_rpc" -> RpcType.MediaRpc
                                 "manual_rpc" -> RpcType.ManualRpc
                                 "custom_rpc" -> RpcType.CustomRpc
@@ -309,16 +478,21 @@ fun Home(
                             if (rpcType != null) {
                                 rpcManager.switchTo(setOf(rpcType), add = true)
                             }
-                        },
-                        onDeleteInstance = { instanceId ->
-                            Prefs.deleteHomeRpcInstance(instanceId)
-                        },
-                        onReorder = { orderedInstances ->
-                            Prefs.reorderHomeRpcInstances(orderedInstances)
-                        },
-                    )
-                }
+                        }) {
+                            Text(text = stringResource(android.R.string.ok))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            showAddRpcDialog = false
+                            selectedRpcType = null
+                        }) {
+                            Text(text = stringResource(android.R.string.cancel))
+                        }
+                    },
+                )
             }
+
             when (state) {
                 is HomeScreenState.LoadingCompleted -> {
                     if (showUpdateDialog) {
@@ -348,6 +522,130 @@ fun Home(
                 }
 
                 else -> {}
+            }
+        }
+    }
+}
+
+@Composable
+private fun RpcTypeRow(
+    type: String,
+    label: String,
+    selectedRpcType: String?,
+    onSelect: (String) -> Unit,
+) {
+    val isSelected = selectedRpcType == type
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onSelect(type) }
+            .padding(vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (isSelected) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        if (isSelected) {
+            Text(text = "✓", color = MaterialTheme.colorScheme.primary)
+        }
+    }
+    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+}
+
+@Composable
+private fun FeatureCard(
+    feature: HomeFeature,
+    canMoveUp: Boolean,
+    canMoveDown: Boolean,
+    onToggle: () -> Unit,
+    onDelete: () -> Unit,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
+) {
+    val brush = if (feature.isChecked) {
+        Brush.linearGradient(
+            listOf(
+                MaterialTheme.colorScheme.primaryContainer,
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+            )
+        )
+    } else {
+        Brush.linearGradient(
+            listOf(
+                MaterialTheme.colorScheme.secondaryContainer,
+                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
+                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
+            )
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(84.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(brush = brush)
+            .clickable {
+                feature.route?.let { feature.onClick(it) }
+            }
+            .padding(start = 22.dp, end = 18.dp, top = 16.dp, bottom = 16.dp),
+    ) {
+        Icon(
+            painter = painterResource(id = feature.icon),
+            contentDescription = null,
+            modifier = Modifier.size(40.dp),
+        )
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(
+            text = feature.title,
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500),
+            color = if (feature.isChecked) MaterialTheme.colorScheme.onPrimaryContainer
+            else MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.weight(1f),
+        )
+        if (feature.showSwitch) {
+            Spacer(modifier = Modifier.width(12.dp))
+            KSwitch(
+                checked = feature.isChecked,
+                modifier = Modifier.padding(start = 12.dp),
+                onClick = onToggle,
+            )
+        }
+        // Reorder and delete controls for user-added cloned RPC instances
+        if (feature.isDeletable && !feature.isAddButton) {
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                if (canMoveUp) {
+                    IconButton(
+                        onClick = onMoveUp,
+                        modifier = Modifier.size(32.dp),
+                    ) {
+                        Text(text = "\u2191")
+                    }
+                }
+                if (canMoveDown) {
+                    IconButton(
+                        onClick = onMoveDown,
+                        modifier = Modifier.size(32.dp),
+                    ) {
+                        Text(text = "\u2193")
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier.size(36.dp),
+            ) {
+                Text(text = "\u2716", color = MaterialTheme.colorScheme.error)
             }
         }
     }

@@ -16,6 +16,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.material3)
     implementation(libs.material.icons.extended)
     implementation(projects.featureRpcBase)
     implementation(projects.featureSettings)
