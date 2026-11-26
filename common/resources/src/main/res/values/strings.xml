@@ -436,7 +436,7 @@
     <string name="update_download_error">Download failed. Try again.</string>
     <string name="save_logs_to_file">Save Logs to File</string>
     <string name="rpc_hide_cover_art">Hide Cover Art Images</string>
-    <string name="rpc_hide_cover_art_desc">Show text only across all RPC types (Media, Custom, Console, Experimental). Covers will not appear on Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Show text only across all RPC types (Media, Custom, Console, Manual). Covers will not appear on Discord.</string>
     <string name="rpc_default_cover_art_large">Default Large Cover Art</string>
     <string name="rpc_default_cover_art_large_desc">Image URL to use as large cover art when the notification has no cover art</string>
     <string name="rpc_default_cover_art_small">Default Small Cover Art</string>
@@ -546,7 +546,7 @@
     <string name="link_toArtistChannel_desc">Link to artist channel</string>
     <string name="link_to_artistChannel">Link to artist channel</string>
     <string name="link_to_artistChannel_desc">Link to artist channel</string>
-    <string name="main_ManualRpcDetails">Experimental RPC is a feature that rotates between Apps RPC and Media RPC.</string>
+    <string name="main_ManualRpcDetails">Manual RPC is a feature that rotates between Apps RPC and Media RPC.</string>
     <string name="main_appDetectionDetails">Used to detect which app is running on your device</string>
     <string name="main_app_detection_details">Used to detect which app is running on your device</string>
     <string name="main_consoleRpcDetails">Allows setting your Discord presence using pre-defined presets</string>
