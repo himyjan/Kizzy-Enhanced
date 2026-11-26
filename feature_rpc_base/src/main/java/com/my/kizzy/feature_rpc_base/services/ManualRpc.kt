@@ -316,15 +316,15 @@ class ManualRpc : Service() {
             )
 
             val notification = Notification.Builder(this, Constants.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_dev_rpc)
+                .setSmallIcon(R.drawable.ic_manual_rpc)
                 .setContentTitle(getString(R.string.service_enabled))
                 .setContentIntent(appPendingIntent)
                 .addAction(
-                    R.drawable.ic_dev_rpc,
+                    R.drawable.ic_manual_rpc,
                     getString(R.string.restart),
                     restartPendingIntent
                 )
-                .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), pendingIntent)
+                .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), pendingIntent)
                 .build()
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, notification)
@@ -565,11 +565,11 @@ class ManualRpc : Service() {
                 notificationManager.notify(
                     Constants.NOTIFICATION_ID_MANUAL_RPC,
                     Notification.Builder(this, Constants.CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_dev_rpc)
+                        .setSmallIcon(R.drawable.ic_manual_rpc)
                         .setContentTitle(getString(R.string.service_enabled))
                         .setContentText(getString(R.string.idling_notification))
-                        .addAction(R.drawable.ic_dev_rpc, getString(R.string.restart), restartPendingIntent)
-                        .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), stopPendingIntent)
+                        .addAction(R.drawable.ic_manual_rpc, getString(R.string.restart), restartPendingIntent)
+                        .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), stopPendingIntent)
                         .build()
                 )
             }
@@ -741,11 +741,11 @@ class ManualRpc : Service() {
                 notificationManager.notify(
                     Constants.NOTIFICATION_ID_MANUAL_RPC,
                     Notification.Builder(this, Constants.CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_dev_rpc)
+                        .setSmallIcon(R.drawable.ic_manual_rpc)
                         .setContentTitle(getString(R.string.service_enabled))
                         .setContentText(getString(R.string.idling_notification))
-                        .addAction(R.drawable.ic_dev_rpc, getString(R.string.restart), restartPendingIntent)
-                        .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), stopPendingIntent)
+                        .addAction(R.drawable.ic_manual_rpc, getString(R.string.restart), restartPendingIntent)
+                        .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), stopPendingIntent)
                         .build()
                 )
             }
@@ -1005,12 +1005,12 @@ class ManualRpc : Service() {
         notificationManager.notify(
             Constants.NOTIFICATION_ID_MANUAL_RPC,
             Notification.Builder(this, Constants.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_dev_rpc)
+                .setSmallIcon(R.drawable.ic_manual_rpc)
                 .setContentTitle(notifTitle)
                 .setContentText(notifText)
                 .setLargeIcon(finalLargeImage, this@ManualRpc)
-                .addAction(R.drawable.ic_dev_rpc, getString(R.string.restart), restartPendingIntent)
-                .addAction(R.drawable.ic_dev_rpc, getString(R.string.exit), stopPendingIntent)
+                .addAction(R.drawable.ic_manual_rpc, getString(R.string.restart), restartPendingIntent)
+                .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), stopPendingIntent)
                 .apply {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentMediaDurationSec > 0) {
                         setProgress(currentMediaDurationSec, currentMediaProgressSec, false)

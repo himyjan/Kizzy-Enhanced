@@ -54,6 +54,8 @@ fun homeFeaturesProvider(
         rpcManager.refreshFromServices()
     }
 
+    // Collect prefsState so the provider recomposes when clones are added/removed/reordered.
+    val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
     val instances = Prefs.getHomeRpcInstances()
 
     val activeRpc by rpcManager.activeRpc.collectAsState()
@@ -80,6 +82,12 @@ fun homeFeaturesProvider(
 
         HomeFeature(
             title = instance.label,
+            icon = when (instance.type) {
+                "media_rpc" -> R.drawable.ic_media_rpc
+                "manual_rpc" -> R.drawable.ic_manual_rpc
+                "custom_rpc" -> R.drawable.ic_custom_rpc
+                else -> R.drawable.ic_media_rpc
+            },
             route = route,
             instanceId = instance.id,
             isChecked = isRunning,
@@ -88,6 +96,7 @@ fun homeFeaturesProvider(
                 navigateTo(it)
             },
             onCheckedChange = { enabled ->
+                // App Detection needs Usage Access permission before it can work
                 if (enabled && requiresUsageAccess && !hasUsageAccess.value) {
                     Toast.makeText(
                         ctx,
@@ -141,6 +150,7 @@ fun homeFeaturesProvider(
     } + listOf(
         HomeFeature(
             title = "Add RPC",
+            icon = R.drawable.ic_home_add_rpc,
             route = null,
             isChecked = false,
             showSwitch = false,

@@ -330,7 +330,7 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.custom_rpc_board_open),
                     description = stringResource(id = R.string.custom_rpc_board_open_desc),
-                    icon = ImageVector.vectorResource(id = R.drawable.ic_custom_rpc_board),
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_custom_rpc),
                 ) {
                     navigateToCustomRpcBoardScreen?.invoke()
                 }

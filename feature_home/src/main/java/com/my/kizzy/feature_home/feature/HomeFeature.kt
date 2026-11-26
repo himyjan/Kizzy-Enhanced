@@ -11,6 +11,7 @@
 
 package com.my.kizzy.feature_home.feature
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.dp
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 @Immutable
 data class HomeFeature(
     val title: String,
+    @DrawableRes val icon: Int,
     val route: String? = null,
     val isChecked: Boolean = false,
     val onClick: (String) -> Unit = {},

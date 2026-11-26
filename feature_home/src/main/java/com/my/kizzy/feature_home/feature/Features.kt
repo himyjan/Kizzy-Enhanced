@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -164,6 +165,7 @@ fun Features(
         FeatureCard(
             feature = HomeFeature(
                 title = "Add RPC",
+                icon = R.drawable.ic_home_add_rpc,
                 route = null,
                 isChecked = false,
                 showSwitch = false,
@@ -178,6 +180,15 @@ fun Features(
             canMoveDown = false,
             onMoveUp = {},
             onMoveDown = {},
+            onClick = {
+                onAddInstance(
+                    RpcInstance(
+                        id = "media_rpc_clone_${System.currentTimeMillis()}",
+                        type = "media_rpc",
+                        label = "Media RPC Clone",
+                    )
+                )
+            },
         )
     }
 }
@@ -193,6 +204,7 @@ private fun FeatureCard(
     canMoveDown: Boolean,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     val brush = if (feature.isChecked) {
         Brush.linearGradient(
@@ -220,13 +232,37 @@ private fun FeatureCard(
             .clip(RoundedCornerShape(24.dp))
             .background(brush = brush)
             .clickable {
-                if (!feature.isAddButton) {
+                if (feature.isAddButton) {
+                    onClick()
+                } else {
                     feature.route?.let { feature.onClick(it) }
                 }
             }
             .padding(start = 22.dp, end = 18.dp, top = 16.dp, bottom = 16.dp),
     ) {
+        androidx.compose.material3.Icon(
+            painter = painterResource(id = feature.icon),
+            contentDescription = null,
+            modifier = Modifier.size(40.dp),
+        )
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(
+            text = feature.title,
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500),
+            color = if (feature.isChecked) MaterialTheme.colorScheme.onPrimaryContainer
+            else MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.weight(1f)
+        )
+        if (feature.showSwitch) {
+            Spacer(modifier = Modifier.width(12.dp))
+            KSwitch(
+                checked = feature.isChecked,
+                modifier = Modifier.padding(start = 12.dp),
+                onClick = onToggle
+            )
+        }
         if (isDeletable && !feature.isAddButton) {
+            Spacer(modifier = Modifier.width(12.dp))
             Column(
                 verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
             ) {
@@ -247,25 +283,6 @@ private fun FeatureCard(
                     }
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.width(20.dp))
-        Text(
-            text = feature.title,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500),
-            color = if (feature.isChecked) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onSecondaryContainer,
-            modifier = Modifier.weight(1f)
-        )
-        if (feature.showSwitch) {
-            Spacer(modifier = Modifier.width(12.dp))
-            KSwitch(
-                checked = feature.isChecked,
-                modifier = Modifier.padding(start = 12.dp),
-                onClick = onToggle
-            )
-        }
-        if (isDeletable && !feature.isAddButton) {
             Spacer(modifier = Modifier.width(12.dp))
             androidx.compose.material3.IconButton(
                 onClick = onDelete,

@@ -1,6 +1,7 @@
 plugins {
     id ("kizzy.android.library")
     id ("kizzy.android.library.compose")
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
