@@ -8,12 +8,8 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kizzy.gateway.BroadcastDiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
-import kizzy.gateway.entities.presence.Activity
-import kizzy.gateway.entities.presence.Presence
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
@@ -48,57 +44,6 @@ class MultiRpcManager @Inject constructor(
 
     /** Globally unique presence application ID per instance. */
     private val appIdAssignments = LinkedHashMap<String, String>()
-
-    /** Last activity produced by each group, used to build one combined presence. */
-    private val lastGroupPresence = LinkedHashMap<String, Presence>()
-    private val throttler = PresenceThrottler()
-    private var lastCombined: Presence? = null
-    private var flushJob: Job? = null
-
-    /**
-     * Combines the latest activity of every group into one ordered presence and
-     * sends that same payload to all sockets. This keeps every enabled instance
-     * visible and in a stable order instead of letting Discord drop/reorder
-     * activities sent independently by each socket.
-     */
-    private fun onGroupPresence(slotId: String, presence: Presence) {
-        lastGroupPresence[slotId] = presence
-        val combined = buildCombined()
-        lastCombined = combined
-
-        val now = System.currentTimeMillis()
-        val waitMs = throttler.delayFor(now, combined)
-        flushJob?.cancel()
-        if (waitMs <= 0L) {
-            flushJob = null
-            sendCombined(combined, now)
-        } else {
-            flushJob = launch {
-                delay(waitMs)
-                lastCombined?.let { sendCombined(it, System.currentTimeMillis()) }
-                flushJob = null
-            }
-        }
-    }
-
-    private fun buildCombined(): Presence {
-        val activities = mutableListOf<Activity>()
-        groups.values.forEach { group ->
-            val base = lastGroupPresence[group.slotId]?.activities?.firstOrNull()
-                ?: return@forEach
-            group.broadcast.forEachInstance { _, appId ->
-                activities += base.copy(applicationId = appId)
-            }
-        }
-        return Presence(activities = activities, afk = false, status = "online")
-    }
-
-    private fun sendCombined(presence: Presence, now: Long) {
-        groups.values.forEach { group ->
-            launch { group.broadcast.sendRaw(presence) }
-        }
-        throttler.markSent(now, presence)
-    }
 
     private fun assignAppId(instanceId: String): String {
         appIdAssignments[instanceId]?.let { return it }
@@ -192,9 +137,6 @@ class MultiRpcManager @Inject constructor(
     }
 
     fun stopAllSessions() {
-        flushJob?.cancel()
-        flushJob = null
-        lastCombined = null
         groups.keys.toList().forEach { stopSession(it) }
     }
 
@@ -211,9 +153,7 @@ class MultiRpcManager @Inject constructor(
         val credential = credentialForSlot(slotId)
         if (credential == null || credential.token.isBlank()) return null
 
-        val broadcast = BroadcastDiscordWebSocket { presence ->
-            onGroupPresence(slotId, presence)
-        }
+        val broadcast = BroadcastDiscordWebSocket()
         val builtInId = builtInInstanceId(slotId)
         if (includeBuiltIn) {
             broadcast.addSocket(

@@ -1,15 +1,10 @@
-package com.my.kizzy.data.rpc
+package kizzy.gateway
 
 import kizzy.gateway.entities.presence.Presence
 
 /**
- * Decides when a combined presence should be sent to the gateway.
- *
- * - A real content change (track, artist, RPC fields, buttons, assets) or a
- *   timeline jump (seek / next song) is sent as soon as the minimum interval
- *   allows.
- * - Repeated, essentially identical updates are held until the maximum
- *   interval, so an idle RPC does not spam the socket or waste network.
+ * Dynamic presence send cadence: changes and timeline jumps go out quickly,
+ * repeated identical updates are held until a maximum interval.
  */
 class PresenceThrottler(
     private val minIntervalMs: Long = 500L,
@@ -19,16 +14,14 @@ class PresenceThrottler(
     private var lastSent: Presence? = null
     private var lastSentAt = 0L
 
-    /** Returns the delay in ms before [presence] should be sent, or -1 to send now. */
+    /** Delay before [presence] should be sent, or 0 to send immediately. */
     fun delayFor(now: Long, presence: Presence): Long {
         val previous = lastSent ?: return 0L
         val elapsed = now - lastSentAt
         if (elapsed >= maxIntervalMs) return 0L
-
         val changed = !sameContent(previous, presence) || timelineJumped(previous, presence)
-        if (!changed) return maxOf(0L, maxIntervalMs - elapsed)
-
-        return maxOf(0L, minIntervalMs - elapsed)
+        return if (changed) maxOf(0L, minIntervalMs - elapsed)
+        else maxOf(0L, maxIntervalMs - elapsed)
     }
 
     fun markSent(now: Long, presence: Presence) {
@@ -38,9 +31,7 @@ class PresenceThrottler(
 
     private fun sameContent(a: Presence, b: Presence): Boolean {
         fun strip(p: Presence) = p.copy(
-            activities = p.activities?.map { activity ->
-                activity?.copy(timestamps = null)
-            },
+            activities = p.activities?.map { it?.copy(timestamps = null) },
         )
         return strip(a) == strip(b)
     }

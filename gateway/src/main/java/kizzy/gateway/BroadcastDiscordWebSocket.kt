@@ -3,27 +3,22 @@ package kizzy.gateway
 import kizzy.gateway.entities.presence.Presence
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * A single logical WebSocket that fans every operation out to a set of real,
- * independent [DiscordWebSocketImpl] connections.
+ * One logical WebSocket that fans every operation out to real, independent
+ * [DiscordWebSocketImpl] connections - one per parallel RPC instance.
  *
- * This lets one [com.my.kizzy.data.rpc.KizzyRPC] (and therefore one service's
- * presence-building logic) drive any number of parallel RPC instances: every
- * instance owns its own Discord gateway socket, sequence, heartbeat, token and
- * application ID, but they all receive the same presence the service builds.
- *
- * The list is mutable at runtime so instances can be added/removed without
- * restarting the service or dropping the other sockets.
+ * Each socket carries its own token, application ID, sequence and heartbeat.
+ * Presence is throttled dynamically: real changes and timeline jumps go out
+ * quickly, identical updates are held until the maximum interval.
  */
-class BroadcastDiscordWebSocket(
-    /** Forward the group's presence to the central combiner. */
-    private val onPresence: suspend (Presence) -> Unit,
-) : DiscordWebSocket {
+class BroadcastDiscordWebSocket : DiscordWebSocket {
 
     override val coroutineContext = SupervisorJob() + Dispatchers.IO
 
@@ -35,29 +30,15 @@ class BroadcastDiscordWebSocket(
 
     private val lock = Any()
     private val entries = LinkedHashMap<String, Entry>()
+    private val throttler = PresenceThrottler()
+    private var pendingPresence: Presence? = null
+    private var flushJob: Job? = null
 
     override var onPresenceDropped: (() -> Unit)? = null
-
-    /** Sends an already-assembled presence to every socket, unchanged. */
-    suspend fun sendRaw(presence: Presence): Boolean {
-        val sockets = snapshot()
-        if (sockets.isEmpty()) return false
-        val results = sockets.map { entry ->
-            async { runCatching { entry.socket.sendActivity(presence) }.getOrDefault(false) }
-        }.awaitAll()
-        return results.any { it }
-    }
-
-    /** Exposes the instances (and their application IDs) attached to this group. */
-    fun forEachInstance(action: (instanceId: String, appId: String) -> Unit) {
-        snapshot().forEach { action(it.instanceId, it.appId) }
-    }
-
 
     fun addSocket(instanceId: String, appId: String, socket: DiscordWebSocketImpl) {
         val callback: () -> Unit = { onPresenceDropped?.invoke() }
         synchronized(lock) {
-            // Close a stale socket with the same id before replacing it.
             entries.remove(instanceId)?.socket?.close()
             socket.onPresenceDropped = callback
             entries[instanceId] = Entry(instanceId, appId, socket)
@@ -73,7 +54,6 @@ class BroadcastDiscordWebSocket(
 
     fun hasSocket(instanceId: String): Boolean = synchronized(lock) { entries.containsKey(instanceId) }
 
-    /** True if at least one delegate has an open connection. */
     fun hasConnectedSocket(): Boolean = synchronized(lock) {
         entries.values.any { it.socket.isWebSocketConnected() }
     }
@@ -81,28 +61,54 @@ class BroadcastDiscordWebSocket(
     private fun snapshot(): List<Entry> = synchronized(lock) { entries.values.toList() }
 
     override suspend fun connect() {
-        // Start every socket in parallel; each one performs its own IDENTIFY.
         snapshot().forEach { entry ->
             launch { entry.socket.connect() }
         }
     }
 
     override suspend fun sendActivity(presence: Presence): Boolean {
-        // The central combiner turns every group's activity into one presence
-        // with a stable order and sends it to all sockets.
-        onPresence(presence)
+        val now = System.currentTimeMillis()
+        val waitMs = throttler.delayFor(now, presence)
+        pendingPresence = presence
+        flushJob?.cancel()
+        if (waitMs <= 0L) {
+            flushJob = null
+            return sendNow(presence, now)
+        }
+        flushJob = launch {
+            delay(waitMs)
+            pendingPresence?.let { sendNow(it, System.currentTimeMillis()) }
+            flushJob = null
+        }
         return true
     }
 
-    override fun isWebSocketConnected(): Boolean {
+    private suspend fun sendNow(presence: Presence, now: Long): Boolean {
         val sockets = snapshot()
-        // Do not block presence for the whole group while one instance is
-        // still doing IDENTIFY (Discord rate-limits simultaneous connects).
-        // Each socket sends independently once it is ready.
-        return sockets.any { it.socket.isWebSocketConnected() }
+        if (sockets.isEmpty()) return false
+        val results = sockets.map { entry ->
+            async {
+                runCatching {
+                    entry.socket.sendActivity(
+                        if (entry.appId.isBlank()) presence
+                        else presence.copy(
+                            activities = presence.activities?.map { activity ->
+                                activity?.copy(applicationId = entry.appId)
+                            },
+                        ),
+                    )
+                }.getOrDefault(false)
+            }
+        }.awaitAll()
+        throttler.markSent(now, presence)
+        return results.any { it }
     }
 
+    override fun isWebSocketConnected(): Boolean = hasConnectedSocket()
+
     override fun close() {
+        flushJob?.cancel()
+        flushJob = null
         val sockets = synchronized(lock) {
             val all = entries.values.toList()
             entries.clear()
