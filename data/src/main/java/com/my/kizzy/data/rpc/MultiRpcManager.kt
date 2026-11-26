@@ -42,6 +42,12 @@ class MultiRpcManager @Inject constructor(
 
     private val groups = LinkedHashMap<String, RpcGroup>()
 
+    /**
+     * Custom RPC instances need different presence data from each other, so each
+     * one owns its own KizzyRPC (and socket) instead of sharing a type group.
+     */
+    private val customSessions = LinkedHashMap<String, KizzyRPC>()
+
     /** Globally unique presence application ID per instance. */
     private val appIdAssignments = LinkedHashMap<String, String>()
 
@@ -74,6 +80,33 @@ class MultiRpcManager @Inject constructor(
         if (existing != null && existing.broadcast.socketCount() > 0) return existing.kizzyRpc
         if (existing != null) stopSession(slotId)
         return createGroup(slotId, includeBuiltIn = false)?.kizzyRpc
+    }
+
+    /** Returns a dedicated KizzyRPC for one Custom RPC instance. */
+    fun customSession(instanceId: String): KizzyRPC? {
+        customSessions[instanceId]?.let { return it }
+        val instance = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }
+        val credential = instance?.oauthIndex?.takeIf { it > 0 }
+            ?.let { Prefs.getOAuthApp(it) }
+            ?: credentialForSlot("2")
+            ?: return null
+        val appId = assignAppId(instanceId)
+        val broadcast = BroadcastDiscordWebSocket()
+        broadcast.addSocket(instanceId, appId, createSocket(credential, instanceId))
+        val rpc = KizzyRPC(
+            credential.token,
+            kizzyRepository,
+            broadcast,
+            logger,
+            appId.takeIf { it.isNotBlank() },
+        )
+        customSessions[instanceId] = rpc
+        launch { broadcast.connect() }
+        return rpc
+    }
+
+    fun closeCustomSession(instanceId: String) {
+        customSessions.remove(instanceId)?.closeRPC()
     }
 
     fun isSessionActive(slotId: String): Boolean {
@@ -144,6 +177,7 @@ class MultiRpcManager @Inject constructor(
 
     fun stopAllSessions() {
         groups.keys.toList().forEach { stopSession(it) }
+        customSessions.keys.toList().forEach { closeCustomSession(it) }
     }
 
     /** Recreates the groups the user had enabled before the process was killed. */

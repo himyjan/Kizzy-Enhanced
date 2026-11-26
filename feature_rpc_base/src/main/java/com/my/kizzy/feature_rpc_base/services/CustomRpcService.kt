@@ -52,6 +52,10 @@ class CustomRpcService : Service() {
 
     private var kizzyRPC: com.my.kizzy.data.rpc.KizzyRPC? = null
 
+    /** Per-instance Custom RPC sessions and their own RpcConfig. */
+    private val customRpcs = LinkedHashMap<String, KizzyRPC>()
+    private val customConfigs = LinkedHashMap<String, RpcConfig>()
+
     @Inject
     lateinit var multiRpc: MultiRpcManager
 
@@ -90,13 +94,13 @@ class CustomRpcService : Service() {
     @SuppressLint("WakelockTimeout")
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Wire Custom RPC to slot "2" (second application ID + token).
-        // A service started only for a user-created instance must not pull in
-        // the built-in instance's socket as well.
-        kizzyRPC = if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
-            multiRpc.sessionWithoutBuiltIn("2")
-        } else {
-            multiRpc.session("2")
+        // Each Custom RPC instance owns its own KizzyRPC/socket so it can show
+        // completely different presence data from the others.
+        val targetId = intent?.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+            ?.takeIf { it.isNotBlank() }
+            ?: "custom_rpc"
+        kizzyRPC = multiRpc.customSession(targetId)?.also {
+            customRpcs[targetId] = it
         }
 
         intent?.let { readConsoleMode(it) }
@@ -153,31 +157,41 @@ class CustomRpcService : Service() {
             Constants.ACTION_ADD_INSTANCE -> {
                 val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
                 if (!instanceId.isNullOrBlank()) {
-                    val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
-                    multiRpc.addInstance("2", instanceId, oauthIndex)
-                    // The instance's own RpcConfig travels in the intent. Without
-                    // reading it here the service falls back to the old global
-                    // config (or an empty activity), so edits never show up.
-                    intent.getStringExtra("RPC")?.takeIf { it.isNotBlank() }?.let { raw ->
-                        rpcData = try {
-                            Json.decodeFromString(raw)
-                        } catch (e: Exception) {
-                            Log.e("CustomRpcService", "Failed to parse instance RPC config: ${e.message}")
-                            null
-                        }
+                    // The instance's own RpcConfig travels in the intent; each
+                    // clone must show its own data, not the global config.
+                    val config = intent.getStringExtra("RPC")?.takeIf { it.isNotBlank() }
+                        ?.let { raw ->
+                            runCatching { Json.decodeFromString<RpcConfig>(raw) }
+                                .getOrElse { e ->
+                                    Log.e("CustomRpcService", "Failed to parse instance RPC config: ${e.message}")
+                                    null
+                                }
+                        } ?: RpcConfig(name = "Custom RPC", details = "Kizzy Enhanced")
+                    customConfigs[instanceId] = config
+                    val rpc = multiRpc.customSession(instanceId)
+                    if (rpc != null) {
+                        customRpcs[instanceId] = rpc
+                        scope.launch { sendInstancePresence(rpc, config, forceRefresh = true) }
                     }
-                    scope.launch { sendPresenceAndNotification(forceRefresh = true) }
                     startPresenceRefresh()
                 }
                 return super.onStartCommand(intent, flags, startId)
             }
             Constants.ACTION_REMOVE_INSTANCE -> {
                 val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
-                if (!instanceId.isNullOrBlank()) multiRpc.removeInstance("2", instanceId)
-                if (multiRpc.instanceCount("2") == 0) {
+                if (!instanceId.isNullOrBlank()) {
+                    multiRpc.closeCustomSession(instanceId)
+                    customRpcs.remove(instanceId)
+                    customConfigs.remove(instanceId)
+                }
+                if (customRpcs.isEmpty()) {
                     stopSelf()
                 } else {
-                    scope.launch { sendPresenceAndNotification(forceRefresh = true) }
+                    customRpcs.forEach { (id, rpc) ->
+                        scope.launch {
+                            sendInstancePresence(rpc, customConfigs[id] ?: RpcConfig(), forceRefresh = true)
+                        }
+                    }
                 }
                 return super.onStartCommand(intent, flags, startId)
             }
@@ -199,6 +213,7 @@ class CustomRpcService : Service() {
                     }
                 }
                 Log.d("CustomRpcService", "ACTION_RESTART_SERVICE: rpcData=${rpcData?.name ?: "null"}")
+                rpcData?.let { customConfigs["custom_rpc"] = it }
                 scope.launch {
                     sendPresenceAndNotification(forceRefresh = true)
                 }
@@ -217,6 +232,7 @@ class CustomRpcService : Service() {
             }
         }
 
+        rpcData?.let { customConfigs["custom_rpc"] = it }
         Log.d("CustomRpcService", "onStartCommand: rpcData=${rpcData?.name ?: "null"}, details=${rpcData?.details ?: "null"}")
         scope.launch {
             sendPresenceAndNotification()
@@ -252,6 +268,55 @@ class CustomRpcService : Service() {
         }
     }
 
+    /** Applies one instance's own RpcConfig to its dedicated KizzyRPC. */
+    private suspend fun sendInstancePresence(
+        rpc: KizzyRPC,
+        config: RpcConfig,
+        forceRefresh: Boolean,
+    ) {
+        val data = if (config.name.isBlank()) {
+            config.copy(name = "Custom RPC", details = "Kizzy Enhanced")
+        } else config
+        val activeBoard = boardManager.getActiveBoard()
+
+        rpc.clearButtons()
+        rpc.setName(data.name)
+        rpc.setDetails(data.details.ifEmpty { null })
+        rpc.setState(data.state.ifEmpty { null })
+        rpc.setPartySize(data.partyCurrentSize.toIntOrNull(), data.partyMaxSize.toIntOrNull())
+        rpc.setStatus(data.status.ifEmpty { "online" })
+        val customAppId = Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""]
+        if (Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false] && customAppId.isNotBlank()) {
+            rpc.setApplicationId(customAppId)
+        } else if (activeBoard != null && activeBoard.applicationId.isNotBlank()) {
+            rpc.setApplicationId(activeBoard.applicationId)
+        }
+        rpc.setType(data.type.toIntOrNull() ?: 0)
+        rpc.setPlatform(data.platform.takeIf { it.isNotBlank() })
+        if (Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true]) {
+            rpc.setStartTimestamps(data.timestampsStart.toLongOrNull())
+            rpc.setStopTimestamps(data.timestampsStop.toLongOrNull())
+        }
+        rpc.setButton1(data.button1.ifEmpty { null }, data.button1link.ifEmpty { null })
+        rpc.setButton2(data.button2.ifEmpty { null }, data.button2link.ifEmpty { null })
+        val showCover = Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART, true] &&
+            !Prefs[Prefs.RPC_HIDE_COVER_ART, false]
+        rpc.setLargeImage(
+            if (showCover) data.largeImg.toRpcImage()
+            else Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""].takeIf { it.isNotEmpty() }
+                ?.let { RpcImage.ExternalImage(it) },
+            data.largeText,
+        )
+        rpc.setSmallImage(
+            if (showCover) data.smallImg.toRpcImage()
+            else Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""].takeIf { it.isNotEmpty() }
+                ?.let { RpcImage.ExternalImage(it) },
+            data.smallText,
+        )
+        rpc.setStreamUrl(data.url.takeIf { it.isNotBlank() })
+        rpc.build(forceRefresh = forceRefresh, priority = 2)
+    }
+
     /** Re-sends the Custom RPC activity periodically so Discord never drops it. */
     private fun startPresenceRefresh() {
         if (presenceRefreshJob?.isActive == true) return
@@ -259,7 +324,9 @@ class CustomRpcService : Service() {
             while (isActive) {
                 delay(10_000)
                 try {
-                    sendPresenceAndNotification(forceRefresh = true)
+                    customRpcs.forEach { (id, rpc) ->
+                        sendInstancePresence(rpc, customConfigs[id] ?: RpcConfig(), forceRefresh = true)
+                    }
                 } catch (e: CancellationException) {
                     throw e
                 } catch (_: Exception) {
@@ -508,14 +575,15 @@ class CustomRpcService : Service() {
         presenceRefreshJob = null
         // Cancel pending work first, then clear/close off the main thread.
         scope.cancel()
-        val rpc = kizzyRPC
+        val rpcs = customRpcs.values.toList() + listOfNotNull(kizzyRPC).distinct()
+        customRpcs.keys.toList().forEach { multiRpc.closeCustomSession(it) }
+        customRpcs.clear()
+        customConfigs.clear()
         AppUtils.unregisterRpcService(this)
-        if (rpc != null) {
-            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            rpcs.forEach { rpc ->
                 try {
                     rpc.clearPresence()
-                } catch (e: CancellationException) {
-                    throw e
                 } catch (_: Exception) {
                 }
                 rpc.closeRPC()
