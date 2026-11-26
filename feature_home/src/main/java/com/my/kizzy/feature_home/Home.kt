@@ -116,6 +116,7 @@ import com.my.kizzy.feature_rpc_base.services.KizzyTileService
 import com.my.kizzy.feature_settings.SettingsDrawer
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.RpcInstance
+import com.my.kizzy.preference.displayLabel
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.KSwitch
 import com.my.kizzy.ui.components.UpdateDialog
@@ -187,7 +188,7 @@ fun Home(
         pendingAddedInstances.removeAll { it.id in instanceMap }
         deletedInstanceIds.removeAll { it !in instanceMap }
         labelOverrides.entries.removeAll { (id, label) ->
-            instanceMap[id]?.label == label
+            instanceMap[id]?.displayLabel(ctx) == label
         }
     }
 
@@ -234,7 +235,7 @@ fun Home(
             }
             .map { feature ->
                 val resolvedLabel = labelOverrides[feature.instanceId]
-                    ?: instanceById[feature.instanceId]?.label
+                    ?: instanceById[feature.instanceId]?.displayLabel(ctx)
                 if (!resolvedLabel.isNullOrBlank() && resolvedLabel != feature.title) {
                     feature.copy(title = resolvedLabel)
                 } else {
@@ -247,7 +248,7 @@ fun Home(
             .filter { inst -> inst.id !in deletedInstanceIds && inst.id !in existingInstanceIds }
             .mapNotNull { inst ->
                 val tpl = templateFeatureForType(inst.type) ?: return@mapNotNull null
-                val resolvedLabel = labelOverrides[inst.id] ?: inst.label.ifBlank { tpl.title }
+                val resolvedLabel = labelOverrides[inst.id] ?: inst.displayLabel(ctx).ifBlank { tpl.title }
                 tpl.copy(
                     title = resolvedLabel,
                     instanceId = inst.id,
@@ -484,7 +485,7 @@ fun Home(
                                 modifier = Modifier.size(18.dp),
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Add RPC")
+                            Text(text = stringResource(R.string.home_add_rpc))
                         }
                     }
                 }

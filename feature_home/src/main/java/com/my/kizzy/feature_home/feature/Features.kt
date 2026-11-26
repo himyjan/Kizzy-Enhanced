@@ -178,13 +178,13 @@ fun Features(
         ) {
             FeatureCard(
                 feature = HomeFeature(
-                    title = "Add RPC",
+                    title = stringResource(R.string.home_add_rpc),
                     icon = R.drawable.ic_home_add_rpc,
                     route = null,
                     isChecked = false,
                     showSwitch = false,
                     isAddButton = true,
-                    tooltipText = "Add a new RPC instance (Media, Manual, or Custom)",
+                    tooltipText = stringResource(R.string.home_add_rpc_tooltip),
                 ),
                 instance = null,
                 onToggle = {},

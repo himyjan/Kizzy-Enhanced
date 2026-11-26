@@ -11,6 +11,7 @@
 
 package com.my.kizzy.preference
 
+import android.content.Context
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -61,3 +62,14 @@ val BUILT_IN_INSTANCES: List<RpcInstance> = listOf(
     RpcInstance(id = RPC_INSTANCE_MANUAL, type = "manual_rpc", label = "Manual RPC", oauthIndex = 3),
     RpcInstance(id = RPC_INSTANCE_CUSTOM, type = "custom_rpc", label = "Custom RPC", oauthIndex = 2),
 )
+
+/** Resolves the display label for an RPC instance. Built-in instances use translated
+ * string resources; user-created clones return their stored [label]. */
+fun RpcInstance.displayLabel(context: Context): String {
+    return when (id) {
+        RPC_INSTANCE_MEDIA -> context.getString(com.my.kizzy.resources.R.string.rpc_instance_media_rpc)
+        RPC_INSTANCE_MANUAL -> context.getString(com.my.kizzy.resources.R.string.rpc_instance_manual_rpc)
+        RPC_INSTANCE_CUSTOM -> context.getString(com.my.kizzy.resources.R.string.rpc_instance_custom_rpc)
+        else -> label
+    }
+}

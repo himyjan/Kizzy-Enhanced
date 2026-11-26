@@ -31,6 +31,7 @@ import com.my.kizzy.navigation.Routes
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.BUILT_IN_INSTANCES
 import com.my.kizzy.preference.RpcInstance
+import com.my.kizzy.preference.displayLabel
 
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
@@ -39,6 +40,7 @@ import com.my.kizzy.resources.R
 
 @Composable
 fun homeFeaturesProvider(
+    prefsMap: Map<String, Any?>,
     navigateTo: (String) -> Unit,
     hasUsageAccess: MutableState<Boolean>,
     hasNotificationAccess: MutableState<Boolean>,
@@ -54,8 +56,6 @@ fun homeFeaturesProvider(
         rpcManager.refreshFromServices()
     }
 
-    // Collect prefsState so the provider recomposes when clones are added/removed/reordered.
-    val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
     val instances = Prefs.getHomeRpcInstances()
 
     val activeInstances by rpcManager.activeInstances.collectAsState()
