@@ -434,7 +434,7 @@
     <string name="update_download_error">Изтеглянето е неуспешно. Опитайте отново.</string>
     <string name="save_logs_to_file">Запиши логовете във файл</string>
     <string name="rpc_hide_cover_art">Скриване на изображенията на обложки</string>
-    <string name="rpc_hide_cover_art_desc">Показване само на текст във всички типове RPC (Media, Custom, Console, Experimental). Обложките няма да се появят в Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Показване само на текст във всички типове RPC (Media, Custom, Console, Manual). Обложките няма да се появят в Discord.</string>
     <string name="rpc_default_cover_art_large">Голяма обложка по подразбиране</string>
     <string name="rpc_default_cover_art_large_desc">URL на изображение за голяма обложка, когато известието няма обложка</string>
     <string name="rpc_default_cover_art_small">Малка обложка по подразбиране</string>
@@ -537,7 +537,7 @@
     <string name="link_toArtistChannel_desc">Връзка към канала на изпълнителя</string>
     <string name="link_to_artistChannel">Връзка към канала на изпълнителя</string>
     <string name="link_to_artistChannel_desc">Връзка към канала на изпълнителя</string>
-    <string name="main_ManualRpcDetails">Experimental RPC е функция, която се редува между Apps RPC и Media RPC.</string>
+    <string name="main_ManualRpcDetails">Manual RPC е функция, която се редува между Apps RPC и Media RPC.</string>
     <string name="main_appDetectionDetails">Използва се за откриване кое приложение работи на устройството ви</string>
     <string name="main_app_detection_details">Използва се за откриване кое приложение работи на устройството ви</string>
     <string name="main_consoleRpcDetails">Позволява задаване на вашето присъствие в Discord чрез предварително зададени шаблони</string>

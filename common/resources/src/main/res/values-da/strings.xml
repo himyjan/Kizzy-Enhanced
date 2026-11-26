@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">Konsol-RPC</string>
     <string name="main_consoleRpc_details">Kizzy giver dig mulighed for at bruge foruddefinerede presets til at angive
         din tilstedeværelse på Discord.</string>
-    <string name="main_ManualRpc">Eksperimentel RPC</string>
+    <string name="main_ManualRpc">Manuel RPC</string>
     <string name="main_ManualRpc_details">Manuel RPC er en funktion i Kizzy, der
         skifter konstant mellem Apps RPC og Media RPC.</string>
     <string name="main_customRpc_details">Kizzy giver dig mulighed for at oprette din egen fuldt tilpassede
@@ -423,7 +423,7 @@
     <string name="update_download_error">Download fejlede. Prøv igen.</string>
     <string name="save_logs_to_file">Gem logfiler i en fil</string>
     <string name="rpc_hide_cover_art">Skjul cover-billeder</string>
-    <string name="rpc_hide_cover_art_desc">Vis kun tekst i alle RPC-typer (medie, brugerdefineret, konsol, eksperimentel). Covers vises ikke på Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Vis kun tekst i alle RPC-typer (medie, brugerdefineret, konsol, Manuel). Covers vises ikke på Discord.</string>
     <string name="rpc_default_cover_art_large">Standard stort cover-billede</string>
     <string name="rpc_default_cover_art_large_desc">Billed-URL til brug som stort cover-billede, når notifikationen ikke har et cover</string>
     <string name="rpc_default_cover_art_small">Standard lille cover-billede</string>

@@ -253,7 +253,7 @@
     <string name="main_customRpc">RPC Kustom</string>
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpc_details">Kizzy nyedhiyakake kesempatan kanggo nggunakake sawijining praetakan sing ditetepake kanggo netepake kehadiran marang Discord.</string>
-    <string name="main_ManualRpc">RPC Eksperimen</string>
+    <string name="main_ManualRpc">RPC Manual</string>
     <string name="main_ManualRpc_details">Manual RPC minangka fitur ing Kizzy sing anyar-anyar ora-nalika mbenteni antarane Apps RPC lan Media RPC.</string>
     <string name="main_customRpc_details">Kizzy nyedhiyakake kesempatan kanggo nggawe rich presence sing bisa disesuaikan sepenuh kanggo Discord.</string>
     <string name="add_rpc_title">Tambah RPC</string>
@@ -412,7 +412,7 @@
     <string name="update_download_error">Undhangan gagal. Coba lagi.</string>
     <string name="save_logs_to_file">Simpen log ing file</string>
     <string name="rpc_hide_cover_art">Singidake Gambar Sampul</string>
-    <string name="rpc_hide_cover_art_desc">Tampilake teks wae ing kabeh jinis RPC (Media, Kustom, Konsol, Eksperimen). Sampul ora bakal katon ing Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Tampilake teks wae ing kabeh jinis RPC (Media, Kustom, Konsol, Manual). Sampul ora bakal katon ing Discord.</string>
     <string name="rpc_default_cover_art_large">Sampul Gedhe Standar</string>
     <string name="rpc_default_cover_art_large_desc">URL gambar sing digunakake minangka sampul gedhe nalika kabar ora duwe sampul</string>
     <string name="rpc_default_cover_art_small">Sampul Cilik Standar</string>

@@ -432,7 +432,7 @@
     <string name="update_download_error">Yükləmə uğursuz oldu. Yenidən cəhd edin.</string>
     <string name="save_logs_to_file">Qeydləri faylda saxla</string>
     <string name="rpc_hide_cover_art">Üz Qapağı Şəkillərini Gizlət</string>
-    <string name="rpc_hide_cover_art_desc">Bütün RPC növlərində (Media, Fərdi, Konsol, Eksperimental) yalnız mətn göstər. Üz qapaqları Discord-da görünməyəcək.</string>
+    <string name="rpc_hide_cover_art_desc">Bütün RPC növlərində (Media, Fərdi, Konsol, Əl İlə) yalnız mətn göstər. Üz qapaqları Discord-da görünməyəcək.</string>
     <string name="rpc_default_cover_art_large">Standart Böyük Üz Qapağı</string>
     <string name="rpc_default_cover_art_large_desc">Bildirişdə üz qapağı şəkli olmadıqda böyük üz qapağı olaraq istifadə ediləcək şəkil URL-i</string>
     <string name="rpc_default_cover_art_small">Standart Kiçik Üz Qapağı</string>
@@ -535,7 +535,7 @@
     <string name="link_toArtistChannel_desc">İfaçı kanalına keçid</string>
     <string name="link_to_artistChannel">İfaçı Kanalına Keçid</string>
     <string name="link_to_artistChannel_desc">İfaçı kanalına keçid</string>
-    <string name="main_ManualRpcDetails">Eksperimental RPC Tətbiqlər RPC və Media RPC arasında dövran edən xüsusiyyətdir.</string>
+    <string name="main_ManualRpcDetails">Əl İlə RPC Tətbiqlər RPC və Media RPC arasında dövran edən xüsusiyyətdir.</string>
     <string name="main_appDetectionDetails">Cihazınızda hansı tətbiqin işlədiyini aşkar etmək üçün istifadə olunur</string>
     <string name="main_app_detection_details">Cihazınızda hansı tətbiqin işlədiyini aşkar etmək üçün istifadə olunur</string>
     <string name="main_consoleRpcDetails">Əvvəlcədən təyin edilmiş şablonlarla Discord statusunuzu təyin etməyə imkan verir</string>

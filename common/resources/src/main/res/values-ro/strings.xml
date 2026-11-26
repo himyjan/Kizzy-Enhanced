@@ -434,7 +434,7 @@
     <string name="update_download_error">Descărcarea a eșuat. Încercați din nou.</string>
     <string name="save_logs_to_file">Salvează jurnalele în fișier</string>
     <string name="rpc_hide_cover_art">Ascunde imaginile de copertă</string>
-    <string name="rpc_hide_cover_art_desc">Afișează doar text în toate tipurile de RPC (Media, Personalizat, Consolă, Experimental). Copertele nu vor apărea pe Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Afișează doar text în toate tipurile de RPC (Media, Personalizat, Consolă, RPC manual). Copertele nu vor apărea pe Discord.</string>
     <string name="rpc_default_cover_art_large">Copertă mare implicită</string>
     <string name="rpc_default_cover_art_large_desc">URL-ul imaginii de folosit ca copertă mare când notificarea nu are copertă</string>
     <string name="rpc_default_cover_art_small">Copertă mică implicită</string>

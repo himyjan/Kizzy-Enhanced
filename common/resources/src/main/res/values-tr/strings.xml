@@ -253,7 +253,7 @@
     <string name="main_customRpc">Özel RPC</string>
     <string name="main_consoleRpc">Konsol RPC</string>
     <string name="main_consoleRpc_details">"Kizzy, Discord'daki varlığınızı ayarlamak için bazı önceden tanımlı ön ayarları kullanmanıza olanak tanır."</string>
-    <string name="main_ManualRpc">Deneysel RPC</string>
+    <string name="main_ManualRpc">El ile RPC</string>
     <string name="main_ManualRpc_details">"Elle RPC, Kizzy'de Uygulama RPC'si ile Medya RPC'si arasında sürekli geçiş yapan bir özelliktir."</string>
     <string name="main_customRpc_details">Kizzy, Discord için kendi tamamen özelleştirilebilir zengin varlığınızı oluşturmanıza olanak tanır.</string>
     <string name="add_rpc_title">RPC Ekle</string>
@@ -415,7 +415,7 @@
     <string name="update_download_error">İndirme başarısız. Tekrar dene.</string>
     <string name="save_logs_to_file">Günlükleri dosyaya kaydet</string>
     <string name="rpc_hide_cover_art">Kapak Sanatı Görüntülerini Gizle</string>
-    <string name="rpc_hide_cover_art_desc">"Tüm RPC türlerinde (Medya, Özel, Konsol, Deneysel) yalnızca metin göster. Kapaklar Discord'da görünmez."</string>
+    <string name="rpc_hide_cover_art_desc">"\"Tüm RPC türlerinde (Medya, Özel, Konsol, El ile) yalnızca metin göster. Kapaklar Discord'da görünmez.\""</string>
     <string name="rpc_default_cover_art_large">Varsayılan Büyük Kapak Sanatı</string>
     <string name="rpc_default_cover_art_large_desc">"Bildirimin kapak sanatı olmadığında büyük kapak sanatı olarak kullanılacak görüntü URL'si"</string>
     <string name="rpc_default_cover_art_small">Varsayılan Küçük Kapak Sanatı</string>

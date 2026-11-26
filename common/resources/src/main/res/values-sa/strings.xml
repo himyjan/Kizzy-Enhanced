@@ -434,7 +434,7 @@
     <string name="update_download_error">डाउनलोड असफल भयो। फेरि प्रयास गर्नुहोस्।</string>
     <string name="save_logs_to_file">लगहरू फाइलमा सुरक्षित गर्नुहोस्</string>
     <string name="rpc_hide_cover_art">आवरण-चित्राणि गोपय</string>
-    <string name="rpc_hide_cover_art_desc">सर्वेषु RPC-प्रकारेषु (माध्यम, अनुकूलित, कन्सोल, प्रयोगात्मक) केवलं पाठं प्रदर्शय। आवरणचित्राणि Discord-मध्ये न दृश्यन्ते।</string>
+    <string name="rpc_hide_cover_art_desc">सर्वेषु RPC-प्रकारेषु (माध्यम, अनुकूलित, कन्सोल, हस्त-चालित) केवलं पाठं प्रदर्शय। आवरणचित्राणि Discord-मध्ये न दृश्यन्ते।</string>
     <string name="rpc_default_cover_art_large">डिफ़ॉल्ट्-बृहत्-आवरणचित्रम्</string>
     <string name="rpc_default_cover_art_large_desc">यदा सूचनायां आवरणचित्रं नास्ति तदा बृहत्-आवरणचित्ररूपेण प्रयोक्तव्यं चित्र-URL</string>
     <string name="rpc_default_cover_art_small">डिफ़ॉल्ट्-लघु-आवरणचित्रम्</string>
@@ -537,7 +537,7 @@
     <string name="link_toArtistChannel_desc">कलाकारस्य चैनल्-स्य संयोजकम्</string>
     <string name="link_to_artistChannel">कलाकारस्य चैनल्-स्य संयोजकम्</string>
     <string name="link_to_artistChannel_desc">कलाकारस्य चैनल्-स्य संयोजकम्</string>
-    <string name="main_ManualRpcDetails">प्रयोगात्मक-RPC इति एकं विशेषम् अस्ति यत् अनुप्रयोग-RPC-मध्ये माध्यम-RPC-मध्ये च आवर्तते।</string>
+    <string name="main_ManualRpcDetails">हस्त-चालित-RPC इति एकं विशेषम् अस्ति यत् अनुप्रयोग-RPC-मध्ये माध्यम-RPC-मध्ये च आवर्तते।</string>
     <string name="main_appDetectionDetails">भवतः उपकरणे कः अनुप्रयोगः प्रचलति इति अभिज्ञातुम् उपयुज्यते</string>
     <string name="main_app_detection_details">भवतः उपकरणे कः अनुप्रयोगः प्रचलति इति अभिज्ञातुम् उपयुज्यते</string>
     <string name="main_consoleRpcDetails">पूर्वनिर्धारित-रूपरेखाभिः भवतः Discord-उपस्थितिं स्थापयितुम् अनुमन्यति</string>

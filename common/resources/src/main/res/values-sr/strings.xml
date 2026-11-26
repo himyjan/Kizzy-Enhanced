@@ -253,7 +253,7 @@
     <string name="main_customRpc">Prilagođen RPC</string>
     <string name="main_consoleRpc">Конзола RPC</string>
     <string name="main_consoleRpc_details">Kizzy вам омогућава да користите неке унапред дефинисане предподешења за подешавање вашег присуства на Discord-у.</string>
-    <string name="main_ManualRpc">Eksperimentalan RPC</string>
+    <string name="main_ManualRpc">Ručni RPC</string>
     <string name="main_ManualRpc_details">Ручни RPC је функција у Kizzy која се стално између RPC апликација и медијског RPC.</string>
     <string name="main_customRpc_details">Kizzy вам омогућава да створите свој потпуно прлагодив rich presence за Discord.</string>
     <string name="add_rpc_title">Додај RPC</string>
@@ -414,7 +414,7 @@
     <string name="update_download_error">Преузимање није успешно. Покушајте поново.</string>
     <string name="save_logs_to_file">Запиши журнале у датотеку</string>
     <string name="rpc_hide_cover_art">Сакрји слике корица</string>
-    <string name="rpc_hide_cover_art_desc">Прикажи само текст у свим врстама RPC (Медијски, По мери, Конзолни, Експериментални). Корице се неће појавити на Discord-у.</string>
+    <string name="rpc_hide_cover_art_desc">Прикажи само текст у свим врстама RPC (Медијски, По мери, Конзолни, Ručni). Корице се неће појавити на Discord-у.</string>
     <string name="rpc_default_cover_art_large">Подразумевана велика корица</string>
     <string name="rpc_default_cover_art_large_desc">URL слике за коришћење као велике корице када обавештење нема корицу</string>
     <string name="rpc_default_cover_art_small">Подразумевана мала корица</string>

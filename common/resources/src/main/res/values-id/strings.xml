@@ -257,7 +257,7 @@
     <string name="main_consoleRpc">RPC Konsol</string>
     <string name="main_consoleRpc_details">Kizzy memungkinkan Anda menggunakan beberapa prasetel yang telah ditentukan untuk mengatur
         kehadiran Anda di Discord.</string>
-    <string name="main_ManualRpc">RPC Eksperimental</string>
+    <string name="main_ManualRpc">RPC Manual</string>
     <string name="main_ManualRpc_details">RPC Manual adalah fitur di Kizzy yang
         terus berganti antara RPC Aplikasi dan RPC Media.</string>
     <string name="main_customRpc_details">Kizzy memungkinkan Anda membuat kehadiran lengkap
@@ -419,7 +419,7 @@
     <string name="update_download_error">Unduhan gagal. Coba lagi.</string>
     <string name="save_logs_to_file">Simpan log ke file</string>
     <string name="rpc_hide_cover_art">Sembunyikan Gambar Sampul</string>
-    <string name="rpc_hide_cover_art_desc">Tampilkan hanya teks di semua jenis RPC (Media, Kustom, Konsol, Eksperimen). Sampul tidak akan muncul di Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Tampilkan hanya teks di semua jenis RPC (Media, Kustom, Konsol, Manual). Sampul tidak akan muncul di Discord.</string>
     <string name="rpc_default_cover_art_large">Sampul Besar Bawaan</string>
     <string name="rpc_default_cover_art_large_desc">URL gambar yang digunakan sebagai sampul besar saat notifikasi tidak memiliki sampul</string>
     <string name="rpc_default_cover_art_small">Sampul Kecil Bawaan</string>

@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">RPC konsoli</string>
     <string name="main_consoleRpc_details">Kizzy pozwala użyć gotowych ustawień, aby określić
         swoją obecność na Discordzie.</string>
-    <string name="main_ManualRpc">Eksperymentalne RPC</string>
+    <string name="main_ManualRpc">Ręczne RPC</string>
     <string name="main_ManualRpc_details">Ręczny RPC to funkcja Kizzy, która
         ciągle przełącza się między RPC aplikacji a RPC multimediów.</string>
     <string name="main_customRpc_details">Kizzy pozwala stworzyć własną, w pełni konfigurowalną
@@ -423,7 +423,7 @@
     <string name="update_download_error">Pobieranie nie powiodło się. Spróbuj ponownie.</string>
     <string name="save_logs_to_file">Zapisz dzienniki do pliku</string>
     <string name="rpc_hide_cover_art">Ukryj obrazy okładek</string>
-    <string name="rpc_hide_cover_art_desc">We wszystkich typach RPC (multimedia, niestandardowy, konsola, eksperymentalny) pokazuj tylko tekst. Okładki nie będą wyświetlane na Discordzie.</string>
+    <string name="rpc_hide_cover_art_desc">We wszystkich typach RPC (multimedia, niestandardowy, konsola, Ręczne) pokazuj tylko tekst. Okładki nie będą wyświetlane na Discordzie.</string>
     <string name="rpc_default_cover_art_large">Domyślna duża okładka</string>
     <string name="rpc_default_cover_art_large_desc">Adres URL obrazu używanego jako duża okładka, gdy powiadomienie nie ma okładki</string>
     <string name="rpc_default_cover_art_small">Domyślna mała okładka</string>

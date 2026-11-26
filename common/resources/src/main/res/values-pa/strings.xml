@@ -259,7 +259,7 @@
     <string name="main_consoleRpc">ਕੰਸੋਲ RPC</string>
     <string name="main_consoleRpc_details">Kizzy ਤੁਹਾਨੂੰ ਕੁਝ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਪ੍ਰੀਸੈਟਾਂ ਨਾਲ ਆਪਣੀ
         Discord ਮੌਜੂਦਗੀ ਨਿਰਧਾਰਤ ਕਰਨ ਦਿੰਦਾ ਹੈ।</string>
-    <string name="main_ManualRpc">ਐਕਸਪੇਰਿਮੈਂਟਲ RPC</string>
+    <string name="main_ManualRpc">ਮੈਨੁਅल RPC</string>
     <string name="main_ManualRpc_details">ਮੈਨੂਅਲ RPC Kizzy ਦੀ ਇੱਕ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ ਜੋ
         ਲਗਾਤਾਰ ਐਪਾਂ RPC ਅਤੇ ਮੀਡੀਆ RPC ਦੇ ਵਿਚਕਾਰ ਬਦਲਦੀ ਹੈ।</string>
     <string name="main_customRpc_details">Kizzy ਤੁਹਾਨੂੰ Discord ਲਈ ਆਪਣੀ ਪੂਰੀ ਤਰ੍ਹਾਂ ਕਸਟਮਾਈਜ਼ ਕੀਤੀ

@@ -433,7 +433,7 @@
     <string name="update_download_error">Muat turun gagal. Cuba lagi.</string>
     <string name="save_logs_to_file">Simpan log ke fail</string>
     <string name="rpc_hide_cover_art">Sembunyikan Imej Seni Muka</string>
-    <string name="rpc_hide_cover_art_desc">Tunjukkan teks sahaja pada semua jenis RPC (Media, Tersuai, Konsol, Eksperimen). Seni muka tidak akan dipaparkan pada Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Tunjukkan teks sahaja pada semua jenis RPC (Media, Tersuai, Konsol, RPC Manual). Seni muka tidak akan dipaparkan pada Discord.</string>
     <string name="rpc_default_cover_art_large">Seni Muka Besar Lalai</string>
     <string name="rpc_default_cover_art_large_desc">URL imej untuk digunakan sebagai seni muka besar apabila pemberitahuan tiada seni muka</string>
     <string name="rpc_default_cover_art_small">Seni Muka Kecil Lalai</string>

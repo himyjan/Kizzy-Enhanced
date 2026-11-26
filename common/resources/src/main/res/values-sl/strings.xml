@@ -253,7 +253,7 @@
     <string name="main_customRpc">Prilagojen RPC</string>
     <string name="main_consoleRpc">Konzolni RPC</string>
     <string name="main_consoleRpc_details">Kizzy vam omogoča uporabo nekaterih vnaprej določenih prednastavitev za nastavitev vaše prisotnosti na Discordu.</string>
-    <string name="main_ManualRpc">Poskusni RPC</string>
+    <string name="main_ManualRpc">Ročni RPC</string>
     <string name="main_ManualRpc_details">Ročni RPC je funkcija v Kizzy, ki se nenehno preklaplja med RPC aplikacij in medijskim RPC.</string>
     <string name="main_customRpc_details">Kizzy vam omogoča ustvarjanje lastne popolnoma prilagodljive rich presence za Discord.</string>
     <string name="add_rpc_title">Dodaj RPC</string>
@@ -412,7 +412,7 @@
     <string name="update_download_error">Prenos ni uspešno zaključen. Poskusite znova.</string>
     <string name="save_logs_to_file">Shrani dnevnike v datoteko</string>
     <string name="rpc_hide_cover_art">Skrij slike ovitkov</string>
-    <string name="rpc_hide_cover_art_desc">Prikaži samo besedilo pri vseh vrstah RPC (medijski, po meri, konzolni, eksperimentalni). Ovitki se na Discordu ne bodo pojavili.</string>
+    <string name="rpc_hide_cover_art_desc">Prikaži samo besedilo pri vseh vrstah RPC (medijski, po meri, konzolni, Ročni). Ovitki se na Discordu ne bodo pojavili.</string>
     <string name="rpc_default_cover_art_large">Privzeti veliki ovoj</string>
     <string name="rpc_default_cover_art_large_desc">URL slike za veliki ovoj, ko obvestilo nima ovitka</string>
     <string name="rpc_default_cover_art_small">Privzeti majhen ovoj</string>

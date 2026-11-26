@@ -433,7 +433,7 @@
     <string name="update_download_error">Elŝuto malsukcesis. Provu denove.</string>
     <string name="save_logs_to_file">Konservi registrojn en dosiero</string>
     <string name="rpc_hide_cover_art">Kaŝi kovrilajn bildojn</string>
-    <string name="rpc_hide_cover_art_desc">Montri nur tekston en ĉiuj tipoj de RPC (amaskomunikiloj, propra, konzolo, eksperimenta). Kovriloj ne aperos en Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Montri nur tekston en ĉiuj tipoj de RPC (amaskomunikiloj, propra, konzolo, Mana). Kovriloj ne aperos en Discord.</string>
     <string name="rpc_default_cover_art_large">Defaŭlta granda kovrila bildo</string>
     <string name="rpc_default_cover_art_large_desc">URL de bildo uzota kiel granda kovrila bildo, kiam la sciigo havas neniun kovrilon</string>
     <string name="rpc_default_cover_art_small">Defaŭlta malgranda kovrila bildo</string>
@@ -536,7 +536,7 @@
     <string name="link_toArtistChannel_desc">Ligo al kanalo de artisto</string>
     <string name="link_to_artistChannel">Ligo al kanalo de artisto</string>
     <string name="link_to_artistChannel_desc">Ligo al kanalo de artisto</string>
-    <string name="main_ManualRpcDetails">Eksperimenta RPC estas funkcio, kiu rotacias inter Apps RPC kaj Media RPC.</string>
+    <string name="main_ManualRpcDetails">Mana RPC estas funkcio, kiu rotacias inter Apps RPC kaj Media RPC.</string>
     <string name="main_appDetectionDetails">Uzata por detekti, kiu aplikaĵo funkcias sur via aparato</string>
     <string name="main_app_detection_details">Uzata por detekti, kiu aplikaĵo funkcias sur via aparato</string>
     <string name="main_consoleRpcDetails">Permesas difini vian Discord-ĉeeston per antaŭdifinitaj agordoj</string>

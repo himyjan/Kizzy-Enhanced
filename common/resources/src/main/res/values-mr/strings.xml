@@ -253,7 +253,7 @@
     <string name="main_customRpc">कस्टम RPC</string>
     <string name="main_consoleRpc">कन्सोल RPC</string>
     <string name="main_consoleRpc_details">Kizzy तुम्हाला Discord वर तुमची उपस्थिती सेट करण्यासाठी काही पूर्वनिर्धारित प्रिसेट वापरू देते.</string>
-    <string name="main_ManualRpc">एक्सपेरिमेंटल RPC</string>
+    <string name="main_ManualRpc">मॅन्युअल RPC</string>
     <string name="main_ManualRpc_details">मॅन्युअल RPC हे Kizzy मधील एक वैशिष्ट्य आहे जे सतत अॅप्स RPC व मीडिया RPC मध्ये बदलत असते.</string>
     <string name="main_customRpc_details">Kizzy तुम्हाला Discord साठी संपूर्णपणे सानुकूल समृद्ध उपस्थिती तयार करू देते.</string>
     <string name="add_rpc_title">RPC जोडा</string>
@@ -413,7 +413,7 @@
     <string name="update_download_error">डाउनलोड अपयशी. पुन्हा प्रयत्न करा.</string>
     <string name="save_logs_to_file">लॉग फाइलमध्ये जतन करा</string>
     <string name="rpc_hide_cover_art">कव्हर आर्ट प्रतिमा लपवा</string>
-    <string name="rpc_hide_cover_art_desc">सर्व RPC प्रकारांमध्ये (मीडिया, सानुकूल, कन्सोल, प्रयोगात्मक) फक्त मजकूर दाखवा. कव्हर Discord वर दिसणार नाहीत.</string>
+    <string name="rpc_hide_cover_art_desc">सर्व RPC प्रकारांमध्ये (मीडिया, सानुकूल, कन्सोल, मॅन्युअल) फक्त मजकूर दाखवा. कव्हर Discord वर दिसणार नाहीत.</string>
     <string name="rpc_default_cover_art_large">डिफॉल्ट मोठे कव्हर आर्ट</string>
     <string name="rpc_default_cover_art_large_desc">सूचनेत कव्हर आर्ट नसताना मोठ्या कव्हर आर्ट म्हणून वापरण्याचा प्रतिमा URL</string>
     <string name="rpc_default_cover_art_small">डिफॉल्ट लहान कव्हर आर्ट</string>
@@ -516,7 +516,7 @@
     <string name="link_toArtistChannel_desc">कलाकाराच्या चॅनेलशी लिंक करा</string>
     <string name="link_to_artistChannel">कलाकाराच्या चॅनेलशी लिंक करा</string>
     <string name="link_to_artistChannel_desc">कलाकाराच्या चॅनेलशी लिंक करा</string>
-    <string name="main_ManualRpcDetails">एक्सपेरिमेंटल RPC Kizzy चा एक वैशिष्ट्य आहे जो आणखी नाही सतत ऍप्स RPC आणि मीडिया RPC मध्ये स्विच करतो.</string>
+    <string name="main_ManualRpcDetails">मॅन्युअल RPC Kizzy चा एक वैशिष्ट्य आहे जो आणखी नाही सतत ऍप्स RPC आणि मीडिया RPC मध्ये स्विच करतो.</string>
     <string name="main_appDetectionDetails">Kizzy तुमच्या डिव्हाइसवर कोणता ऍप चालत आहे याचा डिटेक्शन करून सध्याची क्रियाकलाप Discord वर शेअर करण्याची परवानगी देते.</string>
     <string name="main_app_detection_details">तुमच्या डिव्हाइसवर कोणते अॅप चालू आहे ते शोधण्यासाठी वापरले जाते</string>
     <string name="main_consoleRpcDetails">Kizzy प्री-डिफाइन केलेल्या प्रीसेट वापरून Discord वर तुमची उपस्थिती सेट करण्याची परवानगी देते.</string>

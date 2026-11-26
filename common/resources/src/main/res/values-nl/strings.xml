@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">Console-RPC</string>
     <string name="main_consoleRpc_details">Met Kizzy kun je vooraf gedefinieerde voorinstellingen gebruiken om
         je aanwezigheid op Discord in te stellen.</string>
-    <string name="main_ManualRpc">Experimentele RPC</string>
+    <string name="main_ManualRpc">Handmatige RPC</string>
     <string name="main_ManualRpc_details">Handmatige RPC is een functie in Kizzy die
         voortdurend wisselt tussen app-RPC en media-RPC.</string>
     <string name="main_customRpc_details">Met Kizzy kun je je eigen volledig aanpasbare
@@ -423,7 +423,7 @@
     <string name="update_download_error">Download mislukt. Probeer opnieuw.</string>
     <string name="save_logs_to_file">Logboeken opslaan in bestand</string>
     <string name="rpc_hide_cover_art">Omslagafbeeldingen verbergen</string>
-    <string name="rpc_hide_cover_art_desc">Toon alleen tekst voor alle RPC-typen (media, aangepast, console, experimenteel). Omslagen verschijnen niet op Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Toon alleen tekst voor alle RPC-typen (media, aangepast, console, Handmatige). Omslagen verschijnen niet op Discord.</string>
     <string name="rpc_default_cover_art_large">Standaard grote omslagafbeelding</string>
     <string name="rpc_default_cover_art_large_desc">Afbeeldings-URL om als grote omslagafbeelding te gebruiken wanneer de melding geen omslagafbeelding heeft</string>
     <string name="rpc_default_cover_art_small">Standaard kleine omslagafbeelding</string>

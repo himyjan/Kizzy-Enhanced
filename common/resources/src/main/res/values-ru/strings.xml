@@ -257,7 +257,7 @@
     <string name="main_consoleRpc">Консоль RPC</string>
     <string name="main_consoleRpc_details">Kizzy позволяет использовать готовые шаблоны для настройки
         вашего статуса в Discord.</string>
-    <string name="main_ManualRpc">Экспериментальный RPC</string>
+    <string name="main_ManualRpc">Ручной RPC</string>
     <string name="main_ManualRpc_details">Ручной RPC — функция Kizzy, которая
         постоянно переключается между RPC приложений и RPC медиа.</string>
     <string name="main_customRpc_details">Kizzy позволяет создать полностью настраиваемый расширенный статус

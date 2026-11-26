@@ -537,7 +537,7 @@
     <string name="link_toArtistChannel_desc">د هنرمند چینل سره اړیکه</string>
     <string name="link_to_artistChannel">د هنرمند چینل سره اړیکه</string>
     <string name="link_to_artistChannel_desc">د هنرمند چینل سره اړیکه</string>
-    <string name="main_ManualRpcDetails">تجربوي RPC یوه ځانګړتیا ده چې د اپلیکیشنونو RPC او رسنیو RPC ترمنځ څرخیږي.</string>
+    <string name="main_ManualRpcDetails">لاسي RPC یوه ځانګړتیا ده چې د اپلیکیشنونو RPC او رسنیو RPC ترمنځ څرخیږي.</string>
     <string name="main_appDetectionDetails">ستاسو په وسیله کې کوم اپلیکیشن روان دی د معلومولو لپاره کارول کیږي</string>
     <string name="main_app_detection_details">ستاسو په وسیله کې کوم اپلیکیشن روان دی د معلومولو لپاره کارول کیږي</string>
     <string name="main_consoleRpcDetails">د مخکې ټاکل شويو ترتیباتو په کارولو سره ستاسو Discord حالت ټاکلو ته اجازه ورکوي</string>

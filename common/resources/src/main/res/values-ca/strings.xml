@@ -427,7 +427,7 @@
     <string name="update_download_error">La descàrrega ha fallat. Torna-ho a provar.</string>
     <string name="save_logs_to_file">Desa els registres en un fitxer</string>
     <string name="rpc_hide_cover_art">Amaga les imatges de portada</string>
-    <string name="rpc_hide_cover_art_desc">Mostra només text a tots els tipus de RPC (multimèdia, personalitzat, consola, experimental). Les portades no apareixeran a Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Mostra només text a tots els tipus de RPC (multimèdia, personalitzat, consola, RPC manual). Les portades no apareixeran a Discord.</string>
     <string name="rpc_default_cover_art_large">Portada gran predeterminada</string>
     <string name="rpc_default_cover_art_large_desc">"\"URL d\'imatge per utilitzar com a portada gran quan la notificació no té portada\""</string>
     <string name="rpc_default_cover_art_small">Portada petita predeterminada</string>

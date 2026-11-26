@@ -434,7 +434,7 @@
     <string name="update_download_error">Nabigo ang download. Subukan muli.</string>
     <string name="save_logs_to_file">I-save ang mga log sa file</string>
     <string name="rpc_hide_cover_art">Itago ang mga Larawan ng Kover</string>
-    <string name="rpc_hide_cover_art_desc">Ipakita lamang ang teksto sa lahat ng uri ng RPC (Midya, Pasadya, Console, Eksperimental). Hindi lalabas ang mga kover sa Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Ipakita lamang ang teksto sa lahat ng uri ng RPC (Midya, Pasadya, Console, Manwal). Hindi lalabas ang mga kover sa Discord.</string>
     <string name="rpc_default_cover_art_large">Paunang Malaking Kover</string>
     <string name="rpc_default_cover_art_large_desc">URL ng larawan na gagamitin bilang malaking kover kapag walang kover ang abiso</string>
     <string name="rpc_default_cover_art_small">Paunang Maliit na Kover</string>
@@ -537,7 +537,7 @@
     <string name="link_toArtistChannel_desc">Ugnayan sa tsanel ng artista</string>
     <string name="link_to_artistChannel">Ugnayan sa tsanel ng artista</string>
     <string name="link_to_artistChannel_desc">Ugnayan sa tsanel ng artista</string>
-    <string name="main_ManualRpcDetails">Ang eksperimental na RPC ay isang tampok na umiikot sa pagitan ng RPC ng mga aplikasyon at RPC ng midya.</string>
+    <string name="main_ManualRpcDetails">Ang Manwal na RPC ay isang tampok na umiikot sa pagitan ng RPC ng mga aplikasyon at RPC ng midya.</string>
     <string name="main_appDetectionDetails">Ginagamit upang matukoy kung aling aplikasyon ang tumatakbo sa iyong aparato</string>
     <string name="main_app_detection_details">Ginagamit upang matukoy kung aling aplikasyon ang tumatakbo sa iyong aparato</string>
     <string name="main_consoleRpcDetails">Nagpapahintulot sa pagtatakda ng iyong presensya sa Discord gamit ang mga paunang pagsasaayos</string>

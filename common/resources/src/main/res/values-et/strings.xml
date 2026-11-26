@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">Konsooli RPC</string>
     <string name="main_consoleRpc_details">Kizzy võimaldab kasutada eelmääratletud malle oma oleku
         määramiseks Discordis.</string>
-    <string name="main_ManualRpc">Katse-RPC</string>
+    <string name="main_ManualRpc">Käsitsi-RPC</string>
     <string name="main_ManualRpc_details">Käsitsi RPC on Kizzy funktsioon, mis
         vahetab pidevalt rakenduste RPC ja meedia RPC vahel.</string>
     <string name="main_customRpc_details">"Kizzy võimaldab sul luua täielikult kohandatava
@@ -423,7 +423,7 @@
     <string name="update_download_error">Laadimise viga. Proovige uuesti.</string>
     <string name="save_logs_to_file">Salvesta logid faili</string>
     <string name="rpc_hide_cover_art">Peida kaanepildid</string>
-    <string name="rpc_hide_cover_art_desc">Kuva ainult tekst kõigis RPC tüüpides (meedia, kohandatud, konsool, eksperimentaalne). Kaaneid Discordis ei kuvata.</string>
+    <string name="rpc_hide_cover_art_desc">Kuva ainult tekst kõigis RPC tüüpides (meedia, kohandatud, konsool, Käsitsi-RPC). Kaaneid Discordis ei kuvata.</string>
     <string name="rpc_default_cover_art_large">Vaike suur kaanepilt</string>
     <string name="rpc_default_cover_art_large_desc">Pildi URL, mida kasutada suure kaanepildina, kui teavitusel pole kaanepilti</string>
     <string name="rpc_default_cover_art_small">Vaike väike kaanepilt</string>

@@ -257,7 +257,7 @@
     <string name="main_consoleRpc">कंसोल आरपीसी</string>
     <string name="main_consoleRpc_details">Kizzy आपको कुछ पूर्वनिर्धारित प्रीसेट का उपयोग करके
         Discord पर अपनी उपस्थिति सेट करने देता है।</string>
-    <string name="main_ManualRpc">एक्सपेरिमेंटल आरपीसी</string>
+    <string name="main_ManualRpc">मैनुअल आरपीसी</string>
     <string name="main_ManualRpc_details">मैनुअल RPC, Kizzy की एक विशेषता है जो
         लगातार ऐप RPC और मीडिया RPC के बीच बदलती रहती है।</string>
     <string name="main_customRpc_details">Kizzy आपको Discord के लिए अपना स्वयं का पूर्णतः अनुकूलन योग्य
@@ -420,7 +420,7 @@
     <string name="update_download_error">डाउनलोड विफल रहा। पुनः प्रयास करें।</string>
     <string name="save_logs_to_file">लॉग को फ़ाइल में सहेजें</string>
     <string name="rpc_hide_cover_art">कवर चित्र छिपाएँ</string>
-    <string name="rpc_hide_cover_art_desc">सभी RPC प्रकारों (मीडिया, कस्टम, कंसोल, प्रयोगात्मक) में केवल टेक्स्ट दिखाएँ। कवर Discord पर नहीं दिखेंगे।</string>
+    <string name="rpc_hide_cover_art_desc">सभी RPC प्रकारों (मीडिया, कस्टम, कंसोल, मैनुअल) में केवल टेक्स्ट दिखाएँ। कवर Discord पर नहीं दिखेंगे।</string>
     <string name="rpc_default_cover_art_large">डिफ़ॉल्ट बड़ा कवर चित्र</string>
     <string name="rpc_default_cover_art_large_desc">जब सूचना में कोई कवर न हो तो बड़े कवर चित्र के रूप में उपयोग करने की छवि URL</string>
     <string name="rpc_default_cover_art_small">डिफ़ॉल्ट छोटा कवर चित्र</string>
@@ -523,7 +523,7 @@
     <string name="link_toArtistChannel_desc">कलाकार के चैनल का लिंक</string>
     <string name="link_to_artistChannel">कलाकार के चैनल का लिंक</string>
     <string name="link_to_artistChannel_desc">कलाकार के चैनल का लिंक</string>
-    <string name="main_ManualRpcDetails">एक्सपेरिमेंटल आरपीसी किज़ी की एक विशेषता है जो लगातार ऐप्स आरपीसी और मीडिया आरपीसी के बीच स्विच करता है।</string>
+    <string name="main_ManualRpcDetails">मैनुअल आरपीसी किज़ी की एक विशेषता है जो लगातार ऐप्स आरपीसी और मीडिया आरपीसी के बीच स्विच करता है।</string>
     <string name="main_appDetectionDetails">यह आपके डिवाइस पर चलने वाला ऐप पता लगाने के लिए उपयोग किया जाता है</string>
     <string name="main_app_detection_details">यह आपके डिवाइस पर चलने वाला ऐप पता लगाने के लिए उपयोग किया जाता है</string>
     <string name="main_consoleRpcDetails">किज़ी आपको डिस्कॉर्ड पर अपनी उपस्थिति सेट करने के लिए पहले से निर्धारित सेटिंग्स का उपयोग करने की अनुमति देता है।</string>

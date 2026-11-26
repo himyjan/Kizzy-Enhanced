@@ -259,7 +259,7 @@
     <string name="main_consoleRpc">Консола RPC</string>
     <string name="main_consoleRpc_details">Kizzy ви овозможува да користите однапред дефинирани пресети за да ја поставите
         вашата присутност на Discord.</string>
-    <string name="main_ManualRpc">Експериментален RPC</string>
+    <string name="main_ManualRpc">Рачни RPC</string>
     <string name="main_ManualRpc_details">Рачниот RPC е функција во Kizzy што
         постојано се префрла помеѓу RPC за апликации и медиумски RPC.</string>
     <string name="main_customRpc_details">Kizzy ви овозможува да создадете своја целосно прилагодлива
@@ -422,7 +422,7 @@
     <string name="update_download_error">Преузми</string>
     <string name="save_logs_to_file">Запиши дневници во датотека</string>
     <string name="rpc_hide_cover_art">Криј слики на омотачки</string>
-    <string name="rpc_hide_cover_art_desc">Прикажувај само текст кај сите RPC типови (медиумски, прилагоден, конзолен, експериментален). Омотачките нема да се појават на Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Прикажувај само текст кај сите RPC типови (медиумски, прилагоден, конзолен, Рачни). Омотачките нема да се појават на Discord.</string>
     <string name="rpc_default_cover_art_large">Стандардна голема омотачка</string>
     <string name="rpc_default_cover_art_large_desc">URL на слика што ќе се користи како голема омотачка кога известувањето нема омотачка</string>
     <string name="rpc_default_cover_art_small">Стандардна мала омотачка</string>

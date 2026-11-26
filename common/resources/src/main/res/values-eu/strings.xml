@@ -433,7 +433,7 @@
     <string name="update_download_error">Deskargatzea huts egin du. Saiatu berriro.</string>
     <string name="save_logs_to_file">Gorde logak fitxategian</string>
     <string name="rpc_hide_cover_art">Ezkutatu azal-irudiak</string>
-    <string name="rpc_hide_cover_art_desc">Erakutsi testua soilik RPC mota guztietan (multimedia, pertsonalizatua, kontsola, esperimentala). Azalak ez dira Discorden agertuko.</string>
+    <string name="rpc_hide_cover_art_desc">Erakutsi testua soilik RPC mota guztietan (multimedia, pertsonalizatua, kontsola, Eskuzko). Azalak ez dira Discorden agertuko.</string>
     <string name="rpc_default_cover_art_large">Azal handi lehenetsia</string>
     <string name="rpc_default_cover_art_large_desc">Irudiaren URLa azal handi gisa erabiltzeko jakinarazpenak azalik ez duenean</string>
     <string name="rpc_default_cover_art_small">Azal txiki lehenetsia</string>
@@ -536,7 +536,7 @@
     <string name="link_toArtistChannel_desc">Lotu artistaren kanalera</string>
     <string name="link_to_artistChannel">Lotu artistaren kanalera</string>
     <string name="link_to_artistChannel_desc">Lotu artistaren kanalera</string>
-    <string name="main_ManualRpcDetails">RPC esperimentala aplikazioen RPC eta multimedia RPC artean txandakatzen den ezaugarri bat da.</string>
+    <string name="main_ManualRpcDetails">RPC Eskuzko aplikazioen RPC eta multimedia RPC artean txandakatzen den ezaugarri bat da.</string>
     <string name="main_appDetectionDetails">Zure gailuan zein aplikazio martxan dagoen detektatzeko erabiltzen da</string>
     <string name="main_app_detection_details">Zure gailuan zein aplikazio martxan dagoen detektatzeko erabiltzen da</string>
     <string name="main_consoleRpcDetails">Aurrez definitutako txantiloiak erabiliz Discord egoera ezartzea ahalbidetzen du</string>

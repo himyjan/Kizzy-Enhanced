@@ -261,7 +261,7 @@
     <string name="main_consoleRpc">কনসোল আরপিসি</string>
     <string name="main_consoleRpc_details">Kizzy আপনাকে কিছু পূর্বনির্ধারিত প্রিসেট ব্যবহার করে
         Discord-এ আপনার উপস্থিতি সেট করতে দেয়।</string>
-    <string name="main_ManualRpc">এক্সপেরিমেন্টাল আরপিসি</string>
+    <string name="main_ManualRpc">ম্যানুয়াল আরপিসি</string>
     <string name="main_ManualRpc_details">ম্যানুয়াল RPC হলো Kizzy-এর একটি বৈশিষ্ট্য যা
         ক্রমাগত Apps RPC এবং Media RPC-এর মধ্যে বদলায়।</string>
     <string name="main_customRpc_details">Kizzy আপনাকে Discord-এর জন্য নিজস্ব সম্পূর্ণ কাস্টমাইজযোগ্য
@@ -423,7 +423,7 @@
     <string name="update_download_error">ডাউনলোড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন</string>
     <string name="save_logs_to_file">লগ ফাইলে সংরক্ষণ করুন</string>
     <string name="rpc_hide_cover_art">প্রচ্ছদ ছবি লুকান</string>
-    <string name="rpc_hide_cover_art_desc">সমস্ত RPC ধরনে (Media, Custom, Console, Experimental) শুধু পাঠ্য দেখান। প্রচ্ছদ Discord-এ দেখা যাবে না।</string>
+    <string name="rpc_hide_cover_art_desc">সমস্ত RPC ধরনে (Media, Custom, Console, ম্যানুয়াল) শুধু পাঠ্য দেখান। প্রচ্ছদ Discord-এ দেখা যাবে না।</string>
     <string name="rpc_default_cover_art_large">ডিফল্ট বড় প্রচ্ছদ</string>
     <string name="rpc_default_cover_art_large_desc">বিজ্ঞপ্তিতে প্রচ্ছদ না থাকলে বড় প্রচ্ছদ হিসেবে ব্যবহার করার ছবির URL</string>
     <string name="rpc_default_cover_art_small">ডিফল্ট ছোট প্রচ্ছদ</string>
@@ -526,7 +526,7 @@
     <string name="link_toArtistChannel_desc">শিল্পীর চ্যানেলের লিংক</string>
     <string name="link_to_artistChannel">শিল্পীর চ্যানেলের লিংক</string>
     <string name="link_to_artistChannel_desc">শিল্পীর চ্যানেলের লিংক</string>
-    <string name="main_ManualRpcDetails">Experimental RPC এমন একটি বৈশিষ্ট্য যা Apps RPC এবং Media RPC-এর মধ্যে ঘোরে।</string>
+    <string name="main_ManualRpcDetails">ম্যানুয়াল RPC এমন একটি বৈশিষ্ট্য যা Apps RPC এবং Media RPC-এর মধ্যে ঘোরে।</string>
     <string name="main_appDetectionDetails">আপনার ডিভাইসে কোন অ্যাপ চলছে তা সনাক্ত করতে ব্যবহৃত</string>
     <string name="main_app_detection_details">আপনার ডিভাইসে কোন অ্যাপ চলছে তা সনাক্ত করতে ব্যবহৃত</string>
     <string name="main_consoleRpcDetails">পূর্বনির্ধারিত প্রিসেট ব্যবহার করে Discord-এ আপনার উপস্থিতি সেট করতে দেয়</string>

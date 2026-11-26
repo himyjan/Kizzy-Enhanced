@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">Konzolové RPC</string>
     <string name="main_consoleRpc_details">Kizzy vám umožňuje použít předdefinované šablony pro
         nastavení vašeho stavu na Discordu.</string>
-    <string name="main_ManualRpc">Experimentální RPC</string>
+    <string name="main_ManualRpc">Manuální RPC</string>
     <string name="main_ManualRpc_details">Ruční RPC je funkce v Kizzy, která
         neustále přepíná mezi RPC aplikací a mediálním RPC.</string>
     <string name="main_customRpc_details">Kizzy vám umožňuje vytvořit vlastní plně přizpůsobitelný
@@ -422,7 +422,7 @@
     <string name="update_download_error">Stahování selhalo. Zkuste to znovu.</string>
     <string name="save_logs_to_file">Uložit protokoly do souboru</string>
     <string name="rpc_hide_cover_art">Skrýt obrázky obálky</string>
-    <string name="rpc_hide_cover_art_desc">Zobrazovat pouze text ve všech typech RPC (mediální, vlastní, konzolní, experimentální). Obálky se na Discordu nezobrazí.</string>
+    <string name="rpc_hide_cover_art_desc">Zobrazovat pouze text ve všech typech RPC (mediální, vlastní, konzolní, Manuální). Obálky se na Discordu nezobrazí.</string>
     <string name="rpc_default_cover_art_large">Výchozí velká obálka alba</string>
     <string name="rpc_default_cover_art_large_desc">URL obrázku, který se použije jako velká obálka, když oznámení nemá obálku</string>
     <string name="rpc_default_cover_art_small">Výchozí malá obálka alba</string>

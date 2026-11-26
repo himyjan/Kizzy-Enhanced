@@ -253,7 +253,7 @@
     <string name="main_customRpc">کاسٹم RPC</string>
     <string name="main_consoleRpc">کنسول RPC</string>
     <string name="main_consoleRpc_details">Kizzy آپ کو Discord پر اپنی موجودگی مقرر کرنے کے لیے کچھ پہلے سے مقرر پریسیٹس استعمال کرنے کی اجازت دیتا ہے۔</string>
-    <string name="main_ManualRpc">ایکسپیرمنٹل RPC</string>
+    <string name="main_ManualRpc">ہاتھ سے RPC</string>
     <string name="main_ManualRpc_details">منوئل RPC Kizzy میں ایک خصوصیت ہے جو ایپس RPC اور میڈیا RPC کے درمیان مسلسل تبدیل ہوتی ہے۔</string>
     <string name="main_customRpc_details">Kizzy آپ کو Discord کے لیے اپنا مکمل طور پر قابل تبدیل rich presence بنانے کی اجازت دیتا ہے۔</string>
     <string name="add_rpc_title">RPC شامل کریں</string>

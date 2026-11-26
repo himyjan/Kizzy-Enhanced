@@ -453,7 +453,7 @@
     <string name="save_logs_to_file">Songa amarekhodi kwifayela</string>
     <string name="rpc_hide_cover_art">Fihla Izithombe Zebhokisi</string>
     <string name="rpc_hide_cover_art_desc">Bonisa umbhalo kuphela kuzo zonke izinhlobo
-        ze-RPC (Media, Custom, Console, Experimental). Izibhokisi
+        ze-RPC (Media, Custom, Console, Manual). Izibhokisi
         ngeke zibonakale kwi-Discord.</string>
     <string name="rpc_default_cover_art_large">Ibhokisi Elikhulu Elizenzakalele</string>
     <string name="rpc_default_cover_art_large_desc">I-URL yesithombe esisetshenziswa njengesithombe
@@ -566,7 +566,7 @@
     <string name="link_toArtistChannel_desc">Ixhunywa kwisiteshi somculi</string>
     <string name="link_to_artistChannel">Ixhunywa kwisiteshi somculi</string>
     <string name="link_to_artistChannel_desc">Ixhunywa kwisiteshi somculi</string>
-    <string name="main_ManualRpcDetails">I-Experimental RPC inhlelo esiphethe phakathi
+    <string name="main_ManualRpcDetails">I-Manual RPC inhlelo esiphethe phakathi
         kwe-RPC ye-Apps ne-Media RPC.</string>
     <string name="main_appDetectionDetails">Isetshenziswa ukubona ukuthi iyiphi i-app
         esebenza esiteshini sakho</string>

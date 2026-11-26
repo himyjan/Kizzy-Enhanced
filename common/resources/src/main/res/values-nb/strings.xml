@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">Konsoll-RPC</string>
     <string name="main_consoleRpc_details">Med Kizzy kan du bruke noen forhåndsdefinerte innstillinger for å angi
         din tilstedeværelse på Discord.</string>
-    <string name="main_ManualRpc">Eksperimentell RPC</string>
+    <string name="main_ManualRpc">Manuell RPC</string>
     <string name="main_ManualRpc_details">Manuell RPC er en funksjon i Kizzy som
         veksler kontinuerlig mellom app-RPC og medie-RPC.</string>
     <string name="main_customRpc_details">Med Kizzy kan du lage din egen helt tilpassede
@@ -423,7 +423,7 @@
     <string name="update_download_error">Nedlasting mislyktes. Prøv igjen.</string>
     <string name="save_logs_to_file">Lagre loggene i en fil</string>
     <string name="rpc_hide_cover_art">Skjul omslagsbilder</string>
-    <string name="rpc_hide_cover_art_desc">Vis kun tekst for alle RPC-typer (medier, egendefinert, konsoll, eksperimentell). Omslag vises ikke på Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Vis kun tekst for alle RPC-typer (medier, egendefinert, konsoll, Manuell). Omslag vises ikke på Discord.</string>
     <string name="rpc_default_cover_art_large">Standard stort omslagsbilde</string>
     <string name="rpc_default_cover_art_large_desc">Bilde-URL som brukes som stort omslagsbilde når varselet ikke har et omslagsbilde</string>
     <string name="rpc_default_cover_art_small">Standard lite omslagsbilde</string>

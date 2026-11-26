@@ -434,7 +434,7 @@
     <string name="update_download_error">Спампоўванне не ўдалося. Паспрабуйце зноў.</string>
     <string name="save_logs_to_file">Захаваць журналы ў файл</string>
     <string name="rpc_hide_cover_art">Схаваць выявы абкладанак</string>
-    <string name="rpc_hide_cover_art_desc">"Паказваць толькі тэкст ва ўсіх тыпах RPC (Media, Custom, Console, Experimental). Абкладанкі не з'явяцца ў Discord."</string>
+    <string name="rpc_hide_cover_art_desc">"\"Паказваць толькі тэкст ва ўсіх тыпах RPC (Media, Custom, Console, Manual). Абкладанкі не з'явяцца ў Discord.\""</string>
     <string name="rpc_default_cover_art_large">Вялікая абкладанка па змаўчанні</string>
     <string name="rpc_default_cover_art_large_desc">URL выявы для вялікай абкладанкі, калі ў апавяшчэнні няма абкладанкі</string>
     <string name="rpc_default_cover_art_small">Малая абкладанка па змаўчанні</string>
@@ -537,7 +537,7 @@
     <string name="link_toArtistChannel_desc">Спасылка на канал выканаўцы</string>
     <string name="link_to_artistChannel">Спасылка на канал выканаўцы</string>
     <string name="link_to_artistChannel_desc">Спасылка на канал выканаўцы</string>
-    <string name="main_ManualRpcDetails">Experimental RPC — гэта функцыя, якая пераключаецца паміж Apps RPC і Media RPC.</string>
+    <string name="main_ManualRpcDetails">Manual RPC — гэта функцыя, якая пераключаецца паміж Apps RPC і Media RPC.</string>
     <string name="main_appDetectionDetails">Выкарыстоўваецца для выяўлення праграмы, якая працуе на вашай прыладзе</string>
     <string name="main_app_detection_details">Выкарыстоўваецца для выяўлення праграмы, якая працуе на вашай прыладзе</string>
     <string name="main_consoleRpcDetails">Дазваляе ўстанавіць вашу прысутнасць у Discord з дапамогай гатовых шаблонаў</string>

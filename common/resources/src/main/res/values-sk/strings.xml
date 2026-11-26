@@ -413,7 +413,7 @@
     <string name="update_download_error">Sťahovanie zlyhalo. Skúste to znova.</string>
     <string name="save_logs_to_file">Uložiť logy do súboru</string>
     <string name="rpc_hide_cover_art">Skryť obrázky obalov</string>
-    <string name="rpc_hide_cover_art_desc">Zobraziť iba text vo všetkých typoch RPC (Médiá, Vlastné, Koncové, Experimentálne). Obaly sa na Discorde nezobrazia.</string>
+    <string name="rpc_hide_cover_art_desc">Zobraziť iba text vo všetkých typoch RPC (Médiá, Vlastné, Koncové, Manuálne). Obaly sa na Discorde nezobrazia.</string>
     <string name="rpc_default_cover_art_large">Predvolený veľký obal</string>
     <string name="rpc_default_cover_art_large_desc">URL obrázka ako veľký obal, keď oznámenie nemá obal</string>
     <string name="rpc_default_cover_art_small">Predvolený malý obal</string>

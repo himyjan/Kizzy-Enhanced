@@ -266,7 +266,7 @@
     <string name="main_consoleRpc">คอนโซล RPC</string>
     <string name="main_consoleRpc_details">Kizzy ให้คุณใช้เทมเพลตที่กำหนดไว้ล่วงหน้าเพื่อตั้งค่า
         การมีอยู่ของคุณบน Discord</string>
-    <string name="main_ManualRpc">ทดลอง RPC</string>
+    <string name="main_ManualRpc">ควบคุมด้วยตนเอง RPC</string>
     <string name="main_ManualRpc_details">RPC แมนนวลเป็นฟีเจอร์ใน Kizzy ที่
         สลับระหว่าง RPC แอปและ RPC สื่ออย่างต่อเนื่อง</string>
     <string name="main_customRpc_details">Kizzy ให้คุณสร้าง rich presence ที่กำหนดเองได้อย่างเต็มที่
@@ -433,7 +433,7 @@
     <string name="update_download_error">ดาวน์โหลดไม่สำเร็จ ลองใหม่</string>
     <string name="save_logs_to_file">บันทึกล็อกลงไฟล์</string>
     <string name="rpc_hide_cover_art">ซ่อนภาพหน้าปก</string>
-    <string name="rpc_hide_cover_art_desc">แสดงข้อความเท่านั้นในทุกประเภท RPC (สื่อ, กำหนดเอง, คอนโซล, ทดลอง) หน้าปกจะไม่ปรากฏบน Discord</string>
+    <string name="rpc_hide_cover_art_desc">แสดงข้อความเท่านั้นในทุกประเภท RPC (สื่อ, กำหนดเอง, คอนโซล, ควบคุมด้วยตนเอง) หน้าปกจะไม่ปรากฏบน Discord</string>
     <string name="rpc_default_cover_art_large">หน้าปกขนาดใหญ่เริ่มต้น</string>
     <string name="rpc_default_cover_art_large_desc">URL ภาพที่ใช้เป็นหน้าปกขนาดใหญ่เมื่อการแจ้งเตือนไม่มีหน้าปก</string>
     <string name="rpc_default_cover_art_small">หน้าปกขนาดเล็กเริ่มต้น</string>

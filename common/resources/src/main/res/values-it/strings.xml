@@ -256,7 +256,7 @@
     <string name="main_consoleRpc">RPC console</string>
     <string name="main_consoleRpc_details">Kizzy ti consente di usare alcune configurazioni predefinite per impostare
         la tua presenza su Discord.</string>
-    <string name="main_ManualRpc">RPC sperimentale</string>
+    <string name="main_ManualRpc">RPC manuale</string>
     <string name="main_ManualRpc_details">RPC manuale è una funzione di Kizzy che
         passa continuamente da RPC app a RPC multimediale.</string>
     <string name="main_customRpc_details">Kizzy ti consente di creare la tua presenza avanzata
@@ -418,7 +418,7 @@
     <string name="update_download_error">Download fallito. Riprova.</string>
     <string name="save_logs_to_file">Salva i log in un file</string>
     <string name="rpc_hide_cover_art">Nascondi immagini di copertina</string>
-    <string name="rpc_hide_cover_art_desc">Mostra solo testo in tutti i tipi di RPC (multimediale, personalizzato, console, sperimentale). Le copertine non appariranno su Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Mostra solo testo in tutti i tipi di RPC (multimediale, personalizzato, console, manuale). Le copertine non appariranno su Discord.</string>
     <string name="rpc_default_cover_art_large">Copertina grande predefinita</string>
     <string name="rpc_default_cover_art_large_desc">"\"URL dell'immagine da usare come copertina grande quando la notifica non contiene una copertina\""</string>
     <string name="rpc_default_cover_art_small">Copertina piccola predefinita</string>

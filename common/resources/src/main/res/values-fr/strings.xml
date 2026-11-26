@@ -257,7 +257,7 @@
     <string name="main_consoleRpc">RPC console</string>
     <string name="main_consoleRpc_details">"\"Kizzy vous permet d\'utiliser des préréglages prédéfinis pour définir
         votre présence sur Discord.\""</string>
-    <string name="main_ManualRpc">RPC expérimental</string>
+    <string name="main_ManualRpc">RPC manuel</string>
     <string name="main_ManualRpc_details">Le RPC manuel est une fonctionnalité de Kizzy qui
         bascule en permanence entre le RPC des applications et le RPC média.</string>
     <string name="main_customRpc_details">Kizzy vous permet de créer votre propre Rich Presence
@@ -420,7 +420,7 @@
     <string name="update_download_error">Échec du téléchargement. Veuillez réessayer.</string>
     <string name="save_logs_to_file">Enregistrer les journaux dans un fichier</string>
     <string name="rpc_hide_cover_art">Masquer les pochettes</string>
-    <string name="rpc_hide_cover_art_desc">"\"Afficher uniquement le texte pour tous les types de RPC (média, personnalisé, console, expérimental). Les pochettes n\'apparaîtront pas sur Discord.\""</string>
+    <string name="rpc_hide_cover_art_desc">"\"\"Afficher uniquement le texte pour tous les types de RPC (média, personnalisé, console, manuel). Les pochettes n'apparaîtront pas sur Discord.\"\""</string>
     <string name="rpc_default_cover_art_large">Grande pochette par défaut</string>
     <string name="rpc_default_cover_art_large_desc">"\"URL de l\'image à utiliser comme grande pochette lorsque la notification n\'a pas de pochette\""</string>
     <string name="rpc_default_cover_art_small">Petite pochette par défaut</string>

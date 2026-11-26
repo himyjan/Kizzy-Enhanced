@@ -259,7 +259,7 @@
     <string name="main_consoleRpc">RPC bảng điều khiển</string>
     <string name="main_consoleRpc_details">Kizzy cho phép bạn dùng một số mẫu có sẵn để thiết lập
         hiển thị của mình trên Discord.</string>
-    <string name="main_ManualRpc">RPC thử nghiệm</string>
+    <string name="main_ManualRpc">RPC thủ công</string>
     <string name="main_ManualRpc_details">RPC thủ công là tính năng trong Kizzy
         luôn chuyển đổi giữa Apps RPC và Media RPC.</string>
     <string name="main_customRpc_details">Kizzy cho phép bạn tạo rich presence hoàn toàn tùy chỉnh

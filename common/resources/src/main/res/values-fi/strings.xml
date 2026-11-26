@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">Konsoli-RPC</string>
     <string name="main_consoleRpc_details">Kizzy antaa sinun käyttää valmiita esiasetuksia
         Discord-läsnäolosi asettamiseen.</string>
-    <string name="main_ManualRpc">Kokeellinen RPC</string>
+    <string name="main_ManualRpc">Manuaalinen RPC</string>
     <string name="main_ManualRpc_details">Manuaalinen RPC on Kizzyn ominaisuus, joka
         vaihtaa jatkuvasti sovellusten RPC:n ja media-RPC:n välillä.</string>
     <string name="main_customRpc_details">Kizzy antaa sinun luoda täysin mukautetun

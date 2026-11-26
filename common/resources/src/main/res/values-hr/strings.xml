@@ -266,7 +266,7 @@
     <string name="main_consoleRpc">Konzolni RPC</string>
     <string name="main_consoleRpc_details">Kizzy vam omogućuje korištenje unaprijed definiranih predpostavki za
         postavljanje vašeg statusa na Discordu.</string>
-    <string name="main_ManualRpc">Eksperimentalan RPC</string>
+    <string name="main_ManualRpc">Ručni RPC</string>
     <string name="main_ManualRpc_details">Ručni RPC značajka je Kizzyja koja neprestano
         prebacuje između RPC-a za aplikacije i medijskog RPC-a.</string>
     <string name="main_customRpc_details">Kizzy vam omogućuje stvaranje vlastitog potpuno prilagodljivog
@@ -434,7 +434,7 @@
     <string name="update_download_error">Preuzimanje nije uspjelo. Pokušajte ponovno.</string>
     <string name="save_logs_to_file">Spremi zapise u datoteku</string>
     <string name="rpc_hide_cover_art">Sakrij slike naslovnica</string>
-    <string name="rpc_hide_cover_art_desc">Prikaži samo tekst za sve vrste RPC-a (medijski, prilagođeni, konzolni, eksperimentalni). Naslovnice se neće prikazivati na Discordu.</string>
+    <string name="rpc_hide_cover_art_desc">Prikaži samo tekst za sve vrste RPC-a (medijski, prilagođeni, konzolni, Ručni). Naslovnice se neće prikazivati na Discordu.</string>
     <string name="rpc_default_cover_art_large">Zadana velika naslovnica</string>
     <string name="rpc_default_cover_art_large_desc">URL slike koji se koristi kao velika naslovnica kada obavijest nema naslovnicu</string>
     <string name="rpc_default_cover_art_small">Zadana mala naslovnica</string>
@@ -537,7 +537,7 @@
     <string name="link_toArtistChannel_desc">Poveznica na kanal izvođača</string>
     <string name="link_to_artistChannel">Poveznica na kanal izvođača</string>
     <string name="link_to_artistChannel_desc">Poveznica na kanal izvođača</string>
-    <string name="main_ManualRpcDetails">Eksperimentalni RPC značajka je koja se izmjenjuje između RPC-a za aplikacije i medijskog RPC-a.</string>
+    <string name="main_ManualRpcDetails">Ručni RPC značajka je koja se izmjenjuje između RPC-a za aplikacije i medijskog RPC-a.</string>
     <string name="main_appDetectionDetails">Koristi se za otkrivanje aplikacije koja se pokreće na vašem uređaju</string>
     <string name="main_app_detection_details">Koristi se za otkrivanje aplikacije koja se pokreće na vašem uređaju</string>
     <string name="main_consoleRpcDetails">Omogućuje postavljanje vašeg Discord statusa pomoću unaprijed definiranih predpostavki</string>

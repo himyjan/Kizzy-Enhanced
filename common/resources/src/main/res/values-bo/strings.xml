@@ -536,7 +536,7 @@
     <string name="link_toArtistChannel_desc">གླུ་བའི་ཁ་ལོང་དུ་འབྲེལ་མཚུངས།</string>
     <string name="link_to_artistChannel">གླུ་བའི་ཁ་ལོང་དུ་འབྲེལ་མཚུངས།</string>
     <string name="link_to_artistChannel_desc">གླུ་བའི་ཁ་ལོང་དུ་འབྲེལ་མཚུངས།</string>
-    <string name="main_ManualRpcDetails">Experimental RPC་ནི་Apps RPC་དང་མེ་ཌི་ཡའི་ RPC་བར་དུ་བསྐོར་བའི་ལག་རྩལ་ཤིག་རེད།</string>
+    <string name="main_ManualRpcDetails">ལག་བཟོའི་ RPC་ནི་Apps RPC་དང་མེ་ཌི་ཡའི་ RPC་བར་དུ་བསྐོར་བའི་ལག་རྩལ་ཤིག་རེད།</string>
     <string name="main_appDetectionDetails">ཁྱེད་ཀྱི་འཕྲུལ་ཆས་ནང་རྒྱུགས་མེད་ག་རེ་འཁྲུལ་ཡོད་པ་མཐོང་རྟགས་བྱེད་པར་བཀོལ་གྱི་ཡོད།</string>
     <string name="main_app_detection_details">ཁྱེད་ཀྱི་འཕྲུལ་ཆས་ནང་རྒྱུགས་མེད་ག་རེ་འཁྲུལ་ཡོད་པ་མཐོང་རྟགས་བྱེད་པར་བཀོལ་གྱི་ཡོད།</string>
     <string name="main_consoleRpcDetails">སྔོན་གྱིས་བཟོས་པའི་རང་བཞིན་གྱི་ཕྱོགས་བསྡུས་བཀོལ་ནས་ཁྱེད་ཀྱི་ Discord་གནས་སྟངས་འདུག་གནས་བཟོ་བར་ཆོག་པ་བྱེད་ཀྱི་ཡོད།</string>

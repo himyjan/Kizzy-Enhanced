@@ -253,7 +253,7 @@
     <string name="main_customRpc">Власний RPC</string>
     <string name="main_consoleRpc">Консоль RPC</string>
     <string name="main_consoleRpc_details">Kizzy дозволяє використовувати деякі попередньо налаштовані налаштування, щоб встановити вашу присутність на Discord.</string>
-    <string name="main_ManualRpc">Експериментальний RPC</string>
+    <string name="main_ManualRpc">Ручний RPC</string>
     <string name="main_ManualRpc_details">Експериментальний RPC — це функція Kizzy, яка постійно перемикається між Apps RPC та Media RPC.</string>
     <string name="main_customRpc_details">Kizzy дозволяє створити повністю налаштовану rich presence для Discord.</string>
     <string name="add_rpc_title">Додати RPC</string>
@@ -412,7 +412,7 @@
     <string name="update_download_error">Завантаження не вдалося. Спробуйте ще раз.</string>
     <string name="save_logs_to_file">Зберегти журнали у файл</string>
     <string name="rpc_hide_cover_art">Приховати зображення обкладинок</string>
-    <string name="rpc_hide_cover_art_desc">"Показувати лише текст для всіх типів RPC (медіа, власний, консольний, експериментальний). Обкладинки не з'являтимуться в Discord."</string>
+    <string name="rpc_hide_cover_art_desc">"\"Показувати лише текст для всіх типів RPC (медіа, власний, консольний, Ручний). Обкладинки не з'являтимуться в Discord.\""</string>
     <string name="rpc_default_cover_art_large">Стандартна велика обкладинка</string>
     <string name="rpc_default_cover_art_large_desc">URL зображення як велика обкладинка, коли сповіщення не має обкладинки</string>
     <string name="rpc_default_cover_art_small">Стандартна мала обкладинка</string>

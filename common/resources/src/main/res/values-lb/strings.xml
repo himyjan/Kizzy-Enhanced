@@ -412,7 +412,7 @@
     <string name="update_download_error">Eroflueden fehlgeschlagen. Probéiert et nach eng Kéier.</string>
     <string name="save_logs_to_file">Protokoller an eng Datei späicheren</string>
     <string name="rpc_hide_cover_art">Umschlag-Biller verstoppen</string>
-    <string name="rpc_hide_cover_art_desc">Nëmmen Text bei allen RPC-Typen weisen (Medien, Personaliséiert, Konsoll, Experimentell). Umschläg erschéngen net op Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Nëmmen Text bei allen RPC-Typen weisen (Medien, Personaliséiert, Konsoll, Manuell). Umschläg erschéngen net op Discord.</string>
     <string name="rpc_default_cover_art_large">Standard grouss Umschlag</string>
     <string name="rpc_default_cover_art_large_desc">"Bild-URL, déi als grouss Umschlag benotzt gëtt, wann d'Notifikatioun kee Umschlag huet"</string>
     <string name="rpc_default_cover_art_small">Standard kleng Umschlag</string>

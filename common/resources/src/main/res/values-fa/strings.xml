@@ -266,7 +266,7 @@
     <string name="main_consoleRpc">RPC کنسول</string>
     <string name="main_consoleRpc_details">Kizzy به شما اجازه میدهد از برخی الگوهای از پیش تعریف شده برای تنظیم
         وضعیت خود در Discord استفاده کنید.</string>
-    <string name="main_ManualRpc">RPC آزمایشی</string>
+    <string name="main_ManualRpc">RPC دستی</string>
     <string name="main_ManualRpc_details">RPC دستی قابلیتی در Kizzy است که به طور مداوم
         بین RPC برنامهها و RPC رسانه جابهجا میشود.</string>
     <string name="main_customRpc_details">Kizzy به شما اجازه میدهد Rich Presence کاملاً سفارشی خود را برای Discord
@@ -536,7 +536,7 @@
     <string name="link_toArtistChannel_desc">پیوند به کانال هنرمند</string>
     <string name="link_to_artistChannel">پیوند به کانال هنرمند</string>
     <string name="link_to_artistChannel_desc">پیوند به کانال هنرمند</string>
-    <string name="main_ManualRpcDetails">RPC آزمایشی قابلیتی است که بین RPC برنامهها و RPC رسانه چرخش میکند.</string>
+    <string name="main_ManualRpcDetails">RPC دستی قابلیتی است که بین RPC برنامهها و RPC رسانه چرخش میکند.</string>
     <string name="main_appDetectionDetails">برای تشخیص اینکه کدام برنامه در دستگاه شما در حال اجرا است استفاده میشود</string>
     <string name="main_app_detection_details">برای تشخیص اینکه کدام برنامه در دستگاه شما در حال اجرا است استفاده میشود</string>
     <string name="main_consoleRpcDetails">امکان تنظیم وضعیت Discord شما با استفاده از الگوهای از پیش تعریف شده را فراهم میکند</string>

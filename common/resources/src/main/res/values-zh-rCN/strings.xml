@@ -253,7 +253,7 @@
     <string name="main_customRpc">自定义 RPC</string>
     <string name="main_consoleRpc">主机 RPC</string>
     <string name="main_consoleRpc_details">Kizzy 允许您使用一些预设模板在 Discord 上设置您的在线状态。</string>
-    <string name="main_ManualRpc">实验性 RPC</string>
+    <string name="main_ManualRpc">手动 RPC</string>
     <string name="main_ManualRpc_details">手动 RPC 是 Kizzy 中的一项功能，可在应用 RPC 和媒体 RPC 之间不断切换。</string>
     <string name="main_customRpc_details">Kizzy 允许您为 Discord 创建完全自定义的丰富在线状态。</string>
     <string name="add_rpc_title">添加 RPC</string>

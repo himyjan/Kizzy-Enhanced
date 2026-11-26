@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">RPC κονσόλας</string>
     <string name="main_consoleRpc_details">Το Kizzy σάς επιτρέπει να χρησιμοποιήσετε προκαθορισμένα πρότυπα για να ορίσετε
         την παρουσία σας στο Discord.</string>
-    <string name="main_ManualRpc">Πειραματικό RPC</string>
+    <string name="main_ManualRpc">Χειροκίνητο RPC</string>
     <string name="main_ManualRpc_details">Το χειροκίνητο RPC είναι μια δυνατότητα του Kizzy που
         εναλλάσσεται συνεχώς μεταξύ RPC εφαρμογών και RPC πολυμέσων.</string>
     <string name="main_customRpc_details">Το Kizzy σάς επιτρέπει να δημιουργήσετε τη δική σας πλήρως προσαρμόσιμη

@@ -253,7 +253,7 @@
     <string name="main_customRpc">RPC מותאם אישית</string>
     <string name="main_consoleRpc">קונסולה RPC</string>
     <string name="main_consoleRpc_details">Kizzy מאפשר לך להשתמש בכמה פריסטים מוגדרים מראש כדי להגדיר את הנוכחות שלך ב-Discord.</string>
-    <string name="main_ManualRpc">RPC ניסיוני</string>
+    <string name="main_ManualRpc">RPC ידני</string>
     <string name="main_ManualRpc_details">RPC ידני הוא תכונה ב-Kizzy שמחליפה ללא הרף בין RPC לאפליקציות ל-RPC מדיה.</string>
     <string name="main_customRpc_details">Kizzy מאפשר לך ליצור נוכחות עשירה משלך, הניתנת להתאמה מלאה, עבור Discord.</string>
     <string name="add_rpc_title">הוסף RPC</string>

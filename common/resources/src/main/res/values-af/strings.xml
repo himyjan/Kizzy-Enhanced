@@ -413,7 +413,7 @@
     <string name="update_download_error">Aflaai het gefaal. Probeer weer.</string>
     <string name="save_logs_to_file">Logboeke na lêer stuur</string>
     <string name="rpc_hide_cover_art">Versteek omslagkunsbeelde</string>
-    <string name="rpc_hide_cover_art_desc">Wys net teks oor alle RPC-tipes (Media, Eie, Konsool, Eksperimenteel). Omslae sal nie op Discord verskyn nie.</string>
+    <string name="rpc_hide_cover_art_desc">Wys net teks oor alle RPC-tipes (Media, Eie, Konsool, Handmatige). Omslae sal nie op Discord verskyn nie.</string>
     <string name="rpc_default_cover_art_large">Standaard groot omslagkuns</string>
     <string name="rpc_default_cover_art_large_desc">Beeld-URL om as groot omslagkuns te gebruik wanneer die kennisgewing geen omslagkuns het nie</string>
     <string name="rpc_default_cover_art_small">Standaard klein omslagkuns</string>
@@ -516,7 +516,7 @@
     <string name="link_toArtistChannel_desc">Skakel na kanaal van kunstenaar</string>
     <string name="link_to_artistChannel">Skakel na kanaal van kunstenaar</string>
     <string name="link_to_artistChannel_desc">Skakel na kanaal van kunstenaar</string>
-    <string name="main_ManualRpcDetails">"Eksperimentele RPC is 'n funksie wat wissel tussen Apps RPC en Media RPC."</string>
+    <string name="main_ManualRpcDetails">"\"Handmatige RPC is 'n funksie wat wissel tussen Apps RPC en Media RPC.\""</string>
     <string name="main_appDetectionDetails">Word gebruik om te bepaal watter app op jou toestel loop</string>
     <string name="main_app_detection_details">Word gebruik om te bepaal watter app op jou toestel loop</string>
     <string name="main_consoleRpcDetails">Laat jou Discord-teenwoordigheid met voorgedefinieerde voorafstellings stel</string>

@@ -253,7 +253,7 @@
     <string name="main_customRpc">RPC personalizado</string>
     <string name="main_consoleRpc">RPC de consola</string>
     <string name="main_consoleRpc_details">Kizzy te permite usar algunos ajustes predefinidos para establecer tu presencia en Discord.</string>
-    <string name="main_ManualRpc">RPC experimental</string>
+    <string name="main_ManualRpc">RPC manual</string>
     <string name="main_ManualRpc_details">Manual RPC es una característica en Kizzy que cambia constantemente entre Apps RPC y Media RPC.</string>
     <string name="main_customRpc_details">Kizzy te permite crear tu propia presencia rica totalmente personalizable para Discord.</string>
     <string name="add_rpc_title">Añadir RPC</string>
@@ -412,7 +412,7 @@
     <string name="update_download_error">Descarga falló. Inténtalo de nuevo.</string>
     <string name="save_logs_to_file">Guardar registros en un archivo</string>
     <string name="rpc_hide_cover_art">Ocultar imágenes de portada</string>
-    <string name="rpc_hide_cover_art_desc">Mostrar solo texto en todos los tipos de RPC (multimedia, personalizada, consola, experimental). Las portadas no aparecerán en Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Mostrar solo texto en todos los tipos de RPC (multimedia, personalizada, consola, manual). Las portadas no aparecerán en Discord.</string>
     <string name="rpc_default_cover_art_large">Portada grande predeterminada</string>
     <string name="rpc_default_cover_art_large_desc">URL de imagen que usar como portada grande cuando la notificación no tenga portada</string>
     <string name="rpc_default_cover_art_small">Portada pequeña predeterminada</string>

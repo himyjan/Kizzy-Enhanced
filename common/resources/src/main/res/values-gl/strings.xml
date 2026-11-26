@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">RPC de consola</string>
     <string name="main_consoleRpc_details">Kizzy permíteche usar algunhas predefinicións para establecer
         a túa presenza en Discord.</string>
-    <string name="main_ManualRpc">RPC experimental</string>
+    <string name="main_ManualRpc">RPC manual</string>
     <string name="main_ManualRpc_details">O RPC manual é unha función de Kizzy que
         alterna constantemente entre o RPC das aplicacións e o RPC de multimedia.</string>
     <string name="main_customRpc_details">Kizzy permíteche crear a túa propia Rich Presence
@@ -423,7 +423,7 @@
     <string name="update_download_error">A descarga fallou. Proba de novo.</string>
     <string name="save_logs_to_file">Gardar os rexistros nun ficheiro</string>
     <string name="rpc_hide_cover_art">Ocultar imaxes das portadas</string>
-    <string name="rpc_hide_cover_art_desc">Mostrar só texto en todos os tipos de RPC (multimedia, personalizado, consola, experimental). As portadas non aparecerán en Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Mostrar só texto en todos os tipos de RPC (multimedia, personalizado, consola, manual). As portadas non aparecerán en Discord.</string>
     <string name="rpc_default_cover_art_large">Portada grande predeterminada</string>
     <string name="rpc_default_cover_art_large_desc">URL da imaxe para usar como portada grande cando a notificación non ten portada</string>
     <string name="rpc_default_cover_art_small">Portada pequena predeterminada</string>

@@ -257,7 +257,7 @@
     <string name="main_consoleRpc">コンソール RPC</string>
     <string name="main_consoleRpc_details">Kizzyを使用すると、定義済みのプリセットで
         Discordのプレゼンスを設定できます。</string>
-    <string name="main_ManualRpc">実験的 RPC</string>
+    <string name="main_ManualRpc">手動 RPC</string>
     <string name="main_ManualRpc_details">マニュアルRPCは、アプリRPCとメディアRPCを
         継続的に切り替えるKizzyの機能です。</string>
     <string name="main_customRpc_details">Kizzyを使用すると、Discord用の完全にカスタマイズ可能な
@@ -420,7 +420,7 @@
     <string name="update_download_error">ダウンロードに失敗しました。もう一度お試しください。</string>
     <string name="save_logs_to_file">ログをファイルに保存</string>
     <string name="rpc_hide_cover_art">カバーアート画像を非表示</string>
-    <string name="rpc_hide_cover_art_desc">すべてのRPCの種類（メディア、カスタム、コンソール、実験的）でテキストのみを表示します。カバーはDiscordに表示されません。</string>
+    <string name="rpc_hide_cover_art_desc">すべてのRPCの種類（メディア、カスタム、コンソール、手動）でテキストのみを表示します。カバーはDiscordに表示されません。</string>
     <string name="rpc_default_cover_art_large">デフォルトの大きなカバーアート</string>
     <string name="rpc_default_cover_art_large_desc">通知にカバーアートがない場合に大きなカバーアートとして使用する画像URL</string>
     <string name="rpc_default_cover_art_small">デフォルトの小さなカバーアート</string>

@@ -515,7 +515,7 @@
     <string name="link_toArtistChannel_desc">連結至藝人頻道</string>
     <string name="link_to_artistChannel">連結至藝人頻道</string>
     <string name="link_to_artistChannel_desc">連結至藝人頻道</string>
-    <string name="main_ManualRpcDetails">實驗性 RPC 是一項在應用程式 RPC 與媒體 RPC 之間輪替的功能。</string>
+    <string name="main_ManualRpcDetails">手動 RPC 是一項在應用程式 RPC 與媒體 RPC 之間輪替的功能。</string>
     <string name="main_appDetectionDetails">用於偵測裝置上正在執行的應用程式</string>
     <string name="main_app_detection_details">用於偵測裝置上正在執行的應用程式</string>
     <string name="main_consoleRpcDetails">允許使用預設設定您的 Discord 狀態</string>

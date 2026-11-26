@@ -427,7 +427,7 @@
     <string name="update_download_error">Preuzimanje nije uspjelo. Pokušajte ponovo.</string>
     <string name="save_logs_to_file">Sačuvaj logove u datoteku</string>
     <string name="rpc_hide_cover_art">Sakrij slike naslovnica</string>
-    <string name="rpc_hide_cover_art_desc">Prikazuj samo tekst u svim vrstama RPC-a (medijski, prilagođeni, konzolni, eksperimentalni). Naslovnice se neće prikazivati na Discordu.</string>
+    <string name="rpc_hide_cover_art_desc">Prikazuj samo tekst u svim vrstama RPC-a (medijski, prilagođeni, konzolni, Ručni). Naslovnice se neće prikazivati na Discordu.</string>
     <string name="rpc_default_cover_art_large">Zadana velika naslovnica</string>
     <string name="rpc_default_cover_art_large_desc">URL slike koji će se koristiti kao velika naslovnica kada obavještenje nema naslovnicu</string>
     <string name="rpc_default_cover_art_small">Zadana mala naslovnica</string>
@@ -530,7 +530,7 @@
     <string name="link_toArtistChannel_desc">Veza ka kanalu izvođača</string>
     <string name="link_to_artistChannel">Veza ka kanalu izvođača</string>
     <string name="link_to_artistChannel_desc">Veza ka kanalu izvođača</string>
-    <string name="main_ManualRpcDetails">Eksperimentalni RPC je značajka koja se izmjenjuje između RPC-a aplikacija i medijskog RPC-a.</string>
+    <string name="main_ManualRpcDetails">Ručni RPC je značajka koja se izmjenjuje između RPC-a aplikacija i medijskog RPC-a.</string>
     <string name="main_appDetectionDetails">Koristi se za otkrivanje koja aplikacija radi na vašem uređaju</string>
     <string name="main_app_detection_details">Koristi se za otkrivanje koja aplikacija radi na vašem uređaju</string>
     <string name="main_consoleRpcDetails">Omogućava postavljanje vašeg Discord prisustva pomoću unaprijed definiranih predložaka</string>

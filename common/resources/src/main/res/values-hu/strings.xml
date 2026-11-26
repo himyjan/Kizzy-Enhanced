@@ -253,7 +253,7 @@
     <string name="main_customRpc">Egyedi RPC</string>
     <string name="main_consoleRpc">Konzol RPC</string>
     <string name="main_consoleRpc_details">A Kizzy lehetővé teszi, hogy előre meghatározott beállításokkal állítsa jelenlétét a Discordon.</string>
-    <string name="main_ManualRpc">Kísérleti RPC</string>
+    <string name="main_ManualRpc">Kézi RPC</string>
     <string name="main_ManualRpc_details">A Kísérleti RPC a Kizzy funkciója, amely folyamatosan váltakozik az Apps RPC és a Média RPC között.</string>
     <string name="main_customRpc_details">A Kizzy lehetővé teszi, hogy teljesen testreszabható riche-presencét hozzon létre a Discordon.</string>
     <string name="add_rpc_title">RPC hozzáadása</string>

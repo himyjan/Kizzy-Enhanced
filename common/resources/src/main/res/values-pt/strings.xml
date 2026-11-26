@@ -256,7 +256,7 @@
     <string name="main_consoleRpc">RPC de consola</string>
     <string name="main_consoleRpc_details">O Kizzy permite usar algumas predefinições para definir
         sua presença no Discord.</string>
-    <string name="main_ManualRpc">RPC experimental</string>
+    <string name="main_ManualRpc">RPC manual</string>
     <string name="main_ManualRpc_details">O RPC manual é um recurso do Kizzy que
         alterna constantemente entre RPC de aplicativos e RPC de mídia.</string>
     <string name="main_customRpc_details">O Kizzy permite criar sua própria Rich Presence totalmente personalizável
@@ -417,7 +417,7 @@
     <string name="update_download_error">Falha no download. Tente novamente.</string>
     <string name="save_logs_to_file">Guardar registos num ficheiro</string>
     <string name="rpc_hide_cover_art">Ocultar imagens de capa</string>
-    <string name="rpc_hide_cover_art_desc">Exibir apenas texto em todos os tipos de RPC (mídia, personalizado, console, experimental). As capas não aparecerão no Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Exibir apenas texto em todos os tipos de RPC (mídia, personalizado, console, manual). As capas não aparecerão no Discord.</string>
     <string name="rpc_default_cover_art_large">Capa grande padrão</string>
     <string name="rpc_default_cover_art_large_desc">URL da imagem a usar como capa grande quando a notificação não tiver capa</string>
     <string name="rpc_default_cover_art_small">Capa pequena padrão</string>

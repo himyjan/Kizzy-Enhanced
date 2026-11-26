@@ -253,7 +253,7 @@
     <string name="main_customRpc">Anpassad RPC</string>
     <string name="main_consoleRpc">Konsol-RPC</string>
     <string name="main_consoleRpc_details">Kizzy låter dig använda några fördefinerade förinställningar för att ställa in din närvaro på Discord.</string>
-    <string name="main_ManualRpc">Experimentell RPC</string>
+    <string name="main_ManualRpc">Manuell RPC</string>
     <string name="main_ManualRpc_details">Manuell RPC är en funktion i Kizzy som konstant växlar mellan app-RPC och media-RPC.</string>
     <string name="main_customRpc_details">Kizzy låter dig skapa din egen helt anpassningsbara rich presence för Discord.</string>
     <string name="add_rpc_title">Lägg till RPC</string>
@@ -414,7 +414,7 @@
     <string name="update_download_error">Nedladdningen misslyckades. Försök igen.</string>
     <string name="save_logs_to_file">Spara loggar i en fil</string>
     <string name="rpc_hide_cover_art">Dölj omslagsbilder</string>
-    <string name="rpc_hide_cover_art_desc">Visa endast text i alla RPC-typer (Media, Anpassad, Konsol, Experimentell). Omslag visas inte på Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Visa endast text i alla RPC-typer (Media, Anpassad, Konsol, Manuell). Omslag visas inte på Discord.</string>
     <string name="rpc_default_cover_art_large">Standard stort omslag</string>
     <string name="rpc_default_cover_art_large_desc">Bild-URL att använda som stort omslag när aviseringen saknar omslag</string>
     <string name="rpc_default_cover_art_small">Standard litet omslag</string>

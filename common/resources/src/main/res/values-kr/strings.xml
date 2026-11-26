@@ -266,7 +266,7 @@
     <string name="main_consoleRpc">콘솔 RPC</string>
     <string name="main_consoleRpc_details">Kizzy ಪೂರ್ವನಿರ್ಧರಿತ ಪ್ರಿಸೆಟ್‍ಗಳನ್ನು ಬಳಸಿ Discord ನಲ್ಲಿ ನಿಮ್ಮ ಉಪಸ್ಥಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಅನುವು ಮಾಡಿಕೊಡುತ್ತದೆ.
         </string>
-    <string name="main_ManualRpc">실험적 RPC</string>
+    <string name="main_ManualRpc">수동 RPC</string>
     <string name="main_ManualRpc_details">ಮ್ಯಾನುಯಲ್ RPC ಎನ್ನುವುದು ಅಪ್ಲಿಕೇಶನ್ RPC ಮತ್ತು ಮೀಡಿಯಾ RPC ನಡುವೆ ನಿರಂತರವಾಗಿ ಬದಲಾಗುವ Kizzy ವೈಶಿಷ್ಟ್ಯವಾಗಿದೆ.
         </string>
     <string name="main_customRpc_details">Kizzy ನಿಮಗೆ Discord ಗಾಗಿ ಸಂಪೂರ್ಣ ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ರಿಚ್ ಪ್ರೆಸೆನ್ಸ್ ಅನ್ನು ರಚಿಸಲು ಅನುವು ಮಾಡಿಕೊಡುತ್ತದೆ.

@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">Konsolen-RPC</string>
     <string name="main_consoleRpc_details">Mit Kizzy kannst du vordefinierte Presets verwenden, um
         deine Präsenz auf Discord festzulegen.</string>
-    <string name="main_ManualRpc">Experimentelles RPC</string>
+    <string name="main_ManualRpc">Manuelles RPC</string>
     <string name="main_ManualRpc_details">Manuelles RPC ist eine Funktion in Kizzy, die
         ständig zwischen Apps-RPC und Media-RPC wechselt.</string>
     <string name="main_customRpc_details">Mit Kizzy kannst du deine eigene vollständig anpassbare
@@ -422,7 +422,7 @@
     <string name="update_download_error">Download fehlgeschlagen. Bitte erneut versuchen.</string>
     <string name="save_logs_to_file">Protokolle in Datei speichern</string>
     <string name="rpc_hide_cover_art">Cover-Bilder ausblenden</string>
-    <string name="rpc_hide_cover_art_desc">In allen RPC-Typen (Medien, Benutzerdefiniert, Konsole, Experimentell) nur Text anzeigen. Cover werden auf Discord nicht angezeigt.</string>
+    <string name="rpc_hide_cover_art_desc">In allen RPC-Typen (Medien, Benutzerdefiniert, Konsole, Manuelles) nur Text anzeigen. Cover werden auf Discord nicht angezeigt.</string>
     <string name="rpc_default_cover_art_large">Standardmäßiges großes Cover-Bild</string>
     <string name="rpc_default_cover_art_large_desc">Bild-URL, die als großes Cover-Bild verwendet wird, wenn die Benachrichtigung kein Cover enthält</string>
     <string name="rpc_default_cover_art_small">Standardmäßiges kleines Cover-Bild</string>

@@ -260,7 +260,7 @@
     <string name="main_consoleRpc">Konsoles RPC</string>
     <string name="main_consoleRpc_details">Kizzy ļauj izmantot iepriekš definētus priekšiestatījumus, lai iestatītu
         savu klātbūtni Discord.</string>
-    <string name="main_ManualRpc">Eksperimentālais RPC</string>
+    <string name="main_ManualRpc">Ranka RPC</string>
     <string name="main_ManualRpc_details">Manuālais RPC ir Kizzy funkcija, kas
         pastāvīgi pārslēdzas starp lietotņu RPC un multivides RPC.</string>
     <string name="main_customRpc_details">Kizzy ļauj izveidot savu pilnībā pielāgojamu
@@ -423,7 +423,7 @@
     <string name="update_download_error">Lejuplāde neizdevās. Mēģini atkārtoti.</string>
     <string name="save_logs_to_file">Saglabāt žurnālus failā</string>
     <string name="rpc_hide_cover_art">Slēpt vāka attēlus</string>
-    <string name="rpc_hide_cover_art_desc">Rādīt tikai tekstu visos RPC veidos (multivides, pielāgotais, konsoles, eksperimentālais). Vāki neparādīsies Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Rādīt tikai tekstu visos RPC veidos (multivides, pielāgotais, konsoles, Ranka). Vāki neparādīsies Discord.</string>
     <string name="rpc_default_cover_art_large">Noklusējuma lielais vāka attēls</string>
     <string name="rpc_default_cover_art_large_desc">Attēla URL, ko izmantot kā lielo vāku, ja paziņojumam nav vāka attēla</string>
     <string name="rpc_default_cover_art_small">Noklusējuma mazais vāka attēls</string>

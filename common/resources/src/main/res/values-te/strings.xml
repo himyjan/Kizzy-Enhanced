@@ -253,7 +253,7 @@
     <string name="main_customRpc">కస్టమ్ RPC</string>
     <string name="main_consoleRpc">కాన్సోల్ RPC</string>
     <string name="main_consoleRpc_details">Kizzy Discord‌పై మీ ప్రెజెన్స్‌ను సెట్ చేయడానికి కొన్ని ముందుగా నిర్వచించిన ప్రీసెట్‌లను ఉపయోగించడానికి అనుమతిస్తుంది.</string>
-    <string name="main_ManualRpc">ఎక్స్‌పెరీమెంటల్ RPC</string>
+    <string name="main_ManualRpc">మాన్యువల్ RPC</string>
     <string name="main_ManualRpc_details">మాన్యువల్ RPC అనేది యాప్‌ల RPC మరియు మీడియా RPC మధ్య నిరంతరం మారే Kizzy లక్షణం.</string>
     <string name="main_customRpc_details">Kizzy Discord కోసం మీ సొంత పూర్తిగా అనుకూలీకరించదగిన rich presence సృష్టించడానికి అనుమతిస్తుంది.</string>
     <string name="add_rpc_title">RPC జోడించు</string>

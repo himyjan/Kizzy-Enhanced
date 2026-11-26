@@ -253,7 +253,7 @@
     <string name="main_customRpc">Pasirinktinis RPC</string>
     <string name="main_consoleRpc">Konsolės RPC</string>
     <string name="main_consoleRpc_details">Kizzy leidžia naudoti iš anksto nustatytus šablonus savo būsenai Discorde nustatyti.</string>
-    <string name="main_ManualRpc">Eksperimentinis RPC</string>
+    <string name="main_ManualRpc">Rankinis RPC</string>
     <string name="main_ManualRpc_details">Rankinis RPC yra Kizzy funkcija, kuri nuolat kaitaliojasi tarp programų RPC ir medijos RPC.</string>
     <string name="main_customRpc_details">Kizzy leidžia jums susikurti visiškai tinkintą Rich Presence Discordui.</string>
     <string name="add_rpc_title">Pridėti RPC</string>
@@ -412,7 +412,7 @@
     <string name="update_download_error">Atsisiuntimas nepavyko. Meskite dar kartą.</string>
     <string name="save_logs_to_file">Išsaugoti žurnalus į failą</string>
     <string name="rpc_hide_cover_art">Slėpti viršelio vaizdus</string>
-    <string name="rpc_hide_cover_art_desc">Rodyti tik tekstą visų tipų RPC (medijos, tinkinto, konsolės, eksperimentinio). Viršeliai nebus rodomi „Discord“.</string>
+    <string name="rpc_hide_cover_art_desc">Rodyti tik tekstą visų tipų RPC (medijos, tinkinto, konsolės, Rankinis). Viršeliai nebus rodomi „Discord“.</string>
     <string name="rpc_default_cover_art_large">Numatytasis didelis viršelio vaizdas</string>
     <string name="rpc_default_cover_art_large_desc">Vaizdo URL adresas, naudojamas kaip didelis viršelis, kai pranešime nėra viršelio</string>
     <string name="rpc_default_cover_art_small">Numatytasis mažas viršelio vaizdas</string>

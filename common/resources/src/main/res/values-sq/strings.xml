@@ -413,7 +413,7 @@
     <string name="update_download_error">Shkarkimi dështoi. Provo përsëri.</string>
     <string name="save_logs_to_file">Ruaj regjistrat në skedar</string>
     <string name="rpc_hide_cover_art">Fshi Imazhet e Kopertinës</string>
-    <string name="rpc_hide_cover_art_desc">Shfaq vetëm tekst në të gjitha llojet e RPC (Media, Personalizuar, Konsolë, Eksperimentale). Kopertinat nuk do të shfaqen në Discord.</string>
+    <string name="rpc_hide_cover_art_desc">Shfaq vetëm tekst në të gjitha llojet e RPC (Media, Personalizuar, Konsolë, RPC Manuale). Kopertinat nuk do të shfaqen në Discord.</string>
     <string name="rpc_default_cover_art_large">Kopertinë e Madhe të Parazgjedhur</string>
     <string name="rpc_default_cover_art_large_desc">"URL e imazhit për t'u përdorur si kopertinë e madhe kur njoftimi nuk ka kopertinë"</string>
     <string name="rpc_default_cover_art_small">Kopertinë të Vogël të Parazgjedhur</string>
@@ -516,7 +516,7 @@
     <string name="link_toArtistChannel_desc">Lidhja me kanalin e artistit</string>
     <string name="link_to_artistChannel">Lidhja me kanalin e artistit</string>
     <string name="link_to_artistChannel_desc">Lidhja me kanalin e artistit</string>
-    <string name="main_ManualRpcDetails">RPC Eksperimentale është një veçori që rotacionon midis RPC Aplikacioneve dhe RPC Median.</string>
+    <string name="main_ManualRpcDetails">RPC Manuale është një veçori që rotacionon midis RPC Aplikacioneve dhe RPC Median.</string>
     <string name="main_appDetectionDetails">Përdoret për të zbuluar se cili aplikacion po punon në pajisjen tuaj</string>
     <string name="main_app_detection_details">Përdoret për të zbuluar se cili aplikacion po punon në pajisjen tuaj</string>
     <string name="main_consoleRpcDetails">Lejon vendosjen e pranisë tuaj Discord duke përdorur parapërgatitje të parapërcaktuara</string>

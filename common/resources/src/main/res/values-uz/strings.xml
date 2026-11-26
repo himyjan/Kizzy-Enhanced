@@ -253,7 +253,7 @@
     <string name="main_customRpc">Maxsus RPC</string>
     <string name="main_consoleRpc">Konsol RPC</string>
     <string name="main_consoleRpc_details">"Kizzy Discord'da mavjudligingizni o'rnatish uchun ba'zi oldindan belgilangan sozlamalardan foydalanishga imkon beradi."</string>
-    <string name="main_ManualRpc">"Qo'lda RPC"</string>
+    <string name="main_ManualRpc">"\"Qo'lda RPC"</string>
     <string name="main_ManualRpc_details">"Qo'lda RPC — Kizzy'dagi Ilovalar RPC va Media RPC o'rtasida doimiy almashuvchi funksiya."</string>
     <string name="main_customRpc_details">"Kizzy Discord uchun o'zingizning to'liq moslashtirilgan rich presence yaratishga imkon beradi."</string>
     <string name="add_rpc_title">"RPC qo'shish"</string>

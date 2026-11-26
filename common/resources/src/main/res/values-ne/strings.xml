@@ -259,7 +259,7 @@
     <string name="main_consoleRpc">कन्सोल RPC</string>
     <string name="main_consoleRpc_details">Kizzy ले पहिले नै परिभाषित गरिएका केही पूर्वनिर्धारित सेटिङहरू प्रयोग गरी Discord मा आफ्नो उपस्थिति सेट गर्न अनुमति दिन्छ।
         </string>
-    <string name="main_ManualRpc">एक्सपेरिमेंटल RPC</string>
+    <string name="main_ManualRpc">म्यानुअल आरपीसी</string>
     <string name="main_ManualRpc_details">म्यानुअल RPC भन्ने Kizzy को एक सुविधा हो जसले
         एप RPC र मिडिया RPC बीच निरन्तर स्विच गर्छ।</string>
     <string name="main_customRpc_details">Kizzy ले Discord का लागि पूर्ण रूपमा आफू अनुकूलन योग्य

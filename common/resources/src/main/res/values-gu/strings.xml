@@ -257,7 +257,7 @@
     <string name="main_consoleRpc">કન્સોલ RPC</string>
     <string name="main_consoleRpc_details">Kizzy તમને કેટલાક પૂર્વનિર્ધારિત પ્રિસેટ વાપરીને
         Discord પર તમારી હાજરી સેટ કરવા દે છે.</string>
-    <string name="main_ManualRpc">તાજેતરના પ્રયોગો</string>
+    <string name="main_ManualRpc">મેન્યુઅલ RPC</string>
     <string name="main_ManualRpc_details">મેન્યુઅલ RPC, Kizzyની એક વિશેષતા છે જે
         સતત ઍપ RPC અને મીડિયા RPC વચ્ચે બદલાતી રહે છે.</string>
     <string name="main_customRpc_details">Kizzy તમને Discord માટે તમારી પોતાની સંપૂર્ણપણે કસ્ટમાઇઝ કરી શકાય તેવી
