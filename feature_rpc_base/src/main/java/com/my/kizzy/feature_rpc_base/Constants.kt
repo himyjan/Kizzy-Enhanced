@@ -32,4 +32,10 @@ object Constants {
     const val ACTION_STOP_SERVICE = "Stop Service"
     const val ACTION_RESTART_SERVICE = "Restart Service"
     const val ACTION_TOGGLE = "Toggle Playback"
+
+    // Per-instance RPC sockets (parallel RPC instances on the home screen).
+    const val ACTION_ADD_INSTANCE = "Add RPC Instance"
+    const val ACTION_REMOVE_INSTANCE = "Remove RPC Instance"
+    const val EXTRA_INSTANCE_ID = "RPC_INSTANCE_ID"
+    const val EXTRA_OAUTH_INDEX = "RPC_OAUTH_INDEX"
 }

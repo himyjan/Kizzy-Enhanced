@@ -87,8 +87,14 @@ class CustomRpcService : Service() {
     @SuppressLint("WakelockTimeout")
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Wire Custom RPC to slot "2" (second application ID + token)
-        kizzyRPC = multiRpc.session("2")
+        // Wire Custom RPC to slot "2" (second application ID + token).
+        // A service started only for a user-created instance must not pull in
+        // the built-in instance's socket as well.
+        kizzyRPC = if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
+            multiRpc.sessionWithoutBuiltIn("2")
+        } else {
+            multiRpc.session("2")
+        }
 
         intent?.let { readConsoleMode(it) }
 
@@ -137,6 +143,26 @@ class CustomRpcService : Service() {
             .setContentIntent(appPendingIntent)
             .build()
         startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, initialNotification)
+
+        // Parallel instance sockets: add/remove one socket without disturbing
+        // the presence or connection of any other instance.
+        when (intent?.action) {
+            Constants.ACTION_ADD_INSTANCE -> {
+                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+                if (!instanceId.isNullOrBlank()) {
+                    val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
+                    multiRpc.addInstance("2", instanceId, oauthIndex)
+                    scope.launch { sendPresenceAndNotification(forceRefresh = true) }
+                }
+                return super.onStartCommand(intent, flags, startId)
+            }
+            Constants.ACTION_REMOVE_INSTANCE -> {
+                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+                if (!instanceId.isNullOrBlank()) multiRpc.removeInstance("2", instanceId)
+                if (multiRpc.instanceCount("2") == 0) stopSelf()
+                return super.onStartCommand(intent, flags, startId)
+            }
+        }
 
         intent?.action?.let { ac ->
             if (ac == Constants.ACTION_RESTART_SERVICE) {

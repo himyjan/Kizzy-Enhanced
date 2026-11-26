@@ -2,33 +2,27 @@ package com.my.kizzy.data.rpc
 
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.repository.KizzyRepository
+import com.my.kizzy.preference.OAuthAppCredential
 import com.my.kizzy.preference.Prefs
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
+import kizzy.gateway.BroadcastDiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 /**
- * Manages up to 3 independent Discord gateway connections, each with its own
- * OAuth2 application ID + token. Each session connects to Discord's gateway
- * separately and sends its own presence (OP 3), so Discord shows one activity
- * per application ID simultaneously.
+ * Owns the independent Discord gateway connections used by every RPC instance.
  *
- * Slots:
- *   "1" - default token (Prefs.TOKEN / DISCORD_OAUTH2_ACCESS_TOKEN)
- *   "2" - DISCORD_OAUTH2_ACCESS_TOKEN_2 + DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2
- *   "3" - DISCORD_OAUTH2_ACCESS_TOKEN_3 + DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3
- *
- * RPC type to slot mapping:
- *   Media RPC    -> slot "1"
- *   Custom RPC   -> slot "2"
- *   Manual RPC   -> slot "3"
- *
- * A session is created lazily on first use and connects to Discord's gateway.
- * Each session owns its own WebSocket, heartbeat, sequence, and session ID, so
- * they never interfere with each other.
+ * One group exists per RPC type ("1" media, "2" custom, "3" manual). A group has
+ * a single [KizzyRPC] - so the existing service logic stays unchanged - whose
+ * socket is a [BroadcastDiscordWebSocket]. That broadcaster fans each presence
+ * out to one real [DiscordWebSocketImpl] per enabled instance. Adding or
+ * removing an instance therefore adds/removes a completely separate socket
+ * (own token, application ID, sequence and heartbeat) without restarting the
+ * service or disturbing the other instances.
  */
 @Singleton
 class MultiRpcManager @Inject constructor(
@@ -38,165 +32,162 @@ class MultiRpcManager @Inject constructor(
 
     override val coroutineContext = Dispatchers.IO + SupervisorJob()
 
-    private val TAG = "MultiRpcManager"
-
-    private data class RpcSession(
+    private data class RpcGroup(
         val slotId: String,
-        val appId: String,
+        val broadcast: BroadcastDiscordWebSocket,
         val kizzyRpc: KizzyRPC,
-        val discordWebSocket: DiscordWebSocketImpl,
-        var enabled: Boolean = false
+        /** instanceId -> OAuth credentials used for that instance's socket. */
+        val instances: MutableMap<String, OAuthAppCredential> = LinkedHashMap(),
     )
 
-    private val sessions = mutableMapOf<String, RpcSession>()
+    private val groups = LinkedHashMap<String, RpcGroup>()
 
-    /** Returns the [KizzyRPC] for [slotId], creating it lazily on first use.
-     *
-     * If the existing session's WebSocket is no longer connected (e.g. after
-     * an RPC service was destroyed), the old session is discarded and a fresh
-     * one is created so that toggling a switch off then on again actually
-     * reconnects instead of silently returning a dead session.
-     */
+    /** Returns the [KizzyRPC] for a slot, creating its group lazily on first use. */
     fun session(slotId: String): KizzyRPC? {
-        val existing = sessions[slotId]
-        if (existing != null && existing.kizzyRpc.isRpcRunning()) {
-            return existing.kizzyRpc
-        }
-        // Session is missing, disabled, or WebSocket is dead — remove it and recreate.
-        sessions.remove(slotId)
-        return createSession(slotId)?.kizzyRpc
+        val existing = groups[slotId]
+        if (existing != null && existing.broadcast.hasConnectedSocket()) return existing.kizzyRpc
+        if (existing != null) stopSession(slotId)
+        return createGroup(slotId)?.kizzyRpc
     }
 
-    /** Returns true if [slotId] is enabled and its WebSocket is connected. */
+    /**
+     * Returns the slot's KizzyRPC without adding the built-in instance's socket.
+     * Used when the service is started only for a user-created instance.
+     */
+    fun sessionWithoutBuiltIn(slotId: String): KizzyRPC? {
+        val existing = groups[slotId]
+        if (existing != null && existing.broadcast.hasConnectedSocket()) return existing.kizzyRpc
+        if (existing != null) stopSession(slotId)
+        return createGroup(slotId, includeBuiltIn = false)?.kizzyRpc
+    }
+
     fun isSessionActive(slotId: String): Boolean {
-        val s = sessions[slotId]
-        return s != null && s.enabled && s.kizzyRpc.isRpcRunning()
+        val group = groups[slotId] ?: return false
+        return group.broadcast.hasConnectedSocket()
     }
 
-    /** Returns all currently enabled slot IDs. */
-    fun activeSlots(): List<String> {
-        return sessions.filter { it.value.enabled }.map { it.key }
+    fun activeSlots(): List<String> = groups.filter { it.value.broadcast.hasConnectedSocket() }.map { it.key }
+
+    /** Adds an independent socket for [instanceId] to [slotId]'s group. */
+    fun addInstance(slotId: String, instanceId: String, oauthIndex: Int) {
+        val group = groups[slotId] ?: createGroup(slotId) ?: return
+        if (group.broadcast.hasSocket(instanceId)) return
+
+        val credential = Prefs.getOAuthApp(oauthIndex)
+            ?: Prefs.getOAuthApp(slotIndex(slotId))
+            ?: OAuthAppCredential(
+                index = slotIndex(slotId),
+                token = mainToken(),
+                appId = defaultAppId(slotIndex(slotId)),
+            )
+        if (credential.token.isBlank()) return
+
+        val socket = createSocket(credential, instanceId)
+        group.broadcast.addSocket(instanceId, credential.appId, socket)
+        group.instances[instanceId] = credential
+        launch { socket.connect() }
     }
 
-    /** Enable/disable a session without destroying its WebSocket. */
-    fun setSessionEnabled(slotId: String, enabled: Boolean) {
-        sessions[slotId]?.enabled = enabled
+    /** Closes and removes only [instanceId]'s socket; other instances keep running. */
+    fun removeInstance(slotId: String, instanceId: String) {
+        val group = groups[slotId] ?: return
+        group.broadcast.removeSocket(instanceId)
+        group.instances.remove(instanceId)
     }
 
-    /** Stops and removes a session, closing its WebSocket. */
+    /** Number of live sockets in a slot (including the built-in instance). */
+    fun instanceCount(slotId: String): Int = groups[slotId]?.broadcast?.socketCount() ?: 0
+
+    fun hasInstance(slotId: String, instanceId: String): Boolean =
+        groups[slotId]?.broadcast?.hasSocket(instanceId) == true
+
+    /** Stops every socket in a slot, closing all of its instance connections. */
     fun stopSession(slotId: String) {
-        sessions[slotId]?.let {
-            try {
-                it.kizzyRpc.closeRPC()
-            } catch (_: Exception) {
-            }
-            try {
-                it.discordWebSocket.close()
-            } catch (_: Exception) {
-            }
-            sessions.remove(slotId)
-        }
+        val group = groups.remove(slotId) ?: return
+        group.broadcast.close()
+        group.instances.clear()
     }
 
-    /** Stops every session and clears the map. */
     fun stopAllSessions() {
-        sessions.values.forEach {
-            try {
-                it.kizzyRpc.closeRPC()
-            } catch (_: Exception) {
-            }
-            try {
-                it.discordWebSocket.close()
-            } catch (_: Exception) {
-            }
-        }
-        sessions.clear()
+        groups.keys.toList().forEach { stopSession(it) }
     }
 
-    /** Read persisted session configuration from Preferences and create sessions. */
+    /** Recreates the groups the user had enabled before the process was killed. */
     fun loadSessionsFromPrefs() {
-        // Slot 1 is always "available" if there's a default token
-        val token1 = Prefs[Prefs.TOKEN, ""]
-            .takeIf { it.isNotBlank() }
-            ?: Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
-        if (token1.isNotBlank()) {
-            sessions["1"] = RpcSession(
-                slotId = "1",
-                appId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""],
-                kizzyRpc = createKizzyRpc("1", Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""], token1),
-                discordWebSocket = createDiscordWebSocket("1", Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""], token1),
-                enabled = true
-            )
-        }
-        // Slot 2
-        val token2 = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2, ""]
-        val appId2 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, ""]
-        if (token2.isNotBlank() && Prefs[Prefs.RPC_SESSION_2_ENABLED, false]) {
-            sessions["2"] = RpcSession(
-                slotId = "2",
-                appId = appId2,
-                kizzyRpc = createKizzyRpc("2", appId2, token2),
-                discordWebSocket = createDiscordWebSocket("2", appId2, token2),
-                enabled = true
-            )
-        }
-        // Slot 3
-        val token3 = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3, ""]
-        val appId3 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, ""]
-        if (token3.isNotBlank() && Prefs[Prefs.RPC_SESSION_3_ENABLED, false]) {
-            sessions["3"] = RpcSession(
-                slotId = "3",
-                appId = appId3,
-                kizzyRpc = createKizzyRpc("3", appId3, token3),
-                discordWebSocket = createDiscordWebSocket("3", appId3, token3),
-                enabled = true
-            )
+        val activeTypes = Prefs.getActiveRpcInstanceIds()
+        listOf("1", "2", "3").forEach { slot ->
+            val builtInId = builtInInstanceId(slot)
+            if (activeTypes.isEmpty() || builtInId in activeTypes) createGroup(slot)
         }
     }
 
-    private fun createSession(slotId: String): RpcSession? {
-        val mainToken = Prefs[Prefs.TOKEN, ""]
-            .takeIf { it.isNotBlank() }
-            ?: Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+    private fun createGroup(slotId: String, includeBuiltIn: Boolean = true): RpcGroup? {
+        val credential = credentialForSlot(slotId)
+        if (credential == null || credential.token.isBlank()) return null
 
-        val token = when (slotId) {
-            "1" -> mainToken
-            "2" -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2, ""].takeIf { it.isNotBlank() } ?: mainToken
-            "3" -> Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3, ""].takeIf { it.isNotBlank() } ?: mainToken
-            "4" -> mainToken
-            "5" -> mainToken
-            else -> return null
+        val broadcast = BroadcastDiscordWebSocket()
+        val builtInId = builtInInstanceId(slotId)
+        if (includeBuiltIn) {
+            broadcast.addSocket(
+                instanceId = builtInId,
+                appId = credential.appId,
+                socket = createSocket(credential, builtInId),
+            )
         }
-        val appId = when (slotId) {
-            "1" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""].takeIf { it.isNotBlank() } ?: "1571063796418744412"
-            "2" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, ""].takeIf { it.isNotBlank() } ?: "1573725984845201438"
-            "3" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, ""].takeIf { it.isNotBlank() } ?: "1573728208854065293"
-            "4" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""].takeIf { it.isNotBlank() } ?: "1571063796418744412"
-            "5" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""].takeIf { it.isNotBlank() } ?: "1573730101810331718"
-            else -> ""
-        }
-        if (token.isBlank()) return null
-
-        val discordWebSocket = createDiscordWebSocket(slotId, appId, token)
-        val kizzyRpc = KizzyRPC(token, kizzyRepository, discordWebSocket, logger, appId.takeIf { it.isNotEmpty() })
-        sessions[slotId] = RpcSession(slotId, appId, kizzyRpc, discordWebSocket, true)
-        return sessions[slotId]
+        val kizzyRpc = KizzyRPC(
+            credential.token,
+            kizzyRepository,
+            broadcast,
+            logger,
+            credential.appId.takeIf { it.isNotBlank() },
+        )
+        val group = RpcGroup(
+            slotId = slotId,
+            broadcast = broadcast,
+            kizzyRpc = kizzyRpc,
+            instances = LinkedHashMap(),
+        )
+        groups[slotId] = group
+        return group
     }
 
-    private fun createKizzyRpc(slotId: String, appId: String, token: String): KizzyRPC {
-        val ws = createDiscordWebSocket(slotId, appId, token)
-        return KizzyRPC(token, kizzyRepository, ws, logger, appId.takeIf { it.isNotEmpty() })
+    private fun credentialForSlot(slotId: String): OAuthAppCredential? =
+        Prefs.getOAuthApp(slotIndex(slotId))
+
+    private fun mainToken(): String = Prefs[Prefs.TOKEN, ""]
+        .takeIf { it.isNotBlank() }
+        ?: Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+
+    private fun slotIndex(slotId: String): Int = when (slotId) {
+        "1" -> 1
+        "2" -> 2
+        "3" -> 3
+        else -> 1
     }
 
-    private fun createDiscordWebSocket(slotId: String, appId: String, token: String): DiscordWebSocketImpl {
-        // Use the app ID as the identify device so Discord distinguishes sessions
-        val device = if (appId.isNotBlank()) appId else "kizzy-$slotId"
+    private fun defaultAppId(index: Int): String = when (index) {
+        2 -> Prefs.DEFAULT_OAUTH_APP_ID_2
+        3 -> Prefs.DEFAULT_OAUTH_APP_ID_3
+        else -> Prefs.DEFAULT_OAUTH_APP_ID_1
+    }
+
+    private fun builtInInstanceId(slotId: String): String = when (slotId) {
+        "1" -> "media_rpc"
+        "2" -> "custom_rpc"
+        "3" -> "manual_rpc"
+        else -> "slot_$slotId"
+    }
+
+    private fun createSocket(credential: OAuthAppCredential, instanceId: String): DiscordWebSocketImpl {
+        // Distinct identify device per instance so Discord treats them as
+        // separate clients instead of reconnecting the same session.
+        val device = "${credential.appId}-$instanceId"
         return DiscordWebSocketImpl(
-            token = token,
+            token = credential.token,
             logger = logger,
             identifyBrowser = "Discord Android",
             identifyOs = "Android",
-            identifyDevice = device
+            identifyDevice = device,
         )
     }
 

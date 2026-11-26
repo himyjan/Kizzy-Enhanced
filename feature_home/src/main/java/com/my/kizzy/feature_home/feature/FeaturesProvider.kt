@@ -59,6 +59,7 @@ fun homeFeaturesProvider(
     val instances = Prefs.getHomeRpcInstances()
 
     val activeRpc by rpcManager.activeRpc.collectAsState()
+    val activeInstances by rpcManager.activeInstances.collectAsState()
 
     val builtInIds = BUILT_IN_INSTANCES.map { it.id }.toSet()
 
@@ -75,7 +76,10 @@ fun homeFeaturesProvider(
             "custom_rpc" -> RpcType.CustomRpc
             else -> null
         }
-        val isRunning = rpcType != null && rpcType in activeRpc
+        // Per-instance state: two instances of the same type can be on/off
+        // independently, each with its own Discord socket.
+        val isRunning = instance.id in activeInstances ||
+            (rpcType != null && rpcType in activeRpc && instance.id in builtInIds)
 
         // App Detection requires Usage Access permission; gate the toggle
         val requiresUsageAccess = rpcType == RpcType.AppDetectionRpc
@@ -108,17 +112,18 @@ fun homeFeaturesProvider(
                     scope.launch {
                         if (enabled && rpcType != null) {
                             val configString = when (instance.type) {
-                                "custom_rpc" -> Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                                "custom_rpc" -> instance.config.takeIf { it.isNotBlank() }
+                                    ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
                                 else -> ""
                             }
-                            rpcManager.switchTo(
-                                setOf(rpcType),
-                                add = true,
-                                rpcConfigString = if (configString.isNotBlank()) configString else null,
-                                isConsoleRpc = false
+                            rpcManager.switchToInstance(
+                                instanceId = instance.id,
+                                rpcType = rpcType,
+                                oauthIndex = instance.oauthIndex,
+                                config = configString.takeIf { it.isNotBlank() },
                             )
                         } else if (!enabled && rpcType != null) {
-                            rpcManager.stopRpcTypes(setOf(rpcType))
+                            rpcManager.stopInstance(instance.id, rpcType)
                         }
                     }
                 }
@@ -140,10 +145,10 @@ fun homeFeaturesProvider(
             },
             onDelete = {
                 scope.launch {
-                    onDeleteInstance(instance.id)
                     if (rpcType != null && isRunning) {
-                        rpcManager.stopRpcTypes(setOf(rpcType))
+                        rpcManager.stopInstance(instance.id, rpcType)
                     }
+                    onDeleteInstance(instance.id)
                 }
             },
         )

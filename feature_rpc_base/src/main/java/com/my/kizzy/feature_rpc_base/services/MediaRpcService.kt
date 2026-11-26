@@ -1703,11 +1703,30 @@ class MediaRpcService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Wire Media RPC to slot "1" (default token). If no token is configured,
-        // kizzyRPC stays null and no presence is sent.
-        kizzyRPC = multiRpc.session("1")
+        // kizzyRPC stays null and no presence is sent. A service started only
+        // for a user-created instance must not pull in the built-in socket.
+        kizzyRPC = if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
+            multiRpc.sessionWithoutBuiltIn("1")
+        } else {
+            multiRpc.session("1")
+        }
 
         val ac = intent?.action
         when (ac) {
+            Constants.ACTION_ADD_INSTANCE -> {
+                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+                if (!instanceId.isNullOrBlank()) {
+                    val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
+                    multiRpc.addInstance("1", instanceId, oauthIndex)
+                    // Broadcast the current media presence to the new socket.
+                    restartInPlace()
+                }
+            }
+            Constants.ACTION_REMOVE_INSTANCE -> {
+                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+                if (!instanceId.isNullOrBlank()) multiRpc.removeInstance("1", instanceId)
+                if (multiRpc.instanceCount("1") == 0) stopSelf()
+            }
             Constants.ACTION_STOP_SERVICE -> {
                 // The user stopped the RPC on purpose, so forget the enabled
                 // state as well - otherwise the next cold start would restore it.

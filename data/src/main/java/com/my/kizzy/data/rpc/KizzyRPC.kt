@@ -291,9 +291,13 @@ class KizzyRPC @Inject constructor(
         val tokenChanged = newToken != token
         token = newToken
 
-        if (tokenChanged && discordWebSocket.isWebSocketConnected()) {
+        // A broadcast socket owns several per-instance tokens, so it must not be
+        // cast to a single DiscordWebSocketImpl here. Each delegate keeps its own.
+        if (tokenChanged && discordWebSocket is DiscordWebSocketImpl &&
+            discordWebSocket.isWebSocketConnected()
+        ) {
             logger.d("KizzyRPC", "Token changed, reconnecting WebSocket with new token")
-            (discordWebSocket as DiscordWebSocketImpl).updateTokenAndReconnect(token)
+            discordWebSocket.updateTokenAndReconnect(token)
         }
 
         // Blank stored value (old default "") should identify as Android/mobile,

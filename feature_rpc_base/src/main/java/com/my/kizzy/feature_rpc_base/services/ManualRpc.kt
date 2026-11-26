@@ -266,8 +266,21 @@ class ManualRpc : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Wire Manual RPC to slot "3" (third application ID + token)
-        kizzyRPC = multiRpc.session("3")
+        // Wire Manual RPC to slot "3" (third application ID + token).
+        // A service started only for a user-created instance must not pull in
+        // the built-in instance's socket as well.
+        kizzyRPC = if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
+            multiRpc.sessionWithoutBuiltIn("3")
+        } else {
+            multiRpc.session("3")
+        }
+
+        if (intent?.action == Constants.ACTION_REMOVE_INSTANCE) {
+            val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+            if (!instanceId.isNullOrBlank()) multiRpc.removeInstance("3", instanceId)
+            if (multiRpc.instanceCount("3") == 0) stopSelf()
+            return super.onStartCommand(intent, flags, startId)
+        }
 
         if (intent?.action == Constants.ACTION_STOP_SERVICE) {
             // Explicit stop: the next cold start must not bring it back.
@@ -332,6 +345,15 @@ class ManualRpc : Service() {
                 startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
             }
 
+            // Attach the new instance's socket before the first presence update
+            // so the broadcaster can deliver it immediately.
+            if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
+                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+                if (!instanceId.isNullOrBlank()) {
+                    val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
+                    multiRpc.addInstance("3", instanceId, oauthIndex)
+                }
+            }
 
             mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
             // Registering the session listener requires Notification Listener access.

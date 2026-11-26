@@ -86,7 +86,8 @@ class DiscordOAuth2Auth(
         val clientId: String,
         val redirectUri: String,
         val pkce: PkcePair,
-        val state: String
+        val state: String,
+        val persistLegacy: Boolean = true,
     )
 
     suspend fun authorize(activity: Activity, slot: String = "1"): DiscordOAuth2Result {
@@ -95,6 +96,26 @@ class DiscordOAuth2Auth(
             "3" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3 }
             else -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID }
         }
+        return authorizeInternal(activity, slot, clientId, persistLegacy = true)
+    }
+
+    /**
+     * Authorizes an arbitrary saved RPC application. The resulting token is
+     * returned to the caller (which stores it in the OAuthApp list) instead of
+     * being written to the legacy slot-1/2/3 preference keys.
+     */
+    suspend fun authorizeApp(
+        activity: Activity,
+        appId: String,
+        clientId: String,
+    ): DiscordOAuth2Result = authorizeInternal(activity, appId, clientId, persistLegacy = false)
+
+    private suspend fun authorizeInternal(
+        activity: Activity,
+        slot: String,
+        clientId: String,
+        persistLegacy: Boolean,
+    ): DiscordOAuth2Result {
         if (clientId.isBlank()) {
             throw DiscordOAuth2Exception.InvalidClientId()
         }
@@ -111,7 +132,7 @@ class DiscordOAuth2Auth(
             )
             val authUri = authUrl.toUri()
 
-            pendingAuth = PendingAuth(slot, clientId, REDIRECT_URI, pkce, state)
+            pendingAuth = PendingAuth(slot, clientId, REDIRECT_URI, pkce, state, persistLegacy)
 
             val browserPackage = CustomTabsClient.getPackageName(activity, null)
             val launcher = authTabLauncher
@@ -249,7 +270,8 @@ class DiscordOAuth2Auth(
                             verifier = auth.pkce.verifier,
                             redirectUri = auth.redirectUri,
                             clientId = auth.clientId,
-                            slot = auth.slot
+                            slot = auth.slot,
+                            persistLegacy = auth.persistLegacy
                         )
                         if (cont.isActive) {
                             cont.resume(result)
@@ -290,7 +312,8 @@ class DiscordOAuth2Auth(
         verifier: String,
         redirectUri: String,
         clientId: String,
-        slot: String = "1"
+        slot: String = "1",
+        persistLegacy: Boolean = true,
     ): DiscordOAuth2Result {
         val params = mapOf(
             "client_id" to clientId,
@@ -299,7 +322,7 @@ class DiscordOAuth2Auth(
             "redirect_uri" to redirectUri,
             "code_verifier" to verifier
         )
-        return performTokenExchange(params, slot)
+        return performTokenExchange(params, slot, persistLegacy)
     }
 
     suspend fun refresh(refreshToken: String, slot: String = "1"): DiscordOAuth2Result {
@@ -316,7 +339,11 @@ class DiscordOAuth2Auth(
         return performTokenExchange(params, slot)
     }
 
-    private suspend fun performTokenExchange(params: Map<String, String>, slot: String = "1"): DiscordOAuth2Result {
+    private suspend fun performTokenExchange(
+        params: Map<String, String>,
+        slot: String = "1",
+        persistLegacy: Boolean = true,
+    ): DiscordOAuth2Result {
         return withContext(Dispatchers.IO) {
             HttpClient(OkHttp) {
                 install(HttpTimeout) {
@@ -347,21 +374,25 @@ class DiscordOAuth2Auth(
 
                     Log.d(TAG, "token exchange: success for slot $slot")
 
-                    when (slot) {
-                        "2" -> {
-                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2] = accessToken
-                            Prefs[Prefs.RPC_SESSION_2_ENABLED] = true
-                        }
-                        "3" -> {
-                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3] = accessToken
-                            Prefs[Prefs.RPC_SESSION_3_ENABLED] = true
-                        }
-                        else -> {
-                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
-                            if (refreshToken.isNotEmpty()) {
-                                Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
+                    // Arbitrary saved apps get their token written by the caller;
+                    // only the three legacy slots go to the flat preference keys.
+                    if (persistLegacy) {
+                        when (slot) {
+                            "2" -> {
+                                Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2] = accessToken
+                                Prefs[Prefs.RPC_SESSION_2_ENABLED] = true
                             }
-                            Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
+                            "3" -> {
+                                Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3] = accessToken
+                                Prefs[Prefs.RPC_SESSION_3_ENABLED] = true
+                            }
+                            else -> {
+                                Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
+                                if (refreshToken.isNotEmpty()) {
+                                    Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
+                                }
+                                Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
+                            }
                         }
                     }
 
