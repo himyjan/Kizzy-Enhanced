@@ -1081,10 +1081,16 @@ class ManualRpc : Service() {
         }
 
         launchPresenceUpdate {
-            // Give media session metadata time to populate on initial load.
-            // YouTube/LX Music often take 1-3 seconds to populate title metadata.
-            // Retry up to 3 times with increasing delay before giving up.
-            val richMediaData = fetchPlayingMediaWithRetry()
+            // When this is a media session change event (song skip / next track),
+            // metadata should already be populated — fetch once without retry delays
+            // so the presence updates as fast as Media RPC.
+            val richMediaData = if (isEvent) {
+                this@ManualRpc.getCurrentPlayingMediaAll.invoke()
+            } else {
+                // Initial load: media session metadata may take 1-3 seconds to
+                // populate (YouTube/LX Music). Retry with increasing delay.
+                fetchPlayingMediaWithRetry()
+            }
             // Process media data even without a registered controller — controller is only
             // needed for playback callbacks, presence updates just need media data
             val hasMediaData = richMediaData.appName != null
@@ -1109,7 +1115,6 @@ class ManualRpc : Service() {
             if (!useMediaRpc) return
 
             launchPresenceUpdate {
-                delay(200.milliseconds)
                 val richMediaData = this@ManualRpc.getCurrentPlayingMediaAll.invoke()
                 val hasMediaData = richMediaData.appName != null
 
