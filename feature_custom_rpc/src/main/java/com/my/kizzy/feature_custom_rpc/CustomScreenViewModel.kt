@@ -14,6 +14,7 @@ package com.my.kizzy.feature_custom_rpc
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.domain.model.rpc.RpcConfig
@@ -46,7 +47,12 @@ class CustomScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val uploadGalleryImageUseCase: UploadGalleryImageUseCase,
     private val getGamesUseCase: GetGamesUseCase,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+    /** Null for the built-in Custom RPC; a clone gets its own config key. */
+    private val instanceId: String? = savedStateHandle.get<String>("instanceId")
+    private val configKey: String = Prefs.customRpcConfigKey(instanceId)
+
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
     private val uiEventChannel = Channel<UiEvent>(capacity = Channel.UNLIMITED)
@@ -54,7 +60,7 @@ class CustomScreenViewModel @Inject constructor(
     init {
         // Always load the last saved custom RPC config so the screen remembers
         // what the user last modified, even if they haven't started the RPC yet.
-        val lastConfig = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+        val lastConfig = Prefs[configKey, ""]
         if (lastConfig.isNotBlank()) {
             _uiState.value = _uiState.value.copy(
                 rpcConfig = lastConfig.stringToData()
@@ -98,7 +104,7 @@ class CustomScreenViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(rpcConfig = event.config)
                 // Persist immediately so the RPC config survives navigation away
                 // and re-open of the screen.
-                Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = Json.encodeToString(event.config)
+                Prefs[configKey] = Json.encodeToString(event.config)
                 // Restart running Custom RPC service so field changes apply live
                 // without the user having to close and reopen the app.
                 viewModelScope.launch {
@@ -198,7 +204,7 @@ class CustomScreenViewModel @Inject constructor(
                     showBottomSheet = false
                 )
                 // Persist the clearing so the next time the screen opens it starts empty
-                Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
+                Prefs[configKey] = ""
             }
         }
     }

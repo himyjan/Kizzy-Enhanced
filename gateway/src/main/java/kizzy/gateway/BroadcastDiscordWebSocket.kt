@@ -20,7 +20,10 @@ import kotlinx.coroutines.launch
  * The list is mutable at runtime so instances can be added/removed without
  * restarting the service or dropping the other sockets.
  */
-class BroadcastDiscordWebSocket : DiscordWebSocket {
+class BroadcastDiscordWebSocket(
+    /** Forward the group's presence to the central combiner. */
+    private val onPresence: suspend (Presence) -> Unit,
+) : DiscordWebSocket {
 
     override val coroutineContext = SupervisorJob() + Dispatchers.IO
 
@@ -33,15 +36,23 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
     private val lock = Any()
     private val entries = LinkedHashMap<String, Entry>()
 
-    /** Replaces the presence's application ID with the one assigned to this socket. */
-    private fun Presence.forApplication(appId: String): Presence {
-        if (appId.isBlank()) return this
-        return copy(
-            activities = activities?.map { activity -> activity?.copy(applicationId = appId) }
-        )
+    override var onPresenceDropped: (() -> Unit)? = null
+
+    /** Sends an already-assembled presence to every socket, unchanged. */
+    suspend fun sendRaw(presence: Presence): Boolean {
+        val sockets = snapshot()
+        if (sockets.isEmpty()) return false
+        val results = sockets.map { entry ->
+            async { runCatching { entry.socket.sendActivity(presence) }.getOrDefault(false) }
+        }.awaitAll()
+        return results.any { it }
     }
 
-    override var onPresenceDropped: (() -> Unit)? = null
+    /** Exposes the instances (and their application IDs) attached to this group. */
+    fun forEachInstance(action: (instanceId: String, appId: String) -> Unit) {
+        snapshot().forEach { action(it.instanceId, it.appId) }
+    }
+
 
     fun addSocket(instanceId: String, appId: String, socket: DiscordWebSocketImpl) {
         val callback: () -> Unit = { onPresenceDropped?.invoke() }
@@ -77,15 +88,10 @@ class BroadcastDiscordWebSocket : DiscordWebSocket {
     }
 
     override suspend fun sendActivity(presence: Presence): Boolean {
-        val sockets = snapshot()
-        if (sockets.isEmpty()) return false
-        val results = sockets.map { entry ->
-            async {
-                runCatching { entry.socket.sendActivity(presence.forApplication(entry.appId)) }
-                    .getOrDefault(false)
-            }
-        }.awaitAll()
-        return results.any { it }
+        // The central combiner turns every group's activity into one presence
+        // with a stable order and sends it to all sockets.
+        onPresence(presence)
+        return true
     }
 
     override fun isWebSocketConnected(): Boolean {

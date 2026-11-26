@@ -777,6 +777,13 @@ object Prefs {
      * tokens are sent raw. Needed by every independent socket because the
      * broadcast socket cannot refresh its IDENTIFY properties later.
      */
+    /** Custom RPC config key for one home instance (null = built-in). */
+    fun customRpcConfigKey(instanceId: String?): String =
+        instanceId?.let { "custom_rpc_instance_config_$it" } ?: LAST_RUN_CUSTOM_RPC
+
+    fun getCustomRpcConfig(instanceId: String?): String =
+        get(customRpcConfigKey(instanceId), "")
+
     fun formatIdentifyToken(token: String): String {
         if (token.isBlank() || token.startsWith("Bearer ")) return token
         val method = get(RPC_CONNECTION_METHOD, RPC_CONNECTION_METHOD_OAUTH2)

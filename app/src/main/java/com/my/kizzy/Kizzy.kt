@@ -207,6 +207,16 @@ internal fun Kizzy(
                     onEvent = viewModel::onEvent
                 )
             }
+            composable(Routes.CUSTOM_RPC_INSTANCE) { navBackStackEntry ->
+                // Clone-specific editor: the ViewModel reads instanceId from the
+                // route and loads/saves that instance's own config.
+                val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)
+                CustomRPC(
+                    onBackPressed = { goBack() },
+                    state = viewModel.uiState.collectAsState().value,
+                    onEvent = viewModel::onEvent
+                )
+            }
             composable(Routes.MEDIA_RPC) { navBackStackEntry ->
                 val viewModel = hiltViewModel<MediaScreenViewModel>(navBackStackEntry)
                 MediaRPC(

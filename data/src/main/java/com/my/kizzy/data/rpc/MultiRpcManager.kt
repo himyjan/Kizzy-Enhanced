@@ -8,6 +8,8 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kizzy.gateway.BroadcastDiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
+import kizzy.gateway.entities.presence.Activity
+import kizzy.gateway.entities.presence.Presence
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -44,6 +46,35 @@ class MultiRpcManager @Inject constructor(
 
     /** Globally unique presence application ID per instance. */
     private val appIdAssignments = LinkedHashMap<String, String>()
+
+    /** Last activity produced by each group, used to build one combined presence. */
+    private val lastGroupPresence = LinkedHashMap<String, Presence>()
+
+    /**
+     * Combines the latest activity of every group into one ordered presence and
+     * sends that same payload to all sockets. This keeps every enabled instance
+     * visible and in a stable order instead of letting Discord drop/reorder
+     * activities sent independently by each socket.
+     */
+    private fun onGroupPresence(slotId: String, presence: Presence) {
+        lastGroupPresence[slotId] = presence
+        val activities = mutableListOf<Activity>()
+        groups.values.forEach { group ->
+            val base = lastGroupPresence[group.slotId]?.activities?.firstOrNull()
+                ?: return@forEach
+            group.broadcast.forEachInstance { _, appId ->
+                activities += base.copy(applicationId = appId)
+            }
+        }
+        val combined = Presence(
+            activities = activities,
+            afk = false,
+            status = "online",
+        )
+        groups.values.forEach { group ->
+            launch { group.broadcast.sendRaw(combined) }
+        }
+    }
 
     private fun assignAppId(instanceId: String): String {
         appIdAssignments[instanceId]?.let { return it }
@@ -153,7 +184,9 @@ class MultiRpcManager @Inject constructor(
         val credential = credentialForSlot(slotId)
         if (credential == null || credential.token.isBlank()) return null
 
-        val broadcast = BroadcastDiscordWebSocket()
+        val broadcast = BroadcastDiscordWebSocket { presence ->
+            onGroupPresence(slotId, presence)
+        }
         val builtInId = builtInInstanceId(slotId)
         if (includeBuiltIn) {
             broadcast.addSocket(

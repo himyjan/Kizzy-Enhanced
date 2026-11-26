@@ -355,7 +355,7 @@ class RpcManager @Inject constructor(
         applyActive(_activeInstances.value + instanceId)
         persistActiveRpcTypes(_activeInstances.value.mapNotNull(::typeFor).toSet())
         if (rpcType == RpcType.CustomRpc && !config.isNullOrBlank()) {
-            Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = config
+            Prefs[Prefs.customRpcConfigKey(instanceId.takeIf { it != RPC_INSTANCE_CUSTOM })] = config
         }
         startInstanceService(instanceId, config, oauthIndex)
     }
@@ -397,7 +397,7 @@ class RpcManager @Inject constructor(
             RpcType.CustomRpc, RpcType.ConsoleRpc -> Intent(context, CustomRpcService::class.java).apply {
                 val rpcData = config
                     ?: instance?.config?.takeIf { it.isNotBlank() }
-                    ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                    ?: Prefs.getCustomRpcConfig(instanceId.takeIf { it != "custom_rpc" })
                 putExtra("RPC", rpcData)
                 putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, rpcType == RpcType.ConsoleRpc)
             }

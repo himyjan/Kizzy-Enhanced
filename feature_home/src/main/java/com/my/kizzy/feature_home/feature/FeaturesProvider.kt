@@ -66,7 +66,9 @@ fun homeFeaturesProvider(
         val route = when (instance.type) {
             "media_rpc" -> Routes.MEDIA_RPC
             "manual_rpc" -> Routes.MANUAL_RPC
-            "custom_rpc" -> Routes.CUSTOM_RPC
+            "custom_rpc" ->
+                if (instance.id in builtInIds) Routes.CUSTOM_RPC
+                else "custom_rpc/${instance.id}"
             else -> null
         }
         val rpcType = when (instance.type) {
@@ -112,7 +114,7 @@ fun homeFeaturesProvider(
                         if (enabled && rpcType != null) {
                             val configString = when (instance.type) {
                                 "custom_rpc" -> instance.config.takeIf { it.isNotBlank() }
-                                    ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                                    ?: Prefs.getCustomRpcConfig(instance.id.takeIf { it !in builtInIds })
                                 else -> ""
                             }
                             rpcManager.switchToInstance(
