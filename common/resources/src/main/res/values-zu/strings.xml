@@ -8,14 +8,20 @@
     <string name="activity_state">Isimo somsebeni</string>
     <string name="activity_start_timestamps">Isikhathi esiqala</string>
     <string name="activity_stop_timestamps">Isikhathi esiphelele</string>
-    <string name="activity_status_online_idle_dnd">Activity status ("online", "idle", "dnd")</string>
+    <string name="activity_status_online_idle_dnd">Isimo senzenzo (&quot;online&quot;, &quot;idle&quot;, &quot;dnd&quot;)</string>
     <string name="activity_button1_text">Umsebeni womuntu 1</string>
     <string name="activity_button2_text">Umsebeni womuntu 2</string>
     <string name="activity_button1_url">I-URL ye-button 1</string>
     <string name="activity_button2_url">I-URL ye-button 2</string>
     <string name="activity_large_image">Isithombe esikhulu somsebeni</string>
+    <string name="activity_large_image_preview">Ukuqapha Okukhulu Kwebhokisi</string>
     <string name="activity_small_image">Isithombe esincane somsebeni</string>
+    <string name="activity_small_image_preview">Ukuqapha Okuncane Kwebhokisi</string>
     <string name="activity_type">Uhlobo lomsebeni</string>
+    <string name="auto_detect">Okuzenzakalayo · %1$s</string>
+    <string name="auto_detect_activity_type">Ukuthola uhlobo lwemsebenzi ngokuzenzakalayo</string>
+    <string name="auto_detect_activity_type_desc">Ezinye izinhlelo zemculo zithola umculo, kanti izinhlelo zevidiyo zithola ividiyo, ngakho YouTube Music akusabikadi ukubonakala njengomdlalo. Uhlobo olukhethiwe izinhlelo ezingabhali zihlaba njengolunye.</string>
+    <string name="activity_type_fallback_desc">Isetshenziselwa izinhlelo ezingaziwayo, kanye nazo zonke izinhlelo uma ukuthola ngokuzenzakalayo kukhutshiwe.</string>
     <string name="activity_platform">Iph-platform yomsebeni</string>
     <string name="load_config">Layisha emafayelini</string>
     <string name="save_config">Gcina isilungiselelo</string>
@@ -23,9 +29,10 @@
     <string name="preview_rpc">Ukubuka i-RPC</string>
     <string name="select_a_config">Khetha isilungiselelo</string>
     <string name="login_with_discord">Ngena ng Discord</string>
+    <string name="rich_presence_active">I-Rich Presence isisebenzi</string>
     <string name="github_readme">README</string>
     <string name="github_readme_desc">Buka indawo ye-Github</string>
-    <string name="github_latest_release">"Latest release "</string>
+    <string name="github_latest_release">&quot;Ukukhululwa okusezingeni eliphezulu &quot;</string>
     <string name="github_latest_release_desc">Bheka inguqulo emva kushintshwa</string>
     <string name="github_issue">Isinkinga se-Github</string>
     <string name="github_issue_desc">Thumela isinkinga sokubika iphutha noma ucelo lomsebenzi</string>
@@ -34,25 +41,28 @@
     <string name="enable_artist_name">Vumela igama lomculi</string>
     <string name="enable_album_name">Vumela igama le-album</string>
     <string name="show_app_icon">Bonisa isithombe somhlelo</string>
+    <string name="show_channel_icon">Bonisa Isithonjana Sesiteshi</string>
+    <string name="show_channel_icon_desc">Bonisa isithonjana somabonakude/iziteshi njengesithombe esincane (umabonakude/umculo wesiteshi esisodwa kuphela)</string>
     <string name="enable_timestamps">Vumela izikhathi</string>
     <string name="timestamp_mode">Imo yesikhathi</string>
     <string name="start_timestamp_ms">Isikhathi sokuqala (ngemillisecond)</string>
     <string name="end_timestamp_ms">Isikhathi sopheli (ngemillisecond)</string>
-    <string name="text_after_permission_denied">Storage access is important for this app to store
-        configs in public directories. Please grant the permission.</string>
-    <string name="request_for_storage_access">Storage permission required for config features to
-        work. Please grant the permission.</string>
+    <string name="text_after_permission_denied">Ukufinyelela kwe-Storage kubalulekile kule app ukugcina
+        amafayela eziteshini ezivulekile. Ngiyacela unikeze imvume.</string>
+    <string name="request_for_storage_access">Imvume ye-Storage idingeka ukuze izici zokumisa
+        zisebenze. Ngiyacela unikeze imvume.</string>
     <string name="grant_permission">Nika imvume</string>
     <string name="use_low_res_icon">Sebenzisa imifanekelo ephantsi</string>
-    <string name="use_low_res_icon_desc">Use a lower resolution app icon for displaying on RPC (turn
-        this on if the RPC is crashing). This setting will also be applied to Apps.</string>
+    <string name="use_low_res_icon_desc">Sebenzisa isithonjana se-app esinokuncane kokusobala
+        ukubonisa ku-RPC (vula lokhu uma i-RPC iyaqhephuka). Lokhu kuzosetwa
+        nakwi-Apps.</string>
     <string name="delete_saved_icon_urls">Susa izixhumi zemifanekelo ezisavele</string>
-    <string name="delete_saved_icon_urls_desc">Delete app icon URLs saved in local files (Only use
-        this as needed as it will send images to Discord servers again, which will consume more
-        data)</string>
+    <string name="delete_saved_icon_urls_desc">Susa ama-URL esithonjana se-app agciniwe emafayeleni
+        asendaweni (Sebenzisa lokhu kuphela uma kudingeka ngoba kuzothumela
+        izithombe ezinkonjweni ze-Discord futhi kuzodla idatha eningi)</string>
     <string name="app_crashed">Uhlelo lususekile</string>
-    <string name="share_crash_logs_desc">Please send the Logs in Discord channel with the following
-        stacktrace :</string>
+    <string name="share_crash_logs_desc">Ngiyacela uthumele amalogi esiteshi se-Discord
+        nilandele lo mqondo olandelayo :</string>
     <string name="share_crash_logs">YABELANA AMAREKHODI</string>
     <string name="welcome">Siyakwamukela</string>
     <string name="features">Izinto</string>
@@ -65,6 +75,12 @@
     <string name="enable_appsRpc">Vumela ukuthola izinhelo</string>
     <string name="usage_access">Ufinyezo lokusebenzisa luyidingekile</string>
     <string name="usage_access_desc">Uhlelo ludinga ufinyezo lokusebenzisa ukuze luthole uhlelo olusebenzayo manje</string>
+    <string name="allow_usage_access">Vumela Ukufinyelela Kokusetshenziswa</string>
+    <string name="allow_usage_access_desc">Isinyathelo 2: Vula izilungiselelo zokufinyelela
+        kokusetshenziswa bese uvula u-Kizzy-Enhanced.</string>
+    <string name="usage_access_required_for_app_detection">Ukufinyelela kokusetshenziswa kuyadingeka
+        ekuhloleni kwe-app. Ngiyacela unikeze emilayeleni ye-Settings.</string>
+    <string name="logged_in">Ungenile</string>
     <string name="enable_mediaRpc">Vumela i-Media RPC</string>
     <string name="permission_required">Imvume iyadingekile</string>
     <string name="enable_customRpc">Vumela i-Custom RPC</string>
@@ -72,15 +88,45 @@
     <string name="privacy_policy">Umgqatelo wemvuso</string>
     <string name="privacy_policy_desc">Bheka umgqatelo wemvuso</string>
     <string name="enable_console_rpc">Vumela i-Console RPC</string>
+    <string name="console_auto_detect">Ukuthola i-DroidDeck / Eden ngokuzenzakalayo</string>
+    <string name="console_include_spoofed">Faka ukwengeziyo ukuthi</string>
+    <string name="console_detected">Kutholwe</string>
+    <string name="console_detected_in_game">Ngaphakathi komdlalo</string>
+    <string name="console_detected_hint">Cindisha ukuze usebenzise lo mdlalo we-Console RPC</string>
+    <string name="console_platform">Uhlelo</string>
+    <string name="console_activity_type">Uhlobo Lenzenzo</string>
+    <string name="console_status">Isimo</string>
+    <string name="console_enable_timestamps">Vula Amathegi Esikhathi</string>
+    <string name="console_enable_timestamps_desc">Bonisa amathegi esiqalo nesokugcina</string>
+    <string name="console_show_cover_art">Bonisa Umbhalo Webhokisi</string>
+    <string name="console_show_cover_art_desc">Bonisa umbhalo webhokisi wemidlalo ehloliwe</string>
+    <string name="console_preset_games">Imidlalo ehhleliwe</string>
+    <string name="console_preset_xbox">Xbox</string>
+    <string name="console_preset_playstation">PlayStation</string>
+    <string name="console_preset_nintendo">Nintendo</string>
+    <string name="console_preset_nintendo_switch_2">Nintendo Switch 2</string>
+    <string name="console_preset_desktop">I-Desktop</string>
+    <string name="rpc_tab_custom_settings">I-Custom RPC</string>
+    <string name="rpc_tab_console_presets">I-Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">Khetha okusethiwe ukuze ulungise i-Console RPC ngokushesha. Ungabhulisa inani ngayinye ngemuva kuthe Custom RPC ithebhu.</string>
+    <string name="rpc_tab_back_to_settings">Buyela kuzilungiseliso ze Custom RPC</string>
+    <string name="console_buttons">Amabhathoni</string>
+    <string name="console_buttons_desc">Hlela amabhathoni akhethekile</string>
     <string name="rpc_settings_button_configs">Izilungiselelo zezinkiniso ze-Media ne-AppDetection RPC</string>
     <string name="use_custom_buttons">Sebenzisa izinkiniso zakho</string>
-    <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
-        RPC</string>
+    <string name="use_custom_buttons_desc">Sebenzisa amabhathoni akhethekile ukubonisa ku-Media
+        ne-AppDetection RPC</string>
     <string name="follow_system">Landela uhlelo</string>
     <string name="advance_settings">Izilungiselelo eliqhubekayo</string>
     <string name="amoled">Ithemu ye-AMOLED</string>
     <string name="dynamic_color">Icolor ephucukile</string>
     <string name="dynamic_color_desc">Sebenzisa imibala ye-backdrop</string>
+    <string name="theme_style">Isitayela seThimba</string>
+    <string name="theme_style_desc">Khetha uhlelo lokuklama olusetshenziswa kulo lonke
+        uhlelo lokusebenza</string>
+    <string name="theme_style_kizzy">Kizzy (Okuguquguqukayo)</string>
+    <string name="theme_style_discord_dark">I-Discord Emnyama</string>
+    <string name="theme_style_discord_light">I-Discord Ekhabhane</string>
     <string name="cancel">Khansela</string>
     <string name="confirm">Qinisa</string>
     <string name="primary_color">Icolor ephambili</string>
@@ -89,8 +135,19 @@
     <string name="android_off">Kucinywe</string>
     <string name="setup">Ukulungiselela</string>
     <string name="user_data_policy">Lo hlelo alukusiza iqedo yedata yomsebenzisi</string>
-    <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions
-        to make sure all the features of the app work.</string>
+    <string name="setup_desc">Ngaphambi kokuthuthukela phambili, kunconywa ukwenza
+        izinyathelo ezidingekayo ukuze uqinisekise ukuthi zonke izici
+        zokusebenza zisebenza.</string>
+    <string name="discord_setup_title">Ngaphambi kokuba qale</string>
+    <string name="discord_setup_desc">Uqinisekise ukuthi i-Discord ivumela umsebenzi wakho ukubonakala ku-prophile yakho.</string>
+    <string name="discord_step1_title">Isinyathelo 1: Vula izilungiselelo zokubucwaningi</string>
+    <string name="discord_step1_content">Vula i-app ye-Discord → cindisha isithombe sakho ("Wena") → cindisha Izilungiselelo (⚙️) → skroliya phansi bese ucindisha "Umsayezo kanye Nezokuxhumana" (noma "Ubucwaningi bemsebenzi" emVERSIONS ezindala).</string>
+    <string name="discord_step2_title">Isinyathelo 2: Vula ukwabelana nomsebenzi</string>
+    <string name="discord_step2_content">Thola "Ukwabelana nomsebenzi wami" bese uyakuvula. Ngaphansi kwe"Ukuthi ngabelana nomsebenzi nini", khetha "Ukwabelana emisebenzini yonke". Skroliya ku-"Izinsiza zami" bese uvula izinsiza ofuna ukuthi isimo sakho sibonakale.</string>
+    <string name="discord_step3_title">Isinyathelo 3: Bheka isimo sakho se-inthanethi</string>
+    <string name="discord_step3_content">Cindisha isimo lakho (ngaphansi kwegama lakho) bese ukhetha Ku-inthanethi, Akukho okwenzakayo noma Ungomi. ⚠️ Ungasebenzisi Ukuxhweka — Discord ifihla umsebenzi wa Kizzy uma unguxhweka.</string>
+    <string name="discord_tip_title">Uthola "Ukwabelana nomsebenzi wami"?</string>
+    <string name="discord_tip_content">Ezinye izinguqulo zemobha ze-Discord zifihla lo switch. Vula i-discord.com ku-Chrome → nika i-sitesi ye-Desktop → ngena ngemilayezo → Izilungiselelo (⚙️) → Ubucwaningi bemsebenzi → vula "Ukwabelana nomsebenzi wami".</string>
     <string name="permission_granted">Inikwa</string>
     <string name="permission_not_granted">Akikunikezwa, ucindize ukuze unike imvume</string>
     <string name="activity_large_text">Umbhalo olukhulu somsebeni</string>
@@ -98,46 +155,140 @@
     <string name="contributors">Abab contribute</string>
     <string name="stream_url">I-URL yomucu</string>
     <string name="stream_url_info">Amagu URL asuka ku-https://twitch.tv/ ne-https://youtube.com/ kuphela asebenzeka.</string>
+    <string name="rpc_details_url">I-URL Yemininingwane</string>
+    <string name="rpc_state_url">I-URL Yesimo</string>
+    <string name="rpc_large_url">I-URL Yesithombe Esikhulu</string>
+    <string name="rpc_small_url">I-URL Yesithombe Esincane</string>
     <string name="activity_button_max_character">Umugwa wamagama uhlaka 31</string>
-    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom RPC
-        Fields</string>
-    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom RPC
-        from the last run RPC</string>
+    <string name="set_previous_run_config_in_custom_rpc">Beka isimo sokugcina sisebenzile
+        emibolweni ye-Custom RPC</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Misa ngokuzenzekelayo imibholo
+        ye-Custom RPC ivela ekuhlelweni kokugcina okusebenzile</string>
     <string name="clear_all_fields">Cisha konke imiziba</string>
+    <string name="activity_button_maxCharacter">Umkhawulo omkhulu wezinhlamvu ngu-31</string>
+    <string name="activity_competingTitle">Isihloko Sokuncintisana</string>
+    <string name="activity_competing_title">Isihloko Sokuncintisana</string>
+    <string name="activity_competitive">Okuncintisanayo</string>
+    <string name="activity_largeText">Umbhalo Omkhulu Wenzenzo</string>
+    <string name="activity_listeningTitle">Ukulalela</string>
+    <string name="activity_playingTitle">Ukudlala</string>
+    <string name="activity_smallText">Umbhalo Omncane Wenzenzo</string>
+    <string name="activity_streamingTitle">Ukuthumela ngesikhathi esifanayo</string>
+    <string name="activity_watchingTitle">Ukubuka</string>
+    <string name="advanceSettings">Izilungiselelo Ezithuthukisiwe</string>
+    <string name="app_preferencesDesc">Incazelo Yezinqumo Ze-app</string>
+    <string name="completion_appName">Igama Le-app</string>
+    <string name="completion_media_albumArtist">Umculi We-album</string>
+    <string name="config_nameEmpty">Igama alinalo</string>
+    <string name="creditsDesc">Incazelo Yemibhalo Ehlwayo</string>
+    <string name="designCredits">Ukubonga Kokuklama</string>
+    <string name="dynamicColorDesc">Incazelo Yombala Oguquguqukayo</string>
+    <string name="enableAlbumName">Vula Igama Le-album</string>
+    <string name="enableAppsRpc">Vula I-RPC Ye-Apps</string>
+    <string name="enableCustomRpc">Vula I-Custom RPC</string>
+    <string name="enableMediaRpc">Vula I-Media RPC</string>
+    <string name="enableTimestamps">Vula Amathegi Esikhathi</string>
+    <string name="enable_albumName">Vula Igama Le-album</string>
+    <string name="permissionRequired">Imvume Iyadingeka</string>
+    <string name="primaryColor">Umbala Oyinhloko</string>
+    <string name="primary_colorHint">Iphuzu Lombala Oyinhloko</string>
+    <string name="privacy_policyDesc">Incazelo Yenqubomgomo Yobumfihlo</string>
+    <string name="requestForStorageAccess">Cela Ukufinyelela Kwe-Storage</string>
+    <string name="request_for_notificationAccess">Cela Ukufinyelela Kwezaziso</string>
+    <string name="request_for_postNotification">Cela Imvume Yokukhipha Izaziso</string>
+    <string name="request_for_post_notcription">Cela Imvume Yokukhipha Izaziso</string>
+    <string name="request_for_storageAccess">Cela Ukufinyelela Kwe-Storage</string>
+    <string name="set_imgur_client_idDesc">Incazelo Yokubeka I-Imgur Client ID</string>
+    <string name="set_previousRunConfigInCustomRpc">Beka isimo sokugcina sisebenzile ku-Custom RPC</string>
+    <string name="set_previousRunConfigInCustomRpcDesc">Incazelo yokubeka isimo sokugcina
+        sisebenzile ku-Custom RPC</string>
+    <string name="set_previousRunConfigInCustom_rpc_desc">Incazelo yokubeka isimo sokugcina
+        sisebenzile ku-Custom RPC</string>
+    <string name="set_previous_run_config_in_customRpc">Beka isimo sokugcina sisebenzile ku-Custom RPC</string>
+    <string name="shareCrashLogs">Yabelana Ngamalogi Okuqhephukile</string>
+    <string name="share_crashLogsDesc">Incazelo yokwabelana ngamalogi okuqhephukile</string>
+    <string name="share_crash_logsDesc">Incazelo yokwabelana ngamalogi okuqhephukile</string>
+    <string name="showAppIcon">Bonisa Isithonjana Se-app</string>
+    <string name="show_appIcon">Bonisa Isithonjana Se-app</string>
+    <string name="show_coverArt">Bonisa Umbhalo Webhokisi</string>
+    <string name="show_coverArtDesc">Incazelo yokubonisa umbhalo webhokisi</string>
+    <string name="show_coverArt_desc">Incazelo yokubonisa umbhalo webhokisi</string>
+    <string name="show_playbackState">Bonisa Isimo Sokudlala</string>
+    <string name="show_songAsTitle">Bonisa Ingoma njengesihloko</string>
+    <string name="startTimestampMs">Ithegi Yokuqala</string>
+    <string name="start_appDetectionToast">Isaziso Sokuqala Sokuhlola I-app</string>
+    <string name="start_appNow">Qalisa I-app Manje</string>
+    <string name="start_app_detection">Qalisa Ukuhlola I-app</string>
+    <string name="start_app_detection_toast">Isaziso Sokuqala Sokuhlola I-app</string>
+    <string name="start_manual_rpc">Qala i-Manual RPC</string>
+    <string name="start_manual_rpc_toast">I-Manual RPC iqale</string>
+    <string name="start_media_rpc">Qala i-Media RPC</string>
+    <string name="start_media_rpc_toast">I-Media RPC iqale</string>
+    <string name="stop_rpcToast">Isaziso Soku imisa I-RPC</string>
+    <string name="streamUrl">I-URL Yokuthumela</string>
+    <string name="streamUrlInfo">Ulwazi Lwe-URL Yokuthumela</string>
+    <string name="textAfterPermissionDenied">Umbhalo Ngemva Kokwenqatshelwa Imvume</string>
+    <string name="timestampMode">Imodeli Yamathegi Esikhathi</string>
+    <string name="timestamp_mode_common">Imodeli Yamathegi Esikhathi Evamile</string>
+    <string name="type_toInsertVariable">Bhala ukufaka ishintshi</string>
+    <string name="update_check_forUpdate">Hlola Ukuvuselelwa</string>
+    <string name="update_noUpdatesAvailable">Ayikho ukuvuselelwa okutholakalayo</string>
+    <string name="usageAccess">Ukufinyelela Kokusetshenziswa</string>
+    <string name="usageAccessDesc">Incazelo Yokufinyelela Kokusetshenziswa</string>
+    <string name="usage_accessDesc">Incazelo Yokufinyelela Kokusetshenziswa</string>
+    <string name="useLowResIcon">Sebenzisa Isithonjana Esinokuncane</string>
+    <string name="useLowResIconDesc">Incazelo Yokusebenzisa Isithonjana Esinokuncane</string>
+    <string name="use_a_vpnDesc">Incazelo Yokusebenzisa I-VPN</string>
+    <string name="use_custom_buttonsDesc">Incazelo Yokusebenzisa Amabhathoni Akhethekile</string>
+    <string name="use_imgurDesc">Incazelo Yokusebenzisa I-Imgur</string>
+    <string name="use_youtubeButton">Sebenzisa Ibhathoni Ye-YouTube</string>
+    <string name="use_youtubeButtonDesc">Incazelo Yokusebenzisa Ibhathoni Ye-YouTube</string>
+    <string name="use_youtubeButton_desc">Incazelo Yokusebenzisa Ibhathoni Ye-YouTube</string>
+    <string name="user_dataPolicy">Inqubomgomo Yedatha Yomsebenzisi</string>
+    <string name="user_profileError">Iphutha Leprofayela Yomsebenzisi</string>
+    <string name="user_profileRpcName">Igama Le-RPC Leprofayela Yomsebenzisi</string>
+    <string name="user_profile_rpcName">Igama Le-RPC Leprofayela Yomsebenzisi</string>
+    <string name="user_profile_specialButton">Ibhathoni Ekhethiwe Leprofayela Yomsebenzisi</string>
     <string name="share_config">Yabelana isilungiselelo</string>
     <string name="change_log">Umlando woshintshiso</string>
     <string name="update">Lungisa</string>
     <string name="configs_directory">Isiqondiso sezingiselelo</string>
     <string name="custom_activity_type">Uhlobo lomsebeni olungisiwe</string>
-    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
-        and experimental RPC only</string>
+    <string name="custom_activity_type_desc">Yenza ukweqiwa uhlobo lwenzenzo
+        oluzenzakalele. Isebenela ku-Media
+        ne-experimental RPC kuphela</string>
     <string name="custom_activity_status">Isimo somsebeni esilungisiwe</string>
     <string name="custom_activity_status_desc">Ushintshela isimo somsebeni esizenzile</string>
     <string name="search">Sesha</string>
+    <string name="selected">Okukhethiwe</string>
     <string name="clear">Cisha</string>
     <string name="search_placeholder">Sesha…</string>
     <string name="hide_on_pause">Fihla i-RPC ngesikhathi esimekile</string>
     <string name="idling_notification">Akukho okwenzakayo…</string>
     <string name="main_appDetection">Ukuthola izinhelo</string>
-    <string name="main_appDetection_details">Kizzy allows you to share your current activity on
-        Discord by detecting what app you\'re using on your device.</string>
-    <string name="main_mediaRpc">Media RPC</string>
-    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
-        Discord, such as the song or video you\'re currently listening to or watching.</string>
-    <string name="main_customRpc">Custom RPC</string>
-    <string name="main_consoleRpc">Console RPC</string>
-    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
-        your presence on Discord.</string>
-    <string name="main_ManualRpc">Manual RPC</string>
-    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
-        constantly switches between Apps RPC and Media RPC.</string>
-    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
-        rich presence for Discord.</string>
+    <string name="main_appDetection_details">I-Kizzy ikuvumela ukwabelana ngenzenzo yakho
+        manje kwi-Discord ngokuhlola ukuthi iyiphi i-app oyisebenzisayo
+        kudivayisi lakho.</string>
+    <string name="main_mediaRpc">I-Media RPC</string>
+    <string name="main_mediaRpc_details">I-Kizzy ikuvumela ukwabelana ngenzenzo yakho
+        yezokudlala manje kwi-Discord, njengingoma noma umabonakude
+        obukwayo manje.</string>
+    <string name="main_customRpc">I-Custom RPC</string>
+    <string name="main_consoleRpc">I-Console RPC</string>
+    <string name="main_consoleRpc_details">I-Kizzy ikuvumela ukusebenzisa amanye ama-preset
+        akhethiwe ukumisa ukubukwayo kwakho kwi-Discord.</string>
+    <string name="main_ManualRpc">I-Manual RPC</string>
+    <string name="main_ManualRpc_details">I-Manual RPC inhlelo esebenza ku-Kizzy eshintshana
+        njalo phakathi kwe-RPC ye-Apps ne-Media RPC.</string>
+    <string name="main_customRpc_details">I-Kizzy ikuvumela ukwakha owakho ubukhona
+        obucebile ngokwezifiso be-Discord.</string>
+    <string name="add_rpc_title">Faka I-RPC</string>
+    <string name="add_rpc_select_type">Khetha uhlobo lwe-RPC:</string>
     <string name="main_comingSoon">Izokushesha</string>
     <string name="exit">Phuma</string>
     <string name="logs">Amarekhodi</string>
     <string name="drawer_subtitle_help">USIZO</string>
-    <string name="drawer_faq">FAQ</string>
+    <string name="drawer_faq">Imibuzo Evame Ukubuzwa</string>
     <string name="go_to_profile">Yiya ku-prophile</string>
     <string name="version">Ingqindisi</string>
     <string name="try_again">Zamezela futhi</string>
@@ -152,26 +303,37 @@
     <string name="no_internet_user_profile">Akukho uxhunxwano lwe-inthanethi. Zamezela emva.</string>
     <string name="user_profile_rpc_name">ISEbenzISA I-KIZZY RICH PRESENCE</string>
     <string name="user_profile_bio">NGAMANA</string>
+    <string name="user_profile_no_bio">Ayikho ibhayobhayo okwamanje.</string>
+    <string name="user_profile_bio_oauth_note">Ibhayobhayo ayitholakali nge-Discord OAuth2.
+        Ngena ngethokhini ye-akhawunti ukubonisa.</string>
+    <string name="profile_view_full_bio">Buka Ibhayobhayo Ephelele</string>
+    <string name="profile_show_less">Bonisa Okuncane</string>
+    <string name="profile_open_rpc_preview">Vula Ukubuka Kwe-RPC</string>
     <string name="user_profile_special_button">Inkiniso elikhethekile</string>
     <string name="user_profile">I-prophile yomsebenzisi</string>
     <string name="logout">Phuma</string>
     <string name="custom_rpc_directory">Isiqondiso sokugcina izilungiselelo ze-Custom RPC</string>
     <string name="select_directory">Khetha isiqondiso</string>
     <string name="enter_details">Faka imininingi</string>
-    <string name="status_online">Online</string>
+    <string name="status_online">Ku-inthanethi</string>
     <string name="status_idle">Akukho okwenzakayo…</string>
     <string name="status_dnd">Ungowazi</string>
     <string name="status_invisible_offline">Ihlolwe futhi libonakaliswa njenge-offline</string>
-    <string name="status_offline">Offline</string>
+    <string name="status_offline">Kungaxhunyiwe</string>
     <string name="notification_access">Imvume yezaziso</string>
     <string name="post_notification">Thumela isaziso</string>
     <string name="request_for_post_notification">Nika imvume yokubonisa izaziso</string>
     <string name="storage_access">Ufinyezo lokugcina</string>
+    <string name="battery_optimization">Ukulungisa Ibhethri</string>
+    <string name="battery_optimization_desc">Gcina i-Kizzy isebenza ngemuva ukuze i-Discord
+        Rich Presence ingapheli emva kwesikathi</string>
+    <string name="battery_optimization_unrestricted">Okungenamkhawulo</string>
+    <string name="battery_optimization_restricted">Okuncishisiwe</string>
     <string name="start_app_now">Qala uhlelo manje</string>
     <string name="skip">Nguphuthele</string>
     <string name="party_current">Usayizi lwamanje epheshegeni</string>
     <string name="party_max">Usayizi olukhulu lwepheshegeni</string>
-    <string name="user_profile_party">(%1$d of %2$d)</string>
+    <string name="user_profile_party">(%1$d kuka %2$d)</string>
     <string name="auto_scroll">Ukuziphuzula okuzenzekelayo</string>
     <string name="party_invalid_number">Usayizi lwepheshegeni kumele lube yonke</string>
     <string name="party_less_than_zero">Usayizi lwepheshegeni kumele lube kunophezulu</string>
@@ -182,7 +344,7 @@
     <string name="upload_image">Layisha isithombe</string>
     <string name="save">Gcina</string>
     <string name="set_timestamps">Beka izikhathi</string>
-    <string name="saved_config_toast">Saved "%1$s" successfully</string>
+    <string name="saved_config_toast">Ukugcinwa kwe &quot;%1$s&quot; kwenziwe ngempumelelo</string>
     <string name="error_saving_config_toast">Iphutha ekusavelweni izilungiselelo</string>
     <string name="config_name">Igama lesilungiselelo</string>
     <string name="delete">Susa</string>
@@ -209,25 +371,24 @@
     <string name="use_imgur">Imgur njengomuntu wemifanekelo</string>
     <string name="use_imgur_desc">Sebenzisa i-Imgur njengomuntu othile wemifanekelo.</string>
     <string name="start_appDetection">Qala ukuthola izinhelo</string>
-    <string name="start_media_rpc">Qala i-Media RPC</string>
-    <string name="start_manual_rpc">Qala i-Manual RPC</string>
     <string name="stop_rpc">Yima i-RPC</string>
     <string name="stop">Yima</string>
     <string name="start_appDetection_toast">Ukuthola izinhelo kuqale</string>
-    <string name="start_media_rpc_toast">I-Media RPC iqale</string>
-    <string name="start_manual_rpc_toast">I-Manual RPC iqale</string>
     <string name="stop_rpc_toast">Zonke izinsiza zimiswe</string>
     <string name="show_playback_state">Bonisa isimo sokudlala</string>
     <string name="copied_to_clipboard">Ikopishelwe ku-clipboard</string>
     <string name="application_id">I-ID yohlelo</string>
     <string name="custom_application_id">I-ID yesihlo Discord esilungisiwe</string>
     <string name="custom_application_id_desc">Ushintshela i-ID yesihlo Discord esizenzile</string>
-    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
-        Please use a VPN/DPI to proceed.</string>
-    <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
-        Empty fields will use default behavior or be omitted."</string>
+    <string name="use_a_vpn_desc">Ukungena kwe-Discord kungase ungasebenzi elizweni lakho ngaphandle kwe-VPN/DPI.
+        Ngiyacela usebenzise i-VPN/DPI ukuze uqhubeke.</string>
+    <string name="rpc_templates_note">Sebenzisa izikhala esikhundleni se-{{app_name}},
+        {{media_title}}, njl.
+        Imibholo engenalo izosebenzisa isimo esizenzakalele noma izokhiphwa.</string>
     <string name="manual_rpc_detect_apps">Vumela i-Manual RPC ukuthola izinhelo ezisebenzayo</string>
     <string name="manual_rpc_detect_media">Vumela i-Manual RPC ukuthola ukudlalwa kwemezinto</string>
+    <string name="manual_rpc_detect_artist">Vumela i-Manual RPC ukubonisa igama lomculi</string>
+    <string name="manual_rpc_detect_album">Vumela i-Manual RPC ukubonisa igama le-album</string>
     <string name="app_preferences">Izilungiselelo zohlelo</string>
     <string name="app_preferences_desc">Khetha izinhelo ezisebenzayo ku-Manual RPC</string>
     <string name="completion_media_title">Isihloko somculo/ividiyo</string>
@@ -246,20 +407,29 @@
     <string name="completion_playback">Isimo sokudlala</string>
     <string name="imgur_client_id">I-ID yomuntu we-Imgur</string>
     <string name="set_imgur_client_id">Beka i-ID yomuntu we-Imgur</string>
-    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
-        setting your own Client ID</string>
+    <string name="set_imgur_client_id_desc">Uma izithombe zingabeki usebenzisa i-Imgur,
+        ungazama ukubeka owakho i-Client ID</string>
     <string name="show_song_as_title">Bonisa umculo njengesihloko</string>
+    <string name="show_app_name_in_details">Bonisa Igama Le-app Emininingwane</string>
+    <string name="show_app_name_in_details_desc">Faka \&quot; • igama le-app\&quot; emugqeni wemininingwane
+        (umugqa 2) wokubukwayo kwe-media RPC</string>
+    <string name="media_rpc_use_apps_rpc">Bonisa Ama-app Nemidlalo</string>
+    <string name="media_rpc_use_apps_rpc_desc">Uma akukho media ephuzwa, bonisa uhlelo
+        lokusebenza noma umdlalo ovuliwe manje njengenzenzo yakho
+        ye-Discord</string>
     <string name="use_youtube_button">Faka inkiniso ye-Media</string>
-    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
-        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="use_youtube_button_desc">Faka ngokuzenzekelayo ibhathoni okungayicindezela
+        (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic)
+        uma udlala imidiya</string>
     <string name="link_to_artist_channel">Isixhumi esiqhubekayo nomugela womculi</string>
     <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
     <string name="manual_rpc_title_toggle">Isihloko</string>
-    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
-        of app name</string>
+    <string name="manual_rpc_title_toggle_desc">Bonisa ulwazi lwengoma esihlokweni senzenzo
+        esikhundleni segama le-app</string>
     <string name="title_source_song">Igana lomculo</string>
     <string name="title_source_artist">Umculi</string>
-    <string name="type_to_insert_variable">Type \'{{\' to insert a variable</string>
+    <string name="type_to_insert_variable">"Bhala \'{{\' ukufaka ishintshi"</string>
     <string name="app_selection">Ukukhetha kuhlelo</string>
     <string name="platform_none_desktop">Akukho (i-desktop)</string>
     <string name="platform_desktop">I-desktop</string>
@@ -269,84 +439,235 @@
     <string name="platform_xbox">Xbox</string>
     <string name="platform_playstation">Playstation</string>
     <string name="platform_vr">VR</string>
+    <string name="platform_samsung">Samsung</string>
+    <string name="platform_ps4">PlayStation 4</string>
+    <string name="platform_ps5">PlayStation 5</string>
+    <string name="platform_nintendo_switch_2">Nintendo Switch 2</string>
+    <string name="platform_droideck">DroidDeck</string>
+    <string name="platform_eden">Eden</string>
     <string name="timestamp_mode_default">Izinto/Hlelo (okuzenzekelayo)</string>
     <string name="timestamp_mode_current">Kufanana nesikhathi samanje usuku</string>
     <string name="timestamp_mode_custom">Olungisiwe</string>
     <string name="update_installing">Iyafakwa…</string>
     <string name="update_download_error">Ukulanda akuphumele. Zamezela futhi.</string>
-
+    <string name="save_logs_to_file">Songa amarekhodi kwifayela</string>
+    <string name="rpc_hide_cover_art">Fihla Izithombe Zebhokisi</string>
+    <string name="rpc_hide_cover_art_desc">Bonisa umbhalo kuphela kuzo zonke izinhlobo
+        ze-RPC (Media, Custom, Console, Experimental). Izibhokisi
+        ngeke zibonakale kwi-Discord.</string>
+    <string name="rpc_default_cover_art_large">Ibhokisi Elikhulu Elizenzakalele</string>
+    <string name="rpc_default_cover_art_large_desc">I-URL yesithombe esisetshenziswa njengesithombe
+        esikhulu uma isaziso singenasithombe</string>
+    <string name="rpc_default_cover_art_small">Ibhokisi Elicane Elizenzakalele</string>
+    <string name="rpc_default_cover_art_small_desc">I-URL yesithombe esisetshenziswa njengesithombe
+        esincane uma isaziso singenasithombe</string>
     <string name="rpc_connection_method">Indlela yokuxhumana</string>
     <string name="rpc_connection_method_desc">Khetha ukuthi Kizzy luxhumana ne-Discord</string>
     <string name="rpc_connection_method_gateway">Gateway (itokheni lebhot)</string>
     <string name="rpc_connection_method_oauth2">OAuth (i-akhawni lakho le-Discord)</string>
     <string name="discord_oauth2_authorize">Xhumana ne-Discord</string>
     <string name="discord_oauth2_authorize_desc">Vumela i-Kizzy ukubonisa umsebenzi wakho ku-profaili yakho ye-Discord</string>
-
-    <string name="console_include_spoofed">Faka ukwengeziyo ukuthi</string>
-    <string name="auto_detect">Okuzenzakalayo · %1$s</string>
-    <string name="save_logs_to_file">Songa amarekhodi kwifayela</string>
+    <string name="discord_oauth2_client_id">I-Discord OAuth Client ID</string>
+    <string name="discord_oauth2_client_id_desc">Okukhethiwe: Faka i-Discord Application ID yakho
+        (Client ID) kusuka ku-https://discord.com/developers/applications.
+        Shiya ingenalutho ukusebenzisa ixhunyambo le-Gateway esikhundleni.</string>
     <string name="logs_saved_toast">Amarekhodi asonjathelwe ku-%1$s</string>
-    <string name="discord_step3_content">Cindisha isimo lakho (ngaphansi kwegama lakho) bese ukhetha Ku-inthanethi, Akukho okwenzakayo noma Ungomi. ⚠️ Ungasebenzisi Ukuxhweka — Discord ifihla umsebenzi wa Kizzy uma unguxhweka.</string>
-    <string name="discord_setup_title">Ngaphambi kokuba qale</string>
-    <string name="console_auto_detect">Ukuthola i-DroidDeck / Eden ngokuzenzakalayo</string>
-    <string name="console_detected_hint">Cindisha ukuze usebenzise lo mdlalo we-Console RPC</string>
-    <string name="discord_step2_content">Thola "Ukwabelana nomsebenzi wami" bese uyakuvula. Ngaphansi kwe"Ukuthi ngabelana nomsebenzi nini", khetha "Ukwabelana emisebenzini yonke". Skroliya ku-"Izinsiza zami" bese uvula izinsiza ofuna ukuthi isimo sakho sibonakale.</string>
-    <string name="discord_tip_content">Ezinye izinguqulo zemobha ze-Discord zifihla lo switch. Vula i-discord.com ku-Chrome → nika i-sitesi ye-Desktop → ngena ngemilayezo → Izilungiselelo (⚙️) → Ubucwaningi bemsebenzi → vula "Ukwabelana nomsebenzi wami".</string>
-    <string name="discord_setup_desc">Uqinisekise ukuthi i-Discord ivumela umsebenzi wakho ukubonakala ku-prophile yakho.</string>
-    <string name="auto_detect_activity_type_desc">Ezinye izinhlelo zemculo zithola umculo, kanti izinhlelo zevidiyo zithola ividiyo, ngakho YouTube Music akusabikadi ukubonakala njengomdlalo. Uhlobo olukhethiwe izinhlelo ezingabhali zihlaba njengolunye.</string>
-    <string name="auto_detect_activity_type">Ukuthola uhlobo lwemsebenzi ngokuzenzakalayo</string>
     <string name="logs_save_error">Akuphezu ukusonga amarekhodi</string>
-    <string name="discord_tip_title">Uthola "Ukwabelana nomsebenzi wami"?</string>
-    <string name="console_detected_in_game">Ngaphakathi komdlalo</string>
-    <string name="rich_presence_active">I-Rich Presence isisebenzi</string>
-    <string name="discord_step1_title">Isinyathelo 1: Vula izilungiselelo zokubucwaningi</string>
-    <string name="console_detected">Kutholwe</string>
-    <string name="discord_step2_title">Isinyathelo 2: Vula ukwabelana nomsebenzi</string>
-    <string name="discord_step1_content">Vula i-app ye-Discord → cindisha isithombe sakho ("Wena") → cindisha Izilungiselelo (⚙️) → skroliya phansi bese ucindisha "Umsayezo kanye Nezokuxhumana" (noma "Ubucwaningi bemsebenzi" emVERSIONS ezindala).</string>
-    <string name="activity_type_fallback_desc">Isetshenziselwa izinhlelo ezingaziwayo, kanye nazo zonke izinhlelo uma ukuthola ngokuzenzakalayo kukhutshiwe.</string>
-    <string name="discord_step3_title">Isinyathelo 3: Bheka isimo sakho se-inthanethi</string>
-
-    <string name="console_preset_games">Imidlalo ehhleliwe</string>
-
-    <string name="console_preset_xbox">Xbox</string>
-
-    <string name="console_preset_playstation">PlayStation</string>
-
-    <string name="console_preset_nintendo">Nintendo</string>
-
-    <string name="console_preset_desktop">Desktop</string>
-
-    <string name="rpc_tab_custom_settings">Custom RPC</string>
-    <string name="rpc_tab_console_presets">Console RPC</string>
-    <string name="rpc_tab_console_presets_desc">Khetha okusethiwe ukuze ulungise i-Console RPC ngokushesha. Ungabhulisa inani ngayinye ngemuva kuthe Custom RPC ithebhu.</string>
-    <string name="rpc_tab_back_to_settings">Buyela kuzilungiseliso ze Custom RPC</string>
-
+    <string name="turn_on_all_apps">Vula zonke ama-app</string>
+    <string name="turn_on_all_apps_desc">Vula i-Media RPC yayo yonke i-app</string>
+    <string name="turn_off_all_apps">Cima zonke ama-app</string>
+    <string name="turn_off_all_apps_desc">Cima i-Media RPC yayo yonke i-app</string>
     <string name="console_preset_android">Android</string>
-    <string name="console_preset_applied">Preset applied</string>
-    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
-    <string name="console_preset_delete_title">Delete preset?</string>
-    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_applied">I-preset isisetshenzisiwe</string>
+    <string name="console_preset_delete_desc">I-preset izosuswa ohlwini. Ama-preset asefakwe
+        ngaphakathi awakwazi ukususwa.</string>
+    <string name="console_preset_delete_title">Susa i-preset?</string>
+    <string name="console_preset_embedded">Okufakwe ngaphakathi</string>
     <string name="console_preset_droideck">DroidDeck</string>
     <string name="console_preset_eden">Eden (Switch)</string>
-    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_edit">Hlela i-preset</string>
     <string name="console_preset_ios">iOS</string>
-    <string name="console_preset_name">Preset name</string>
-    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_name">Igama Le-preset</string>
+    <string name="console_preset_new">I-preset Elisha</string>
     <string name="console_preset_ps4">PlayStation 4</string>
     <string name="console_preset_ps5">PlayStation 5</string>
     <string name="console_preset_samsung">Samsung</string>
-    <string name="console_presets_title">Presets</string>
-    <string name="console_options_title">Console RPC options</string>
-
-    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
-    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
-    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="console_presets_title">Ama-preset</string>
+    <string name="console_games_title">Imidlalo</string>
+    <string name="console_options_title">Izinketho Ze-Console RPC</string>
+    <string name="console_detected_games">Imidlalo Ehloliwe</string>
+    <string name="console_game_selected">%1$s ikhethiwe ye-Console RPC</string>
+    <string name="console_large_cover_art">I-URL Yebhokisi Elikhulu</string>
+    <string name="console_small_cover_art">I-URL Yebhokisi Elicane</string>
+    <string name="lastfm_settings_title">Ukurekhoda I-Last.fm</string>
+    <string name="lastfm_enabled">Vula I-Last.fm</string>
     <string name="lastfm_api_key">API Key</string>
     <string name="lastfm_secret">Secret</string>
-    <string name="lastfm_username">Username</string>
-    <string name="lastfm_password">Password</string>
-    <string name="lastfm_show_timestamps">Show Timestamps</string>
-    <string name="lastfm_show_cover_art">Show Cover Art</string>
-    <string name="lastfm_show_party_current">Show Party Current Size</string>
-    <string name="lastfm_show_party_max">Show Party Max Size</string>
+    <string name="lastfm_username">Igama Lomsebenzisi</string>
+    <string name="lastfm_password">Iphasiwedi</string>
+    <string name="lastfm_show_timestamps">Bonisa Amathegi Esikhathi</string>
+    <string name="lastfm_show_cover_art">Bonisa Umbhalo Webhokisi</string>
+    <string name="lastfm_show_party_current">Bonisa Usayizi Olusebenzayo Lweqembu</string>
+    <string name="lastfm_show_party_max">Bonisa Usayizi Omkhulu Lweqembu</string>
+    <string name="lastfm_login">Ngena</string>
+    <string name="lastfm_logout">Phuma</string>
+    <string name="lastfm_get_token">Thola Ithokhini</string>
+    <string name="lastfm_get_session">Thola i-Session</string>
+    <string name="lastfm_authenticated">Iqinisekisiwe</string>
+    <string name="lastfm_not_authenticated">Ayiqinisekisiwe</string>
+    <string name="lastfm_show_password">Bonisa iphasiwedi</string>
+    <string name="lastfm_hide_password">Fihla iphasiwedi</string>
+    <string name="librefm_settings_title">Ukurekhoda I-Libre.fm</string>
+    <string name="librefm_enabled">Vula I-Libre.fm</string>
+    <string name="librefm_api_key">I-Libre.fm API Key</string>
+    <string name="librefm_secret">I-Libre.fm API Secret</string>
+    <string name="librefm_username">I-Libre.fm Igama Lomsebenzisi</string>
+    <string name="librefm_password">I-Libre.fm Iphasiwedi</string>
+    <string name="librefm_api_key_desc">Yakha ikhiye ye-API ku-https://libre.fm/api-keys.php.
+        I-Libre.fm isebenzisa i-API ehambisana ne-Last.fm.</string>
+    <string name="listenbrainz_settings_title">Ukurekhoda I-ListenBrainz</string>
+    <string name="listenbrainz_enabled">Vula I-ListenBrainz</string>
+    <string name="listenbrainz_user_token">Ithokhini Yomsebenzisi</string>
+    <string name="listenbrainz_user_token_desc">Thola ithokhini yakho kusuka ku-https://listenbrainz.org/profile/</string>
+    <string name="listenbrainz_show_timestamps">Bonisa Amathegi Esikhathi</string>
+    <string name="listenbrainz_show_cover_art">Bonisa Umbhalo Webhokisi</string>
+    <string name="listenbrainz_show_party_current">Bonisa Usayizi Olusebenzayo Lweqembu</string>
+    <string name="listenbrainz_show_party_max">Bonisa Usayizi Omkhulu Lweqembu</string>
+    <string name="androidOff">Kucimile</string>
+    <string name="androidOn">Kuvuliwe</string>
+    <string name="clear_allFields">Sula Zonke Imibholo</string>
+    <string name="copied_toClipboard">Kukhishwe kwelungiselelo lokuncamathisela</string>
+    <string name="custom_application_idDesc">Yenza ukweqiwa i-Discord Application ID
+        ezinzakalele</string>
+    <string name="custom_rpcDirectory">Uhlu lwamafayela lwe-Custom RPC</string>
+    <string name="custom_rpcRunning">I-Custom RPC isebenza</string>
+    <string name="deleteSavedIconUrls">Susa ama-URL esithonjana agciniwe</string>
+    <string name="deleteSavedIconUrlsDesc">Susa ama-URL esithonjana akhethekile agciniwe
+        endaweni yakho</string>
+    <string name="delete_config_successfullyToast">%1$s isuliwe ngempumelelo</string>
+    <string name="drawer_subtitleHelp">Usizo lwesihlokwana se-drowa</string>
+    <string name="enableArtistName">Vula igama lomculi</string>
+    <string name="enable_artistName">Vula igama lomculi</string>
+    <string name="enable_consoleRpc">Vula I-Console RPC</string>
+    <string name="endTimestampMs">Ithegi Yokuphela (milliseconds)</string>
+    <string name="error_savingConfig_toast">Iphutha ekugcineni isimo</string>
+    <string name="githubIssue">Inkinga Ye-GitHub</string>
+    <string name="githubIssueDesc">Thumela inkinga yokuqopha ibhaga noma isicelo sesici</string>
+    <string name="github_issueDesc">Thumela inkinga yokuqopha ibhaga noma isicelo sesici</string>
+    <string name="github_latestRelease">Ukukhululwa okusezingeni eliphezulu</string>
+    <string name="github_latestReleaseDesc">Hlola ukuvuselelwa kwamashini amasha e-Android
+        nochungechunge lwoshintsho</string>
+    <string name="github_readmeDesc">Buka umphathi we-GitHub</string>
+    <string name="grantPermission">Nikeza imvume</string>
+    <string name="hide_onPause">Fihla I-RPC Uma Kuma</string>
+    <string name="idlingNotiification">Ukungasebenzi…</string>
+    <string name="link_toArtistChannel">Ixhunywa kwisiteshi somculi</string>
+    <string name="link_toArtistChannelDesc">Ixhunywa kwisiteshi somculi</string>
+    <string name="link_toArtistChannel_desc">Ixhunywa kwisiteshi somculi</string>
+    <string name="link_to_artistChannel">Ixhunywa kwisiteshi somculi</string>
+    <string name="link_to_artistChannel_desc">Ixhunywa kwisiteshi somculi</string>
+    <string name="main_ManualRpcDetails">I-Experimental RPC inhlelo esiphethe phakathi
+        kwe-RPC ye-Apps ne-Media RPC.</string>
+    <string name="main_appDetectionDetails">Isetshenziswa ukubona ukuthi iyiphi i-app
+        esebenza esiteshini sakho</string>
+    <string name="main_app_detection_details">Isetshenziswa ukubona ukuthi iyiphi i-app
+        esebenza esiteshini sakho</string>
+    <string name="main_consoleRpcDetails">Ikuvumela ukumisa ukubukwayo kwakho kwe-Discord
+        usebenzisa ama-preset akhethiwe</string>
+    <string name="main_console_rpc">I-Console RPC</string>
+    <string name="main_console_rpc_details">Ikuvumela ukumisa ukubukwayo kwakho kwe-Discord
+        usebenzisa ama-preset akhethiwe</string>
+    <string name="main_customRpcDetails">Ikuvumela ukwakha i-Rich Presence ekhethekile</string>
+    <string name="main_custom_rpc">I-Custom RPC</string>
+    <string name="main_custom_rpc_details">Ikuvumela ukwakha i-Rich Presence ekhethekile</string>
+    <string name="main_manual_rpc">I-Manual RPC</string>
+    <string name="main_manual_rpc_details">Imininingwane ye-Manual RPC</string>
+    <string name="main_mediaRpcDetails">Isebenzisa inhlanganisela yakho yamanje yezokudlala
+        ye-Discord</string>
+    <string name="main_media_rpc">I-Media RPC</string>
+    <string name="main_media_rpc_details">Isebenzisa inhlanganisela yakho yamanje yezokudlala
+        ye-Discord</string>
+    <string name="no_internetConnection">Ayikho intanethi</string>
+    <string name="no_internetUserProfile">Ayikho intanethi. Zama futhi.</string>
+    <string name="party_greaterThanMax">Usayizi lweqembu manje unqontshu kunomkhulu</string>
+    <string name="party_invalidNumber">Usayizi lweqembu kufanele ube inombolo</string>
+    <string name="party_lessThanZero">Usayizi lweqembu kufanele ube ngaphezu kwe-zero</string>
+    <string name="party_maxCannotBeEmpty">Usayizi olukhulu lweqembu alukwazi ukuba
+        lingenalutho</string>
+    <string name="permissionGranted">Imvume inikeziwe</string>
+    <string name="permissionNotGranted">Imvume ayinikeziwe</string>
+    <string name="permissionNot_granted">Imvume ayinikeziwe</string>
+    <string name="set_previous_run_config_in_custom_rpcDesc">Misa ngokuzenzekelayo imibholo
+        ye-Custom RPC ivela kokugcina okusebenzile</string>
+    <string name="setupDesc">Ukuhlela</string>
+    <string name="copy_to_custom_rpc">Kopisa ku-Custom RPC</string>
+    <string name="copy_to_custom_rpc_desc">Kopisa ukubukwayo kwe-media/manje ku-editor
+        ye-Custom RPC</string>
+    <string name="copied_to_custom_rpc">Kukhishwe kwesimo se-Custom RPC</string>
+    <string name="copy_to_custom_rpc_no_presence">Akukho okukuphekayo ukukopisha</string>
+    <string name="custom_rpc_board">Ibhodi Le-Custom RPC</string>
+    <string name="custom_rpc_board_open">Vula Ibhodi Le-Custom RPC</string>
+    <string name="custom_rpc_board_open_desc">Phatha futhi uvule amabhodi okubukwayo
+        akhethekile</string>
+    <string name="custom_rpc_board_add">Faka Ibhodi</string>
+    <string name="custom_rpc_board_edit">Hlela Ibhodi</string>
+    <string name="custom_rpc_board_delete">Susa Ibhodi</string>
+    <string name="custom_rpc_board_activate">Vula</string>
+    <string name="custom_rpc_board_deactivate">Cima</string>
+    <string name="custom_rpc_board_label">Ilebula Lebhodi</string>
+    <string name="custom_rpc_board_application_id">I-Application ID</string>
+    <string name="custom_rpc_board_activity_type">Uhlobo Lenzenzo</string>
+    <string name="custom_rpc_board_activity_type_invalid">Faka uhlobo lwenzenzo olusebenzayo
+        (0-5, ngaphandle kuka-4)</string>
+    <string name="custom_rpc_board_activity_type_not_rich_presence">Isimo Esihlelwe Ngezifiso (4)
+        ne-Hang Status (6) azibonakali njengamakhadi e-Rich Presence</string>
+    <string name="custom_rpc_board_name">Igama Lenzenzo</string>
+    <string name="custom_rpc_board_details">Imininingwane Yenzenzo</string>
+    <string name="custom_rpc_board_state">Isimo Senzenzo</string>
+    <string name="custom_rpc_board_large_image">Ikhili Lesithombe Esikhulu</string>
+    <string name="custom_rpc_board_small_image">Ikhili Lesithombe Esincane</string>
+    <string name="custom_rpc_board_large_text">Umbhalo Wesithombe Esikhulu</string>
+    <string name="custom_rpc_board_small_text">Umbhalo Wesithombe Esincane</string>
+    <string name="custom_rpc_board_button1_label">Ilebula Lebhathoni 1</string>
+    <string name="custom_rpc_board_button1_url">I-URL Yebhathoni 1</string>
+    <string name="custom_rpc_board_button2_label">Ilebula Lebhathoni 2</string>
+    <string name="custom_rpc_board_button2_url">I-URL Yebhathoni 2</string>
+    <string name="discord_leaderboard">Ibhodi Lamarekhodi Le-Discord</string>
+    <string name="discord_leaderboard_desc">Thumela ibhodi esiteshi se-Discord</string>
+    <string name="discord_leaderboard_enabled">Vula Ibhodi Lokuqala Le-Discord</string>
+    <string name="discord_leaderboard_enabled_desc">Thumela izibuyekezo zebhodi esiteshi se-Discord</string>
+    <string name="discord_leaderboard_bot_token">Ithokhini Yebhodi</string>
+    <string name="discord_leaderboard_bot_token_desc">Ithokhini yebhodi ye-Discord enokufinyelela
+        kwesiteshi</string>
+    <string name="discord_leaderboard_channel_id">I-Siteshi ID</string>
+    <string name="discord_leaderboard_channel_id_desc">I-Discord siteshi ID yezethulo zebhodi</string>
+    <string name="discord_leaderboard_interval">Isikhathi Sezibuyekezo (imizuzu)</string>
+    <string name="discord_leaderboard_interval_desc">Ukuruphulwa kanjani izibuyekezo zebhodi</string>
+    <string name="discord_leaderboard_max_entries">Okuninzi Okungangeniswa</string>
+    <string name="discord_leaderboard_max_entries_desc">Inani elikhulu lokungenisa ngesikhathi esisodwa</string>
+    <string name="discord_leaderboard_title">Isihloko Sebhodi</string>
+    <string name="discord_leaderboard_title_desc">Isihloko sokufakwa</string>
+    <string name="discord_leaderboard_description">Incazelo</string>
+    <string name="discord_leaderboard_description_desc">Incazelo yokufakwa</string>
+    <string name="discord_leaderboard_submit_score">Thumela Amaphuzu</string>
+    <string name="discord_leaderboard_submit_score_desc">Thumela ngokwesandla amaphuzu ebhodi</string>
+    <string name="discord_leaderboard_connection">Ukuxhunywa</string>
+    <string name="discord_leaderboard_embed">Ukufaka</string>
+    <string name="discord_leaderboard_updates">Izibuyekezo</string>
+    <string name="discord_leaderboard_top_entries">Okuphezulu</string>
+    <string name="discord_leaderboard_no_entries">Ayikho amaphuzu athunyiwe okwamanje.</string>
+    <string name="discord_leaderboard_post_now">Thumela Manje</string>
+    <string name="discord_leaderboard_post_now_desc">Thumela ibhodi lamanje esiteshi esihlelwe</string>
+    <string name="discord_leaderboard_post_success">Ibhodi lithunyiwe</string>
+    <string name="discord_leaderboard_post_failed">Ibhodi alikwazanga ukuthunyelwa. Hlola
+        ithokhini yebhodi, i-siteshi ID nemvume.</string>
+    <string name="discord_leaderboard_no_scores">Ayikho amaphuzu okuthumela okwamanje.</string>
+    <string name="discord_leaderboard_config_missing">Faka ithokhini yebhodi ne-siteshi ID
+        ukuze uqale ukuthumela</string>
+    <string name="discord_leaderboard_invalid_value">Faka inani elilungele</string>
+    <string name="discord_leaderboard_player_name">Igama Lomdlali</string>
+    <string name="discord_leaderboard_score">Amaphuzu</string>
+    <string name="discord_leaderboard_game_id_optional">I-Game ID (okukhethiwe)</string>
+    <string name="discord_leaderboard_score_saved">Amaphuzu athunyiwe</string>
+    <string name="discord_leaderboard_entry_points">%1$d amaphuzu</string>
 </resources>
