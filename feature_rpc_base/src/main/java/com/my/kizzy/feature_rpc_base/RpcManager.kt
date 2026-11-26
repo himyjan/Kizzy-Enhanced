@@ -354,9 +354,11 @@ class RpcManager @Inject constructor(
         ignoreServiceDetectionUntil = System.currentTimeMillis() + 1500
         applyActive(_activeInstances.value + instanceId)
         persistActiveRpcTypes(_activeInstances.value.mapNotNull(::typeFor).toSet())
-        if (rpcType == RpcType.CustomRpc && !config.isNullOrBlank()) {
-            Prefs[Prefs.customRpcConfigKey(instanceId.takeIf { it != RPC_INSTANCE_CUSTOM })] = config
-        }
+        // Do NOT save config here - the Custom RPC screen saves clone-specific
+        // config to Prefs.customRpcConfigKey(instanceId) when the user edits it.
+        // Saving here would overwrite a clone's edits with the built-in config
+        // (because config comes from instance.config which is never updated when
+        // editing a clone, falling back to LAST_RUN_CUSTOM_RPC).
         startInstanceService(instanceId, config, oauthIndex)
     }
 
@@ -395,9 +397,12 @@ class RpcManager @Inject constructor(
         val intent = when (rpcType) {
             RpcType.MediaRpc -> Intent(context, MediaRpcService::class.java)
             RpcType.CustomRpc, RpcType.ConsoleRpc -> Intent(context, CustomRpcService::class.java).apply {
-                val rpcData = config
+                // Clone-specific config takes priority so each clone keeps its
+                // own settings instead of sharing the built-in config.
+                val rpcData = Prefs.getCustomRpcConfig(instanceId.takeIf { it != "custom_rpc" })
+                    ?: config
                     ?: instance?.config?.takeIf { it.isNotBlank() }
-                    ?: Prefs.getCustomRpcConfig(instanceId.takeIf { it != "custom_rpc" })
+                    ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
                 putExtra("RPC", rpcData)
                 putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, rpcType == RpcType.ConsoleRpc)
             }
