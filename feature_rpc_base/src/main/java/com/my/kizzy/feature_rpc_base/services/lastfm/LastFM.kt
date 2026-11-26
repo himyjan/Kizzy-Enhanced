@@ -32,8 +32,8 @@ const val DEFAULT_LASTFM_SECRET = "7c3200d4a626f3d546da37eecd0849a2"
 
 // Libre.fm does not issue API keys via a web portal.
 // Define your own identifier string here for Last.fm-style endpoint compatibility.
-const val DEFAULT_LIBREFM_API_KEY = "kizzy_librefm_client"
-const val DEFAULT_LIBREFM_SECRET = "kizzy_librefm_secret"
+const val DEFAULT_LIBREFM_API_KEY = "4a5ef9bd299a26fe0ad82ac52ae7969c"
+const val DEFAULT_LIBREFM_SECRET = "bcd1c2499a484dde8fcf85ac4e137ba6"
 
 open class LastFmApiClient(
     private val apiBaseUrl: String,

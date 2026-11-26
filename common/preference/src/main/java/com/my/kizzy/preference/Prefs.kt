@@ -689,49 +689,91 @@ object Prefs {
      */
     fun getOAuthApps(): List<OAuthApp> {
         val json = get(OAUTH2_APPS, "")
-        if (json.isNotBlank()) {
-            return try {
+        val existing = if (json.isNotBlank()) {
+            try {
                 Json.decodeFromString<List<OAuthApp>>(json)
             } catch (_: Exception) {
                 emptyList()
             }
+        } else emptyList()
+        if (existing.isNotEmpty()) {
+            // Ensure all 3 default app IDs are present even if an older
+            // migration only saved slot 1.
+            val existingIndices = existing.map { it.index }.toSet()
+            val toAdd = mutableListOf<OAuthApp>()
+            if (1 !in existingIndices) {
+                toAdd += OAuthApp(
+                    id = OAuthApp.newId(), label = "RPC App 1",
+                    clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID, "").ifBlank { DEFAULT_OAUTH_APP_ID_1 },
+                    token = get(TOKEN, "").takeIf { it.isNotBlank() }
+                        ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+                    index = 1,
+                )
+            }
+            if (2 !in existingIndices) {
+                toAdd += OAuthApp(
+                    id = OAuthApp.newId(), label = "RPC App 2",
+                    clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "").ifBlank { DEFAULT_OAUTH_APP_ID_2 },
+                    token = get(DISCORD_OAUTH2_ACCESS_TOKEN_2, "")
+                        .takeIf { it.isNotBlank() }
+                        ?: get(TOKEN, "").takeIf { it.isNotBlank() }
+                        ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+                    index = 2,
+                )
+            }
+            if (3 !in existingIndices) {
+                toAdd += OAuthApp(
+                    id = OAuthApp.newId(), label = "RPC App 3",
+                    clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, "").ifBlank { DEFAULT_OAUTH_APP_ID_3 },
+                    token = get(DISCORD_OAUTH2_ACCESS_TOKEN_3, "")
+                        .takeIf { it.isNotBlank() }
+                        ?: get(TOKEN, "").takeIf { it.isNotBlank() }
+                        ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+                    index = 3,
+                )
+            }
+            if (toAdd.isNotEmpty()) {
+                saveOAuthApps(existing + toAdd)
+            }
+            return existing + toAdd
         }
         if (get(OAUTH2_APPS_MIGRATED, false)) return emptyList()
 
         val legacy = mutableListOf<OAuthApp>()
-        val token1 = get(TOKEN, "").takeIf { it.isNotBlank() }
-            ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, "")
-        if (token1.isNotBlank()) {
-            legacy += OAuthApp(
-                id = OAuthApp.newId(),
-                label = "RPC App 1",
-                clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID, "").ifBlank { DEFAULT_OAUTH_APP_ID_1 },
-                token = token1,
-                refreshToken = get(DISCORD_OAUTH2_REFRESH_TOKEN, ""),
-                expiresAt = get(DISCORD_OAUTH2_EXPIRES_AT, 0L),
-                index = 1,
-            )
-        }
-        val token2 = get(DISCORD_OAUTH2_ACCESS_TOKEN_2, "")
-        if (token2.isNotBlank()) {
-            legacy += OAuthApp(
-                id = OAuthApp.newId(),
-                label = "RPC App 2",
-                clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "").ifBlank { DEFAULT_OAUTH_APP_ID_2 },
-                token = token2,
-                index = 2,
-            )
-        }
-        val token3 = get(DISCORD_OAUTH2_ACCESS_TOKEN_3, "")
-        if (token3.isNotBlank()) {
-            legacy += OAuthApp(
-                id = OAuthApp.newId(),
-                label = "RPC App 3",
-                clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, "").ifBlank { DEFAULT_OAUTH_APP_ID_3 },
-                token = token3,
-                index = 3,
-            )
-        }
+        // Always register all 3 default Discord app IDs so parallel RPC
+        // instances can be spread across them even when only slot 1 has an
+        // OAuth token. Slots 2/3 fall back to the main token when no separate
+        // OAuth token is configured.
+        legacy += OAuthApp(
+            id = OAuthApp.newId(),
+            label = "RPC App 1",
+            clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID, "").ifBlank { DEFAULT_OAUTH_APP_ID_1 },
+            token = get(TOKEN, "").takeIf { it.isNotBlank() }
+                ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+            refreshToken = get(DISCORD_OAUTH2_REFRESH_TOKEN, ""),
+            expiresAt = get(DISCORD_OAUTH2_EXPIRES_AT, 0L),
+            index = 1,
+        )
+        legacy += OAuthApp(
+            id = OAuthApp.newId(),
+            label = "RPC App 2",
+            clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "").ifBlank { DEFAULT_OAUTH_APP_ID_2 },
+            token = get(DISCORD_OAUTH2_ACCESS_TOKEN_2, "")
+                .takeIf { it.isNotBlank() }
+                ?: get(TOKEN, "").takeIf { it.isNotBlank() }
+                ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+            index = 2,
+        )
+        legacy += OAuthApp(
+            id = OAuthApp.newId(),
+            label = "RPC App 3",
+            clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, "").ifBlank { DEFAULT_OAUTH_APP_ID_3 },
+            token = get(DISCORD_OAUTH2_ACCESS_TOKEN_3, "")
+                .takeIf { it.isNotBlank() }
+                ?: get(TOKEN, "").takeIf { it.isNotBlank() }
+                ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+            index = 3,
+        )
         saveOAuthApps(legacy)
         set(OAUTH2_APPS_MIGRATED, true)
         return legacy
