@@ -9,7 +9,7 @@ in the locale file — it never touches keys absent from the translation JSON.
 """
 import re, os, glob, json
 
-RES = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..',
+RES = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',
                                    'common', 'resources', 'src', 'main', 'res'))
 BASE = os.path.join(RES, 'values', 'strings.xml')
 TASK_DIR = '/tmp/kizzy_i18n/tasks'
@@ -20,9 +20,16 @@ def load(p):
         return dict(re.findall(r'<string\s+name="([^"]+)"[^>]*>(.*?)</string>', f.read(), re.S))
 
 def encode(v):
-    # v comes from LLM as plain text; encode for Android XML
-    return (v.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-             .replace('"', '&quot;').replace("'", '&apos;'))
+    # v comes from LLM as plain text; encode for Android XML.
+    # NOTE: Android aapt2 does NOT accept &apos; / &#39; for apostrophes.
+    # Use \"...\" wrapping (with backslash-escaped inner quotes) instead.
+    v = v.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    if "'" in v:
+        v = v.replace('"', '\\"')
+        v = '"' + v + '"'
+    else:
+        v = v.replace('"', '&quot;')
+    return v
 
 base = load(BASE)
 base_order = list(base.keys())
