@@ -59,6 +59,7 @@ class KizzyRPC @Inject constructor(
     private var party: Party? = null
     private var largeImage: RpcImage? = null
     private var smallImage: RpcImage? = null
+    private var smallUrl: String? = null
     private var largeText: String? = null
     private var smallText: String? = null
     private var status: String? = null
@@ -605,6 +606,17 @@ class KizzyRPC @Inject constructor(
     }
 
     /**
+     * Small image click URL on Rpc
+     *
+     * @param smallUrl
+     * @return
+     */
+    fun setSmallUrl(smallUrl: String?): KizzyRPC {
+        this.smallUrl = smallUrl
+        return this
+    }
+
+    /**
      * Start timestamps
      *
      * @param startTimestamps
@@ -872,7 +884,8 @@ class KizzyRPC @Inject constructor(
                         largeText = largeText?.sanitize(),
                         smallText = smallText?.sanitize(),
                         // For manual RPC, use url as large_url if set.
-                        largeUrl = if (type != 1) sanitizeFieldUrl(url) else null
+                        largeUrl = if (type != 1) sanitizeFieldUrl(url) else null,
+                        smallUrl = smallUrl?.sanitize()
                     ).takeIf { largeImage != null || smallImage != null },
                     // Client-presence format: labels in buttons, urls in metadata.
                     buttons = cleanButtons?.map { it.label },
