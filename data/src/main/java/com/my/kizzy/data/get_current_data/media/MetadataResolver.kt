@@ -15,6 +15,24 @@ class MetadataResolver @Inject constructor(
     companion object {
         private const val METADATA_KEY_SOURCE_URL = "android.media.metadata.SOURCE_URL"
         private const val METADATA_KEY_MEDIA_URI = "android.media.metadata.MEDIA_URI"
+
+        // Known non-string MediaMetadata keys (integers, ratings, dimensions) that
+        // should never be read as text strings.
+        private val NON_STRING_METADATA_KEYS = setOf(
+            MediaMetadata.METADATA_KEY_DURATION,
+            MediaMetadata.METADATA_KEY_NUM_TRACKS,
+            MediaMetadata.METADATA_KEY_TRACK_NUMBER,
+            MediaMetadata.METADATA_KEY_DISC_NUMBER,
+            MediaMetadata.METADATA_KEY_YEAR,
+            MediaMetadata.METADATA_KEY_BT_FOLDER_TYPE,
+            MediaMetadata.METADATA_KEY_USER_RATING,
+            MediaMetadata.METADATA_KEY_RATING,
+            MediaMetadata.METADATA_KEY_ALBUM_ART,
+            MediaMetadata.METADATA_KEY_ART,
+            MediaMetadata.METADATA_KEY_DISPLAY_ICON,
+            "com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX",
+            "com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX"
+        )
     }
 
     fun getCoverArt(metadata: MediaMetadata): Bitmap? {
@@ -157,7 +175,7 @@ class MetadataResolver @Inject constructor(
 
         // Delegate directly to YouTubeResolver's robust unwrapping and normalization logic
         YouTubeResolver.toRpcUrl(url)?.let { canonicalUrl ->
-            // Additional safety check: ensure it's either ayoutu.be video,
+            // Additional safety check: ensure it's either a youtu.be video,
             // a channel link, or a playlist link, and not an accidental search query.
             if (!canonicalUrl.contains("/results?search_query=")) {
                 return canonicalUrl
@@ -1312,6 +1330,23 @@ class MetadataResolver @Inject constructor(
     }
 
     /**
+     * Safely reads a string metadata field without crashing if the underlying
+     * bundle holds a non-string value such as a [Bitmap] or numeric type.
+     */
+    private fun MediaMetadata.safeGetString(key: String?): String? {
+        if (key.isNullOrBlank() || key in NON_STRING_METADATA_KEYS || key.endsWith("_PX", ignoreCase = true)) {
+            return null
+        }
+        return runCatching { getString(key) }
+            .onFailure { throwable ->
+                if (throwable is ClassCastException) {
+                    logger.d("MetadataResolver", "Skipped non-string metadata key '$key': ${throwable.message}")
+                }
+            }
+            .getOrNull()
+    }
+
+    /**
      * Scans EVERY string metadata value for a YouTube video id.
      *
      * YouTube Music wrapper clients (Morphe, AndDea Revanced, InnerTune, ...)
@@ -1322,24 +1357,6 @@ class MetadataResolver @Inject constructor(
      * `youtu.be/ID`. This local scan needs no network and makes the details /
      * cover links resolve to the real video.
      */
-private val NON_STRING_METADATA_KEYS = setOf(
-    MediaMetadata.METADATA_KEY_DURATION,
-    MediaMetadata.METADATA_KEY_NUM_TRACKS,
-    MediaMetadata.METADATA_KEY_TRACK_NUMBER,
-    MediaMetadata.METADATA_KEY_DISC_NUMBER,
-    MediaMetadata.METADATA_KEY_YEAR,
-    MediaMetadata.METADATA_KEY_BT_FOLDER_TYPE,
-    MediaMetadata.METADATA_KEY_USER_RATING,
-    MediaMetadata.METADATA_KEY_RATING,
-    "com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX",
-    "com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX"
-)
-
-private fun MediaMetadata.safeGetString(key: String?): String? {
-    if (key == null || key in NON_STRING_METADATA_KEYS || key.endsWith("_PX", ignoreCase = true)) return null
-    return runCatching { getString(key) }.getOrNull()
-}
-
     private fun findVideoIdInMetadata(metadata: MediaMetadata): String? {
         // Check id/url-ish keys first, then everything else.
         val orderedKeys = runCatching { metadata.keySet() }.getOrNull()?.sortedByDescending { key ->
@@ -1483,8 +1500,7 @@ private fun MediaMetadata.safeGetString(key: String?): String? {
         }
         // Then every key available in the bundle (sites use custom keys).
         metadata.keySet().forEach { key ->
-            runCatching { metadata.safeGetString(key) }
-                .getOrNull()
+            metadata.safeGetString(key)
                 ?.takeIf { it.isNotBlank() }
                 ?.let { candidates.add(it) }
         }
@@ -1590,7 +1606,7 @@ private fun MediaMetadata.safeGetString(key: String?): String? {
             ?.takeIf { it.isNotBlank() }
             ?: metadata.safeGetString(MediaMetadata.METADATA_KEY_AUTHOR)
                 ?.takeIf { it.isNotBlank() }
-                ?: metadata.safeGetString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+            ?: metadata.safeGetString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
         val parsedCollaborators = parseCollaboratingArtists(rawArtistString)
         val isMultiArtist = artists.size > 1 || parsedCollaborators.size > 1
         val pkg = packageName?.lowercase().orEmpty()
@@ -1917,13 +1933,14 @@ private fun MediaMetadata.safeGetString(key: String?): String? {
         return null
     }
 
+    // Receiver is already a non-null String; only check blankness and http(s) scheme.
     private fun String.isValidMediaUrl(): Boolean {
-    if (isNullOrBlank()) return false
-    val lower = lowercase()
-    return lower.startsWith("http://") || lower.startsWith("https://")
-}
+        if (isBlank()) return false
+        val lower = lowercase()
+        return lower.startsWith("http://") || lower.startsWith("https://")
+    }
 
-private fun archiveTuneArtistUrl(sourceUrl: String?): String? {
+    private fun archiveTuneArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("archive.org")) return null
         try {
