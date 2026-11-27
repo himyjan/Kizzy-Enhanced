@@ -61,6 +61,9 @@ class ManualRpc : Service() {
 
     private var kizzyRPC: KizzyRPC? = null
 
+    /** Instance id this service is currently publishing (built-in "manual_rpc" or a clone id). */
+    private var currentInstanceId: String = "manual_rpc"
+
     /**
      * True when the user explicitly stopped the service via the notification "Exit" action.
      * In that case we must NOT schedule RPC recovery, since the user intentionally turned
@@ -266,8 +269,38 @@ class ManualRpc : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Wire Manual RPC to slot "3" (third application ID + token)
-        kizzyRPC = multiRpc.session("3")
+        // Wire Manual RPC to slot "3" (third application ID + token).
+        // A service started only for a user-created instance must not pull in
+        // the built-in instance's socket as well.
+        currentInstanceId = if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
+            intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)?.takeIf { it.isNotBlank() } ?: "manual_rpc"
+        } else {
+            "manual_rpc"
+        }
+        kizzyRPC = if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
+            val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+            if (!instanceId.isNullOrBlank()) {
+                multiRpc.customSession(instanceId)
+            } else {
+                multiRpc.session("3")
+            }
+        } else {
+            multiRpc.session("3")
+        }
+
+        if (intent?.action == Constants.ACTION_REMOVE_INSTANCE) {
+            val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+            if (!instanceId.isNullOrBlank()) {
+                multiRpc.removeInstance("3", instanceId)
+                CloneNotificationHelper.cancel(notificationManager, instanceId)
+                rpcManager.removePresenceConfig(instanceId)
+            }
+            if (multiRpc.instanceCount("3") == 0) {
+                rpcManager.removePresenceConfig(currentInstanceId)
+                stopSelf()
+            }
+            return super.onStartCommand(intent, flags, startId)
+        }
 
         if (intent?.action == Constants.ACTION_STOP_SERVICE) {
             // Explicit stop: the next cold start must not bring it back.
@@ -332,6 +365,27 @@ class ManualRpc : Service() {
                 startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
             }
 
+            // Attach the new instance's socket before the first presence update
+            // so the broadcaster can deliver it immediately.
+            if (intent?.action == Constants.ACTION_ADD_INSTANCE) {
+                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+                if (!instanceId.isNullOrBlank()) {
+                    currentInstanceId = instanceId
+                    val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
+                    multiRpc.addInstance("3", instanceId, oauthIndex)
+                    // Each Manual clone gets its own independent notification.
+                    CloneNotificationHelper.show(
+                        context = this@ManualRpc,
+                        notificationManager = notificationManager,
+                        serviceClass = ManualRpc::class.java,
+                        instanceId = instanceId,
+                        label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
+                            ?: getString(R.string.main_ManualRpc),
+                        content = getString(R.string.rich_presence_active),
+                        iconRes = R.drawable.ic_manual_rpc,
+                    )
+                }
+            }
 
             mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
             // Registering the session listener requires Notification Listener access.
@@ -979,7 +1033,7 @@ class ManualRpc : Service() {
         LastPresence.rememberExperimental(rpcConfig)
         // Expose the current presence so the Manual RPC screen can offer
         // a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
-        rpcManager.setCurrentPresenceConfig(rpcConfig, RpcManager.RpcType.ManualRpc)
+        rpcManager.setCurrentPresenceConfig(rpcConfig.copy(instanceId = currentInstanceId), currentInstanceId)
 
         val notifTitle = finalName.takeIf { !it.isNullOrEmpty() } ?: getString(R.string.app_name_full)
         val notifText = if (currentMediaDurationSec > 0) {
