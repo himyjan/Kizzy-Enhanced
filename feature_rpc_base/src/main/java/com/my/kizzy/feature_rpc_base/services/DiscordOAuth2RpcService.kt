@@ -16,8 +16,10 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.data.rpc.MultiRpcManager
+import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.preference.Prefs
@@ -59,11 +61,21 @@ class DiscordOAuth2RpcService : Service() {
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.DiscordOAuth2Rpc.name
 
         // Refresh the gateway token and identify properties from prefs.
-        // Also send presence so Discord shows this account as online.
-        // Unlike build() which sends an empty presence, updateRPC() reuses the
-        // existing presence object which may already contain user data.
         scope.launch {
             kizzyRPC?.refreshFromPrefs()
+
+            // Send an initial presence so Discord shows this account as online.
+            kizzyRPC?.updateRPC(
+                CommonRpc(
+                    name = "Kizzy Enhanced",
+                    details = "Discord OAuth2 RPC",
+                    state = "Online",
+                    type = 0,
+                    platform = "android",
+                    time = Timestamps(start = System.currentTimeMillis()),
+                ),
+                priority = 5,
+            )
         }
 
         return Service.START_STICKY

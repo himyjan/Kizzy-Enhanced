@@ -263,17 +263,26 @@ class KizzyRPC @Inject constructor(
      * ensures a late login still works without restarting the service.
      */
     suspend fun refreshFromPrefs() {
-        // Each connection method uses its own token:
-        //   Gateway -> the account token in TOKEN
-        //   OAuth2  -> the application OAuth2 token in DISCORD_OAUTH2_ACCESS_TOKEN
-        // The two are never mixed, so switching methods always uses the right one.
+        // Per-instance KizzyRPCs are created by MultiRpcManager with their OWN
+        // credential token and a UNIQUE identify device (appId-instanceId) baked
+        // into the socket by createSocket(). Overwriting those with the global
+        // slot-1 token/device here is what collapsed 4 parallel clones into one
+        // activity: every socket then identified identically and Discord killed
+        // all but one. If this instance already has a token, leave its socket
+        // untouched.
+        if (token.isNotBlank()) {
+            logger.d("KizzyRPC", "refreshFromPrefs: per-instance token set, keeping socket identity")
+            return
+        }
+
+        // Only the DI singleton KizzyRPC can start with a blank token (Media RPC
+        // auto-starting before login). Pick up the token from prefs in that case
+        // so a late login still works without restarting the service.
         val accountToken = Prefs[Prefs.TOKEN, ""].trim()
         val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].trim()
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_OAUTH2]
 
         val isOAuth2Method = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH2
-        // Social SDK OAuth2 tokens are sent as "Bearer <token>" in IDENTIFY,
-        // exactly like Metrolist. Gateway account tokens are sent raw.
         val newToken = when {
             isOAuth2Method && oauthToken.isNotBlank() -> if (oauthToken.startsWith("Bearer ")) oauthToken else "Bearer $oauthToken"
             accountToken.isNotBlank() -> accountToken
@@ -281,20 +290,10 @@ class KizzyRPC @Inject constructor(
             else -> ""
         }
 
-        logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod tokenLen=${newToken.length}")
-        logger.d(
-            "KizzyRPC",
-            "token shape: parts=${newToken.count { it == '.' } + if (newToken.isEmpty()) 0 else 1} len=${newToken.length}"
-        )
-
-        // If the token changed (e.g. switching connection method or login/logout),
-        // reconnect the WebSocket. IDENTIFY authenticates at handshake time, so
-        // updating the in-memory token alone is not enough on an open socket.
+        logger.d("KizzyRPC", "refreshFromPrefs: singleton late-login tokenLen=${newToken.length}")
         val tokenChanged = newToken != token
         token = newToken
 
-        // A broadcast socket owns several per-instance tokens, so it must not be
-        // cast to a single DiscordWebSocketImpl here. Each delegate keeps its own.
         if (tokenChanged && discordWebSocket is DiscordWebSocketImpl &&
             discordWebSocket.isWebSocketConnected()
         ) {
@@ -302,12 +301,9 @@ class KizzyRPC @Inject constructor(
             discordWebSocket.updateTokenAndReconnect(token)
         }
 
-        // Blank stored value (old default "") should identify as Android/mobile,
-        // not fall through to the desktop identify.
         val platform = Prefs[Prefs.MANUAL_RPC_PLATFORM, "android"]
             .takeIf { it.isNotBlank() } ?: "android"
         val (browser, os, spooferDevice) = Constants.spoofIdentifyProperties(platform)
-        // The Social SDK expects the application id as `device` on IDENTIFY.
         val device = if (isOAuth2Method) {
             Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, "1571063796418744412"]
                 .ifBlank { spooferDevice }

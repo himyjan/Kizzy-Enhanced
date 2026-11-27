@@ -20,12 +20,11 @@ import kotlinx.coroutines.launch
  *
  * Discord Gateway allows only ONE WebSocket connection per user token.
  * Multiple sockets with the same token kill each other with INVALID_SESSION,
- * causing infinite reconnect loops. Therefore [socketCache] keys sockets by
- * their formatted identify token so that:
+ * causing infinite reconnect loops. Each RPC instance therefore gets its own
+ * socket keyed by token plus instance id.
  *   - A single account token used by Media/Custom/Manual RPC shares ONE socket.
  *   - Different OAuth2 app tokens each get their OWN parallel socket.
- * Each [KizzyRPC] instance owns its own presence data but shares its socket
- * with other instances using the same token.
+ * Each [KizzyRPC] instance owns its own presence data.
  */
 @Singleton
 class MultiRpcManager @Inject constructor(
@@ -44,9 +43,6 @@ class MultiRpcManager @Inject constructor(
 
     /** Custom RPC instances keep their own KizzyRPC outside slot groups. */
     private val customSessions = LinkedHashMap<String, KizzyRPC>()
-
-    /** Socket cache keyed by formatted identify token. */
-    private val socketCache = LinkedHashMap<String, DiscordWebSocketImpl>()
 
     /** Globally unique presence application ID per instance. */
     private val appIdAssignments = LinkedHashMap<String, String>()
@@ -76,7 +72,7 @@ class MultiRpcManager @Inject constructor(
             ?: credentialForSlot("2")
             ?: return null
         val appId = assignAppId(instanceId)
-        val socket = socketForToken(credential)
+        val socket = createSocket(credential, instanceId)
         val rpc = KizzyRPC(
             credential.token,
             kizzyRepository,
@@ -123,7 +119,7 @@ class MultiRpcManager @Inject constructor(
         if (group.instances.containsKey(instanceId)) return
 
         val appId = assignAppId(instanceId)
-        val socket = socketForToken(credential)
+        val socket = createSocket(credential, instanceId)
         val rpc = KizzyRPC(
             credential.token,
             kizzyRepository,
@@ -174,7 +170,6 @@ class MultiRpcManager @Inject constructor(
     fun stopAllSessions() {
         groups.keys.toList().forEach { stopSession(it) }
         customSessions.keys.toList().forEach { closeCustomSession(it) }
-        socketCache.clear()
     }
 
     /** Recreates the groups the user had enabled before the process was killed. */
@@ -191,7 +186,7 @@ class MultiRpcManager @Inject constructor(
         if (credential == null || credential.token.isBlank()) return null
 
         val builtInId = builtInInstanceId(slotId)
-        val socket = socketForToken(credential)
+        val socket = createSocket(credential, builtInId)
         val kizzyRpc = KizzyRPC(
             credential.token,
             kizzyRepository,
@@ -261,25 +256,23 @@ class MultiRpcManager @Inject constructor(
     }
 
     /**
-     * Returns a cached [DiscordWebSocketImpl] for [credential]'s token, or creates a
-     * new one if the token has not been seen before.
+     * Creates a fresh, independent [DiscordWebSocketImpl] for one RPC instance.
      *
-     * Discord Gateway allows only ONE connection per user token. Caching by token
-     * prevents multiple sockets with the same token from killing each other with
-     * INVALID_SESSION while preserving true multisocket for different tokens.
+     * Each instance gets its own socket so parallel clones each send their own
+     * presence to Discord instead of sharing one socket where only the last
+     * presence sent is visible. The device string includes [instanceId] so
+     * Discord treats instances as separate clients rather than reconnecting
+     * the same session.
      */
-    private fun socketForToken(credential: OAuthAppCredential): DiscordWebSocketImpl {
+    private fun createSocket(credential: OAuthAppCredential, instanceId: String): DiscordWebSocketImpl {
         val token = Prefs.formatIdentifyToken(credential.token)
-        return socketCache.getOrPut(token) {
-            val device = "${credential.appId}-${token.takeLast(8)}"
-            DiscordWebSocketImpl(
-                token = token,
-                logger = logger,
-                identifyBrowser = "Discord Android",
-                identifyOs = "Android",
-                identifyDevice = device,
-            )
-        }
+        return DiscordWebSocketImpl(
+            token = token,
+            logger = logger,
+            identifyBrowser = "Discord Android",
+            identifyOs = "Android",
+            identifyDevice = "${credential.appId}-$instanceId",
+        )
     }
 
     fun onDestroy() {

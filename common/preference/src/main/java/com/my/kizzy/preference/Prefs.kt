@@ -833,6 +833,13 @@ object Prefs {
     fun getCustomRpcConfig(instanceId: String?): String =
         get(customRpcConfigKey(instanceId), "")
 
+    /**
+     * Formats a token for Gateway IDENTIFY:
+     *   - OAuth2 method -> Bearer <token>
+     *   - Gateway method  -> raw account token (id.timestamp.hmac) or bot token
+     * Account tokens (2+ dots or mfa. prefix) are sent raw; OAuth2 bearer tokens
+     * are wrapped as "Bearer <token>" so Discord accepts them at IDENTIFY.
+     */
     fun formatIdentifyToken(token: String): String {
         val trimmed = token.trim()
         if (trimmed.isBlank() || trimmed.startsWith("Bearer ")) return trimmed
