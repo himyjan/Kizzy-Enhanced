@@ -134,8 +134,11 @@ dependencies {
     // Extras
     implementation(libs.androidx.browser)
     implementation(libs.app.compat)
-    implementation(libs.compose.navigation)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.hiltLifecycleViewmodelCompose)
 
     // Material
     implementation(libs.material3)
@@ -145,9 +148,6 @@ dependencies {
     // WorkManager + Hilt Work
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
-
-    // Hilt Navigation Compose for shared ViewModels across routes
-    implementation(libs.hilt.navigation.compose)
 
     // Hilt annotation processor
     ksp(libs.hilt.compiler)
