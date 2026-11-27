@@ -29,6 +29,7 @@ import com.my.kizzy.navigation.AppRoute
 import com.my.kizzy.preference.BUILT_IN_INSTANCES
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.RpcInstance
+import com.my.kizzy.preference.displayLabel
 import com.my.kizzy.resources.R
 import kotlinx.coroutines.launch
 
@@ -82,7 +83,8 @@ fun homeFeaturesProvider(
         val requiresUsageAccess = rpcType == RpcType.AppDetectionRpc
 
         HomeFeature(
-            title = instance.label,
+            // Built-ins resolve to translated resources; clones keep their stored label.
+            title = instance.displayLabel(ctx),
             icon = when (instance.type) {
                 "media_rpc" -> R.drawable.ic_media_rpc
                 "manual_rpc" -> R.drawable.ic_manual_rpc
