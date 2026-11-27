@@ -16,9 +16,9 @@ dependencies {
 
 // ============================================================================
 // Manual bytecode patching: Kotlin compiles with JDK 28 toolchain (major version
-// 72), but AGP 9.6 / R8 does not accept class file major version 72. Patch all
-// compiled .class files down to major version 71 (Java 27) before the JAR is
-// packaged, so downstream Android modules and R8/D8 can process them.
+// 72), but the Kotlin compiler only supports up to class file major version 70.
+// Patch all compiled .class files down to major version 65 (Java 21) before
+// the JAR is packaged, so downstream Android modules can process them.
 // ============================================================================
 
 private fun patchClassFileMajorVersion(file: File, newMajor: Int) {
@@ -35,20 +35,21 @@ private fun patchClassFileMajorVersion(file: File, newMajor: Int) {
     }
 }
 
-tasks.register("patchJvm28To27") {
+tasks.register("patchJvm28To21") {
     group = "build"
-    description = "Patch JVM 28 class files (major 72) down to JVM 27 (major 71) for R8 compatibility"
+    description = "Patch JVM 28 class files (major 72) down to JVM 21 (major 65) for Kotlin compiler compatibility"
     dependsOn(tasks.named("compileKotlin"))
+    val buildDir = project.buildDir
     doLast {
-        val classesDir = File(project.buildDir.toString(), "classes/kotlin/main")
+        val classesDir = File(buildDir, "classes/kotlin/main")
         if (classesDir.exists()) {
             classesDir.walkTopDown().filter { it.extension == "class" }.forEach { file ->
-                patchClassFileMajorVersion(file, 71)
+                patchClassFileMajorVersion(file, 65)
             }
         }
     }
 }
 
 tasks.named("jar") {
-    dependsOn(tasks.named("patchJvm28To27"))
+    dependsOn(tasks.named("patchJvm28To21"))
 }
