@@ -15,6 +15,24 @@ class MetadataResolver @Inject constructor(
     companion object {
         private const val METADATA_KEY_SOURCE_URL = "android.media.metadata.SOURCE_URL"
         private const val METADATA_KEY_MEDIA_URI = "android.media.metadata.MEDIA_URI"
+
+        // Known non-string MediaMetadata keys (integers, ratings, dimensions) that
+        // should never be read as text strings.
+        private val NON_STRING_METADATA_KEYS = setOf(
+            MediaMetadata.METADATA_KEY_DURATION,
+            MediaMetadata.METADATA_KEY_NUM_TRACKS,
+            MediaMetadata.METADATA_KEY_TRACK_NUMBER,
+            MediaMetadata.METADATA_KEY_DISC_NUMBER,
+            MediaMetadata.METADATA_KEY_YEAR,
+            MediaMetadata.METADATA_KEY_BT_FOLDER_TYPE,
+            MediaMetadata.METADATA_KEY_USER_RATING,
+            MediaMetadata.METADATA_KEY_RATING,
+            MediaMetadata.METADATA_KEY_ALBUM_ART,
+            MediaMetadata.METADATA_KEY_ART,
+            MediaMetadata.METADATA_KEY_DISPLAY_ICON,
+            "com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX",
+            "com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX"
+        )
     }
 
     fun getCoverArt(metadata: MediaMetadata): Bitmap? {

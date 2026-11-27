@@ -56,7 +56,7 @@ class GetCurrentPlayingMedia @Inject constructor(
      * It is a suspending function because the link of the track is resolved,
      * which may need a network call.
      */
-    suspend operator fun invoke(): CommonRpc {
+    suspend operator fun invoke(instanceId: String? = null): CommonRpc {
         val mediaSessionManager =
             context.getSystemService(Service.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val sessions: List<android.media.session.MediaController> = try {
@@ -227,9 +227,14 @@ class GetCurrentPlayingMedia @Inject constructor(
             // Small image is a 1-of-3 choice: channel icon / app icon / playback
             // state. Only one can be shown at a time; channel icon wins when
             // enabled and the media is a single-channel video/music.
-            val showChannelIcon = Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false]
-            val showAppIconSmall = Prefs[Prefs.MEDIA_RPC_APP_ICON, false]
-            val showPlaybackIconSmall = Prefs[Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE, false]
+            // Read per-instance scoped preferences when available so clones
+            // can have different cover-art/channel-icon settings than built-ins.
+            val channelIconKey = Prefs.scopedKey(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, instanceId)
+            val appIconKey = Prefs.scopedKey(Prefs.MEDIA_RPC_APP_ICON, instanceId)
+            val playbackIconKey = Prefs.scopedKey(Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE, instanceId)
+            val showChannelIcon = Prefs[channelIconKey, false]
+            val showAppIconSmall = Prefs[appIconKey, false]
+            val showPlaybackIconSmall = Prefs[playbackIconKey, false]
             val channelAvatarUrl = if (showChannelIcon && MediaServiceResolver.isYouTube(mediaController.packageName)) {
                 MetadataResolver.getChannelAvatarUrl(metadata, mediaController.packageName)
             } else null
@@ -250,7 +255,7 @@ class GetCurrentPlayingMedia @Inject constructor(
             // track. Without it the button linked to a search page.
             val mediaUrl = MetadataResolver.getDirectMediaUrl(metadata, mediaController.packageName)
                 ?: MetadataResolver.getMediaUrl(metadata, mediaController.packageName)
-            
+
             // Fallback search URL for details_url (first line clickable)
             // This ensures the details line is always clickable even if the direct URL is unavailable
             val detailsUrl = mediaUrl ?: MediaServiceResolver.mediaSearchUrl(
@@ -284,7 +289,7 @@ class GetCurrentPlayingMedia @Inject constructor(
                 albumText != null -> albumText.takeIf { albumEnabled }
                 else -> playlistName
             }
-            
+
             return CommonRpc(
                 name = rpcName,
                 details = rpcDetails,
