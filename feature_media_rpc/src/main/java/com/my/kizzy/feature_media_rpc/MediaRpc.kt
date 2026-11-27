@@ -93,6 +93,7 @@ import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.PlaylistAddCircle
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.Warning
+import com.my.kizzy.preference.RPC_INSTANCE_MEDIA
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,7 +105,9 @@ fun MediaRPC(
     selectAllMediaApps: () -> Unit,
     deselectAllMediaApps: () -> Unit,
     updateAppActivityType: (String, Int?) -> Unit = { _, _ -> },
+    instanceId: String? = null,
 ) {
+    fun key(prefKey: String) = Prefs.scopedKey(prefKey, instanceId)
     val context = LocalContext.current
     val rpcManager = RpcManager.getInstance(context)
     val scope = rememberCoroutineScope()
@@ -153,11 +156,17 @@ fun MediaRPC(
             val newValue = !mediaRpcRunning
             mediaRpcRunning = newValue
             scope.launch {
-                // Toggle Media RPC independently — does not stop Custom/Console/Manual RPC.
+                // Toggle THIS instance's socket (built-in or this clone).
+                // Other instances stay connected and unaffected.
+                val targetInstanceId = instanceId ?: RPC_INSTANCE_MEDIA
                 if (newValue) {
-                    rpcManager.switchTo(setOf(RpcType.MediaRpc), add = true)
+                    rpcManager.switchToInstance(
+                        instanceId = targetInstanceId,
+                        rpcType = RpcType.MediaRpc,
+                        oauthIndex = 1,
+                    )
                 } else {
-                    rpcManager.stopRpcTypes(setOf(RpcType.MediaRpc))
+                    rpcManager.stopInstance(targetInstanceId, RpcType.MediaRpc)
                 }
             }
         },
