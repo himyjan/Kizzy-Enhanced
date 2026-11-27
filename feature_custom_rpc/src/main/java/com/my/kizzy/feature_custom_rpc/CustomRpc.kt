@@ -1920,8 +1920,8 @@ private fun RpcTextFieldsColumn(
             item {
                 androidx.compose.material3.OutlinedButton(
                     onClick = {
-                        val mediaCfg = rpcManager.presenceConfigs.value[RpcType.MediaRpc]
-                        val manualCfg = rpcManager.presenceConfigs.value[RpcType.ManualRpc]
+                        val mediaCfg = rpcManager.presenceConfigs.value["media_rpc"]
+                        val manualCfg = rpcManager.presenceConfigs.value["manual_rpc"]
                         val source = mediaCfg ?: manualCfg
                         if (source != null) {
                             onEvent(UiEvent.SetFieldsFromConfig(source))

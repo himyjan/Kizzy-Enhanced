@@ -27,8 +27,10 @@ import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,20 +43,34 @@ import java.io.File
 import android.content.Context
 
 @SuppressLint("StaticFieldLeak")
-@HiltViewModel
-class CustomScreenViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = CustomScreenViewModel.Factory::class)
+class CustomScreenViewModel @AssistedInject constructor(
     @ApplicationContext private val context: Context,
     private val uploadGalleryImageUseCase: UploadGalleryImageUseCase,
     private val getGamesUseCase: GetGamesUseCase,
+    /** Null for the built-in Custom RPC; a clone passes its own instance id. */
+    @Assisted instanceId: String?,
 ) : ViewModel() {
+    private val instanceIdValue: String? = instanceId
+    private val configKey: String = Prefs.customRpcConfigKey(instanceId)
+
+    @AssistedFactory
+    interface Factory {
+        fun create(instanceId: String?): CustomScreenViewModel
+    }
+
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
     private val uiEventChannel = Channel<UiEvent>(capacity = Channel.UNLIMITED)
 
     init {
+        // Tag the state with this instance so the UI's switch / restart / preset
+        // actions only touch THIS instance, never the built-in or other clones.
+        _uiState.value = _uiState.value.copy(instanceId = instanceId)
+
         // Always load the last saved custom RPC config so the screen remembers
         // what the user last modified, even if they haven't started the RPC yet.
-        val lastConfig = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+        val lastConfig = Prefs[configKey, ""]
         if (lastConfig.isNotBlank()) {
             _uiState.value = _uiState.value.copy(
                 rpcConfig = lastConfig.stringToData()
@@ -98,7 +114,7 @@ class CustomScreenViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(rpcConfig = event.config)
                 // Persist immediately so the RPC config survives navigation away
                 // and re-open of the screen.
-                Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = Json.encodeToString(event.config)
+                Prefs[configKey] = Json.encodeToString(event.config)
                 // Restart running Custom RPC service so field changes apply live
                 // without the user having to close and reopen the app.
                 viewModelScope.launch {
@@ -107,6 +123,9 @@ class CustomScreenViewModel @Inject constructor(
                             action = Constants.ACTION_RESTART_SERVICE
                             putExtra("RPC", Json.encodeToString(event.config))
                             putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, false)
+                            // Target ONLY this instance. Without this a clone's edit
+                            // restarted the built-in Custom RPC with the clone's config.
+                            instanceIdValue?.let { putExtra(Constants.EXTRA_INSTANCE_ID, it) }
                         }
                         context.startService(intent)
                     }
@@ -198,7 +217,7 @@ class CustomScreenViewModel @Inject constructor(
                     showBottomSheet = false
                 )
                 // Persist the clearing so the next time the screen opens it starts empty
-                Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
+                Prefs[configKey] = ""
             }
         }
     }
