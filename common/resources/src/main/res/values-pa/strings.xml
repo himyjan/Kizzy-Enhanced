@@ -265,6 +265,7 @@
     <string name="main_customRpc_details">Kizzy ਤੁਹਾਨੂੰ Discord ਲਈ ਆਪਣੀ ਪੂਰੀ ਤਰ੍ਹਾਂ ਕਸਟਮਾਈਜ਼ ਕੀਤੀ
         ਰਿਚ ਪ੍ਰੈਜ਼ੈਂਸ ਬਣਾਉਣ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ।</string>
     <string name="add_rpc_title">RPC ਸ਼ਾਮਲ ਕਰੋ</string>
+    <string name="home_add_rpc">RPC ਸ਼ਾਮਲ ਕਰੋ</string>
     <string name="add_rpc_select_type">RPC ਦੀ ਕਿਸਮ ਚੁਣੋ:</string>
     <string name="main_comingSoon">ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ</string>
     <string name="exit">ਬਾਹਰ ਨਿਕਲੋ</string>

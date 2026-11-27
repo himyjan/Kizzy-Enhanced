@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">የሙከራ RPC በመተግበሪያዎች RPC እና በሚዲያ RPC መካከል ያለማቋረጥ የሚቀያየር በKizzy ውስጥ ያለ ባህሪ ነው።</string>
     <string name="main_customRpc_details">Kizzy ለዲስኮርድ የራስዎን ሙሉ በሙሉ ሊበጅ የሚችል የበለፀገ መገኘት እንዲፈጥሩ ይፈቅድልዎታል።</string>
     <string name="add_rpc_title">RPC አክል</string>
+    <string name="home_add_rpc">RPC አክል</string>
     <string name="add_rpc_select_type">የRPC አይነት ይምረጡ፡</string>
     <string name="main_comingSoon">በቅርብ ወጥ</string>
     <string name="exit">ውጣ</string>

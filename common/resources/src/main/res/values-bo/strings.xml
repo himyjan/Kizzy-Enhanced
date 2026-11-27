@@ -273,6 +273,7 @@
     <string name="main_customRpc_details">Kizzy་ས་ཁྱེད་རང་གི་རང་བཟོ་ཡོངས་སུ་བསྒྱུར་ནུས་པའི་
         Discord་ཡི་ Rich Presence་བཟོ་བར་ཆོག་པ་བྱེད་ཀྱི་ཡོད།</string>
     <string name="add_rpc_title">RPC་བསྣན་པ།</string>
+    <string name="home_add_rpc">RPC་བསྣན་པ།</string>
     <string name="add_rpc_select_type">RPC་རྣམ་གྲངས་འདེམས་རོགས།</string>
     <string name="main_comingSoon">སྔོན་འགྲིམ།</string>
     <string name="exit">འགྱོད</string>

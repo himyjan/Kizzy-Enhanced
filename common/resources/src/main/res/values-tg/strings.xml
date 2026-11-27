@@ -273,6 +273,7 @@
     <string name="main_customRpc_details">Kizzy ба шумо имкон медиҳад, ки rich presence-и худро барои Discord
         пурра фармоишӣ созед.</string>
     <string name="add_rpc_title">RPC илова кунед</string>
+    <string name="home_add_rpc">RPC илова кунед</string>
     <string name="add_rpc_select_type">Навъи RPC-ро интихоб кунед:</string>
     <string name="main_comingSoon">Дар роҳ аст</string>
     <string name="exit">Баромадан</string>

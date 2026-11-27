@@ -273,6 +273,7 @@
     <string name="main_customRpc_details">Kizzy ଆପଣଙ୍କୁ Discord ପାଇଁ ସମ୍ପୂର୍ଣ୍ଣ ନିଜସ୍ୱ
         ରିଚ୍ ପ୍ରେଜେନ୍ସ ତିଆରି କରିବାକୁ ଅନୁମତି ଦିଏ।</string>
     <string name="add_rpc_title">RPC ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="home_add_rpc">RPC ଯୋଡ଼ନ୍ତୁ</string>
     <string name="add_rpc_select_type">RPC ପ୍ରକାର ଚୟନ କରନ୍ତୁ:</string>
     <string name="main_comingSoon">ଶୀଘ୍ରିଆ</string>
     <string name="exit">ବାହାର</string>

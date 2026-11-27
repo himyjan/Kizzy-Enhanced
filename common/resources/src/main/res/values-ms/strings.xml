@@ -272,6 +272,7 @@
     <string name="main_customRpc_details">Kizzy membolehkan anda mencipta kehadiran kaya yang sepenuhnya
         boleh disesuaikan untuk Discord.</string>
     <string name="add_rpc_title">Tambah RPC</string>
+    <string name="home_add_rpc">Tambah RPC</string>
     <string name="add_rpc_select_type">Pilih jenis RPC:</string>
     <string name="main_comingSoon">Akan datang</string>
     <string name="exit">Keluar</string>

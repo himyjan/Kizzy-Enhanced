@@ -266,6 +266,7 @@
     <string name="main_customRpc_details">Med Kizzy kan du lage din egen helt tilpassede
         Rich Presence for Discord.</string>
     <string name="add_rpc_title">Legg til RPC</string>
+    <string name="home_add_rpc">Legg til RPC</string>
     <string name="add_rpc_select_type">Velg RPC-type:</string>
     <string name="main_comingSoon">Kommer snart</string>
     <string name="exit">Avslutt</string>

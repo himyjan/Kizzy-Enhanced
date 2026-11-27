@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Кол менен RPC — Kizzyдеги Колдонмолор RPC менен Медиа RPC ортосунда тынымсыз алмашып турган өзгөчөлүк.</string>
     <string name="main_customRpc_details">Kizzy Discord үчүн өзүңүзгө толук ыңгайлаштырылган Rich Presence түзүүгө мүмкүндүк берет.</string>
     <string name="add_rpc_title">RPC кошуу</string>
+    <string name="home_add_rpc">RPC кошуу</string>
     <string name="add_rpc_select_type">RPC түрүн тандаңыз:</string>
     <string name="main_comingSoon">Жакында</string>
     <string name="exit">Чыгуу</string>

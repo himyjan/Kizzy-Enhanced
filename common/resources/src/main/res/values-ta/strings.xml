@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">கைமுறை RPC என்பது செயலிகள் RPC மற்றும் மீடியா RPC இடையே தொடர்ந்து மாறும் Kizzy-இன் அம்சமாகும்.</string>
     <string name="main_customRpc_details">Kizzy Discord-க்கான உங்கள் சொந்த முழுமையாகத் தனிப்பயனாக்கக்கூடிய rich presence-ஐ உருவாக்க அனுமதிக்கிறது.</string>
     <string name="add_rpc_title">RPC சேர்</string>
+    <string name="home_add_rpc">RPC சேர்</string>
     <string name="add_rpc_select_type">RPC வகையைத் தேர்ந்தெடுக்கவும்:</string>
     <string name="main_comingSoon">விரைவில் வருகிறது</string>
     <string name="exit">வெளியேறு</string>

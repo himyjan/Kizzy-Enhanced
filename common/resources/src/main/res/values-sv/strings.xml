@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Manuell RPC är en funktion i Kizzy som konstant växlar mellan app-RPC och media-RPC.</string>
     <string name="main_customRpc_details">Kizzy låter dig skapa din egen helt anpassningsbara rich presence för Discord.</string>
     <string name="add_rpc_title">Lägg till RPC</string>
+    <string name="home_add_rpc">Lägg till RPC</string>
     <string name="add_rpc_select_type">Välj RPC-typ:</string>
     <string name="main_comingSoon">Kommer snart</string>
     <string name="exit">Avsluta</string>

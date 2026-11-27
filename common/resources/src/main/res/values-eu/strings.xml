@@ -272,6 +272,7 @@
     <string name="main_customRpc_details">Kizzy-k Discord-erako guztiz pertsonaliza daitekeen
         rich presence bat sortzeko aukera ematen dizu.</string>
     <string name="add_rpc_title">Gehitu RPC</string>
+    <string name="home_add_rpc">Gehitu RPC</string>
     <string name="add_rpc_select_type">Hautatu RPC mota:</string>
     <string name="main_comingSoon">Laster</string>
     <string name="exit">Irten</string>

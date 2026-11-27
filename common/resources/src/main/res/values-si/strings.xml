@@ -273,6 +273,7 @@
     <string name="main_customRpc_details">ඔබේම සම්පූර්ණයෙන් අභිරුචිකරණය කළ හැකි විස්තීර්ණ පැවැත්මක්
         Discord සඳහා නිර්මාණය කිරීමට Kizzy ඉඩ දෙයි.</string>
     <string name="add_rpc_title">RPC එකතු කරන්න</string>
+    <string name="home_add_rpc">RPC එකතු කරන්න</string>
     <string name="add_rpc_select_type">RPC වර්ගය තෝරන්න:</string>
     <string name="main_comingSoon">ඉක්මනින්</string>
     <string name="exit">පිටතට</string>

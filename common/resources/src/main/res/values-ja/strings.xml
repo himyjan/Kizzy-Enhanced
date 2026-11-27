@@ -263,6 +263,7 @@
     <string name="main_customRpc_details">Kizzyを使用すると、Discord用の完全にカスタマイズ可能な
         リッチプレゼンスを作成できます。</string>
     <string name="add_rpc_title">RPCを追加</string>
+    <string name="home_add_rpc">RPCを追加</string>
     <string name="add_rpc_select_type">RPCの種類を選択：</string>
     <string name="main_comingSoon">近日公開</string>
     <string name="exit">終了</string>

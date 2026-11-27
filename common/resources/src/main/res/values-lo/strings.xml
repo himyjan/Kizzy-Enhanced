@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">RPC ແບບກຳນົດເອງແມ່ນຄຸນສົມບັດໃນ Kizzy ທີ່ສະຫຼັບລະຫວ່າງ RPC ແອັບ ແລະ RPC ສື່ຕະຫຼອດເວລາ.</string>
     <string name="main_customRpc_details">Kizzy ອະນຸຍາດໃຫ້ທ່ານສ້າງ Rich Presence ຂອງທ່ານເອງແບບກຳນົດເອງໄດ້ເຕັມຮູບແບບສຳລັບ Discord.</string>
     <string name="add_rpc_title">ເພີ່ມ RPC</string>
+    <string name="home_add_rpc">ເພີ່ມ RPC</string>
     <string name="add_rpc_select_type">ເລືອກປະເພດ RPC:</string>
     <string name="main_comingSoon">ແລ້ວເທິງ</string>
     <string name="exit">ອອກ</string>

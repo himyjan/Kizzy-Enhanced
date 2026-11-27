@@ -76,6 +76,12 @@ class AppDetectionService : Service() {
     private lateinit var restartPendingIntent: PendingIntent
 
     private var runningPackage = ""
+    override fun onTaskRemoved(intent: Intent?) {
+        Log.d(TAG, "onTaskRemoved: app swiped from Recents - keeping App Detection alive")
+        com.my.kizzy.data.work.WorkManagerHelper.scheduleRpcRecovery(this)
+        super.onTaskRemoved(intent)
+    }
+
     override fun onBind(intent: Intent): IBinder? = null
 
     override fun onCreate() {
@@ -384,6 +390,7 @@ class AppDetectionService : Service() {
         )
         rpcManager.setCurrentPresenceConfig(
             RpcConfig(
+                instanceId = "app_detection_rpc",
                 name = appLabel,
                 details = details.orEmpty(),
                 state = state.orEmpty(),
@@ -392,7 +399,7 @@ class AppDetectionService : Service() {
                 timestampsStop = "",
                 largeImg = largeImage.toUrlString().orEmpty(),
             ),
-            RpcManager.RpcType.AppDetectionRpc
+            "app_detection_rpc"
         )
 
         notificationManager.notify(

@@ -266,6 +266,7 @@
     <string name="main_customRpc_details">"Kizzy võimaldab sul luua täielikult kohandatava
         rich presence'i Discordis."</string>
     <string name="add_rpc_title">Lisa RPC</string>
+    <string name="home_add_rpc">Lisa RPC</string>
     <string name="add_rpc_select_type">Vali RPC tüüp:</string>
     <string name="main_comingSoon">Kiiresti tuleb</string>
     <string name="exit">Välju</string>

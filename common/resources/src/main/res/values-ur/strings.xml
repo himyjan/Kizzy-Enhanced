@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">منوئل RPC Kizzy میں ایک خصوصیت ہے جو ایپس RPC اور میڈیا RPC کے درمیان مسلسل تبدیل ہوتی ہے۔</string>
     <string name="main_customRpc_details">Kizzy آپ کو Discord کے لیے اپنا مکمل طور پر قابل تبدیل rich presence بنانے کی اجازت دیتا ہے۔</string>
     <string name="add_rpc_title">RPC شامل کریں</string>
+    <string name="home_add_rpc">RPC شامل کریں</string>
     <string name="add_rpc_select_type">RPC کی قسم منتخب کریں:</string>
     <string name="main_comingSoon">جلد آگ رہا ہے</string>
     <string name="exit">باہر نکلنا</string>

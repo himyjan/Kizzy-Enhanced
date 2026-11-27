@@ -266,6 +266,7 @@
     <string name="main_customRpc_details">Το Kizzy σάς επιτρέπει να δημιουργήσετε τη δική σας πλήρως προσαρμόσιμη
         εμπλουτισμένη παρουσία για το Discord.</string>
     <string name="add_rpc_title">Προσθήκη RPC</string>
+    <string name="home_add_rpc">Προσθήκη RPC</string>
     <string name="add_rpc_select_type">Επιλογή τύπου RPC:</string>
     <string name="main_comingSoon">Εructe σύντομα</string>
     <string name="exit">Έξοδος</string>

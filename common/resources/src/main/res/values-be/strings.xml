@@ -273,6 +273,7 @@
     <string name="main_customRpc_details">Kizzy дазваляе стварыць уласны цалкам наладжвальны
         Rich Presence для Discord.</string>
     <string name="add_rpc_title">Дадаць RPC</string>
+    <string name="home_add_rpc">Дадаць RPC</string>
     <string name="add_rpc_select_type">Выберыце тып RPC:</string>
     <string name="main_comingSoon">Хутка</string>
     <string name="exit">Выхад</string>

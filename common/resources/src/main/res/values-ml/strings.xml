@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">ആക്സ്പിരിമെന്റൽ RPC കിഴിയിലെ ഒരു ഫീച്ചர் ആണ്, അത് ആപ്പ്‌സ് RPC-യും മീഡിയ RPC-യും തമ്മിൽ perpétuellement മാറിക്കൊണ്ടിരിക്കുന്നു.</string>
     <string name="main_customRpc_details">Kizzy നിങ്ങളുടെ സ്വന്തം പൂർണ്ണമായി കസ്റ്റമൈസ് ചെയ്യാവുന്ന റിച്ച് പ്രെസൻസ് Discord-ൽ സൃഷ്ടിക്കാൻ അനുവദിക്കുന്നു.</string>
     <string name="add_rpc_title">RPC ചേർക്കുക</string>
+    <string name="home_add_rpc">RPC ചേർക്കുക</string>
     <string name="add_rpc_select_type">RPC തരം തിരഞ്ഞെടുക്കുക:</string>
     <string name="main_comingSoon">വientôt വenganും</string>
     <string name="exit">വ saída</string>

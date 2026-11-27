@@ -263,6 +263,7 @@
     <string name="main_customRpc_details">Kizzy გაძლევთ საშუალებას შექმნათ სრულად მორგებული
         rich presence Discord-ისთვის.</string>
     <string name="add_rpc_title">RPC-ის დამატება</string>
+    <string name="home_add_rpc">RPC-ის დამატება</string>
     <string name="add_rpc_select_type">აირჩიე RPC-ის ტიპი:</string>
     <string name="main_comingSoon">მალე გამოვა</string>
     <string name="exit">გასვლა</string>

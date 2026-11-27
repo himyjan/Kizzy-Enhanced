@@ -272,6 +272,7 @@
     <string name="main_customRpc_details">Kizzy ให้คุณสร้าง rich presence ที่กำหนดเองได้อย่างเต็มที่
         สำหรับ Discord</string>
     <string name="add_rpc_title">เพิ่ม RPC</string>
+    <string name="home_add_rpc">เพิ่ม RPC</string>
     <string name="add_rpc_select_type">เลือกประเภท RPC:</string>
     <string name="main_comingSoon">อดใจไว้ก่อน ฟีเจอร์ใหม่ยังไม่มา</string>
     <string name="exit">ออก</string>

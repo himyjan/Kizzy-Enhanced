@@ -262,6 +262,7 @@
     <string name="main_ManualRpc_details">ကိုယ်တိုင် RPC ဟာ Kizzy ထဲက အင်္ဂါရပ်တစ်ခုဖြစ်ပြီး အက်ပ်များ RPC နဲ့ မီဒီယာ RPC ကြားမှာ အမြဲပြောင်းလဲနေပါတယ်။</string>
     <string name="main_customRpc_details">Kizzy က Discord အတွက် သင်ကိုယ်တိုင် အပြည့်အဝ စိတ်ကြိုက်ပြင်ဆင်နိုင်တဲ့ ကြွယ်ဝသော ရှိနေမှုအခြေအနေကို ဖန်တီးခွင့်ပေးပါတယ်။</string>
     <string name="add_rpc_title">RPC ထည့်ရန်</string>
+    <string name="home_add_rpc">RPC ထည့်ရန်</string>
     <string name="add_rpc_select_type">RPC အမျိုးအစား ရွေးပါ:</string>
     <string name="main_comingSoon">မကြာမီ</string>
     <string name="exit">ထွက်ပါ</string>

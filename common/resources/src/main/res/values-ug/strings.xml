@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">قولدا RPC بولسا Kizzy دىكى ئەپ RPC سى بىلەن ۋاسىتە RPC سى ئارىسىدا ئۈزلۈكسىز ئالمىشىدىغان ئىقتىدار.</string>
     <string name="main_customRpc_details">Kizzy Discord ئۈچۈن ئۆزىڭىزنىڭ تولۇق خاسلاشتۇرغىلى بولىدىغان rich presence قۇرۇشىڭىزغا يول قويىدۇ.</string>
     <string name="add_rpc_title">RPC قوشۇش</string>
+    <string name="home_add_rpc">RPC قوشۇش</string>
     <string name="add_rpc_select_type">RPC تىپىنى تاللاڭ:</string>
     <string name="main_comingSoon">ھامان كېلىدۇ</string>
     <string name="exit">چىقىش</string>

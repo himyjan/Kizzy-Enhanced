@@ -263,6 +263,7 @@
     <string name="main_customRpc_details">Kizzy તમને Discord માટે તમારી પોતાની સંપૂર્ણપણે કસ્ટમાઇઝ કરી શકાય તેવી
         Rich Presence બનાવવા દે છે.</string>
     <string name="add_rpc_title">RPC ઉમેરો</string>
+    <string name="home_add_rpc">RPC ઉમેરો</string>
     <string name="add_rpc_select_type">RPC પ્રકાર પસંદ કરો:</string>
     <string name="main_comingSoon">આજે થઇ રહ્યું છે</string>
     <string name="exit">નિકળો</string>

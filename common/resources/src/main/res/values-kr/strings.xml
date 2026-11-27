@@ -272,6 +272,7 @@
     <string name="main_customRpc_details">Kizzy ನಿಮಗೆ Discord ಗಾಗಿ ಸಂಪೂರ್ಣ ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ರಿಚ್ ಪ್ರೆಸೆನ್ಸ್ ಅನ್ನು ರಚಿಸಲು ಅನುವು ಮಾಡಿಕೊಡುತ್ತದೆ.
         </string>
     <string name="add_rpc_title">RPC ಸೇರಿಸು</string>
+    <string name="home_add_rpc">RPC ಸೇರಿಸು</string>
     <string name="add_rpc_select_type">RPC ಪ್ರಕಾರ ಆಯ್ಕೆಮಾಡಿ:</string>
     <string name="main_comingSoon">곧 출시</string>
     <string name="exit">종료</string>

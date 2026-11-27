@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Manual RPC minangka fitur ing Kizzy sing anyar-anyar ora-nalika mbenteni antarane Apps RPC lan Media RPC.</string>
     <string name="main_customRpc_details">Kizzy nyedhiyakake kesempatan kanggo nggawe rich presence sing bisa disesuaikan sepenuh kanggo Discord.</string>
     <string name="add_rpc_title">Tambah RPC</string>
+    <string name="home_add_rpc">Tambah RPC</string>
     <string name="add_rpc_select_type">Pilih jinis RPC:</string>
     <string name="main_comingSoon">Segera Hadir</string>
     <string name="exit">Keluar</string>

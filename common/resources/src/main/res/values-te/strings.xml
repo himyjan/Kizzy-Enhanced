@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">మాన్యువల్ RPC అనేది యాప్‌ల RPC మరియు మీడియా RPC మధ్య నిరంతరం మారే Kizzy లక్షణం.</string>
     <string name="main_customRpc_details">Kizzy Discord కోసం మీ సొంత పూర్తిగా అనుకూలీకరించదగిన rich presence సృష్టించడానికి అనుమతిస్తుంది.</string>
     <string name="add_rpc_title">RPC జోడించు</string>
+    <string name="home_add_rpc">RPC జోడించు</string>
     <string name="add_rpc_select_type">RPC రకాన్ని ఎంచుకోండి:</string>
     <string name="main_comingSoon">రాజు రాకుండా</string>
     <string name="exit">బయటకు వెళ్ళండి</string>

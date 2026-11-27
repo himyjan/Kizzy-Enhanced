@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">"Qo'lda RPC — Kizzy'dagi Ilovalar RPC va Media RPC o'rtasida doimiy almashuvchi funksiya."</string>
     <string name="main_customRpc_details">"Kizzy Discord uchun o'zingizning to'liq moslashtirilgan rich presence yaratishga imkon beradi."</string>
     <string name="add_rpc_title">"RPC qo'shish"</string>
+    <string name="home_add_rpc">"RPC qo'shish"</string>
     <string name="add_rpc_select_type">RPC turini tanlang:</string>
     <string name="main_comingSoon">Tez orada</string>
     <string name="exit">Chiqish</string>

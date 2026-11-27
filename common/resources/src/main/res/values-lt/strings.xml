@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Rankinis RPC yra Kizzy funkcija, kuri nuolat kaitaliojasi tarp programų RPC ir medijos RPC.</string>
     <string name="main_customRpc_details">Kizzy leidžia jums susikurti visiškai tinkintą Rich Presence Discordui.</string>
     <string name="add_rpc_title">Pridėti RPC</string>
+    <string name="home_add_rpc">Pridėti RPC</string>
     <string name="add_rpc_select_type">Pasirinkite RPC tipą:</string>
     <string name="main_comingSoon">Artimiausiu metu</string>
     <string name="exit">Išeiti</string>

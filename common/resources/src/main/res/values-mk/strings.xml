@@ -265,6 +265,7 @@
     <string name="main_customRpc_details">Kizzy ви овозможува да создадете своја целосно прилагодлива
         богата присутност за Discord.</string>
     <string name="add_rpc_title">Додај RPC</string>
+    <string name="home_add_rpc">Додај RPC</string>
     <string name="add_rpc_select_type">Изберете тип на RPC:</string>
     <string name="main_comingSoon">Ѕе доћи</string>
     <string name="exit">Излез</string>

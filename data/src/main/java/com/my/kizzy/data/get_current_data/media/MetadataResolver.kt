@@ -33,16 +33,16 @@ class MetadataResolver @Inject constructor(
             MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI,
         )
         for (key in keys) {
-            val value = metadata.getString(key)
+            val value = metadata.safeGetString(key)
             if (!value.isNullOrEmpty()) return value
         }
         return null
     }
 
     fun getArtistOrAuthor(metadata: MediaMetadata): String? {
-        return if (!metadata.getString(MediaMetadata.METADATA_KEY_ARTIST).isNullOrEmpty()) metadata.getString(
+        return if (!metadata.safeGetString(MediaMetadata.METADATA_KEY_ARTIST).isNullOrEmpty()) metadata.safeGetString(
             MediaMetadata.METADATA_KEY_ARTIST
-        ) else if (!metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR).isNullOrEmpty()) metadata.getString(
+        ) else if (!metadata.safeGetString(MediaMetadata.METADATA_KEY_AUTHOR).isNullOrEmpty()) metadata.safeGetString(
             MediaMetadata.METADATA_KEY_AUTHOR
         ) else null
     }
@@ -73,7 +73,7 @@ class MetadataResolver @Inject constructor(
     }
 
     fun getAlbum(metadata: MediaMetadata): String? {
-        return if (!metadata.getString(MediaMetadata.METADATA_KEY_ALBUM).isNullOrEmpty()) metadata.getString(
+        return if (!metadata.safeGetString(MediaMetadata.METADATA_KEY_ALBUM).isNullOrEmpty()) metadata.safeGetString(
             MediaMetadata.METADATA_KEY_ALBUM
         ) else null
     }
@@ -91,7 +91,7 @@ class MetadataResolver @Inject constructor(
             "android.media.metadata.PLAYLIST_TITLE", "android.media.metadata.PLAYLIST_NAME",
         )
         for (key in customKeys) {
-            metadata.getString(key)?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
+            metadata.safeGetString(key)?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
         }
         return runCatching {
             metadata.keySet().firstNotNullOfOrNull { key ->
@@ -101,7 +101,7 @@ class MetadataResolver @Inject constructor(
                     (lowerKey.contains("playlist") &&
                         (lowerKey.contains("name") || lowerKey.contains("title")))
                 if (!looksLikeName) return@firstNotNullOfOrNull null
-                val value = metadata.getString(key)?.trim() ?: return@firstNotNullOfOrNull null
+                val value = metadata.safeGetString(key)?.trim() ?: return@firstNotNullOfOrNull null
                 value.takeIf {
                     it.isNotEmpty() &&
                         !it.startsWith("http://", ignoreCase = true) &&
@@ -112,7 +112,7 @@ class MetadataResolver @Inject constructor(
     }
 
     fun getAlbumArtists(metadata: MediaMetadata): String? {
-        return if (!metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST).isNullOrEmpty()) metadata.getString(
+        return if (!metadata.safeGetString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST).isNullOrEmpty()) metadata.safeGetString(
             MediaMetadata.METADATA_KEY_ALBUM_ARTIST
         ) else getArtistOrAuthor(metadata)
     }
@@ -120,7 +120,7 @@ class MetadataResolver @Inject constructor(
     fun getAudioChannels(metadata: MediaMetadata): String? {
         val channelKeys = listOf("audio_channels", "audio_channel_count", "channel_count", "surround", "audio_format")
         for (key in channelKeys) {
-            val value = metadata.getString(key)
+            val value = metadata.safeGetString(key)
             if (value.isNullOrEmpty()) continue
             return when (value.lowercase()) {
                 "5.1", "5.1ch", "51" -> "5.1 Surround"
@@ -130,7 +130,7 @@ class MetadataResolver @Inject constructor(
                 else -> value
             }
         }
-        val album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
+        val album = metadata.safeGetString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
         val channelMatch = Regex("""(5\.1|7\.1|2\.0|stereo|surround|atmos)""", RegexOption.IGNORE_CASE).find(album)
         return channelMatch?.value?.replaceFirstChar { it.uppercase() }
     }
@@ -208,7 +208,7 @@ class MetadataResolver @Inject constructor(
         val customKeys = listOf("youtube_url", "video_url", "source_url", "media_url", "content_url",
             "spotify_url", "apple_music_url", "deezer_url", "soundcloud_url")
         for (key in customKeys) {
-            val value = metadata.getString(key)
+            val value = metadata.safeGetString(key)
             if (value != null && value.isValidMediaUrl()) {
                 val normalized = normalizeMediaUrl(value, packageName)
                 if (normalized != null) return normalized
@@ -236,20 +236,20 @@ class MetadataResolver @Inject constructor(
             // artist link still gets a search page, so the media link must too,
             // otherwise Discord shows only "Artist on ..." and the
             // video/music/playlist button disappears entirely.
-            val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+            val title = metadata.safeGetString(MediaMetadata.METADATA_KEY_TITLE)
             return MediaServiceResolver.mediaSearchUrl(packageName, title)
         }
         if (MediaServiceResolver.isBrowser(packageName)) {
-            val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+            val title = metadata.safeGetString(MediaMetadata.METADATA_KEY_TITLE)
             return MediaServiceResolver.browserSearchUrl(title)
         }
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+        val title = metadata.safeGetString(MediaMetadata.METADATA_KEY_TITLE)
         return MediaServiceResolver.mediaSearchUrl(packageName, title)
     }
 
     /** Resolves a track URL from sourceUrl or custom metadata keys. */
     fun getTrackUrl(metadata: MediaMetadata, packageName: String?): String? {
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
+        val sourceUrl = metadata.safeGetString(METADATA_KEY_SOURCE_URL)
         if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
             val url = resolveTrackUrl(sourceUrl, packageName)
             if (url != null) return url
@@ -263,7 +263,7 @@ class MetadataResolver @Inject constructor(
             "joox_track_url"
         )
         for (key in customKeys) {
-            val value = metadata.getString(key)
+            val value = metadata.safeGetString(key)
             if (value != null && value.isValidMediaUrl()) {
                 val url = resolveTrackUrl(value, packageName)
                 if (url != null) return url
@@ -287,7 +287,7 @@ class MetadataResolver @Inject constructor(
             MediaMetadata.METADATA_KEY_MEDIA_ID,
         )
         for (key in candidateKeys) {
-            val value = metadata.getString(key)
+            val value = metadata.safeGetString(key)
             if (value != null && value.isValidMediaUrl()) {
                 val url = resolveAlbumUrl(value, packageName)
                 if (url != null) return url
@@ -300,7 +300,7 @@ class MetadataResolver @Inject constructor(
             "bandcamp_album_url"
         )
         for (key in customKeys) {
-            val value = metadata.getString(key)
+            val value = metadata.safeGetString(key)
             if (value != null && value.isValidMediaUrl()) {
                 val url = resolveAlbumUrl(value, packageName)
                 if (url != null) return url
@@ -311,7 +311,7 @@ class MetadataResolver @Inject constructor(
 
     /** Resolves a playlist URL from sourceUrl or custom metadata keys. */
     fun getPlaylistUrl(metadata: MediaMetadata, packageName: String?): String? {
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
+        val sourceUrl = metadata.safeGetString(METADATA_KEY_SOURCE_URL)
         if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
             val url = resolvePlaylistUrl(sourceUrl, packageName)
             if (url != null) return url
@@ -322,7 +322,7 @@ class MetadataResolver @Inject constructor(
             "linemusic_playlist_url", "joox_playlist_url", "soundcloud_playlist_url"
         )
         for (key in customKeys) {
-            val value = metadata.getString(key)
+            val value = metadata.safeGetString(key)
             if (value != null && value.isValidMediaUrl()) {
                 val url = resolvePlaylistUrl(value, packageName)
                 if (url != null) return url
@@ -1322,9 +1322,27 @@ class MetadataResolver @Inject constructor(
      * `youtu.be/ID`. This local scan needs no network and makes the details /
      * cover links resolve to the real video.
      */
+private val NON_STRING_METADATA_KEYS = setOf(
+    MediaMetadata.METADATA_KEY_DURATION,
+    MediaMetadata.METADATA_KEY_NUM_TRACKS,
+    MediaMetadata.METADATA_KEY_TRACK_NUMBER,
+    MediaMetadata.METADATA_KEY_DISC_NUMBER,
+    MediaMetadata.METADATA_KEY_YEAR,
+    MediaMetadata.METADATA_KEY_BT_FOLDER_TYPE,
+    MediaMetadata.METADATA_KEY_USER_RATING,
+    MediaMetadata.METADATA_KEY_RATING,
+    "com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX",
+    "com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX"
+)
+
+private fun MediaMetadata.safeGetString(key: String?): String? {
+    if (key == null || key in NON_STRING_METADATA_KEYS || key.endsWith("_PX", ignoreCase = true)) return null
+    return runCatching { getString(key) }.getOrNull()
+}
+
     private fun findVideoIdInMetadata(metadata: MediaMetadata): String? {
         // Check id/url-ish keys first, then everything else.
-        val orderedKeys = metadata.keySet().sortedByDescending { key ->
+        val orderedKeys = runCatching { metadata.keySet() }.getOrNull()?.sortedByDescending { key ->
             val k = key.lowercase()
             when {
                 ("video" in k && "id" in k) -> 3
@@ -1333,9 +1351,9 @@ class MetadataResolver @Inject constructor(
                 ("url" in k || "uri" in k || "link" in k) -> 1
                 else -> 0
             }
-        }
+        } ?: return null
         for (key in orderedKeys) {
-            val value = metadata.getString(key)?.trim() ?: continue
+            val value = metadata.safeGetString(key)?.trim() ?: continue
             if (value.isEmpty()) continue
             val id = YouTubeResolver.extractVideoId(value) ?: continue
             if (YouTubeResolver.isValidVideoId(id)) return id
@@ -1353,7 +1371,7 @@ class MetadataResolver @Inject constructor(
                 toRpcMediaUrl(url)?.let { return it }
             }
         }
-        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
+        val mediaId = metadata.safeGetString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
             if (YouTubeResolver.isYoutubeFamilyUrl(mediaId)) {
                 toRpcMediaUrl(mediaId)?.let { return it }
@@ -1383,7 +1401,7 @@ class MetadataResolver @Inject constructor(
         if (!sourceUrl.isNullOrEmpty() && YouTubeResolver.isYoutubeFamilyUrl(sourceUrl)) {
             YouTubeResolver.lookup(YouTubeResolver.unwrapYmusicUrl(sourceUrl))?.let { return it }
         }
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
+        val title = metadata.safeGetString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
         if (title.isNullOrEmpty()) return null
         val artist = MetadataResolverArtistName(metadata)
         return YouTubeResolver.lookupByTitle(title, artist)
@@ -1399,8 +1417,8 @@ class MetadataResolver @Inject constructor(
         packageName: String?,
     ): String? {
         if (!MediaServiceResolver.isYouTube(packageName)) return null
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: "unknown"
-        val artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?: "unknown"
+        val title = metadata.safeGetString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: "unknown"
+        val artist = metadata.safeGetString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?: "unknown"
         val video = resolveYouTubeVideo(metadata)
         if (video == null) {
             logger.d("MediaImage", "Channel avatar: resolveYouTubeVideo returned null for '$title' by $artist")
@@ -1461,11 +1479,11 @@ class MetadataResolver @Inject constructor(
             MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
             MediaMetadata.METADATA_KEY_ART_URI,
         ).forEach { key ->
-            metadata.getString(key)?.takeIf { it.isNotBlank() }?.let { candidates.add(it) }
+            metadata.safeGetString(key)?.takeIf { it.isNotBlank() }?.let { candidates.add(it) }
         }
         // Then every key available in the bundle (sites use custom keys).
         metadata.keySet().forEach { key ->
-            runCatching { metadata.getString(key) }
+            runCatching { metadata.safeGetString(key) }
                 .getOrNull()
                 ?.takeIf { it.isNotBlank() }
                 ?.let { candidates.add(it) }
@@ -1493,7 +1511,7 @@ class MetadataResolver @Inject constructor(
             METADATA_KEY_SOURCE_URL,
             MediaMetadata.METADATA_KEY_MEDIA_ID,
         ).forEach { key ->
-            metadata.getString(key)?.takeIf { it.isValidMediaUrl() }?.let { return it }
+            metadata.safeGetString(key)?.takeIf { it.isValidMediaUrl() }?.let { return it }
         }
         return scanAllMetadataForUrl(metadata)
     }
@@ -1506,7 +1524,7 @@ class MetadataResolver @Inject constructor(
             MediaMetadata.METADATA_KEY_MEDIA_ID,
         )
         for (key in keys) {
-            val value = metadata.getString(key)
+            val value = metadata.safeGetString(key)
             if (!value.isNullOrEmpty() && value.isValidMediaUrl()) return value
         }
         return null
@@ -1522,7 +1540,7 @@ class MetadataResolver @Inject constructor(
     }
 
     private fun extractYouTubeUrl(metadata: MediaMetadata): String? {
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+        val title = metadata.safeGetString(MediaMetadata.METADATA_KEY_TITLE)
         // Local full-metadata scan first (no network), so wrapper clients resolve
         // to youtu.be/ID instead of a search page.
         findVideoIdInMetadata(metadata)?.let { return "https://youtu.be/$it" }
@@ -1533,9 +1551,9 @@ class MetadataResolver @Inject constructor(
             YouTubeResolver.extractVideoId(raw)?.let { return "https://youtu.be/$it" }
             return null
         }
-        fromRaw(metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID))?.let { return it }
+        fromRaw(metadata.safeGetString(MediaMetadata.METADATA_KEY_MEDIA_ID))?.let { return it }
         fromRaw(firstMetadataUrl(metadata))?.let { return it }
-        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
+        val mediaId = metadata.safeGetString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
             val channelId = YouTubeResolver.extractChannelId(mediaId)
             if (channelId != null) return "https://www.youtube.com/channel/$channelId"
@@ -1549,7 +1567,7 @@ class MetadataResolver @Inject constructor(
         val youtubeKeys = listOf("youtube_url", "video_url", "source_url", "media_url", "content_url",
             "yt_url", "youtube_video_url", "youtube_watch_url")
         for (key in youtubeKeys) {
-            fromRaw(metadata.getString(key))?.let { return it }
+            fromRaw(metadata.safeGetString(key))?.let { return it }
         }
         if (!title.isNullOrEmpty()) {
             return "https://www.youtube.com/results?search_query=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
@@ -1568,11 +1586,11 @@ class MetadataResolver @Inject constructor(
         // Use blank-safe fall-through so an empty ARTIST field still resolves the
         // AUTHOR / ALBUM_ARTIST below, keeping parsedCollaborators consistent with
         // the multi-artist detection in `artists`.
-        val rawArtistString = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)
+        val rawArtistString = metadata.safeGetString(MediaMetadata.METADATA_KEY_ARTIST)
             ?.takeIf { it.isNotBlank() }
-            ?: metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+            ?: metadata.safeGetString(MediaMetadata.METADATA_KEY_AUTHOR)
                 ?.takeIf { it.isNotBlank() }
-                ?: metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+                ?: metadata.safeGetString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
         val parsedCollaborators = parseCollaboratingArtists(rawArtistString)
         val isMultiArtist = artists.size > 1 || parsedCollaborators.size > 1
         val pkg = packageName?.lowercase().orEmpty()
@@ -1580,7 +1598,7 @@ class MetadataResolver @Inject constructor(
             val combinedQuery = parsedCollaborators.joinToString(" ").ifBlank { artist }
             return MediaServiceResolver.artistUrl(packageName, combinedQuery)
         }
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
+        val sourceUrl = metadata.safeGetString(METADATA_KEY_SOURCE_URL)
         val parsedArtistUrl = when {
             "soundcloud" in pkg -> soundcloudArtistUrl(sourceUrl)
             "spotify" in pkg -> spotifyArtistUrl(sourceUrl)

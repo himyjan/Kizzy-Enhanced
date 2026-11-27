@@ -273,6 +273,7 @@
     <string name="main_customRpc_details">Kizzy gerir þér kleift að búa til þína eigin fullsérsniðnu
         ríku nærveru fyrir Discord.</string>
     <string name="add_rpc_title">Bæta við RPC</string>
+    <string name="home_add_rpc">Bæta við RPC</string>
     <string name="add_rpc_select_type">Veldu RPC-tegund:</string>
     <string name="main_comingSoon">Kemur fljótlega</string>
     <string name="exit">Hætta</string>

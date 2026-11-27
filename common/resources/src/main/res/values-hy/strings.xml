@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Ձեռքով RPC-ն Kizzy-ի հնարավորություն է, որը մշտապես փոխվում է Հավելվածների RPC-ի և Երաժշտության RPC-ի միջև:</string>
     <string name="main_customRpc_details">Kizzy-ն թույլ է տալիս ստեղծել ձեր ամբողջովին հարմարեցվող հարուստ ներկայություն Discord-ի համար:</string>
     <string name="add_rpc_title">Ավելացնել RPC</string>
+    <string name="home_add_rpc">Ավելացնել RPC</string>
     <string name="add_rpc_select_type">Ընտրեք RPC տիպը՝</string>
     <string name="main_comingSoon">Շուտ</string>
     <string name="exit">Ելք</string>

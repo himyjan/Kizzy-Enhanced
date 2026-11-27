@@ -273,6 +273,7 @@
     <string name="main_customRpc_details">Pinapayagan ka ng Kizzy na gumawa ng sarili mong lubos na pasadyang
         Rich Presence para sa Discord.</string>
     <string name="add_rpc_title">Magdagdag ng RPC</string>
+    <string name="home_add_rpc">Magdagdag ng RPC</string>
     <string name="add_rpc_select_type">Piliin ang uri ng RPC:</string>
     <string name="main_comingSoon">Malapit</string>
     <string name="exit">Paglabas</string>

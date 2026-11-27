@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">RPC gacmeed waa hawl Kizzy ah oo si joogto ah u beddelaya inta u dhaxaysa RPC barnaamijyada iyo RPC maadad.</string>
     <string name="main_customRpc_details">Kizzy waxay kuu ogolaaneysaa inaad abuuro firfircoonidaada gaar ah oo si buuxda loo habeeyay Discord-ka.</string>
     <string name="add_rpc_title">Ku dar RPC</string>
+    <string name="home_add_rpc">Ku dar RPC</string>
     <string name="add_rpc_select_type">Dooro nooca RPC:</string>
     <string name="main_comingSoon">Soo socda</string>
     <string name="exit">Ka bax</string>

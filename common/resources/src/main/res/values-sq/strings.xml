@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">RPC Manuale është një veçori në Kizzy që ndërron vazhdimisht midis RPC Aplikacioneve dhe RPC Median.</string>
     <string name="main_customRpc_details">Kizzy ju lejon të krijoni praninë tuaj të personalizuar plotësisht për Discord.</string>
     <string name="add_rpc_title">Shto RPC</string>
+    <string name="home_add_rpc">Shto RPC</string>
     <string name="add_rpc_select_type">Zgjidhni llojin e RPC:</string>
     <string name="main_comingSoon">Së shpejt</string>
     <string name="exit">Dil</string>

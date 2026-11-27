@@ -262,6 +262,7 @@
     <string name="main_customRpc_details">Kizzy ti consente di creare la tua presenza avanzata
         completamente personalizzabile per Discord.</string>
     <string name="add_rpc_title">Aggiungi RPC</string>
+    <string name="home_add_rpc">Aggiungi RPC</string>
     <string name="add_rpc_select_type">Seleziona il tipo di RPC:</string>
     <string name="main_comingSoon">In arrivo</string>
     <string name="exit">Esci</string>

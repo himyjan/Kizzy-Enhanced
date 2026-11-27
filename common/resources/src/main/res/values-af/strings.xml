@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">"Handmatige RPC is 'n funksie in Kizzy wat voortdurend wissel tussen Apps RPC en Media RPC."</string>
     <string name="main_customRpc_details">Kizzy laat jou toe om jou eie volledig aanpasbare rijkteenwoordigheid vir Discord te skep.</string>
     <string name="add_rpc_title">Voeg RPC by</string>
+    <string name="home_add_rpc">Voeg RPC by</string>
     <string name="add_rpc_select_type">Kies RPC-tipe:</string>
     <string name="main_comingSoon">Binnekort</string>
     <string name="exit">Verlaat</string>

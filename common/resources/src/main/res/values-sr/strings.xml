@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Ручни RPC је функција у Kizzy која се стално између RPC апликација и медијског RPC.</string>
     <string name="main_customRpc_details">Kizzy вам омогућава да створите свој потпуно прлагодив rich presence за Discord.</string>
     <string name="add_rpc_title">Додај RPC</string>
+    <string name="home_add_rpc">Додај RPC</string>
     <string name="add_rpc_select_type">Изаберите врсту RPC:</string>
     <string name="main_comingSoon">Brzo dolazi</string>
     <string name="exit">Излази</string>

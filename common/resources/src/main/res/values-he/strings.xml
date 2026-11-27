@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">RPC ידני הוא תכונה ב-Kizzy שמחליפה ללא הרף בין RPC לאפליקציות ל-RPC מדיה.</string>
     <string name="main_customRpc_details">Kizzy מאפשר לך ליצור נוכחות עשירה משלך, הניתנת להתאמה מלאה, עבור Discord.</string>
     <string name="add_rpc_title">הוסף RPC</string>
+    <string name="home_add_rpc">הוסף RPC</string>
     <string name="add_rpc_select_type">בחר סוג RPC:</string>
     <string name="main_comingSoon">בקרוב</string>
     <string name="exit">יְצִיאָה</string>

@@ -272,6 +272,7 @@
     <string name="main_customRpc_details">Kizzy kuruhusu kuunda rich presence yako mwenyewe inayoweza kubadilishwa
         kabisa kwa Discord.</string>
     <string name="add_rpc_title">Ongeza RPC</string>
+    <string name="home_add_rpc">Ongeza RPC</string>
     <string name="add_rpc_select_type">Chagua aina ya RPC:</string>
     <string name="main_comingSoon">Karibuni</string>
     <string name="exit">Toka</string>

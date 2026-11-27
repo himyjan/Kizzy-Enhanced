@@ -272,6 +272,7 @@
     <string name="main_customRpc_details">Kizzy អនុញ្ញាតឱ្យអ្នកបង្កើតវត្តមានដ៏សម្បូរបែបផ្ទាល់ខ្លួនសម្រាប់ Discord។
         </string>
     <string name="add_rpc_title">បន្ថែម RPC</string>
+    <string name="home_add_rpc">បន្ថែម RPC</string>
     <string name="add_rpc_select_type">ជ្រើសរើសប្រភេទ RPC៖</string>
     <string name="main_comingSoon">មកលឿន</string>
     <string name="exit">ចាកចេញ</string>

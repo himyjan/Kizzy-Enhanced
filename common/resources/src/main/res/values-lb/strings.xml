@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Manuell RPC ass eng Fonctioun a Kizzy, déi konstant tëscht Applikatiouns-RPC a Medien-RPC wiesselt.</string>
     <string name="main_customRpc_details">Kizzy erlaabt Iech, Är eege voll personaliséiert Rich Presence fir Discord ze kreéieren.</string>
     <string name="add_rpc_title">RPC derbäisetzen</string>
+    <string name="home_add_rpc">RPC derbäisetzen</string>
     <string name="add_rpc_select_type">RPC-Typ wielen:</string>
     <string name="main_comingSoon">Bald verfügbar</string>
     <string name="exit">Verloossen</string>

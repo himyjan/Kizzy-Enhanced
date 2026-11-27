@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Гарын RPC нь Kizzy-ийн Аппуудын RPC болон Медиа RPC хооронд байн шилждэг боломж юм.</string>
     <string name="main_customRpc_details">Kizzy нь Discord-д зориулсан бүрэн тохируулж болох баялаг байдлыг өөрөө бий болгох боломжийг олгоно.</string>
     <string name="add_rpc_title">RPC нэмэх</string>
+    <string name="home_add_rpc">RPC нэмэх</string>
     <string name="add_rpc_select_type">RPC төрлийг сонгоно уу:</string>
     <string name="main_comingSoon">Тун удахгүй</string>
     <string name="exit">Гарах</string>

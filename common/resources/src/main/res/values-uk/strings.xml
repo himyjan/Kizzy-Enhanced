@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Експериментальний RPC — це функція Kizzy, яка постійно перемикається між Apps RPC та Media RPC.</string>
     <string name="main_customRpc_details">Kizzy дозволяє створити повністю налаштовану rich presence для Discord.</string>
     <string name="add_rpc_title">Додати RPC</string>
+    <string name="home_add_rpc">Додати RPC</string>
     <string name="add_rpc_select_type">Виберіть тип RPC:</string>
     <string name="main_comingSoon">Звільнити</string>
     <string name="exit">Вихід</string>

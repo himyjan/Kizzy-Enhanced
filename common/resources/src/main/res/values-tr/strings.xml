@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">"Elle RPC, Kizzy'de Uygulama RPC'si ile Medya RPC'si arasında sürekli geçiş yapan bir özelliktir."</string>
     <string name="main_customRpc_details">Kizzy, Discord için kendi tamamen özelleştirilebilir zengin varlığınızı oluşturmanıza olanak tanır.</string>
     <string name="add_rpc_title">RPC Ekle</string>
+    <string name="home_add_rpc">RPC Ekle</string>
     <string name="add_rpc_select_type">RPC türünü seç:</string>
     <string name="main_comingSoon">Yakında</string>
     <string name="exit">Çıkış</string>

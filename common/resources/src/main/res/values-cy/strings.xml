@@ -268,6 +268,7 @@
     <string name="main_customRpc_details">Mae Kizzy yn eich galluogi i greu eich rich presence personol llawn
         ar gyfer Discord.</string>
     <string name="add_rpc_title">Ychwanegu RPC</string>
+    <string name="home_add_rpc">Ychwanegu RPC</string>
     <string name="add_rpc_select_type">Dewiswch fath RPC:</string>
     <string name="main_comingSoon">Yn dod yn nes</string>
     <string name="exit">Allan</string>

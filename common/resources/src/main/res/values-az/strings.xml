@@ -270,6 +270,7 @@
     <string name="main_customRpc_details">Kizzy Discord üçün tamamilə fərdiləşdirilmiş öz
         zəngin statusunuzu yaratmağa imkan verir.</string>
     <string name="add_rpc_title">RPC Əlavə Et</string>
+    <string name="home_add_rpc">RPC Əlavə Et</string>
     <string name="add_rpc_select_type">RPC növünü seçin:</string>
     <string name="main_comingSoon">Tezliklə</string>
     <string name="exit">Çıxış</string>

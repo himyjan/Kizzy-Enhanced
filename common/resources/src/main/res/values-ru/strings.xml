@@ -263,6 +263,7 @@
     <string name="main_customRpc_details">Kizzy позволяет создать полностью настраиваемый расширенный статус
         для Discord.</string>
     <string name="add_rpc_title">Добавить RPC</string>
+    <string name="home_add_rpc">Добавить RPC</string>
     <string name="add_rpc_select_type">Выберите тип RPC:</string>
     <string name="main_comingSoon">Скоро</string>
     <string name="exit">Выход</string>

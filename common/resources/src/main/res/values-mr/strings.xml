@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">मॅन्युअल RPC हे Kizzy मधील एक वैशिष्ट्य आहे जे सतत अॅप्स RPC व मीडिया RPC मध्ये बदलत असते.</string>
     <string name="main_customRpc_details">Kizzy तुम्हाला Discord साठी संपूर्णपणे सानुकूल समृद्ध उपस्थिती तयार करू देते.</string>
     <string name="add_rpc_title">RPC जोडा</string>
+    <string name="home_add_rpc">RPC जोडा</string>
     <string name="add_rpc_select_type">RPC प्रकार निवडा:</string>
     <string name="main_comingSoon">लवकरच</string>
     <string name="exit">बाहेर पडा</string>

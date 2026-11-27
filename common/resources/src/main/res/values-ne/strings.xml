@@ -265,6 +265,7 @@
     <string name="main_customRpc_details">Kizzy ले Discord का लागि पूर्ण रूपमा आफू अनुकूलन योग्य
         उपस्थिति सिर्जना गर्न अनुमति दिन्छ।</string>
     <string name="add_rpc_title">RPC थप्नुहोस्</string>
+    <string name="home_add_rpc">RPC थप्नुहोस्</string>
     <string name="add_rpc_select_type">RPC प्रकार छान्नुहोस्:</string>
     <string name="main_comingSoon">छिटो आउँदैछ</string>
     <string name="exit">बाहिर निस्कनुहोस्</string>
