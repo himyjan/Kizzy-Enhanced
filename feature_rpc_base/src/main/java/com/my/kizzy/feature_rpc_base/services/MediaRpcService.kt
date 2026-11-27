@@ -60,6 +60,12 @@ class MediaRpcService : Service() {
 
     private var kizzyRPC: KizzyRPC? = null
 
+
+    /** The home-screen instance ID this service is currently sending presence for.
+     *  Null for the built-in Media RPC; a clone's id for clones. Used to read
+     *  per-instance scoped preferences (cover art, channel icon, etc.). */
+    private var currentInstanceId: String? = null
+
     @Inject
     lateinit var multiRpc: MultiRpcManager
 
@@ -872,8 +878,11 @@ class MediaRpcService : Service() {
         if (BuildConfig.DEBUG) Trace.beginSection("MediaRpc.updatePresence")
         try {
             val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
-            val showCoverArt = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true]
-            val playingMedia = getCurrentPlayingMedia()
+            // Read per-instance scoped preferences so clones can have different
+            // cover-art settings than built-ins.
+            val coverArtKey = Prefs.scopedKey(Prefs.MEDIA_RPC_SHOW_COVER_ART, currentInstanceId)
+            val showCoverArt = Prefs[coverArtKey, true]
+            val playingMedia = getCurrentPlayingMedia(currentInstanceId)
 
             currentMediaTitle = playingMedia.name.takeIf { it.isNotBlank() }
             currentMediaArtist = playingMedia.state?.takeIf { it.isNotBlank() }
@@ -1306,7 +1315,10 @@ class MediaRpcService : Service() {
         // Expose the current presence as an RpcConfig so the Media/Manual RPC screens
         // can offer a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
         try {
-            rpcManager.setCurrentPresenceConfig(commonRpcToRpcConfig(commonRpc), RpcManager.RpcType.MediaRpc)
+            rpcManager.setCurrentPresenceConfig(
+                commonRpcToRpcConfig(commonRpc).copy(instanceId = currentInstanceId ?: "media_rpc"),
+                currentInstanceId ?: "media_rpc"
+            )
         } catch (e: Exception) {
             logger.e(MEDIA_RPC, "Failed to expose current presence config: ${e.message}")
         }
@@ -1708,6 +1720,42 @@ class MediaRpcService : Service() {
 
         val ac = intent?.action
         when (ac) {
+            Constants.ACTION_ADD_INSTANCE -> {
+                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+                if (!instanceId.isNullOrBlank()) {
+                    currentInstanceId = instanceId
+                    val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
+                    multiRpc.addInstance("1", instanceId, oauthIndex)
+                    // Each Media clone gets its own independent notification.
+                    CloneNotificationHelper.show(
+                        context = this@MediaRpcService,
+                        notificationManager = notificationManager,
+                        serviceClass = MediaRpcService::class.java,
+                        instanceId = instanceId,
+                        label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
+                            ?: getString(R.string.main_mediaRpc),
+                        content = currentMediaTitle ?: getString(R.string.rich_presence_active),
+                        iconRes = R.drawable.ic_media_rpc,
+                    )
+                    // Broadcast the current media presence to the new socket.
+                    restartInPlace()
+                }
+            }
+            Constants.ACTION_REMOVE_INSTANCE -> {
+                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
+                if (!instanceId.isNullOrBlank()) {
+                    multiRpc.removeInstance("1", instanceId)
+                    CloneNotificationHelper.cancel(notificationManager, instanceId)
+                    rpcManager.removePresenceConfig(instanceId)
+                }
+                if (multiRpc.instanceCount("1") == 0) {
+                    stopSelf()
+                } else {
+                    // The remaining instance still needs a fresh presence on its
+                    // own application ID after the other socket was removed.
+                    restartInPlace()
+                }
+            }
             Constants.ACTION_STOP_SERVICE -> {
                 // The user stopped the RPC on purpose, so forget the enabled
                 // state as well - otherwise the next cold start would restore it.

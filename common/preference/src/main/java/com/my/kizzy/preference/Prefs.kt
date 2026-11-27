@@ -67,7 +67,10 @@ object Prefs {
     private val SENSITIVE_KEYS = setOf(
         TOKEN,
         DISCORD_OAUTH2_ACCESS_TOKEN,
+        DISCORD_OAUTH2_ACCESS_TOKEN_2,
+        DISCORD_OAUTH2_ACCESS_TOKEN_3,
         DISCORD_OAUTH2_REFRESH_TOKEN,
+        OAUTH2_APPS,
         LASTFM_API_KEY,
         LASTFM_SECRET,
         LASTFM_USERNAME,
@@ -221,12 +224,12 @@ object Prefs {
                 // Prime the synchronous mirror with values already on disk;
                 // ignore failures so the UI never waits forever on defaults.
                 if (runCatching {
-                    dataStore?.data?.first()?.asMap()?.forEach { (key, value) ->
-                        val name = key.name
-                        val plain = if (value is String) decodeFromStorage(name, value) else value
-                        _prefsState.update { it + (name to plain) }
-                    }
-                }.isFailure) {
+                        dataStore?.data?.first()?.asMap()?.forEach { (key, value) ->
+                            val name = key.name
+                            val plain = if (value is String) decodeFromStorage(name, value) else value
+                            _prefsState.update { it + (name to plain) }
+                        }
+                    }.isFailure) {
                 }
                 // Signal even when the read failed, so the UI never waits
                 // forever on the default (pre-priming) values.
@@ -390,6 +393,25 @@ object Prefs {
      * the user creates.
      */
     const val HOME_RPC_INSTANCES = "home_rpc_instances"
+
+    /**
+     * IDs of the RPC instances that are currently enabled, as a comma-separated
+     * list. Kept separate from [ACTIVE_RPC_TYPES] so two instances of the same
+     * type can be on independently, each with its own gateway connection.
+     */
+    const val ACTIVE_RPC_INSTANCES = "active_rpc_instances"
+
+    /** Fallback application IDs used when a user has not configured one. */
+    const val DEFAULT_OAUTH_APP_ID_1 = "1571063796418744412"
+    const val DEFAULT_OAUTH_APP_ID_2 = "1573725984845201438"
+    const val DEFAULT_OAUTH_APP_ID_3 = "1573728208854065293"
+
+    /**
+     * All saved Discord OAuth2 applications, serialized as one JSON string.
+     * Listed in SENSITIVE_KEYS so Tink encrypts the whole blob at rest.
+     */
+    const val OAUTH2_APPS = "oauth2_apps"
+    const val OAUTH2_APPS_MIGRATED = "oauth2_apps_migrated"
 
     /** Whether the running CustomRpcService is in Console RPC mode. */
     const val CUSTOM_RPC_CONSOLE_MODE = "custom_rpc_console_mode"
@@ -659,6 +681,189 @@ object Prefs {
      */
     fun reorderHomeRpcInstances(instances: List<RpcInstance>) {
         saveHomeRpcInstances(instances)
+    }
+
+    /**
+     * All saved Discord applications. Existing users' legacy slot-1/2/3
+     * credentials are migrated into this list on first access.
+     */
+    fun getOAuthApps(): List<OAuthApp> {
+        val json = get(OAUTH2_APPS, "")
+        val existing = if (json.isNotBlank()) {
+            try {
+                Json.decodeFromString<List<OAuthApp>>(json)
+            } catch (_: Exception) {
+                emptyList()
+            }
+        } else emptyList()
+        if (existing.isNotEmpty()) {
+            // Ensure all 3 default app IDs are present even if an older
+            // migration only saved slot 1.
+            val existingIndices = existing.map { it.index }.toSet()
+            val toAdd = mutableListOf<OAuthApp>()
+            if (1 !in existingIndices) {
+                toAdd += OAuthApp(
+                    id = OAuthApp.newId(), label = "RPC App 1",
+                    clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID, "").ifBlank { DEFAULT_OAUTH_APP_ID_1 },
+                    token = get(TOKEN, "").takeIf { it.isNotBlank() }
+                        ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+                    index = 1,
+                )
+            }
+            if (2 !in existingIndices) {
+                toAdd += OAuthApp(
+                    id = OAuthApp.newId(), label = "RPC App 2",
+                    clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "").ifBlank { DEFAULT_OAUTH_APP_ID_2 },
+                    token = get(DISCORD_OAUTH2_ACCESS_TOKEN_2, "")
+                        .takeIf { it.isNotBlank() }
+                        ?: get(TOKEN, "").takeIf { it.isNotBlank() }
+                        ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+                    index = 2,
+                )
+            }
+            if (3 !in existingIndices) {
+                toAdd += OAuthApp(
+                    id = OAuthApp.newId(), label = "RPC App 3",
+                    clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, "").ifBlank { DEFAULT_OAUTH_APP_ID_3 },
+                    token = get(DISCORD_OAUTH2_ACCESS_TOKEN_3, "")
+                        .takeIf { it.isNotBlank() }
+                        ?: get(TOKEN, "").takeIf { it.isNotBlank() }
+                        ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+                    index = 3,
+                )
+            }
+            if (toAdd.isNotEmpty()) {
+                saveOAuthApps(existing + toAdd)
+            }
+            return existing + toAdd
+        }
+        if (get(OAUTH2_APPS_MIGRATED, false)) return emptyList()
+
+        val legacy = mutableListOf<OAuthApp>()
+        // Always register all 3 default Discord app IDs so parallel RPC
+        // instances can be spread across them even when only slot 1 has an
+        // OAuth token. Slots 2/3 fall back to the main token when no separate
+        // OAuth token is configured.
+        legacy += OAuthApp(
+            id = OAuthApp.newId(),
+            label = "RPC App 1",
+            clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID, "").ifBlank { DEFAULT_OAUTH_APP_ID_1 },
+            token = get(TOKEN, "").takeIf { it.isNotBlank() }
+                ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+            refreshToken = get(DISCORD_OAUTH2_REFRESH_TOKEN, ""),
+            expiresAt = get(DISCORD_OAUTH2_EXPIRES_AT, 0L),
+            index = 1,
+        )
+        legacy += OAuthApp(
+            id = OAuthApp.newId(),
+            label = "RPC App 2",
+            clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "").ifBlank { DEFAULT_OAUTH_APP_ID_2 },
+            token = get(DISCORD_OAUTH2_ACCESS_TOKEN_2, "")
+                .takeIf { it.isNotBlank() }
+                ?: get(TOKEN, "").takeIf { it.isNotBlank() }
+                ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+            index = 2,
+        )
+        legacy += OAuthApp(
+            id = OAuthApp.newId(),
+            label = "RPC App 3",
+            clientId = get(DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, "").ifBlank { DEFAULT_OAUTH_APP_ID_3 },
+            token = get(DISCORD_OAUTH2_ACCESS_TOKEN_3, "")
+                .takeIf { it.isNotBlank() }
+                ?: get(TOKEN, "").takeIf { it.isNotBlank() }
+                ?: get(DISCORD_OAUTH2_ACCESS_TOKEN, ""),
+            index = 3,
+        )
+        saveOAuthApps(legacy)
+        set(OAUTH2_APPS_MIGRATED, true)
+        return legacy
+    }
+
+    fun saveOAuthApps(apps: List<OAuthApp>) {
+        set(OAUTH2_APPS, Json.encodeToString(apps))
+    }
+
+    fun addOAuthApp(app: OAuthApp) {
+        val apps = getOAuthApps().toMutableList()
+        val nextIndex = (apps.maxOfOrNull { it.index } ?: 0) + 1
+        apps += if (app.index <= 0) app.copy(index = nextIndex) else app
+        saveOAuthApps(apps)
+    }
+
+    fun updateOAuthApp(app: OAuthApp) {
+        saveOAuthApps(getOAuthApps().map { if (it.id == app.id) app else it })
+    }
+
+    fun deleteOAuthApp(appId: String) {
+        saveOAuthApps(getOAuthApps().filter { it.id != appId })
+    }
+
+    /**
+     * Every authenticated OAuth2 application, used to spread parallel RPC
+     * instances evenly across available token/application-ID pairs.
+     */
+    fun getConfiguredOAuthApps(): List<OAuthAppCredential> =
+        getOAuthApps()
+            .filter { it.token.isNotBlank() && it.clientId.isNotBlank() }
+            .map { OAuthAppCredential(it.index, it.token, it.clientId) }
+
+    /** Returns the configured app for [index], or null when that slot has none. */
+    fun getOAuthApp(index: Int): OAuthAppCredential? =
+        getConfiguredOAuthApps().firstOrNull { it.index == index }
+
+    fun getConfiguredOAuthAppCount(): Int = getConfiguredOAuthApps().size
+
+    /**
+     * Formats a saved token exactly like KizzyRPC.refreshFromPrefs() does:
+     * social-sdk OAuth2 tokens go out as "Bearer <token>", gateway account
+     * tokens are sent raw. Needed by every independent socket because the
+     * broadcast socket cannot refresh its IDENTIFY properties later.
+     */
+    /**
+     * Instance-scoped preference key. Clones keep their own copy of a setting;
+     * built-ins (null id) keep the original key for backwards compatibility.
+     */
+    fun scopedKey(key: String, instanceId: String?): String =
+        if (instanceId.isNullOrBlank()) key else "${key}__instance_${instanceId}"
+
+    /** Custom RPC config key for one home instance (null = built-in). */
+    fun customRpcConfigKey(instanceId: String?): String =
+        instanceId?.let { "custom_rpc_instance_config_$it" } ?: LAST_RUN_CUSTOM_RPC
+
+    fun getCustomRpcConfig(instanceId: String?): String =
+        get(customRpcConfigKey(instanceId), "")
+
+    /**
+     * Formats a token for Gateway IDENTIFY:
+     *   - OAuth2 method -> Bearer <token>
+     *   - Gateway method  -> raw account token (id.timestamp.hmac) or bot token
+     * Account tokens (2+ dots or mfa. prefix) are sent raw; OAuth2 bearer tokens
+     * are wrapped as "Bearer <token>" so Discord accepts them at IDENTIFY.
+     */
+    fun formatIdentifyToken(token: String): String {
+        val trimmed = token.trim()
+        if (trimmed.isBlank() || trimmed.startsWith("Bearer ")) return trimmed
+        val isAccountToken = trimmed.count { it == '.' } >= 2 || trimmed.startsWith("mfa.")
+        if (isAccountToken) return trimmed
+        val method = get(RPC_CONNECTION_METHOD, RPC_CONNECTION_METHOD_OAUTH2)
+        return if (method == RPC_CONNECTION_METHOD_OAUTH2) "Bearer $trimmed" else trimmed
+    }
+
+    /** Picks an app index for the [ordinal]-th instance, cycling through all apps. */
+    fun getRoundRobinOAuthIndex(ordinal: Int): Int {
+        val apps = getConfiguredOAuthApps()
+        if (apps.isEmpty()) return 1
+        return apps[ kotlin.math.abs(ordinal) % apps.size ].index
+    }
+
+    fun getActiveRpcInstanceIds(): Set<String> =
+        get(ACTIVE_RPC_INSTANCES, "").split(',')
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .toSet()
+
+    fun setActiveRpcInstanceIds(ids: Set<String>) {
+        set(ACTIVE_RPC_INSTANCES, ids.joinToString(","))
     }
 
     fun isExperimentalAppEnabled(packageName: String?): Boolean {

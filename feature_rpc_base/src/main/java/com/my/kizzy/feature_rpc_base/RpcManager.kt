@@ -23,6 +23,9 @@ import com.my.kizzy.feature_rpc_base.services.ManualRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.RPC_INSTANCE_CUSTOM
+import com.my.kizzy.preference.RPC_INSTANCE_MEDIA
+import com.my.kizzy.preference.RPC_INSTANCE_MANUAL
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -91,9 +94,20 @@ class RpcManager @Inject constructor(
     private val _activeRpc = MutableStateFlow<Set<RpcType>>(emptySet())
     val activeRpc: StateFlow<Set<RpcType>> = _activeRpc.asStateFlow()
 
-    /** Presence configs per active RPC type, keyed by [RpcType]. */
-    private val _presenceConfigs = MutableStateFlow<MutableMap<RpcType, RpcConfig>>(mutableMapOf())
-    val presenceConfigs: StateFlow<Map<RpcType, RpcConfig>> = _presenceConfigs.asStateFlow()
+    /**
+     * IDs of the home-screen instances that are currently enabled. This is the
+     * fine-grained state: two instances of the same type can both be on, each
+     * with its own gateway socket, so a Set<RpcType> is not enough.
+     */
+    private val _activeInstances = MutableStateFlow<Set<String>>(Prefs.getActiveRpcInstanceIds())
+    val activeInstances: StateFlow<Set<String>> = _activeInstances.asStateFlow()
+
+    /** Presence configs per instance ID, keyed by instanceId string.
+     * Each clone gets its own entry - they run in parallel and do not
+     * overwrite each other.
+     */
+    private val _presenceConfigs = MutableStateFlow<MutableMap<String, RpcConfig>>(mutableMapOf())
+    val presenceConfigs: StateFlow<Map<String, RpcConfig>> = _presenceConfigs.asStateFlow()
 
     /** Backwards-compatible single-config accessor: the highest-priority non-empty config. */
     private val _singleConfig = _presenceConfigs
@@ -103,24 +117,24 @@ class RpcManager @Inject constructor(
         .stateIn(scope, SharingStarted.Eagerly, null)
 
     /**
-     * Registers the presence config for [rpcType] so the profile preview can
-     * display it. Each RPC type keeps its own entry - they run in parallel
+     * Registers the presence config for [instanceId] so the profile preview can
+     * display it. Each instance keeps its own entry - they run in parallel
      * and do not overwrite each other.
      *
      * Called by each RPC service after it assembles its CommonRpc.
      */
-    fun setCurrentPresenceConfig(config: RpcConfig, rpcType: RpcType) {
+    fun setCurrentPresenceConfig(config: RpcConfig, instanceId: String) {
         _presenceConfigs.value = _presenceConfigs.value.toMutableMap().apply {
-            this[rpcType] = config
+            this[instanceId] = config
         }
     }
 
     /**
      * Removes the presence config for [rpcType] when its service stops.
      */
-    fun removePresenceConfig(rpcType: RpcType) {
+    fun removePresenceConfig(instanceId: String) {
         _presenceConfigs.value = _presenceConfigs.value.toMutableMap().apply {
-            this.remove(rpcType)
+            this.remove(instanceId)
         }
     }
 
@@ -139,10 +153,48 @@ class RpcManager @Inject constructor(
         Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = Json.encodeToString(config)
     }
 
+    /** Stable id used in [activeInstances] for a built-in/legacy RPC type. */
+    private fun instanceIdFor(type: RpcType): String = when (type) {
+        RpcType.MediaRpc -> RPC_INSTANCE_MEDIA
+        RpcType.CustomRpc -> RPC_INSTANCE_CUSTOM
+        RpcType.ConsoleRpc -> "console_rpc"
+        RpcType.ManualRpc -> RPC_INSTANCE_MANUAL
+        RpcType.AppDetectionRpc -> "app_detection_rpc"
+        RpcType.DiscordOAuth2Rpc -> "discord_oauth2_rpc"
+        RpcType.None -> ""
+    }
+
+    /** Resolves an instance id back to its RPC type (clones included). */
+    private fun typeFor(id: String): RpcType? = when (id) {
+        RPC_INSTANCE_MEDIA -> RpcType.MediaRpc
+        RPC_INSTANCE_CUSTOM -> RpcType.CustomRpc
+        "console_rpc" -> RpcType.ConsoleRpc
+        RPC_INSTANCE_MANUAL -> RpcType.ManualRpc
+        "app_detection_rpc" -> RpcType.AppDetectionRpc
+        "discord_oauth2_rpc" -> RpcType.DiscordOAuth2Rpc
+        else -> when (Prefs.getHomeRpcInstances().firstOrNull { it.id == id }?.type) {
+            "media_rpc" -> RpcType.MediaRpc
+            "custom_rpc" -> RpcType.CustomRpc
+            "manual_rpc" -> RpcType.ManualRpc
+            else -> null
+        }
+    }
+
+    /** Updates both the fine-grained instance set and the legacy type set. */
+    private fun applyActive(ids: Set<String>) {
+        val filtered = ids - ""
+        _activeInstances.value = filtered
+        _activeRpc.value = filtered.mapNotNull(::typeFor).toSet()
+        Prefs.setActiveRpcInstanceIds(filtered)
+    }
+
     init {
         // Seed from the persisted choice first: on a cold start the service is
         // not running yet, but the switch must still show the enabled RPC.
-        _activeRpc.value = persistedRpcTypes()
+        val persistedIds = Prefs.getActiveRpcInstanceIds()
+            .takeIf { it.isNotEmpty() }
+            ?: persistedRpcTypes().map(::instanceIdFor).toSet()
+        applyActive(persistedIds)
         // Sync initial state from Android services on creation.
         refreshFromServices()
         // The preference mirror is primed asynchronously, so the first read may
@@ -170,12 +222,15 @@ class RpcManager @Inject constructor(
         // 1-second cache, which would resurrect it incorrectly.
         val wasActive = _activeRpc.value
 
-        // Self-heal: for each type the user enabled, check if its service is
-        // actually running. If not (system killed it), restart it.
-        val toStart = wasActive.filter { it != RpcType.None && it !in running }
-        for (rpcType in toStart) {
-            Log.d(TAG, "RPC $rpcType is enabled but not running, restarting it")
-            startRpcService(rpcType, rpcConfigString = null, isConsoleRpc = rpcType == RpcType.ConsoleRpc)
+        // Self-heal: re-attach every enabled instance whose service is no longer
+        // running. Each instance gets its own socket again after a cold start.
+        val toStart = _activeInstances.value.filter { id ->
+            val type = typeFor(id)
+            type != null && type != RpcType.None && type !in running
+        }
+        for (id in toStart) {
+            Log.d(TAG, "RPC instance $id is enabled but not running, restarting it")
+            startInstanceService(id)
         }
     }
 
@@ -190,16 +245,13 @@ class RpcManager @Inject constructor(
         val valid = if (tokenEmpty) types - RpcType.DiscordOAuth2Rpc else types
         if (valid != types) persistActiveRpcTypes(valid)
 
+        applyActive(_activeInstances.value + valid.map(::instanceIdFor))
         val running = runningRpcTypes()
-        for (type in valid) {
-            if (type == RpcType.None) continue
-            if (type in running) {
-                _activeRpc.value = _activeRpc.value + type
-                continue
-            }
-            Log.d(TAG, "Restoring $type after a cold start")
-            startRpcService(type, rpcConfigString = null, isConsoleRpc = type == RpcType.ConsoleRpc)
-            _activeRpc.value = _activeRpc.value + type
+        for (id in _activeInstances.value) {
+            val type = typeFor(id) ?: continue
+            if (type in running) continue
+            Log.d(TAG, "Restoring RPC instance $id after a cold start")
+            startInstanceService(id)
         }
     }
 
@@ -260,12 +312,20 @@ class RpcManager @Inject constructor(
             Prefs[Prefs.RPC_CONNECTION_METHOD] = Prefs.RPC_CONNECTION_METHOD_OAUTH2
         }
 
+        val idsToStart = typesToStart.map(::instanceIdFor).toSet()
+        val excludedId = when {
+            RpcType.ConsoleRpc in typesToStart -> RPC_INSTANCE_CUSTOM
+            RpcType.CustomRpc in typesToStart -> "console_rpc"
+            else -> null
+        }
+        val previousIds = _activeInstances.value
+        val baseIds = if (add) previousIds - excludedId.orEmpty() else emptySet()
+        applyActive(baseIds + idsToStart)
+
         for (rpcType in typesToStart) {
             startRpcService(rpcType, rpcConfigString, isConsoleRpc)
         }
         if (typesToStart.isEmpty()) Log.d(TAG, "All RPCs stopped")
-
-        _activeRpc.value = finalTypes
     }
 
     /**
@@ -278,6 +338,138 @@ class RpcManager @Inject constructor(
         isConsoleRpc: Boolean = false
     ) {
         switchTo(setOf(rpcType), add, rpcConfigString, isConsoleRpc)
+    }
+
+    /**
+     * Enables a single home-screen RPC instance. The instance gets its own
+     * gateway socket; other instances (including other instances of the same
+     * type) are left untouched.
+     */
+    fun switchToInstance(
+        instanceId: String,
+        rpcType: RpcType,
+        oauthIndex: Int = -1,
+        config: String? = null,
+    ) {
+        if (instanceId.isBlank() || rpcType == RpcType.None) return
+        // Built-ins use the same per-instance path as clones so that turning one
+        // instance off never closes the sockets of the others.
+        ignoreServiceDetectionUntil = System.currentTimeMillis() + 1500
+        applyActive(_activeInstances.value + instanceId)
+        persistActiveRpcTypes(_activeInstances.value.mapNotNull(::typeFor).toSet())
+        // For Custom RPC clones, read the instance's own config from Prefs first,
+        // so each clone keeps its own settings instead of sharing the built-in config.
+        val effectiveConfig = if (rpcType == RpcType.CustomRpc) {
+            // Read clone-specific config from Prefs first, so each clone keeps
+            // its own settings instead of sharing the built-in config.
+            Prefs.getCustomRpcConfig(instanceId.takeIf { it != RPC_INSTANCE_CUSTOM })
+                .takeIf { it.isNotBlank() }
+                ?: config
+        } else {
+            config
+        }
+        if (rpcType == RpcType.CustomRpc && effectiveConfig?.isNotBlank() == true) {
+            Prefs[Prefs.customRpcConfigKey(instanceId.takeIf { it != RPC_INSTANCE_CUSTOM })] = effectiveConfig
+        }
+        startInstanceService(instanceId, effectiveConfig, oauthIndex)
+    }
+
+    /**
+     * Disables a single instance. Its socket is closed without touching the
+     * sockets of the other enabled instances.
+     */
+    fun stopInstance(instanceId: String, rpcType: RpcType) {
+        if (instanceId.isBlank()) return
+        ignoreServiceDetectionUntil = System.currentTimeMillis() + 1500
+        val remaining = _activeInstances.value - instanceId
+        applyActive(remaining)
+        persistActiveRpcTypes(remaining.mapNotNull(::typeFor).toSet())
+
+        // Remove this instance's presence config immediately so the profile
+        // preview stops showing an RPC the user just switched off.
+        removePresenceConfig(instanceId)
+
+        val serviceClass = serviceClassFor(rpcType) ?: return
+        val intent = Intent(context, serviceClass).apply {
+            action = Constants.ACTION_REMOVE_INSTANCE
+            putExtra(Constants.EXTRA_INSTANCE_ID, instanceId)
+        }
+        context.startService(intent)
+
+        // When no instance of this type is left, tear the service down entirely.
+        if (remaining.none { typeFor(it) == rpcType }) {
+            context.stopService(Intent(context, serviceClass))
+        }
+    }
+
+    /** Starts (or re-attaches) the service on behalf of one instance. */
+    private fun startInstanceService(
+        instanceId: String,
+        config: String? = null,
+        oauthIndex: Int = -1,
+    ) {
+        val rpcType = typeFor(instanceId) ?: return
+        val instance = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }
+        val intent = when (rpcType) {
+            RpcType.MediaRpc -> Intent(context, MediaRpcService::class.java)
+            RpcType.CustomRpc, RpcType.ConsoleRpc -> Intent(context, CustomRpcService::class.java).apply {
+                // Clone-specific config takes priority so each clone keeps its
+                // own settings instead of sharing the built-in config.
+                val rpcData = Prefs.getCustomRpcConfig(instanceId.takeIf { it != "custom_rpc" })
+                    ?: config
+                    ?: instance?.config?.takeIf { it.isNotBlank() }
+                    ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                putExtra("RPC", rpcData)
+                putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, rpcType == RpcType.ConsoleRpc)
+            }
+            RpcType.ManualRpc -> Intent(context, ManualRpc::class.java)
+            else -> null
+        } ?: return
+
+        val index = oauthIndex.takeIf { it > 0 }
+            ?: instance?.oauthIndex?.takeIf { it > 0 }
+            ?: defaultOauthIndex(rpcType)
+        intent.action = Constants.ACTION_ADD_INSTANCE
+        intent.putExtra(Constants.EXTRA_INSTANCE_ID, instanceId)
+        intent.putExtra(Constants.EXTRA_OAUTH_INDEX, index)
+        // Every instance needs its own notification ID so multiple instances
+        // of the same service type show separate foreground notifications.
+        intent.putExtra(
+            Constants.EXTRA_NOTIFICATION_ID,
+            java.lang.Math.abs(instanceId.hashCode()),
+        )
+        try {
+            context.startForegroundService(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start instance $instanceId", e)
+            context.startService(intent)
+        }
+    }
+
+    /** Stable notification ID for a built-in instance started via the legacy path. */
+    private fun builtInNotificationId(rpcType: RpcType): Int =
+        when (rpcType) {
+            RpcType.MediaRpc -> Constants.NOTIFICATION_ID_MEDIA_RPC
+            RpcType.CustomRpc, RpcType.ConsoleRpc -> Constants.NOTIFICATION_ID_CUSTOM_RPC
+            RpcType.ManualRpc -> Constants.NOTIFICATION_ID_MANUAL_RPC
+            RpcType.AppDetectionRpc -> Constants.NOTIFICATION_ID_APP_DETECTION
+            RpcType.DiscordOAuth2Rpc -> Constants.NOTIFICATION_ID_OAUTH2_RPC
+            RpcType.None -> Constants.NOTIFICATION_ID_MEDIA_RPC
+        }
+
+    private fun defaultOauthIndex(type: RpcType): Int = when (type) {
+        RpcType.CustomRpc -> 2
+        RpcType.ManualRpc -> 3
+        else -> 1
+    }
+
+    private fun serviceClassFor(type: RpcType) = when (type) {
+        RpcType.MediaRpc -> MediaRpcService::class.java
+        RpcType.CustomRpc, RpcType.ConsoleRpc -> CustomRpcService::class.java
+        RpcType.ManualRpc -> ManualRpc::class.java
+        RpcType.AppDetectionRpc -> AppDetectionService::class.java
+        RpcType.DiscordOAuth2Rpc -> DiscordOAuth2RpcService::class.java
+        RpcType.None -> null
     }
 
     /**
@@ -352,13 +544,14 @@ class RpcManager @Inject constructor(
                 it == RpcType.CustomRpc || it == RpcType.ConsoleRpc
             }
         ) typesToStop + setOf(RpcType.CustomRpc, RpcType.ConsoleRpc) else typesToStop
-        val remaining = _activeRpc.value - effectiveStops
-        persistActiveRpcTypes(remaining)
-        _activeRpc.value = remaining
+        val idsToStop = effectiveStops.map(::instanceIdFor).toSet()
+        val remainingIds = _activeInstances.value - idsToStop
+        persistActiveRpcTypes(remainingIds.mapNotNull(::typeFor).toSet())
+        applyActive(remainingIds)
 
         // Remove presence configs for stopped types.
         for (rpcType in typesToStop) {
-            removePresenceConfig(rpcType)
+            removePresenceConfig(instanceIdFor(rpcType))
         }
 
         for (rpcType in typesToStop.toList()) {
@@ -389,7 +582,7 @@ class RpcManager @Inject constructor(
 
         clearAllPresenceConfigs()
         persistActiveRpcTypes(emptySet())
-        _activeRpc.value = emptySet()
+        applyActive(emptySet())
     }
 
     /** The RPC types whose Android services are running right now. */
@@ -445,7 +638,7 @@ class RpcManager @Inject constructor(
     private fun persistActiveRpcTypes(types: Set<RpcType>) {
         val filtered = types - RpcType.None
         Prefs[Prefs.ACTIVE_RPC_TYPES] = filtered.joinToString(",") { it.name }
-        Prefs[Prefs.ACTIVE_RPC_TYPE] = filtered.firstOrNull()?.name ?: ""
+        Prefs[Prefs.ACTIVE_RPC_TYPE] = filtered.firstOrNull()?.name.orEmpty()
         Prefs[Prefs.MEDIA_RPC_ENABLED] = RpcType.MediaRpc in filtered
         AppUtils.invalidateRunningServicesCache()
     }
