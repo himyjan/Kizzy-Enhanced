@@ -12,7 +12,9 @@ import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
 import com.my.kizzy.feature_profile.fetchDiscordUser
 import com.my.kizzy.feature_profile.fetchDiscordUserProfile
 import com.my.kizzy.feature_profile.fetchUserInfo
+import com.my.kizzy.feature_profile.persistDiscordUser
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
@@ -35,7 +37,8 @@ import org.slf4j.LoggerFactory
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
-    private val stateRepository: KizzyStateRepository
+    private val stateRepository: KizzyStateRepository,
+    private val rpcManager: RpcManager
 ) : ViewModel() {
 
     private val logger: Logger = LoggerFactory.getLogger("UserViewModel")
@@ -130,7 +133,7 @@ class UserViewModel @Inject constructor(
             }
             if (currentUser?.bio == bio) return@launch
             val merged = (currentUser ?: baseUser).copy(bio = bio)
-            Prefs[Prefs.USER_DATA] = Json.encodeToString(merged)
+            persistDiscordUser(merged)
             _state.value = UserState.LoadingCompleted(merged, currentRpcConfigs())
         }
     }
@@ -171,7 +174,7 @@ class UserViewModel @Inject constructor(
                 bio = fresh.bio?.takeIf { it.isNotBlank() } ?: currentUser.bio,
             )
             if (merged == currentUser) return@launch
-            Prefs[Prefs.USER_DATA] = Json.encodeToString(merged)
+            persistDiscordUser(merged)
             _state.value = UserState.LoadingCompleted(merged, currentRpcConfigs())
         }
     }
@@ -217,7 +220,7 @@ class UserViewModel @Inject constructor(
                 val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
                     fresh.copy(bio = profileBio)
                 } ?: fresh
-                Prefs[Prefs.USER_DATA] = Json.encodeToString(withBio)
+                persistDiscordUser(withBio)
                 _state.value = UserState.LoadingCompleted(withBio, currentRpcConfigs())
                 return
             }
@@ -227,7 +230,13 @@ class UserViewModel @Inject constructor(
                 ?: fetchDiscordUser(token)
                 ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }
             if (fresh != null) {
-                _state.value = UserState.LoadingCompleted(fresh, currentRpcConfigs())
+                // Gateway READY includes bio; if it failed, try the profile
+                // endpoint which may return bio for account tokens too.
+                val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
+                    fresh.copy(bio = profileBio)
+                } ?: fresh
+                persistDiscordUser(withBio)
+                _state.value = UserState.LoadingCompleted(withBio, currentRpcConfigs())
                 return
             }
         }
@@ -315,63 +324,74 @@ class UserViewModel @Inject constructor(
     }
 
     private fun observeRpcState() {
-        val mediaFlow = combine(
+        // Live media state grouped into one flow (combine supports <=5 typed flows).
+        val mediaStateFlow = combine(
             stateRepository.currentTrackTitle,
             stateRepository.currentArtist,
             stateRepository.isPaused,
             stateRepository.currentTimestampStart,
             stateRepository.currentTimestampStop
         ) { title, artist, isPaused, tsStart, tsStop ->
-            combine(
-                stateRepository.currentLargeImageUrl,
-                stateRepository.currentSmallImageUrl,
-                stateRepository.pausedPositionMs
-            ) { largeImg, smallImg, pausedPositionMs ->
-                // Start from the full set of active RPC configs and only
-                // update the MediaRpc entry with live media state.
-                val configs = currentRpcConfigs().toMutableList()
-                val mediaIdx = configs.indexOfFirst { it.type == "2" }
-
-                val mediaEntry = configs.getOrNull(mediaIdx)
-                val updatedMedia = mediaEntry?.copy(
-                    name = mediaEntry.name.copyIfNotEmpty(title),
-                    details = mediaEntry.details.copyIfNotEmpty(artist ?: mediaEntry.details),
-                    state = mediaEntry.state.copyIfNotEmpty(artist ?: mediaEntry.state),
-                    timestampsStart = tsStart?.toString() ?: mediaEntry.timestampsStart,
-                    timestampsStop = tsStop?.toString() ?: mediaEntry.timestampsStop,
-                    largeImg = largeImg ?: mediaEntry.largeImg,
-                    smallImg = smallImg ?: mediaEntry.smallImg,
-                    paused = isPaused,
-                    pausedPositionMs = pausedPositionMs
-                )
-
-                if (mediaIdx >= 0 && updatedMedia != null) {
-                    configs[mediaIdx] = updatedMedia
-                } else if (updatedMedia != null) {
-                    configs.add(updatedMedia)
-                }
-                configs
-            }
+            MediaLiveState(title, artist, isPaused, tsStart, tsStop)
         }
-        mediaFlow.flatMapLatest { it }.onEach { newConfigs ->
+        val mediaImagesFlow = combine(
+            stateRepository.currentLargeImageUrl,
+            stateRepository.currentSmallImageUrl,
+            stateRepository.pausedPositionMs
+        ) { largeImg, smallImg, pausedPosition ->
+            MediaImagesLiveState(largeImg, smallImg, pausedPosition)
+        }
+
+        // Observe the live presence configs from RpcManager (keyed by instanceId).
+        // Every running instance registers its own config, so all clones appear.
+        combine(rpcManager.presenceConfigs, mediaStateFlow, mediaImagesFlow) { configs, media, images ->
+            val liveConfigs = configs.values.map { cfg ->
+                cfg.copy(instanceId = cfg.instanceId.ifBlank { cfg.name })
+            }.toMutableList()
+
+            // Apply live media state to media-type configs (type == "2" or "3").
+            val mediaIdx = liveConfigs.indexOfFirst { it.type == "2" || it.type == "3" }
+            if (mediaIdx >= 0) {
+                val mediaEntry = liveConfigs[mediaIdx]
+                liveConfigs[mediaIdx] = mediaEntry.copy(
+                    name = mediaEntry.name.copyIfNotEmpty(media.title),
+                    details = mediaEntry.details.copyIfNotEmpty(media.artist ?: mediaEntry.details),
+                    state = mediaEntry.state.copyIfNotEmpty(media.artist ?: mediaEntry.state),
+                    timestampsStart = media.tsStart?.toString() ?: mediaEntry.timestampsStart,
+                    timestampsStop = media.tsStop?.toString() ?: mediaEntry.timestampsStop,
+                    largeImg = images.large ?: mediaEntry.largeImg,
+                    smallImg = images.small ?: mediaEntry.smallImg,
+                    paused = media.isPaused,
+                    pausedPositionMs = images.pausedPosition
+                )
+            }
+
+            // If no service has registered yet, fall back to legacy prefs snapshot.
+            if (liveConfigs.isEmpty()) currentRpcConfigs() else liveConfigs
+        }.onEach { newConfigs ->
             viewModelScope.launch(Dispatchers.Main) {
                 val current = _state.value
-                // While still loading, ignore media updates.
                 if (current is UserState.Loading) return@launch
-                // NEVER overwrite a logged-out state (UserState.Error) with
-                // an empty user - that would wrongly show Logout instead of
-                // Login.
                 if (current !is UserState.LoadingCompleted) return@launch
-                if (current.rpcConfigs == newConfigs) {
-                    return@launch
-                }
-                _state.value = UserState.LoadingCompleted(
-                    current.user,
-                    newConfigs
-                )
+                if (current.rpcConfigs == newConfigs) return@launch
+                _state.value = UserState.LoadingCompleted(current.user, newConfigs)
             }
         }.launchIn(viewModelScope)
     }
+
+    private data class MediaLiveState(
+        val title: String?,
+        val artist: String?,
+        val isPaused: Boolean,
+        val tsStart: Long?,
+        val tsStop: Long?,
+    )
+
+    private data class MediaImagesLiveState(
+        val large: String?,
+        val small: String?,
+        val pausedPosition: Long?,
+    )
 
     /**
      * The presence configs that are shown on Discord right now.
@@ -387,16 +407,22 @@ class UserViewModel @Inject constructor(
     private fun currentRpcConfigs(): List<RpcConfig> = try {
         val configs = mutableListOf<RpcConfig>()
 
-        if (AppUtils.customRpcRunning()) {
-            val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+        // Add all enabled Custom RPC instances (built-in + clones), each with
+        // its own per-instance config so clones show their own settings.
+        val instances = Prefs.getHomeRpcInstances()
+        for (instance in instances) {
+            if (instance.type != "custom_rpc") continue
+            if (!AppUtils.customRpcRunning()) continue
+            val json = Prefs.getCustomRpcConfig(instance.id.takeIf { it != "custom_rpc" })
             if (json.isNotBlank()) {
                 runCatching { Json.decodeFromString<RpcConfig>(json) }
-                    .getOrDefault(kizzyDefault("Custom RPC"))
+                    .getOrDefault(kizzyDefault(instance.label))
                     .let { configs.add(it) }
             } else {
-                configs.add(kizzyDefault("Custom RPC"))
+                configs.add(kizzyDefault(instance.label))
             }
         }
+
         if (AppUtils.mediaRpcRunning()) {
             LastPresence.media()?.let { configs.add(it) } ?: configs.add(RpcConfig(name = "Media RPC", details = "Playing media", type = "2"))
         }
