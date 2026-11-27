@@ -23,9 +23,11 @@ import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.services.ManualRpc
 import com.my.kizzy.preference.Prefs
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,53 +35,61 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
-@HiltViewModel
-class ManualRpcViewmodel @Inject constructor(
+@HiltViewModel(assistedFactory = ManualRpcViewmodel.Factory::class)
+class ManualRpcViewmodel @AssistedInject constructor(
     @ApplicationContext private val context: Context,
     private val uploadGalleryImageUseCase: UploadGalleryImageUseCase,
+    @Assisted private val instanceId: String?,
 ) : ViewModel() {
+    @AssistedFactory
+    interface Factory {
+        fun create(instanceId: String?): ManualRpcViewmodel
+    }
+
+    private fun key(prefKey: String) = Prefs.scopedKey(prefKey, instanceId)
+
     private val _uiState = MutableStateFlow(
         UiState(
             isAppsLoading = true,
-            isAppsRpcPartEnabled = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true],
-            isMediaRpcPartEnabled = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true],
-            templateName = Prefs[Prefs.MANUAL_RPC_TEMPLATE_NAME, ""],
-            templateDetails = Prefs[Prefs.MANUAL_RPC_TEMPLATE_DETAILS, ""],
-            templateState = Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, ""],
-            showCoverArt = Prefs[Prefs.MANUAL_RPC_SHOW_COVER_ART, false],
-            showAppIcon = Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON, false],
-            showArtistName = Prefs[Prefs.MANUAL_RPC_SHOW_ARTIST_NAME, true],
-            showAlbumName = Prefs[Prefs.MANUAL_RPC_SHOW_ALBUM_NAME, true],
-            showPlaybackState = Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE, false],
-            enableTimestamps = Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, false],
-            hideOnPause = Prefs[Prefs.MANUAL_RPC_HIDE_ON_PAUSE, false],
-            platform = Prefs[Prefs.MANUAL_RPC_PLATFORM, ""],
-            buttonsEnabled = Prefs[Prefs.MANUAL_RPC_USE_BUTTONS, false],
-            button1Text = Prefs[Prefs.MANUAL_RPC_BUTTON1_TEXT, ""],
-            button1Url = Prefs[Prefs.MANUAL_RPC_BUTTON1_URL, ""],
-            button2Text = Prefs[Prefs.MANUAL_RPC_BUTTON2_TEXT, ""],
-            button2Url = Prefs[Prefs.MANUAL_RPC_BUTTON2_URL, ""],
-            useCustomAppId = Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false],
-            applicationId = Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""],
-            timestampMode = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_MODE, "default"],
-            customTimestampStart = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_START, ""],
-            customTimestampEnd = Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_END, ""],
-            showSongAsTitle = Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE, false],
-            showAppNameInDetails = Prefs[Prefs.MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS, false],
-            showChannelIcon = Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON, false],
-            useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, false],
-            titleSource = Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE, "title"],
+            isAppsRpcPartEnabled = Prefs[key(Prefs.MANUAL_RPC_USE_APPS_RPC), true],
+            isMediaRpcPartEnabled = Prefs[key(Prefs.MANUAL_RPC_USE_MEDIA_RPC), true],
+            templateName = Prefs[key(Prefs.MANUAL_RPC_TEMPLATE_NAME), ""],
+            templateDetails = Prefs[key(Prefs.MANUAL_RPC_TEMPLATE_DETAILS), ""],
+            templateState = Prefs[key(Prefs.MANUAL_RPC_TEMPLATE_STATE), ""],
+            showCoverArt = Prefs[key(Prefs.MANUAL_RPC_SHOW_COVER_ART), false],
+            showAppIcon = Prefs[key(Prefs.MANUAL_RPC_SHOW_APP_ICON), false],
+            showArtistName = Prefs[key(Prefs.MANUAL_RPC_SHOW_ARTIST_NAME), true],
+            showAlbumName = Prefs[key(Prefs.MANUAL_RPC_SHOW_ALBUM_NAME), true],
+            showPlaybackState = Prefs[key(Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE), false],
+            enableTimestamps = Prefs[key(Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS), false],
+            hideOnPause = Prefs[key(Prefs.MANUAL_RPC_HIDE_ON_PAUSE), false],
+            platform = Prefs[key(Prefs.MANUAL_RPC_PLATFORM), ""],
+            buttonsEnabled = Prefs[key(Prefs.MANUAL_RPC_USE_BUTTONS), false],
+            button1Text = Prefs[key(Prefs.MANUAL_RPC_BUTTON1_TEXT), ""],
+            button1Url = Prefs[key(Prefs.MANUAL_RPC_BUTTON1_URL), ""],
+            button2Text = Prefs[key(Prefs.MANUAL_RPC_BUTTON2_TEXT), ""],
+            button2Url = Prefs[key(Prefs.MANUAL_RPC_BUTTON2_URL), ""],
+            useCustomAppId = Prefs[key(Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID), false],
+            applicationId = Prefs[key(Prefs.MANUAL_RPC_APPLICATION_ID), ""],
+            timestampMode = Prefs[key(Prefs.MANUAL_RPC_TIMESTAMP_MODE), "default"],
+            customTimestampStart = Prefs[key(Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_START), ""],
+            customTimestampEnd = Prefs[key(Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_END), ""],
+            showSongAsTitle = Prefs[key(Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE), false],
+            showAppNameInDetails = Prefs[key(Prefs.MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS), false],
+            showChannelIcon = Prefs[key(Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON), false],
+            useAppsRpc = Prefs[key(Prefs.MANUAL_RPC_USE_APPS_RPC), false],
+            titleSource = Prefs[key(Prefs.MANUAL_RPC_TITLE_SOURCE), "title"],
 
             // Advanced settings
-            activityType = Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE, ""],
-            status = Prefs[Prefs.MANUAL_RPC_STATUS, "online"],
-            largeImage = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""],
-            smallImage = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""],
-            largeText = Prefs[Prefs.MANUAL_RPC_LARGE_TEXT, ""],
-            smallText = Prefs[Prefs.MANUAL_RPC_SMALL_TEXT, ""],
-            streamUrl = Prefs[Prefs.MANUAL_RPC_STREAM_URL, ""],
-            partyCurrentSize = Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE, ""],
-            partyMaxSize = Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE, ""],
+            activityType = Prefs[key(Prefs.MANUAL_RPC_ACTIVITY_TYPE), ""],
+            status = Prefs[key(Prefs.MANUAL_RPC_STATUS), "online"],
+            largeImage = Prefs[key(Prefs.MANUAL_RPC_LARGE_IMAGE), ""],
+            smallImage = Prefs[key(Prefs.MANUAL_RPC_SMALL_IMAGE), ""],
+            largeText = Prefs[key(Prefs.MANUAL_RPC_LARGE_TEXT), ""],
+            smallText = Prefs[key(Prefs.MANUAL_RPC_SMALL_TEXT), ""],
+            streamUrl = Prefs[key(Prefs.MANUAL_RPC_STREAM_URL), ""],
+            partyCurrentSize = Prefs[key(Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE), ""],
+            partyMaxSize = Prefs[key(Prefs.MANUAL_RPC_PARTY_MAX_SIZE), ""],
         )
     )
     val uiState = _uiState.asStateFlow()
@@ -107,7 +117,7 @@ class ManualRpcViewmodel @Inject constructor(
                     enabledApps = enabledApps,
                     appActivityTypes = appActivityTypes,
                     isAppsLoading = false,
-                    isAutoActivityTypeEnabled = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true]
+                    isAutoActivityTypeEnabled = Prefs[key(Prefs.AUTO_ACTIVITY_TYPE), true]
                 )
             }
         }
@@ -130,7 +140,7 @@ class ManualRpcViewmodel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is UiEvent.ToggleAppsRpcPart -> {
-                    Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_USE_APPS_RPC)] = event.enabled
                     _uiState.value = _uiState.value.copy(isAppsRpcPartEnabled = event.enabled)
                     restartServiceIfRunning()
                 }
@@ -138,31 +148,31 @@ class ManualRpcViewmodel @Inject constructor(
                 is UiEvent.ToggleAutoActivityType -> {
                     // The switch is shared with the Media RPC, so both features
                     // detect the activity type in the same way.
-                    Prefs[Prefs.AUTO_ACTIVITY_TYPE] = event.enabled
+                    Prefs[key(Prefs.AUTO_ACTIVITY_TYPE)] = event.enabled
                     _uiState.update { it.copy(isAutoActivityTypeEnabled = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleMediaRpcPart -> {
-                    Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_USE_MEDIA_RPC)] = event.enabled
                     _uiState.value = _uiState.value.copy(isMediaRpcPartEnabled = event.enabled)
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetTemplateName -> {
-                    Prefs[Prefs.MANUAL_RPC_TEMPLATE_NAME] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_TEMPLATE_NAME)] = event.value
                     _uiState.update { it.copy(templateName = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetTemplateDetails -> {
-                    Prefs[Prefs.MANUAL_RPC_TEMPLATE_DETAILS] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_TEMPLATE_DETAILS)] = event.value
                     _uiState.update { it.copy(templateDetails = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetTemplateState -> {
-                    Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_TEMPLATE_STATE)] = event.value
                     _uiState.update { it.copy(templateState = event.value) }
                     restartServiceIfRunning()
                 }
@@ -232,61 +242,61 @@ class ManualRpcViewmodel @Inject constructor(
                     restartServiceIfRunning()
                 }
                 is UiEvent.ToggleShowCoverArt -> {
-                    Prefs[Prefs.MANUAL_RPC_SHOW_COVER_ART] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_SHOW_COVER_ART)] = event.enabled
                     _uiState.update { it.copy(showCoverArt = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowAppIcon -> {
-                    Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_SHOW_APP_ICON)] = event.enabled
                     _uiState.update {
                         it.copy(showAppIcon = event.enabled)
                     }
                     if (event.enabled) {
-                        Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE] = false
+                        Prefs[key(Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE)] = false
                         _uiState.update { it.copy(showPlaybackState = false) }
                     }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowArtistName -> {
-                    Prefs[Prefs.MANUAL_RPC_SHOW_ARTIST_NAME] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_SHOW_ARTIST_NAME)] = event.enabled
                     _uiState.update { it.copy(showArtistName = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowAlbumName -> {
-                    Prefs[Prefs.MANUAL_RPC_SHOW_ALBUM_NAME] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_SHOW_ALBUM_NAME)] = event.enabled
                     _uiState.update { it.copy(showAlbumName = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowPlaybackState -> {
-                    Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE)] = event.enabled
                     _uiState.update {
                         it.copy(showPlaybackState = event.enabled)
                     }
                     if (event.enabled) {
-                        Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON] = false
+                        Prefs[key(Prefs.MANUAL_RPC_SHOW_APP_ICON)] = false
                         _uiState.update { it.copy(showAppIcon = false) }
                     }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleEnableTimestamps -> {
-                    Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS)] = event.enabled
                     _uiState.update { it.copy(enableTimestamps = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleHideOnPause -> {
-                    Prefs[Prefs.MANUAL_RPC_HIDE_ON_PAUSE] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_HIDE_ON_PAUSE)] = event.enabled
                     _uiState.update { it.copy(hideOnPause = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetPlatform -> {
-                    Prefs[Prefs.MANUAL_RPC_PLATFORM] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_PLATFORM)] = event.value
                     _uiState.update { it.copy(platform = event.value, platformIsExpanded = false) }
                     // Platform is applied via the gateway IDENTIFY on service start,
                     // so restart the running service to apply the new platform live.
@@ -298,45 +308,45 @@ class ManualRpcViewmodel @Inject constructor(
                 }
 
                 is UiEvent.ToggleButtons -> {
-                    Prefs[Prefs.MANUAL_RPC_USE_BUTTONS] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_USE_BUTTONS)] = event.enabled
                     _uiState.update { it.copy(buttonsEnabled = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetButton1Text -> {
-                    Prefs[Prefs.MANUAL_RPC_BUTTON1_TEXT] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_BUTTON1_TEXT)] = event.value
                     _uiState.update { it.copy(button1Text = event.value) }
                 }
 
                 is UiEvent.SetButton1Url -> {
-                    Prefs[Prefs.MANUAL_RPC_BUTTON1_URL] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_BUTTON1_URL)] = event.value
                     _uiState.update { it.copy(button1Url = event.value) }
                 }
 
                 is UiEvent.SetButton2Text -> {
-                    Prefs[Prefs.MANUAL_RPC_BUTTON2_TEXT] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_BUTTON2_TEXT)] = event.value
                     _uiState.update { it.copy(button2Text = event.value) }
                 }
 
                 is UiEvent.SetButton2Url -> {
-                    Prefs[Prefs.MANUAL_RPC_BUTTON2_URL] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_BUTTON2_URL)] = event.value
                     _uiState.update { it.copy(button2Url = event.value) }
                 }
 
                 is UiEvent.ToggleUseCustomAppId -> {
-                    Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID)] = event.enabled
                     _uiState.update { it.copy(useCustomAppId = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetApplicationId -> {
-                    Prefs[Prefs.MANUAL_RPC_APPLICATION_ID] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_APPLICATION_ID)] = event.value
                     _uiState.update { it.copy(applicationId = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetTimestampMode -> {
-                    Prefs[Prefs.MANUAL_RPC_TIMESTAMP_MODE] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_TIMESTAMP_MODE)] = event.value
                     _uiState.update { it.copy(timestampMode = event.value, timestampModeExpanded = false) }
                     restartServiceIfRunning()
                 }
@@ -346,43 +356,43 @@ class ManualRpcViewmodel @Inject constructor(
                 }
 
                 is UiEvent.SetCustomTimestampStart -> {
-                    Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_START] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_START)] = event.value
                     _uiState.update { it.copy(customTimestampStart = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetCustomTimestampEnd -> {
-                    Prefs[Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_END] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_TIMESTAMP_CUSTOM_END)] = event.value
                     _uiState.update { it.copy(customTimestampEnd = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowSongAsTitle -> {
-                    Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE)] = event.enabled
                     _uiState.update { it.copy(showSongAsTitle = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowAppNameInDetails -> {
-                    Prefs[Prefs.MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_SHOW_APP_NAME_IN_DETAILS)] = event.enabled
                     _uiState.update { it.copy(showAppNameInDetails = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleShowChannelIcon -> {
-                    Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON)] = event.enabled
                     _uiState.update { it.copy(showChannelIcon = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.ToggleUseAppsRpc -> {
-                    Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC] = event.enabled
+                    Prefs[key(Prefs.MANUAL_RPC_USE_APPS_RPC)] = event.enabled
                     _uiState.update { it.copy(useAppsRpc = event.enabled) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetTitleSource -> {
-                    Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_TITLE_SOURCE)] = event.value
                     _uiState.update { it.copy(titleSource = event.value, titleSourceExpanded = false) }
                     restartServiceIfRunning()
                 }
@@ -393,7 +403,7 @@ class ManualRpcViewmodel @Inject constructor(
 
                 // Advanced settings handlers
                 is UiEvent.SetActivityType -> {
-                    Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_ACTIVITY_TYPE)] = event.value
                     _uiState.update { it.copy(activityType = event.value) }
                     restartServiceIfRunning()
                 }
@@ -403,7 +413,7 @@ class ManualRpcViewmodel @Inject constructor(
                 }
 
                 is UiEvent.SetStatus -> {
-                    Prefs[Prefs.MANUAL_RPC_STATUS] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_STATUS)] = event.value
                     _uiState.update { it.copy(status = event.value) }
                     restartServiceIfRunning()
                 }
@@ -413,13 +423,13 @@ class ManualRpcViewmodel @Inject constructor(
                 }
 
                 is UiEvent.SetLargeImage -> {
-                    Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_LARGE_IMAGE)] = event.value
                     _uiState.update { it.copy(largeImage = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetSmallImage -> {
-                    Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_SMALL_IMAGE)] = event.value
                     _uiState.update { it.copy(smallImage = event.value) }
                     restartServiceIfRunning()
                 }
@@ -434,56 +444,56 @@ class ManualRpcViewmodel @Inject constructor(
                 }
 
                 is UiEvent.SetLargeText -> {
-                    Prefs[Prefs.MANUAL_RPC_LARGE_TEXT] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_LARGE_TEXT)] = event.value
                     _uiState.update { it.copy(largeText = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetSmallText -> {
-                    Prefs[Prefs.MANUAL_RPC_SMALL_TEXT] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_SMALL_TEXT)] = event.value
                     _uiState.update { it.copy(smallText = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetStreamUrl -> {
-                    Prefs[Prefs.MANUAL_RPC_STREAM_URL] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_STREAM_URL)] = event.value
                     _uiState.update { it.copy(streamUrl = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetPartyCurrentSize -> {
-                    Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE)] = event.value
                     _uiState.update { it.copy(partyCurrentSize = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetPartyMaxSize -> {
-                    Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_PARTY_MAX_SIZE)] = event.value
                     _uiState.update { it.copy(partyMaxSize = event.value) }
                     restartServiceIfRunning()
                 }
 
                 // RPC link URL handlers
                 is UiEvent.SetDetailsUrl -> {
-                    Prefs[Prefs.MANUAL_RPC_DETAILS_URL] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_DETAILS_URL)] = event.value
                     _uiState.update { it.copy(detailsUrl = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetStateUrl -> {
-                    Prefs[Prefs.MANUAL_RPC_STATE_URL] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_STATE_URL)] = event.value
                     _uiState.update { it.copy(stateUrl = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetLargeUrl -> {
-                    Prefs[Prefs.MANUAL_RPC_LARGE_URL] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_LARGE_URL)] = event.value
                     _uiState.update { it.copy(largeUrl = event.value) }
                     restartServiceIfRunning()
                 }
 
                 is UiEvent.SetSmallUrl -> {
-                    Prefs[Prefs.MANUAL_RPC_SMALL_URL] = event.value
+                    Prefs[key(Prefs.MANUAL_RPC_SMALL_URL)] = event.value
                     _uiState.update { it.copy(smallUrl = event.value) }
                     restartServiceIfRunning()
                 }
