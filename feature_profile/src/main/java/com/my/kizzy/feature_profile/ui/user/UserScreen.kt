@@ -49,6 +49,7 @@ import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_profile.fetchDiscordUser
 import com.my.kizzy.feature_profile.fetchDiscordUserProfile
+import com.my.kizzy.feature_profile.persistDiscordUser
 import com.my.kizzy.feature_settings.rpc_settings.DiscordOAuth2Auth
 import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
 import com.my.kizzy.feature_profile.ui.component.ProfileCard
@@ -72,7 +73,7 @@ fun UserScreen(
     state: UserState,
     onBackPressed: () -> Unit,
     onLogout: (Context) -> Unit,
-    onNavigateToRpcPreview: () -> Unit = {},
+    onNavigateToRpcPreview: (String?) -> Unit = { _ -> },
     // AuthTab launcher + binder from MainActivity -> Kizzy, used by the inline
     // Discord login on this screen (no separate login screen).
     authTabLauncher: ActivityResultLauncher<Intent>? = null,
@@ -113,9 +114,15 @@ fun UserScreen(
                         System.currentTimeMillis() + result.expiresInSec * 1000
                 }
                 // Persist avatar/bio/banner before the profile switches to logged-in.
-                fetchDiscordUser(result.accessToken)
-                // Also fetch bio/about me from REST (gateway READY doesn't include bio)
-                fetchDiscordUserProfile(result.accessToken)
+                // fetchDiscordUser writes USER_DATA; the profile endpoint returns
+                // the bio that /users/@me omits, so merge and persist it too.
+                val user = fetchDiscordUser(result.accessToken)
+                if (user != null) {
+                    val profileBio = fetchDiscordUserProfile(result.accessToken)
+                    persistDiscordUser(
+                        user.copy(bio = profileBio?.takeIf { it.isNotBlank() } ?: user.bio)
+                    )
+                }
             } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
                 oauth2Error = e.message ?: "Authorization failed"
             } catch (e: Exception) {
@@ -225,7 +232,7 @@ fun UserScreen(
                         ProfileCard(
                             state.user,
                             rpcConfigs = state.rpcConfigs,
-                            onAvatarClick = { onNavigateToRpcPreview() }
+                            onAvatarClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) }
                         )
                         Spacer(Modifier.height(24.dp))
                         DiscordLoginButton(
@@ -257,7 +264,7 @@ fun UserScreen(
                         ProfileCard(
                             state.user,
                             rpcConfigs = state.rpcConfigs,
-                            onAvatarClick = { onNavigateToRpcPreview() }
+                            onAvatarClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) }
                         )
 
                         Spacer(Modifier.height(16.dp))
@@ -271,7 +278,7 @@ fun UserScreen(
                             MenuRow(
                                 icon = Icons.Filled.PlayArrow,
                                 label = stringResource(R.string.profile_open_rpc_preview),
-                                onClick = { onNavigateToRpcPreview() },
+                                onClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) },
                             )
                             MenuDivider()
                             // Log Out stays in the same menu card as Open RPC
@@ -344,8 +351,9 @@ private fun TokenLoginSection() {
                     } else {
                         // Also fetch bio/about me from REST client profile endpoint
                         val bio = fetchDiscordUserProfile(value)
-                        val userWithBio = user.copy(bio = bio?.takeIf { it.isNotBlank() } ?: user.bio)
-                        Prefs[Prefs.USER_DATA] = kotlinx.serialization.json.Json.encodeToString(userWithBio)
+                        persistDiscordUser(
+                            user.copy(bio = bio?.takeIf { it.isNotBlank() } ?: user.bio)
+                        )
                         error = ""
                     }
                     // A pasted account token belongs only in TOKEN; never overwrite
