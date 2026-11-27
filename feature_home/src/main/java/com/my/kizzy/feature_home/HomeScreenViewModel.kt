@@ -7,7 +7,6 @@
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
  *
- *
  */
 
 package com.my.kizzy.feature_home
@@ -25,43 +24,57 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
+/**
+ * ViewModel backing update checks and release state on the Home screen.
+ */
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val checkForUpdateUseCase: CheckForUpdateUseCase
-): ViewModel() {
+) : ViewModel() {
+
     private val _aboutScreenState: MutableStateFlow<HomeScreenState> = MutableStateFlow(
         HomeScreenState.Loading
     )
     val aboutScreenState: StateFlow<HomeScreenState> = _aboutScreenState
 
+    // Triggers an asynchronous check for the latest release from the domain use case
     fun getLatestUpdate() {
         checkForUpdateUseCase().onEach { result ->
-            when(result){
+            when (result) {
                 is Resource.Success -> {
                     _aboutScreenState.value =
                         HomeScreenState.LoadingCompleted(result.data ?: Release())
                 }
+
                 is Resource.Error -> {
                     _aboutScreenState.value =
                         HomeScreenState.Error(result.message ?: "An unexpected error occurred")
                 }
+
                 is Resource.Loading -> {
                     _aboutScreenState.value = HomeScreenState.Loading
                 }
             }
         }.launchIn(viewModelScope)
     }
-    fun setReleaseFromPrefs(release: Release){
+
+    // Populates release state directly from cached preferences
+    fun setReleaseFromPrefs(release: Release) {
         _aboutScreenState.value = HomeScreenState.LoadingCompleted(release)
     }
 }
 
+/**
+ * UI state holder for release update checks on the Home screen.
+ */
 @Stable
 sealed interface HomeScreenState {
     @Stable
-    object Loading: HomeScreenState
+    object Loading : HomeScreenState
+
     @Stable
-    class Error(val error: String?): HomeScreenState
+    class Error(val error: String?) : HomeScreenState
+
     @Stable
-    class LoadingCompleted(val release: Release): HomeScreenState
+    class LoadingCompleted(val release: Release) : HomeScreenState
 }

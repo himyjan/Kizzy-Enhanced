@@ -5,7 +5,7 @@
  *  *  * HomeFeature.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  ******************************************************************
+ *  *****************************************************************
  *
  */
 
@@ -15,14 +15,19 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.dp
+import com.my.kizzy.navigation.AppRoute
 
+/**
+ * UI model for a single feature or action item on the Home screen.
+ * Uses [AppRoute] (`NavKey`) for type-safe Navigation 3 routing.
+ */
 @Immutable
 data class HomeFeature(
     val title: String,
     @DrawableRes val icon: Int,
-    val route: String? = null,
+    val route: AppRoute? = null,
     val isChecked: Boolean = false,
-    val onClick: (String) -> Unit = {},
+    val onClick: (AppRoute) -> Unit = {},
     val onCheckedChange: (Boolean) -> Unit = {},
     val showSwitch: Boolean = true,
     val shape: RoundedCornerShape = RoundedCornerShape(0.dp),

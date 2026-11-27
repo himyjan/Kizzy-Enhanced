@@ -5,7 +5,7 @@
  *  *  * Features.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  ******************************************************************
+ *  *****************************************************************
  *
  */
 
@@ -54,6 +54,10 @@ import com.my.kizzy.preference.RpcInstance
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.KSwitch
 
+/**
+ * Renders a vertical list of [HomeFeature] cards, an "Add RPC" action card,
+ * and a dialog for creating new RPC instance clones.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Features(
@@ -66,11 +70,11 @@ fun Features(
 ) {
     val uriHandler = LocalUriHandler.current
 
-    // Show type picker dialog when "Add RPC" is clicked
+    // Dialog visibility and selected RPC template type
     var showAddRpcDialog by remember { mutableStateOf(false) }
     var selectedRpcType by remember { mutableStateOf<String?>(null) }
 
-    // Resolve string resources in @Composable scope so onClick lambdas only read plain Strings.
+    // Resolve localized labels in composable scope before passing to click handlers
     val mediaRpcLabel = stringResource(R.string.main_mediaRpc)
     val manualRpcLabel = stringResource(R.string.main_ManualRpc)
     val customRpcLabel = stringResource(R.string.main_customRpc)
@@ -83,8 +87,30 @@ fun Features(
             val instance = instances.firstOrNull { it.id == item.instanceId }
             val idx = homeItems.indexOf(item)
             val isBuiltIn = !item.isDeletable
+
+            // Allow moving deletable clone items only within adjacent deletable items
             val canMoveUp = !isBuiltIn && idx > 0 && homeItems[idx - 1].isDeletable
             val canMoveDown = !isBuiltIn && idx < homeItems.lastIndex - 1 && homeItems[idx + 1].isDeletable
+
+            val moveUp: () -> Unit = {
+                val newInstances = instances.toMutableList()
+                val instanceIdx = newInstances.indexOfFirst { it.id == item.instanceId }
+                if (instanceIdx > 0) {
+                    val moved = newInstances.removeAt(instanceIdx)
+                    newInstances.add(instanceIdx - 1, moved)
+                    onReorder(newInstances)
+                }
+            }
+
+            val moveDown: () -> Unit = {
+                val newInstances = instances.toMutableList()
+                val instanceIdx = newInstances.indexOfFirst { it.id == item.instanceId }
+                if (instanceIdx < newInstances.lastIndex) {
+                    val moved = newInstances.removeAt(instanceIdx)
+                    newInstances.add(instanceIdx + 1, moved)
+                    onReorder(newInstances)
+                }
+            }
 
             if (item.tooltipText.isNotBlank()) {
                 TooltipBox(
@@ -117,24 +143,8 @@ fun Features(
                         isDeletable = item.isDeletable,
                         canMoveUp = canMoveUp,
                         canMoveDown = canMoveDown,
-                        onMoveUp = {
-                            val newInstances = instances.toMutableList()
-                            val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
-                            if (idx2 > 0) {
-                                val moved = newInstances.removeAt(idx2)
-                                newInstances.add(idx2 - 1, moved)
-                                onReorder(newInstances)
-                            }
-                        },
-                        onMoveDown = {
-                            val newInstances = instances.toMutableList()
-                            val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
-                            if (idx2 < newInstances.lastIndex) {
-                                val moved = newInstances.removeAt(idx2)
-                                newInstances.add(idx2 + 1, moved)
-                                onReorder(newInstances)
-                            }
-                        },
+                        onMoveUp = moveUp,
+                        onMoveDown = moveDown,
                     )
                 }
             } else {
@@ -149,29 +159,13 @@ fun Features(
                     isDeletable = item.isDeletable,
                     canMoveUp = canMoveUp,
                     canMoveDown = canMoveDown,
-                    onMoveUp = {
-                        val newInstances = instances.toMutableList()
-                        val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
-                        if (idx2 > 0) {
-                            val moved = newInstances.removeAt(idx2)
-                            newInstances.add(idx2 - 1, moved)
-                            onReorder(newInstances)
-                        }
-                    },
-                    onMoveDown = {
-                        val newInstances = instances.toMutableList()
-                        val idx2 = newInstances.indexOfFirst { it.id == item.instanceId }
-                        if (idx2 < newInstances.lastIndex) {
-                            val moved = newInstances.removeAt(idx2)
-                            newInstances.add(idx2 + 1, moved)
-                            onReorder(newInstances)
-                        }
-                    },
+                    onMoveUp = moveUp,
+                    onMoveDown = moveDown,
                 )
             }
         }
 
-        // Add RPC card at the bottom - aligned right
+        // Trailing "Add RPC" action card aligned to the right
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
@@ -201,7 +195,7 @@ fun Features(
         }
     }
 
-    // Add RPC type picker dialog
+    // RPC type selection dialog for adding a new clone instance
     if (showAddRpcDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -210,21 +204,17 @@ fun Features(
             },
             title = { Text(text = stringResource(R.string.add_rpc_title)) },
             text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = stringResource(R.string.add_rpc_select_type),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        typeRow("media_rpc", mediaRpcLabel, selectedRpcType) { selectedRpcType = it }
-                        typeRow("manual_rpc", manualRpcLabel, selectedRpcType) { selectedRpcType = it }
-                        typeRow("custom_rpc", customRpcLabel, selectedRpcType) { selectedRpcType = it }
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        RpcTypeRow("media_rpc", mediaRpcLabel, selectedRpcType) { selectedRpcType = it }
+                        RpcTypeRow("manual_rpc", manualRpcLabel, selectedRpcType) { selectedRpcType = it }
+                        RpcTypeRow("custom_rpc", customRpcLabel, selectedRpcType) { selectedRpcType = it }
                     }
                 }
             },
@@ -262,13 +252,22 @@ fun Features(
     }
 }
 
+/**
+ * Single selectable row inside the "Add RPC" type dialog.
+ */
 @Composable
-private fun typeRow(type: String, label: String, selectedRpcType: String?, onSelect: (String) -> Unit) {
+private fun RpcTypeRow(
+    type: String,
+    label: String,
+    selectedRpcType: String?,
+    onSelect: (String) -> Unit,
+) {
     val isSelected = selectedRpcType == type
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onSelect(type) },
+            .clickable { onSelect(type) }
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -285,6 +284,9 @@ private fun typeRow(type: String, label: String, selectedRpcType: String?, onSel
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 }
 
+/**
+ * Card representing a single RPC feature, clone instance, or the "Add RPC" button.
+ */
 @Composable
 private fun FeatureCard(
     feature: HomeFeature,
@@ -353,6 +355,7 @@ private fun FeatureCard(
                 onClick = onToggle
             )
         }
+        // Reorder and delete controls for user-added clone instances
         if (isDeletable && !feature.isAddButton) {
             Spacer(modifier = Modifier.width(12.dp))
             Column(

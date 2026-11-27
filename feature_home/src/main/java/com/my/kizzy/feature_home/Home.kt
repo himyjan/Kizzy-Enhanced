@@ -5,20 +5,23 @@
  *  *  * Home.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
+ *  *****************************************************************
  *
  */
 
 package com.my.kizzy.feature_home
 
+import android.app.StatusBarManager
 import android.content.ComponentName
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -34,6 +37,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Menu
@@ -44,7 +50,6 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -57,6 +62,7 @@ import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -66,8 +72,14 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -77,15 +89,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -94,25 +111,29 @@ import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.toVersion
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_home.feature.HomeFeature
-import com.my.kizzy.feature_home.feature.ToolTipContent
+import com.my.kizzy.feature_home.feature.homeFeaturesProvider
 import com.my.kizzy.feature_rpc_base.RpcManager
-import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.feature_rpc_base.services.KizzyTileService
 import com.my.kizzy.feature_settings.SettingsDrawer
+import com.my.kizzy.navigation.AppRoute
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.RpcInstance
+import com.my.kizzy.preference.displayLabel
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.KSwitch
 import com.my.kizzy.ui.components.UpdateDialog
 import kotlinx.coroutines.launch
 
+/**
+ * Main Home screen composable showing RPC feature/clone cards, drag-and-drop reordering,
+ * instance renaming/deletion, update checks, and the navigation drawer.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
     state: HomeScreenState,
     checkForUpdates: () -> Unit,
     showBadge: Boolean,
-    features: List<HomeFeature>,
     user: User?,
     navigateToProfile: () -> Unit,
     navigateToStyleAndAppearance: () -> Unit,
@@ -120,11 +141,14 @@ fun Home(
     navigateToAbout: () -> Unit,
     navigateToRpcSettings: () -> Unit,
     navigateToLogsScreen: () -> Unit,
+    navigateTo: (AppRoute) -> Unit = {},
+    hasUsageAccess: MutableState<Boolean>,
+    hasNotificationAccess: MutableState<Boolean>,
+    onReloadHome: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val uriHandler = LocalUriHandler.current
-
-    // Configuration-aware string resources
+    // Resolve string resources up front for dialogs, toasts, and Quick Settings tiles
     val updateCheckText = stringResource(R.string.update_check_for_update)
     val noUpdatesText = stringResource(R.string.update_no_updates_available)
     val qsTileLabel = stringResource(R.string.qs_tile_label)
@@ -132,36 +156,192 @@ fun Home(
     val manualRpcLabel = stringResource(R.string.main_ManualRpc)
     val customRpcLabel = stringResource(R.string.main_customRpc)
 
-    var showUpdateDialog by remember {
-        mutableStateOf(false)
-    }
-
-    // State for the "Add RPC" type picker dialog opened from the Features header button
+    // Dialog and drawer UI states
+    var showUpdateDialog by remember { mutableStateOf(false) }
     var showAddRpcDialog by remember { mutableStateOf(false) }
     var selectedRpcType by remember { mutableStateOf<String?>(null) }
+    var renamingTarget by remember { mutableStateOf<HomeFeature?>(null) }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     var drawerOpen by remember { mutableStateOf(false) }
     var isDrawerAnimating by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-            rememberTopAppBarState(),
-            canScroll = { false }
-        )
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+        rememberTopAppBarState(),
+        canScroll = { false }
+    )
 
-    // `features` is now derived directly from RpcManager.activeRpc (see
-    // homeFeaturesProvider), so the switch state can be read from it without
-    // keeping a second, easily-stale copy in local state.
     val rpcManager = RpcManager.getInstance(ctx)
 
-    // Read user-created RPC instances from DataStore (built-ins + clones).
-    val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
-    val homeRpcInstances = Prefs.getHomeRpcInstances()
+    // Optimistic UI overrides for instant feedback before persisted preferences update
+    var prefsRefreshCounter by remember { mutableIntStateOf(0) }
+    val pendingAddedInstances = remember { mutableStateListOf<RpcInstance>() }
+    val deletedInstanceIds = remember { mutableStateListOf<String>() }
+    val labelOverrides = remember { mutableStateMapOf<String, String>() }
 
+    // Observe preference map and read current RPC instances (built-ins + user clones)
+    val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
+    val homeRpcInstances = remember(prefsMap, prefsRefreshCounter) {
+        Prefs.getHomeRpcInstances()
+    }
+
+    // Build feature cards directly from current preferences and AppRoute navigation callback
+    val features = homeFeaturesProvider(
+        prefsMap = prefsMap,
+        navigateTo = navigateTo,
+        hasUsageAccess = hasUsageAccess,
+        hasNotificationAccess = hasNotificationAccess,
+        userVerified = user?.verified == true,
+        onAddInstance = { instance ->
+            Prefs.addHomeRpcInstance(instance)
+            prefsRefreshCounter++
+        },
+        onDeleteInstance = { instanceId ->
+            Prefs.deleteHomeRpcInstance(instanceId)
+            prefsRefreshCounter++
+        },
+        onReorder = { instances ->
+            Prefs.reorderHomeRpcInstances(instances)
+            prefsRefreshCounter++
+        },
+    )
+
+    // Clear optimistic state once persisted instances reflect the changes
+    LaunchedEffect(homeRpcInstances) {
+        val instanceMap = homeRpcInstances.associateBy { it.id }
+        pendingAddedInstances.removeAll { it.id in instanceMap }
+        deletedInstanceIds.removeAll { it !in instanceMap }
+        labelOverrides.entries.removeAll { (id, label) ->
+            instanceMap[id]?.displayLabel(ctx) == label
+        }
+    }
+
+    // Merge persisted instances with newly created pending instances
+    val effectiveInstances = remember(
+        homeRpcInstances,
+        pendingAddedInstances.toList(),
+        prefsRefreshCounter,
+    ) {
+        val existingIds = homeRpcInstances.map { it.id }.toSet()
+        homeRpcInstances + pendingAddedInstances.filter { it.id !in existingIds }
+    }
+
+    // Find a built-in template feature matching an RPC type for synthesizing clone cards
+    fun templateFeatureForType(type: String): HomeFeature? {
+        val lowerTitle = when (type) {
+            "media_rpc" -> mediaRpcLabel.lowercase()
+            "manual_rpc" -> manualRpcLabel.lowercase()
+            "custom_rpc" -> customRpcLabel.lowercase()
+            else -> type.lowercase()
+        }
+        return features.firstOrNull { f ->
+            f.instanceId.isBlank() && f.title.lowercase().contains(lowerTitle)
+        } ?: features.firstOrNull { it.instanceId.isBlank() }
+    }
+
+    // Combine base features with synthesized clones, apply overrides, and keep built-ins pinned first
+    val visibleFeatures = remember(
+        features,
+        effectiveInstances,
+        prefsRefreshCounter,
+        deletedInstanceIds.toList(),
+        labelOverrides.toMap(),
+    ) {
+        val instanceById = effectiveInstances.associateBy { it.id }
+        val orderMap = effectiveInstances.mapIndexed { index, inst -> inst.id to index }.toMap()
+
+        val mappedExisting = features
+            .filter { feature ->
+                feature.instanceId.isBlank() ||
+                        (feature.instanceId !in deletedInstanceIds && feature.instanceId in instanceById)
+            }
+            .map { feature ->
+                val resolvedLabel = labelOverrides[feature.instanceId]
+                    ?: instanceById[feature.instanceId]?.displayLabel(ctx)
+                if (!resolvedLabel.isNullOrBlank() && resolvedLabel != feature.title) {
+                    feature.copy(title = resolvedLabel)
+                } else {
+                    feature
+                }
+            }
+
+        val existingInstanceIds = mappedExisting.mapNotNull { it.instanceId.takeIf(String::isNotBlank) }.toSet()
+        val synthesizedNew = effectiveInstances
+            .filter { inst -> inst.id !in deletedInstanceIds && inst.id !in existingInstanceIds }
+            .mapNotNull { inst ->
+                val tpl = templateFeatureForType(inst.type) ?: return@mapNotNull null
+                val resolvedLabel = labelOverrides[inst.id] ?: inst.displayLabel(ctx).ifBlank { tpl.title }
+                tpl.copy(
+                    title = resolvedLabel,
+                    instanceId = inst.id,
+                    isDeletable = true,
+                    isChecked = false,
+                )
+            }
+
+        (mappedExisting + synthesizedNew).sortedBy { feature ->
+            if (feature.instanceId.isBlank()) Int.MIN_VALUE
+            else orderMap[feature.instanceId] ?: Int.MAX_VALUE
+        }
+    }
+
+    // Backing list for live drag-and-drop card reordering in the LazyColumn
+    val displayFeatures = remember { mutableStateListOf<HomeFeature>() }
+    LaunchedEffect(visibleFeatures) {
+        displayFeatures.clear()
+        displayFeatures.addAll(visibleFeatures)
+    }
+
+    var draggedKey by remember { mutableStateOf<String?>(null) }
+    var dragOffsetY by remember { mutableFloatStateOf(0f) }
+    val itemPitchPx = with(LocalDensity.current) { (84.dp + 12.dp).toPx() }
+
+    // Persist current display order for instance cards
+    fun persistCurrentOrder() {
+        val orderedIds = displayFeatures.mapNotNull { it.instanceId.takeIf(String::isNotBlank) }
+        if (orderedIds.isEmpty()) return
+        val byId = effectiveInstances.associateBy { it.id }
+        val reordered = orderedIds.mapNotNull { byId[it] } +
+                effectiveInstances.filter { it.id !in orderedIds }
+        Prefs.reorderHomeRpcInstances(reordered)
+        prefsRefreshCounter++
+    }
+
+    // Apply an immediate label override and persist the renamed instance
+    fun renameInstance(target: HomeFeature, newLabel: String) {
+        val trimmed = newLabel.trim()
+        if (trimmed.isEmpty() || target.instanceId.isBlank()) return
+
+        labelOverrides[target.instanceId] = trimmed
+        val idx = displayFeatures.indexOfFirst { it.instanceId == target.instanceId }
+        if (idx >= 0) {
+            displayFeatures[idx] = displayFeatures[idx].copy(title = trimmed)
+        }
+
+        val updated = effectiveInstances.map { inst ->
+            if (inst.id == target.instanceId) inst.copy(label = trimmed) else inst
+        }
+        Prefs.reorderHomeRpcInstances(updated)
+        prefsRefreshCounter++
+    }
+
+    // Remove a clone instance immediately and persist deletion
+    fun deleteInstance(target: HomeFeature) {
+        if (target.instanceId.isNotBlank() && target.instanceId !in deletedInstanceIds) {
+            deletedInstanceIds.add(target.instanceId)
+        }
+        pendingAddedInstances.removeAll { it.id == target.instanceId }
+        displayFeatures.removeAll { it.instanceId == target.instanceId }
+        Prefs.deleteHomeRpcInstance(target.instanceId)
+        prefsRefreshCounter++
+        onReloadHome()
+    }
+
+    // Refresh running RPC service state whenever Home resumes
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
             rpcManager.refreshFromServices()
+            prefsRefreshCounter++
         }
     }
 
@@ -175,11 +355,11 @@ fun Home(
                     onRequestAddTile = {
                         val cn = ComponentName(ctx, KizzyTileService::class.java)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            val sbm = ctx.getSystemService(android.app.StatusBarManager::class.java)
+                            val sbm = ctx.getSystemService(StatusBarManager::class.java)
                             sbm.requestAddTileService(
                                 cn,
                                 qsTileLabel,
-                                android.graphics.drawable.Icon.createWithResource(ctx, R.drawable.ic_tile_play),
+                                Icon.createWithResource(ctx, R.drawable.ic_tile_play),
                                 {}
                             ) {}
                         }
@@ -232,6 +412,16 @@ fun Home(
                         }
                     },
                     actions = {
+                        val onUpdateClick = {
+                            Toast.makeText(
+                                ctx,
+                                updateCheckText,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            checkForUpdates()
+                            showUpdateDialog = true
+                        }
+
                         if (showBadge) {
                             BadgedBox(
                                 badge = {
@@ -248,30 +438,14 @@ fun Home(
                                 Icon(
                                     imageVector = Icons.Outlined.Update,
                                     contentDescription = "Update",
-                                    modifier = Modifier.clickable {
-                                        Toast.makeText(
-                                            ctx,
-                                            updateCheckText,
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        checkForUpdates()
-                                        showUpdateDialog = true
-                                    }
+                                    modifier = Modifier.clickable(onClick = onUpdateClick)
                                 )
                             }
                         } else {
                             Icon(
                                 imageVector = Icons.Outlined.Update,
                                 contentDescription = "Update",
-                                modifier = Modifier.clickable {
-                                    Toast.makeText(
-                                        ctx,
-                                        updateCheckText,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    checkForUpdates()
-                                    showUpdateDialog = true
-                                }
+                                modifier = Modifier.clickable(onClick = onUpdateClick)
                             )
                         }
                         Spacer(modifier = Modifier.width(8.dp))
@@ -302,7 +476,6 @@ fun Home(
                 )
             }
         ) { paddingValues ->
-            // Single top-level LazyColumn bounded by Scaffold's content constraints.
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -310,7 +483,6 @@ fun Home(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                // Features section header on the left with "Add RPC" aligned to the right.
                 item(key = "features_header") {
                     Row(
                         modifier = Modifier
@@ -333,56 +505,75 @@ fun Home(
                                 modifier = Modifier.size(18.dp),
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Add RPC")
+                            Text(text = stringResource(R.string.home_add_rpc))
                         }
                     }
                 }
 
-                // No local list copy: RpcManager is the single source of truth and
-                // `features` recomposes from it, so the switch always shows the real
-                // running state.
                 items(
-                    items = features,
-                    key = { it.instanceId.ifBlank { "${it.title}_${it.route}" } },
+                    items = displayFeatures,
+                    key = { feature -> feature.instanceId.ifBlank { "${feature.title}_${feature.route}" } },
                 ) { item ->
-                    val idx = features.indexOf(item)
-                    val isBuiltIn = !item.isDeletable
-                    val canMoveUp = !isBuiltIn && idx > 0 && features[idx - 1].isDeletable
-                    val canMoveDown = !isBuiltIn && idx < features.lastIndex - 1 && features[idx + 1].isDeletable
+                    val itemKey = item.instanceId.ifBlank { "${item.title}_${item.route}" }
+                    val isDragging = draggedKey == itemKey
+                    val currentIndex = displayFeatures.indexOfFirst { feature ->
+                        (feature.instanceId.ifBlank { "${feature.title}_${feature.route}" }) == itemKey
+                    }
 
-                    val moveUp: () -> Unit = {
-                        val updated = homeRpcInstances.toMutableList()
-                        val pos = updated.indexOfFirst { it.id == item.instanceId }
-                        if (pos > 0) {
-                            val moved = updated.removeAt(pos)
-                            updated.add(pos - 1, moved)
-                            Prefs.reorderHomeRpcInstances(updated)
+                    // Swap adjacent deletable items when dragged past half a row pitch
+                    val handleDragDelta: (Float) -> Unit = { deltaY ->
+                        if (item.isDeletable && currentIndex >= 0) {
+                            dragOffsetY += deltaY
+                            val threshold = itemPitchPx * 0.5f
+
+                            if (dragOffsetY > threshold && currentIndex < displayFeatures.lastIndex) {
+                                val targetIndex = currentIndex + 1
+                                if (displayFeatures[targetIndex].isDeletable) {
+                                    val moved = displayFeatures.removeAt(currentIndex)
+                                    displayFeatures.add(targetIndex, moved)
+                                    dragOffsetY -= itemPitchPx
+                                    persistCurrentOrder()
+                                }
+                            } else if (dragOffsetY < -threshold && currentIndex > 0) {
+                                val targetIndex = currentIndex - 1
+                                if (displayFeatures[targetIndex].isDeletable) {
+                                    val moved = displayFeatures.removeAt(currentIndex)
+                                    displayFeatures.add(targetIndex, moved)
+                                    dragOffsetY += itemPitchPx
+                                    persistCurrentOrder()
+                                }
+                            }
                         }
                     }
 
-                    val moveDown: () -> Unit = {
-                        val updated = homeRpcInstances.toMutableList()
-                        val pos = updated.indexOfFirst { it.id == item.instanceId }
-                        if (pos in 0 until updated.lastIndex) {
-                            val moved = updated.removeAt(pos)
-                            updated.add(pos + 1, moved)
-                            Prefs.reorderHomeRpcInstances(updated)
+                    val finishDrag: () -> Unit = {
+                        if (draggedKey == itemKey) {
+                            draggedKey = null
+                            dragOffsetY = 0f
+                            persistCurrentOrder()
                         }
                     }
 
                     val cardContent: @Composable () -> Unit = {
                         FeatureCard(
                             feature = item,
-                            canMoveUp = canMoveUp,
-                            canMoveDown = canMoveDown,
+                            isDragging = isDragging,
+                            dragOffsetY = if (isDragging) dragOffsetY else 0f,
+                            onDragStart = {
+                                draggedKey = itemKey
+                                dragOffsetY = 0f
+                            },
+                            onDragDelta = handleDragDelta,
+                            onDragEnd = finishDrag,
                             onToggle = {
                                 item.onCheckedChange(!item.isChecked)
                             },
-                            onDelete = {
-                                Prefs.deleteHomeRpcInstance(item.instanceId)
+                            onRename = {
+                                renamingTarget = item
                             },
-                            onMoveUp = moveUp,
-                            onMoveDown = moveDown,
+                            onDelete = {
+                                deleteInstance(item)
+                            },
                         )
                     }
 
@@ -395,7 +586,10 @@ fun Home(
                             tooltip = {
                                 RichTooltip(
                                     title = {
-                                        Text(item.title, style = MaterialTheme.typography.titleMedium)
+                                        Text(
+                                            item.title,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
                                     },
                                     text = { Text(item.tooltipText) },
                                     action = {
@@ -415,7 +609,43 @@ fun Home(
                 }
             }
 
-            // Add RPC type picker dialog
+            // Dialog to rename a user-added RPC instance
+            renamingTarget?.let { target ->
+                val nameState = rememberTextFieldState(initialText = target.title)
+                LaunchedEffect(target.instanceId, target.title) {
+                    nameState.setTextAndPlaceCursorAtEnd(target.title)
+                }
+
+                AlertDialog(
+                    onDismissRequest = { renamingTarget = null },
+                    title = { Text(text = "Rename RPC") },
+                    text = {
+                        TextField(
+                            state = nameState,
+                            label = { Text(text = "Name") },
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val updatedName = nameState.text.toString()
+                            val currentTarget = target
+                            renamingTarget = null
+                            renameInstance(currentTarget, updatedName)
+                        }) {
+                            Text(text = stringResource(R.string.save))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { renamingTarget = null }) {
+                            Text(text = stringResource(R.string.cancel))
+                        }
+                    },
+                )
+            }
+
+            // Dialog to pick an RPC type and create a new clone instance
             if (showAddRpcDialog) {
                 AlertDialog(
                     onDismissRequest = {
@@ -456,28 +686,27 @@ fun Home(
                             val type = selectedRpcType ?: return@TextButton
                             showAddRpcDialog = false
                             selectedRpcType = null
-                            val label = when (type) {
+                            val baseLabel = when (type) {
                                 "media_rpc" -> mediaRpcLabel
                                 "manual_rpc" -> manualRpcLabel
                                 "custom_rpc" -> customRpcLabel
                                 else -> type
                             }
+                            val existingCount = effectiveInstances.count { it.type == type }
+                            val label = if (existingCount > 0) "$baseLabel #${existingCount + 1}" else baseLabel
+
+                            // Assign OAuth slots in round-robin order across authenticated applications
                             val newInstance = RpcInstance(
-                                id = "${type}_clone_${System.currentTimeMillis()}",
+                                id = RpcInstance.newId(type),
                                 type = type,
                                 label = label,
+                                oauthIndex = Prefs.getRoundRobinOAuthIndex(existingCount),
                             )
-                            // Save clone to prefs and start its service
+                            if (pendingAddedInstances.none { it.id == newInstance.id }) {
+                                pendingAddedInstances.add(newInstance)
+                            }
                             Prefs.addHomeRpcInstance(newInstance)
-                            val rpcType = when (newInstance.type) {
-                                "media_rpc" -> RpcType.MediaRpc
-                                "manual_rpc" -> RpcType.ManualRpc
-                                "custom_rpc" -> RpcType.CustomRpc
-                                else -> null
-                            }
-                            if (rpcType != null) {
-                                rpcManager.switchTo(setOf(rpcType), add = true)
-                            }
+                            prefsRefreshCounter++
                         }) {
                             Text(text = stringResource(android.R.string.ok))
                         }
@@ -493,6 +722,7 @@ fun Home(
                 )
             }
 
+            // Show release update dialog when an update check finishes with a newer version
             when (state) {
                 is HomeScreenState.LoadingCompleted -> {
                     if (showUpdateDialog) {
@@ -527,6 +757,9 @@ fun Home(
     }
 }
 
+/**
+ * Single selectable RPC type row inside the "Add RPC" dialog.
+ */
 @Composable
 private fun RpcTypeRow(
     type: String,
@@ -556,15 +789,21 @@ private fun RpcTypeRow(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 }
 
+/**
+ * Individual Home feature/clone row supporting click navigation, toggle switch,
+ * rename, long-press drag reordering, and deletion.
+ */
 @Composable
 private fun FeatureCard(
     feature: HomeFeature,
-    canMoveUp: Boolean,
-    canMoveDown: Boolean,
+    isDragging: Boolean = false,
+    dragOffsetY: Float = 0f,
+    onDragStart: () -> Unit = {},
+    onDragDelta: (Float) -> Unit = {},
+    onDragEnd: () -> Unit = {},
     onToggle: () -> Unit,
+    onRename: () -> Unit,
     onDelete: () -> Unit,
-    onMoveUp: () -> Unit,
-    onMoveDown: () -> Unit,
 ) {
     val brush = if (feature.isChecked) {
         Brush.linearGradient(
@@ -584,9 +823,19 @@ private fun FeatureCard(
         )
     }
 
+    val contentColor = if (feature.isChecked) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .zIndex(if (isDragging) 1f else 0f)
+            .graphicsLayer {
+                translationY = if (isDragging) dragOffsetY else 0f
+            }
             .fillMaxWidth()
             .height(84.dp)
             .clip(RoundedCornerShape(24.dp))
@@ -594,63 +843,104 @@ private fun FeatureCard(
             .clickable {
                 feature.route?.let { feature.onClick(it) }
             }
-            .padding(start = 22.dp, end = 18.dp, top = 16.dp, bottom = 16.dp),
+            .padding(start = 22.dp, end = 12.dp, top = 16.dp, bottom = 16.dp),
     ) {
         Icon(
             painter = painterResource(id = feature.icon),
             contentDescription = null,
             modifier = Modifier.size(40.dp),
         )
-        Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = feature.title,
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500),
-            color = if (feature.isChecked) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onSecondaryContainer,
+            color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
         if (feature.showSwitch) {
-            Spacer(modifier = Modifier.width(12.dp))
-            KSwitch(
-                checked = feature.isChecked,
-                modifier = Modifier.padding(start = 12.dp),
-                onClick = onToggle,
-            )
-        }
-        // Reorder and delete controls for user-added cloned RPC instances
-        if (feature.isDeletable && !feature.isAddButton) {
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.height(48.dp),
             ) {
-                if (canMoveUp) {
-                    IconButton(
-                        onClick = onMoveUp,
-                        modifier = Modifier.size(32.dp),
-                    ) {
-                        Text(text = "\u2191")
-                    }
-                }
-                if (canMoveDown) {
-                    IconButton(
-                        onClick = onMoveDown,
-                        modifier = Modifier.size(32.dp),
-                    ) {
-                        Text(text = "\u2193")
-                    }
-                }
+                KSwitch(
+                    checked = feature.isChecked,
+                    onClick = onToggle,
+                )
             }
-            Spacer(modifier = Modifier.width(12.dp))
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier.size(36.dp),
+        }
+        // Rename, long-press drag handle, and delete controls for added RPC instances
+        if (feature.isDeletable && !feature.isAddButton) {
+            Spacer(modifier = Modifier.width(4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                Text(text = "\u2716", color = MaterialTheme.colorScheme.error)
+                IconButton(
+                    onClick = onRename,
+                    modifier = Modifier.size(36.dp),
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        Text(
+                            text = "✎",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            color = contentColor,
+                        )
+                    }
+                }
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .pointerInput(feature.instanceId) {
+                            detectDragGesturesAfterLongPress(
+                                onDragStart = { onDragStart() },
+                                onDragEnd = { onDragEnd() },
+                                onDragCancel = { onDragEnd() },
+                                onDrag = { change, dragAmount ->
+                                    change.consume()
+                                    onDragDelta(dragAmount.y)
+                                },
+                            )
+                        },
+                ) {
+                    Text(
+                        text = "☰",
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center,
+                        color = contentColor,
+                    )
+                }
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.size(36.dp),
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        Text(
+                            text = "\u2716",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
             }
         }
     }
 }
 
+/**
+ * Registers a temporary [LifecycleEventObserver] for the current [LocalLifecycleOwner].
+ */
 @Composable
 fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {
     val eventHandler = rememberUpdatedState(onEvent)
@@ -676,47 +966,18 @@ fun HomeScreenPreview() {
         state = HomeScreenState.Loading,
         checkForUpdates = {},
         showBadge = true,
-        features = fakeFeatures,
         user = fakeUser,
-        navigateToProfile = { },
-        navigateToStyleAndAppearance = { },
-        navigateToLanguages = { },
-        navigateToAbout = { },
-        navigateToRpcSettings = { }) {
-
-    }
-}
-
-val fakeFeatures = listOf(
-    HomeFeature(
-        title = "Media RPC",
-        icon = R.drawable.ic_media_rpc,
-        route = "media_rpc_route",
-        shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
-        tooltipText = ToolTipContent.MEDIA_RPC_DOCS
-    ),
-    HomeFeature(
-        title = "App Detection",
-        icon = R.drawable.ic_manual_rpc,
-        route = "app_detection_route",
-        shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-        tooltipText = ToolTipContent.APP_DETECTION_DOCS
-    ),
-    HomeFeature(
-        title = "Manual RPC",
-        icon = R.drawable.ic_manual_rpc,
-        route = "manual_rpc_route",
-        shape = RoundedCornerShape(20.dp, 44.dp, 20.dp, 44.dp),
-        tooltipText = ToolTipContent.MANUAL_RPC_DOCS
-    ),
-    HomeFeature(
-        title = "Custom RPC",
-        icon = R.drawable.ic_custom_rpc,
-        route = "custom_rpc_route",
-        shape = RoundedCornerShape(44.dp, 20.dp, 44.dp, 20.dp),
-        tooltipText = ToolTipContent.CUSTOM_RPC_DOCS
+        navigateToProfile = {},
+        navigateToStyleAndAppearance = {},
+        navigateToLanguages = {},
+        navigateToAbout = {},
+        navigateToRpcSettings = {},
+        navigateToLogsScreen = {},
+        navigateTo = {},
+        hasUsageAccess = remember { mutableStateOf(false) },
+        hasNotificationAccess = remember { mutableStateOf(false) },
     )
-)
+}
 
 val fakeUser = User(
     accentColor = null,

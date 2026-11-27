@@ -5,20 +5,31 @@
  *  *  * ToolTipTexts.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
+ *  *****************************************************************
  *
  */
 
 package com.my.kizzy.feature_home.feature
 
+/**
+ * Documentation descriptions and URLs shown inside Home feature tooltips.
+ */
 object ToolTipContent {
     private const val BASE_DOCS_URL = "https://kizzydocs.vercel.app/rpc"
-    const val APP_DETECTION_DOCS = "Kizzy allows you to share your current activity on Discord by detecting what app you&apos;re using on your device."
-    const val MEDIA_RPC_DOCS = "Kizzy allows you to share your current media activity on Discord, such as the song or video you&apos;re currently listening to or watching."
-    const val CONSOLE_RPC_DOCS = "Kizzy allows you to use some predefined presets to set your presence on Discord."
-    const val CUSTOM_RPC_DOCS = "Kizzy allows you to create your own fully customisable rich presence for Discord."
-    const val MANUAL_RPC_DOCS = "Manual RPC is a feature in Kizzy that constantly switches between Apps RPC and Media RPC."
+
+    // Tooltip body copy for RPC features
+    const val APP_DETECTION_DOCS =
+        "Kizzy allows you to share your current activity on Discord by detecting what app you&apos;re using on your device."
+    const val MEDIA_RPC_DOCS =
+        "Kizzy allows you to share your current media activity on Discord, such as the song or video you&apos;re currently listening to or watching."
+    const val CONSOLE_RPC_DOCS =
+        "Kizzy allows you to use some predefined presets to set your presence on Discord."
+    const val CUSTOM_RPC_DOCS =
+        "Kizzy allows you to create your own fully customisable rich presence for Discord."
+    const val MANUAL_RPC_DOCS =
+        "Manual RPC is a feature in Kizzy that constantly switches between Apps RPC and Media RPC."
+
+    // External documentation links for each RPC feature
     const val APP_DETECTION_DOCS_LINK = "$BASE_DOCS_URL/app"
     const val MEDIA_RPC_DOCS_LINK = "$BASE_DOCS_URL/media"
     const val CONSOLE_RPC_DOCS_LINK = "$BASE_DOCS_URL/console"
