@@ -23,10 +23,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.androidx.browser)
+    implementation(libs.activity.compose)
 
     implementation(projects.color)
     implementation(projects.theme)
     implementation(projects.featureRpcBase)
     implementation(projects.common.components)
-    implementation(libs.hilt.navigation.compose)
 }

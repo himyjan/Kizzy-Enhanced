@@ -22,7 +22,6 @@ dependencies {
     implementation(libs.coil.network)
     implementation(libs.bundles.network.ktor)
     implementation(libs.activity.compose)
-    implementation(libs.compose.navigation)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.browser)
     implementation(libs.material.icons.extended)
