@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Cached
 import androidx.compose.material.icons.filled.Storage
@@ -34,7 +35,6 @@ import androidx.compose.material.icons.outlined.HighQuality
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material.icons.outlined.RemoveRedEye
@@ -344,7 +344,7 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.discord_leaderboard),
                     description = stringResource(id = R.string.discord_leaderboard_desc),
-                    icon = Icons.Outlined.List,
+                    icon = Icons.AutoMirrored.Outlined.List,
                 ) {
                     navigateToLeaderboardScreen?.invoke()
                 }
