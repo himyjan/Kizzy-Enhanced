@@ -50,7 +50,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -1520,27 +1520,24 @@ fun RpcSettings(
             },
             text = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
+                    TextField(
                         value = appLabelInput,
                         onValueChange = { appLabelInput = it },
                         label = { Text("Name") },
-                        singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
+                    TextField(
                         value = appClientIdInput,
                         onValueChange = { appClientIdInput = it },
                         label = { Text("Application Client ID") },
-                        singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
+                    TextField(
                         value = appTokenInput,
                         onValueChange = { appTokenInput = it },
                         label = { Text("Gateway token (optional)") },
-                        singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Spacer(modifier = Modifier.height(8.dp))

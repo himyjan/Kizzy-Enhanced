@@ -67,7 +67,7 @@ class MultiRpcManager @Inject constructor(
             else -> return null
         }
         groups[slotId]?.instances[instanceId]?.let { return it }
-        val credential = instance?.oauthIndex?.takeIf { it > 0 }
+        val credential = instance.oauthIndex?.takeIf { it > 0 }
             ?.let { Prefs.getOAuthApp(it) }
             ?: credentialForSlot("2")
             ?: return null

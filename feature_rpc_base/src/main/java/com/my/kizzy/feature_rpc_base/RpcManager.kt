@@ -387,7 +387,7 @@ class RpcManager @Inject constructor(
             action = Constants.ACTION_REMOVE_INSTANCE
             putExtra(Constants.EXTRA_INSTANCE_ID, instanceId)
         }
-        runCatching { context.startService(intent) }
+        context.startService(intent)
 
         // When no instance of this type is left, tear the service down entirely.
         if (remaining.none { typeFor(it) == rpcType }) {
@@ -435,7 +435,7 @@ class RpcManager @Inject constructor(
             context.startForegroundService(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start instance $instanceId", e)
-            runCatching { context.startService(intent) }
+            context.startService(intent)
         }
     }
 
@@ -631,7 +631,7 @@ class RpcManager @Inject constructor(
     private fun persistActiveRpcTypes(types: Set<RpcType>) {
         val filtered = types - RpcType.None
         Prefs[Prefs.ACTIVE_RPC_TYPES] = filtered.joinToString(",") { it.name }
-        Prefs[Prefs.ACTIVE_RPC_TYPE] = filtered.firstOrNull()?.name ?: ""
+        Prefs[Prefs.ACTIVE_RPC_TYPE] = filtered.firstOrNull()?.name.orEmpty()
         Prefs[Prefs.MEDIA_RPC_ENABLED] = RpcType.MediaRpc in filtered
         AppUtils.invalidateRunningServicesCache()
     }

@@ -73,7 +73,6 @@ import com.my.kizzy.ui.theme.DISCORD_YELLOW
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.layout.offset
 
 const val NITRO_ICON = "https://cdn.discordapp.com/badge-icons/2ba85e8026a8614b640c2837bcdfe21b.png"
@@ -395,26 +394,22 @@ fun ProfileCard(
                     buildAnnotatedBio(bio, linkColor, textColor)
                 }
 
-                ClickableText(
+                Text(
                     text = annotatedBio,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = if (bioExpanded) Int.MAX_VALUE else 5,
                     overflow = TextOverflow.Ellipsis,
                     onTextLayout = { res: TextLayoutResult -> bioOverflow = res.hasVisualOverflow },
-                    modifier = Modifier.padding(top = 4.dp),
-                    onClick = { offset ->
-                        val urlRegex = Regex("https?://[^\\s]+")
-                        var lastIndex = 0
-                        urlRegex.findAll(annotatedBio.text).forEach { matchResult ->
-                            val start = matchResult.range.first
-                            val end = matchResult.range.last + 1
-                            if (offset in start until end) {
-                                val url = annotatedBio.text.substring(start, end)
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .clickable {
+                            val urlRegex = Regex("https?://[^\\s]+")
+                            val match = urlRegex.find(annotatedBio.text)
+                            if (match != null) {
+                                val url = annotatedBio.text.substring(match.range.first, match.range.last + 1)
                                 uriHandler.openUri(url)
                             }
-                            lastIndex = end
-                        }
-                    },
+                        },
                 )
                 if (bioOverflow) {
                     Text(
