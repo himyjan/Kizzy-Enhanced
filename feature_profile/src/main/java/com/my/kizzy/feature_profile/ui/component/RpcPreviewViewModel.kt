@@ -4,30 +4,38 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.data.rpc.LastPresence
 import com.my.kizzy.domain.model.rpc.RpcConfig
-import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
 
 /**
  * Live state for the RPC preview.
  *
- * The preview receives its [RpcConfig] through the navigation route, so the route
- * only carries a snapshot taken when the page was opened. The media service keeps
- * publishing after that: the next song, a seek and the pause state all change
- * without touching the route. For a running Media RPC the fields are rebuilt from
- * the state repository so the preview follows the current track (and freezes when
- * the music is paused). Every other RPC type keeps using the route snapshot.
+ * The route only carries a snapshot taken when the page was opened. Media RPC
+ * keeps publishing after that - next track, seek, pause and replay after a long
+ * idle all change the presence without touching the route. One flow (started
+ * once with `stateIn`) merges the route snapshot, the latest presence published
+ * by the services and the live media state repository, so the preview follows
+ * whichever instance is currently active and never freezes on an old snapshot.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(FlowPreview::class)
 @HiltViewModel(assistedFactory = RpcPreviewViewModel.Factory::class)
 class RpcPreviewViewModel @AssistedInject constructor(
-    private val stateRepository: KizzyStateRepository,
+    stateRepository: KizzyStateRepository,
+    rpcManager: RpcManager,
     @Assisted rawConfig: String,
 ) : ViewModel() {
     @AssistedFactory
@@ -42,44 +50,69 @@ class RpcPreviewViewModel @AssistedInject constructor(
             }.getOrNull()
         }
 
-    val rpcConfig: StateFlow<RpcConfig?> = if (AppUtils.mediaRpcRunning()) {
-        liveMediaConfig(passedConfig)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, passedConfig)
-    } else {
-        MutableStateFlow(passedConfig)
+    private val mediaState: Flow<MediaState> = combine(
+        stateRepository.currentTrackTitle,
+        stateRepository.currentArtist,
+        stateRepository.isPaused,
+        stateRepository.currentTimestampStart,
+        stateRepository.currentTimestampStop,
+    ) { title, artist, isPaused, tsStart, tsStop ->
+        MediaState(title, artist, isPaused, tsStart, tsStop)
     }
 
-    private fun liveMediaConfig(
-        base: RpcConfig?,
-    ): Flow<RpcConfig> =
-        combine(
-            stateRepository.currentTrackTitle,
-            stateRepository.currentArtist,
-            stateRepository.isPaused,
-            stateRepository.currentTimestampStart,
-            stateRepository.currentTimestampStop,
-        ) { title, artist, isPaused, tsStart, tsStop ->
-            combine(
-                stateRepository.currentLargeImageUrl,
-                stateRepository.currentSmallImageUrl,
-                stateRepository.pausedPositionMs,
-            ) { largeImage, smallImage, pausedPositionMs ->
-                val resolvedBase = base
-                    ?: LastPresence.media()
-                    ?: RpcConfig(name = "Media RPC", details = "Playing media", type = "2")
-                resolvedBase.copy(
-                    name = resolvedBase.name.copyIfNotEmpty(title ?: resolvedBase.name),
-                    details = resolvedBase.details.copyIfNotEmpty(artist ?: resolvedBase.details),
-                    state = resolvedBase.state.copyIfNotEmpty(artist ?: resolvedBase.state),
-                    timestampsStart = tsStart?.toString() ?: resolvedBase.timestampsStart,
-                    timestampsStop = tsStop?.toString() ?: resolvedBase.timestampsStop,
-                    largeImg = largeImage ?: resolvedBase.largeImg,
-                    smallImg = smallImage ?: resolvedBase.smallImg,
-                    paused = isPaused,
-                    pausedPositionMs = pausedPositionMs,
-                )
-            }
-        }.flatMapLatest { it }
+    private val mediaImages: Flow<MediaImages> = combine(
+        stateRepository.currentLargeImageUrl,
+        stateRepository.currentSmallImageUrl,
+        stateRepository.pausedPositionMs,
+    ) { large, small, pausedPosition ->
+        MediaImages(large, small, pausedPosition)
+    }
+
+    val rpcConfig: StateFlow<RpcConfig?> =
+        combine(rpcManager.presenceConfigs, mediaState, mediaImages) { configs, media, images ->
+            // The preview is opened from the profile activity card; prefer the
+            // presence currently published by the running service, then the
+            // last persisted media presence, then the route snapshot.
+            val fromService = configs.values.firstOrNull()
+            val base = fromService
+                ?: passedConfig?.takeIf { media.hasMetadata() }
+                ?: LastPresence.media()
+                ?: LastPresence.experimental()
+                ?: passedConfig
+            if (base == null) return@combine null
+
+            base.copy(
+                name = base.name.copyIfNotEmpty(media.title),
+                details = base.details.copyIfNotEmpty(media.artist),
+                state = base.state.copyIfNotEmpty(media.artist),
+                timestampsStart = media.tsStart?.toString() ?: base.timestampsStart,
+                timestampsStop = media.tsStop?.toString() ?: base.timestampsStop,
+                largeImg = images.large ?: base.largeImg,
+                smallImg = images.small ?: base.smallImg,
+                paused = media.isPaused,
+                pausedPositionMs = images.pausedPosition,
+            )
+        }
+            .distinctUntilChanged()
+            .debounce(100.milliseconds)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private data class MediaState(
+        val title: String?,
+        val artist: String?,
+        val isPaused: Boolean,
+        val tsStart: Long?,
+        val tsStop: Long?,
+    ) {
+        fun hasMetadata(): Boolean =
+            !title.isNullOrBlank() || !artist.isNullOrBlank() || tsStart != null || tsStop != null
+    }
+
+    private data class MediaImages(
+        val large: String?,
+        val small: String?,
+        val pausedPosition: Long?,
+    )
 
     private fun String?.copyIfNotEmpty(newValue: String?): String {
         if (newValue?.isNotBlank() == true) return newValue

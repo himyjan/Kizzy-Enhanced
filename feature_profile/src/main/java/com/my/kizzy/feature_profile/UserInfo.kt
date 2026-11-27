@@ -31,7 +31,6 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -86,12 +85,7 @@ suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
         }
         socket.connect()
         deferred.await()
-    }?.also { user ->
-        Prefs[USER_ID] = user.id
-        Prefs[USER_BIO] = user.bio
-        Prefs[USER_NITRO] = user.nitro
-        Prefs[USER_DATA] = Json.encodeToString(user)
-    }
+    }?.also(::persistDiscordUser)
 
 /** Legacy callback variant kept for callers outside this module. */
 suspend fun getUserInfo(token: String, onInfoSaved: () -> Unit) {
@@ -101,6 +95,26 @@ suspend fun getUserInfo(token: String, onInfoSaved: () -> Unit) {
 private val restJson = Json {
     ignoreUnknownKeys = true
     coerceInputValues = true
+}
+
+/**
+ * Persists the identity fields the profile screen reads.
+ *
+ * Discord's REST `/users/@me` does not return `bio`, while the client profile
+ * endpoint does. A later REST refresh must therefore never erase a bio that
+ * was fetched previously. Keeping this in one place also guarantees that
+ * both the gateway (account token) and the OAuth2 REST paths write USER_DATA
+ * and the dedicated USER_BIO mirror.
+ */
+fun persistDiscordUser(user: User) {
+    val merged = user.copy(
+        bio = user.bio?.takeIf { it.isNotBlank() }
+            ?: (Prefs[USER_BIO, ""]).takeIf { it.isNotBlank() }
+    )
+    Prefs[USER_ID] = merged.id
+    Prefs[USER_BIO] = merged.bio
+    Prefs[USER_NITRO] = merged.nitro
+    Prefs[USER_DATA] = restJson.encodeToString(merged)
 }
 
 /**
@@ -155,10 +169,7 @@ suspend fun fetchDiscordUser(token: String): User? {
 
             if (user.id.isNullOrBlank()) continue
 
-            Prefs[USER_ID] = user.id
-            Prefs[USER_BIO] = user.bio
-            Prefs[USER_NITRO] = user.nitro
-            Prefs[USER_DATA] = restJson.encodeToString(user)
+            persistDiscordUser(user)
             return user
         }
     }

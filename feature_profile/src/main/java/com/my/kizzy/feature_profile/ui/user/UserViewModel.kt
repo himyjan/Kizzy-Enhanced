@@ -12,6 +12,7 @@ import com.my.kizzy.domain.use_case.get_user.GetUserUseCase
 import com.my.kizzy.feature_profile.fetchDiscordUser
 import com.my.kizzy.feature_profile.fetchDiscordUserProfile
 import com.my.kizzy.feature_profile.fetchUserInfo
+import com.my.kizzy.feature_profile.persistDiscordUser
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
 import com.my.kizzy.feature_rpc_base.services.AppDetectionService
@@ -130,7 +131,7 @@ class UserViewModel @Inject constructor(
             }
             if (currentUser?.bio == bio) return@launch
             val merged = (currentUser ?: baseUser).copy(bio = bio)
-            Prefs[Prefs.USER_DATA] = Json.encodeToString(merged)
+            persistDiscordUser(merged)
             _state.value = UserState.LoadingCompleted(merged, currentRpcConfigs())
         }
     }
@@ -171,7 +172,7 @@ class UserViewModel @Inject constructor(
                 bio = fresh.bio?.takeIf { it.isNotBlank() } ?: currentUser.bio,
             )
             if (merged == currentUser) return@launch
-            Prefs[Prefs.USER_DATA] = Json.encodeToString(merged)
+            persistDiscordUser(merged)
             _state.value = UserState.LoadingCompleted(merged, currentRpcConfigs())
         }
     }
@@ -217,7 +218,7 @@ class UserViewModel @Inject constructor(
                 val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
                     fresh.copy(bio = profileBio)
                 } ?: fresh
-                Prefs[Prefs.USER_DATA] = Json.encodeToString(withBio)
+                persistDiscordUser(withBio)
                 _state.value = UserState.LoadingCompleted(withBio, currentRpcConfigs())
                 return
             }
@@ -232,6 +233,7 @@ class UserViewModel @Inject constructor(
                 val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
                     fresh.copy(bio = profileBio)
                 } ?: fresh
+                persistDiscordUser(withBio)
                 _state.value = UserState.LoadingCompleted(withBio, currentRpcConfigs())
                 return
             }

@@ -67,9 +67,9 @@ val BUILT_IN_INSTANCES: List<RpcInstance> = listOf(
  * string resources; user-created clones return their stored [label]. */
 fun RpcInstance.displayLabel(context: Context): String {
     return when (id) {
-        RPC_INSTANCE_MEDIA -> context.getString(com.my.kizzy.resources.R.string.rpc_instance_media_rpc)
-        RPC_INSTANCE_MANUAL -> context.getString(com.my.kizzy.resources.R.string.rpc_instance_manual_rpc)
-        RPC_INSTANCE_CUSTOM -> context.getString(com.my.kizzy.resources.R.string.rpc_instance_custom_rpc)
+        RPC_INSTANCE_MEDIA -> context.getString(com.my.kizzy.resources.R.string.main_mediaRpc)
+        RPC_INSTANCE_MANUAL -> context.getString(com.my.kizzy.resources.R.string.main_ManualRpc)
+        RPC_INSTANCE_CUSTOM -> context.getString(com.my.kizzy.resources.R.string.main_customRpc)
         else -> label
     }
 }

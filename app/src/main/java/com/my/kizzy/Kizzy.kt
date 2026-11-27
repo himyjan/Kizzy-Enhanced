@@ -365,7 +365,9 @@ internal fun Kizzy(
 
                 // Built-in Manual RPC screen
                 entry<AppRoute.ManualRpc> {
-                    val viewModel = hiltViewModel<ManualRpcViewmodel>()
+                    val viewModel = hiltViewModel<ManualRpcViewmodel, ManualRpcViewmodel.Factory>(
+                        creationCallback = { factory -> factory.create(null) }
+                    )
                     val state by viewModel.uiState.collectAsState()
                     ManualRpcScreen(
                         state = state,
@@ -395,7 +397,9 @@ internal fun Kizzy(
 
                 // App picker for Manual RPC
                 entry<AppRoute.ManualRpcApps> {
-                    val viewModel = hiltViewModel<ManualRpcViewmodel>()
+                    val viewModel = hiltViewModel<ManualRpcViewmodel, ManualRpcViewmodel.Factory>(
+                        creationCallback = { factory -> factory.create(null) }
+                    )
                     val state by viewModel.uiState.collectAsState()
                     ManualRpcAppsScreen(
                         onBackPressed = { goBack() },
