@@ -1,6 +1,6 @@
 [versions]
 # project level
-gradle = "9.9.1"
+gradle = "9.9.2"
 version-name = "6.2-enhanced-0"
 version-code = "14"
 
@@ -16,12 +16,11 @@ androidxMacroBenchmark = "1.6.0-alpha02"
 app-compat = "1.8.0"
 coil = "3.6.3"
 compose-bom = "2026.11.01"
-compose-navigation = "2.10.2"
 core-ktx = "1.20.0-alpha01"
 datastore-preferences = "1.3.0"
 guava-listenablefuture = "9999.0-empty-to-avoid-conflict-with-guava"
 hilt = "2.60.1"
-hilt-navigation-compose = "1.4.0"
+hilt-jetpack = "1.4.0"
 hiltWork = "1.4.0"
 jakarta-inject = "2.0.1"
 junit = "4.13.2"
@@ -31,17 +30,23 @@ kotlinx-serialization-json = "1.13.0"
 ksp = "2.3.14"
 ktor = "3.6.2"
 leakcanary = "3.0-alpha-9"
+lifecycle-viewmodel-navigation3 = "2.11.1"
+material3 = "1.5.0"
+navigation3 = "1.3.0-alpha05"
 tink-android = "1.24.0"
 workmanager = "2.12.0"
-material3 = "1.5.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 # Gradle plugins
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle-viewmodel-navigation3" }
 androidx-macro-benchmark = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidxMacroBenchmark" }
 androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 androidx-test-ext-junit = "androidx.test.ext:junit:1.4.0-alpha04"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.4.1"
 app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
@@ -54,7 +59,6 @@ coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 # Compose BOM (manages all androidx.compose.* versions)
 compose-bom = { module = "androidx.compose:compose-bom-alpha", version.ref = "compose-bom" }
-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
 # Compose — versions from BOM
 compose-ui = { module = "androidx.compose.ui:ui" }
@@ -69,7 +73,7 @@ guava-listenablefuture = { module = "com.google.guava:listenablefuture", version
 # Hilt
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+hiltLifecycleViewmodelCompose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hilt-jetpack" }
 hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 # Jakarta
 jakarta-inject = { module = "jakarta.inject:jakarta.inject-api", version.ref = "jakarta-inject" }
@@ -101,7 +105,6 @@ tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "
 tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-tracing" }
 tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workmanager" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

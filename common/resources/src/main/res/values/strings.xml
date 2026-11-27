@@ -3,6 +3,15 @@
     <string name="app_name_full">Kizzy Enhanced</string>
     <string name="qs_tile_label">Kizzy Quickie</string>
 
+    <!-- Built-in RPC instance labels -->
+    <string name="rpc_instance_media_rpc">Media RPC</string>
+    <string name="rpc_instance_manual_rpc">Manual RPC</string>
+    <string name="rpc_instance_custom_rpc">Custom RPC</string>
+
+    <!-- Home screen -->
+    <string name="home_add_rpc">Add RPC</string>
+    <string name="home_add_rpc_tooltip">Add a new RPC instance (Media, Manual, or Custom)</string>
+
     <!-- Activities -->
     <string name="activity_name">Activity Name</string>
     <string name="activity_details">Activity Details</string>
