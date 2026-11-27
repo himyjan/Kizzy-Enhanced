@@ -267,17 +267,18 @@ class KizzyRPC @Inject constructor(
         //   Gateway -> the account token in TOKEN
         //   OAuth2  -> the application OAuth2 token in DISCORD_OAUTH2_ACCESS_TOKEN
         // The two are never mixed, so switching methods always uses the right one.
-        val accountToken = Prefs[Prefs.TOKEN, ""]
-        val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
+        val accountToken = Prefs[Prefs.TOKEN, ""].trim()
+        val oauthToken = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].trim()
         val connectionMethod = Prefs[Prefs.RPC_CONNECTION_METHOD, Prefs.RPC_CONNECTION_METHOD_OAUTH2]
 
         val isOAuth2Method = connectionMethod == Prefs.RPC_CONNECTION_METHOD_OAUTH2
         // Social SDK OAuth2 tokens are sent as "Bearer <token>" in IDENTIFY,
         // exactly like Metrolist. Gateway account tokens are sent raw.
         val newToken = when {
-            isOAuth2Method && oauthToken.isNotBlank() -> "Bearer $oauthToken"
-            isOAuth2Method -> ""
-            else -> accountToken
+            isOAuth2Method && oauthToken.isNotBlank() -> if (oauthToken.startsWith("Bearer ")) oauthToken else "Bearer $oauthToken"
+            accountToken.isNotBlank() -> accountToken
+            oauthToken.isNotBlank() -> if (oauthToken.startsWith("Bearer ")) oauthToken else "Bearer $oauthToken"
+            else -> ""
         }
 
         logger.d("KizzyRPC", "refreshFromPrefs: connectionMethod=$connectionMethod tokenLen=${newToken.length}")
@@ -829,6 +830,9 @@ class KizzyRPC @Inject constructor(
         var result = this
         // Discord silently drops activities containing fullwidth brackets.
         result = result.replace("【", "[").replace("】", "]")
+        // Discord rejects activity fields longer than 128 chars (name, details,
+        // state, large_text, small_text). Truncate so the whole presence
+        // doesn't get dropped.
         return if (result.length > 128) {
             result.substring(0, 128)
         } else {
@@ -874,7 +878,6 @@ class KizzyRPC @Inject constructor(
                     details = details?.sanitize(),
                     // For manual RPC, use url field as details_url if set.
                     // Links do not depend on whether cover art is shown.
-                    detailsUrl = if (type != 1) sanitizeFieldUrl(url) else null,
                     party = party.takeIf { party != null },
                     type = type,
                     platform = platform?.sanitize(),
@@ -883,18 +886,17 @@ class KizzyRPC @Inject constructor(
                         end = stopTimestamps
                     ).takeIf { startTimestamps != null || stopTimestamps != null },
                     assets = Assets(
-                        largeImage = largeImage?.resolveImage(kizzyRepository),
-                        smallImage = smallImage?.resolveImage(kizzyRepository),
-                        largeText = largeText?.sanitize(),
-                        smallText = smallText?.sanitize(),
+                        largeImage = largeImage?.resolveImage(kizzyRepository)?.takeIf { it.isNotBlank() },
+                        smallImage = smallImage?.resolveImage(kizzyRepository)?.takeIf { it.isNotBlank() },
+                        largeText = largeText?.sanitize()?.takeIf { it.isNotBlank() },
+                        smallText = smallText?.sanitize()?.takeIf { it.isNotBlank() },
                         // For manual RPC, use url as large_url if set.
                         largeUrl = if (type != 1) sanitizeFieldUrl(url) else null,
-                        smallUrl = smallUrl?.sanitize()
+                        smallUrl = sanitizeFieldUrl(smallUrl)
                     ).takeIf { largeImage != null || smallImage != null },
                     // Client-presence format: labels in buttons, urls in metadata.
                     buttons = cleanButtons?.map { it.label },
                     metadata = cleanButtons?.let { Metadata(buttonUrls = it.map { b -> b.url }) },
-                    applicationId = applicationIdNumber.takeIf { it.isNotEmpty() } ?: Constants.APPLICATION_ID,
                     // Top-level url is only valid for Streaming (type 1).
                     url = sanitizeStreamUrl(url, type)
                 )
@@ -1172,8 +1174,6 @@ class KizzyRPC @Inject constructor(
                         name = commonRpc.name.sanitize(),
                         details = commonRpc.details?.takeIf { it.isNotEmpty() }?.sanitize(),
                         state = commonRpc.state?.takeIf { it.isNotEmpty() }?.sanitize(),
-                        detailsUrl = sanitizeFieldUrl(commonRpc.detailsUrl),
-                        stateUrl = sanitizeFieldUrl(commonRpc.stateUrl),
                         type = activityType,
                         platform = commonRpc.platform?.sanitize(),
                         timestamps = time,
@@ -1189,13 +1189,11 @@ class KizzyRPC @Inject constructor(
                         party = party.takeIf { party != null },
                         // Client-presence format: labels in buttons, urls in metadata.
                         buttons = cleanButtons?.map { it.label },
-                        metadata = cleanButtons?.let { Metadata(buttonUrls = it.map { b -> b.url }) },
-                        applicationId = applicationIdNumber.takeIf { it.isNotEmpty() }
-                            ?: Constants.APPLICATION_ID
+                        metadata = cleanButtons?.let { Metadata(buttonUrls = it.map { b -> b.url }) }
                     )
                 ),
-                // The user is actively doing something, so they are not AFK. Sending
-                // `afk = true` made Discord render the profile as idle.
+                applicationId = applicationIdNumber.takeIf { it.isNotEmpty() }
+                    ?: Constants.APPLICATION_ID,
                 afk = false,
                 since = null,
                 status = effectiveStatus(status)

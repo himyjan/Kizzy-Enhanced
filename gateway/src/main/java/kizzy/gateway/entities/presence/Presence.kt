@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class Presence(
     @SerialName("activities")
     val activities: List<Activity?>?,
+    @SerialName("application_id")
+    val applicationId: String? = null,
     @SerialName("afk")
     val afk: Boolean? = true,
     @SerialName("since")

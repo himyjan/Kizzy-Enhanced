@@ -18,6 +18,8 @@ import kotlinx.serialization.Serializable
 // data class used for saving/loading/previewing rpc in the app
 @Serializable
 data class RpcConfig(
+    @SerialName("instanceId")
+    val instanceId: String = "",
     @SerialName("button1")
     val button1: String = "",
     @SerialName("button1link")

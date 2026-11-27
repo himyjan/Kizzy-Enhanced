@@ -170,7 +170,8 @@ fun ProfileCard(
     type: String = stringResource(id = R.string.user_profile_rpc_name),
     rpcConfigs: List<RpcConfig> = emptyList(),
     showTs: Boolean = true,
-    onAvatarClick: () -> Unit = {}
+    onAvatarClick: () -> Unit = {},
+    onRpcInstanceClick: ((String?) -> Unit)? = null
 ) {
     if (user == null) return
 
@@ -438,6 +439,7 @@ fun ProfileCard(
                         rpcConfig = cfg,
                         showTs = showTs,
                         special = user.special,
+                        onInstanceClick = { onRpcInstanceClick?.invoke(it) }
                     )
                 }
             }

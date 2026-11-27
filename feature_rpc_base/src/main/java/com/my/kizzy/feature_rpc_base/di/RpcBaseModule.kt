@@ -47,15 +47,31 @@ object RpcBaseModule {
         @ApplicationContext context: Context,
         notificationManager: NotificationManager
     ): Notification.Builder {
+        // IMPORTANCE_DEFAULT keeps each RPC instance's notification visible as
+        // its own card. IMPORTANCE_LOW makes Android auto-group them into a
+        // single "N notifications" summary (the collapsed "3" badge).
         val channel = NotificationChannel(
             Constants.CHANNEL_ID,
             Constants.CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_LOW
+            NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
             description = Constants.CHANNEL_DESCRIPTION
-            setShowBadge(false)
+            setShowBadge(true)
         }
         notificationManager.createNotificationChannel(channel)
+
+        // Separate channel for per-instance RPC notifications with DEFAULT
+        // importance so Android does not auto-group them into one card.
+        val instanceChannel = NotificationChannel(
+            Constants.CHANNEL_ID_RPC_INSTANCES,
+            "Kizzy RPC Instances",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Independent notifications for each RPC instance"
+            setShowBadge(true)
+        }
+        notificationManager.createNotificationChannel(instanceChannel)
+
         return Notification.Builder(context, Constants.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_apps)
     }

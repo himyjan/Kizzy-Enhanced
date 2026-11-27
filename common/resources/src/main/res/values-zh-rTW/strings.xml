@@ -257,6 +257,7 @@
     <string name="main_ManualRpc_details">Manual RPC 是 Kizzy 的一項功能，會不斷在 Apps RPC 和 Media RPC 之間切換。</string>
     <string name="main_customRpc_details">Kizzy 允許你為 Discord 創建完全可自定義的豐富存在。</string>
     <string name="add_rpc_title">新增 RPC</string>
+    <string name="home_add_rpc">新增 RPC</string>
     <string name="add_rpc_select_type">選取 RPC 類型：</string>
     <string name="main_comingSoon">即將推出</string>
     <string name="exit">退出</string>

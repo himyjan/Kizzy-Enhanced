@@ -181,7 +181,9 @@ internal fun Kizzy(
 
                 // Built-in Custom RPC screen
                 entry<AppRoute.CustomRpc> {
-                    val viewModel = hiltViewModel<CustomScreenViewModel>()
+                    val viewModel = hiltViewModel<CustomScreenViewModel, CustomScreenViewModel.Factory>(
+                        creationCallback = { factory -> factory.create(null) }
+                    )
                     val state by viewModel.uiState.collectAsState()
                     CustomRPC(
                         onBackPressed = { goBack() },
@@ -245,7 +247,7 @@ internal fun Kizzy(
                         onLogout = { ctx -> viewModel.logout(ctx, logoutScope) },
                         authTabLauncher = authTabLauncher,
                         onBindAuthTabCallback = onBindAuthTabCallback,
-                        onNavigateToRpcPreview = {
+                        onNavigateToRpcPreview = { instanceId ->
                             val currentState = state
                             val user = when (currentState) {
                                 is UserState.LoadingCompleted -> currentState.user
@@ -254,29 +256,11 @@ internal fun Kizzy(
                             }
                             val userId = user?.id ?: ""
                             val avatarUrl = user?.getAvatarImage() ?: ""
-                            val rpcConfig: RpcConfig? = try {
-                                val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                                if (json.isNotBlank()) {
-                                    Json.decodeFromString(json)
-                                } else {
-                                    null
-                                }
-                            } catch (_: Exception) {
-                                null
-                            }
-                            val encodedRpcConfig = if (rpcConfig != null) {
-                                Json {
-                                    ignoreUnknownKeys = true
-                                    encodeDefaults = true
-                                }.encodeToString(RpcConfig.serializer(), rpcConfig)
-                            } else {
-                                ""
-                            }
                             navigateTo(
                                 AppRoute.RpcPreview(
                                     userId = userId,
                                     avatarUrl = avatarUrl,
-                                    rpcConfig = encodedRpcConfig,
+                                    instanceId = instanceId,
                                 )
                             )
                         },
@@ -349,10 +333,10 @@ internal fun Kizzy(
                     )
                 }
 
-                // RPC presence preview screen with assisted `rpcConfig`
+                // RPC presence preview screen with assisted `instanceId`
                 entry<AppRoute.RpcPreview> { key ->
                     val viewModel = hiltViewModel<RpcPreviewViewModel, RpcPreviewViewModel.Factory>(
-                        creationCallback = { factory -> factory.create(key.rpcConfig) }
+                        creationCallback = { factory -> factory.create(key.instanceId) }
                     )
                     val rpcConfig by viewModel.rpcConfig.collectAsState()
                     RpcPreviewScreen(

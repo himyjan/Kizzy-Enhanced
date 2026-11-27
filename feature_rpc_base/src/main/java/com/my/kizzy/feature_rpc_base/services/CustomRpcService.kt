@@ -58,15 +58,12 @@ class CustomRpcService : Service() {
     private val customConfigs = LinkedHashMap<String, RpcConfig>()
     /** Stable notification id for the instance currently in the foreground. */
     private var foregroundNotificationId: Int = Constants.NOTIFICATION_ID_CUSTOM_RPC
-    private val notificationIds = mutableMapOf<String, Int>()
 
     private fun notificationIdFor(instanceId: String): Int =
         if (instanceId == RPC_INSTANCE_CUSTOM || instanceId == "console_rpc") {
             Constants.NOTIFICATION_ID_CUSTOM_RPC
         } else {
-            notificationIds.getOrPut(instanceId) {
-                (Constants.NOTIFICATION_ID_CUSTOM_RPC + kotlin.math.abs(instanceId.hashCode()) % 100_000)
-            }
+            CloneNotificationHelper.notificationIdFor(instanceId)
         }
 
     @Inject
@@ -99,9 +96,33 @@ class CustomRpcService : Service() {
     @Inject
     lateinit var notificationManager: NotificationManager
 
+    @Volatile
+    private var foregroundStarted = false
+
     override fun onCreate() {
         super.onCreate()
         AppUtils.registerRpcService(this)
+        // Start ONE foreground notification for the service. Each clone later
+        // gets its own independent notification via notificationManager.notify().
+        val appIntent = packageManager.getLaunchIntentForPackage(packageName)
+            ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
+        appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val appPendingIntent = PendingIntent.getActivity(
+            this, 0, appIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val initialNotification = Notification.Builder(this, Constants.CHANNEL_ID)
+            .setContentTitle(getString(R.string.custom_rpc_running))
+            .setContentText("")
+            .setSmallIcon(R.drawable.ic_rpc_placeholder)
+            .setContentIntent(appPendingIntent)
+            .build()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, initialNotification)
+        } else {
+            startForeground(Constants.NOTIFICATION_ID_CUSTOM_RPC, initialNotification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        }
+        foregroundNotificationId = Constants.NOTIFICATION_ID_CUSTOM_RPC
+        foregroundStarted = true
     }
 
     @SuppressLint("WakelockTimeout")
@@ -142,28 +163,9 @@ class CustomRpcService : Service() {
 
         Log.d("CustomRpcService", "onStartCommand: intent action=${intent?.action}, hasRPCExtra=${intent?.getStringExtra("RPC")?.isNotBlank() == true}")
 
-        // Call startForeground() immediately and synchronously so Android doesn't
-        // kill the service for not calling startForeground() within 5 seconds.
-        // The full notification (with buttons, etc.) is built below inside the
-        // coroutine and replaces this placeholder notification.
-        val appIntent = packageManager.getLaunchIntentForPackage(packageName)
-            ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
-        appIntent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
-        )
-        val appPendingIntent = PendingIntent.getActivity(
-            this, 0, appIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        val initialNotification = Notification.Builder(this, Constants.CHANNEL_ID)
-            .setContentTitle(getString(R.string.custom_rpc_running))
-            .setContentText("")
-            .setSmallIcon(R.drawable.ic_rpc_placeholder)
-            .setContentIntent(appPendingIntent)
-            .build()
-        startForeground(foregroundNotificationId, initialNotification)
+        // Foreground notification is started once in onCreate(). Do NOT call
+        // startForeground() again here: it would replace the foreground slot
+        // and cancel the previous clone's notification.
 
         // Parallel instance sockets: add/remove one socket without disturbing
         // the presence or connection of any other instance.
@@ -187,6 +189,9 @@ class CustomRpcService : Service() {
                         customRpcs[instanceId] = rpc
                         scope.launch { sendInstancePresence(instanceId, rpc, config, forceRefresh = true) }
                     }
+                    // Always show this clone's own notification, even if the socket
+                    // is not ready yet, so every enabled RPC has a visible card.
+                    scope.launch { showInstanceNotification(instanceId, config) }
                     startPresenceRefresh()
                 }
                 return super.onStartCommand(intent, flags, startId)
@@ -197,11 +202,11 @@ class CustomRpcService : Service() {
                     multiRpc.closeCustomSession(instanceId)
                     customRpcs.remove(instanceId)
                     customConfigs.remove(instanceId)
+                    // Remove the profile preview config for this instance.
+                    rpcManager.removePresenceConfig(instanceId)
                     // Only this instance's notification goes away; other custom
                     // RPC instances keep running and keep their own notification.
-                    val removedNotificationId = notificationIdFor(instanceId)
-                    notificationManager.cancel(removedNotificationId)
-                    notificationIds.remove(instanceId)
+                    CloneNotificationHelper.cancel(notificationManager, instanceId)
                     if (foregroundNotificationId == notificationIdFor(instanceId)) {
                         foregroundNotificationId = customRpcs.keys.firstOrNull()?.let(::notificationIdFor)
                             ?: Constants.NOTIFICATION_ID_CUSTOM_RPC
@@ -238,7 +243,7 @@ class CustomRpcService : Service() {
                 Log.d("CustomRpcService", "ACTION_RESTART_SERVICE: rpcData=${rpcData?.name ?: "null"}")
                 rpcData?.let { customConfigs["custom_rpc"] = it }
                 scope.launch {
-                    sendPresenceAndNotification(forceRefresh = true)
+                    sendPresenceAndNotification(targetId, forceRefresh = true)
                 }
                 startConsoleDetectionIfNeeded()
                 return super.onStartCommand(intent, flags, startId)
@@ -258,7 +263,7 @@ class CustomRpcService : Service() {
         rpcData?.let { customConfigs["custom_rpc"] = it }
         Log.d("CustomRpcService", "onStartCommand: rpcData=${rpcData?.name ?: "null"}, details=${rpcData?.details ?: "null"}")
         scope.launch {
-            sendPresenceAndNotification()
+            sendPresenceAndNotification(targetId)
         }
         startPresenceRefresh()
         startConsoleDetectionIfNeeded()
@@ -341,44 +346,44 @@ class CustomRpcService : Service() {
         rpc.setStreamUrl(data.url.takeIf { it.isNotBlank() })
         rpc.build(forceRefresh = forceRefresh, priority = 2)
 
-        // Each instance gets its own notification, carrying that instance's
-        // current RPC data plus working Restart/Exit actions. Distinct request
-        // codes are required: with the same code the second PendingIntent
-        // replaces the first, so one of the buttons silently did nothing.
+        // Register this clone's own config so the profile page shows a preview
+        // for EVERY instance, not just the built-in one.
+        rpcManager.setCurrentPresenceConfig(data.copy(instanceId = instanceId), instanceId)
+
+        // Service is already foreground (started in onCreate()). Every instance gets
+        // its own independent notification via notify(), so 5 clones show 5 cards.
+        showInstanceNotification(instanceId, data)
+    }
+
+    /** Shows (or updates) one instance's independent notification. */
+    private suspend fun showInstanceNotification(instanceId: String, data: RpcConfig) {
         val instanceNotificationId = notificationIdFor(instanceId)
         val stopIntent = Intent(this@CustomRpcService, CustomRpcService::class.java).apply {
             action = Constants.ACTION_REMOVE_INSTANCE
             putExtra(Constants.EXTRA_INSTANCE_ID, instanceId)
         }
-        val stopPendingIntent: PendingIntent = PendingIntent.getService(
+        val stopPendingIntent = PendingIntent.getService(
             this@CustomRpcService, instanceNotificationId + 1, stopIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-
         val restartIntent = Intent(this@CustomRpcService, CustomRpcService::class.java).apply {
             action = Constants.ACTION_RESTART_SERVICE
             putExtra(Constants.EXTRA_INSTANCE_ID, instanceId)
             putExtra("RPC", Json.encodeToString(data))
             putExtra(EXTRA_CONSOLE_RPC, consoleMode)
         }
-        val restartPendingIntent: PendingIntent = PendingIntent.getService(
+        val restartPendingIntent = PendingIntent.getService(
             this@CustomRpcService, instanceNotificationId + 2, restartIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-
         val appIntent = packageManager.getLaunchIntentForPackage(packageName)
             ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
-        appIntent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
-        )
+        appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val appPendingIntent = PendingIntent.getActivity(
             this@CustomRpcService, instanceNotificationId + 3, appIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-
-        val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
+        val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID_RPC_INSTANCES)
             .setContentTitle(data.name.ifBlank { getString(R.string.custom_rpc_running) })
             .setContentText(listOfNotNull(data.details, data.state).joinToString(" · ")
                 .ifBlank { getString(R.string.custom_rpc_running) })
@@ -387,26 +392,18 @@ class CustomRpcService : Service() {
             .addAction(
                 Notification.Action.Builder(
                     Icon.createWithResource(this@CustomRpcService, R.drawable.ic_rpc_placeholder),
-                    getString(R.string.restart),
-                    restartPendingIntent
+                    getString(R.string.restart), restartPendingIntent
                 ).build()
             )
             .addAction(
                 Notification.Action.Builder(
                     Icon.createWithResource(this@CustomRpcService, R.drawable.ic_rpc_placeholder),
-                    getString(R.string.exit),
-                    stopPendingIntent
+                    getString(R.string.exit), stopPendingIntent
                 ).build()
             )
             .setLargeIcon(data.largeImg.toRpcImage(), this@CustomRpcService)
             .build()
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            startForeground(instanceNotificationId, notification)
-        } else {
-            startForeground(instanceNotificationId, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        }
-        foregroundNotificationId = instanceNotificationId
+        notificationManager.notify(instanceNotificationId, notification)
     }
 
     /** Re-sends the Custom RPC activity periodically so Discord never drops it. */
@@ -485,7 +482,7 @@ class CustomRpcService : Service() {
         rpcData = updated
         Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = Json.encodeToString(updated)
         scope.launch {
-            sendPresenceAndNotification()
+            sendPresenceAndNotification(RPC_INSTANCE_CUSTOM)
         }
     }
 
@@ -497,7 +494,7 @@ class CustomRpcService : Service() {
      *   already connected (bypasses the "already connected" early return in
      *   KizzyRPC.build()). Used by the notification restart button.
      */
-    private suspend fun sendPresenceAndNotification(forceRefresh: Boolean = false) {
+    private suspend fun sendPresenceAndNotification(instanceId: String, forceRefresh: Boolean = false) {
         // If there is an active custom RPC board, use its fields to build the
         // presence instead of the stored RpcConfig.
         val activeBoard = boardManager.getActiveBoard()
@@ -540,7 +537,7 @@ class CustomRpcService : Service() {
 
         // Restart/Exit must be distinct PendingIntents: a shared request code
         // makes the second action overwrite the first, leaving one button dead.
-        val notificationId = foregroundNotificationId
+        val notificationId = notificationIdFor(instanceId)
         val stopIntent = Intent(this, CustomRpcService::class.java).apply {
             action = Constants.ACTION_STOP_SERVICE
         }
@@ -583,7 +580,7 @@ class CustomRpcService : Service() {
             // Build the complete notification (content intent, actions, and large icon)
             // in one place so nothing is dropped. A second notify() call had previously
             // replaced the notification entirely, removing its click intent and buttons.
-            val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID)
+            val notification = Notification.Builder(this@CustomRpcService, Constants.CHANNEL_ID_RPC_INSTANCES)
                 .setContentTitle(rpcDataToUse.name.ifBlank { getString(R.string.custom_rpc_running) })
                 .setContentText(
                     listOfNotNull(rpcDataToUse.details, rpcDataToUse.state)
@@ -609,11 +606,9 @@ class CustomRpcService : Service() {
                 .setLargeIcon(rpcDataToUse.largeImg.toRpcImage(), this@CustomRpcService)
                 .build()
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                startForeground(notificationId, notification)
-            } else {
-                startForeground(notificationId, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-            }
+            // Service is already foreground (started in onCreate()); update this
+            // instance's notification without promoting/replacing the foreground slot.
+            notificationManager.notify(notificationId, notification)
 
             rpcDataToUse.let {
                 kizzyRPC?.apply {
@@ -662,8 +657,7 @@ class CustomRpcService : Service() {
                     build(forceRefresh = forceRefresh, priority = 2) // Custom/Console RPC: user-configured, priority 2
                     Log.d("CustomRpcService", "kizzyRPC?.build() completed")
 
-                    val rpcType = if (consoleMode) RpcManager.RpcType.ConsoleRpc else RpcManager.RpcType.CustomRpc
-                    rpcManager.setCurrentPresenceConfig(rpcDataToUse, rpcType)
+                    rpcManager.setCurrentPresenceConfig(rpcDataToUse.copy(instanceId = instanceId), instanceId)
                 }
             }
         }
@@ -674,16 +668,18 @@ class CustomRpcService : Service() {
         consoleDetectionJob = null
         presenceRefreshJob?.cancel()
         presenceRefreshJob = null
-        // Remove each instance's foreground notification so stale notifications
+        // Remove each instance's notification so stale notifications
         // don't linger after the Custom RPC service is stopped.
-        notificationIds.values.forEach { notificationManager.cancel(it) }
+        customRpcs.keys.toList().forEach { CloneNotificationHelper.cancel(notificationManager, it) }
         notificationManager.cancel(foregroundNotificationId)
-        notificationIds.clear()
         stopForeground(Service.STOP_FOREGROUND_REMOVE)
         // Cancel pending work first, then clear/close off the main thread.
         scope.cancel()
         val rpcs = customRpcs.values.toList() + listOfNotNull(kizzyRPC).distinct()
         customRpcs.keys.toList().forEach { multiRpc.closeCustomSession(it) }
+        // Remove all profile preview configs registered by this service.
+        (customRpcs.keys + listOfNotNull(kizzyRPC?.let { "custom_rpc" })).distinct()
+            .forEach { rpcManager.removePresenceConfig(it) }
         customRpcs.clear()
         customConfigs.clear()
         AppUtils.unregisterRpcService(this)
@@ -700,6 +696,12 @@ class CustomRpcService : Service() {
             if (it.isHeld) it.release()
         }
         super.onDestroy()
+    }
+
+    override fun onTaskRemoved(intent: Intent?) {
+        Log.d("CustomRpcService", "onTaskRemoved: app swiped from Recents - keeping Custom RPC alive")
+        com.my.kizzy.data.work.WorkManagerHelper.scheduleRpcRecovery(this)
+        super.onTaskRemoved(intent)
     }
 
     override fun onBind(intent: Intent?): IBinder? {

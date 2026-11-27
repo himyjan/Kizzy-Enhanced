@@ -102,9 +102,12 @@ class RpcManager @Inject constructor(
     private val _activeInstances = MutableStateFlow<Set<String>>(Prefs.getActiveRpcInstanceIds())
     val activeInstances: StateFlow<Set<String>> = _activeInstances.asStateFlow()
 
-    /** Presence configs per active RPC type, keyed by [RpcType]. */
-    private val _presenceConfigs = MutableStateFlow<MutableMap<RpcType, RpcConfig>>(mutableMapOf())
-    val presenceConfigs: StateFlow<Map<RpcType, RpcConfig>> = _presenceConfigs.asStateFlow()
+    /** Presence configs per instance ID, keyed by instanceId string.
+     * Each clone gets its own entry - they run in parallel and do not
+     * overwrite each other.
+     */
+    private val _presenceConfigs = MutableStateFlow<MutableMap<String, RpcConfig>>(mutableMapOf())
+    val presenceConfigs: StateFlow<Map<String, RpcConfig>> = _presenceConfigs.asStateFlow()
 
     /** Backwards-compatible single-config accessor: the highest-priority non-empty config. */
     private val _singleConfig = _presenceConfigs
@@ -114,24 +117,24 @@ class RpcManager @Inject constructor(
         .stateIn(scope, SharingStarted.Eagerly, null)
 
     /**
-     * Registers the presence config for [rpcType] so the profile preview can
-     * display it. Each RPC type keeps its own entry - they run in parallel
+     * Registers the presence config for [instanceId] so the profile preview can
+     * display it. Each instance keeps its own entry - they run in parallel
      * and do not overwrite each other.
      *
      * Called by each RPC service after it assembles its CommonRpc.
      */
-    fun setCurrentPresenceConfig(config: RpcConfig, rpcType: RpcType) {
+    fun setCurrentPresenceConfig(config: RpcConfig, instanceId: String) {
         _presenceConfigs.value = _presenceConfigs.value.toMutableMap().apply {
-            this[rpcType] = config
+            this[instanceId] = config
         }
     }
 
     /**
      * Removes the presence config for [rpcType] when its service stops.
      */
-    fun removePresenceConfig(rpcType: RpcType) {
+    fun removePresenceConfig(instanceId: String) {
         _presenceConfigs.value = _presenceConfigs.value.toMutableMap().apply {
-            this.remove(rpcType)
+            this.remove(instanceId)
         }
     }
 
@@ -382,6 +385,10 @@ class RpcManager @Inject constructor(
         applyActive(remaining)
         persistActiveRpcTypes(remaining.mapNotNull(::typeFor).toSet())
 
+        // Remove this instance's presence config immediately so the profile
+        // preview stops showing an RPC the user just switched off.
+        removePresenceConfig(instanceId)
+
         val serviceClass = serviceClassFor(rpcType) ?: return
         val intent = Intent(context, serviceClass).apply {
             action = Constants.ACTION_REMOVE_INSTANCE
@@ -544,7 +551,7 @@ class RpcManager @Inject constructor(
 
         // Remove presence configs for stopped types.
         for (rpcType in typesToStop) {
-            removePresenceConfig(rpcType)
+            removePresenceConfig(instanceIdFor(rpcType))
         }
 
         for (rpcType in typesToStop.toList()) {

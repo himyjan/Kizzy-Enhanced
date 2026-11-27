@@ -73,7 +73,7 @@ fun UserScreen(
     state: UserState,
     onBackPressed: () -> Unit,
     onLogout: (Context) -> Unit,
-    onNavigateToRpcPreview: () -> Unit = {},
+    onNavigateToRpcPreview: (String?) -> Unit = { _ -> },
     // AuthTab launcher + binder from MainActivity -> Kizzy, used by the inline
     // Discord login on this screen (no separate login screen).
     authTabLauncher: ActivityResultLauncher<Intent>? = null,
@@ -232,7 +232,7 @@ fun UserScreen(
                         ProfileCard(
                             state.user,
                             rpcConfigs = state.rpcConfigs,
-                            onAvatarClick = { onNavigateToRpcPreview() }
+                            onAvatarClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) }
                         )
                         Spacer(Modifier.height(24.dp))
                         DiscordLoginButton(
@@ -264,7 +264,7 @@ fun UserScreen(
                         ProfileCard(
                             state.user,
                             rpcConfigs = state.rpcConfigs,
-                            onAvatarClick = { onNavigateToRpcPreview() }
+                            onAvatarClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) }
                         )
 
                         Spacer(Modifier.height(16.dp))
@@ -278,7 +278,7 @@ fun UserScreen(
                             MenuRow(
                                 icon = Icons.Filled.PlayArrow,
                                 label = stringResource(R.string.profile_open_rpc_preview),
-                                onClick = { onNavigateToRpcPreview() },
+                                onClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) },
                             )
                             MenuDivider()
                             // Log Out stays in the same menu card as Open RPC

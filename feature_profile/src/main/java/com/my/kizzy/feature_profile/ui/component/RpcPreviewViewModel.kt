@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.serialization.json.Json
 
 /**
  * Live state for the RPC preview.
@@ -36,19 +35,17 @@ import kotlinx.serialization.json.Json
 class RpcPreviewViewModel @AssistedInject constructor(
     stateRepository: KizzyStateRepository,
     rpcManager: RpcManager,
-    @Assisted rawConfig: String,
+    @Assisted instanceId: String? = null,
 ) : ViewModel() {
     @AssistedFactory
     interface Factory {
-        fun create(rawConfig: String): RpcPreviewViewModel
+        fun create(instanceId: String? = null): RpcPreviewViewModel
     }
 
-    private val passedConfig: RpcConfig? = rawConfig.takeIf { it.isNotBlank() }
-        ?.let { value ->
-            runCatching {
-                Json { ignoreUnknownKeys = true }.decodeFromString<RpcConfig>(value)
-            }.getOrNull()
-        }
+    private val passedConfig: RpcConfig? = instanceId?.let { id ->
+        // Look up this instance's config directly by instanceId.
+        rpcManager.presenceConfigs.value[id]
+    }
 
     private val mediaState: Flow<MediaState> = combine(
         stateRepository.currentTrackTitle,
@@ -70,12 +67,12 @@ class RpcPreviewViewModel @AssistedInject constructor(
 
     val rpcConfig: StateFlow<RpcConfig?> =
         combine(rpcManager.presenceConfigs, mediaState, mediaImages) { configs, media, images ->
-            // The preview is opened from the profile activity card; prefer the
-            // presence currently published by the running service, then the
-            // last persisted media presence, then the route snapshot.
-            val fromService = configs.values.firstOrNull()
+            // The preview is opened from the profile activity card for a
+            // SPECIFIC instance. Show that instance's live config, not the
+            // first config from an arbitrary RPC type.
+            val fromService = instanceId?.let { configs[it] }
+                ?: passedConfig
             val base = fromService
-                ?: passedConfig?.takeIf { media.hasMetadata() }
                 ?: LastPresence.media()
                 ?: LastPresence.experimental()
                 ?: passedConfig

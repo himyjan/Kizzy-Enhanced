@@ -65,6 +65,17 @@ class MediaRpcService : Service() {
      *  per-instance scoped preferences (cover art, channel icon, etc.). */
     private var currentInstanceId: String? = null
 
+    /** Per-instance notification IDs so each Media clone gets its own card. */
+    private val notificationIds = mutableMapOf<String, Int>()
+    private var nextCloneNotificationId: Int = Constants.NOTIFICATION_ID_CLONE_BASE
+
+    private fun notificationIdFor(instanceId: String?): Int =
+        if (instanceId.isNullOrBlank() || instanceId == "media_rpc") {
+            Constants.NOTIFICATION_ID_MEDIA_RPC
+        } else {
+            notificationIds.getOrPut(instanceId) { nextCloneNotificationId++ }
+        }
+
     @Inject
     lateinit var multiRpc: MultiRpcManager
 
@@ -1314,7 +1325,10 @@ class MediaRpcService : Service() {
         // Expose the current presence as an RpcConfig so the Media/Manual RPC screens
         // can offer a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
         try {
-            rpcManager.setCurrentPresenceConfig(commonRpcToRpcConfig(commonRpc), RpcManager.RpcType.MediaRpc)
+            rpcManager.setCurrentPresenceConfig(
+                commonRpcToRpcConfig(commonRpc).copy(instanceId = currentInstanceId ?: "media_rpc"),
+                currentInstanceId ?: "media_rpc"
+            )
         } catch (e: Exception) {
             logger.e(MEDIA_RPC, "Failed to expose current presence config: ${e.message}")
         }
@@ -1732,24 +1746,28 @@ class MediaRpcService : Service() {
                     currentInstanceId = instanceId
                     val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
                     multiRpc.addInstance("1", instanceId, oauthIndex)
+                    // Each Media clone gets its own independent notification.
+                    CloneNotificationHelper.show(
+                        context = this@MediaRpcService,
+                        notificationManager = notificationManager,
+                        serviceClass = MediaRpcService::class.java,
+                        instanceId = instanceId,
+                        label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
+                            ?: getString(R.string.main_mediaRpc),
+                        content = currentMediaTitle ?: getString(R.string.rich_presence_active),
+                        iconRes = R.drawable.ic_media_rpc,
+                    )
                     // Broadcast the current media presence to the new socket.
                     restartInPlace()
                 }
             }
             Constants.ACTION_REMOVE_INSTANCE -> {
                 val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
-                if (!instanceId.isNullOrBlank()) multiRpc.removeInstance("1", instanceId)
-                if (multiRpc.instanceCount("1") == 0) {
-                    stopSelf()
-                } else {
-                    // The remaining instance still needs a fresh presence on its
-                    // own application ID after the other socket was removed.
-                    restartInPlace()
+                if (!instanceId.isNullOrBlank()) {
+                    multiRpc.removeInstance("1", instanceId)
+                    CloneNotificationHelper.cancel(notificationManager, instanceId)
+                    rpcManager.removePresenceConfig(instanceId)
                 }
-            }
-            Constants.ACTION_REMOVE_INSTANCE -> {
-                val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
-                if (!instanceId.isNullOrBlank()) multiRpc.removeInstance("1", instanceId)
                 if (multiRpc.instanceCount("1") == 0) {
                     stopSelf()
                 } else {
@@ -1857,10 +1875,13 @@ class MediaRpcService : Service() {
     }
 
     override fun onTaskRemoved(intent: Intent?) {
-        logger.d(MEDIA_RPC, "onTaskRemoved: user swiped app from Recents")
+        logger.d(MEDIA_RPC, "onTaskRemoved: user swiped app from Recents - keeping service alive as foreground")
 
-        stopForeground(Service.STOP_FOREGROUND_REMOVE)
-        stopSelf()
+        // DO NOT call stopSelf() here. The service must continue running as a
+        // foreground service so Discord presence keeps updating.
+        // Do NOT call stopForeground() - that would remove foreground status
+        // and let Android kill the service when memory is low.
+        // Keep the notification visible so the user knows RPC is still active.
 
         if (Prefs[Prefs.USE_RPC_BUTTONS, false] || Prefs[MEDIA_RPC_MEDIA_BUTTON, false] || Prefs[MEDIA_RPC_ARTIST_LINK, false]) {
             logger.d(MEDIA_RPC, "Scheduling RPC recovery work after task removal")

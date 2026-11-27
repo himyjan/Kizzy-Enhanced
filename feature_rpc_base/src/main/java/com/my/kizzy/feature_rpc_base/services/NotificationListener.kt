@@ -18,6 +18,7 @@ import com.my.kizzy.data.rpc.ConsoleAppRegistry
 import com.my.kizzy.data.rpc.ConsoleNotificationParser
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
+import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.utils.MediaMetadataParser
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
@@ -111,20 +112,50 @@ class NotificationListener : NotificationListenerService() {
     }
 
     /**
-     * Starts the Media RPC when it should run but does not.
+     * Starts any enabled RPC service (Media, Custom, Manual, App Detection)
+     * when it should be running but is not (e.g., killed by OS or swiped away).
      */
     private fun checkMediaRpcService() {
-        // The user wants the Media RPC.
-        if (!Prefs[Prefs.MEDIA_RPC_ENABLED, false]) return
-        // But it is running already.
-        if (AppUtils.mediaRpcRunning()) return
+        val activeTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
+            .split(',')
+            .mapNotNull { runCatching { RpcManager.RpcType.valueOf(it.trim()) }.getOrNull() }
+            .toSet()
 
-        Log.d("NotificationListener", "Media RPC is enabled but not running - starting it")
-        val intent = Intent(this, MediaRpcService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
+        if (Prefs[Prefs.MEDIA_RPC_ENABLED, false] || RpcManager.RpcType.MediaRpc in activeTypes) {
+            if (!AppUtils.mediaRpcRunning()) {
+                Log.d("NotificationListener", "Media RPC is enabled but not running - restoring it")
+                startForegroundServiceSafely(Intent(this, MediaRpcService::class.java))
+            }
+        }
+        if (RpcManager.RpcType.CustomRpc in activeTypes || RpcManager.RpcType.ConsoleRpc in activeTypes) {
+            if (!AppUtils.customRpcRunning()) {
+                Log.d("NotificationListener", "Custom RPC is enabled but not running - restoring it")
+                startForegroundServiceSafely(Intent(this, CustomRpcService::class.java))
+            }
+        }
+        if (RpcManager.RpcType.ManualRpc in activeTypes) {
+            if (!AppUtils.ManualRpcRunning()) {
+                Log.d("NotificationListener", "Manual RPC is enabled but not running - restoring it")
+                startForegroundServiceSafely(Intent(this, ManualRpc::class.java))
+            }
+        }
+        if (RpcManager.RpcType.AppDetectionRpc in activeTypes) {
+            if (!AppUtils.appDetectionRunning()) {
+                Log.d("NotificationListener", "App Detection RPC is enabled but not running - restoring it")
+                startForegroundServiceSafely(Intent(this, AppDetectionService::class.java))
+            }
+        }
+    }
+
+    private fun startForegroundServiceSafely(intent: Intent) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+        } catch (e: Exception) {
+            Log.e("NotificationListener", "Failed to start service ${intent.component?.className}", e)
         }
     }
 

@@ -124,6 +124,7 @@ fun ActivityRow(
     rpcConfig: RpcConfig?,
     showTs: Boolean,
     special: String?,
+    onInstanceClick: ((String?) -> Unit)? = null,
 ) {
     val uriHandler = LocalUriHandler.current
     // Only open real http(s) links so a bad/blank url never crashes the preview.
@@ -211,7 +212,9 @@ fun ActivityRow(
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onInstanceClick?.invoke(rpcConfig?.instanceId) },
     ) {
         Column(
             modifier = Modifier.padding(14.dp),

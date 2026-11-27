@@ -95,6 +95,7 @@ open class DiscordWebSocketImpl(
     private val json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
+        explicitNulls = false
     }
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
