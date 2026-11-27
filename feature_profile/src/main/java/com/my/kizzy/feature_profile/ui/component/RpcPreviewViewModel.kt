@@ -1,14 +1,15 @@
 package com.my.kizzy.feature_profile.ui.component
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.data.rpc.LastPresence
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.security.KizzyStateRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
@@ -24,28 +25,32 @@ import kotlinx.serialization.json.Json
  * the music is paused). Every other RPC type keeps using the route snapshot.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-@HiltViewModel
-class RpcPreviewViewModel @Inject constructor(
-    stateRepository: KizzyStateRepository,
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = RpcPreviewViewModel.Factory::class)
+class RpcPreviewViewModel @AssistedInject constructor(
+    private val stateRepository: KizzyStateRepository,
+    @Assisted rawConfig: String,
 ) : ViewModel() {
-    private val passedConfig: RpcConfig? = savedStateHandle.get<String>("rpcConfig")
-        ?.takeIf { it.isNotBlank() }
-        ?.let { raw ->
+    @AssistedFactory
+    interface Factory {
+        fun create(rawConfig: String): RpcPreviewViewModel
+    }
+
+    private val passedConfig: RpcConfig? = rawConfig.takeIf { it.isNotBlank() }
+        ?.let { value ->
             runCatching {
-                Json { ignoreUnknownKeys = true }.decodeFromString<RpcConfig>(raw)
+                Json { ignoreUnknownKeys = true }.decodeFromString<RpcConfig>(value)
             }.getOrNull()
         }
 
     val rpcConfig: StateFlow<RpcConfig?> = if (AppUtils.mediaRpcRunning()) {
-        liveMediaConfig(stateRepository)
+        liveMediaConfig(passedConfig)
             .stateIn(viewModelScope, SharingStarted.Eagerly, passedConfig)
     } else {
         MutableStateFlow(passedConfig)
     }
 
     private fun liveMediaConfig(
-        stateRepository: KizzyStateRepository,
+        base: RpcConfig?,
     ): Flow<RpcConfig> =
         combine(
             stateRepository.currentTrackTitle,
@@ -59,17 +64,17 @@ class RpcPreviewViewModel @Inject constructor(
                 stateRepository.currentSmallImageUrl,
                 stateRepository.pausedPositionMs,
             ) { largeImage, smallImage, pausedPositionMs ->
-                val base = passedConfig
+                val resolvedBase = base
                     ?: LastPresence.media()
                     ?: RpcConfig(name = "Media RPC", details = "Playing media", type = "2")
-                base.copy(
-                    name = base.name.copyIfNotEmpty(title ?: base.name),
-                    details = base.details.copyIfNotEmpty(artist ?: base.details),
-                    state = base.state.copyIfNotEmpty(artist ?: base.state),
-                    timestampsStart = tsStart?.toString() ?: base.timestampsStart,
-                    timestampsStop = tsStop?.toString() ?: base.timestampsStop,
-                    largeImg = largeImage ?: base.largeImg,
-                    smallImg = smallImage ?: base.smallImg,
+                resolvedBase.copy(
+                    name = resolvedBase.name.copyIfNotEmpty(title ?: resolvedBase.name),
+                    details = resolvedBase.details.copyIfNotEmpty(artist ?: resolvedBase.details),
+                    state = resolvedBase.state.copyIfNotEmpty(artist ?: resolvedBase.state),
+                    timestampsStart = tsStart?.toString() ?: resolvedBase.timestampsStart,
+                    timestampsStop = tsStop?.toString() ?: resolvedBase.timestampsStop,
+                    largeImg = largeImage ?: resolvedBase.largeImg,
+                    smallImg = smallImage ?: resolvedBase.smallImg,
                     paused = isPaused,
                     pausedPositionMs = pausedPositionMs,
                 )

@@ -14,7 +14,6 @@ package com.my.kizzy.feature_custom_rpc
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.my.kizzy.domain.model.rpc.RpcConfig
@@ -28,8 +27,10 @@ import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,16 +43,20 @@ import java.io.File
 import android.content.Context
 
 @SuppressLint("StaticFieldLeak")
-@HiltViewModel
-class CustomScreenViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = CustomScreenViewModel.Factory::class)
+class CustomScreenViewModel @AssistedInject constructor(
     @ApplicationContext private val context: Context,
     private val uploadGalleryImageUseCase: UploadGalleryImageUseCase,
     private val getGamesUseCase: GetGamesUseCase,
-    savedStateHandle: SavedStateHandle,
+    /** Null for the built-in Custom RPC; a clone passes its own instance id. */
+    @Assisted instanceId: String?,
 ) : ViewModel() {
-    /** Null for the built-in Custom RPC; a clone gets its own config key. */
-    private val instanceId: String? = savedStateHandle.get<String>("instanceId")
     private val configKey: String = Prefs.customRpcConfigKey(instanceId)
+
+    @AssistedFactory
+    interface Factory {
+        fun create(instanceId: String?): CustomScreenViewModel
+    }
 
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState

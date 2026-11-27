@@ -1,6 +1,7 @@
 plugins {
     id ("kizzy.android.library")
     id ("kizzy.android.library.compose")
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -9,5 +10,6 @@ android {
 
 dependencies {
     implementation(libs.compose.ui)
-    implementation(libs.compose.navigation)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.kotlinx.serialization.json)
 }

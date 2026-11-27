@@ -15,6 +15,7 @@ dependencies {
     implementation(projects.common.preference)
     implementation(projects.theme)
     implementation(libs.material.icons.extended)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.activity.compose)
 
     // Hilt annotation processor required for @HiltViewModel

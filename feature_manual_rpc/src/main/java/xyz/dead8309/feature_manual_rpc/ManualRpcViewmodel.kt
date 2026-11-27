@@ -23,10 +23,11 @@ import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.services.ManualRpc
 import com.my.kizzy.preference.Prefs
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import androidx.lifecycle.SavedStateHandle
-import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,13 +35,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
-@HiltViewModel
-class ManualRpcViewmodel @Inject constructor(
+@HiltViewModel(assistedFactory = ManualRpcViewmodel.Factory::class)
+class ManualRpcViewmodel @AssistedInject constructor(
     @ApplicationContext private val context: Context,
     private val uploadGalleryImageUseCase: UploadGalleryImageUseCase,
-    savedStateHandle: SavedStateHandle,
+    @Assisted private val instanceId: String?,
 ) : ViewModel() {
-    private val instanceId: String? = savedStateHandle.get<String>("instanceId")
+    @AssistedFactory
+    interface Factory {
+        fun create(instanceId: String?): ManualRpcViewmodel
+    }
+
     private fun key(prefKey: String) = Prefs.scopedKey(prefKey, instanceId)
 
     private val _uiState = MutableStateFlow(

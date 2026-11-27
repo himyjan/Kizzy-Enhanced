@@ -15,30 +15,23 @@ package com.my.kizzy
 import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.launch
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.navArgument
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.toVersion
-import kotlinx.serialization.json.Json
 import com.my.kizzy.feature_about.about.About
 import com.my.kizzy.feature_about.about.Credits
 import com.my.kizzy.feature_about.about.CreditsScreenViewModel
@@ -48,7 +41,6 @@ import com.my.kizzy.feature_custom_rpc.CustomRPC
 import com.my.kizzy.feature_custom_rpc.CustomScreenViewModel
 import com.my.kizzy.feature_home.Home
 import com.my.kizzy.feature_home.HomeScreenViewModel
-import com.my.kizzy.feature_home.feature.homeFeaturesProvider
 import com.my.kizzy.feature_logs.LogScreen
 import com.my.kizzy.feature_logs.LogsViewModel
 import com.my.kizzy.feature_media_rpc.MediaRPC
@@ -65,359 +57,353 @@ import com.my.kizzy.feature_settings.rpc_settings.RpcSettings
 import com.my.kizzy.feature_settings.style.Appearance
 import com.my.kizzy.feature_settings.style.DarkThemePreferences
 import com.my.kizzy.feature_startup.StartUp
-import com.my.kizzy.feature_rpc_base.services.MediaRpcService
-import com.my.kizzy.feature_rpc_base.services.CustomRpcService
-import com.my.kizzy.navigation.Routes
+import com.my.kizzy.navigation.AppRoute
 import com.my.kizzy.preference.Prefs
+import kotlinx.serialization.json.Json
 import xyz.dead8309.feature_manual_rpc.ManualRpcScreen
 import xyz.dead8309.feature_manual_rpc.ManualRpcViewmodel
 import xyz.dead8309.feature_manual_rpc.apps.ManualRpcAppsScreen
 
+/**
+ * Root Navigation 3 host composable for Kizzy.
+ * Owns the `NavBackStack` of `@Serializable` `AppRoute` keys and maps each key to its screen.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun Kizzy(
     usageAccessStatus: MutableState<Boolean>,
     notificationListenerAccess: MutableState<Boolean>,
     batteryOptimizationStatus: MutableState<Boolean>,
-    // ActivityResultLauncher registered in MainActivity for AuthTabIntent launches.
     authTabLauncher: ActivityResultLauncher<Intent>? = null,
-    // Allows active screens (RpcSettings / UserScreen) to register a normalized
-    // (resultCode, callbackIntent) handler with MainActivity without `:app` needing
-    // direct access to `AuthTabIntent.AuthResult`.
     onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
 ) {
-    Scaffold()
-    {
-        val navController = rememberNavController()
-        val startDestination = if (Prefs[Prefs.IS_FIRST_LAUNCHED, true]) Routes.SETUP else Routes.HOME
-
-        // A destination must ALWAYS be present. Rapid double-taps on the back
-        // arrow used to empty the back stack, leaving NavHost with nothing to
-        // render (a blank screen, no crash). Restore the root destination
-        // whenever the stack becomes empty.
-        val currentEntry by navController.currentBackStackEntryAsState()
-        LaunchedEffect(currentEntry) {
-            if (currentEntry == null) {
-                navController.navigate(startDestination) {
-                    popUpTo(0) { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
+    MaterialTheme {
+        // Choose initial destination on first launch vs returning user
+        val startRoute = remember {
+            if (Prefs[Prefs.IS_FIRST_LAUNCHED, true]) AppRoute.Setup else AppRoute.Home
         }
 
-        // Safe back: pop only when there is a destination below the current
-        // one; otherwise re-seat the root. This stops a second (rapid) back
-        // tap from ever emptying the stack in the first place.
+        // Developer-owned back stack persisted across config changes & process death
+        val backStack = rememberNavBackStack(startRoute)
+
+        // Guard against popping past the root destination on rapid back presses
         fun goBack() {
-            if (!navController.popBackStack()) {
-                navController.navigate(startDestination) {
-                    popUpTo(0) { inclusive = true }
-                    launchSingleTop = true
-                }
+            if (backStack.size > 1) {
+                backStack.removeLastOrNull()
             }
         }
-        NavHost(
-            navController = navController,
-            startDestination = startDestination
-        ) {
-            composable(Routes.SETUP) {
-                StartUp(
-                    usageAccessStatus = usageAccessStatus,
-                    mediaControlStatus = notificationListenerAccess,
-                    batteryOptimizationStatus = batteryOptimizationStatus,
-                    navigateToLanguages = {
-                        navController.navigate(Routes.LANGUAGES) {
-                            launchSingleTop = true
-                        }
-                    },
-                    navigateToHome = {
-                        Prefs[Prefs.IS_FIRST_LAUNCHED] = false
-                        navController.navigate(Routes.HOME) {
-                            popUpTo(Routes.SETUP) { inclusive = true }
-                        }
-                    },
-                    navigateToLogin = {
-                        // Login now lives on the profile page - no separate screen.
-                        navController.navigate(Routes.PROFILE)
-                    })
+
+        // Push destination unless it is already at the top of the stack
+        fun navigateTo(route: AppRoute) {
+            if (backStack.lastOrNull() != route) {
+                backStack.add(route)
             }
-            composable(Routes.HOME) { navBackStackEntry ->
-                val release = remember(Prefs.getSavedLatestRelease()) {
-                    Prefs.getSavedLatestRelease()
+        }
+
+        // Replace the entire back stack with a single destination (e.g., after onboarding)
+        fun navigateAndClearTo(route: AppRoute) {
+            backStack.clear()
+            backStack.add(route)
+        }
+
+        NavDisplay(
+            backStack = backStack,
+            modifier = Modifier.fillMaxSize(),
+            onBack = { goBack() },
+            // Scope SaveableState and ViewModels to each individual NavEntry
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+            ),
+            entryProvider = entryProvider {
+                // First-time setup & permission onboarding flow
+                entry<AppRoute.Setup> {
+                    StartUp(
+                        usageAccessStatus = usageAccessStatus,
+                        mediaControlStatus = notificationListenerAccess,
+                        batteryOptimizationStatus = batteryOptimizationStatus,
+                        navigateToLanguages = { navigateTo(AppRoute.Languages) },
+                        navigateToHome = {
+                            Prefs[Prefs.IS_FIRST_LAUNCHED] = false
+                            navigateAndClearTo(AppRoute.Home)
+                        },
+                        navigateToLogin = { navigateTo(AppRoute.Profile) },
+                    )
                 }
-                val user = Prefs.getUser()
-                val viewModel = hiltViewModel<HomeScreenViewModel>(navBackStackEntry)
-                val state = viewModel.aboutScreenState.collectAsState().value
-                val showBadge = release
-                    ?.toVersion()
-                    ?.whetherNeedUpdate(BuildConfig.VERSION_NAME.toVersion())
-                    ?: false
-                val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
-                Home(
-                    state = state,
-                    checkForUpdates = {
-                        if (release != null && release.toVersion() > BuildConfig.VERSION_NAME.toVersion()) {
-                            viewModel.setReleaseFromPrefs(release)
-                        } else {
-                            viewModel.getLatestUpdate()
-                        }
-                    },
-                    showBadge = showBadge,
-                    features = homeFeaturesProvider(
-                        prefsMap = prefsMap,
-                        navigateTo = { navController.navigate(it) },
+
+                // Home screen with RPC toggles, clones, and update check
+                entry<AppRoute.Home> {
+                    val release = remember(Prefs.getSavedLatestRelease()) {
+                        Prefs.getSavedLatestRelease()
+                    }
+                    val user = Prefs.getUser()
+                    val viewModel = hiltViewModel<HomeScreenViewModel>()
+                    val state by viewModel.aboutScreenState.collectAsState()
+                    val showBadge = release
+                        ?.toVersion()
+                        ?.whetherNeedUpdate(BuildConfig.VERSION_NAME.toVersion())
+                        ?: false
+
+                    Home(
+                        state = state,
+                        checkForUpdates = {
+                            if (release != null && release.toVersion() > BuildConfig.VERSION_NAME.toVersion()) {
+                                viewModel.setReleaseFromPrefs(release)
+                            } else {
+                                viewModel.getLatestUpdate()
+                            }
+                        },
+                        showBadge = showBadge,
+                        user = user,
+                        navigateToProfile = { navigateTo(AppRoute.Profile) },
+                        navigateToStyleAndAppearance = { navigateTo(AppRoute.StyleAndAppearance) },
+                        navigateToLanguages = { navigateTo(AppRoute.Languages) },
+                        navigateToAbout = { navigateTo(AppRoute.About) },
+                        navigateToRpcSettings = { navigateTo(AppRoute.RpcSettings) },
+                        navigateToLogsScreen = { navigateTo(AppRoute.LogsScreen) },
+                        navigateTo = { route -> navigateTo(route) },
                         hasUsageAccess = usageAccessStatus,
                         hasNotificationAccess = notificationListenerAccess,
-                        userVerified = user?.verified == true
-                    ),
-                    user = user,
-                    navigateToProfile = {
-                        navController.navigate(Routes.PROFILE)
-                    },
-                    navigateToStyleAndAppearance = {
-                        navController.navigate(Routes.STYLE_AND_APPEARANCE)
-                    },
-                    navigateToLanguages = {
-                        navController.navigate(Routes.LANGUAGES)
-                    },
-                    navigateToAbout = {
-                        navController.navigate(Routes.ABOUT)
-                    },
-                    navigateToRpcSettings = {
-                        navController.navigate(Routes.RPC_SETTINGS)
-                    },
-                    navigateToLogsScreen = {
-                        navController.navigate(Routes.LOGS_SCREEN)
-                    }
-                )
-            }
-            composable(Routes.APPS_DETECTION) { navBackStackEntry ->
-                val viewModel = hiltViewModel<AppsScreenViewModel>(navBackStackEntry)
-                AppsRPC(
-                    onBackPressed = { goBack() },
-                    hasUsageAccess = usageAccessStatus.value,
-                    state = viewModel.state.collectAsState().value,
-                    updateAppEnabled = viewModel::updateAppEnabled,
-                )
-            }
-            composable(Routes.CUSTOM_RPC) { navBackStackEntry ->
-                val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)
-                CustomRPC(
-                    onBackPressed = { goBack() },
-                    state = viewModel.uiState.collectAsState().value,
-                    onEvent = viewModel::onEvent
-                )
-            }
-            composable(Routes.CUSTOM_RPC_INSTANCE) { navBackStackEntry ->
-                // Clone-specific editor: the ViewModel reads instanceId from the
-                // route and loads/saves that instance's own config.
-                val viewModel = hiltViewModel<CustomScreenViewModel>(navBackStackEntry)
-                CustomRPC(
-                    onBackPressed = { goBack() },
-                    state = viewModel.uiState.collectAsState().value,
-                    onEvent = viewModel::onEvent
-                )
-            }
-            composable(Routes.MEDIA_RPC) { navBackStackEntry ->
-                val viewModel = hiltViewModel<MediaScreenViewModel>(navBackStackEntry)
-                MediaRPC(
-                    onBackPressed = { goBack() },
-                    state = viewModel.state.collectAsState().value,
-                    hasNotificationAccess = notificationListenerAccess.value,
-                    updateMediaAppEnabled = viewModel::updateMediaAppEnabled,
-                    selectAllMediaApps = viewModel::selectAllMediaApps,
-                    deselectAllMediaApps = viewModel::deselectAllMediaApps,
-                    updateAppActivityType = viewModel::updateAppActivityType,
-                )
-            }
-            composable(Routes.MEDIA_RPC_INSTANCE) { navBackStackEntry ->
-                val instanceId = navBackStackEntry.arguments?.getString("instanceId")
-                val viewModel = hiltViewModel<MediaScreenViewModel>(navBackStackEntry)
-                MediaRPC(
-                    onBackPressed = { goBack() },
-                    state = viewModel.state.collectAsState().value,
-                    hasNotificationAccess = notificationListenerAccess.value,
-                    updateMediaAppEnabled = viewModel::updateMediaAppEnabled,
-                    selectAllMediaApps = viewModel::selectAllMediaApps,
-                    deselectAllMediaApps = viewModel::deselectAllMediaApps,
-                    updateAppActivityType = viewModel::updateAppActivityType,
-                    instanceId = instanceId,
-                )
-            }
-            composable(Routes.PROFILE) { navBackStackEntry ->
-                val viewModel = hiltViewModel<UserViewModel>(navBackStackEntry)
-                val state by viewModel.state.collectAsState()
-                val scope = rememberCoroutineScope()
-                UserScreen(
-                    state = state,
-                    onBackPressed = { goBack() },
-                    onLogout = { ctx ->
-                        viewModel.logout(ctx, scope)
-                    },
-                    authTabLauncher = authTabLauncher,
-                    onBindAuthTabCallback = onBindAuthTabCallback,
-                    onNavigateToRpcPreview = {
-                        val currentState = state
-                        val user = when (currentState) {
-                            is UserState.LoadingCompleted -> currentState.user
-                            is UserState.Error -> currentState.user
-                            UserState.Loading -> null
-                        }
-                        val userId = user?.id ?: ""
-                        val avatarUrl = user?.getAvatarImage() ?: ""
-                        // Uri.encode (not URLEncoder): URLEncoder turns a space into
-                        // "+", which the navigation route does not decode back, so
-                        // "Penthouse Rules" was shown as "Penthouse+Rules".
-                        val encodedAvatarUrl = android.net.Uri.encode(avatarUrl)
-                        // Read rpcConfig directly from prefs so it always reflects
-                        // the current RPC state, even if the user toggled RPC on/off
-                        // after this screen was created.
-                        val rpcConfig: RpcConfig? = try {
-                            val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
-                            if (json.isNotBlank()) {
-                                Json.decodeFromString(json)
-                            } else {
+                    )
+                }
+
+                // App Detection screen
+                entry<AppRoute.AppsDetection> {
+                    val viewModel = hiltViewModel<AppsScreenViewModel>()
+                    val state by viewModel.state.collectAsState()
+                    AppsRPC(
+                        onBackPressed = { goBack() },
+                        hasUsageAccess = usageAccessStatus.value,
+                        state = state,
+                        updateAppEnabled = viewModel::updateAppEnabled,
+                    )
+                }
+
+                // Built-in Custom RPC screen
+                entry<AppRoute.CustomRpc> {
+                    val viewModel = hiltViewModel<CustomScreenViewModel>()
+                    val state by viewModel.uiState.collectAsState()
+                    CustomRPC(
+                        onBackPressed = { goBack() },
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                    )
+                }
+
+                // Cloned Custom RPC instance screen keyed by `key.instanceId`
+                entry<AppRoute.CustomRpcInstance> { key ->
+                    val viewModel = hiltViewModel<CustomScreenViewModel, CustomScreenViewModel.Factory>(
+                        creationCallback = { factory -> factory.create(key.instanceId) }
+                    )
+                    val state by viewModel.uiState.collectAsState()
+                    CustomRPC(
+                        onBackPressed = { goBack() },
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                    )
+                }
+
+                // Built-in Media RPC screen
+                entry<AppRoute.MediaRpc> {
+                    val viewModel = hiltViewModel<MediaScreenViewModel>()
+                    val state by viewModel.state.collectAsState()
+                    MediaRPC(
+                        onBackPressed = { goBack() },
+                        state = state,
+                        hasNotificationAccess = notificationListenerAccess.value,
+                        updateMediaAppEnabled = viewModel::updateMediaAppEnabled,
+                        selectAllMediaApps = viewModel::selectAllMediaApps,
+                        deselectAllMediaApps = viewModel::deselectAllMediaApps,
+                        updateAppActivityType = viewModel::updateAppActivityType,
+                    )
+                }
+
+                // Cloned Media RPC instance screen keyed by `key.instanceId`
+                entry<AppRoute.MediaRpcInstance> { key ->
+                    val viewModel = hiltViewModel<MediaScreenViewModel>()
+                    val state by viewModel.state.collectAsState()
+                    MediaRPC(
+                        onBackPressed = { goBack() },
+                        state = state,
+                        hasNotificationAccess = notificationListenerAccess.value,
+                        updateMediaAppEnabled = viewModel::updateMediaAppEnabled,
+                        selectAllMediaApps = viewModel::selectAllMediaApps,
+                        deselectAllMediaApps = viewModel::deselectAllMediaApps,
+                        updateAppActivityType = viewModel::updateAppActivityType,
+                        instanceId = key.instanceId,
+                    )
+                }
+
+                // Discord user profile & OAuth login screen
+                entry<AppRoute.Profile> {
+                    val viewModel = hiltViewModel<UserViewModel>()
+                    val logoutScope = rememberCoroutineScope()
+                    val state by viewModel.state.collectAsState()
+                    UserScreen(
+                        state = state,
+                        onBackPressed = { goBack() },
+                        onLogout = { ctx -> viewModel.logout(ctx, logoutScope) },
+                        authTabLauncher = authTabLauncher,
+                        onBindAuthTabCallback = onBindAuthTabCallback,
+                        onNavigateToRpcPreview = {
+                            val currentState = state
+                            val user = when (currentState) {
+                                is UserState.LoadingCompleted -> currentState.user
+                                is UserState.Error -> currentState.user
+                                UserState.Loading -> null
+                            }
+                            val userId = user?.id ?: ""
+                            val avatarUrl = user?.getAvatarImage() ?: ""
+                            val rpcConfig: RpcConfig? = try {
+                                val json = Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                                if (json.isNotBlank()) {
+                                    Json.decodeFromString(json)
+                                } else {
+                                    null
+                                }
+                            } catch (_: Exception) {
                                 null
                             }
-                        } catch (e: Exception) {
-                            null
-                        }
-                        val encodedRpcConfig = if (rpcConfig != null) {
-                            android.net.Uri.encode(
-                                kotlinx.serialization.json.Json {
+                            val encodedRpcConfig = if (rpcConfig != null) {
+                                Json {
                                     ignoreUnknownKeys = true
                                     encodeDefaults = true
-                                }.encodeToString(
-                                    com.my.kizzy.domain.model.rpc.RpcConfig.serializer(),
-                                    rpcConfig
+                                }.encodeToString(RpcConfig.serializer(), rpcConfig)
+                            } else {
+                                ""
+                            }
+                            navigateTo(
+                                AppRoute.RpcPreview(
+                                    userId = userId,
+                                    avatarUrl = avatarUrl,
+                                    rpcConfig = encodedRpcConfig,
                                 )
                             )
-                        } else ""
-                        navController.navigate("${Routes.RPC_PREVIEW}/$userId/$encodedAvatarUrl/$encodedRpcConfig")
-                    }
-                )
-            }
-            composable(Routes.LANGUAGES) {
-                Language(
-                    onBackPressed = { goBack() },
-                    updateLocaleLanguage = MainActivity::setLanguage
-                )
-            }
-            composable(Routes.STYLE_AND_APPEARANCE) {
-                Appearance(onBackPressed = {
-                    goBack()
-                }) {
-                    navController.navigate(Routes.DARK_THEME)
+                        },
+                    )
+                }
+
+                // Language selector screen
+                entry<AppRoute.Languages> {
+                    Language(
+                        onBackPressed = { goBack() },
+                        updateLocaleLanguage = MainActivity::setLanguage,
+                    )
+                }
+
+                // Appearance & theme settings
+                entry<AppRoute.StyleAndAppearance> {
+                    Appearance(
+                        onBackPressed = { goBack() },
+                        navigateToDarkTheme = { navigateTo(AppRoute.DarkTheme) },
+                    )
+                }
+
+                // Dark theme preference screen
+                entry<AppRoute.DarkTheme> {
+                    DarkThemePreferences { goBack() }
+                }
+
+                // RPC settings hub
+                entry<AppRoute.RpcSettings> {
+                    RpcSettings(
+                        onBackPressed = { goBack() },
+                        authTabLauncher = authTabLauncher,
+                        onBindAuthTabCallback = onBindAuthTabCallback,
+                        navigateToCustomRpcBoardScreen = { navigateTo(AppRoute.CustomRpcBoard) },
+                        navigateToLeaderboardScreen = { navigateTo(AppRoute.Leaderboard) },
+                    )
+                }
+
+                // Leaderboard settings
+                entry<AppRoute.Leaderboard> {
+                    LeaderboardSettings(onBackPressed = { goBack() })
+                }
+
+                // Custom RPC board screen
+                entry<AppRoute.CustomRpcBoard> {
+                    CustomRpcBoardScreen(onBackPressed = { goBack() })
+                }
+
+                // Logs viewer screen
+                entry<AppRoute.LogsScreen> {
+                    val viewModel = hiltViewModel<LogsViewModel>()
+                    LogScreen(viewModel, onBackPressed = { goBack() })
+                }
+
+                // About screen
+                entry<AppRoute.About> {
+                    About(
+                        onBackPressed = { goBack() },
+                        navigateToCredits = { navigateTo(AppRoute.Credits) },
+                    )
+                }
+
+                // Credits screen
+                entry<AppRoute.Credits> {
+                    val viewModel = hiltViewModel<CreditsScreenViewModel>()
+                    val state by viewModel.creditScreenState.collectAsState()
+                    Credits(
+                        state = state,
+                        onBackPressed = { goBack() },
+                    )
+                }
+
+                // RPC presence preview screen with assisted `rpcConfig`
+                entry<AppRoute.RpcPreview> { key ->
+                    val viewModel = hiltViewModel<RpcPreviewViewModel, RpcPreviewViewModel.Factory>(
+                        creationCallback = { factory -> factory.create(key.rpcConfig) }
+                    )
+                    val rpcConfig by viewModel.rpcConfig.collectAsState()
+                    RpcPreviewScreen(
+                        userId = key.userId,
+                        avatarUrl = key.avatarUrl,
+                        rpcConfig = rpcConfig,
+                        onBackPressed = { goBack() },
+                    )
+                }
+
+                // Built-in Manual RPC screen
+                entry<AppRoute.ManualRpc> {
+                    val viewModel = hiltViewModel<ManualRpcViewmodel>()
+                    val state by viewModel.uiState.collectAsState()
+                    ManualRpcScreen(
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                        onBackPressed = { goBack() },
+                        hasUsageAccess = usageAccessStatus.value,
+                        hasNotificationAccess = notificationListenerAccess.value,
+                        navigateToAppSelection = { navigateTo(AppRoute.ManualRpcApps) },
+                    )
+                }
+
+                // Cloned Manual RPC instance screen keyed by `key.instanceId`
+                entry<AppRoute.ManualRpcInstance> { key ->
+                    val viewModel = hiltViewModel<ManualRpcViewmodel, ManualRpcViewmodel.Factory>(
+                        creationCallback = { factory -> factory.create(key.instanceId) }
+                    )
+                    val state by viewModel.uiState.collectAsState()
+                    ManualRpcScreen(
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                        onBackPressed = { goBack() },
+                        hasUsageAccess = usageAccessStatus.value,
+                        hasNotificationAccess = notificationListenerAccess.value,
+                        navigateToAppSelection = { navigateTo(AppRoute.ManualRpcApps) },
+                    )
+                }
+
+                // App picker for Manual RPC
+                entry<AppRoute.ManualRpcApps> {
+                    val viewModel = hiltViewModel<ManualRpcViewmodel>()
+                    val state by viewModel.uiState.collectAsState()
+                    ManualRpcAppsScreen(
+                        onBackPressed = { goBack() },
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                    )
                 }
             }
-            composable(Routes.DARK_THEME) {
-                DarkThemePreferences {
-                    goBack()
-                }
-            }
-            composable(Routes.RPC_SETTINGS) {
-                // Pass named `onBackPressed` alongside AuthTab launcher & callback binder.
-                RpcSettings(
-                    onBackPressed = { goBack() },
-                    authTabLauncher = authTabLauncher,
-                    onBindAuthTabCallback = onBindAuthTabCallback,
-                    navigateToCustomRpcBoardScreen = {
-                        navController.navigate(Routes.CUSTOM_RPC_BOARD)
-                    },
-                    navigateToLeaderboardScreen = {
-                        navController.navigate(Routes.LEADERBOARD)
-                    },
-                )
-            }
-
-            composable(Routes.LEADERBOARD) {
-                LeaderboardSettings(onBackPressed = { goBack() })
-            }
-
-            composable(Routes.CUSTOM_RPC_BOARD) {
-                CustomRpcBoardScreen(onBackPressed = { goBack() })
-            }
-            composable(Routes.LOGS_SCREEN) { navBackStackEntry ->
-                val viewModel = hiltViewModel<LogsViewModel>(navBackStackEntry)
-                LogScreen(viewModel, onBackPressed = { goBack() })
-            }
-            composable(Routes.ABOUT) {
-                About(
-                    onBackPressed = {
-                        goBack()
-                    },
-                    navigateToCredits = {
-                        navController.navigate(Routes.CREDITS)
-                    }
-                )
-            }
-            composable(Routes.CREDITS) { navBackStackEntry ->
-                val viewModel = hiltViewModel<CreditsScreenViewModel>(navBackStackEntry)
-                Credits(
-                    state = viewModel.creditScreenState.collectAsState().value,
-                    onBackPressed = {
-                        goBack()
-                    }
-                )
-            }
-            composable(
-                route = "${Routes.RPC_PREVIEW}/{userId}/{avatarUrl}/{rpcConfig}",
-                arguments = listOf(
-                    navArgument("userId") { type = NavType.StringType },
-                    navArgument("avatarUrl") { type = NavType.StringType },
-                    navArgument("rpcConfig") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                val avatarUrl = backStackEntry.arguments?.getString("avatarUrl") ?: ""
-                // The route argument is only a snapshot of the presence at the
-                // moment the page was opened. The ViewModel decodes it and, while
-                // Media RPC runs, replaces the media fields with the live ones so
-                // the next song, seek and pause state show up here too.
-                val previewViewModel = hiltViewModel<RpcPreviewViewModel>(backStackEntry)
-                val rpcConfig by previewViewModel.rpcConfig.collectAsState()
-                RpcPreviewScreen(
-                    userId = userId,
-                    avatarUrl = avatarUrl,
-                    rpcConfig = rpcConfig,
-                    onBackPressed = { goBack() }
-                )
-            }
-            composable(Routes.MANUAL_RPC) { navBackStackEntry ->
-                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
-                ManualRpcScreen(
-                    state = experimentalRpcViewModel.uiState.collectAsState().value,
-                    onEvent = experimentalRpcViewModel::onEvent,
-                    onBackPressed = { goBack() },
-                    hasUsageAccess = usageAccessStatus.value,
-                    hasNotificationAccess = notificationListenerAccess.value,
-                    navigateToAppSelection = {
-                        navController.navigate(Routes.MANUAL_RPC_APPS)
-                    },
-                )
-            }
-            composable(Routes.MANUAL_RPC_INSTANCE) { navBackStackEntry ->
-                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
-                ManualRpcScreen(
-                    state = experimentalRpcViewModel.uiState.collectAsState().value,
-                    onEvent = experimentalRpcViewModel::onEvent,
-                    onBackPressed = { goBack() },
-                    hasUsageAccess = usageAccessStatus.value,
-                    hasNotificationAccess = notificationListenerAccess.value,
-                    navigateToAppSelection = {
-                        navController.navigate(Routes.MANUAL_RPC_APPS)
-                    },
-                )
-            }
-            composable(Routes.MANUAL_RPC_APPS) { navBackStackEntry ->
-                val experimentalRpcViewModel = hiltViewModel<ManualRpcViewmodel>(navBackStackEntry)
-                ManualRpcAppsScreen(
-                    onBackPressed = { goBack() },
-                    state = experimentalRpcViewModel.uiState.collectAsState().value,
-                    onEvent = experimentalRpcViewModel::onEvent,
-                )
-            }
-        }
+        )
     }
 }

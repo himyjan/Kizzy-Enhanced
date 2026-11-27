@@ -35,7 +35,6 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.datastore.preferences)
     implementation(libs.tink.android)
-    implementation(libs.hilt.navigation.compose)
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
     implementation(projects.gateway)

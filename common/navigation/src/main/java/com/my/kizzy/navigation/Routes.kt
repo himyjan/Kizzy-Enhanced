@@ -1,72 +1,86 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * Routes.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.navigation
 
-class Routes {
-    companion object {
-        /* Home Screen */
-        const val HOME = "home"
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
-        /* Onboarding/Setup Screen */
-        const val SETUP = "setup"
+/**
+ * Navigation 3 destination keys for Kizzy.
+ * Every key implements [NavKey] and is [@Serializable] so `rememberNavBackStack`
+ * can save and restore the back stack across configuration changes and process death.
+ */
+@Serializable
+sealed interface AppRoute : NavKey {
 
-        /* Profile Screen*/
-        const val PROFILE = "profile"
+    // Setup / onboarding destination
+    @Serializable
+    data object Setup : AppRoute
 
-        /* Login Screen */
-        const val LOGIN = "login"
+    // Primary Home screen destination
+    @Serializable
+    data object Home : AppRoute
 
-        /* Rpc Screens */
-        const val APPS_DETECTION = "apps_rpc"
-        const val MEDIA_RPC = "media_rpc"
-        const val MEDIA_RPC_INSTANCE = "media_rpc/{instanceId}"
-        const val CUSTOM_RPC = "custom_rpc"
-        /** Custom RPC editor for one home-screen instance (clones keep their own config). */
-        const val CUSTOM_RPC_INSTANCE = "custom_rpc/{instanceId}"
-        const val CONSOLE_RPC = "console_rpc"
-        const val MANUAL_RPC = "manual_rpc"
-        const val MANUAL_RPC_INSTANCE = "manual_rpc/{instanceId}"
-        const val MANUAL_RPC_APPS = "manual_rpc_apps"
+    // Media RPC screen; pass a non-null [instanceId] when opening a cloned instance
+    @Serializable
+    data class MediaRpc(val instanceId: String? = null) : AppRoute
 
-        /* Settings Screens */
-        const val LANGUAGES = "languages"
-        const val STYLE_AND_APPEARANCE = "style_and_appearance"
-        const val RPC_SETTINGS = "rpc_settings"
-        const val LEADERBOARD = "leaderboard"
+    @Serializable
+    data class MediaRpcInstance(val instanceId: String) : AppRoute
 
-        /* Custom RPC Board */
-        const val CUSTOM_RPC_BOARD = "custom_rpc_board"
+    // Manual RPC screen; pass a non-null [instanceId] when opening a cloned instance
+    @Serializable
+    data class ManualRpc(val instanceId: String? = null) : AppRoute
 
-        /* Display Screen */
-        const val DARK_THEME ="dark_theme_screen"
+    @Serializable
+    data class ManualRpcInstance(val instanceId: String) : AppRoute
 
-        /* Logs Screen */
-        const val LOGS_SCREEN= "logs_screen"
+    // Custom RPC screen; pass a non-null [instanceId] when opening a cloned instance
+    @Serializable
+    data class CustomRpc(val instanceId: String? = null) : AppRoute
 
-        /* About Screen */
-        const val ABOUT = "about"
-        const val CREDITS = "credits"
+    @Serializable
+    data class CustomRpcInstance(val instanceId: String) : AppRoute
 
-        /* RPC Preview Screen */
-        /**
-         * The route of the RPC preview.
-         *
-         * It must NOT contain the path parameters: the screen registers the
-         * route as "${RPC_PREVIEW}/{userId}/{avatarUrl}/{rpcConfig}". When the
-         * constant already carried the parameters, the route was registered
-         * twice and the arguments never arrived, so the preview showed no
-         * data at all.
-         */
-        const val RPC_PREVIEW = "rpc_preview"
-    }
+    // Settings drawer and top-bar destinations
+    @Serializable
+    data object Profile : AppRoute
+
+    @Serializable
+    data object StyleAndAppearance : AppRoute
+
+    @Serializable
+    data object Languages : AppRoute
+
+    @Serializable
+    data object About : AppRoute
+
+    @Serializable
+    data object RpcSettings : AppRoute
+
+    @Serializable
+    data object LogsScreen : AppRoute
+
+    @Serializable
+    data object AppsDetection : AppRoute
+
+    @Serializable
+    data object DarkTheme : AppRoute
+
+    @Serializable
+    data object CustomRpcBoard : AppRoute
+
+    @Serializable
+    data object Leaderboard : AppRoute
+
+    @Serializable
+    data object Credits : AppRoute
+
+    @Serializable
+    data object ManualRpcApps : AppRoute
+
+    @Serializable
+    data class RpcPreview(
+        val userId: String,
+        val avatarUrl: String,
+        val rpcConfig: String,
+    ) : AppRoute
 }

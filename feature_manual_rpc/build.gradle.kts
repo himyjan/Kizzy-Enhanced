@@ -14,6 +14,7 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.coil)
     implementation(libs.coil.network)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     implementation(projects.featureRpcBase)
     implementation(projects.featureProfile)

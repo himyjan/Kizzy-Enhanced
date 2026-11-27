@@ -301,7 +301,17 @@ fun StartUp(
                     }
                 }
             }
-            val allMandatoryComplete = batteryOptimizationStatus.value && notificationPostingPerm && usageAccessStatus.value && mediaControlStatus.value
+            // Discord login is mandatory too: without a token the app cannot
+            // connect the RPC gateway, so keep the user in setup until both
+            // the login and every required permission are complete.
+            val hasDiscordLogin =
+                (prefsState[Prefs.TOKEN] as? String)?.isNotBlank() == true ||
+                    (prefsState[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] as? String)?.isNotBlank() == true
+            val allMandatoryComplete = hasDiscordLogin &&
+                batteryOptimizationStatus.value &&
+                notificationPostingPerm &&
+                usageAccessStatus.value &&
+                mediaControlStatus.value
 
             // Fetch Discord user ID via REST API if we have a token but no USER_ID yet
             val anyToken = (prefsState[Prefs.TOKEN] as? String)

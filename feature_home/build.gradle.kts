@@ -21,6 +21,7 @@ dependencies {
     implementation(projects.featureRpcBase)
     implementation(projects.featureSettings)
     implementation(projects.common.navigation)
+    implementation(libs.androidx.navigation3.runtime)
     implementation(libs.coil)
     implementation(libs.coil.network)
 
