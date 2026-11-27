@@ -157,16 +157,17 @@ fun MediaRPC(
             val newValue = !mediaRpcRunning
             mediaRpcRunning = newValue
             scope.launch {
-                // Toggle only the built-in Media instance's socket. Other
-                // instances (including Media clones) stay connected.
+                // Toggle THIS instance's socket (built-in or this clone).
+                // Other instances stay connected and unaffected.
+                val targetInstanceId = instanceId ?: RPC_INSTANCE_MEDIA
                 if (newValue) {
                     rpcManager.switchToInstance(
-                        instanceId = RPC_INSTANCE_MEDIA,
+                        instanceId = targetInstanceId,
                         rpcType = RpcType.MediaRpc,
                         oauthIndex = 1,
                     )
                 } else {
-                    rpcManager.stopInstance(RPC_INSTANCE_MEDIA, RpcType.MediaRpc)
+                    rpcManager.stopInstance(targetInstanceId, RpcType.MediaRpc)
                 }
             }
         },

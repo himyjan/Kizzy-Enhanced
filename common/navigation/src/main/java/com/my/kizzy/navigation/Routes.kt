@@ -81,6 +81,6 @@ sealed interface AppRoute : NavKey {
     data class RpcPreview(
         val userId: String,
         val avatarUrl: String,
-        val rpcConfig: String,
+        val instanceId: String? = null,
     ) : AppRoute
 }

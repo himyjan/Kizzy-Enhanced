@@ -834,9 +834,12 @@ object Prefs {
         get(customRpcConfigKey(instanceId), "")
 
     fun formatIdentifyToken(token: String): String {
-        if (token.isBlank() || token.startsWith("Bearer ")) return token
+        val trimmed = token.trim()
+        if (trimmed.isBlank() || trimmed.startsWith("Bearer ")) return trimmed
+        val isAccountToken = trimmed.count { it == '.' } >= 2 || trimmed.startsWith("mfa.")
+        if (isAccountToken) return trimmed
         val method = get(RPC_CONNECTION_METHOD, RPC_CONNECTION_METHOD_OAUTH2)
-        return if (method == RPC_CONNECTION_METHOD_OAUTH2) "Bearer $token" else token
+        return if (method == RPC_CONNECTION_METHOD_OAUTH2) "Bearer $trimmed" else trimmed
     }
 
     /** Picks an app index for the [ordinal]-th instance, cycling through all apps. */

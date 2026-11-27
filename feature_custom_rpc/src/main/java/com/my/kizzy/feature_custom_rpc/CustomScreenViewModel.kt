@@ -51,6 +51,7 @@ class CustomScreenViewModel @AssistedInject constructor(
     /** Null for the built-in Custom RPC; a clone passes its own instance id. */
     @Assisted instanceId: String?,
 ) : ViewModel() {
+    private val instanceIdValue: String? = instanceId
     private val configKey: String = Prefs.customRpcConfigKey(instanceId)
 
     @AssistedFactory
@@ -63,6 +64,10 @@ class CustomScreenViewModel @AssistedInject constructor(
     private val uiEventChannel = Channel<UiEvent>(capacity = Channel.UNLIMITED)
 
     init {
+        // Tag the state with this instance so the UI's switch / restart / preset
+        // actions only touch THIS instance, never the built-in or other clones.
+        _uiState.value = _uiState.value.copy(instanceId = instanceId)
+
         // Always load the last saved custom RPC config so the screen remembers
         // what the user last modified, even if they haven't started the RPC yet.
         val lastConfig = Prefs[configKey, ""]
@@ -118,6 +123,9 @@ class CustomScreenViewModel @AssistedInject constructor(
                             action = Constants.ACTION_RESTART_SERVICE
                             putExtra("RPC", Json.encodeToString(event.config))
                             putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, false)
+                            // Target ONLY this instance. Without this a clone's edit
+                            // restarted the built-in Custom RPC with the clone's config.
+                            instanceIdValue?.let { putExtra(Constants.EXTRA_INSTANCE_ID, it) }
                         }
                         context.startService(intent)
                     }

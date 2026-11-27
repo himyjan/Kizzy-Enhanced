@@ -410,6 +410,8 @@ fun CustomRpcScreen(
 
                 selectedTab = selectedTab,
 
+                instanceId = state.instanceId,
+
                 onPresetSelected = { selectedTab = 0 }
 
             )
@@ -433,6 +435,8 @@ private fun RpcTextFieldsColumn(
     snackBarHostState: SnackbarHostState,
 
     selectedTab: Int = 0,
+
+    instanceId: String? = null,
 
     onPresetSelected: () -> Unit = {},
 
@@ -458,20 +462,22 @@ private fun RpcTextFieldsColumn(
         isCustomRpcEnabled = RpcType.CustomRpc in rpcManager.activeRpc.value
         isConsoleRpcEnabled = RpcType.ConsoleRpc in rpcManager.activeRpc.value
     }
+    // Clones read their own instance-scoped console settings; built-ins use
+    // the legacy global keys.
     var consolePlatform by remember {
-        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"])
+        mutableStateOf(Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_PLATFORM, instanceId), "xbox"])
     }
     var consoleActivityType by remember {
-        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_ACTIVITY_TYPE, "0"])
+        mutableStateOf(Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_ACTIVITY_TYPE, instanceId), "0"])
     }
     var consoleStatus by remember {
-        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_STATUS, "online"])
+        mutableStateOf(Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_STATUS, instanceId), "online"])
     }
     var consoleEnableTimestamps by remember {
-        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_ENABLE_TIMESTAMPS, false])
+        mutableStateOf(Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_ENABLE_TIMESTAMPS, instanceId), false])
     }
     var consoleShowCoverArt by remember {
-        mutableStateOf(Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART, true])
+        mutableStateOf(Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_SHOW_COVER_ART, instanceId), true])
     }
     var consoleButton1Text by remember {
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON1_TEXT, ""])
@@ -499,7 +505,7 @@ private fun RpcTextFieldsColumn(
         // the list reflects the current Console RPC configuration.
         mutableStateOf(
             ConsolePresetStore.selectedId().ifBlank {
-                val platform = Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"]
+                val platform = Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_PLATFORM, instanceId), "xbox"]
                 ConsolePresetStore.builtIns().firstOrNull { it.platform == platform }?.id ?: ""
             }
         )
@@ -559,13 +565,15 @@ private fun RpcTextFieldsColumn(
         }
     }
 
-    /** Writes the console values to the preferences so they survive a restart. */
+    /** Writes the console values to the preferences so they survive a restart.
+     *  Clones use instance-scoped keys so their settings never touch the built-in
+     *  Custom/Console RPC config. */
     fun persistConsoleSettings() {
-        Prefs[Prefs.CONSOLE_RPC_PLATFORM] = consolePlatform
-        Prefs[Prefs.CONSOLE_RPC_ACTIVITY_TYPE] = consoleActivityType
-        Prefs[Prefs.CONSOLE_RPC_STATUS] = consoleStatus
-        Prefs[Prefs.CONSOLE_RPC_ENABLE_TIMESTAMPS] = consoleEnableTimestamps
-        Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART] = consoleShowCoverArt
+        Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_PLATFORM, instanceId)] = consolePlatform
+        Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_ACTIVITY_TYPE, instanceId)] = consoleActivityType
+        Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_STATUS, instanceId)] = consoleStatus
+        Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_ENABLE_TIMESTAMPS, instanceId)] = consoleEnableTimestamps
+        Prefs[Prefs.scopedKey(Prefs.CONSOLE_RPC_SHOW_COVER_ART, instanceId)] = consoleShowCoverArt
     }
 
     /** The presence that Console RPC sends with the current values. */
@@ -717,18 +725,33 @@ private fun RpcTextFieldsColumn(
                             // always received "Console RPC / Console RPC running".
                             val customConfig = uiState.rpcConfig
                             scope.launch {
-                                // Add Custom RPC without stopping Console RPC or other RPCs.
-                                rpcManager.switchTo(
-                                    setOf(RpcType.CustomRpc),
-                                    add = true,
-                                    rpcConfigString = Json.encodeToString(customConfig),
-                                    isConsoleRpc = false
-                                )
+                                if (instanceId != null) {
+                                    // Clone: use the instance-scoped path so this clone
+                                    // gets its own socket + config and never touches
+                                    // the built-in Custom RPC.
+                                    rpcManager.switchToInstance(
+                                        instanceId = instanceId,
+                                        rpcType = RpcType.CustomRpc,
+                                        config = Json.encodeToString(customConfig.copy(instanceId = instanceId)),
+                                    )
+                                } else {
+                                    // Built-in Custom RPC.
+                                    rpcManager.switchTo(
+                                        setOf(RpcType.CustomRpc),
+                                        add = true,
+                                        rpcConfigString = Json.encodeToString(customConfig),
+                                        isConsoleRpc = false
+                                    )
+                                }
                             }
                         }
                         false -> scope.launch {
-                            // Stop only Custom RPC, leave Console RPC and others running.
-                            rpcManager.stopRpcTypes(setOf(RpcType.CustomRpc))
+                            // Stop only this instance; leave Console RPC and others running.
+                            if (instanceId != null) {
+                                rpcManager.stopInstance(instanceId, RpcType.CustomRpc)
+                            } else {
+                                rpcManager.stopRpcTypes(setOf(RpcType.CustomRpc))
+                            }
                         }
                     }
                 }
@@ -1920,8 +1943,8 @@ private fun RpcTextFieldsColumn(
             item {
                 androidx.compose.material3.OutlinedButton(
                     onClick = {
-                        val mediaCfg = rpcManager.presenceConfigs.value[RpcType.MediaRpc]
-                        val manualCfg = rpcManager.presenceConfigs.value[RpcType.ManualRpc]
+                        val mediaCfg = rpcManager.presenceConfigs.value["media_rpc"]
+                        val manualCfg = rpcManager.presenceConfigs.value["manual_rpc"]
                         val source = mediaCfg ?: manualCfg
                         if (source != null) {
                             onEvent(UiEvent.SetFieldsFromConfig(source))
