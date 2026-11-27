@@ -33,5 +33,7 @@ data class UiState(
     val showLargeCoverArt: Boolean = true,
     val showSmallCoverArt: Boolean = true,
     val consoleGames: List<Game> = emptyList(),
-    val rpcConfig: RpcConfig = RpcConfig()
+    val rpcConfig: RpcConfig = RpcConfig(),
+    /** Null for built-in Custom RPC; the clone's id otherwise. */
+    val instanceId: String? = null,
 )

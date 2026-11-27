@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.coil.network)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(projects.featureRpcBase)
     implementation(projects.featureProfile)
 
