@@ -1510,7 +1510,15 @@ class MediaRpcService : Service() {
         }
     }
 
-    private fun updateNotificationPauseButton() {
+    private var lastNotificationUpdateMs: Long = 0
+
+private fun updateNotificationPauseButton() {
+        // Throttle notification updates to at most once per second to avoid
+        // Android's notification rate limit which mutes the app as noisy.
+        val now = System.currentTimeMillis()
+        if (now - lastNotificationUpdateMs < 1000) return
+        lastNotificationUpdateMs = now
+
         val title = currentMediaTitle ?: getString(R.string.rich_presence_active)
 
         // Build "artist · channels" plus the elapsed/total time, e.g.
