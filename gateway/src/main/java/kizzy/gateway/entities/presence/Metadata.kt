@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Metadata(
     @SerialName("button_urls")
-    val buttonUrls: List<String?>?
+    val buttonUrls: List<String?>? = null,
 )

@@ -37,4 +37,3 @@ fun Number.autoDark(isDarkTheme: Boolean = LocalDarkTheme.current.isDarkTheme())
         100.0 -> 20.0
         else -> this.toDouble()
     }
-

@@ -10,5 +10,5 @@ data class Resume(
     @SerialName("session_id")
     val sessionId: String?,
     @SerialName("token")
-    val token: String
+    val token: String,
 )

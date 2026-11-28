@@ -28,7 +28,7 @@ enum class OpCode(val value: Int) {
     /** Request information about offline guild members in a large guild. */
     REQUEST_GUILD_MEMBERS(8),
 
-    /** The session has been invalidated. You should reconnect and identify/resume accordingly */
+    /** The session has been invalidated. You should reconnect and identify/resume accordingly. */
     INVALID_SESSION(9),
 
     /** Sent immediately after connecting, contains the heartbeat_interval to use. */

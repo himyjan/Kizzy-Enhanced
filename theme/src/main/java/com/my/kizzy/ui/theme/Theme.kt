@@ -153,12 +153,13 @@ fun getColorScheme(
     }
     return colorScheme
 }
+
 @Composable
 fun KizzyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     isHighContrastModeEnabled: Boolean = false,
     isDynamicColorEnabled: Boolean,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = getColorScheme(
         darkTheme,

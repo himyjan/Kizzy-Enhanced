@@ -12,5 +12,5 @@ data class Presence(
     @SerialName("since")
     val since: Long? = 0L,
     @SerialName("status")
-    val status: String? = "online"
+    val status: String? = "online",
 )

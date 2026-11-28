@@ -8,12 +8,13 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 class OpCodeSerializer : KSerializer<OpCode> {
-    override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor("OpCode", PrimitiveKind.INT)
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("OpCode", PrimitiveKind.INT)
 
     override fun deserialize(decoder: Decoder): OpCode {
         val opCode = decoder.decodeInt()
-        return OpCode.values().firstOrNull { it.value == opCode } ?: throw IllegalArgumentException("Unknown OpCode $opCode")
+        return OpCode.entries.firstOrNull { it.value == opCode }
+            ?: throw IllegalArgumentException("Unknown OpCode $opCode")
     }
 
     override fun serialize(encoder: Encoder, value: OpCode) {

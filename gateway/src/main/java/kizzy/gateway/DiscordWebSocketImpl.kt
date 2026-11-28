@@ -2,12 +2,18 @@ package kizzy.gateway
 
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.interfaces.NoOpLogger
-import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.client.plugins.websocket.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.headers
 import io.ktor.http.HttpHeaders
-import io.ktor.websocket.*
+import io.ktor.websocket.CloseReason
+import io.ktor.websocket.Frame
+import io.ktor.websocket.close
+import io.ktor.websocket.readReason
+import io.ktor.websocket.readText
 import kizzy.gateway.entities.Heartbeat
 import kizzy.gateway.entities.Identify.Companion.toIdentifyPayload
 import kizzy.gateway.entities.OutgoingPayload
@@ -17,27 +23,46 @@ import kizzy.gateway.entities.Ready
 import kizzy.gateway.entities.Resume
 import kizzy.gateway.entities.SessionReplaceEntry
 import kizzy.gateway.entities.op.OpCode
-import kizzy.gateway.entities.op.OpCode.*
-import kizzy.gateway.entities.presence.Assets
+import kizzy.gateway.entities.op.OpCode.DISPATCH
+import kizzy.gateway.entities.op.OpCode.HEARTBEAT
+import kizzy.gateway.entities.op.OpCode.HEARTBEAT_ACK
+import kizzy.gateway.entities.op.OpCode.HELLO
+import kizzy.gateway.entities.op.OpCode.IDENTIFY
+import kizzy.gateway.entities.op.OpCode.INVALID_SESSION
+import kizzy.gateway.entities.op.OpCode.PRESENCE_UPDATE
+import kizzy.gateway.entities.op.OpCode.RECONNECT
+import kizzy.gateway.entities.op.OpCode.RESUME
 import kizzy.gateway.entities.presence.Activity
 import kizzy.gateway.entities.presence.ActivityButton
+import kizzy.gateway.entities.presence.Assets
 import kizzy.gateway.entities.presence.Metadata
 import kizzy.gateway.entities.presence.Presence
 import kizzy.gateway.entities.presence.Timestamps
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.decodeFromString
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlin.coroutines.CoroutineContext
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
@@ -56,40 +81,51 @@ open class DiscordWebSocketImpl(
     private var identifyOs: String = "Windows",
     private var identifyDevice: String = "ktor",
     private val externalScope: CoroutineScope? = null,
-    private val isOnlineState: StateFlow<Boolean>? = null
+    private val isOnlineState: StateFlow<Boolean>? = null,
 ) : DiscordWebSocket {
     companion object {
         @Volatile
         var instance: DiscordWebSocketImpl? = null
         private const val STUCK_CONNECT_MS = 45_000L
         private const val CONNECT_WAIT_TIMEOUT_MS = 15_000L
-        private const val CLOSE_AUTH_FAILED = 4004
         private const val CUSTOM_STATUS_TYPE = 4
         private val NON_RESUMABLE_CLOSE_CODES = setOf(4004, 4010, 4011, 4012, 4013, 4014)
     }
+
     private val gatewayUrl = "wss://gateway.discord.gg/?v=10&encoding=json"
     private var websocket: DefaultClientWebSocketSession? = null
     private var sequence = 0
     private var sessionId: String? = null
     private var heartbeatInterval = 0L
+
     /** Callback invoked when a SESSIONS_REPLACE no longer contains our activity. */
     override var onPresenceDropped: (() -> Unit)? = null
+
     // Identity of the activity from the last successfully sent presence. Used to
     // decide whether an incoming SESSIONS_REPLACE still contains our presence.
     @Volatile
     internal var lastSentActivityApplicationId: String? = null
+
     @Volatile
     internal var lastSentActivityName: String? = null
+
     private var resumeGatewayUrl: String? = null
     private var heartbeatJob: Job? = null
+
     @Volatile
     private var connected = false
+
     /** True when the current handshake used RESUME, false when it used IDENTIFY. */
     private var handshakeUsedResume = false
+
+    @Volatile
     private var deliberateClose = false
     private var reconnectAttempts = 0
+
+    @Volatile
     private var awaitingHeartbeatAck = false
-    private var client: HttpClient = HttpClient(OkHttp) {
+
+    private val client: HttpClient = HttpClient(OkHttp) {
         install(WebSockets)
     }
     private val json = Json {
@@ -103,41 +139,39 @@ open class DiscordWebSocketImpl(
     private val _gatewayEvents = MutableSharedFlow<Payload>(replay = 1, extraBufferCapacity = 64)
     val gatewayEvents: SharedFlow<Payload> = _gatewayEvents.asSharedFlow()
 
-    private val externalCoroutineScope: CoroutineScope? = externalScope
     private val supervisorJob = SupervisorJob()
-    override val coroutineContext: CoroutineContext = (externalScope?.coroutineContext ?: supervisorJob) + Dispatchers.Default
+    override val coroutineContext: CoroutineContext =
+        (externalScope?.coroutineContext ?: supervisorJob) + Dispatchers.Default
 
-    // Connection management - Mutex instead of synchronized for coroutine safety
     private val connectionMutex = Mutex()
+
     @Volatile
     private var connectionJob: Job? = null
+
     @Volatile
     private var generation = 0
+
     @Volatile
     private var connectStartedAtNanos = 0L
 
+    private var reconnectJob: Job? = null
+
+    @Volatile
+    private var reconnectScheduled = false
+
     override suspend fun connect() {
-        // Early return if already connected and the WebSocket is active.
-        // updateRPC() calls connect() on every presence update; without this
-        // guard each call launches a coroutine on the supervisor job even when
-        // the gateway is already open, which contributes to socket churn.
         if (websocket?.isActive == true && connected) {
             logger.d("Gateway", "Connect called while already connected; keeping it")
             return
         }
 
-        launch(coroutineContext) {
+        launch {
             try {
                 logger.i("Gateway", "Connect called")
                 instance = this@DiscordWebSocketImpl
-                // A previous close() must not prevent this explicit connect from working.
                 deliberateClose = false
                 _connectionState.value = ConnectionState.Connecting
 
-                // Everything is decided and started while holding the mutex. Doing
-                // connectInternal() outside the lock left a small window in which a
-                // second connect() also saw "no live job" and opened a second socket
-                // (the first one was then cancelled by the generation check).
                 connectionMutex.withLock {
                     val live = connectionJob
                     if (live != null && live.isActive) {
@@ -150,9 +184,7 @@ open class DiscordWebSocketImpl(
                             live.cancel()
                             val stale = websocket
                             websocket = null
-                            // Best-effort close; ignore failures (e.g. socket already closed).
-                            if (runCatching { stale?.close() }.isFailure) {
-                            }
+                            runCatching { stale?.close() }
                             connectInternal()
                         }
                     } else {
@@ -171,9 +203,6 @@ open class DiscordWebSocketImpl(
             }
         }
     }
-
-    private var reconnectJob: Job? = null
-    private var reconnectScheduled = false
 
     private suspend fun connectInternal() {
         val gen = ++generation
@@ -197,25 +226,23 @@ open class DiscordWebSocketImpl(
                     }
                 }
                 if (gen != generation) {
-                    // Best-effort close; ignore failures (e.g. session already closed).
-                    if (runCatching { session.close() }.isFailure) {
-                    }
+                    runCatching { session.close() }
                     return@launch
                 }
                 websocket = session
 
                 session.incoming.receiveAsFlow()
-                    .collect {
-                        when (it) {
+                    .collect { frame ->
+                        when (frame) {
                             is Frame.Text -> {
-                                val jsonString = it.readText()
+                                val jsonString = frame.readText()
                                 if (gen == generation) onMessage(jsonString)
                             }
                             is Frame.Close -> {
-                                val reason = it.readReason()
+                                val reason = frame.readReason()
                                 logger.w("Gateway", "WebSocket close frame: code=${reason?.code}, reason=${reason?.message ?: "none"}")
                             }
-                            else -> {}
+                            else -> Unit
                         }
                     }
                 if (gen == generation) {
@@ -238,7 +265,10 @@ open class DiscordWebSocketImpl(
 
     private suspend fun scheduleReconnect() {
         if (deliberateClose || reconnectScheduled) return
-        reconnectScheduled = true
+        connectionMutex.withLock {
+            if (deliberateClose || reconnectScheduled) return
+            reconnectScheduled = true
+        }
         heartbeatJob?.cancel()
         connected = false
         reconnectJob = launch {
@@ -277,9 +307,6 @@ open class DiscordWebSocketImpl(
                 payload.handleDispatch(jsonString)
                 if (payload.t == "SESSIONS_REPLACE") {
                     if (isOurActivityPresent(jsonString)) {
-                        // This is the echo of our own PRESENCE_UPDATE (or another
-                        // client's update that kept our activity). Re-sending would
-                        // be a duplicate and burn the presence rate limit.
                         logger.d("Gateway", "SESSIONS_REPLACE still contains our activity")
                     } else {
                         logger.i("Gateway", "SESSIONS_REPLACE no longer contains our activity — re-applying presence")
@@ -295,7 +322,7 @@ open class DiscordWebSocketImpl(
                 awaitingHeartbeatAck = false
                 logger.d("Gateway", "Heartbeat ACK received")
             }
-            else -> {}
+            else -> Unit
         }
     }
 
@@ -304,20 +331,13 @@ open class DiscordWebSocketImpl(
             "READY" -> {
                 val ready = decodePayloadData<Ready>(jsonString) ?: return
                 sessionId = ready.sessionId
-                // resume_gateway_url is optional in the READY payload. Appending to
-                // a null used to produce the invalid url "null/?v=10&encoding=json".
                 resumeGatewayUrl = ready.resumeGatewayUrl?.let { "$it/?v=10&encoding=json" }
                 logger.i("Gateway", "resume_gateway_url updated to $resumeGatewayUrl")
                 logger.i("Gateway", "session_id updated to $sessionId")
                 connected = true
-                // A successful handshake ends the current reconnect cycle.
                 reconnectAttempts = 0
                 _connectionState.value = ConnectionState.Connected
-                // Always re-apply presence after reconnect, whether IDENTIFY or RESUME
-                // was used. Presence updates queued while the socket was down were
-                // never sent, so they must be re-sent after any reconnect.
                 onPresenceDropped?.invoke()
-                return
             }
             "RESUMED" -> {
                 logger.i("Gateway", "Session Resumed")
@@ -325,20 +345,17 @@ open class DiscordWebSocketImpl(
                 reconnectAttempts = 0
                 _connectionState.value = ConnectionState.Connected
             }
-            else -> {}
+            else -> Unit
         }
     }
 
     private suspend fun handleInvalidSession(jsonString: String) {
-        // Discord's INVALID_SESSION `d` is a boolean: true means the session can
-        // still be resumed, false means it is gone and a fresh IDENTIFY is needed.
         val resumable = runCatching {
             json.decodeFromString<PayloadData<Boolean>>(jsonString).d
         }.getOrNull() ?: false
 
         if (resumable && sequence > 0 && !sessionId.isNullOrBlank()) {
             logger.i("Gateway", "Invalid session (resumable) — resuming")
-            // Discord asks clients to wait 1-5 seconds before resuming.
             delay(Random.nextLong(1_000L, 5_000L))
             sendResume()
         } else {
@@ -362,12 +379,6 @@ open class DiscordWebSocketImpl(
         startHeartbeatJob(heartbeatInterval)
     }
 
-    /**
-     * Whether an incoming SESSIONS_REPLACE still contains the activity we last
-     * sent. This replaces the old time-window heuristic, which re-applied the
-     * presence when it was still there and skipped it when Discord had actually
-     * cleared it (the exact "RPC stops working" case).
-     */
     internal fun isOurActivityPresent(jsonString: String): Boolean {
         val appId = lastSentActivityApplicationId
         val name = lastSentActivityName
@@ -380,33 +391,29 @@ open class DiscordWebSocketImpl(
         }
         val found = sessions.any { session ->
             session.activities.any { activity ->
-                // type 4 is a Custom Status, never our Rich Presence.
                 activity.type != CUSTOM_STATUS_TYPE &&
-                    ((appId != null && activity.applicationId == appId) ||
-                        (name != null && activity.name == name))
+                        ((appId != null && activity.applicationId == appId) ||
+                                (name != null && activity.name == name))
             }
         }
         if (!found) {
             logger.d(
                 "Gateway",
                 "SESSIONS_REPLACE mismatch: want appId=$appId name=$name, " +
-                    "sessions=" + sessions.joinToString { s ->
-                        "${s.sessionId}:[" + s.activities.joinToString { a ->
-                            "${a.name}/${a.type}/${a.applicationId}"
-                        } + "]"
-                    }
+                        "sessions=" + sessions.joinToString { s ->
+                    "${s.sessionId}:[" + s.activities.joinToString { a ->
+                        "${a.name}/${a.type}/${a.applicationId}"
+                    } + "]"
+                }
             )
         }
         return found
     }
 
-    protected fun decodeReady(jsonString: String): Ready? {
-        return decodePayloadData(jsonString)
-    }
+    protected fun decodeReady(jsonString: String): Ready? = decodePayloadData(jsonString)
 
-    private inline fun <reified T> decodePayloadData(jsonString: String): T? {
-        return json.decodeFromString<PayloadData<T>>(jsonString).d
-    }
+    private inline fun <reified T> decodePayloadData(jsonString: String): T? =
+        json.decodeFromString<PayloadData<T>>(jsonString).d
 
     private suspend fun sendHeartBeat() {
         logger.i("Gateway", "Sending $HEARTBEAT with seq: $sequence")
@@ -416,7 +423,7 @@ open class DiscordWebSocketImpl(
         )
     }
 
-    private suspend fun handleClose(session: DefaultWebSocketSession) {
+    private suspend fun handleClose(session: DefaultClientWebSocketSession) {
         heartbeatJob?.cancel()
         connected = false
         val closeReason = session.closeReason.await()
@@ -426,10 +433,6 @@ open class DiscordWebSocketImpl(
                 "Gateway",
                 "WebSocket closed: code=$code, reason=${closeReason?.message ?: "none"}"
             )
-            // 4004 = Authentication failed (bad token, or an OAuth2 bearer
-            // token used for IDENTIFY). Retrying with the same token creates an
-            // endless reconnect loop and floods the log. Stop and require a
-            // new login / token refresh instead.
             if (code.toInt() in NON_RESUMABLE_CLOSE_CODES) {
                 logger.e("Gateway", "Non-resumable close ($code): authentication failed, not reconnecting")
                 sessionId = null
@@ -443,7 +446,7 @@ open class DiscordWebSocketImpl(
         }
     }
 
-    private suspend inline fun reconnectWebSocket() {
+    private suspend fun reconnectWebSocket() {
         try {
             websocket?.close(
                 CloseReason(
@@ -486,7 +489,7 @@ open class DiscordWebSocketImpl(
     private fun startHeartbeatJob(interval: Long) {
         heartbeatJob?.cancel()
         awaitingHeartbeatAck = false
-        heartbeatJob = launch((externalScope?.coroutineContext ?: supervisorJob) + Dispatchers.IO) {
+        heartbeatJob = launch(Dispatchers.IO) {
             while (isActive) {
                 if (awaitingHeartbeatAck) {
                     logger.w("Gateway", "No heartbeat ACK — zombie connection, reconnecting")
@@ -500,19 +503,13 @@ open class DiscordWebSocketImpl(
         }
     }
 
-    private fun isSocketConnectedToAccount(): Boolean {
-        return connected && websocket?.isActive == true
-    }
+    private fun isSocketConnectedToAccount(): Boolean =
+        connected && websocket?.isActive == true
 
-    @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
-    override fun isWebSocketConnected(): Boolean {
-        // "connected" only becomes true after READY/RESUMED. Checking just the
-        // socket object reported a connection that had not authenticated yet
-        // (and a dead one during the reconnect backoff), so callers skipped the
-        // reconnect and the presence was silently dropped.
-        return connected && websocket?.isActive == true &&
-            websocket?.outgoing?.isClosedForSend == false
-    }
+    override fun isWebSocketConnected(): Boolean =
+        connected &&
+                websocket?.isActive == true &&
+                websocket?.outgoing?.isClosedForSend == false
 
     private suspend inline fun <reified T> send(op: OpCode, d: T?): Boolean {
         val socket = websocket
@@ -534,22 +531,16 @@ open class DiscordWebSocketImpl(
         deliberateClose = true
         heartbeatJob?.cancel()
         heartbeatJob = null
-        // Tear down the CURRENT connection, but keep the coroutine scope alive.
-        //
-        // Cancelling the scope (this.cancel()) used to permanently kill the gateway: every
-        // later connect() launched on an already-cancelled job and therefore never ran, so
-        // the RPC could never come back once it had been closed. That is what made switching
-        // to another app in the apps list leave Discord showing the previous app forever.
+        reconnectJob?.cancel()
+        reconnectJob = null
+        reconnectScheduled = false
         connectionJob?.cancel()
         connectionJob = null
-        // Best-effort cancel; ignore failures (e.g. already cancelled).
-        if (runCatching { websocket?.cancel() }.isFailure) {
-        }
+        val stale = websocket
         websocket = null
+        runCatching { stale?.coroutineContext?.job?.cancel() }
         resumeGatewayUrl = null
         sessionId = null
-        // A deliberate close starts a brand-new session on the next connect, so
-        // the old sequence must not be used for a heartbeat before READY.
         sequence = 0
         awaitingHeartbeatAck = false
         handshakeUsedResume = false
@@ -580,8 +571,6 @@ open class DiscordWebSocketImpl(
             false
         }
         if (sent) {
-            // Remember what Discord should now show, so SESSIONS_REPLACE can be
-            // checked against the real content instead of a time window.
             val primary = presence.activities?.firstOrNull()
             lastSentActivityApplicationId = primary?.applicationId
             lastSentActivityName = primary?.name
@@ -601,7 +590,7 @@ open class DiscordWebSocketImpl(
         endTime: Long? = null,
         status: String = "online",
         afk: Boolean = false,
-        buttons: List<ActivityButton>? = null
+        buttons: List<ActivityButton>? = null,
     ) {
         if (!isSocketConnectedToAccount()) {
             logger.w("Gateway", "Socket not connected — cannot update presence")
@@ -610,15 +599,23 @@ open class DiscordWebSocketImpl(
 
         val timestamps = if (startTime != null || endTime != null) {
             Timestamps(start = startTime, end = endTime)
-        } else null
+        } else {
+            null
+        }
 
         val assets = if (largeImageKey != null || smallImageKey != null) {
-            Assets(largeImage = largeImageKey, smallImage = smallImageKey, largeText = largeText, smallText = smallText)
-        } else null
+            Assets(
+                largeImage = largeImageKey,
+                smallImage = smallImageKey,
+                largeText = largeText,
+                smallText = smallText,
+            )
+        } else {
+            null
+        }
 
-        // Client-presence format: labels in buttons, urls in metadata.
         val btnLabels = buttons?.map { it.label }
-        val btnMetadata = buttons?.let { Metadata(buttonUrls = it.map { it.url }) }
+        val btnMetadata = buttons?.let { Metadata(buttonUrls = it.map { b -> b.url }) }
 
         val activity = Activity(
             name = name,
@@ -628,13 +625,13 @@ open class DiscordWebSocketImpl(
             timestamps = timestamps,
             assets = assets,
             buttons = btnLabels,
-            metadata = btnMetadata
+            metadata = btnMetadata,
         )
 
         val presence = Presence(
             activities = listOf(activity),
             status = status,
-            afk = afk
+            afk = afk,
         )
 
         logger.i("Gateway", "Sending $PRESENCE_UPDATE — name=$name, details=$details")
@@ -647,15 +644,12 @@ open class DiscordWebSocketImpl(
     suspend fun clearPresence() {
         if (!isSocketConnectedToAccount()) return
         logger.i("Gateway", "Clearing Rich Presence")
-        // Only the activity is removed. Setting status="invisible" here (as the
-        // old code did) also made the whole account appear offline to everyone,
-        // which is not what "clear the activity" means.
         if (send(
                 op = PRESENCE_UPDATE,
                 d = Presence(
                     activities = emptyList(),
                     status = "online",
-                    afk = false
+                    afk = false,
                 )
             )
         ) {
@@ -674,10 +668,11 @@ open class DiscordWebSocketImpl(
     private suspend fun stopWebSocketInternally() {
         heartbeatJob?.cancel()
         heartbeatJob = null
-        // Best-effort close; ignore failures (e.g. already closed).
-        if (runCatching { websocket?.close() }.isFailure) {
-        }
+        connectionJob?.cancel()
+        connectionJob = null
+        val stale = websocket
         websocket = null
+        runCatching { stale?.close() }
         connected = false
         sessionId = null
         resumeGatewayUrl = null
@@ -690,14 +685,6 @@ open class DiscordWebSocketImpl(
         connect()
     }
 
-    /**
-     * Refreshes the token and platform-indicator properties before (re)connecting.
-     *
-     * These are stored as constructor parameters and were immutable, so a token or
-     * platform change after DI never took effect. If the Media RPC service auto-starts
-     * before the user logs in, the token is empty and Discord rejects the IDENTIFY,
-     * so the presence is never sent.
-     */
     public fun refreshIdentifyProperties(
         token: String,
         browser: String,
@@ -712,7 +699,7 @@ open class DiscordWebSocketImpl(
 
     fun disconnect() {
         deliberateClose = true
-        launch(coroutineContext) {
+        launch {
             stopWebSocketInternally()
         }
     }
@@ -724,4 +711,23 @@ open class DiscordWebSocketImpl(
     private fun emitEvent(event: RpcEvent, message: String) {
         logger.i("Gateway", "$event: $message")
     }
+
+    @Suppress("unused")
+    private suspend fun fetchCurrentUserId(bearerOrUserToken: String): String? =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val connection = (URL("https://discord.com/api/v10/users/@me").openConnection() as HttpURLConnection).apply {
+                    requestMethod = "GET"
+                    setRequestProperty("Authorization", bearerOrUserToken)
+                    connectTimeout = 10_000
+                    readTimeout = 10_000
+                }
+                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                    val body = connection.inputStream.bufferedReader().use { it.readText() }
+                    Regex("\"id\":\"([^\"]+)\"").find(body)?.groupValues?.getOrNull(1)
+                } else {
+                    null
+                }
+            }.getOrNull()
+        }
 }

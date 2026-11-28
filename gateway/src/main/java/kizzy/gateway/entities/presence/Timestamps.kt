@@ -8,5 +8,5 @@ data class Timestamps(
     @SerialName("end")
     val end: Long? = null,
     @SerialName("start")
-    val start: Long? = null
+    val start: Long? = null,
 )

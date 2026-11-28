@@ -8,7 +8,7 @@ data class Party(
     @SerialName("id")
     val id: String = "kizzy",
     @SerialName("size")
-    val size: Array<Int> = arrayOf(0, 0)
+    val size: Array<Int> = arrayOf(0, 0),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -21,6 +21,7 @@ data class Party(
 
         return true
     }
+
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + size.contentHashCode()

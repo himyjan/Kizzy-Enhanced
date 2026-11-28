@@ -8,7 +8,7 @@ data class ActivityButton(
     @SerialName("label")
     val label: String,
     @SerialName("url")
-    val url: String
+    val url: String,
 )
 
 @Serializable
@@ -51,5 +51,5 @@ data class Activity(
      * Defaults to 0 (name) if not specified.
      */
     @SerialName("status_display_type")
-    val statusDisplayType: Int? = null
+    val statusDisplayType: Int? = null,
 )

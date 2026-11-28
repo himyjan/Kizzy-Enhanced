@@ -1,4 +1,5 @@
 package kizzy.gateway.entities
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,13 +17,13 @@ data class Identify(
     val token: String,
     // Required by the Social SDK presence flow (and ignored by account tokens).
     @SerialName("intents")
-    val intents: Int = 0
-){
+    val intents: Int = 0,
+) {
     companion object {
         fun String.toIdentifyPayload(
             browser: String = "Discord Client",
             os: String = "Windows",
-            device: String = "ktor"
+            device: String = "ktor",
         ) = Identify(
             capabilities = 65,
             compress = false,
@@ -30,9 +31,9 @@ data class Identify(
             properties = Properties(
                 browser = browser,
                 device = device,
-                os = os
+                os = os,
             ),
-            token = this
+            token = this,
         )
     }
 }
@@ -44,5 +45,5 @@ data class Properties(
     @SerialName("device")
     val device: String,
     @SerialName("os")
-    val os: String
+    val os: String,
 )

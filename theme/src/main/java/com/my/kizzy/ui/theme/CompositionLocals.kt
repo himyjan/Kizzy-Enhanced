@@ -28,17 +28,21 @@ import com.kyant.monet.TonalPalettes.Companion.toTonalPalettes
 import com.my.kizzy.preference.AppSettingsStateFlow
 import com.my.kizzy.preference.DEFAULT_SEED_COLOR
 import com.my.kizzy.preference.DarkThemePreference
+import com.my.kizzy.preference.ThemeStyle
 import com.my.kizzy.preference.palettesMap
 
 val LocalDarkTheme = compositionLocalOf { DarkThemePreference() }
 val LocalSeedColor = compositionLocalOf { DEFAULT_SEED_COLOR }
 val LocalDynamicColorSwitch = compositionLocalOf { false }
-val LocalThemeStyle = compositionLocalOf { com.my.kizzy.preference.ThemeStyle.KIZZY }
+val LocalThemeStyle = compositionLocalOf { ThemeStyle.KIZZY }
 val LocalWindowWidthState = staticCompositionLocalOf { WindowWidthSizeClass.Compact }
 val LocalPaletteStyleIndex = compositionLocalOf { 0 }
 
 @Composable
-fun SettingsProvider(windowWidthSizeClass: WindowWidthSizeClass,content: @Composable () -> Unit) {
+fun SettingsProvider(
+    windowWidthSizeClass: WindowWidthSizeClass,
+    content: @Composable () -> Unit,
+) {
     val appSettingsState = AppSettingsStateFlow.collectAsState().value
     CompositionLocalProvider(
         LocalDarkTheme provides appSettingsState.darkTheme,
