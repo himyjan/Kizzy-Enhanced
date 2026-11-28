@@ -18,6 +18,13 @@ versionCatalogUpdate {
     versionSelector { candidate ->
         !candidate.candidate.version.isBlank()
     }
+    keep {
+        versions.addAll(
+            "gradle",
+            "version-name",
+            "version-code",
+        )
+    }
 }
 
 allprojects {

@@ -20,28 +20,35 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 class CreditsScreenViewModel @Inject constructor(
     private val getContributorsUseCase: GetContributorsUseCase
-): ViewModel() {
-    private val _creditScreenState: MutableStateFlow<CreditScreenState> = MutableStateFlow(CreditScreenState.Loading)
-    val creditScreenState: StateFlow<CreditScreenState> = _creditScreenState
+) : ViewModel() {
+    private val _creditScreenState: MutableStateFlow<CreditScreenState> =
+        MutableStateFlow(CreditScreenState.Loading)
+    val creditScreenState: StateFlow<CreditScreenState> = _creditScreenState.asStateFlow()
 
     init {
         getContributors()
     }
+
     private fun getContributors() {
         getContributorsUseCase().onEach { result ->
-            when(result){
+            when (result) {
                 is Resource.Success -> {
-                    _creditScreenState.value = CreditScreenState.LoadingCompleted(result.data?: emptyList())
+                    _creditScreenState.value =
+                        CreditScreenState.LoadingCompleted(result.data.orEmpty())
                 }
+
                 is Resource.Error -> {
-                    _creditScreenState.value = CreditScreenState.Error(result.message?: "An unexpected error occurred")
+                    _creditScreenState.value =
+                        CreditScreenState.Error(result.message ?: "An unexpected error occurred")
                 }
+
                 is Resource.Loading -> {
                     _creditScreenState.value = CreditScreenState.Loading
                 }

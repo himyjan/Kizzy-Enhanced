@@ -15,8 +15,11 @@ package com.my.kizzy.feature_about.about
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,9 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,7 +55,8 @@ import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.CreditItem
 import com.my.kizzy.ui.components.Subtitle
-import kotlin.math.floor
+import kotlin.math.ceil
+import kotlin.math.max
 
 data class Credit(val title: String = "", val license: String = "", val url: String = "")
 
@@ -65,6 +67,7 @@ const val MIT = "MIT License"
 const val originalKizzy = "https://github.com/dead8309/Kizzy"
 const val readYou = "https://github.com/Ashinch/ReadYou"
 const val seal = "https://github.com/JunkFood02/Seal"
+const val metrolist = "https://github.com/MetrolistGroup/Metrolist"
 const val materialColor = "https://github.com/material-foundation/material-color-utilities"
 const val nintendoRepo = "https://github.com/ninstar/Rich-Presence-U"
 const val XboxRpc = "https://github.com/MrCoolAndroid/Xbox-Rich-Presence-Discord"
@@ -74,6 +77,7 @@ val creditsList = listOf(
     Credit("Kizzy (original app)", GPL_V3, originalKizzy),
     Credit("Read You", GPL_V3, readYou),
     Credit("Seal", GPL_V3, seal),
+    Credit("Metrolist", GPL_V3, metrolist),
     Credit("material-color-utilities", APACHE_V2, materialColor),
     Credit("Rich-Presence-U", GPL_V3, nintendoRepo),
     Credit("Xbox-Rich-Presence-Discord", MIT, XboxRpc),
@@ -85,12 +89,16 @@ val creditsList = listOf(
 fun Credits(state: CreditScreenState, onBackPressed: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
-        canScroll = { true })
+        canScroll = { true }
+    )
 
     val uriHandler = LocalUriHandler.current
     fun openUrl(url: String) {
-        uriHandler.openUri(url)
+        if (url.isNotBlank()) {
+            uriHandler.openUri(url)
+        }
     }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -108,11 +116,19 @@ fun Credits(state: CreditScreenState, onBackPressed: () -> Unit) {
             )
         }
     ) { paddingValues ->
-        LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            item {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            item(key = "design_credits_header") {
                 Subtitle(text = stringResource(id = R.string.design_credits))
             }
-            items(creditsList) { item: Credit ->
+            items(
+                items = creditsList,
+                key = { item -> "${item.title}_${item.url}" }
+            ) { item: Credit ->
                 CreditItem(
                     title = item.title,
                     description = item.license
@@ -120,41 +136,60 @@ fun Credits(state: CreditScreenState, onBackPressed: () -> Unit) {
                     openUrl(item.url)
                 }
             }
-            item {
+            item(key = "contributors_header") {
                 Subtitle(text = stringResource(id = R.string.contributors))
             }
-            item {
+            item(key = "contributors_content") {
                 when (state) {
                     is CreditScreenState.Error -> {
                         Text(
-                            text = state.error + "",
-                            modifier = Modifier
-                                .padding(16.dp, 20.dp),
+                            text = state.error ?: stringResource(id = R.string.unknown_error),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp),
                         )
                     }
 
                     CreditScreenState.Loading -> {
                         CircularProgressIndicator(
-                            modifier = Modifier
-                                .padding(16.dp, 20.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
                         )
                     }
 
                     is CreditScreenState.LoadingCompleted -> {
-                        // dirty way to enable LazyVerticalGird,
-                        // TODO update this part once compose team release out a better
-                        //  implementation of nested scrolling
-                        val itemsPerRowAccordingToScreenWidth =
-                            floor((LocalConfiguration.current.screenWidthDp.dp / 90).value)
-                        val totalHeightForLazyGrid =
-                            state.contributors.size.div(itemsPerRowAccordingToScreenWidth)
-                                .times((96)).dp
-                        LazyVerticalGrid(
-                            columns = GridCells.Adaptive(90.dp),
-                            modifier = Modifier.height(totalHeightForLazyGrid)
-                        ) {
-                            items(state.contributors) {
-                                ContributorItem(contributor = it)
+                        if (state.contributors.isEmpty()) {
+                            Text(
+                                text = stringResource(id = R.string.no_internet_connection),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp),
+                            )
+                        } else {
+                            BoxWithConstraints(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
+                            ) {
+                                val minCellWidth = 90.dp
+                                val columns = max(1, (maxWidth / minCellWidth).toInt())
+                                val rows = max(1, ceil(state.contributors.size.toDouble() / columns).toInt())
+                                val cellHeight = maxWidth / columns
+                                val totalGridHeight = cellHeight * rows
+
+                                LazyVerticalGrid(
+                                    columns = GridCells.Adaptive(minCellWidth),
+                                    userScrollEnabled = false,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(totalGridHeight)
+                                ) {
+                                    items(
+                                        items = state.contributors,
+                                        key = { contributor -> "${contributor.name}_${contributor.url}" }
+                                    ) { contributor ->
+                                        ContributorItem(contributor = contributor)
+                                    }
+                                }
                             }
                         }
                     }
@@ -175,7 +210,9 @@ fun ContributorItem(contributor: Contributor) {
             .clip(RoundedCornerShape(25.dp))
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(absoluteElevation))
             .clickable {
-                uriHandler.openUri(contributor.url)
+                if (contributor.url.isNotBlank()) {
+                    uriHandler.openUri(contributor.url)
+                }
             }
     ) {
         AsyncImage(
@@ -185,12 +222,12 @@ fun ContributorItem(contributor: Contributor) {
                 .padding(top = 5.dp)
                 .size(60.dp)
                 .clip(RoundedCornerShape(26.dp)),
-            contentDescription = contributor.avatar
+            contentDescription = contributor.name
         )
         Text(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 4.dp),
+                .padding(horizontal = 6.dp, vertical = 4.dp),
             text = contributor.name,
             maxLines = 1,
             style = MaterialTheme.typography.labelLarge,
@@ -208,6 +245,7 @@ fun CreditsPreview() {
         onBackPressed = {}
     )
 }
+
 @Preview
 @Composable
 fun CreditsPreview2() {
@@ -216,6 +254,7 @@ fun CreditsPreview2() {
         onBackPressed = {}
     )
 }
+
 @Preview
 @Composable
 fun CreditsPreview3() {

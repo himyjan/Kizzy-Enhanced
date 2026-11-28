@@ -12,12 +12,12 @@
 
 package com.my.kizzy.feature_about.about
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import com.my.kizzy.domain.model.Contributor
 
-@Stable
+@Immutable
 sealed interface CreditScreenState {
-    object Loading: CreditScreenState
-    class Error(val error: String?): CreditScreenState
-    class LoadingCompleted(val contributors: List<Contributor>): CreditScreenState
+    data object Loading : CreditScreenState
+    data class Error(val error: String?) : CreditScreenState
+    data class LoadingCompleted(val contributors: List<Contributor>) : CreditScreenState
 }

@@ -11,20 +11,20 @@ android {
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String","VERSION_NAME", "\"${libs.versions.version.name.get()}\"")
+        buildConfigField("String", "VERSION_NAME", "\"${project.version}\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
 dependencies {
-    implementation(libs.androidx.material3)
-    implementation(libs.material.icons.extended)
     implementation(projects.featureRpcBase)
     implementation(projects.featureSettings)
     implementation(projects.common.navigation)
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.coil)
-    implementation(libs.coil.network)
 
-    // Hilt annotation processor required for @HiltViewModel
-    ksp(libs.hilt.compiler)
+    implementation(libs.coil)
+    implementation(libs.material.icons.extended)
+    implementation(libs.activity.compose)
 }

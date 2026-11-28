@@ -139,8 +139,8 @@ dependencies {
     // Extras
     implementation(libs.androidx.browser)
     implementation(libs.app.compat)
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.navigation3.runtime)
+    implementation(libs.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hiltLifecycleViewmodelCompose)
