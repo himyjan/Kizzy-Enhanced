@@ -27,20 +27,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Audiotrack
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Gamepad
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.PauseCircle
-import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.PlaylistAddCircle
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -405,7 +391,7 @@ fun MediaRPCContent(
                     actions = {
                         IconButton(onClick = { isSearchBarVisible = true }) {
                             Icon(
-                                imageVector = Icons.Outlined.Search,
+                                imageVector = vectorResource(R.drawable.ic_search),
                                 contentDescription = stringResource(id = R.string.search)
                             )
                         }
@@ -432,7 +418,7 @@ fun MediaRPCContent(
                 PreferencesHint(
                     title = stringResource(id = R.string.permission_required),
                     description = stringResource(id = R.string.request_for_notification_access),
-                    icon = Icons.Outlined.Warning,
+                    icon = vectorResource(R.drawable.ic_warning),
                 ) {
                     if (!hasNotificationAccess) {
                         context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
@@ -461,7 +447,7 @@ fun MediaRPCContent(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Outlined.ContentCopy,
+                                imageVector = vectorResource(R.drawable.ic_content_copy),
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp)
                             )
@@ -479,14 +465,14 @@ fun MediaRPCContent(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.enable_artist_name),
-                        icon = Icons.Outlined.Audiotrack,
+                        icon = vectorResource(R.drawable.ic_audiotrack),
                         isChecked = isArtistEnabled,
                     ) { onArtistEnabledChanged() }
                 }
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.enable_album_name),
-                        icon = Icons.Outlined.Album,
+                        icon = vectorResource(R.drawable.ic_album),
                         isChecked = isAlbumEnabled
                     ) { onAlbumEnabledChanged() }
                 }
@@ -494,14 +480,14 @@ fun MediaRPCContent(
                     PreferenceSwitch(
                         title = stringResource(id = R.string.show_cover_art),
                         description = stringResource(id = R.string.show_cover_art_desc),
-                        icon = Icons.Outlined.Image,
+                        icon = vectorResource(R.drawable.ic_image),
                         isChecked = isCoverArtEnabled,
                     ) { onCoverArtEnabledChanged() }
                 }
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.show_app_icon),
-                        icon = Icons.Outlined.Apps,
+                        icon = vectorResource(R.drawable.ic_apps),
                         isChecked = isAppIconEnabled,
                     ) { onAppIconEnabledChanged() }
                 }
@@ -509,7 +495,7 @@ fun MediaRPCContent(
                     PreferenceSwitch(
                         title = stringResource(id = R.string.show_channel_icon),
                         description = stringResource(id = R.string.show_channel_icon_desc),
-                        icon = Icons.Outlined.AccountCircle,
+                        icon = vectorResource(R.drawable.ic_account_circle),
                         isChecked = isChannelIconEnabled,
                     ) { onChannelIconEnabledChanged() }
                 }
@@ -517,35 +503,35 @@ fun MediaRPCContent(
                     PreferenceSwitch(
                         title = stringResource(id = R.string.media_rpc_use_apps_rpc),
                         description = stringResource(id = R.string.media_rpc_use_apps_rpc_desc),
-                        icon = Icons.Outlined.Gamepad,
+                        icon = vectorResource(R.drawable.ic_gamepad),
                         isChecked = useAppsRpc,
                     ) { onUseAppsRpcChanged() }
                 }
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.enable_timestamps),
-                        icon = Icons.Outlined.Timer,
+                        icon = vectorResource(R.drawable.ic_timer),
                         isChecked = isTimestampsEnabled,
                     ) { onTimestampsEnabledChanged() }
                 }
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.show_playback_state),
-                        icon = Icons.Outlined.PlayCircle,
+                        icon = vectorResource(R.drawable.ic_play_circle),
                         isChecked = isShowPlaybackState,
                     ) { onShowPlaybackStateChanged() }
                 }
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.hide_on_pause),
-                        icon = Icons.Outlined.PauseCircle,
+                        icon = vectorResource(R.drawable.ic_pause_circle),
                         isChecked = hideOnPause,
                     ) { onHideOnPauseChanged() }
                 }
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.show_song_as_title),
-                        icon = Icons.Outlined.PlaylistAddCircle,
+                        icon = vectorResource(R.drawable.ic_playlist_add_circle),
                         isChecked = showSongAsTitle,
                     ) { onShowSongAsTitleChanged() }
                 }
@@ -559,7 +545,7 @@ fun MediaRPCContent(
                 item {
                     PreferenceSwitch(
                         title = stringResource(id = R.string.auto_detect_activity_type),
-                        icon = Icons.Outlined.AutoAwesome,
+                        icon = vectorResource(R.drawable.ic_auto_awesome),
                         isChecked = isAutoActivityTypeEnabled,
                     ) { onAutoActivityTypeEnabledChanged() }
                 }

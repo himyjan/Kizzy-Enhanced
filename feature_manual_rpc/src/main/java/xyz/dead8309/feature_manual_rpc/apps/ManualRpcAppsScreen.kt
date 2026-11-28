@@ -16,7 +16,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,18 +31,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Headphones
-import androidx.compose.material.icons.filled.LiveTv
-import androidx.compose.material.icons.filled.SportsEsports
-import androidx.compose.material.icons.filled.SportsMma
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -51,73 +40,45 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
-
 import androidx.compose.material3.TextButton
-
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.resources.R
+import com.my.kizzy.ui.components.ActivityTypeChip
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.KSwitch
-import com.my.kizzy.ui.components.ActivityTypeChip
 import com.my.kizzy.ui.components.SearchBar
 import com.my.kizzy.ui.components.rememberAppIconBitmap
 import xyz.dead8309.feature_manual_rpc.UiEvent
 import xyz.dead8309.feature_manual_rpc.UiState
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Headphones
-import androidx.compose.material.icons.outlined.LiveTv
-import androidx.compose.material.icons.outlined.SportsEsports
-import androidx.compose.material.icons.outlined.SportsMma
-import androidx.compose.material.icons.outlined.Visibility
 
 typealias AppItem = com.my.kizzy.data.utils.AppsInfo
 
-/**
- * The icon is read from the package manager, which is a blocking call. It is
- * loaded in the background and cached, so scrolling the list does not stall the
- * UI thread.
- */
 @Composable
 private fun loadAppIconCached(packageName: String): ImageBitmap? =
     rememberAppIconBitmap(packageName, sizePx = 144)
 
-/**
- * Individual app list item with stable key. Extracting to a separate composable with
- * [key] ensures Compose only recomposes items that actually change.
- */
 @Composable
 private fun AppListItem(
     app: AppItem,
     isChecked: Boolean,
-    /** The type the user picked, null when it is detected automatically. */
     selectedTypeId: Int?,
-    /** The type the automatic detection came up with. */
     detectedTypeId: Int,
     onToggleEnabled: (String) -> Unit,
     onSetActivityType: (String, Int?) -> Unit,
@@ -219,14 +180,12 @@ fun ManualRpcAppsScreen(
     var searchText by remember { mutableStateOf("") }
     var isSearchBarVisible by remember { mutableStateOf(false) }
 
-    // Pre-compute filtered and sorted list outside of LazyColumn composition
-    // to avoid running filter/sort on every recomposition
     val filteredApps = remember(state.installedApps, state.enabledApps, searchText) {
         state.installedApps
             .filter {
                 searchText.isEmpty() ||
-                        it.name.contains(searchText, ignoreCase = true) ||
-                        it.pkg.contains(searchText, ignoreCase = true)
+                    it.name.contains(searchText, ignoreCase = true) ||
+                    it.pkg.contains(searchText, ignoreCase = true)
             }
             .sortedWith(
                 compareByDescending<AppItem> {
@@ -237,9 +196,6 @@ fun ManualRpcAppsScreen(
 
     Scaffold(
         topBar = {
-            // The search field lives in its own row below the app bar. Putting a
-            // full width field inside the `actions` slot squeezes the title down to
-            // zero width, which makes the title wrap and inflates the whole app bar.
             Column {
                 TopAppBar(
                     title = { Text(stringResource(R.string.app_selection)) },
@@ -247,7 +203,7 @@ fun ManualRpcAppsScreen(
                     actions = {
                         IconButton(onClick = { isSearchBarVisible = true }) {
                             Icon(
-                                imageVector = Icons.Outlined.Search,
+                                imageVector = vectorResource(R.drawable.ic_search),
                                 contentDescription = stringResource(R.string.search)
                             )
                         }
@@ -309,23 +265,25 @@ fun ManualRpcAppsScreen(
                         items = filteredApps,
                         key = { it.pkg }
                     ) { app ->
-                        val isChecked = state.enabledApps[app.pkg] ?: false
-                        val selectedTypeId = state.appActivityTypes[app.pkg]
-                        val detectedTypeId = ActivityTypeResolver.knownType(app.pkg)
-                            ?: ActivityTypeResolver.DEFAULT_TYPE
+                        key(app.pkg) {
+                            val isChecked = state.enabledApps[app.pkg] ?: false
+                            val selectedTypeId = state.appActivityTypes[app.pkg]
+                            val detectedTypeId = ActivityTypeResolver.knownType(app.pkg)
+                                ?: ActivityTypeResolver.DEFAULT_TYPE
 
-                        AppListItem(
-                            app = app,
-                            isChecked = isChecked,
-                            selectedTypeId = selectedTypeId,
-                            detectedTypeId = detectedTypeId,
-                            onToggleEnabled = { pkg ->
-                                onEvent(UiEvent.ToggleAppEnabled(pkg))
-                            },
-                            onSetActivityType = { pkg, type ->
-                                onEvent(UiEvent.SetAppActivityType(pkg, type))
-                            }
-                        )
+                            AppListItem(
+                                app = app,
+                                isChecked = isChecked,
+                                selectedTypeId = selectedTypeId,
+                                detectedTypeId = detectedTypeId,
+                                onToggleEnabled = { pkg ->
+                                    onEvent(UiEvent.ToggleAppEnabled(pkg))
+                                },
+                                onSetActivityType = { pkg, type ->
+                                    onEvent(UiEvent.SetAppActivityType(pkg, type))
+                                }
+                            )
+                        }
                     }
                 }
             }

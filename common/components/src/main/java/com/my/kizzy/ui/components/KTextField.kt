@@ -5,12 +5,15 @@ import android.content.Context
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -21,10 +24,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import com.my.kizzy.ui.components.R
+import androidx.compose.ui.res.vectorResource
+import com.my.kizzy.resources.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,18 +41,19 @@ fun KTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions(),
 ) {
-    val clipboardManager = LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val context = LocalContext.current
+    val clipboardManager = remember(context) {
+        context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    }
     val focusRequester = remember { FocusRequester() }
     val textFieldState = rememberTextFieldState(initialText = value)
 
-    // Keep the internal state in sync with the externally-provided value.
     LaunchedEffect(value) {
         if (textFieldState.text != value) {
             textFieldState.setTextAndPlaceCursorAtEnd(value)
         }
     }
 
-    // Emit user/state edits to onValueChange
     LaunchedEffect(textFieldState) {
         snapshotFlow { textFieldState.text.toString() }
             .drop(1)
@@ -59,7 +64,7 @@ fun KTextField(
     }
 
     LaunchedEffect(Unit) {
-        delay(100)  // ???
+        delay(100)
         focusRequester.requestFocus()
     }
 
@@ -87,7 +92,7 @@ fun KTextField(
                     if (!readOnly) onValueChange("")
                 }) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = vectorResource(R.drawable.ic_close),
                         contentDescription = "clear",
                         tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                     )
@@ -95,7 +100,7 @@ fun KTextField(
             } else {
                 IconButton(onClick = {
                     if (!readOnly) {
-                        val clipText = clipboardManager.primaryClip?.getItemAt(0)?.text?.toString() ?: ""
+                        val clipText = clipboardManager?.primaryClip?.getItemAt(0)?.text?.toString().orEmpty()
                         onValueChange(clipText)
                     }
                 }) {
@@ -108,5 +113,6 @@ fun KTextField(
             }
         },
         keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
     )
 }

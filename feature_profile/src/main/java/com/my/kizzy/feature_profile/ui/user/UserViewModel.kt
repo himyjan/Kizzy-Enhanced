@@ -27,8 +27,18 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -43,17 +53,20 @@ class UserViewModel @Inject constructor(
 
     private val logger: Logger = LoggerFactory.getLogger("UserViewModel")
 
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
+
     private val _state = MutableStateFlow<UserState>(UserState.Loading)
     val state: StateFlow<UserState> = _state.asStateFlow()
 
-    /** Cancels an in-flight identity fetch when the account logs out. */
-    private var identityJob: kotlinx.coroutines.Job? = null
-    /** Last identity key we resolved, so prefs emissions don't re-fetch forever. */
+    private var identityJob: Job? = null
+
     @Volatile
     private var lastIdentityKey: String? = null
 
     private companion object {
-        /** How often the gateway identity may be re-read to refresh the custom status. */
         const val IDENTITY_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000L
     }
 
@@ -61,11 +74,8 @@ class UserViewModel @Inject constructor(
         observeLoginState()
         observeRpcState()
 
-        // Immediately load the current RPC configs on init so the profile shows
-        // the real state after a cold boot, not empty/null values
         val currentConfigs = currentRpcConfigs()
-        val currentState = _state.value
-        when (currentState) {
+        when (val currentState = _state.value) {
             is UserState.Error -> _state.value = UserState.Error(
                 error = currentState.error,
                 user = currentState.user,
@@ -75,24 +85,13 @@ class UserViewModel @Inject constructor(
                 user = currentState.user,
                 rpcConfigs = currentConfigs
             )
-            UserState.Loading -> Unit // Keep as Loading, observeRpcState will update
+            UserState.Loading -> Unit
         }
     }
 
-    /**
-     * Reacts to credential changes in [Prefs.prefsState].
-     *
-     * The profile ViewModel lives in the navigation backstack and used to fetch
-     * only once in init, so after a Discord re-login (or logout) it kept showing
-     * the stale "Login with Discord" state. Every token/USER_ID write is now a
-     * trigger.
-     */
     private fun observeLoginState() {
         Prefs.prefsState
             .map { state ->
-                // Either credential means the user is logged in: the gateway
-                // account token or the OAuth2 bearer token (gateway rejects the
-                // latter, but REST /users/@me accepts it for the profile).
                 val token = (state[Prefs.TOKEN] as? String ?: "").ifBlank {
                     state[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] as? String ?: ""
                 }
@@ -102,8 +101,6 @@ class UserViewModel @Inject constructor(
             }
             .distinctUntilChanged()
             .onEach { (token, userId, cachedJson) ->
-                // Do not include cachedJson in the key: our own profile writes
-                // would otherwise retrigger and cancel the in-flight bio fetch.
                 val key = "$token|$userId"
                 if (key == lastIdentityKey) return@onEach
                 lastIdentityKey = key
@@ -116,15 +113,9 @@ class UserViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    /**
-     * Best-effort background refresh of the bio for OAuth2 sessions.
-     * Faster cached UI is shown first; if the profile endpoint returns a bio,
-     * persist and emit the merged user.
-     */
     private fun refreshBioInBackground(token: String, baseUser: User) {
         viewModelScope.launch {
-            val bio = fetchDiscordUserProfile(token) ?: return@launch
-            if (bio.isBlank()) return@launch
+            val bio = fetchDiscordUserProfile(token)?.takeIf { it.isNotBlank() } ?: return@launch
             val current = _state.value
             val currentUser = when (current) {
                 is UserState.LoadingCompleted -> current.user
@@ -138,22 +129,12 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    /**
-     * The custom status is only exposed in the gateway READY payload. A profile
-     * written by the REST token login therefore has no custom status, and the
-     * cached branch below would never fetch it again. Refresh the identity from
-     * the gateway for account tokens, at most once per
-     * [IDENTITY_REFRESH_INTERVAL_MS], so the Bio section does not stay stuck on
-     * the "No bio yet" placeholder.
-     */
     private fun shouldRefreshIdentity(): Boolean {
         val last = Prefs[Prefs.USER_PROFILE_SYNCED_AT, 0L]
         return System.currentTimeMillis() - last >= IDENTITY_REFRESH_INTERVAL_MS
     }
 
     private fun refreshIdentityInBackground(token: String, baseUser: User) {
-        // OAuth2 bearer tokens are rejected by the gateway; only account tokens
-        // (id.timestamp.hmac, two dots) can read the READY payload.
         val isAccountToken = token.count { it == '.' } >= 2 || token.startsWith("mfa.")
         if (!isAccountToken) return
 
@@ -168,10 +149,9 @@ class UserViewModel @Inject constructor(
                 UserState.Loading -> baseUser
             } ?: baseUser
 
-            // READY is authoritative for the identity and the custom status,
-            // but keep a locally fetched bio when the payload does not carry one.
             val merged = fresh.copy(
                 bio = fresh.bio?.takeIf { it.isNotBlank() } ?: currentUser.bio,
+                nitro = fresh.nitro || currentUser.nitro,
             )
             if (merged == currentUser) return@launch
             persistDiscordUser(merged)
@@ -181,11 +161,10 @@ class UserViewModel @Inject constructor(
 
     private suspend fun loadIdentity(token: String, userId: String, cachedJson: String) {
         val cachedUser = runCatching {
-            if (cachedJson.isNotBlank()) Json.decodeFromString<User>(cachedJson) else null
+            if (cachedJson.isNotBlank()) json.decodeFromString<User>(cachedJson) else null
         }.getOrNull()
 
         if (token.isBlank()) {
-            // Logged out: no account data at all.
             _state.value = UserState.Error(
                 error = "Not logged in",
                 user = User(),
@@ -194,10 +173,7 @@ class UserViewModel @Inject constructor(
             return
         }
 
-        // If we already have persisted user data, show it immediately.
-        // If bio is missing, refresh it in the background so OAuth2 users
-        // still get the bio from the profile endpoint.
-        if (cachedUser != null && cachedUser.id?.isNotBlank() == true) {
+        if (cachedUser != null && !cachedUser.id.isNullOrBlank()) {
             _state.value = UserState.LoadingCompleted(cachedUser, currentRpcConfigs())
             if (cachedUser.bio.isNullOrBlank()) {
                 refreshBioInBackground(token, cachedUser)
@@ -208,16 +184,11 @@ class UserViewModel @Inject constructor(
             return
         }
 
-        // OAuth2 bearer tokens cannot open a Discord gateway connection, so the
-        // READY payload never arrives and fetchUserInfo always times out.
-        // Account tokens contain two dots; OAuth2 tokens do not.
         val isAccountToken = token.count { it == '.' } >= 2 || token.startsWith("mfa.")
         if (!isAccountToken) {
-            // OAuth2: /users/@me gives the profile quickly, then best-effort
-            // fetch /users/@me/profile for the bio and merge it.
             val fresh = fetchDiscordUser(token)
             if (fresh != null) {
-                val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
+                val withBio = fetchDiscordUserProfile(token)?.takeIf { it.isNotBlank() }?.let { profileBio ->
                     fresh.copy(bio = profileBio)
                 } ?: fresh
                 persistDiscordUser(withBio)
@@ -225,14 +196,11 @@ class UserViewModel @Inject constructor(
                 return
             }
         } else {
-            // Account token: gateway READY includes bio. Fall back to REST.
             val fresh = fetchUserInfo(token)
                 ?: fetchDiscordUser(token)
                 ?: cachedUser?.takeIf { !it.id.isNullOrBlank() }
             if (fresh != null) {
-                // Gateway READY includes bio; if it failed, try the profile
-                // endpoint which may return bio for account tokens too.
-                val withBio = fetchDiscordUserProfile(token)?.let { profileBio ->
+                val withBio = fetchDiscordUserProfile(token)?.takeIf { it.isNotBlank() }?.let { profileBio ->
                     fresh.copy(bio = profileBio)
                 } ?: fresh
                 persistDiscordUser(withBio)
@@ -241,9 +209,6 @@ class UserViewModel @Inject constructor(
             }
         }
 
-        // Everything failed: fall back to the profile API, but NEVER report
-        // "not logged in" while a token is present - that would wrongly show
-        // the login button.
         val fallback = runCatching {
             var result: User? = null
             getUserUseCase(userId).collect { resource ->
@@ -263,31 +228,21 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Logs the user out: stops every RPC service, clears all credentials and
-     * account data, and resets state to show the Discord Signin button.
-     */
-    fun logout(ctx: Context, scope: CoroutineScope) {
-        viewModelScope.launch {
+    fun logout(ctx: Context, scope: CoroutineScope = viewModelScope) {
+        scope.launch {
             logger.info("Logging out user")
 
-            // Stop EVERY RPC service, not just Media/Custom. Manual RPC,
-            // App Detection and the OAuth2 service also hold a gateway socket
-            // with the old token; leaving them running keeps a stale session
-            // alive and can resurrect the presence after logout.
-            // Best-effort stop of all RPC services; ignore failures.
-            if (runCatching { com.my.kizzy.feature_rpc_base.RpcManager.getInstance(ctx).switchTo(com.my.kizzy.feature_rpc_base.RpcManager.RpcType.None) }.isFailure) {
-            }
+            runCatching { rpcManager.switchTo(RpcManager.RpcType.None) }
             listOf(
                 MediaRpcService::class.java,
                 CustomRpcService::class.java,
                 ManualRpc::class.java,
                 AppDetectionService::class.java,
                 DiscordOAuth2RpcService::class.java,
-            ).forEach { service -> ctx.stopService(Intent(ctx, service)) }
+            ).forEach { service ->
+                runCatching { ctx.stopService(Intent(ctx, service)) }
+            }
 
-            // Credentials - both gateway (user token) and OAuth2 (bearer +
-            // refresh). Both are encrypted on disk via SecurePrefs.
             Prefs.remove(Prefs.TOKEN)
             Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
             Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
@@ -295,16 +250,12 @@ class UserViewModel @Inject constructor(
             Prefs.remove(Prefs.DISCORD_OAUTH2_USER_ID)
             Prefs.remove(Prefs.DISCORD_OAUTH2_USERNAME)
             Prefs.remove(Prefs.RPC_CONNECTION_METHOD)
-            // Do NOT clear the OAuth2 application client id - it is a
-            // configuration value, not a credential.
 
-            // Account identity
             Prefs.remove(Prefs.USER_ID)
             Prefs.remove(Prefs.USER_DATA)
             Prefs.remove(Prefs.USER_BIO)
             Prefs.remove(Prefs.USER_NITRO)
 
-            // Third-party credentials / scrobbling sessions
             Prefs.remove(Prefs.LASTFM_API_KEY)
             Prefs.remove(Prefs.LASTFM_SECRET)
             Prefs.remove(Prefs.LASTFM_USERNAME)
@@ -312,7 +263,7 @@ class UserViewModel @Inject constructor(
             Prefs.remove(Prefs.LASTFM_SESSION_KEY)
             Prefs.remove(Prefs.LISTENBRAINZ_USER_TOKEN)
 
-            // Reset state immediately; observeLoginState() will also react.
+            lastIdentityKey = null
             identityJob?.cancel()
             _state.value = UserState.Error(
                 error = "Not logged in",
@@ -324,8 +275,7 @@ class UserViewModel @Inject constructor(
     }
 
     private fun observeRpcState() {
-        // Live media state grouped into one flow (combine supports <=5 typed flows).
-        val mediaStateFlow = combine(
+        val mediaStateFlow: Flow<MediaLiveState> = combine(
             stateRepository.currentTrackTitle,
             stateRepository.currentArtist,
             stateRepository.isPaused,
@@ -334,7 +284,7 @@ class UserViewModel @Inject constructor(
         ) { title, artist, isPaused, tsStart, tsStop ->
             MediaLiveState(title, artist, isPaused, tsStart, tsStop)
         }
-        val mediaImagesFlow = combine(
+        val mediaImagesFlow: Flow<MediaImagesLiveState> = combine(
             stateRepository.currentLargeImageUrl,
             stateRepository.currentSmallImageUrl,
             stateRepository.pausedPositionMs
@@ -342,14 +292,11 @@ class UserViewModel @Inject constructor(
             MediaImagesLiveState(largeImg, smallImg, pausedPosition)
         }
 
-        // Observe the live presence configs from RpcManager (keyed by instanceId).
-        // Every running instance registers its own config, so all clones appear.
         combine(rpcManager.presenceConfigs, mediaStateFlow, mediaImagesFlow) { configs, media, images ->
             val liveConfigs = configs.values.map { cfg ->
                 cfg.copy(instanceId = cfg.instanceId.ifBlank { cfg.name })
             }.toMutableList()
 
-            // Apply live media state to media-type configs (type == "2" or "3").
             val mediaIdx = liveConfigs.indexOfFirst { it.type == "2" || it.type == "3" }
             if (mediaIdx >= 0) {
                 val mediaEntry = liveConfigs[mediaIdx]
@@ -366,15 +313,13 @@ class UserViewModel @Inject constructor(
                 )
             }
 
-            // If no service has registered yet, fall back to legacy prefs snapshot.
             if (liveConfigs.isEmpty()) currentRpcConfigs() else liveConfigs
         }.onEach { newConfigs ->
             viewModelScope.launch(Dispatchers.Main) {
                 val current = _state.value
-                if (current is UserState.Loading) return@launch
-                if (current !is UserState.LoadingCompleted) return@launch
-                if (current.rpcConfigs == newConfigs) return@launch
-                _state.value = UserState.LoadingCompleted(current.user, newConfigs)
+                if (current is UserState.LoadingCompleted && current.rpcConfigs != newConfigs) {
+                    _state.value = UserState.LoadingCompleted(current.user, newConfigs)
+                }
             }
         }.launchIn(viewModelScope)
     }
@@ -393,29 +338,16 @@ class UserViewModel @Inject constructor(
         val pausedPosition: Long?,
     )
 
-    /**
-     * The presence configs that are shown on Discord right now.
-     *
-     * Every service remembers the presence it sent last, so the preview shows
-     * the real data - the name, the details, the timestamps and the buttons -
-     * instead of a placeholder. When the service is not running, the memory of
-     * the last run is used.
-     *
-     * Multiple RPCs can be active at the same time, so this returns all of
-     * them.
-     */
     private fun currentRpcConfigs(): List<RpcConfig> = try {
         val configs = mutableListOf<RpcConfig>()
 
-        // Add all enabled Custom RPC instances (built-in + clones), each with
-        // its own per-instance config so clones show their own settings.
         val instances = Prefs.getHomeRpcInstances()
         for (instance in instances) {
             if (instance.type != "custom_rpc") continue
             if (!AppUtils.customRpcRunning()) continue
-            val json = Prefs.getCustomRpcConfig(instance.id.takeIf { it != "custom_rpc" })
-            if (json.isNotBlank()) {
-                runCatching { Json.decodeFromString<RpcConfig>(json) }
+            val rawJson = Prefs.getCustomRpcConfig(instance.id.takeIf { it != "custom_rpc" })
+            if (rawJson.isNotBlank()) {
+                runCatching { json.decodeFromString<RpcConfig>(rawJson) }
                     .getOrDefault(kizzyDefault(instance.label))
                     .let { configs.add(it) }
             } else {
@@ -424,17 +356,22 @@ class UserViewModel @Inject constructor(
         }
 
         if (AppUtils.mediaRpcRunning()) {
-            LastPresence.media()?.let { configs.add(it) } ?: configs.add(RpcConfig(name = "Media RPC", details = "Playing media", type = "2"))
+            LastPresence.media()?.let { configs.add(it) }
+                ?: configs.add(RpcConfig(name = "Media RPC", details = "Playing media", type = "2"))
         }
         if (AppUtils.ManualRpcRunning()) {
-            LastPresence.experimental()?.let { configs.add(it) } ?: configs.add(RpcConfig(name = "Manual RPC", details = "Active"))
+            LastPresence.experimental()?.let { configs.add(it) }
+                ?: configs.add(RpcConfig(name = "Manual RPC", details = "Active"))
         }
         if (AppUtils.appDetectionRunning()) {
             configs.add(RpcConfig(name = "App Detection", details = "Detecting apps"))
         }
 
-        return if (configs.isNotEmpty()) configs else listOf(LastPresence.media() ?: LastPresence.experimental() ?: kizzyDefault())
-    } catch (e: Exception) { listOf(kizzyDefault()) }
+        if (configs.isNotEmpty()) configs
+        else listOf(LastPresence.media() ?: LastPresence.experimental() ?: kizzyDefault())
+    } catch (_: Exception) {
+        listOf(kizzyDefault())
+    }
 
     private fun kizzyDefault(name: String = "Kizzy") = RpcConfig(name = name, details = "Using $name")
 

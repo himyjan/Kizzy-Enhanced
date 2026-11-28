@@ -12,6 +12,8 @@
 
 package xyz.dead8309.feature_manual_rpc
 
+import java.io.File
+
 sealed interface UiEvent {
     data class ToggleAppsRpcPart(val enabled: Boolean) : UiEvent
     data class ToggleMediaRpcPart(val enabled: Boolean) : UiEvent
@@ -33,7 +35,7 @@ sealed interface UiEvent {
     data class ToggleEnableTimestamps(val enabled: Boolean) : UiEvent
     data class ToggleHideOnPause(val enabled: Boolean) : UiEvent
     data class SetPlatform(val value: String) : UiEvent
-    object TriggerPlatformDropDownMenu : UiEvent
+    data object TriggerPlatformDropDownMenu : UiEvent
     data class ToggleButtons(val enabled: Boolean) : UiEvent
     data class SetButton1Text(val value: String) : UiEvent
     data class SetButton1Url(val value: String) : UiEvent
@@ -42,21 +44,20 @@ sealed interface UiEvent {
     data class ToggleUseCustomAppId(val enabled: Boolean) : UiEvent
     data class SetApplicationId(val value: String) : UiEvent
     data class SetTimestampMode(val value: String) : UiEvent
-    object TriggerTimestampModeDropDownMenu : UiEvent
+    data object TriggerTimestampModeDropDownMenu : UiEvent
     data class SetCustomTimestampStart(val value: String) : UiEvent
     data class SetCustomTimestampEnd(val value: String) : UiEvent
     data class ToggleShowSongAsTitle(val enabled: Boolean) : UiEvent
     data class ToggleShowAppNameInDetails(val enabled: Boolean) : UiEvent
     data class ToggleShowChannelIcon(val enabled: Boolean) : UiEvent
-    data class ToggleUseAppsRpc(val enabled: Boolean) : UiEvent
     data class SetTitleSource(val value: String) : UiEvent
-    object TriggerTitleSourceDropDown : UiEvent
+    data object TriggerTitleSourceDropDown : UiEvent
 
     // Advanced settings (matching Custom RPC / RpcConfig fields)
     data class SetActivityType(val value: String) : UiEvent
-    object TriggerActivityTypeDropDownMenu : UiEvent
+    data object TriggerActivityTypeDropDownMenu : UiEvent
     data class SetStatus(val value: String) : UiEvent
-    object TriggerStatusDropDownMenu : UiEvent
+    data object TriggerStatusDropDownMenu : UiEvent
     data class SetLargeImage(val value: String) : UiEvent
     data class SetSmallImage(val value: String) : UiEvent
     data class SetLargeText(val value: String) : UiEvent
@@ -64,7 +65,7 @@ sealed interface UiEvent {
     data class SetStreamUrl(val value: String) : UiEvent
     data class SetPartyCurrentSize(val value: String) : UiEvent
     data class SetPartyMaxSize(val value: String) : UiEvent
-    data class UploadImage(val file: java.io.File, val callback: (String) -> Unit) : UiEvent
+    data class UploadImage(val file: File, val callback: (String?) -> Unit) : UiEvent
 
     // RPC link fields (details_url, state_url, large_url, small_url)
     data class SetDetailsUrl(val value: String) : UiEvent

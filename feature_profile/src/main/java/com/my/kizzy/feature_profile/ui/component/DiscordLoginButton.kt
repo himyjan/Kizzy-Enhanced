@@ -12,9 +12,10 @@
 
 package com.my.kizzy.feature_profile.ui.component
 
-import android.content.Context
-import android.telephony.TelephonyManager
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.telephony.TelephonyManager
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -70,7 +71,7 @@ internal fun DiscordLoginButton(
             dismissButton = {
                 TextButton(onClick = {
                     showVpnDialog = false
-                    (context as? Activity)?.finish()
+                    context.findActivity()?.finish()
                 }) {
                     Text(stringResource(R.string.exit))
                 }
@@ -107,9 +108,15 @@ internal fun DiscordLoginButton(
     }
 }
 
+internal tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
 private fun getUserCountry(context: Context): String {
-    val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-    val country = tm.networkCountryIso
+    val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+    val country = tm?.networkCountryIso
     return if (country.isNullOrEmpty()) {
         Locale.getDefault().country.uppercase()
     } else {

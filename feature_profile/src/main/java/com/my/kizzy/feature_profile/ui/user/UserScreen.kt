@@ -1,39 +1,58 @@
 /*
  *
--  ******************************************************************
--  *  * Copyright (C) 2022
--  *  * UserScreen.kt is part of Kizzy
--  *  *  and can not be copied and/or distributed without the express
--  *  * permission of yzziK(Vaibhav)
--  *  *****************************************************************
+ *  ******************************************************************
+ *  *  * Copyright (C) 2022
+ *  *  * UserScreen.kt is part of Kizzy
+ *  *  *  and can not be copied and/or distributed without the express
+ *  *  * permission of yzziK(Vaibhav)
+ *  *  *****************************************************************
+ *
  *
  */
-
 
 @file:Suppress("DEPRECATION")
 
 package com.my.kizzy.feature_profile.ui.user
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.verticalScroll
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,22 +68,19 @@ import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_profile.fetchDiscordUser
 import com.my.kizzy.feature_profile.fetchDiscordUserProfile
+import com.my.kizzy.feature_profile.fetchUserInfo
 import com.my.kizzy.feature_profile.persistDiscordUser
-import com.my.kizzy.feature_settings.rpc_settings.DiscordOAuth2Auth
 import com.my.kizzy.feature_profile.ui.component.DiscordLoginButton
 import com.my.kizzy.feature_profile.ui.component.ProfileCard
 import com.my.kizzy.feature_profile.ui.component.ProfileNetworkError
+import com.my.kizzy.feature_profile.ui.component.findActivity
+import com.my.kizzy.feature_settings.rpc_settings.DiscordOAuth2Auth
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.shimmer.AnimatedShimmer
 import com.my.kizzy.ui.components.shimmer.ShimmerProfileCard
-import com.my.kizzy.ui.theme.DISCORD_BLURPLE
-import com.my.kizzy.ui.theme.DISCORD_BG
-import com.my.kizzy.ui.theme.DISCORD_CARD
 import com.my.kizzy.ui.theme.DISCORD_LOGOUT_RED
-import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
-import com.my.kizzy.ui.theme.DISCORD_TEXT
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,12 +90,12 @@ fun UserScreen(
     onBackPressed: () -> Unit,
     onLogout: (Context) -> Unit,
     onNavigateToRpcPreview: (String?) -> Unit = { _ -> },
-    // AuthTab launcher + binder from MainActivity -> Kizzy, used by the inline
-    // Discord login on this screen (no separate login screen).
+    onRefreshUser: () -> Unit = {},
     authTabLauncher: ActivityResultLauncher<Intent>? = null,
     onBindAuthTabCallback: (((Int, Intent?) -> Unit) -> Unit)? = null,
 ) {
     val ctx = LocalContext.current
+    val activity = ctx.findActivity()
     val scope = rememberCoroutineScope()
     var showLogoutDialog by remember { mutableStateOf(false) }
     var oauth2Error by remember { mutableStateOf("") }
@@ -98,13 +114,15 @@ fun UserScreen(
 
     fun startOAuth() {
         oauth2Error = ""
+        val hostActivity = activity
+        if (hostActivity == null) {
+            oauth2Error = "Unable to launch authorization from current context"
+            return
+        }
         isAuthorizing = true
         scope.launch {
             try {
-                val result = discordAuth.authorize(ctx as Activity)
-                // Never write an OAuth2 bearer token into TOKEN: the gateway
-                // rejects it with 4004. TOKEN is reserved for the real account
-                // token used by the Gateway connection method.
+                val result = discordAuth.authorize(hostActivity)
                 Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = result.accessToken
                 if (result.refreshToken.isNotEmpty()) {
                     Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = result.refreshToken
@@ -113,15 +131,13 @@ fun UserScreen(
                     Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] =
                         System.currentTimeMillis() + result.expiresInSec * 1000
                 }
-                // Persist avatar/bio/banner before the profile switches to logged-in.
-                // fetchDiscordUser writes USER_DATA; the profile endpoint returns
-                // the bio that /users/@me omits, so merge and persist it too.
                 val user = fetchDiscordUser(result.accessToken)
                 if (user != null) {
                     val profileBio = fetchDiscordUserProfile(result.accessToken)
                     persistDiscordUser(
                         user.copy(bio = profileBio?.takeIf { it.isNotBlank() } ?: user.bio)
                     )
+                    onRefreshUser()
                 }
             } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
                 oauth2Error = e.message ?: "Authorization failed"
@@ -133,14 +149,12 @@ fun UserScreen(
         }
     }
 
-    // Resolved at composition so the confirmation dialog stays config-aware.
     val sureMessage = stringResource(R.string.are_you_sure)
     val yesLabel = stringResource(R.string.yes)
     val cancelLabel = stringResource(android.R.string.cancel)
     val logoutLabel = stringResource(R.string.logout)
 
     if (showLogoutDialog) {
-        // Modern Material 3 confirmation dialog for destructive logout action.
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -203,8 +217,7 @@ fun UserScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { },
@@ -221,19 +234,24 @@ fun UserScreen(
         ) {
             when (state) {
                 is UserState.Error -> {
-                    // Not logged in - Discord-style card with fallback user
-                    // plus the Discord Signin button.
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState()),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        ProfileCard(
-                            state.user,
-                            rpcConfigs = state.rpcConfigs,
-                            onAvatarClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) }
-                        )
+                        if (state.error.isNotBlank()) {
+                            ProfileNetworkError(error = state.error)
+                        }
+                        if (state.user != null) {
+                            ProfileCard(
+                                user = state.user,
+                                rpcConfigs = state.rpcConfigs,
+                                onAvatarClick = {
+                                    onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId)
+                                }
+                            )
+                        }
                         Spacer(Modifier.height(24.dp))
                         DiscordLoginButton(
                             onClick = { startOAuth() },
@@ -244,7 +262,7 @@ fun UserScreen(
                             Text(text = oauth2Error, color = MaterialTheme.colorScheme.error)
                         }
                         Spacer(Modifier.height(16.dp))
-                        TokenLoginSection()
+                        TokenLoginSection(onLoginSuccess = onRefreshUser)
                         Spacer(Modifier.height(24.dp))
                     }
                 }
@@ -262,9 +280,11 @@ fun UserScreen(
                             .verticalScroll(rememberScrollState()),
                     ) {
                         ProfileCard(
-                            state.user,
+                            user = state.user,
                             rpcConfigs = state.rpcConfigs,
-                            onAvatarClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) }
+                            onAvatarClick = {
+                                onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId)
+                            }
                         )
 
                         Spacer(Modifier.height(16.dp))
@@ -276,13 +296,13 @@ fun UserScreen(
                                 .background(MaterialTheme.colorScheme.surfaceVariant),
                         ) {
                             MenuRow(
-                                icon = Icons.Filled.PlayArrow,
+                                icon = vectorResource(R.drawable.ic_play_arrow),
                                 label = stringResource(R.string.profile_open_rpc_preview),
-                                onClick = { onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId) },
+                                onClick = {
+                                    onNavigateToRpcPreview(state.rpcConfigs.firstOrNull()?.instanceId)
+                                },
                             )
                             MenuDivider()
-                            // Log Out stays in the same menu card as Open RPC
-                            // Preview, but keeps Discord's destructive red.
                             MenuRow(
                                 icon = Icons.AutoMirrored.Filled.Logout,
                                 label = logoutLabel,
@@ -298,14 +318,11 @@ fun UserScreen(
     }
 }
 
-/**
- * Manual token entry shown on the profile page next to the Discord login button.
- * Validates by fetching the REST identity, which also persists USER_DATA so the
- * avatar/bio appear as soon as the user is logged in.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TokenLoginSection() {
+private fun TokenLoginSection(
+    onLoginSuccess: () -> Unit = {},
+) {
     var token by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
@@ -349,15 +366,18 @@ private fun TokenLoginSection() {
                         Prefs.remove(Prefs.TOKEN)
                         error = "Invalid token or network error"
                     } else {
-                        // Also fetch bio/about me from REST client profile endpoint
                         val bio = fetchDiscordUserProfile(value)
+                        val gatewayUser = fetchUserInfo(value, timeoutMs = 6_000L)
                         persistDiscordUser(
-                            user.copy(bio = bio?.takeIf { it.isNotBlank() } ?: user.bio)
+                            (gatewayUser ?: user).copy(
+                                bio = bio?.takeIf { it.isNotBlank() }
+                                    ?: gatewayUser?.bio?.takeIf { it.isNotBlank() }
+                                    ?: user.bio
+                            )
                         )
                         error = ""
+                        onLoginSuccess()
                     }
-                    // A pasted account token belongs only in TOKEN; never overwrite
-                    // the OAuth2 bearer used by the OAuth2 connection method.
                     isSubmitting = false
                 }
             },
@@ -430,15 +450,17 @@ val fakeUser = User(
     nitro = true,
     bio = "Hello 👋"
 )
+
 @Preview
 @Composable
 fun UserScreenPreview() {
     UserScreen(
         state = UserState.Loading,
         onBackPressed = {},
-        onLogout = { ctx -> }
+        onLogout = {}
     )
 }
+
 @Preview
 @Composable
 fun UserScreenPreview2() {
@@ -464,9 +486,10 @@ fun UserScreenPreview2() {
             )
         ),
         onBackPressed = {},
-        onLogout = { ctx -> }
+        onLogout = {}
     )
 }
+
 @Preview
 @Composable
 fun UserScreenPreview3() {
@@ -476,6 +499,6 @@ fun UserScreenPreview3() {
             rpcConfigs = listOf(RpcConfig(name = "Kizzy", details = "Using Kizzy"))
         ),
         onBackPressed = {},
-        onLogout = { ctx -> }
+        onLogout = {}
     )
 }

@@ -30,24 +30,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.AppSettingsAlt
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.AppsOutage
-import androidx.compose.material.icons.outlined.Audiotrack
-import androidx.compose.material.icons.outlined.BrokenImage
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Gamepad
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.PauseCircle
-import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.Title
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,6 +43,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,7 +65,6 @@ import coil3.compose.AsyncImage
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.data.rpc.TemplateKeys
 import com.my.kizzy.data.utils.uriToFile
-import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.resources.R
@@ -124,21 +106,16 @@ fun ManualRpcScreen(
     onEvent: (UiEvent) -> Unit,
 ) {
     val context = LocalContext.current
-    val rpcManager = RpcManager.getInstance(context)
+    val rpcManager = remember(context) { RpcManager.getInstance(context) }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
+
+    LaunchedEffect(rpcManager) {
         rpcManager.refreshFromServices()
     }
 
-    var manualRpcRunning by remember { mutableStateOf(RpcType.ManualRpc in rpcManager.activeRpc.value) }
-    LaunchedEffect(rpcManager.activeRpc) {
-        manualRpcRunning = RpcType.ManualRpc in rpcManager.activeRpc.value
-    }
-
-    var copyConfig by remember { mutableStateOf<RpcConfig?>(null) }
-    LaunchedEffect(rpcManager.currentPresenceConfig) {
-        copyConfig = rpcManager.currentPresenceConfig.value
-    }
+    val activeRpc by rpcManager.activeRpc.collectAsState()
+    val currentConfig by rpcManager.currentPresenceConfig.collectAsState()
+    val manualRpcRunning = RpcType.ManualRpc in activeRpc
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
@@ -167,7 +144,7 @@ fun ManualRpcScreen(
                 PreferencesHint(
                     title = stringResource(id = R.string.usage_access),
                     description = stringResource(id = R.string.usage_access_desc),
-                    icon = Icons.Outlined.AppsOutage,
+                    icon = vectorResource(R.drawable.ic_apps_outage),
                 ) {
                     if (!hasUsageAccess) {
                         context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
@@ -179,7 +156,7 @@ fun ManualRpcScreen(
                 PreferencesHint(
                     title = stringResource(id = R.string.permission_required),
                     description = stringResource(id = R.string.request_for_notification_access),
-                    icon = Icons.Outlined.Warning,
+                    icon = vectorResource(R.drawable.ic_warning),
                 ) {
                     if (!hasNotificationAccess) {
                         context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
@@ -192,10 +169,9 @@ fun ManualRpcScreen(
                 isChecked = manualRpcRunning,
                 enabled = hasUsageAccess && hasNotificationAccess,
             ) {
-                val newValue = !manualRpcRunning
-                manualRpcRunning = newValue
+                val targetEnabled = !manualRpcRunning
                 scope.launch {
-                    if (newValue) {
+                    if (targetEnabled) {
                         rpcManager.switchTo(setOf(RpcType.ManualRpc), add = true)
                     } else {
                         rpcManager.stopRpcTypes(setOf(RpcType.ManualRpc))
@@ -203,8 +179,8 @@ fun ManualRpcScreen(
                 }
             }
 
-            val currentConfig = copyConfig
-            if (currentConfig != null) {
+            val configToCopy = currentConfig
+            if (configToCopy != null) {
                 val copyToast = stringResource(id = R.string.copied_to_custom_rpc)
                 Row(
                     modifier = Modifier
@@ -213,17 +189,13 @@ fun ManualRpcScreen(
                 ) {
                     TextButton(
                         onClick = {
-                            rpcManager.copyToCustomRpc(currentConfig)
-                            Toast.makeText(
-                                context,
-                                copyToast,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            rpcManager.copyToCustomRpc(configToCopy)
+                            Toast.makeText(context, copyToast, Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Outlined.ContentCopy,
+                                imageVector = vectorResource(R.drawable.ic_content_copy),
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp)
                             )
@@ -310,7 +282,7 @@ fun ManualRpcScreen(
                     SettingItem(
                         title = stringResource(R.string.app_preferences),
                         description = stringResource(R.string.app_preferences_desc),
-                        icon = Icons.Outlined.AppSettingsAlt
+                        icon = vectorResource(R.drawable.ic_app_settings_alt)
                     ) {
                         navigateToAppSelection()
                     }
@@ -328,7 +300,7 @@ fun ManualRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleShowArtistName(!state.showArtistName))
                         },
-                        icon = Icons.Outlined.Audiotrack,
+                        icon = vectorResource(R.drawable.ic_audiotrack),
                     )
                 }
 
@@ -340,7 +312,7 @@ fun ManualRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleShowAlbumName(!state.showAlbumName))
                         },
-                        icon = Icons.Outlined.Album,
+                        icon = vectorResource(R.drawable.ic_album),
                     )
                 }
 
@@ -352,7 +324,7 @@ fun ManualRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleShowCoverArt(!state.showCoverArt))
                         },
-                        icon = Icons.Outlined.Image,
+                        icon = vectorResource(R.drawable.ic_image),
                     )
                 }
 
@@ -363,7 +335,7 @@ fun ManualRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleShowAppIcon(!state.showAppIcon))
                         },
-                        icon = Icons.Outlined.Apps,
+                        icon = vectorResource(R.drawable.ic_apps),
                     )
                 }
 
@@ -375,7 +347,7 @@ fun ManualRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleShowChannelIcon(!state.showChannelIcon))
                         },
-                        icon = Icons.Outlined.AccountCircle,
+                        icon = vectorResource(R.drawable.ic_account_circle),
                     )
                 }
 
@@ -383,10 +355,10 @@ fun ManualRpcScreen(
                     PreferenceSwitch(
                         title = stringResource(R.string.media_rpc_use_apps_rpc),
                         description = stringResource(R.string.media_rpc_use_apps_rpc_desc),
-                        icon = Icons.Outlined.Gamepad,
-                        isChecked = state.useAppsRpc,
+                        icon = vectorResource(R.drawable.ic_gamepad),
+                        isChecked = state.isAppsRpcPartEnabled,
                         onClick = {
-                            onEvent(UiEvent.ToggleUseAppsRpc(!state.useAppsRpc))
+                            onEvent(UiEvent.ToggleAppsRpcPart(!state.isAppsRpcPartEnabled))
                         },
                     )
                 }
@@ -398,16 +370,16 @@ fun ManualRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleEnableTimestamps(!state.enableTimestamps))
                         },
-                        icon = Icons.Outlined.Timer
+                        icon = vectorResource(R.drawable.ic_timer)
                     )
                 }
 
                 if (state.enableTimestamps) {
                     item {
                         val tsIcon = if (state.timestampModeExpanded)
-                            Icons.Outlined.KeyboardArrowUp
+                            vectorResource(R.drawable.ic_keyboard_arrow_up)
                         else
-                            Icons.Outlined.KeyboardArrowDown
+                            vectorResource(R.drawable.ic_keyboard_arrow_down)
 
                         val tsModes = linkedMapOf(
                             stringResource(R.string.timestamp_mode_default) to "default",
@@ -426,7 +398,8 @@ fun ManualRpcScreen(
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
                                         onEvent(UiEvent.TriggerTimestampModeDropDownMenu)
-                                    })
+                                    }
+                                )
                             },
                             content = {
                                 DropdownMenu(
@@ -473,7 +446,7 @@ fun ManualRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleShowPlaybackState(!state.showPlaybackState))
                         },
-                        icon = Icons.Outlined.PlayCircle
+                        icon = vectorResource(R.drawable.ic_play_circle)
                     )
                 }
 
@@ -484,7 +457,7 @@ fun ManualRpcScreen(
                         onClick = {
                             onEvent(UiEvent.ToggleHideOnPause(!state.hideOnPause))
                         },
-                        icon = Icons.Outlined.PauseCircle
+                        icon = vectorResource(R.drawable.ic_pause_circle)
                     )
                 }
 
@@ -494,7 +467,7 @@ fun ManualRpcScreen(
                         description = stringResource(R.string.manual_rpc_title_toggle_desc),
                         isChecked = state.showSongAsTitle,
                         onClick = { onEvent(UiEvent.ToggleShowSongAsTitle(!state.showSongAsTitle)) },
-                        icon = Icons.Outlined.Title,
+                        icon = vectorResource(R.drawable.ic_title),
                     )
                 }
 
@@ -504,7 +477,7 @@ fun ManualRpcScreen(
                         description = stringResource(R.string.show_app_name_in_details_desc),
                         isChecked = state.showAppNameInDetails,
                         onClick = { onEvent(UiEvent.ToggleShowAppNameInDetails(!state.showAppNameInDetails)) },
-                        icon = Icons.Outlined.Apps,
+                        icon = vectorResource(R.drawable.ic_apps),
                     )
                 }
 
@@ -515,9 +488,9 @@ fun ManualRpcScreen(
                             stringResource(R.string.title_source_artist) to "artist",
                         )
                         val titleIcon = if (state.titleSourceExpanded)
-                            Icons.Outlined.KeyboardArrowUp
+                            vectorResource(R.drawable.ic_keyboard_arrow_up)
                         else
-                            Icons.Outlined.KeyboardArrowDown
+                            vectorResource(R.drawable.ic_keyboard_arrow_down)
                         val titleLabel = titleSources.entries
                             .firstOrNull { it.value == state.titleSource }?.key ?: ""
                         RpcField(
@@ -583,9 +556,9 @@ fun ManualRpcScreen(
 
                 item {
                     val platformIcon = if (state.platformIsExpanded)
-                        Icons.Outlined.KeyboardArrowUp
+                        vectorResource(R.drawable.ic_keyboard_arrow_up)
                     else
-                        Icons.Outlined.KeyboardArrowDown
+                        vectorResource(R.drawable.ic_keyboard_arrow_down)
 
                     val platforms = linkedMapOf(
                         stringResource(R.string.platform_none_desktop) to "",
@@ -615,7 +588,8 @@ fun ManualRpcScreen(
                                 contentDescription = null,
                                 modifier = Modifier.clickable {
                                     onEvent(UiEvent.TriggerPlatformDropDownMenu)
-                                })
+                                }
+                            )
                         },
                         content = {
                             DropdownMenu(
@@ -713,9 +687,9 @@ fun ManualRpcScreen(
 
                 item {
                     val activityTypeIcon = if (state.activityTypeIsExpanded)
-                        Icons.Outlined.KeyboardArrowUp
+                        vectorResource(R.drawable.ic_keyboard_arrow_up)
                     else
-                        Icons.Outlined.KeyboardArrowDown
+                        vectorResource(R.drawable.ic_keyboard_arrow_down)
                     val activityTypes = Constants.ACTIVITY_TYPE
                     val activityTypeLabel = activityTypes.entries
                         .firstOrNull { it.value.toString() == state.activityType }?.key ?: state.activityType
@@ -729,7 +703,8 @@ fun ManualRpcScreen(
                                 contentDescription = null,
                                 modifier = Modifier.clickable {
                                     onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
-                                })
+                                }
+                            )
                         },
                         content = {
                             DropdownMenu(
@@ -742,10 +717,7 @@ fun ManualRpcScreen(
                                 activityTypes.forEach { (label, value) ->
                                     DropdownMenuItem(
                                         text = { Text(text = label) },
-                                        onClick = {
-                                            onEvent(UiEvent.SetActivityType(value.toString()))
-                                            onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
-                                        },
+                                        onClick = { onEvent(UiEvent.SetActivityType(value.toString())) },
                                     )
                                 }
                             }
@@ -757,9 +729,9 @@ fun ManualRpcScreen(
 
                 item {
                     val statusIcon = if (state.statusIsExpanded)
-                        Icons.Outlined.KeyboardArrowUp
+                        vectorResource(R.drawable.ic_keyboard_arrow_up)
                     else
-                        Icons.Outlined.KeyboardArrowDown
+                        vectorResource(R.drawable.ic_keyboard_arrow_down)
                     val statuses = Constants.ACTIVITY_STATUS
                     val statusLabel = statuses.entries
                         .firstOrNull { it.value == state.status }?.let { stringResource(it.key) } ?: state.status
@@ -773,7 +745,8 @@ fun ManualRpcScreen(
                                 contentDescription = null,
                                 modifier = Modifier.clickable {
                                     onEvent(UiEvent.TriggerStatusDropDownMenu)
-                                })
+                                }
+                            )
                         },
                         content = {
                             DropdownMenu(
@@ -786,10 +759,7 @@ fun ManualRpcScreen(
                                 statuses.forEach { (label, value) ->
                                     DropdownMenuItem(
                                         text = { Text(text = stringResource(label)) },
-                                        onClick = {
-                                            onEvent(UiEvent.SetStatus(value))
-                                            onEvent(UiEvent.TriggerStatusDropDownMenu)
-                                        },
+                                        onClick = { onEvent(UiEvent.SetStatus(value)) },
                                     )
                                 }
                             }
@@ -810,7 +780,7 @@ fun ManualRpcScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Image,
+                                imageVector = vectorResource(R.drawable.ic_image),
                                 contentDescription = "openGallery",
                                 modifier = Modifier
                                     .size(20.dp)
@@ -829,7 +799,9 @@ fun ManualRpcScreen(
                                     UiEvent.UploadImage(file) { result ->
                                         showProgress = false
                                         openPickerDialog = false
-                                        onEvent(UiEvent.SetLargeImage(result))
+                                        if (result != null) {
+                                            onEvent(UiEvent.SetLargeImage(result))
+                                        }
                                     }
                                 )
                             }
@@ -844,7 +816,7 @@ fun ManualRpcScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp, 8.dp)
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.activity_large_image_preview),
@@ -857,8 +829,8 @@ fun ManualRpcScreen(
                                 modifier = Modifier
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(8.dp)),
-                                placeholder = rememberVectorPainter(Icons.Outlined.Image),
-                                error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                                placeholder = rememberVectorPainter(vectorResource(R.drawable.ic_image)),
+                                error = rememberVectorPainter(vectorResource(R.drawable.ic_broken_image))
                             )
                         }
                     }
@@ -875,7 +847,7 @@ fun ManualRpcScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Image,
+                                imageVector = vectorResource(R.drawable.ic_image),
                                 contentDescription = "openGallery",
                                 modifier = Modifier
                                     .size(20.dp)
@@ -894,7 +866,9 @@ fun ManualRpcScreen(
                                     UiEvent.UploadImage(file) { result ->
                                         showProgress = false
                                         openPickerDialog = false
-                                        onEvent(UiEvent.SetSmallImage(result))
+                                        if (result != null) {
+                                            onEvent(UiEvent.SetSmallImage(result))
+                                        }
                                     }
                                 )
                             }
@@ -909,7 +883,7 @@ fun ManualRpcScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp, 8.dp)
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.activity_small_image_preview),
@@ -922,8 +896,8 @@ fun ManualRpcScreen(
                                 modifier = Modifier
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(8.dp)),
-                                placeholder = rememberVectorPainter(Icons.Outlined.Image),
-                                error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                                placeholder = rememberVectorPainter(vectorResource(R.drawable.ic_image)),
+                                error = rememberVectorPainter(vectorResource(R.drawable.ic_broken_image))
                             )
                         }
                     }
@@ -1028,7 +1002,7 @@ fun ManualRpcScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Info,
+                            imageVector = vectorResource(R.drawable.ic_info),
                             contentDescription = null,
                         )
                         Text(
@@ -1043,53 +1017,54 @@ fun ManualRpcScreen(
     }
 }
 
+private fun sampleManualRpcUiState(): UiState = UiState(
+    isLoading = false,
+    error = null,
+    isAppsRpcPartEnabled = true,
+    isMediaRpcPartEnabled = true,
+    templateName = "Media Playback",
+    templateDetails = "Playing Spotify",
+    templateState = "Artist - Song Title",
+    showCoverArt = true,
+    showAppIcon = true,
+    showPlaybackState = true,
+    enableTimestamps = true,
+    hideOnPause = false,
+    platform = "desktop",
+    platformIsExpanded = false,
+    buttonsEnabled = true,
+    button1Text = "Play / Pause",
+    button1Url = "https://spotify.com",
+    button2Text = "Next Track",
+    button2Url = "https://spotify.com",
+    useCustomAppId = false,
+    applicationId = "",
+    timestampMode = "default",
+    timestampModeExpanded = false,
+    customTimestampStart = "",
+    customTimestampEnd = "",
+    showSongAsTitle = false,
+    titleSource = "title",
+    titleSourceExpanded = false,
+    activityType = "",
+    status = "online",
+    largeImage = "",
+    smallImage = "",
+    largeText = "",
+    smallText = "",
+    streamUrl = "",
+    partyCurrentSize = "",
+    partyMaxSize = "",
+    activityTypeIsExpanded = false,
+    statusIsExpanded = false,
+)
+
 @Preview(name = "ManualRpcScreen (Light)")
 @Composable
 fun ManualRpcScreenLightPreview() {
-    val uiState = UiState(
-        isLoading = false,
-        error = null,
-        isAppsRpcPartEnabled = true,
-        isMediaRpcPartEnabled = true,
-        templateName = "Media Playback",
-        templateDetails = "Playing Spotify",
-        templateState = "Artist - Song Title",
-        showCoverArt = true,
-        showAppIcon = true,
-        showPlaybackState = true,
-        enableTimestamps = true,
-        hideOnPause = false,
-        platform = "desktop",
-        platformIsExpanded = false,
-        buttonsEnabled = true,
-        button1Text = "Play / Pause",
-        button1Url = "https://spotify.com",
-        button2Text = "Next Track",
-        button2Url = "https://spotify.com",
-        useCustomAppId = false,
-        applicationId = "",
-        timestampMode = "default",
-        timestampModeExpanded = false,
-        customTimestampStart = "",
-        customTimestampEnd = "",
-        showSongAsTitle = false,
-        titleSource = "title",
-        titleSourceExpanded = false,
-        activityType = "",
-        status = "online",
-        largeImage = "",
-        smallImage = "",
-        largeText = "",
-        smallText = "",
-        streamUrl = "",
-        partyCurrentSize = "",
-        partyMaxSize = "",
-        activityTypeIsExpanded = false,
-        statusIsExpanded = false,
-    )
     ManualRpcScreen(
         onBackPressed = {},
-        state = uiState,
+        state = sampleManualRpcUiState(),
         hasUsageAccess = true,
         hasNotificationAccess = true,
         navigateToAppSelection = {},
@@ -1100,47 +1075,6 @@ fun ManualRpcScreenLightPreview() {
 @Preview(name = "ManualRpcScreen (Dark)")
 @Composable
 fun ManualRpcScreenDarkPreview() {
-    val uiState = UiState(
-        isLoading = false,
-        error = null,
-        isAppsRpcPartEnabled = true,
-        isMediaRpcPartEnabled = true,
-        templateName = "Media Playback",
-        templateDetails = "Playing Spotify",
-        templateState = "Artist - Song Title",
-        showCoverArt = true,
-        showAppIcon = true,
-        showPlaybackState = true,
-        enableTimestamps = true,
-        hideOnPause = false,
-        platform = "desktop",
-        platformIsExpanded = false,
-        buttonsEnabled = true,
-        button1Text = "Play / Pause",
-        button1Url = "https://spotify.com",
-        button2Text = "Next Track",
-        button2Url = "https://spotify.com",
-        useCustomAppId = false,
-        applicationId = "",
-        timestampMode = "default",
-        timestampModeExpanded = false,
-        customTimestampStart = "",
-        customTimestampEnd = "",
-        showSongAsTitle = false,
-        titleSource = "title",
-        titleSourceExpanded = false,
-        activityType = "",
-        status = "online",
-        largeImage = "",
-        smallImage = "",
-        largeText = "",
-        smallText = "",
-        streamUrl = "",
-        partyCurrentSize = "",
-        partyMaxSize = "",
-        activityTypeIsExpanded = false,
-        statusIsExpanded = false,
-    )
     KizzyTheme(
         darkTheme = true,
         isHighContrastModeEnabled = false,
@@ -1148,7 +1082,7 @@ fun ManualRpcScreenDarkPreview() {
     ) {
         ManualRpcScreen(
             onBackPressed = {},
-            state = uiState,
+            state = sampleManualRpcUiState(),
             hasUsageAccess = true,
             hasNotificationAccess = true,
             navigateToAppSelection = {},
@@ -1158,10 +1092,10 @@ fun ManualRpcScreenDarkPreview() {
 }
 
 private fun coverArtPreviewUrl(url: String?): String? {
-    val trimmed = url?.trim() ?: return null
+    val trimmed = url?.trim()?.takeIf { it.isNotEmpty() } ?: return null
     val withoutMp = trimmed.removePrefix("mp:")
     return when {
-        withoutMp.startsWith("attachments") || withoutMp.startsWith("external") ->
+        withoutMp.startsWith("attachments/") || withoutMp.startsWith("external/") ->
             "https://media.discordapp.net/$withoutMp"
         else -> withoutMp
     }

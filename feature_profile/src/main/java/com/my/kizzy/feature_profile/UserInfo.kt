@@ -18,9 +18,6 @@ import com.my.kizzy.preference.Prefs.USER_BIO
 import com.my.kizzy.preference.Prefs.USER_DATA
 import com.my.kizzy.preference.Prefs.USER_ID
 import com.my.kizzy.preference.Prefs.USER_NITRO
-import kizzy.gateway.DiscordWebSocket
-import kizzy.gateway.DiscordWebSocketImpl
-import kizzy.gateway.entities.Payload
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
@@ -28,32 +25,21 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import kizzy.gateway.DiscordWebSocket
+import kizzy.gateway.DiscordWebSocketImpl
+import kizzy.gateway.entities.Payload
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
 
-/**
- * Fetches the account identity from the gateway READY payload and persists it.
- *
- * The WebView login only captures the account token; it never writes USER_ID /
- * USER_DATA / USER_BIO / USER_NITRO. Without those the profile has no avatar,
- * banner, bio or badges, and UserViewModel treats the account as logged out
- * even though TOKEN exists (so the "Login with Discord" button stays visible).
- *
- * Returns null when READY does not arrive within [timeoutMs] or the token was
- * rejected - callers must fall back to cached data instead of crashing.
- */
 suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
     withTimeoutOrNull(timeoutMs) {
-        // The READY payload is the only place Discord exposes `bio`. The token
-        // passed here can be either a gateway account token (id.timestamp.hmac)
-        // or an OAuth2 token. Account tokens contain two dots; OAuth2 tokens do
-        // not and need "Bearer ".
         val isAccountToken = token.count { it == '.' } >= 2 || token.startsWith("mfa.")
         val identifyToken = if (token.isNotBlank() && !isAccountToken) "Bearer $token" else token
         val deferred = CompletableDeferred<User?>()
@@ -72,8 +58,6 @@ suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
                     banner = readyUser.banner,
                     bannerColor = readyUser.bannerColor,
                     bio = readyUser.bio,
-                    // Custom status lives under user_settings in the READY
-                    // payload, not under user.bio.
                     special = ready.userSettings?.customStatus?.text.orEmpty().takeIf { it.isNotBlank() },
                     nitro = readyUser.premiumType in 1..3,
                     publicFlags = readyUser.publicFlags,
@@ -87,7 +71,6 @@ suspend fun fetchUserInfo(token: String, timeoutMs: Long = 15_000L): User? =
         deferred.await()
     }?.also(::persistDiscordUser)
 
-/** Legacy callback variant kept for callers outside this module. */
 suspend fun getUserInfo(token: String, onInfoSaved: () -> Unit) {
     fetchUserInfo(token)?.let { onInfoSaved() }
 }
@@ -97,19 +80,11 @@ private val restJson = Json {
     coerceInputValues = true
 }
 
-/**
- * Persists the identity fields the profile screen reads.
- *
- * Discord's REST `/users/@me` does not return `bio`, while the client profile
- * endpoint does. A later REST refresh must therefore never erase a bio that
- * was fetched previously. Keeping this in one place also guarantees that
- * both the gateway (account token) and the OAuth2 REST paths write USER_DATA
- * and the dedicated USER_BIO mirror.
- */
 fun persistDiscordUser(user: User) {
+    val existingBio = (Prefs[USER_BIO, ""]).takeIf { it.isNotBlank() }
     val merged = user.copy(
-        bio = user.bio?.takeIf { it.isNotBlank() }
-            ?: (Prefs[USER_BIO, ""]).takeIf { it.isNotBlank() }
+        bio = user.bio?.takeIf { it.isNotBlank() } ?: existingBio,
+        nitro = user.nitro || Prefs[USER_NITRO, false],
     )
     Prefs[USER_ID] = merged.id
     Prefs[USER_BIO] = merged.bio
@@ -117,22 +92,9 @@ fun persistDiscordUser(user: User) {
     Prefs[USER_DATA] = restJson.encodeToString(merged)
 }
 
-/**
- * Fetches the full account identity from Discord's REST API (`/users/@me`) and
- * persists it so the profile card has an avatar, banner, bio and badges.
- *
- * The gateway-based [fetchUserInfo] cannot be used here: Discord does not accept
- * an OAuth2 bearer token on the gateway, so the READY payload never arrives and
- * USER_DATA is never written (profile shows no avatar/bio and keeps the login
- * button visible). The REST endpoint works for both OAuth2 bearer tokens and
- * raw account tokens, so both Authorization schemes are tried.
- *
- * Returns null when the token is rejected or the request fails.
- */
 suspend fun fetchDiscordUser(token: String): User? {
     if (token.isBlank()) return null
 
-    // Account tokens look like "id.timestamp.hmac" (dots); OAuth2 bearer tokens don't.
     val authHeaders = if (token.count { it == '.' } >= 2) {
         listOf(token, "Bearer $token")
     } else {
@@ -160,9 +122,9 @@ suspend fun fetchDiscordUser(token: String): User? {
             val user = runCatching {
                 val obj = restJson.parseToJsonElement(body) as? JsonObject ?: return@runCatching null
                 val parsed = restJson.decodeFromString<User>(body)
+                val premiumType = (obj["premium_type"] as? JsonPrimitive)?.intOrNull
                 parsed.copy(
-                    // Discord reports subscription via premium_type, not "nitro".
-                    nitro = (obj["premium_type"] as? JsonPrimitive)?.intOrNull in 1..3,
+                    nitro = premiumType in 1..3 || parsed.nitro,
                     verified = (obj["verified"] as? JsonPrimitive)?.booleanOrNull ?: parsed.verified,
                 )
             }.getOrNull() ?: continue
@@ -176,12 +138,22 @@ suspend fun fetchDiscordUser(token: String): User? {
     return null
 }
 
-/**
- * Best-effort fetch of the current user's client profile, which can contain
- * the bio field. Discord's public /users/@me endpoint does not return bio, but
- * the client profile endpoint may return it for OAuth2 bearer tokens.
- * Any failure is ignored so the normal profile load still succeeds.
- */
+private fun extractBioFromJson(obj: JsonObject): String? {
+    val direct = (obj["bio"] as? JsonPrimitive)?.contentOrNull
+        ?: (obj["about_me"] as? JsonPrimitive)?.contentOrNull
+    if (!direct.isNullOrBlank()) return direct
+
+    val userObj = obj["user"] as? JsonObject
+    val fromUser = (userObj?.get("bio") as? JsonPrimitive)?.contentOrNull
+        ?: (userObj?.get("about_me") as? JsonPrimitive)?.contentOrNull
+    if (!fromUser.isNullOrBlank()) return fromUser
+
+    val profileObj = obj["user_profile"] as? JsonObject
+    val fromProfile = (profileObj?.get("bio") as? JsonPrimitive)?.contentOrNull
+        ?: (profileObj?.get("about_me") as? JsonPrimitive)?.contentOrNull
+    return fromProfile?.takeIf { it.isNotBlank() }
+}
+
 suspend fun fetchDiscordUserProfile(token: String): String? {
     if (token.isBlank()) return null
 
@@ -209,14 +181,11 @@ suspend fun fetchDiscordUserProfile(token: String): String? {
                 null
             } ?: continue
 
-            if (body.isNullOrEmpty()) continue
+            if (body.isEmpty()) continue
 
             val bio = runCatching {
                 val obj = restJson.parseToJsonElement(body) as? JsonObject ?: return@runCatching null
-                val userObj = obj["user"] as? JsonObject
-                val bioField = userObj?.get("bio") as? JsonPrimitive
-                val aboutMeField = userObj?.get("about_me") as? JsonPrimitive
-                bioField?.content ?: aboutMeField?.content
+                extractBioFromJson(obj)
             }.getOrNull()
 
             if (!bio.isNullOrBlank()) return bio

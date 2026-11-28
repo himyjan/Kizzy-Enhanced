@@ -18,11 +18,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ClearAll
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.FileOpen
-import androidx.compose.material.icons.outlined.SaveAs
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -69,7 +64,7 @@ fun BottomSheet(
         ) {
             SheetItem(
                 title = stringResource(id = R.string.load_config),
-                icon = Icons.Outlined.FileOpen,
+                icon = vectorResource(R.drawable.ic_file_open),
                 onClick = {
                     dismissAndRun {
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -81,7 +76,7 @@ fun BottomSheet(
             )
             SheetItem(
                 title = stringResource(id = R.string.save_config),
-                icon = Icons.Outlined.SaveAs,
+                icon = vectorResource(R.drawable.ic_save_as),
                 onClick = {
                     dismissAndRun {
                         onEvent(UiEvent.SheetEvent.TriggerSaveDialog)
@@ -90,7 +85,7 @@ fun BottomSheet(
             )
             SheetItem(
                 title = stringResource(id = R.string.delete_configs),
-                icon = Icons.Outlined.Delete,
+                icon = vectorResource(R.drawable.ic_delete),
                 onClick = {
                     dismissAndRun {
                         onEvent(UiEvent.SheetEvent.TriggerDeleteDialog)
@@ -108,7 +103,7 @@ fun BottomSheet(
             )
             SheetItem(
                 title = stringResource(id = R.string.clear_all_fields),
-                icon = Icons.Outlined.ClearAll,
+                icon = vectorResource(R.drawable.ic_clear_all),
                 onClick = {
                     dismissAndRun {
                         onEvent(UiEvent.SheetEvent.ClearAllFields)
@@ -117,7 +112,7 @@ fun BottomSheet(
             )
             SheetItem(
                 title = stringResource(id = R.string.share_config),
-                icon = Icons.Outlined.Share,
+                icon = vectorResource(R.drawable.ic_share),
                 onClick = {
                     dismissAndRun {
                         onEvent(UiEvent.SheetEvent.TriggerShareDialog)

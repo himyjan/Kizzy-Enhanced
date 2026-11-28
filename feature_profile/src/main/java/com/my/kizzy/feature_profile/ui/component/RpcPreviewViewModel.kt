@@ -12,24 +12,14 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Live state for the RPC preview.
- *
- * The route only carries a snapshot taken when the page was opened. Media RPC
- * keeps publishing after that - next track, seek, pause and replay after a long
- * idle all change the presence without touching the route. One flow (started
- * once with `stateIn`) merges the route snapshot, the latest presence published
- * by the services and the live media state repository, so the preview follows
- * whichever instance is currently active and never freezes on an old snapshot.
- */
 @OptIn(FlowPreview::class)
 @HiltViewModel(assistedFactory = RpcPreviewViewModel.Factory::class)
 class RpcPreviewViewModel @AssistedInject constructor(
@@ -43,7 +33,6 @@ class RpcPreviewViewModel @AssistedInject constructor(
     }
 
     private val passedConfig: RpcConfig? = instanceId?.let { id ->
-        // Look up this instance's config directly by instanceId.
         rpcManager.presenceConfigs.value[id]
     }
 
@@ -67,11 +56,7 @@ class RpcPreviewViewModel @AssistedInject constructor(
 
     val rpcConfig: StateFlow<RpcConfig?> =
         combine(rpcManager.presenceConfigs, mediaState, mediaImages) { configs, media, images ->
-            // The preview is opened from the profile activity card for a
-            // SPECIFIC instance. Show that instance's live config, not the
-            // first config from an arbitrary RPC type.
-            val fromService = instanceId?.let { configs[it] }
-                ?: passedConfig
+            val fromService = instanceId?.let { configs[it] } ?: passedConfig
             val base = fromService
                 ?: LastPresence.media()
                 ?: LastPresence.experimental()
@@ -79,8 +64,7 @@ class RpcPreviewViewModel @AssistedInject constructor(
             if (base == null) return@combine null
 
             base.copy(
-                name = base.name.copyIfNotEmpty(media.title),
-                details = base.details.copyIfNotEmpty(media.artist),
+                details = base.details.copyIfNotEmpty(media.title),
                 state = base.state.copyIfNotEmpty(media.artist),
                 timestampsStart = media.tsStart?.toString() ?: base.timestampsStart,
                 timestampsStop = media.tsStop?.toString() ?: base.timestampsStop,
@@ -100,10 +84,7 @@ class RpcPreviewViewModel @AssistedInject constructor(
         val isPaused: Boolean,
         val tsStart: Long?,
         val tsStop: Long?,
-    ) {
-        fun hasMetadata(): Boolean =
-            !title.isNullOrBlank() || !artist.isNullOrBlank() || tsStart != null || tsStop != null
-    }
+    )
 
     private data class MediaImages(
         val large: String?,

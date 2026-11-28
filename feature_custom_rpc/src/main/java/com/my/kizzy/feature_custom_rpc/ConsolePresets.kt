@@ -1,10 +1,6 @@
 package com.my.kizzy.feature_custom_rpc
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DesktopWindows
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.SportsEsports
-import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
@@ -167,12 +163,12 @@ object ConsolePresetStore {
 
 /** Icon shown next to a preset. */
 fun consolePresetIcon(preset: ConsolePreset): ImageVector = when (preset.platform) {
-    "desktop", "embedded" -> Icons.Filled.DesktopWindows
-    "android", "ios", "samsung" -> Icons.Filled.PhoneAndroid
-    "ps4", "ps5" -> Icons.Filled.Tv
-    "xbox" -> Icons.Filled.SportsEsports
-    "droideck" -> Icons.Filled.DesktopWindows
-    "eden" -> Icons.Filled.Tv
-    "nintendo-switch-2" -> Icons.Filled.Tv
-    else -> Icons.Filled.SportsEsports
+    "desktop", "embedded" -> vectorResource(R.drawable.ic_desktop_windows)
+    "android", "ios", "samsung" -> vectorResource(R.drawable.ic_phone_android)
+    "ps4", "ps5" -> vectorResource(R.drawable.ic_tv)
+    "xbox" -> vectorResource(R.drawable.ic_sports_esports)
+    "droideck" -> vectorResource(R.drawable.ic_desktop_windows)
+    "eden" -> vectorResource(R.drawable.ic_tv)
+    "nintendo-switch-2" -> vectorResource(R.drawable.ic_tv)
+    else -> vectorResource(R.drawable.ic_sports_esports)
 }

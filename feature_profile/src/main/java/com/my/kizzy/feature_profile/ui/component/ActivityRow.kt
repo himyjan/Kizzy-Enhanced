@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -47,21 +45,9 @@ import kotlinx.coroutines.delay
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-// Discord's green "elapsed" marker shown next to the note glyph when a media
-// activity has no seekable timeline.
 private val MEDIA_ELAPSED_GREEN = DISCORD_GREEN
-
-// Guard for the "now - start" fallback: any start timestamp further away than
-// this is not a position (e.g. an epoch value or an absolute end time).
 private const val SEVEN_DAYS_MS = 7L * 24 * 60 * 60 * 1000
 
-/**
- * Pure computation of the media timeline: returns (progress 0f..1f,
- * elapsedText).
- *
- * Kept as a top-level function so the very first frame can be computed
- * synchronously during composition instead of waiting for the ticker.
- */
 private fun computeTimeline(cfg: RpcConfig?, nowMs: Long): Pair<Float, String> {
     val type = cfg?.type?.toIntOrNull()
     val isMedia = type == 2 || type == 3
@@ -71,9 +57,6 @@ private fun computeTimeline(cfg: RpcConfig?, nowMs: Long): Pair<Float, String> {
     if (cfg != null && isMedia && start != null && stop != null) {
         val difference = stop - start
         if (cfg.paused) {
-            // Freeze the timeline where the player stopped. `start` is
-            // computed as "read time - position", so it cannot be used with
-            // the wall clock while paused - it would keep counting.
             val position = (cfg.pausedPositionMs ?: 0L)
                 .coerceIn(0L, difference.coerceAtLeast(0L))
             val progress = if (difference > 0L) {
@@ -97,10 +80,6 @@ private fun computeTimeline(cfg: RpcConfig?, nowMs: Long): Pair<Float, String> {
         return progress to text
     }
 
-    // Media without a full start/stop range (or non-media): Discord shows
-    // no seekable bar - just an elapsed marker. Prefer the paused position,
-    // then the start timestamp converted to a position, so "stopped" media
-    // does not read as 00:00 or as a multi-year timestamp.
     val text = when {
         cfg?.paused == true && cfg.pausedPositionMs != null ->
             getFormatFromMs((cfg.pausedPositionMs ?: 0L).coerceAtLeast(0L))
@@ -111,14 +90,6 @@ private fun computeTimeline(cfg: RpcConfig?, nowMs: Long): Pair<Float, String> {
     return 0f to text
 }
 
-/**
- * Discord's "Current activity" card.
- *
- * Layout mirrors Discord mobile: header row with the activity verb plus a
- * "..." affordance, then the large/small artwork next to the title and
- * subtitle, a single-row media timeline (elapsed — track — total) and the
- * optional action buttons at the bottom.
- */
 @Composable
 fun ActivityRow(
     rpcConfig: RpcConfig?,
@@ -126,16 +97,13 @@ fun ActivityRow(
     special: String?,
 ) {
     val uriHandler = LocalUriHandler.current
-    // Only open real http(s) links so a bad/blank url never crashes the preview.
     fun openLink(url: String?) {
         val trimmed = url?.trim()
         if (trimmed != null &&
             (trimmed.startsWith("http://", ignoreCase = true) ||
                     trimmed.startsWith("https://", ignoreCase = true))
         ) {
-            // Best-effort open; ignore failures (e.g. no browser installed).
-            if (runCatching { uriHandler.openUri(trimmed) }.isFailure) {
-            }
+            runCatching { uriHandler.openUri(trimmed) }
         }
     }
 
@@ -145,24 +113,11 @@ fun ActivityRow(
         rpcConfig?.type?.toIntOrNull()?.equals(2) == true || rpcConfig?.type?.toIntOrNull()
             ?.equals(3) == true
 
-    // Media timeline - calculate real elapsed time from timestamps.
-    //
-    // The previous version keyed remember/LaunchedEffect on
-    // timestampsStart/timestampsStop, which change every second (now - position).
-    // This reset state to "00:00" and restarted the ticker with a 1-second delay
-    // on every tick, making the timeline jump back to 00:00 repeatedly.
-    //
-    // Now we keep a mutable ref to the latest rpcConfig (updated via
-    // LaunchedEffect(rpcConfig)) and run a stable ticker (LaunchedEffect(Unit))
-    // that reads fresh values without ever resetting state or restarting.
     var latestRpcConfig by remember { mutableStateOf(rpcConfig) }
     LaunchedEffect(rpcConfig) {
         latestRpcConfig = rpcConfig
     }
 
-    // Computed synchronously for the first frame: LaunchedEffect only runs
-    // after composition, so seeding "00:00" showed a stale value on entry
-    // even when the track was already seconds in.
     val initialTimeline = remember(rpcConfig) {
         computeTimeline(rpcConfig, System.currentTimeMillis())
     }
@@ -171,8 +126,6 @@ fun ActivityRow(
 
     LaunchedEffect(Unit) {
         while (true) {
-            // 2-second tick instead of 1 second: reduces UI recompositions
-            // by 50% while the profile screen is visible and media is playing.
             delay(2000)
             val next = computeTimeline(latestRpcConfig, System.currentTimeMillis())
             sliderPosition = next.first
@@ -183,10 +136,12 @@ fun ActivityRow(
     val activityPrefix = when (rpcConfig?.type?.toIntOrNull()) {
         2 -> stringResource(
             R.string.activity_listening_title,
-            rpcConfig.name.orEmpty().ifEmpty { "music" })
+            rpcConfig.name.orEmpty().ifEmpty { "music" }
+        )
         3 -> stringResource(
             R.string.activity_watching_title,
-            rpcConfig.name.orEmpty().ifEmpty { "video" })
+            rpcConfig.name.orEmpty().ifEmpty { "video" }
+        )
         5 -> stringResource(R.string.activity_competiting_title, rpcConfig.name.orEmpty())
         else -> rpcConfig?.name?.takeIf { it.isNotEmpty() }
             ?: stringResource(R.string.activity_playing_title)
@@ -199,9 +154,7 @@ fun ActivityRow(
         rpcConfig?.details
     }
     val renderedState = rpcConfig?.state?.takeIf { it.isNotEmpty() }
-    // Line 4: album name (or playlist name when there is no album).
     val renderedLargeText = rpcConfig?.largeText?.takeIf { it.isNotEmpty() }
-    // Local vals so the timeline block can smart-cast below.
     val cfg = rpcConfig
     val startMs = cfg?.timestampsStart?.toLongOrNull()
     val stopMs = cfg?.timestampsStop?.toLongOrNull()
@@ -216,9 +169,6 @@ fun ActivityRow(
         Column(
             modifier = Modifier.padding(14.dp),
         ) {
-            // Header: "Listening to X" with the "..." menu affordance on the
-            // right, exactly like Discord's activity card. The icon is visual
-            // only - Kizzy has no activity menu.
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
@@ -234,7 +184,7 @@ fun ActivityRow(
                 )
                 Spacer(Modifier.width(8.dp))
                 Icon(
-                    imageVector = Icons.Filled.MoreHoriz,
+                    imageVector = vectorResource(R.drawable.ic_more_horiz),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp),
@@ -249,16 +199,15 @@ fun ActivityRow(
                         .size(88.dp)
                         .clickable { openLink(cfg?.largeUrl) }
                 ) {
-                    val rawLargeImg = cfg?.largeImg
-                    val largeImg = rawLargeImg?.removePrefix("mp:")
+                    val rawLargeImg = cfg?.largeImg?.trim()?.takeIf { it.isNotEmpty() }
+                    val strippedLargeImg = rawLargeImg?.removePrefix("mp:")
                     AsyncImage(
-                        model = if (isAsset(largeImg)) "https://media.discordapp.net/$largeImg" else
-                            rawLargeImg,
+                        model = resolveDiscordImageUrl(rawLargeImg, strippedLargeImg),
                         error = painterResource(id = R.drawable.editing_rpc_pencil),
                         placeholder = painterResource(R.drawable.editing_rpc_pencil),
                         contentDescription = null,
                         contentScale = ContentScale.FillHeight,
-                        modifier = if (!rawLargeImg.isNullOrEmpty())
+                        modifier = if (rawLargeImg != null)
                             Modifier
                                 .size(80.dp)
                                 .clip(RoundedCornerShape(4.dp))
@@ -269,26 +218,22 @@ fun ActivityRow(
                                 .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
                                 .align(Alignment.TopStart),
                     )
-                    val rawSmallImg = cfg?.smallImg
-                    if (!rawSmallImg.isNullOrEmpty()) {
-                        val smallImg = rawSmallImg.removePrefix("mp:")
+                    val rawSmallImg = cfg?.smallImg?.trim()?.takeIf { it.isNotEmpty() }
+                    if (rawSmallImg != null) {
+                        val strippedSmallImg = rawSmallImg.removePrefix("mp:")
                         Box(
-                            modifier =
-                                Modifier
-                                    .clickable { openLink(cfg.smallUrl) }
-                                    .border(
-                                        3.dp,
-                                        MaterialTheme.colorScheme.surfaceVariant,
-                                        CircleShape,
-                                    ).padding(2.dp)
-                                    .align(Alignment.BottomEnd),
+                            modifier = Modifier
+                                .clickable { openLink(cfg.smallUrl) }
+                                .border(
+                                    3.dp,
+                                    MaterialTheme.colorScheme.surfaceVariant,
+                                    CircleShape,
+                                )
+                                .padding(2.dp)
+                                .align(Alignment.BottomEnd),
                         ) {
                             AsyncImage(
-                                model =
-                                    if (isAsset(smallImg))
-                                        "https://media.discordapp.net/$smallImg"
-                                    else
-                                        rawSmallImg,
+                                model = resolveDiscordImageUrl(rawSmallImg, strippedSmallImg),
                                 error = painterResource(id = R.drawable.ic_rpc_placeholder),
                                 placeholder = painterResource(id = R.drawable.ic_rpc_placeholder),
                                 contentDescription = null,
@@ -302,10 +247,9 @@ fun ActivityRow(
                 }
 
                 Column(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .padding(start = 12.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 12.dp),
                 ) {
                     Text(
                         text = renderedDetails.orEmpty(),
@@ -340,14 +284,12 @@ fun ActivityRow(
                     }
 
                     when {
-                        // Media without a seekable timeline: Discord renders a
-                        // green "♪ 0:21" elapsed marker instead of a bar.
                         showTs && isPlayingMedia && !hasTimeline -> Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(top = 6.dp),
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.MusicNote,
+                                imageVector = vectorResource(R.drawable.ic_music_note),
                                 contentDescription = null,
                                 tint = MEDIA_ELAPSED_GREEN,
                                 modifier = Modifier.size(14.dp),
@@ -360,7 +302,6 @@ fun ActivityRow(
                                 fontWeight = FontWeight.Medium,
                             )
                         }
-                        // Playing game / non-media: "Time elapsed: 12m 30s".
                         showTs && isPlaying -> Text(
                             text = stringResource(
                                 id = cfg.timestampsStop.toLongOrNull()?.let {
@@ -382,8 +323,6 @@ fun ActivityRow(
 
             if (hasTimeline) {
                 Spacer(Modifier.height(12.dp))
-                // Discord draws the media timeline as one row:
-                // elapsed ———— track ———— total.
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth(),
@@ -431,8 +370,16 @@ fun ActivityRow(
     }
 }
 
-private fun isAsset(url: String?): Boolean {
-    return url?.startsWith("attachments") == true || url?.startsWith("external") == true || url?.startsWith("mp:") == true
+private fun resolveDiscordImageUrl(rawUrl: String?, strippedUrl: String?): String? {
+    if (rawUrl.isNullOrEmpty() || strippedUrl.isNullOrEmpty()) return null
+    val normalized = strippedUrl.removePrefix("/")
+    return when {
+        rawUrl.startsWith("mp:", ignoreCase = true) ||
+                normalized.startsWith("attachments/", ignoreCase = true) ||
+                normalized.startsWith("external/", ignoreCase = true) ->
+            "https://media.discordapp.net/$normalized"
+        else -> rawUrl
+    }
 }
 
 private fun getFormatFromMs(ms: Long): String {

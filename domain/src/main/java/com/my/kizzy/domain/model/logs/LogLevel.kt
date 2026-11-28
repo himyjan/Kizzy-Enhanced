@@ -13,5 +13,5 @@
 package com.my.kizzy.domain.model.logs
 
 enum class LogLevel {
-    INFO,DEBUG,WARN,ERROR
+    INFO, DEBUG, WARN, ERROR
 }

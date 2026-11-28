@@ -1,15 +1,3 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * LogoutButton.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.feature_profile.ui.component
 
 import androidx.compose.material3.Button
@@ -23,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import com.my.kizzy.resources.R
 
 @Composable
-fun Logout(
+fun LogoutButton(
     modifier: Modifier = Modifier,
     shape: Shape,
     onClicked: () -> Unit,
@@ -31,7 +19,7 @@ fun Logout(
     Button(
         modifier = modifier,
         shape = shape,
-        onClick = { onClicked() },
+        onClick = onClicked,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.errorContainer,
             contentColor = MaterialTheme.colorScheme.onErrorContainer

@@ -48,10 +48,10 @@ fun dynamicColorScheme(isLight: Boolean = !isSystemInDarkTheme()): ColorScheme {
             onTertiary = 100.a3,
             onTertiaryContainer = 10.a3,
             outline = 50.n2,
-//            outlineVariant = 80.n2,
+            outlineVariant = 80.n2,
             primary = 40.a1,
             primaryContainer = 90.a1,
-//            scrim = 0.n1,
+            scrim = 0.n1,
             secondary = 40.a2,
             secondaryContainer = 90.a2,
             surface = 99.n1,
@@ -75,10 +75,10 @@ fun dynamicColorScheme(isLight: Boolean = !isSystemInDarkTheme()): ColorScheme {
             onTertiary = 20.a3,
             onTertiaryContainer = 90.a3,
             outline = 60.n2,
-//            outlineVariant = 30.n2,
+            outlineVariant = 30.n2,
             primary = 80.a1,
             primaryContainer = 30.a1,
-//            scrim = 0.n1,
+            scrim = 0.n1,
             secondary = 80.a2,
             secondaryContainer = 30.a2,
             surface = 10.n1,
@@ -90,17 +90,18 @@ fun dynamicColorScheme(isLight: Boolean = !isSystemInDarkTheme()): ColorScheme {
 }
 
 fun Srgb.toColor(): Color {
+    val clamped = clamp()
     return Color(
-        (r * 255).roundToInt(),
-        (g * 255).roundToInt(),
-        (b * 255).roundToInt()
+        red = (clamped.r * 255).roundToInt().coerceIn(0, 255),
+        green = (clamped.g * 255).roundToInt().coerceIn(0, 255),
+        blue = (clamped.b * 255).roundToInt().coerceIn(0, 255)
     )
 }
 
 fun Color.toSrgb(): Srgb {
     return Srgb(
-        red.toDouble(),
-        green.toDouble(),
-        blue.toDouble()
+        r = red.toDouble().coerceIn(0.0, 1.0),
+        g = green.toDouble().coerceIn(0.0, 1.0),
+        b = blue.toDouble().coerceIn(0.0, 1.0)
     )
 }

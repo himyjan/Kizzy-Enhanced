@@ -34,18 +34,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DesktopWindows
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.outlined.BrokenImage
-import androidx.compose.material.icons.outlined.ClearAll
-import androidx.compose.material.icons.outlined.EditCalendar
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -216,13 +204,13 @@ fun CustomRpcScreen(
                 actions = {
                     IconButton(onClick = { onEvent(UiEvent.TriggerBottomSheet) }) {
                         Icon(
-                            imageVector = Icons.Outlined.MoreVert,
+                            imageVector = vectorResource(R.drawable.ic_more_vert),
                             contentDescription = "menu"
                         )
                     }
                     IconButton(onClick = { onEvent(UiEvent.SheetEvent.ClearAllFields) }) {
                         Icon(
-                            imageVector = Icons.Outlined.ClearAll,
+                            imageVector = vectorResource(R.drawable.ic_clear_all),
                             contentDescription = stringResource(id = R.string.clear_all_fields)
                         )
                     }
@@ -240,7 +228,7 @@ fun CustomRpcScreen(
                     onClick = { selectedTab = 0 },
                     icon = {
                         Icon(
-                            imageVector = Icons.Filled.Edit,
+                            imageVector = vectorResource(R.drawable.ic_edit),
                             contentDescription = "Custom RPC",
                             modifier = Modifier.size(24.dp),
                             tint = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
@@ -253,7 +241,7 @@ fun CustomRpcScreen(
                     onClick = { selectedTab = 1 },
                     icon = {
                         Icon(
-                            imageVector = Icons.Filled.DesktopWindows,
+                            imageVector = vectorResource(R.drawable.ic_desktop_windows),
                             contentDescription = "Console RPC",
                             modifier = Modifier.size(24.dp),
                             tint = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
@@ -624,7 +612,7 @@ private fun RpcTextFieldsColumn(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.EditCalendar,
+                                imageVector = vectorResource(R.drawable.ic_edit_calendar),
                                 contentDescription = null,
                                 modifier = Modifier.clickable {
                                     onEvent(UiEvent.TriggerStartTimeStampsDialog)
@@ -657,7 +645,7 @@ private fun RpcTextFieldsColumn(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.EditCalendar,
+                                imageVector = vectorResource(R.drawable.ic_edit_calendar),
                                 contentDescription = null,
                                 modifier = Modifier.clickable {
                                     onEvent(UiEvent.TriggerStopTimeStampsDialog)
@@ -684,9 +672,9 @@ private fun RpcTextFieldsColumn(
                 }
 
                 val iconStatus = if (uiState.activityTypeIsExpanded)
-                    Icons.Outlined.KeyboardArrowUp
+                    vectorResource(R.drawable.ic_keyboard_arrow_up)
                 else
-                    Icons.Outlined.KeyboardArrowDown
+                    vectorResource(R.drawable.ic_keyboard_arrow_down)
 
                 item {
                     RpcField(
@@ -829,7 +817,7 @@ private fun RpcTextFieldsColumn(
                         label = R.string.activity_large_image,
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Image,
+                                imageVector = vectorResource(R.drawable.ic_image),
                                 contentDescription = "openGallery",
                                 modifier = Modifier.clickable {
                                     openPickerDialog = true
@@ -876,8 +864,8 @@ private fun RpcTextFieldsColumn(
                                 modifier = Modifier
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(8.dp)),
-                                placeholder = rememberVectorPainter(Icons.Outlined.Image),
-                                error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                                placeholder = rememberVectorPainter(vectorResource(R.drawable.ic_image)),
+                                error = rememberVectorPainter(vectorResource(R.drawable.ic_broken_image))
                             )
                         }
                     }
@@ -906,7 +894,7 @@ private fun RpcTextFieldsColumn(
                         label = R.string.activity_small_image,
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Image,
+                                imageVector = vectorResource(R.drawable.ic_image),
                                 contentDescription = "openGallery",
                                 modifier = Modifier.clickable {
                                     openPickerDialog = true
@@ -953,8 +941,8 @@ private fun RpcTextFieldsColumn(
                                 modifier = Modifier
                                     .size(120.dp)
                                     .clip(RoundedCornerShape(8.dp)),
-                                placeholder = rememberVectorPainter(Icons.Outlined.Image),
-                                error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                                placeholder = rememberVectorPainter(vectorResource(R.drawable.ic_image)),
+                                error = rememberVectorPainter(vectorResource(R.drawable.ic_broken_image))
                             )
                         }
                     }
@@ -972,9 +960,9 @@ private fun RpcTextFieldsColumn(
                 }
 
                 val icon = if (uiState.activityTypeIsExpanded)
-                    Icons.Outlined.KeyboardArrowUp
+                    vectorResource(R.drawable.ic_keyboard_arrow_up)
                 else
-                    Icons.Outlined.KeyboardArrowDown
+                    vectorResource(R.drawable.ic_keyboard_arrow_down)
 
                 item {
                     RpcField(
@@ -1014,7 +1002,7 @@ private fun RpcTextFieldsColumn(
                 // ===== Console RPC Settings =====
                 item {
                     var consolePlatformExpanded by remember { mutableStateOf(false) }
-                    val consolePlatformIcon = if (consolePlatformExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+                    val consolePlatformIcon = if (consolePlatformExpanded) vectorResource(R.drawable.ic_keyboard_arrow_up) else vectorResource(R.drawable.ic_keyboard_arrow_down)
 
                     RpcField(
                         value = consolePlatform,
@@ -1050,7 +1038,7 @@ private fun RpcTextFieldsColumn(
 
                 item {
                     var consoleActivityTypeExpanded by remember { mutableStateOf(false) }
-                    val consoleActivityTypeIcon = if (consoleActivityTypeExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+                    val consoleActivityTypeIcon = if (consoleActivityTypeExpanded) vectorResource(R.drawable.ic_keyboard_arrow_up) else vectorResource(R.drawable.ic_keyboard_arrow_down)
 
                     RpcField(
                         value = consoleActivityType,
@@ -1087,7 +1075,7 @@ private fun RpcTextFieldsColumn(
 
                 item {
                     var consoleStatusExpanded by remember { mutableStateOf(false) }
-                    val consoleStatusIcon = if (consoleStatusExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+                    val consoleStatusIcon = if (consoleStatusExpanded) vectorResource(R.drawable.ic_keyboard_arrow_up) else vectorResource(R.drawable.ic_keyboard_arrow_down)
 
                     RpcField(
                         value = consoleStatus,
@@ -1188,7 +1176,7 @@ private fun RpcTextFieldsColumn(
                             label = R.string.stream_url,
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.Outlined.Info,
+                                    imageVector = vectorResource(R.drawable.ic_info),
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
                                         scope.launch {
@@ -1390,7 +1378,7 @@ private fun RpcTextFieldsColumn(
                     label = { Text(text = stringResource(id = R.string.search)) },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Outlined.Search,
+                            imageVector = vectorResource(R.drawable.ic_search),
                             contentDescription = stringResource(id = R.string.search)
                         )
                     },
@@ -1541,7 +1529,7 @@ fun ConsoleGameItem(
                         .size(24.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Check,
+                        imageVector = vectorResource(R.drawable.ic_check),
                         contentDescription = stringResource(id = R.string.selected),
                         modifier = Modifier
                             .size(16.dp)
@@ -1627,7 +1615,7 @@ fun ConsolePresetChip(
         if (onEdit != null) {
             IconButton(onClick = onEdit) {
                 Icon(
-                    imageVector = Icons.Filled.Edit,
+                    imageVector = vectorResource(R.drawable.ic_edit),
                     contentDescription = stringResource(id = R.string.console_preset_edit),
                     modifier = Modifier.size(20.dp),
                     tint = contentColor
@@ -1636,7 +1624,7 @@ fun ConsolePresetChip(
         }
         if (selected) {
             Icon(
-                imageVector = Icons.Filled.Check,
+                imageVector = vectorResource(R.drawable.ic_check),
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
                 tint = colorScheme.onPrimaryContainer

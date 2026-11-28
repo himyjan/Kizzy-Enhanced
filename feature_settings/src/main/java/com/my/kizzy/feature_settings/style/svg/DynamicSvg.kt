@@ -13,6 +13,7 @@
 package com.my.kizzy.feature_settings.style.svg
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import coil3.compose.AsyncImage
@@ -30,16 +31,21 @@ fun DynamicSVGImage(
     tonalPalettes: TonalPalettes = LocalTonalPalettes.current,
     isDarkTheme: Boolean = LocalDarkTheme.current.isDarkTheme()
 ) {
-    val dynamicSvg = svgString.parseDynamicColor(
-        tonalPalettes = tonalPalettes,
-        isDarkTheme = isDarkTheme
-    )
-    val svgBytes = dynamicSvg.toByteArray(StandardCharsets.UTF_8)
+    val context = LocalContext.current
+    val svgBytes = remember(svgString, tonalPalettes, isDarkTheme) {
+        svgString.parseDynamicColor(
+            tonalPalettes = tonalPalettes,
+            isDarkTheme = isDarkTheme
+        ).toByteArray(StandardCharsets.UTF_8)
+    }
+    val request = remember(context, svgBytes) {
+        ImageRequest.Builder(context)
+            .data(svgBytes)
+            .build()
+    }
 
     AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(svgBytes)
-            .build(),
+        model = request,
         contentDescription = contentDescription,
         modifier = modifier
     )

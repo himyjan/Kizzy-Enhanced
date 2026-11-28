@@ -1,24 +1,12 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * UserState.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.feature_profile.ui.user
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 
-@Stable
+@Immutable
 sealed interface UserState {
-    object Loading: UserState
-    class Error(val error: String, val user: User?, val rpcConfigs: List<RpcConfig>): UserState
-    class LoadingCompleted(val user: User?, val rpcConfigs: List<RpcConfig>): UserState
+    data object Loading : UserState
+    data class Error(val error: String, val user: User?, val rpcConfigs: List<RpcConfig>) : UserState
+    data class LoadingCompleted(val user: User?, val rpcConfigs: List<RpcConfig>) : UserState
 }

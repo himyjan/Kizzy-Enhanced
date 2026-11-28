@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BrokenImage
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -123,7 +122,7 @@ fun UploadDialog(
                         model = image.value,
                         contentDescription = "",
                         modifier = Modifier.size(200.dp),
-                        error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                        error = rememberVectorPainter(vectorResource(R.drawable.ic_broken_image))
                     )
                 }
             }

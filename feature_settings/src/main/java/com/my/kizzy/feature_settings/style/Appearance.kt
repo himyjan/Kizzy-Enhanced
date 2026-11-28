@@ -1,25 +1,45 @@
-@file:Suppress("DEPRECATION")
-
 package com.my.kizzy.feature_settings.style
 
 /**
  * source: https://github.com/JunkFood02/Seal
  */
 
-import android.graphics.Color.parseColor
-import androidx.compose.animation.*
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,12 +47,11 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.core.graphics.toColorInt
 import com.google.android.material.color.DynamicColors
-import com.my.kizzy.resources.R
 import com.kyant.monet.Hct
 import com.kyant.monet.LocalTonalPalettes
 import com.kyant.monet.PaletteStyle
@@ -48,11 +67,12 @@ import com.my.kizzy.feature_settings.style.svg.PALETTE
 import com.my.kizzy.preference.DEFAULT_SEED_COLOR
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.CUSTOM_THEME_COLOR
+import com.my.kizzy.preference.ThemeStyle
 import com.my.kizzy.preference.modifyThemeSeedColor
 import com.my.kizzy.preference.modifyThemeStyle
 import com.my.kizzy.preference.palettesMap
-import com.my.kizzy.preference.ThemeStyle
 import com.my.kizzy.preference.switchDynamicColor
+import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.SettingItem
 import com.my.kizzy.ui.components.Subtitle
@@ -65,13 +85,10 @@ import com.my.kizzy.ui.theme.LocalPaletteStyleIndex
 import com.my.kizzy.ui.theme.LocalSeedColor
 import com.my.kizzy.ui.theme.LocalThemeStyle
 import com.my.kizzy.ui.theme.autoDark
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.Palette
 
 val colorList = listOf(
-    Color(DEFAULT_SEED_COLOR), // Red (#BF1527) — default
-    Color(0xFFAF92F1), // Original purple
+    Color(DEFAULT_SEED_COLOR),
+    Color(0xFFAF92F1),
     Color.Blue,
     Hct(60.0, 100.0, 70.0).toSrgb().toColor(),
     Hct(125.0, 50.0, 60.0).toSrgb().toColor(),
@@ -83,24 +100,27 @@ val colorList = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Appearance(
-    onBackPressed: () -> Unit, navigateToDarkTheme: () -> Unit
+    onBackPressed: () -> Unit,
+    navigateToDarkTheme: () -> Unit
 ) {
-
-    Scaffold(topBar = {
-        LargeTopAppBar(title = {
-            Text(
-                text = stringResource(id = R.string.display),
-                style = MaterialTheme.typography.headlineMedium
+    Scaffold(
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.display),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                },
+                navigationIcon = {
+                    BackButton(onClick = onBackPressed)
+                }
             )
-        }, navigationIcon = {
-            BackButton {
-                onBackPressed()
-            }
-        })
-    }) {
+        }
+    ) { paddingValues ->
         Column(
-            Modifier
-                .padding(it)
+            modifier = Modifier
+                .padding(paddingValues)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
@@ -111,9 +131,7 @@ fun Appearance(
                         .padding(horizontal = 24.dp)
                         .aspectRatio(1.38f)
                         .clip(RoundedCornerShape(24.dp))
-                        .background(
-                            MaterialTheme.colorScheme.inverseOnSurface
-                        )
+                        .background(MaterialTheme.colorScheme.inverseOnSurface)
                         .clickable { },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
@@ -128,10 +146,12 @@ fun Appearance(
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
+                val initialPage = colorList.indexOf(Color(LocalSeedColor.current)).let {
+                    if (it == -1) 1 else it
+                }
                 val pagerState = rememberPagerState(
                     pageCount = { colorList.size },
-                    initialPage = colorList.indexOf(Color(LocalSeedColor.current))
-                        .run { if (equals(-1)) 1 else this }
+                    initialPage = initialPage
                 )
                 HorizontalPager(
                     modifier = Modifier
@@ -181,30 +201,29 @@ fun Appearance(
                 selected = LocalThemeStyle.current == ThemeStyle.DISCORD_LIGHT,
             ) { modifyThemeStyle(ThemeStyle.DISCORD_LIGHT) }
             if (DynamicColors.isDynamicColorAvailable()) {
-                PreferenceSwitch(title = stringResource(id = R.string.dynamic_color),
-                    description = stringResource(
-                        id = R.string.dynamic_color_desc
-                    ),
-                    icon = Icons.Outlined.Palette,
+                PreferenceSwitch(
+                    title = stringResource(id = R.string.dynamic_color),
+                    description = stringResource(id = R.string.dynamic_color_desc),
+                    icon = vectorResource(R.drawable.ic_palette),
                     isChecked = LocalDynamicColorSwitch.current,
-                    onClick = {
-                        switchDynamicColor()
-                    })
+                    onClick = { switchDynamicColor() }
+                )
             }
 
             SettingItem(
                 title = stringResource(id = R.string.dark_theme),
                 description = LocalDarkTheme.current.getDarkThemeDesc(),
-                icon = Icons.Outlined.DarkMode,
-            ) { navigateToDarkTheme() }
+                icon = vectorResource(R.drawable.ic_dark_mode),
+                onClick = navigateToDarkTheme
+            )
         }
     }
 }
 
 @Composable
 fun RowScope.ColorButtons(color: Color, last: Boolean = false) {
-    palettesMap.forEach {
-        ColorButton(color = color, index = it.key, tonalStyle = it.value, custom = it.key == 3 && last)
+    palettesMap.forEach { (key, style) ->
+        ColorButton(color = color, index = key, tonalStyle = style, custom = key == 3 && last)
     }
 }
 
@@ -218,32 +237,31 @@ fun RowScope.ColorButton(
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var customColorValue by remember { mutableStateOf(Prefs[CUSTOM_THEME_COLOR, ""]) }
-    val tonalPalettes =
-        if(custom)
-            customColorValue.color.toTonalPalettes(tonalStyle)
-        else
-            color.toTonalPalettes(tonalStyle)
-    val isSelect =
-        !LocalDynamicColorSwitch.current && LocalSeedColor.current == color.toArgb() && LocalPaletteStyleIndex.current == index
+    val tonalPalettes = if (custom) {
+        customColorValue.color.toTonalPalettes(tonalStyle)
+    } else {
+        color.toTonalPalettes(tonalStyle)
+    }
+    val isSelect = !LocalDynamicColorSwitch.current &&
+        LocalSeedColor.current == color.toArgb() &&
+        LocalPaletteStyleIndex.current == index
 
-    TextFieldDialog(visible = showDialog,
+    TextFieldDialog(
+        visible = showDialog,
         title = stringResource(R.string.primary_color),
-        icon = Icons.Outlined.Palette,
+        icon = vectorResource(R.drawable.ic_palette),
         value = customColorValue,
         placeholder = stringResource(R.string.primary_color_hint),
-        onValueChange = {
-            customColorValue = it
-        },
-        onDismissRequest = {
-            showDialog = false
-        },
+        onValueChange = { customColorValue = it },
+        onDismissRequest = { showDialog = false },
         onConfirm = { hexString ->
-                customColorValue = hexString
-                switchDynamicColor(enabled = false)
-                Prefs[CUSTOM_THEME_COLOR] = hexString
-                modifyThemeSeedColor(customColorValue.color.toArgb(), index)
-                showDialog = false
-        })
+            customColorValue = hexString
+            switchDynamicColor(enabled = false)
+            Prefs[CUSTOM_THEME_COLOR] = hexString
+            modifyThemeSeedColor(customColorValue.color.toArgb(), index)
+            showDialog = false
+        }
+    )
     ColorButtonImpl(
         modifier = modifier,
         tonalPalettes = tonalPalettes,
@@ -257,7 +275,6 @@ fun RowScope.ColorButton(
             modifyThemeSeedColor(color.toArgb(), index)
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -270,22 +287,25 @@ fun RowScope.ColorButtonImpl(
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     onClick: () -> Unit = {}
 ) {
-
-    val containerSize by animateDpAsState(targetValue = if (isSelected.invoke()) 28.dp else 0.dp,
+    val containerSize by animateDpAsState(
+        targetValue = if (isSelected()) 28.dp else 0.dp,
         label = "containerSizeAnimation"
     )
-    val iconSize by animateDpAsState(targetValue = if (isSelected.invoke()) 16.dp else 0.dp,
+    val iconSize by animateDpAsState(
+        targetValue = if (isSelected()) 16.dp else 0.dp,
         label = "iconSizeAnimation"
     )
 
-    Surface(modifier = modifier
-        .padding(4.dp)
-        .sizeIn(maxHeight = 80.dp, maxWidth = 80.dp, minHeight = 64.dp, minWidth = 64.dp)
-        .weight(1f, false)
-        .aspectRatio(1f),
+    Surface(
+        modifier = modifier
+            .padding(4.dp)
+            .sizeIn(maxHeight = 80.dp, maxWidth = 80.dp, minHeight = 64.dp, minWidth = 64.dp)
+            .weight(1f, false)
+            .aspectRatio(1f),
         shape = RoundedCornerShape(16.dp),
         color = cardColor,
-        onClick = { onClick() }) {
+        onClick = onClick
+    ) {
         CompositionLocalProvider(LocalTonalPalettes provides tonalPalettes) {
             val color1 = 80.a1
             val color2 = 90.a2
@@ -318,7 +338,7 @@ fun RowScope.ColorButtonImpl(
                             .drawBehind { drawCircle(containerColor) },
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Check,
+                            imageVector = vectorResource(R.drawable.ic_check),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(iconSize)
@@ -326,16 +346,11 @@ fun RowScope.ColorButtonImpl(
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
-
                 }
             }
         }
     }
 }
 
-val String.color
-    get() = try {
-        Color(parseColor(this))
-    } catch (ex: Exception) {
-        Color.Transparent
-    }
+val String.color: Color
+    get() = runCatching { Color(trim().toColorInt()) }.getOrDefault(Color.Transparent)

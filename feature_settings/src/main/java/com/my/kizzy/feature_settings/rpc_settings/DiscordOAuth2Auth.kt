@@ -38,7 +38,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class DiscordOAuth2Auth(
-    private val context: Context,
+    @Suppress("unused") private val context: Context,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
     private val authTabLauncher: ActivityResultLauncher<Intent>? = null,
 ) {
@@ -47,9 +47,6 @@ class DiscordOAuth2Auth(
         private const val TAG = "DiscordOAuth2Auth"
         private const val DISCORD_OAUTH2_AUTHORIZE = "https://discord.com/oauth2/authorize"
         private const val DISCORD_OAUTH2_TOKEN = "https://discord.com/api/v10/oauth2/token"
-        // Social SDK default presence scopes: required for the OAuth2 token to
-        // connect to the gateway and publish rich presence (same as Metrolist).
-        // `identify` keeps REST /users/@me working for the profile (avatar/bio).
         private const val DISCORD_SCOPES = "openid identify sdk.social_layer_presence"
         private const val REDIRECT_URI = "kizzy://oauth2/callback"
         private const val REDIRECT_SCHEME = "kizzy"
@@ -57,6 +54,19 @@ class DiscordOAuth2Auth(
         private const val DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID = "1571063796418744412"
         private const val DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2 = "1573725984845201438"
         private const val DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3 = "1573728208854065293"
+
+        private val tokenHttpClient by lazy {
+            HttpClient(OkHttp) {
+                install(HttpTimeout) {
+                    connectTimeoutMillis = 15_000
+                    requestTimeoutMillis = 15_000
+                    socketTimeoutMillis = 10_000
+                }
+                defaultRequest {
+                    url(DISCORD_OAUTH2_TOKEN)
+                }
+            }
+        }
     }
 
     data class DiscordOAuth2Result(
@@ -89,12 +99,17 @@ class DiscordOAuth2Auth(
         val state: String
     )
 
+    private fun resolveClientId(slot: String): String = when (slot) {
+        "2" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2]
+            .ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2 }
+        "3" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3]
+            .ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3 }
+        else -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID]
+            .ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID }
+    }
+
     suspend fun authorize(activity: Activity, slot: String = "1"): DiscordOAuth2Result {
-        val clientId = when (slot) {
-            "2" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2 }
-            "3" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3 }
-            else -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID }
-        }
+        val clientId = resolveClientId(slot)
         if (clientId.isBlank()) {
             throw DiscordOAuth2Exception.InvalidClientId()
         }
@@ -160,12 +175,6 @@ class DiscordOAuth2Auth(
         }
     }
 
-    /**
-     * Opens Discord's login page in an ephemeral AuthTab so the user can sign in
-     * before pasting their account token for the Gateway connection method.
-     * Gateway still requires the real account token (user_id.timestamp.hmac);
-     * this just makes the login step private and browser-isolated.
-     */
     fun launchGatewayLogin(activity: Activity) {
         val launcher = authTabLauncher
         val browserPackage = CustomTabsClient.getPackageName(activity, null)
@@ -210,9 +219,6 @@ class DiscordOAuth2Auth(
                 val code = callbackUri?.getQueryParameter("code")
                 val state = callbackUri?.getQueryParameter("state")
 
-                // Discord may redirect back with ?error=... instead of ?code=...
-                // (e.g. invalid_scope, access_denied). Surface that clearly
-                // instead of the misleading "Missing code" network error.
                 val oauthError = callbackUri?.getQueryParameter("error")
                 if (!oauthError.isNullOrBlank()) {
                     val description = callbackUri.getQueryParameter("error_description")
@@ -303,11 +309,7 @@ class DiscordOAuth2Auth(
     }
 
     suspend fun refresh(refreshToken: String, slot: String = "1"): DiscordOAuth2Result {
-        val clientId = when (slot) {
-            "2" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID2 }
-            "3" -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID3 }
-            else -> Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID].ifBlank { DEFAULT_DISCORD_OAUTH2_APPLICATION_CLIENT_ID }
-        }
+        val clientId = resolveClientId(slot)
         val params = mapOf(
             "client_id" to clientId,
             "grant_type" to "refresh_token",
@@ -318,68 +320,57 @@ class DiscordOAuth2Auth(
 
     private suspend fun performTokenExchange(params: Map<String, String>, slot: String = "1"): DiscordOAuth2Result {
         return withContext(Dispatchers.IO) {
-            HttpClient(OkHttp) {
-                install(HttpTimeout) {
-                    connectTimeoutMillis = 15_000
-                    requestTimeoutMillis = 15_000
-                    socketTimeoutMillis = 10_000
-                }
-                defaultRequest {
-                    url(DISCORD_OAUTH2_TOKEN)
-                }
-            }.use { client ->
-                val postData = params.entries.joinToString("&") { (key, value) ->
-                    "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
-                }
-                val response = client.post {
-                    contentType(ContentType.Application.FormUrlEncoded)
-                    setBody(postData)
-                }
-                val responseCode = response.status.value
-                val responseBody = response.bodyAsText()
+            val postData = params.entries.joinToString("&") { (key, value) ->
+                "${URLEncoder.encode(key, StandardCharsets.UTF_8.name())}=${URLEncoder.encode(value, StandardCharsets.UTF_8.name())}"
+            }
+            val response = tokenHttpClient.post {
+                contentType(ContentType.Application.FormUrlEncoded)
+                setBody(postData)
+            }
+            val responseCode = response.status.value
+            val responseBody = response.bodyAsText()
 
-                if (responseCode in 200..299) {
-                    val json = JSONObject(responseBody)
-                    val accessToken = json.getString("access_token")
-                    val refreshToken = json.optString("refresh_token", "")
-                    val expiresIn = json.optLong("expires_in", 0L)
-                    val scope = json.optString("scope", DISCORD_SCOPES)
+            if (responseCode in 200..299) {
+                val json = JSONObject(responseBody)
+                val accessToken = json.getString("access_token")
+                val refreshToken = json.optString("refresh_token", "")
+                val expiresIn = json.optLong("expires_in", 0L)
+                val scope = json.optString("scope", DISCORD_SCOPES)
 
-                    Log.d(TAG, "token exchange: success for slot $slot")
+                Log.d(TAG, "token exchange: success for slot $slot")
 
-                    when (slot) {
-                        "2" -> {
-                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2] = accessToken
-                            Prefs[Prefs.RPC_SESSION_2_ENABLED] = true
-                        }
-                        "3" -> {
-                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3] = accessToken
-                            Prefs[Prefs.RPC_SESSION_3_ENABLED] = true
-                        }
-                        else -> {
-                            Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
-                            if (refreshToken.isNotEmpty()) {
-                                Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
-                            }
-                            Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
-                        }
+                when (slot) {
+                    "2" -> {
+                        Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2] = accessToken
+                        Prefs[Prefs.RPC_SESSION_2_ENABLED] = true
                     }
-
-                    DiscordOAuth2Result(
-                        accessToken = accessToken,
-                        refreshToken = refreshToken,
-                        expiresInSec = expiresIn,
-                        scope = scope,
-                    )
-                } else {
-                    val errorMsg = runCatching {
-                        val json = JSONObject(responseBody)
-                        json.getString("error") + (json.optString("error_description").let { if (it.isNotEmpty()) ": $it" else "" })
-                    }.getOrElse { responseBody }
-
-                    Log.w(TAG, "token exchange: HTTP $responseCode error body=$responseBody")
-                    throw DiscordOAuth2Exception.NetworkFailure(IOException("HTTP $responseCode: $errorMsg"))
+                    "3" -> {
+                        Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_3] = accessToken
+                        Prefs[Prefs.RPC_SESSION_3_ENABLED] = true
+                    }
+                    else -> {
+                        Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN] = accessToken
+                        if (refreshToken.isNotEmpty()) {
+                            Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN] = refreshToken
+                        }
+                        Prefs[Prefs.DISCORD_OAUTH2_EXPIRES_AT] = System.currentTimeMillis() + expiresIn * 1000
+                    }
                 }
+
+                DiscordOAuth2Result(
+                    accessToken = accessToken,
+                    refreshToken = refreshToken,
+                    expiresInSec = expiresIn,
+                    scope = scope,
+                )
+            } else {
+                val errorMsg = runCatching {
+                    val json = JSONObject(responseBody)
+                    json.getString("error") + (json.optString("error_description").let { if (it.isNotEmpty()) ": $it" else "" })
+                }.getOrElse { responseBody }
+
+                Log.w(TAG, "token exchange: HTTP $responseCode error body=$responseBody")
+                throw DiscordOAuth2Exception.NetworkFailure(IOException("HTTP $responseCode: $errorMsg"))
             }
         }
     }
@@ -453,12 +444,12 @@ class DiscordOAuth2Auth(
         if (!isTokenExpired(slot)) return token
         val refreshToken = Prefs[Prefs.DISCORD_OAUTH2_REFRESH_TOKEN, ""]
         if (refreshToken.isEmpty()) return token
-        try {
+        return try {
             val refreshed = refresh(refreshToken, slot)
-            return refreshed.accessToken
+            refreshed.accessToken
         } catch (e: Exception) {
             Log.w(TAG, "getValidAccessToken: refresh failed", e)
-            return token
+            token
         }
     }
 
@@ -466,7 +457,7 @@ class DiscordOAuth2Auth(
         return Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""].takeIf { it.isNotEmpty() }
     }
 
-    suspend fun clearTokens() {
+    fun clearTokens() {
         Prefs.remove(Prefs.DISCORD_OAUTH2_ACCESS_TOKEN)
         Prefs.remove(Prefs.DISCORD_OAUTH2_REFRESH_TOKEN)
         Prefs.remove(Prefs.DISCORD_OAUTH2_EXPIRES_AT)

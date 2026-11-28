@@ -32,7 +32,6 @@ import com.my.kizzy.data.get_current_data.media.MetadataResolver
 import com.my.kizzy.data.get_current_data.media.RichMediaMetadata
 import com.my.kizzy.data.rpc.ActivityTypeResolver
 import com.my.kizzy.data.rpc.CommonRpc
-import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.data.rpc.DynamicActivityDetectionEngine
 import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.data.rpc.LastPresence
@@ -49,6 +48,7 @@ import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
@@ -73,6 +73,9 @@ private const val TAG = "ManualRPC"
 private const val MIN_RPC_INTERVAL_MS = 500L
 private const val MAX_RPC_IDLE_INTERVAL_MS = 14_500L
 private const val NOTIFICATION_MIN_INTERVAL_MS = 1_000L
+private const val MEDIA_RETRY_BASE_DELAY_MS = 500L
+private const val MAX_MEDIA_RETRY_ATTEMPTS = 4
+private const val APP_DETECTION_INTERVAL_MS = 2_000L
 
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
@@ -82,41 +85,20 @@ class ManualRpc : Service() {
     private val serviceScope = CoroutineScope(serviceJob + Dispatchers.Main.immediate)
 
     private var kizzyRPC: KizzyRPC? = null
-
-    private var lastNotificationUpdateMs: Long = 0
-
+    private var lastNotificationUpdateMs: Long = 0L
     private var currentInstanceId: String = RPC_INSTANCE_MANUAL
-
     private val manualCloneInstanceIds = mutableSetOf<String>()
-
     private var explicitStop = false
 
-    @Inject
-    lateinit var multiRpc: MultiRpcManager
-
-    @Inject
-    lateinit var getCurrentPlayingMediaAll: GetCurrentPlayingMediaAll
-
-    @Inject
-    lateinit var metadataResolver: MetadataResolver
-
-    @Inject
-    lateinit var getCurrentlyRunningApp: GetCurrentlyRunningApp
-
-    @Inject
-    lateinit var dynamicActivityDetectionEngine: DynamicActivityDetectionEngine
-
-    @Inject
-    lateinit var logger: Logger
-
-    @Inject
-    lateinit var notificationManager: NotificationManager
-
-    @Inject
-    lateinit var notificationBuilder: Notification.Builder
-
-    @Inject
-    lateinit var rpcManager: RpcManager
+    @Inject lateinit var multiRpc: MultiRpcManager
+    @Inject lateinit var getCurrentPlayingMediaAll: GetCurrentPlayingMediaAll
+    @Inject lateinit var metadataResolver: MetadataResolver
+    @Inject lateinit var getCurrentlyRunningApp: GetCurrentlyRunningApp
+    @Inject lateinit var dynamicActivityDetectionEngine: DynamicActivityDetectionEngine
+    @Inject lateinit var logger: Logger
+    @Inject lateinit var notificationManager: NotificationManager
+    @Inject lateinit var notificationBuilder: Notification.Builder
+    @Inject lateinit var rpcManager: RpcManager
 
     private lateinit var mediaSessionManager: MediaSessionManager
 
@@ -126,30 +108,7 @@ class ManualRpc : Service() {
         }
 
     private var currentMediaController: MediaController? = null
-
     private val mediaControllerCallback = MediaControllerCallback()
-
-    private val mediaDetectionDelayMs = 500L
-    private val maxMediaDetectionAttempts = 4
-
-    private suspend fun fetchPlayingMediaWithRetry(): RichMediaMetadata {
-        var richMediaData = getCurrentPlayingMediaAll.invoke()
-        var attempt = 1
-        while (richMediaData.appName == null && attempt < maxMediaDetectionAttempts) {
-            logger.d(
-                TAG,
-                "fetchPlayingMediaWithRetry attempt $attempt: appName=${richMediaData.appName}, title=${richMediaData.title}, pkg=${richMediaData.packageName} - retrying..."
-            )
-            delay((mediaDetectionDelayMs * attempt).milliseconds)
-            richMediaData = getCurrentPlayingMediaAll.invoke()
-            attempt++
-        }
-        logger.d(
-            TAG,
-            "fetchPlayingMediaWithRetry final: appName=${richMediaData.appName}, title=${richMediaData.title}, pkg=${richMediaData.packageName}"
-        )
-        return richMediaData
-    }
 
     private var isMediaSessionActive = false
     private var lastSentPresenceKey: List<String?>? = null
@@ -170,6 +129,23 @@ class ManualRpc : Service() {
     private var periodicRefreshJob: Job? = null
     private var appDetectionJob: Job? = null
     private var presenceUpdateJob: Job? = null
+
+    private var useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
+    private var useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
+    private var enabledExperimentalApps: List<String> = readEnabledExperimentalApps()
+
+    private fun readEnabledExperimentalApps(): List<String> = try {
+        Json.decodeFromString(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
+    } catch (_: Exception) {
+        emptyList()
+    }
+
+    private suspend fun refreshCachedPrefs() {
+        val apps = withContext(Dispatchers.IO) { readEnabledExperimentalApps() }
+        useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
+        useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
+        enabledExperimentalApps = apps
+    }
 
     private fun resolveAppStartTimestamp(packageName: String): Long {
         if (detectedAppPackage != packageName || detectedAppStartMs == null) {
@@ -219,32 +195,41 @@ class ManualRpc : Service() {
         periodicRefreshJob = null
     }
 
-    private var useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
-    private var useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
+    private fun buildServiceNotification(
+        title: String,
+        contentText: String,
+        largeImage: RpcImage? = null,
+        progressMaxSec: Int = 0,
+        progressSec: Int = 0,
+    ): Notification {
+        val stopIntent = Intent(this, ManualRpc::class.java).apply {
+            action = Constants.ACTION_STOP_SERVICE
+        }
+        val stopPendingIntent = PendingIntent.getService(
+            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
+        )
+        val restartIntent = Intent(this, ManualRpc::class.java).apply {
+            action = Constants.ACTION_RESTART_SERVICE
+        }
+        val restartPendingIntent = PendingIntent.getService(
+            this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
+        )
 
-    private var templateName =
-        Prefs[Prefs.MANUAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
-    private var templateDetails =
-        Prefs[Prefs.MANUAL_RPC_TEMPLATE_DETAILS, TemplateKeys.MEDIA_TITLE]
-    private var templateState =
-        Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
-
-    private var manualActivityType = Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE, ""]
-    private var manualStatus = Prefs[Prefs.MANUAL_RPC_STATUS, "online"]
-    private var manualLargeText = Prefs[Prefs.MANUAL_RPC_LARGE_TEXT, ""]
-    private var manualSmallText = Prefs[Prefs.MANUAL_RPC_SMALL_TEXT, ""]
-    private var manualLargeImage = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""]
-    private var manualSmallImage = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""]
-    private var manualStreamUrl = Prefs[Prefs.MANUAL_RPC_STREAM_URL, ""]
-    private var manualPartyCurrentSize = Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE, ""]
-    private var manualPartyMaxSize = Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE, ""]
-
-    private var enabledExperimentalApps: List<String> = readEnabledExperimentalApps()
-
-    private fun readEnabledExperimentalApps(): List<String> = try {
-        Json.decodeFromString(Prefs[Prefs.ENABLED_EXPERIMENTAL_APPS, "[]"])
-    } catch (_: Exception) {
-        emptyList()
+        return Notification.Builder(this, Constants.CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_manual_rpc)
+            .setContentTitle(title)
+            .setContentText(contentText)
+            .apply {
+                if (largeImage != null) {
+                    setLargeIcon(largeImage, this@ManualRpc)
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && progressMaxSec > 0) {
+                    setProgress(progressMaxSec, progressSec, false)
+                }
+            }
+            .addAction(R.drawable.ic_manual_rpc, getString(R.string.restart), restartPendingIntent)
+            .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), stopPendingIntent)
+            .build()
     }
 
     private fun notifyIdleIfNeeded() {
@@ -252,28 +237,28 @@ class ManualRpc : Service() {
         if (now - lastNotificationUpdateMs < NOTIFICATION_MIN_INTERVAL_MS) return
         lastNotificationUpdateMs = now
 
-        val stopIntent = Intent(this, ManualRpc::class.java).apply {
-            action = com.my.kizzy.feature_rpc_base.Constants.ACTION_STOP_SERVICE
-        }
-        val stopPendingIntent = PendingIntent.getService(
-            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
-        )
-        val restartIntent = Intent(this, ManualRpc::class.java).apply {
-            action = com.my.kizzy.feature_rpc_base.Constants.ACTION_RESTART_SERVICE
-        }
-        val restartPendingIntent = PendingIntent.getService(
-            this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
-        )
         notificationManager.notify(
-            com.my.kizzy.feature_rpc_base.Constants.NOTIFICATION_ID_MANUAL_RPC,
-            Notification.Builder(this, com.my.kizzy.feature_rpc_base.Constants.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_manual_rpc)
-                .setContentTitle(getString(R.string.service_enabled))
-                .setContentText(getString(R.string.idling_notification))
-                .addAction(R.drawable.ic_manual_rpc, getString(R.string.restart), restartPendingIntent)
-                .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), stopPendingIntent)
-                .build()
+            Constants.NOTIFICATION_ID_MANUAL_RPC,
+            buildServiceNotification(
+                title = getString(R.string.service_enabled),
+                contentText = getString(R.string.idling_notification),
+            )
         )
+    }
+
+    private suspend fun fetchPlayingMediaWithRetry(): RichMediaMetadata {
+        var richMediaData = getCurrentPlayingMediaAll.invoke()
+        var attempt = 1
+        while (richMediaData.appName == null && attempt < MAX_MEDIA_RETRY_ATTEMPTS) {
+            logger.d(
+                TAG,
+                "fetchPlayingMediaWithRetry attempt $attempt: appName=${richMediaData.appName}, title=${richMediaData.title}, pkg=${richMediaData.packageName}"
+            )
+            delay((MEDIA_RETRY_BASE_DELAY_MS * attempt).milliseconds)
+            richMediaData = getCurrentPlayingMediaAll.invoke()
+            attempt++
+        }
+        return richMediaData
     }
 
     override fun onCreate() {
@@ -282,25 +267,22 @@ class ManualRpc : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        currentInstanceId = if (intent?.action == com.my.kizzy.feature_rpc_base.Constants.ACTION_ADD_INSTANCE) {
-            intent.getStringExtra(com.my.kizzy.feature_rpc_base.Constants.EXTRA_INSTANCE_ID)
+        val action = intent?.action
+        currentInstanceId = if (action == Constants.ACTION_ADD_INSTANCE) {
+            intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
                 ?.takeIf { it.isNotBlank() } ?: RPC_INSTANCE_MANUAL
         } else {
             RPC_INSTANCE_MANUAL
         }
-        kizzyRPC = if (intent?.action == com.my.kizzy.feature_rpc_base.Constants.ACTION_ADD_INSTANCE) {
-            val instanceId = intent.getStringExtra(com.my.kizzy.feature_rpc_base.Constants.EXTRA_INSTANCE_ID)
-            if (!instanceId.isNullOrBlank()) {
-                multiRpc.customSession(instanceId)
-            } else {
-                multiRpc.session("3")
-            }
+
+        kizzyRPC = if (action == Constants.ACTION_ADD_INSTANCE && currentInstanceId != RPC_INSTANCE_MANUAL) {
+            multiRpc.customSession(currentInstanceId)
         } else {
             multiRpc.session("3")
         }
 
-        if (intent?.action == com.my.kizzy.feature_rpc_base.Constants.ACTION_REMOVE_INSTANCE) {
-            val instanceId = intent.getStringExtra(com.my.kizzy.feature_rpc_base.Constants.EXTRA_INSTANCE_ID)
+        if (action == Constants.ACTION_REMOVE_INSTANCE) {
+            val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
             if (!instanceId.isNullOrBlank()) {
                 multiRpc.removeInstance("3", instanceId)
                 manualCloneInstanceIds.remove(instanceId)
@@ -314,7 +296,7 @@ class ManualRpc : Service() {
             return START_NOT_STICKY
         }
 
-        if (intent?.action == com.my.kizzy.feature_rpc_base.Constants.ACTION_STOP_SERVICE) {
+        if (action == Constants.ACTION_STOP_SERVICE) {
             explicitStop = true
             val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
                 .split(',')
@@ -329,66 +311,33 @@ class ManualRpc : Service() {
             return START_NOT_STICKY
         }
 
-        if (intent?.action == com.my.kizzy.feature_rpc_base.Constants.ACTION_RESTART_SERVICE) {
-            rpcPacer.reset()
+        rpcPacer.reset()
+        if (action == Constants.ACTION_RESTART_SERVICE) {
             lastSentPresenceKey = null
-        } else {
-            rpcPacer.reset()
         }
 
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.ManualRpc.name
-        val stopIntent = Intent(this, ManualRpc::class.java).apply {
-            action = com.my.kizzy.feature_rpc_base.Constants.ACTION_STOP_SERVICE
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getService(
-            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        val restartIntent = Intent(this, ManualRpc::class.java).apply {
-            action = com.my.kizzy.feature_rpc_base.Constants.ACTION_RESTART_SERVICE
-        }
-        val restartPendingIntent: PendingIntent = PendingIntent.getService(
-            this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
 
-        val appIntent = packageManager.getLaunchIntentForPackage(packageName)
-            ?: Intent(Intent.ACTION_MAIN).setPackage(packageName)
-        appIntent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val foregroundNotification = buildServiceNotification(
+            title = getString(R.string.service_enabled),
+            contentText = getString(R.string.rich_presence_active),
         )
-        val appPendingIntent = PendingIntent.getActivity(
-            this, 0, appIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val notification = Notification.Builder(this, com.my.kizzy.feature_rpc_base.Constants.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_manual_rpc)
-            .setContentTitle(getString(R.string.service_enabled))
-            .setContentIntent(appPendingIntent)
-            .addAction(
-                R.drawable.ic_manual_rpc,
-                getString(R.string.restart),
-                restartPendingIntent
-            )
-            .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), pendingIntent)
-            .build()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            startForeground(com.my.kizzy.feature_rpc_base.Constants.NOTIFICATION_ID_MANUAL_RPC, notification)
+            startForeground(Constants.NOTIFICATION_ID_MANUAL_RPC, foregroundNotification)
         } else {
             startForeground(
-                com.my.kizzy.feature_rpc_base.Constants.NOTIFICATION_ID_MANUAL_RPC,
-                notification,
+                Constants.NOTIFICATION_ID_MANUAL_RPC,
+                foregroundNotification,
                 FOREGROUND_SERVICE_TYPE_DATA_SYNC
             )
         }
 
-        if (intent?.action == com.my.kizzy.feature_rpc_base.Constants.ACTION_ADD_INSTANCE) {
-            val instanceId = intent.getStringExtra(com.my.kizzy.feature_rpc_base.Constants.EXTRA_INSTANCE_ID)
+        if (action == Constants.ACTION_ADD_INSTANCE) {
+            val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
             if (!instanceId.isNullOrBlank()) {
                 currentInstanceId = instanceId
                 manualCloneInstanceIds.add(instanceId)
-                val oauthIndex = intent.getIntExtra(com.my.kizzy.feature_rpc_base.Constants.EXTRA_OAUTH_INDEX, 1)
+                val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
                 multiRpc.addInstance("3", instanceId, oauthIndex)
                 if (instanceId != RPC_INSTANCE_MANUAL) {
                     CloneNotificationHelper.show(
@@ -417,47 +366,30 @@ class ManualRpc : Service() {
         }
 
         serviceScope.launch {
-            withContext(Dispatchers.IO) {
-                templateName = Prefs[Prefs.MANUAL_RPC_TEMPLATE_NAME, TemplateKeys.APP_NAME]
-                templateDetails = Prefs[Prefs.MANUAL_RPC_TEMPLATE_DETAILS, TemplateKeys.MEDIA_TITLE]
-                templateState = Prefs[Prefs.MANUAL_RPC_TEMPLATE_STATE, TemplateKeys.MEDIA_ARTIST]
-                useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
-                useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
-                enabledExperimentalApps = readEnabledExperimentalApps()
-                manualActivityType = Prefs[Prefs.MANUAL_RPC_ACTIVITY_TYPE, ""]
-                manualStatus = Prefs[Prefs.MANUAL_RPC_STATUS, "online"]
-                manualLargeImage = Prefs[Prefs.MANUAL_RPC_LARGE_IMAGE, ""]
-                manualSmallImage = Prefs[Prefs.MANUAL_RPC_SMALL_IMAGE, ""]
-                manualLargeText = Prefs[Prefs.MANUAL_RPC_LARGE_TEXT, ""]
-                manualSmallText = Prefs[Prefs.MANUAL_RPC_SMALL_TEXT, ""]
-                manualStreamUrl = Prefs[Prefs.MANUAL_RPC_STREAM_URL, ""]
-                manualPartyCurrentSize = Prefs[Prefs.MANUAL_RPC_PARTY_CURRENT_SIZE, ""]
-                manualPartyMaxSize = Prefs[Prefs.MANUAL_RPC_PARTY_MAX_SIZE, ""]
-            }
-        }
+            refreshCachedPrefs()
 
-        val initialMediaSessions = try {
-            mediaSessionManager.getActiveSessions(
-                ComponentName(this, NotificationListener::class.java)
-            )
-        } catch (e: SecurityException) {
-            logger.e(TAG, "No notification access, skipping media sessions: ${e.message}")
-            emptyList()
-        }
-        var mediaActiveInitially = false
-        if (useMediaRpc && initialMediaSessions.isNotEmpty()) {
-            val firstActiveMediaController = initialMediaSessions.firstOrNull {
-                enabledExperimentalApps.contains(it.packageName) ||
+            val initialMediaSessions = try {
+                mediaSessionManager.getActiveSessions(
+                    ComponentName(this@ManualRpc, NotificationListener::class.java)
+                )
+            } catch (e: SecurityException) {
+                logger.e(TAG, "No notification access, skipping media sessions: ${e.message}")
+                emptyList()
+            }
+
+            var mediaActiveInitially = false
+            if (useMediaRpc && initialMediaSessions.isNotEmpty()) {
+                val firstActiveMediaController = initialMediaSessions.firstOrNull {
+                    enabledExperimentalApps.contains(it.packageName) ||
                         Prefs.isMediaAppEnabled(it.packageName)
+                }
+                if (firstActiveMediaController != null) {
+                    mediaActiveInitially = true
+                    activeSessionsListener(listOf(firstActiveMediaController), isEvent = false)
+                }
             }
-            if (firstActiveMediaController != null) {
-                mediaActiveInitially = true
-                activeSessionsListener(listOf(firstActiveMediaController), isEvent = false)
-            }
-        }
 
-        if (!mediaActiveInitially) {
-            serviceScope.launch {
+            if (!mediaActiveInitially) {
                 var foundMedia = false
                 if (useMediaRpc) {
                     val directMedia = fetchPlayingMediaWithRetry()
@@ -475,11 +407,8 @@ class ManualRpc : Service() {
                     startAppDetectionCoroutine()
                 }
             }
-        }
 
-        startPeriodicRefresh()
-
-        serviceScope.launch {
+            startPeriodicRefresh()
             kizzyRPC?.build(priority = 1)
         }
 
@@ -493,31 +422,30 @@ class ManualRpc : Service() {
     }
 
     private fun startAppDetectionCoroutine() {
-        if (appDetectionJob?.isActive == true) {
-            logger.d(TAG, "App detection coroutine already running")
-            return
-        }
-        logger.d(TAG, "Starting app detection coroutine")
+        if (appDetectionJob?.isActive == true) return
 
         appDetectionJob = serviceScope.launch {
             var currentPackageName = ""
             while (isActive) {
                 try {
-                    enabledExperimentalApps = readEnabledExperimentalApps()
+                    val updatedApps = withContext(Dispatchers.IO) { readEnabledExperimentalApps() }
+                    enabledExperimentalApps = updatedApps
+                    useAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
+                    useMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
+
+                    if (!useAppsRpc) {
+                        delay(APP_DETECTION_INTERVAL_MS.milliseconds)
+                        continue
+                    }
 
                     val currentApp = getCurrentlyRunningApp()
-
                     if (currentApp.name.isNotEmpty() && currentApp.packageName != currentPackageName) {
-                        val isGameApp = dynamicActivityDetectionEngine.identifyGame(currentApp.packageName) != null
-                        val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(currentApp.packageName) != null
-                        val shouldShow = isGameApp || isAiApp || enabledExperimentalApps.contains(currentApp.packageName)
+                        val aiApp = dynamicActivityDetectionEngine.identifyAiApp(currentApp.packageName)
+                        val gameApp = dynamicActivityDetectionEngine.identifyGame(currentApp.packageName)
+                        val shouldShow = aiApp != null || gameApp != null || updatedApps.contains(currentApp.packageName)
                         if (shouldShow) {
                             currentPackageName = currentApp.packageName
-                            val displayName = if (isAiApp) {
-                                dynamicActivityDetectionEngine.identifyAiApp(currentApp.packageName)?.displayName
-                            } else if (isGameApp) {
-                                dynamicActivityDetectionEngine.identifyGame(currentApp.packageName)?.displayName
-                            } else null
+                            val displayName = (aiApp ?: gameApp)?.displayName
                             val startMs = resolveAppStartTimestamp(currentApp.packageName)
                             val appInfo = currentApp.copy(
                                 name = displayName?.takeIf { it.isNotBlank() } ?: currentApp.name,
@@ -525,11 +453,13 @@ class ManualRpc : Service() {
                             )
                             updatePresence(appInfo = appInfo, forceRefresh = true)
                         } else if (!isMediaSessionActive || !useMediaRpc) {
-                            currentPackageName = ""
-                            clearDetectedAppTimestamp()
-                            updatePresence(CommonRpc(), forceRefresh = true)
+                            if (currentPackageName.isNotEmpty()) {
+                                currentPackageName = ""
+                                clearDetectedAppTimestamp()
+                                updatePresence(CommonRpc(), forceRefresh = true)
+                            }
                         }
-                    } else if (currentApp.name.isEmpty() && currentPackageName != "") {
+                    } else if (currentApp.name.isEmpty() && currentPackageName.isNotEmpty()) {
                         currentPackageName = ""
                         clearDetectedAppTimestamp()
                         updatePresence(CommonRpc(), forceRefresh = true)
@@ -539,7 +469,7 @@ class ManualRpc : Service() {
                 } catch (e: Exception) {
                     logger.e(TAG, "Detection cycle failed: ${e.message}")
                 }
-                delay(2000.milliseconds)
+                delay(APP_DETECTION_INTERVAL_MS.milliseconds)
             }
         }
     }
@@ -575,21 +505,10 @@ class ManualRpc : Service() {
         val currentUseAppsRpc = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, true]
         val currentUseMediaRpc = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, true]
 
-        val finalName: String?
-        val finalDetails: String?
-        val finalState: String?
-        var finalLargeImage: RpcImage?
-        var finalSmallImage: RpcImage?
-        var finalSmallImageChannelUrl: String? = null
-        val finalLargeText: String?
-        val finalSmallText: String?
-        val finalTimestamps: Timestamps?
-        val effectivePackageName: String?
-
         if (richMediaInfo != null &&
             Prefs[Prefs.MANUAL_RPC_HIDE_ON_PAUSE, false] &&
             (richMediaInfo.playbackState == PlaybackState.STATE_PAUSED ||
-                    richMediaInfo.playbackState == PlaybackState.STATE_STOPPED)
+                richMediaInfo.playbackState == PlaybackState.STATE_STOPPED)
         ) {
             if (currentUseAppsRpc) {
                 startAppDetectionCoroutine()
@@ -615,18 +534,27 @@ class ManualRpc : Service() {
             playbackState = richMediaInfo?.playbackState
         )
 
+        var finalSmallImageChannelUrl: String? = null
+        val finalName: String?
+        val finalDetails: String?
+        val finalState: String?
+        var finalLargeImage: RpcImage?
+        var finalSmallImage: RpcImage?
+        val finalLargeText: String?
+        val finalSmallText: String?
+        val finalTimestamps: Timestamps?
+        val effectivePackageName: String?
+
         if (currentContextIsMedia) {
             effectivePackageName = richMediaInfo.packageName
-
             currentMediaProgressSec = (richMediaInfo.position / 1000).toInt()
                 .coerceIn(0, (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0))
             currentMediaDurationSec = (richMediaInfo.duration / 1000).toInt().coerceAtLeast(0)
             currentMediaPositionMs = richMediaInfo.position.coerceAtLeast(0L)
             isPaused = richMediaInfo.playbackState != PlaybackState.STATE_PLAYING &&
-                    richMediaInfo.playbackState != PlaybackState.STATE_BUFFERING &&
-                    richMediaInfo.playbackState != PlaybackState.STATE_CONNECTING
+                richMediaInfo.playbackState != PlaybackState.STATE_BUFFERING &&
+                richMediaInfo.playbackState != PlaybackState.STATE_CONNECTING
 
-            logger.d(TAG, "Processing Rich Media Context")
             if (Prefs[Prefs.MANUAL_RPC_SHOW_SONG_AS_TITLE, false]) {
                 val titleSource = Prefs[Prefs.MANUAL_RPC_TITLE_SOURCE, "title"]
                 finalName = if (titleSource == "artist") richMediaInfo.artist else richMediaInfo.title
@@ -653,65 +581,46 @@ class ManualRpc : Service() {
                 )
             }
 
+            val hideCoverArt = Prefs[Prefs.RPC_HIDE_COVER_ART, false]
+            val showCoverArt = Prefs[Prefs.MANUAL_RPC_SHOW_COVER_ART, true] && !hideCoverArt
+            val showAppIcon = Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON, false] && !hideCoverArt
+            val showChannelIcon = Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON, false] && !hideCoverArt
+            val showPlaybackState = Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE, true]
+
             finalLargeImage = when {
-                Prefs[Prefs.MANUAL_RPC_SHOW_COVER_ART, true] &&
-                        !Prefs[Prefs.RPC_HIDE_COVER_ART, false] ->
-                    richMediaInfo.coverArt ?: richMediaInfo.appIcon
-                Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON, false] &&
-                        !Prefs[Prefs.RPC_HIDE_COVER_ART, false] -> richMediaInfo.appIcon
+                showCoverArt -> richMediaInfo.coverArt ?: richMediaInfo.appIcon
+                showAppIcon -> richMediaInfo.appIcon
                 else -> null
             }
 
             finalSmallImage = when {
-                Prefs[Prefs.MANUAL_RPC_SHOW_CHANNEL_ICON, false] &&
-                        !Prefs[Prefs.RPC_HIDE_COVER_ART, false] ->
-                    richMediaInfo.channelUrl?.let { channelUrl ->
-                        val avatarUrl = YouTubeResolver.lookupChannelAvatarByChannelUrl(channelUrl)
-                        if (avatarUrl != null) {
-                            finalSmallImageChannelUrl = richMediaInfo.channelUrl
-                            RpcImage.ExternalImage(avatarUrl)
-                        } else null
-                    } ?: richMediaInfo.mediaUrl?.let { url ->
-                        val videoId = YouTubeResolver.extractVideoId(url)
-                        if (videoId != null) {
-                            val avatarUrl = YouTubeResolver.lookupChannelAvatar(videoId)
-                            if (avatarUrl != null) {
-                                finalSmallImageChannelUrl = richMediaInfo.channelUrl
-                                RpcImage.ExternalImage(avatarUrl)
-                            } else null
-                        } else null
-                    }
-
-                Prefs[Prefs.MANUAL_RPC_SHOW_PLAYBACK_STATE, true] ->
-                    richMediaInfo.playbackStateIcon
-
-                Prefs[Prefs.MANUAL_RPC_SHOW_APP_ICON, false] &&
-                        !Prefs[Prefs.RPC_HIDE_COVER_ART, false] && finalLargeImage != richMediaInfo.appIcon ->
-                    richMediaInfo.appIcon
+                showChannelIcon -> resolveChannelAvatar(richMediaInfo)?.also {
+                    finalSmallImageChannelUrl = richMediaInfo.channelUrl
+                }
+                showPlaybackState -> richMediaInfo.playbackStateIcon
+                showAppIcon && finalLargeImage != richMediaInfo.appIcon -> richMediaInfo.appIcon
                 else -> null
             }
 
             finalLargeText = richMediaInfo.album ?: richMediaInfo.playlistName
-            finalSmallText =
-                if (finalSmallImage == richMediaInfo.appIcon) richMediaInfo.appName
-                else if (finalSmallImageChannelUrl != null) richMediaInfo.state?.takeIf { it.isNotEmpty() }
-                else null
+            finalSmallText = when {
+                finalSmallImage == richMediaInfo.appIcon -> richMediaInfo.appName
+                finalSmallImageChannelUrl != null -> richMediaInfo.state?.takeIf { it.isNotEmpty() }
+                else -> null
+            }
 
             finalTimestamps = resolveTimestamps(richMediaInfo.timestamps)
         } else if (currentContextIsApp) {
             effectivePackageName = appInfo.packageName
-            logger.d(TAG, "Processing App Context")
             finalName = resolveTemplateValue(processor.process(currentTemplateName), appInfo.name)
             finalDetails = resolveTemplateValue(processor.process(currentTemplateDetails), appInfo.details)
             finalState = resolveTemplateValue(processor.process(currentTemplateState), appInfo.state)
-
             finalLargeImage = appInfo.largeImage
             finalSmallImage = appInfo.smallImage
             finalLargeText = appInfo.largeText
             finalSmallText = appInfo.smallText
             finalTimestamps = resolveTimestamps(appInfo.time)
         } else {
-            logger.d(TAG, "No active context (App or Media) — using default template presence")
             finalName = null
             finalDetails = null
             finalState = null
@@ -727,7 +636,6 @@ class ManualRpc : Service() {
             finalName.isNullOrEmpty() && finalDetails.isNullOrEmpty() && finalState.isNullOrEmpty()
 
         if (rpcDataIsEmpty) {
-            logger.d(TAG, "Calculated RPC data is empty, clearing presence.")
             if (kizzyRPC?.isRpcRunning() == true) {
                 kizzyRPC?.clearPresence()
                 lastHadPresence = false
@@ -766,7 +674,6 @@ class ManualRpc : Service() {
             richMediaInfo?.albumUrl,
             richMediaInfo?.playlistUrl,
         )
-
         val smallUrl = MediaServiceResolver.appDownloadUrl(richMediaInfo?.packageName)
         val finalLargeUrl = largeUrl ?: smallUrl
 
@@ -776,6 +683,14 @@ class ManualRpc : Service() {
         if (currentSmallImageStr.isNotBlank()) {
             finalSmallImage = currentSmallImageStr.toRpcImage()
         }
+
+        val useButtons = Prefs[Prefs.MANUAL_RPC_USE_BUTTONS, false]
+        val button1Text = Prefs[Prefs.MANUAL_RPC_BUTTON1_TEXT, ""]
+        val button1Url = Prefs[Prefs.MANUAL_RPC_BUTTON1_URL, ""]
+        val button2Text = Prefs[Prefs.MANUAL_RPC_BUTTON2_TEXT, ""]
+        val button2Url = Prefs[Prefs.MANUAL_RPC_BUTTON2_URL, ""]
+        val useCustomAppId = Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false]
+        val customAppId = Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""]
 
         val presenceKey = listOf(
             finalName,
@@ -797,35 +712,30 @@ class ManualRpc : Service() {
             currentStreamUrl,
             currentPartyCurrentSize,
             currentPartyMaxSize,
-            Prefs[Prefs.MANUAL_RPC_USE_BUTTONS, false].toString(),
-            Prefs[Prefs.MANUAL_RPC_BUTTON1_TEXT, ""],
-            Prefs[Prefs.MANUAL_RPC_BUTTON1_URL, ""],
-            Prefs[Prefs.MANUAL_RPC_BUTTON2_TEXT, ""],
-            Prefs[Prefs.MANUAL_RPC_BUTTON2_URL, ""],
-            Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false].toString(),
-            Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""],
+            useButtons.toString(),
+            button1Text,
+            button1Url,
+            button2Text,
+            button2Url,
+            useCustomAppId.toString(),
+            customAppId,
         )
         val hasMeaningfulChange = presenceKey != lastSentPresenceKey
         if (!rpcPacer.acquireSendSlot(hasMeaningfulChange = hasMeaningfulChange, forceRefresh = forceRefresh)) {
-            logger.d(TAG, "Presence unchanged within idle window, skipping redundant update")
             return
         }
 
-        val commonRpc = CommonRpc(
-            name = finalName ?: "",
-            type = if (currentActivityType.isNotEmpty()) currentActivityType.toIntOrNull()
-                ?: ActivityTypeResolver.resolve(
-                    packageName = effectivePackageName,
-                    isMusicMetadata = richMediaInfo?.isMusicMetadata == true,
-                    fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
-                    useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
-                )
-            else ActivityTypeResolver.resolve(
+        val resolvedActivityType = currentActivityType.takeIf { it.isNotEmpty() }?.toIntOrNull()
+            ?: ActivityTypeResolver.resolve(
                 packageName = effectivePackageName,
                 isMusicMetadata = richMediaInfo?.isMusicMetadata == true,
                 fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
                 useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
-            ),
+            )
+
+        val commonRpc = CommonRpc(
+            name = finalName ?: "",
+            type = resolvedActivityType,
             details = finalDetails,
             state = finalState,
             detailsUrl = detailsUrl,
@@ -847,11 +757,7 @@ class ManualRpc : Service() {
         )
 
         kizzyRPC?.clearButtons()
-        if (Prefs[Prefs.MANUAL_RPC_USE_BUTTONS, false]) {
-            val button1Text = Prefs[Prefs.MANUAL_RPC_BUTTON1_TEXT, ""]
-            val button1Url = Prefs[Prefs.MANUAL_RPC_BUTTON1_URL, ""]
-            val button2Text = Prefs[Prefs.MANUAL_RPC_BUTTON2_TEXT, ""]
-            val button2Url = Prefs[Prefs.MANUAL_RPC_BUTTON2_URL, ""]
+        if (useButtons) {
             if (button1Text.isNotEmpty() && button1Url.isNotEmpty()) {
                 kizzyRPC?.setButton1(button1Text, button1Url)
             }
@@ -886,8 +792,9 @@ class ManualRpc : Service() {
                 }
             }
         }
-        if (Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false]) {
-            kizzyRPC?.setApplicationId(Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""])
+
+        if (useCustomAppId) {
+            kizzyRPC?.setApplicationId(customAppId)
         }
         if (currentStreamUrl.isNotBlank()) {
             kizzyRPC?.setStreamUrl(currentStreamUrl)
@@ -926,9 +833,9 @@ class ManualRpc : Service() {
             button2 = kizzyRPC?.currentButtons()?.getOrNull(1)?.label.orEmpty(),
             button2link = kizzyRPC?.currentButtons()?.getOrNull(1)?.url.orEmpty(),
             status = resolvedStatus,
-            url = currentStreamUrl.takeIf { it.isNotEmpty() } ?: "",
-            partyCurrentSize = currentPartyCurrentSize.takeIf { it.isNotEmpty() } ?: "",
-            partyMaxSize = currentPartyMaxSize.takeIf { it.isNotEmpty() } ?: "",
+            url = currentStreamUrl.ifEmpty { "" },
+            partyCurrentSize = currentPartyCurrentSize.ifEmpty { "" },
+            partyMaxSize = currentPartyMaxSize.ifEmpty { "" },
         )
         LastPresence.rememberExperimental(rpcConfig)
         rpcManager.setCurrentPresenceConfig(rpcConfig.copy(instanceId = currentInstanceId), currentInstanceId)
@@ -947,53 +854,49 @@ class ManualRpc : Service() {
                     .ifEmpty { getString(R.string.idling_notification) }
             }
 
-            val stopIntent = Intent(this, ManualRpc::class.java).apply {
-                action = com.my.kizzy.feature_rpc_base.Constants.ACTION_STOP_SERVICE
-            }
-            val stopPendingIntent = PendingIntent.getService(
-                this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
-            )
-            val restartIntent = Intent(this, ManualRpc::class.java).apply {
-                action = com.my.kizzy.feature_rpc_base.Constants.ACTION_RESTART_SERVICE
-            }
-            val restartPendingIntent = PendingIntent.getService(
-                this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE
-            )
             notificationManager.notify(
-                com.my.kizzy.feature_rpc_base.Constants.NOTIFICATION_ID_MANUAL_RPC,
-                Notification.Builder(this, com.my.kizzy.feature_rpc_base.Constants.CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_manual_rpc)
-                    .setContentTitle(notifTitle)
-                    .setContentText(notifText)
-                    .setLargeIcon(finalLargeImage, this@ManualRpc)
-                    .addAction(R.drawable.ic_manual_rpc, getString(R.string.restart), restartPendingIntent)
-                    .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), stopPendingIntent)
-                    .apply {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentMediaDurationSec > 0) {
-                            setProgress(currentMediaDurationSec, currentMediaProgressSec, false)
-                        }
-                    }
-                    .build()
+                Constants.NOTIFICATION_ID_MANUAL_RPC,
+                buildServiceNotification(
+                    title = notifTitle,
+                    contentText = notifText,
+                    largeImage = finalLargeImage,
+                    progressMaxSec = currentMediaDurationSec,
+                    progressSec = currentMediaProgressSec,
+                )
             )
         }
+    }
+
+    private suspend fun resolveChannelAvatar(richMediaInfo: RichMediaMetadata): RpcImage.ExternalImage? {
+        val byChannel = richMediaInfo.channelUrl?.let { channelUrl ->
+            YouTubeResolver.lookupChannelAvatarByChannelUrl(channelUrl)
+        }
+        if (byChannel != null) {
+            return RpcImage.ExternalImage(byChannel)
+        }
+        val byVideo = richMediaInfo.mediaUrl?.let { url ->
+            YouTubeResolver.extractVideoId(url)?.let { videoId ->
+                YouTubeResolver.lookupChannelAvatar(videoId)
+            }
+        }
+        return byVideo?.let { RpcImage.ExternalImage(it) }
     }
 
     private fun activeSessionsListener(
         mediaSessions: List<MediaController>?,
         isEvent: Boolean = true,
     ) {
-        if (!useMediaRpc) {
-            logger.i(TAG, "Media part of Manual RPC is disabled.")
-            if (useAppsRpc && !isMediaSessionActive) {
+        val mediaEnabled = Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, useMediaRpc]
+        val appsEnabled = Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, useAppsRpc]
+        useMediaRpc = mediaEnabled
+        useAppsRpc = appsEnabled
+
+        if (!mediaEnabled) {
+            if (appsEnabled && !isMediaSessionActive) {
                 startAppDetectionCoroutine()
-            } else if (!useAppsRpc) {
+            } else if (!appsEnabled) {
                 launchPresenceUpdate {
-                    updatePresence(
-                        appInfo = null,
-                        richMediaInfo = null,
-                        rawMediaMetadata = null,
-                        forceRefresh = true,
-                    )
+                    updatePresence(appInfo = null, richMediaInfo = null, rawMediaMetadata = null, forceRefresh = true)
                 }
             }
             return
@@ -1003,10 +906,9 @@ class ManualRpc : Service() {
         currentMediaController?.unregisterCallback(mediaControllerCallback)
         currentMediaController = null
 
-        if (mediaSessions?.isNotEmpty() == true) {
+        if (!mediaSessions.isNullOrEmpty()) {
             currentMediaController = mediaSessions.firstOrNull {
-                enabledExperimentalApps.contains(it.packageName) ||
-                        Prefs.isMediaAppEnabled(it.packageName)
+                enabledExperimentalApps.contains(it.packageName) || Prefs.isMediaAppEnabled(it.packageName)
             }
             currentMediaController?.registerCallback(mediaControllerCallback)
             isMediaSessionActive = currentMediaController != null
@@ -1016,9 +918,7 @@ class ManualRpc : Service() {
 
         launchPresenceUpdate {
             val richMediaData = fetchPlayingMediaWithRetry()
-            val hasMediaData = richMediaData.appName != null
-
-            if (hasMediaData && useMediaRpc) {
+            if (richMediaData.appName != null && useMediaRpc) {
                 updatePresence(
                     richMediaInfo = richMediaData,
                     rawMediaMetadata = currentMediaController?.metadata,
@@ -1026,22 +926,18 @@ class ManualRpc : Service() {
                 )
             } else if (useAppsRpc) {
                 startAppDetectionCoroutine()
-            } else {
-                logger.d(TAG, "No media data available yet - skipping presence update, waiting for media to load")
             }
         }
     }
 
     private inner class MediaControllerCallback : MediaController.Callback() {
         private fun handleMediaUpdate() {
-            if (!useMediaRpc) return
+            if (!Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, useMediaRpc]) return
 
             launchPresenceUpdate {
                 delay(200.milliseconds)
-                val richMediaData = this@ManualRpc.getCurrentPlayingMediaAll.invoke()
-                val hasMediaData = richMediaData.appName != null
-
-                if (hasMediaData && useMediaRpc) {
+                val richMediaData = getCurrentPlayingMediaAll.invoke()
+                if (richMediaData.appName != null && Prefs[Prefs.MANUAL_RPC_USE_MEDIA_RPC, useMediaRpc]) {
                     val freshController = try {
                         mediaSessionManager
                             .getActiveSessions(ComponentName(this@ManualRpc, NotificationListener::class.java))
@@ -1054,42 +950,32 @@ class ManualRpc : Service() {
                         rawMediaMetadata = freshController?.metadata,
                         forceRefresh = true,
                     )
+                } else if (Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, useAppsRpc]) {
+                    startAppDetectionCoroutine()
                 } else {
-                    if (useAppsRpc) {
-                        startAppDetectionCoroutine()
-                    } else {
-                        updatePresence(
-                            appInfo = null,
-                            richMediaInfo = null,
-                            rawMediaMetadata = null,
-                            forceRefresh = true,
-                        )
-                    }
+                    updatePresence(appInfo = null, richMediaInfo = null, rawMediaMetadata = null, forceRefresh = true)
                 }
             }
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             super.onPlaybackStateChanged(state)
-            logger.d(TAG, "MediaControllerCallback: onPlaybackStateChanged")
             handleMediaUpdate()
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
-            logger.d(TAG, "MediaControllerCallback: onMetadataChanged")
             handleMediaUpdate()
         }
 
         override fun onSessionDestroyed() {
             super.onSessionDestroyed()
-            logger.d(TAG, "MediaControllerCallback: onSessionDestroyed")
             currentMediaController?.unregisterCallback(this)
             currentMediaController = null
             isMediaSessionActive = false
 
             launchPresenceUpdate {
-                if (useAppsRpc) {
+                if (Prefs[Prefs.MANUAL_RPC_USE_APPS_RPC, useAppsRpc]) {
                     startAppDetectionCoroutine()
                 } else {
                     updatePresence(appInfo = null, richMediaInfo = null, rawMediaMetadata = null, forceRefresh = true)
@@ -1104,9 +990,9 @@ class ManualRpc : Service() {
             "current" -> {
                 val cal = Calendar.getInstance()
                 val midnightMs = System.currentTimeMillis() -
-                        (cal.get(Calendar.HOUR_OF_DAY) * 3600L +
-                                cal.get(Calendar.MINUTE) * 60L +
-                                cal.get(Calendar.SECOND)) * 1000L
+                    (cal.get(Calendar.HOUR_OF_DAY) * 3600L +
+                        cal.get(Calendar.MINUTE) * 60L +
+                        cal.get(Calendar.SECOND)) * 1000L
                 Timestamps(start = midnightMs)
             }
             "custom" -> {
@@ -1134,6 +1020,7 @@ class ManualRpc : Service() {
     }
 
     override fun onDestroy() {
+        AppUtils.unregisterRpcService(this)
         if (::mediaSessionManager.isInitialized) {
             try {
                 mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangedListener)
@@ -1147,8 +1034,8 @@ class ManualRpc : Service() {
         presenceUpdateJob?.cancel()
         clearDetectedAppTimestamp()
         serviceJob.cancel()
+
         val rpc = kizzyRPC
-        AppUtils.unregisterRpcService(this)
         if (rpc != null) {
             CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
                 try {
@@ -1169,9 +1056,7 @@ class ManualRpc : Service() {
         super.onDestroy()
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+    override fun onBind(intent: Intent?): IBinder? = null
 
     private fun formatDuration(durationMs: Long): String {
         val totalSeconds = (durationMs / 1000L).coerceAtLeast(0L)

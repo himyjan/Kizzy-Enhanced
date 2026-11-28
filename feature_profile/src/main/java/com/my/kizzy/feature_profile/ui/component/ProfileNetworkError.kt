@@ -15,32 +15,38 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.runtime.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.resources.R
-import com.my.kizzy.ui.theme.DISCORD_CARD
-import com.my.kizzy.ui.theme.DISCORD_TEXT
-import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
 
 @Composable
 fun ProfileNetworkError(
@@ -53,60 +59,61 @@ fun ProfileNetworkError(
     val context = LocalContext.current
 
     if (showDialog) {
-        Box(
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        copyToClipboard(context, error)
+                        showDialog = false
+                    }
+                ) {
+                    Text("Copy")
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(vertical = 25.dp)
-        ) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                confirmButton = {
-                    TextButton(onClick = { showDialog = false }) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            copyToClipboard(context, error)
-                            showDialog = false
-                        }
-                    ) {
-                        Text("Copy")
-                    }
-                },
-                text = {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Text(text = error, color = DISCORD_TEXT)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        )
     }
 
-    LaunchedEffect(Unit) {
-        snackbarHostState.showSnackbar(
-            message = errorMessage,
-            actionLabel = "View Details"
-        ).also { result ->
-            if (result == SnackbarResult.ActionPerformed) {
-                showDialog = true
+    LaunchedEffect(error) {
+        if (error.isNotBlank()) {
+            snackbarHostState.showSnackbar(
+                message = errorMessage,
+                actionLabel = "View Details"
+            ).also { result ->
+                if (result == SnackbarResult.ActionPerformed) {
+                    showDialog = true
+                }
             }
         }
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        ProfileNetworkErrorDiscord(error = error)
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
 }
@@ -120,8 +127,8 @@ fun ProfileNetworkErrorDiscord(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
             .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -148,7 +155,8 @@ fun ProfileNetworkErrorDiscord(
 }
 
 fun copyToClipboard(context: Context, text: String) {
-    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+        ?: return
     val clipData = ClipData.newPlainText("Error Details", text)
     clipboardManager.setPrimaryClip(clipData)
 }
@@ -158,7 +166,7 @@ fun copyToClipboard(context: Context, text: String) {
 fun Preview_Profile_Network_Error() {
     ProfileNetworkError(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp),
         error = "Unable to connect to the network."
     )

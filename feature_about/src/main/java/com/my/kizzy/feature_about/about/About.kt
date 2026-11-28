@@ -19,12 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ContactSupport
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.Forum
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.NewReleases
-import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
@@ -101,7 +95,7 @@ fun About(
                 PreferencesHint(
                     title = stringResource(id = R.string.privacy_policy),
                     description = stringResource(id = R.string.privacy_policy_desc),
-                    icon = Icons.Outlined.PrivacyTip
+                    icon = vectorResource(R.drawable.ic_privacy_tip)
                 ) {
                     openUrl(github_privacy_policy)
                 }
@@ -110,7 +104,7 @@ fun About(
                 SettingItem(
                     title = stringResource(id = R.string.github_readme),
                     description = stringResource(id = R.string.github_readme_desc),
-                    icon = Icons.Outlined.Description
+                    icon = vectorResource(R.drawable.ic_description)
                 ) {
                     openUrl(github_Repository)
                 }
@@ -119,7 +113,7 @@ fun About(
                 SettingItem(
                     title = stringResource(id = R.string.github_latest_release),
                     description = stringResource(id = R.string.github_latest_release_desc),
-                    icon = Icons.Outlined.NewReleases
+                    icon = vectorResource(R.drawable.ic_new_releases)
                 ) {
                     openUrl(github_Release)
                 }
@@ -128,7 +122,7 @@ fun About(
                 SettingItem(
                     title = "GitHub Discussions",
                     description = "Ask questions, report bugs, or share feedback",
-                    icon = Icons.Outlined.Forum
+                    icon = vectorResource(R.drawable.ic_forum)
                 ) {
                     openUrl(github_Discussions)
                 }
@@ -146,7 +140,7 @@ fun About(
                 SettingItem(
                     title = stringResource(id = R.string.credits),
                     description = stringResource(id = R.string.credits_desc),
-                    icon = Icons.Outlined.AutoAwesome
+                    icon = vectorResource(R.drawable.ic_auto_awesome)
                 ) {
                     navigateToCredits()
                 }
@@ -155,7 +149,7 @@ fun About(
                 SettingItem(
                     title = stringResource(id = R.string.version),
                     description = BuildConfig.VERSION_NAME,
-                    icon = Icons.Outlined.Info
+                    icon = vectorResource(R.drawable.ic_info)
                 ) {
                 }
             }

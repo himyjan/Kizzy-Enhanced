@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -170,7 +169,7 @@ fun ConsolePresetEditorDialog(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Image,
+                                    imageVector = vectorResource(R.drawable.ic_image),
                                     contentDescription = "Pick large cover art"
                                 )
                             }
@@ -196,7 +195,7 @@ fun ConsolePresetEditorDialog(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Image,
+                                    imageVector = vectorResource(R.drawable.ic_image),
                                     contentDescription = "Pick small cover art"
                                 )
                             }

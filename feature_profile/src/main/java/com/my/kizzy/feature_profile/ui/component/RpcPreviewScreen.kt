@@ -26,13 +26,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -46,19 +46,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.TopAppBarDefaults
 import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
-import com.my.kizzy.ui.theme.DISCORD_BG
 import com.my.kizzy.ui.theme.DISCORD_BLURPLE
-import com.my.kizzy.ui.theme.DISCORD_CARD
 import com.my.kizzy.ui.theme.DISCORD_GREEN
-import com.my.kizzy.ui.theme.DISCORD_LIGHT_DARK
 import com.my.kizzy.ui.theme.DISCORD_RED
-import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
-import com.my.kizzy.ui.theme.DISCORD_TEXT
 import com.my.kizzy.ui.theme.DISCORD_YELLOW
 
 // Discord presence dots - mirrored from ProfileCard.
@@ -147,7 +141,7 @@ fun RpcPreviewScreen(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Filled.Person,
+                            imageVector = vectorResource(R.drawable.ic_person),
                             contentDescription = "User Avatar",
                             modifier = Modifier
                                 .size(86.dp)

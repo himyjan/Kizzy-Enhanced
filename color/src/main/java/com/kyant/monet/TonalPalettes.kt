@@ -61,7 +61,6 @@ class TonalPalettes(
         ): TonalPalette =
             tonalValues.associateWith { transform(it, ColorSpec()) }
 
-
         fun ColorScheme.toTonalPalettes(
             tonalValues: DoubleArray = M3TonalValues
         ): TonalPalettes = TonalPalettes(
@@ -73,15 +72,14 @@ class TonalPalettes(
             neutral2 = surfaceVariant.toTonalPalette(tonalValues),
         )
 
-
         private fun Color.transform(tone: Double, spec: ColorSpec): Color {
             val cam = toSrgb().toCieXyz().toCam16()
             return Hct(
                 h = cam.h + spec.hueShift(cam.h),
                 c = (
-                        if (tone >= 90.0) spec.chroma(cam.c).coerceAtMost(40.0)
-                        else spec.chroma(cam.c)
-                        ) * 2.0 / 3.0,
+                    if (tone >= 90.0) spec.chroma(cam.c).coerceAtMost(40.0)
+                    else spec.chroma(cam.c)
+                ) * 2.0 / 3.0,
                 t = tone
             ).toSrgb().toColor()
         }

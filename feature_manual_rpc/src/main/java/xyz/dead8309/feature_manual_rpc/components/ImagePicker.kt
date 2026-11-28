@@ -23,12 +23,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BrokenImage
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,22 +52,35 @@ fun ImagePicker(
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
-    ) {
-        imageUri.value = it
+    ) { uri ->
+        if (uri != null) {
+            imageUri.value = uri
+        }
     }
+
+    LaunchedEffect(visible) {
+        if (!visible) {
+            imageUri.value = null
+        }
+    }
+
     if (visible) {
         UploadDialog(
             image = imageUri,
             onBrowse = {
-                launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*")))
+                launcher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
             },
-            onPicked = {
-                onImageSelected(it)
+            onPicked = { uri ->
+                onImageSelected(uri)
             },
             onDismiss = {
-                onDismiss()
+                if (!showProgress) {
+                    onDismiss()
+                }
             },
-            showProgress = showProgress
+            showProgress = showProgress,
         )
     }
 }
@@ -80,24 +93,32 @@ fun UploadDialog(
     showProgress: Boolean,
     onPicked: (uri: Uri) -> Unit
 ) {
+    val selectedUri = image.value
     AlertDialog(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.padding(20.dp),
         confirmButton = {
-            if (image.value != null) {
+            if (selectedUri != null) {
                 TextButton(
+                    enabled = !showProgress,
                     shape = RoundedCornerShape(8.dp),
-                    onClick = {
-                        onPicked(image.value!!)
-                    },
+                    onClick = { onPicked(selectedUri) },
                 ) {
                     Text(text = stringResource(R.string.confirm))
                     if (showProgress) {
-                        Spacer(modifier = Modifier.width(2.dp))
-                        CircularProgressIndicator(Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                     }
                 }
+            }
+        },
+        dismissButton = {
+            TextButton(
+                enabled = !showProgress,
+                onClick = onDismiss,
+            ) {
+                Text(text = stringResource(android.R.string.cancel))
             }
         },
         title = { Text(text = stringResource(R.string.upload_image)) },
@@ -113,13 +134,14 @@ fun UploadDialog(
                 ) {
                     onBrowse()
                 }
-                if (image.value != null)
+                if (selectedUri != null) {
                     AsyncImage(
-                        model = image.value,
-                        contentDescription = "",
+                        model = selectedUri,
+                        contentDescription = null,
                         modifier = Modifier.size(200.dp),
-                        error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                        error = rememberVectorPainter(vectorResource(R.drawable.ic_broken_image))
                     )
+                }
             }
         }
     )

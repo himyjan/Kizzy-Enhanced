@@ -15,19 +15,20 @@ package com.my.kizzy.feature_profile.ui.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -41,17 +42,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -60,25 +65,12 @@ import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.resources.R
-import com.my.kizzy.ui.theme.DISCORD_BG
-import com.my.kizzy.ui.theme.DISCORD_CARD
 import com.my.kizzy.ui.theme.DISCORD_GREEN
-import com.my.kizzy.ui.theme.DISCORD_LIGHT_DARK
 import com.my.kizzy.ui.theme.DISCORD_RED
-import com.my.kizzy.ui.theme.DISCORD_RED
-import com.my.kizzy.ui.theme.DISCORD_SUBTEXT
-import com.my.kizzy.ui.theme.DISCORD_TEXT
 import com.my.kizzy.ui.theme.DISCORD_YELLOW
-
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.layout.offset
 
 const val NITRO_ICON = "https://cdn.discordapp.com/badge-icons/2ba85e8026a8614b640c2837bcdfe21b.png"
 
-// Discord's presence dots - brand status palette.
 private val ONLINE = DISCORD_GREEN
 private val IDLE = DISCORD_YELLOW
 private val DND = DISCORD_RED
@@ -111,7 +103,6 @@ private fun DiscordPresenceBadge(
     ) {
         when (cleanStatus) {
             "idle" -> {
-                // Crescent moon cutout
                 Box(
                     modifier = Modifier
                         .size(10.dp)
@@ -121,7 +112,6 @@ private fun DiscordPresenceBadge(
                 )
             }
             "dnd" -> {
-                // Horizontal minus bar
                 Box(
                     modifier = Modifier
                         .width(10.dp)
@@ -142,8 +132,6 @@ private fun DiscordPresenceBadge(
     }
 }
 
-// bannerColor arrives as "#RRGGBB" / "RRGGBB" (sometimes with alpha);
-// accentColor as a 0xRRGGBB int without alpha.
 private fun parseHexColor(value: String?): Color? {
     val hex = value?.removePrefix("#")?.trim().orEmpty()
     if (hex.isEmpty()) return null
@@ -157,11 +145,6 @@ private fun parseHexColor(value: String?): Color? {
 private fun User.accentComposeColor(): Color? =
     accentColor?.let { Color(it or 0xFF000000.toInt()) }
 
-/**
- * Discord's mobile profile: full-bleed banner, oversized avatar with a
- * presence dot overlapping the banner, display name, username with the
- * custom-status chip, badge strip, collapsible bio and the activity card.
- */
 @Composable
 fun ProfileCard(
     user: User?,
@@ -186,9 +169,6 @@ fun ProfileCard(
             .fillMaxWidth()
             .padding(padding),
     ) {
-        // --- Banner + overlapping avatar + presence dot -----------------
-        // The box is taller than the banner so the avatar can hang half
-        // below it, exactly like Discord.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -206,6 +186,7 @@ fun ProfileCard(
                         model = bannerImage,
                         contentScale = ContentScale.Crop,
                         placeholder = painterResource(R.drawable.broken_image),
+                        error = painterResource(R.drawable.broken_image),
                         contentDescription = null,
                         modifier = Modifier.fillMaxWidth().height(140.dp),
                     )
@@ -220,8 +201,6 @@ fun ProfileCard(
             }
 
             val avatarImage = user.getAvatarImage()
-            // The dot must live OUTSIDE the circle clip, otherwise it gets cut
-            // away at the bottom-right corner and is never visible.
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -247,34 +226,31 @@ fun ProfileCard(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Filled.Person,
+                            imageVector = vectorResource(R.drawable.ic_person),
                             contentDescription = "User Avatar",
                             modifier = Modifier.size(86.dp).clip(CircleShape),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                // Avatar decoration (Nitro badge)
-                val avatarDecoration = user.avatarDecoration
-                if (avatarDecoration != null) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(bottom = 4.dp, end = 4.dp)
-                        ,
-                    ) {
-                        AsyncImage(
-                            model = user.getAvatarDecorationImage(),
-                            placeholder = painterResource(id = R.drawable.broken_image),
-                            error = painterResource(id = R.drawable.error_avatar),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(32.dp),
-                        )
+                    val avatarDecoration = user.avatarDecoration
+                    if (avatarDecoration != null) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(bottom = 4.dp, end = 4.dp),
+                        ) {
+                            AsyncImage(
+                                model = user.getAvatarDecorationImage(),
+                                placeholder = painterResource(id = R.drawable.broken_image),
+                                error = painterResource(id = R.drawable.error_avatar),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.size(32.dp),
+                            )
+                        }
                     }
                 }
-                }
 
-                // Presence badge - driven by the first RPC activity status.
                 val statusStr = rpcConfigs.firstOrNull()?.status?.takeIf { it.isNotBlank() } ?: "online"
                 DiscordPresenceBadge(
                     status = statusStr,
@@ -283,7 +259,6 @@ fun ProfileCard(
                 )
             }
 
-            // Custom Status Speech Bubble (attached to the top-right side of avatar)
             val customStatus = user.special?.takeIf { it.isNotBlank() }
             if (customStatus != null) {
                 Box(
@@ -306,7 +281,6 @@ fun ProfileCard(
             }
         }
 
-        // --- Identity ---------------------------------------------------
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -316,19 +290,16 @@ fun ProfileCard(
 
             val displayName = user.globalName?.takeIf { it.isNotBlank() } ?: user.username
             if (!displayName.isNullOrEmpty()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = displayName,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+                Text(
+                    text = displayName,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
 
-            // Username row, with pronouns and custom status chip - "name 🌧 rain".
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(top = 4.dp),
@@ -345,9 +316,10 @@ fun ProfileCard(
                 )
             }
 
-            // --- Badges ---------------------------------------------------
+            // --- Badges + Nitro -------------------------------------------
             val allBadges = user.getAllBadges()
-            if (allBadges.isNotEmpty()) {
+            val showNitroIcon = user.nitro && allBadges.none { it.icon == NITRO_ICON }
+            if (allBadges.isNotEmpty() || showNitroIcon) {
                 Spacer(Modifier.height(12.dp))
                 Row(
                     modifier = Modifier
@@ -355,27 +327,35 @@ fun ProfileCard(
                         .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                         .padding(horizontal = 8.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                     allBadges.forEach { badge ->
                         AsyncImage(
                             model = badge.icon,
                             placeholder = painterResource(R.drawable.broken_image),
+                            error = painterResource(R.drawable.broken_image),
                             modifier = Modifier
                                 .size(30.dp)
                                 .padding(3.dp),
                             contentDescription = badge.name,
                         )
                     }
+                    if (showNitroIcon) {
+                        AsyncImage(
+                            model = NITRO_ICON,
+                            placeholder = painterResource(R.drawable.broken_image),
+                            error = painterResource(R.drawable.broken_image),
+                            modifier = Modifier
+                                .size(30.dp)
+                                .padding(3.dp),
+                            contentDescription = "Nitro",
+                        )
+                    }
                 }
             }
 
-            // --- Bio (collapsible, with Discord blue clickable links) -----
-            // Always show the Bio section; use a placeholder when the account
-            // has neither a custom status nor a bio so the area never looks
-            // missing. The custom status is preferred because the REST profile
-            // endpoint used for OAuth2 sessions does not return the bio.
-            val bio = user.special?.takeIf { it.isNotBlank() }
-                ?: user.bio?.takeIf { it.isNotBlank() }
+            // --- Bio (actual bio, never replaced by custom status) -------
+            val bio = user.bio?.takeIf { it.isNotBlank() }
             Spacer(Modifier.height(16.dp))
             SectionHeader(text = stringResource(id = R.string.user_profile_bio))
             if (bio == null) {
@@ -390,31 +370,17 @@ fun ProfileCard(
                 var bioOverflow by remember { mutableStateOf(false) }
                 val linkColor = MaterialTheme.colorScheme.primary
                 val textColor = MaterialTheme.colorScheme.onBackground
-                val uriHandler = LocalUriHandler.current
                 val annotatedBio = remember(bio, linkColor, textColor) {
                     buildAnnotatedBio(bio, linkColor, textColor)
                 }
 
-                ClickableText(
+                Text(
                     text = annotatedBio,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = if (bioExpanded) Int.MAX_VALUE else 5,
                     overflow = TextOverflow.Ellipsis,
                     onTextLayout = { res: TextLayoutResult -> bioOverflow = res.hasVisualOverflow },
                     modifier = Modifier.padding(top = 4.dp),
-                    onClick = { offset ->
-                        val urlRegex = Regex("https?://[^\\s]+")
-                        var lastIndex = 0
-                        urlRegex.findAll(annotatedBio.text).forEach { matchResult ->
-                            val start = matchResult.range.first
-                            val end = matchResult.range.last + 1
-                            if (offset in start until end) {
-                                val url = annotatedBio.text.substring(start, end)
-                                uriHandler.openUri(url)
-                            }
-                            lastIndex = end
-                        }
-                    },
                 )
                 if (bioOverflow) {
                     Text(
@@ -432,7 +398,6 @@ fun ProfileCard(
                 }
             }
 
-            // --- Current activity ----------------------------------------
             if (rpcConfigs.isNotEmpty()) {
                 Spacer(Modifier.height(18.dp))
                 SectionHeader(text = stringResource(R.string.user_profile_rpc_name))
@@ -450,7 +415,6 @@ fun ProfileCard(
     }
 }
 
-/** Discord's small caps section heading ("BIO", "Current activity"). */
 @Composable
 fun SectionHeader(
     text: String,
@@ -471,11 +435,14 @@ fun ProfileButton(label: String?, link: String?) {
     val uriHandler = LocalUriHandler.current
     if (!label.isNullOrEmpty()) {
         ElevatedButton(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             onClick = {
-                if (!link.isNullOrEmpty()) {
-                    uriHandler.openUri(link)
+                val trimmed = link?.trim()
+                if (!trimmed.isNullOrEmpty() &&
+                    (trimmed.startsWith("http://", ignoreCase = true) ||
+                            trimmed.startsWith("https://", ignoreCase = true))
+                ) {
+                    runCatching { uriHandler.openUri(trimmed) }
                 }
             },
             colors = ButtonDefaults.elevatedButtonColors(
@@ -492,6 +459,9 @@ fun ProfileButton(label: String?, link: String?) {
 private fun buildAnnotatedBio(bio: String, linkColor: Color, textColor: Color): AnnotatedString = buildAnnotatedString {
     val urlRegex = Regex("https?://[^\\s]+")
     var lastIndex = 0
+    val linkStyles = TextLinkStyles(
+        style = SpanStyle(color = linkColor, fontWeight = FontWeight.Medium)
+    )
     urlRegex.findAll(bio).forEach { matchResult ->
         val start = matchResult.range.first
         val end = matchResult.range.last + 1
@@ -501,8 +471,7 @@ private fun buildAnnotatedBio(bio: String, linkColor: Color, textColor: Color): 
                 append(bio.substring(lastIndex, start))
             }
         }
-        addStringAnnotation(url, "URL", start, end)
-        withStyle(SpanStyle(color = linkColor, fontWeight = FontWeight.Medium)) {
+        withLink(LinkAnnotation.Url(url = url, styles = linkStyles)) {
             append(url)
         }
         lastIndex = end
@@ -528,9 +497,10 @@ fun PreviewProfileCard() {
         id = null,
         publicFlags = null,
         username = "yizzK",
-        special = null,
+        special = "Listening to music",
         verified = false,
-        bio = "Hello 👋"
+        nitro = true,
+        bio = "Hello 👋 https://example.com"
     )
     ProfileCard(user = user)
 }

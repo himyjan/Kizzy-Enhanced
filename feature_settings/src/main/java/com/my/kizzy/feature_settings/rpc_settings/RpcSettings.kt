@@ -1,6 +1,8 @@
 package com.my.kizzy.feature_settings.rpc_settings
 
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -23,22 +25,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Login
-import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.Cached
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.material.icons.outlined.DoNotDisturbOn
-import androidx.compose.material.icons.outlined.HighQuality
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Pin
-import androidx.compose.material.icons.outlined.RemoveRedEye
-import androidx.compose.material.icons.outlined.SmartButton
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -56,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -68,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
+import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
+import com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
 import com.my.kizzy.feature_rpc_base.services.lastfm.LastFMandLibreFM
 import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFMandLibreFM
 import com.my.kizzy.preference.Prefs
@@ -77,11 +68,19 @@ import com.my.kizzy.ui.components.SettingItem
 import com.my.kizzy.ui.components.Subtitle
 import com.my.kizzy.ui.components.dialog.SingleChoiceItem
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+private val rpcJson = Json {
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,8 +92,8 @@ fun RpcSettings(
     navigateToLeaderboardScreen: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    val activity = context as Activity
-    val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
+    val activity = remember(context) { context.findActivity() }
+    val scope = rememberCoroutineScope()
     var isLowResIconsEnabled by remember { mutableStateOf(Prefs[Prefs.RPC_USE_LOW_RES_ICON, false]) }
     var useImgur by remember { mutableStateOf(Prefs[Prefs.USE_IMGUR, false]) }
     var configsDir by remember { mutableStateOf(Prefs[Prefs.CONFIGS_DIRECTORY, ""]) }
@@ -105,7 +104,6 @@ fun RpcSettings(
         mutableStateOf(Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""])
     }
     var showClientIdDialog by remember { mutableStateOf(false) }
-    var editingClientId22 by remember { mutableStateOf("") }
     var showClientIdDialog2 by remember { mutableStateOf(false) }
     var editingClientId2 by remember { mutableStateOf("") }
     var showClientIdDialog3 by remember { mutableStateOf(false) }
@@ -113,10 +111,6 @@ fun RpcSettings(
     var showUserLogin by remember { mutableStateOf(false) }
     var gatewayTokenMode by remember { mutableStateOf(false) }
 
-    // Collect from DataStore state flow so OAuth2 selection persists across cold boots.
-    // DataStore priming is async (Dispatchers.IO), so Prefs[...] may return the default
-    // on first read before priming completes. Using collectAsState makes the UI react
-    // when _prefsState is primed from disk.
     val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap())
     var connectionMethod by remember(prefsMap) {
         mutableStateOf(prefsMap[Prefs.RPC_CONNECTION_METHOD] as? String ?: Prefs.RPC_CONNECTION_METHOD_OAUTH2)
@@ -130,8 +124,6 @@ fun RpcSettings(
         )
     }
 
-    // Bind this screen's callback into the hosting Activity while RpcSettings is active,
-    // and clear it on disposal so stale screens don't intercept results.
     DisposableEffect(discordAuth, onBindAuthTabCallback) {
         onBindAuthTabCallback?.invoke { resultCode, callbackIntent ->
             discordAuth.onActivityResult(resultCode, callbackIntent)
@@ -146,7 +138,11 @@ fun RpcSettings(
     var linkToArtistChannel by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_ARTIST_LINK, false]) }
     var showButtonsConfigDialog by remember { mutableStateOf(false) }
     var rpcButtons by remember {
-        mutableStateOf<RpcButtons>(Json.decodeFromString(Prefs[Prefs.RPC_BUTTONS_DATA, "{}"]))
+        mutableStateOf(
+            runCatching {
+                rpcJson.decodeFromString<RpcButtons>(Prefs[Prefs.RPC_BUTTONS_DATA, "{}"])
+            }.getOrDefault(RpcButtons())
+        )
     }
     var customActivityStatus by remember {
         mutableStateOf(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
@@ -164,12 +160,9 @@ fun RpcSettings(
     var customApplicationId by remember { mutableStateOf(Prefs[Prefs.CUSTOM_ACTIVITY_APPLICATION_ID, ""]) }
     var imgurClientId by remember { mutableStateOf(Prefs[Prefs.IMGUR_CLIENT_ID, Constants.IMGUR_CLIENT_ID]) }
 
-    // Last.fm scrobbling settings
-    // API key and secret default to Kizzy's built-in values, but are optional
-    // and can be overridden by the user if they have their own Last.fm API credentials.
     var showLastFmDialog by remember { mutableStateOf(false) }
-    var lastfmApiKey by remember { mutableStateOf(Prefs[Prefs.LASTFM_API_KEY, com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY]) }
-    var lastfmSecret by remember { mutableStateOf(Prefs[Prefs.LASTFM_SECRET, com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET]) }
+    var lastfmApiKey by remember { mutableStateOf(Prefs[Prefs.LASTFM_API_KEY, DEFAULT_LASTFM_API_KEY]) }
+    var lastfmSecret by remember { mutableStateOf(Prefs[Prefs.LASTFM_SECRET, DEFAULT_LASTFM_SECRET]) }
     var lastfmUsername by remember { mutableStateOf(Prefs[Prefs.LASTFM_USERNAME, ""]) }
     var lastfmPassword by remember { mutableStateOf(Prefs[Prefs.LASTFM_PASSWORD, ""]) }
     var lastfmPendingToken by remember { mutableStateOf<String?>(null) }
@@ -180,7 +173,6 @@ fun RpcSettings(
     var lastfmShowPartyMax by remember { mutableStateOf(Prefs[Prefs.LASTFM_SHOW_PARTY_MAX, false]) }
     var isLastFmEnabled by remember { mutableStateOf(Prefs[Prefs.LASTFM_ENABLED, false]) }
 
-    // Libre.fm scrobbling settings
     var showLibreFmDialog by remember { mutableStateOf(false) }
     var librefmApiKey by remember { mutableStateOf(Prefs[Prefs.LIBREFM_API_KEY, ""]) }
     var librefmSecret by remember { mutableStateOf(Prefs[Prefs.LIBREFM_SECRET, ""]) }
@@ -189,7 +181,6 @@ fun RpcSettings(
     var librefmPasswordVisible by remember { mutableStateOf(false) }
     var isLibreFmEnabled by remember { mutableStateOf(Prefs[Prefs.LIBREFM_ENABLED, false]) }
 
-    // ListenBrainz scrobbling settings
     var showListenBrainzDialog by remember { mutableStateOf(false) }
     var listenbrainzUserToken by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""]) }
     var listenbrainzEnabled by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_ENABLED, false]) }
@@ -198,21 +189,27 @@ fun RpcSettings(
     var listenbrainzShowPartyCurrent by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_SHOW_PARTY_CURRENT, true]) }
     var listenbrainzShowPartyMax by remember { mutableStateOf(Prefs[Prefs.LISTENBRAINZ_SHOW_PARTY_MAX, false]) }
 
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        LargeTopAppBar(title = {
-            Text(
-                text = stringResource(id = R.string.settings),
-                style = MaterialTheme.typography.headlineMedium,
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.settings),
+                        style = MaterialTheme.typography.headlineMedium,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                }
             )
-        }, navigationIcon = {
-            IconButton(onClick = { onBackPressed() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null
-                )
-            }
-        })
-    }) { paddingValues ->
+        }
+    ) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
             item(key = "general_settings") {
                 Subtitle(text = stringResource(R.string.general_settings))
@@ -222,7 +219,7 @@ fun RpcSettings(
                     SettingItem(
                         title = stringResource(id = R.string.configs_directory),
                         description = configsDir.ifEmpty { stringResource(id = R.string.custom_rpc_directory) },
-                        icon = Icons.Default.Storage,
+                        icon = vectorResource(R.drawable.ic_storage),
                     ) {
                         showDirConfigDialog = true
                     }
@@ -242,10 +239,9 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.discord_oauth2_client_id),
                     description = stringResource(id = R.string.discord_oauth2_client_id_desc) + (if (discordOAuth2ClientId.isNotEmpty()) "  •  $discordOAuth2ClientId" else "  •  (optional)"),
-                    icon = Icons.Outlined.Person,
+                    icon = vectorResource(R.drawable.ic_person),
                 ) {
                     discordOAuth2ClientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""]
-                    editingClientId22 = discordOAuth2ClientId
                     showClientIdDialog = true
                 }
             }
@@ -259,23 +255,19 @@ fun RpcSettings(
                     SettingItem(
                         title = stringResource(id = R.string.discord_oauth2_authorize),
                         description = stringResource(id = R.string.discord_oauth2_authorize_desc)
-                                + if (oauth2Error.isNotEmpty()) "  •  Error: $oauth2Error" else "  •  $oauthStatus",
+                            + if (oauth2Error.isNotEmpty()) "  •  Error: $oauth2Error" else "  •  $oauthStatus",
                         icon = Icons.AutoMirrored.Filled.Login,
                     ) {
+                        val currentActivity = activity
+                        if (currentActivity == null) {
+                            oauth2Error = "No active Activity context"
+                            return@SettingItem
+                        }
                         oauth2Error = ""
                         scope.launch {
                             try {
-                                // OAuth 2.1 Authorization Code flow with PKCE S256.
-                                // discordAuth.authorize() launches AuthTabIntent (or
-                                // CustomTabsIntent fallback) using the launcher passed
-                                // into DiscordOAuth2Auth, exchanges the code, and stores tokens.
-                                val result = discordAuth.authorize(activity)
+                                val result = discordAuth.authorize(currentActivity)
                                 Log.d("RpcSettings", "OAuth2 authorized: bearer_token len=${result.accessToken.length}, refresh_token len=${result.refreshToken.length}, expires_in=${result.expiresInSec}s")
-
-                                // Discord's OAuth2 returns a bearer token, which the
-                                // The OAuth2 bearer token is stored by authorize().
-                                // Open the manual login only to capture the real account
-                                // token (user_id.timestamp.hmac) needed by the gateway.
                                 gatewayTokenMode = true
                                 showUserLogin = true
                                 oauth2Error = ""
@@ -300,7 +292,7 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.discord_oauth2_client_id),
                     description = stringResource(id = R.string.discord_oauth2_client_id_desc) + (if (appId2.isNotEmpty()) "  •  $appId2" else "  •  (optional)"),
-                    icon = Icons.Outlined.Person,
+                    icon = vectorResource(R.drawable.ic_person),
                 ) {
                     editingClientId2 = appId2
                     showClientIdDialog2 = true
@@ -311,7 +303,7 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.discord_oauth2_client_id),
                     description = stringResource(id = R.string.discord_oauth2_client_id_desc) + (if (appId3.isNotEmpty()) "  •  $appId3" else "  •  (optional)"),
-                    icon = Icons.Outlined.Person,
+                    icon = vectorResource(R.drawable.ic_person),
                 ) {
                     editingClientId3 = appId3
                     showClientIdDialog3 = true
@@ -320,8 +312,6 @@ fun RpcSettings(
             item(key = "multi_rpc_header") {
                 Subtitle(text = "Multiple RPC Applications")
             }
-
-            // Custom RPC Board section
             item(key = "custom_rpc_board_section") {
                 Subtitle(text = stringResource(id = R.string.custom_rpc_board))
             }
@@ -334,8 +324,6 @@ fun RpcSettings(
                     navigateToCustomRpcBoardScreen?.invoke()
                 }
             }
-
-            // Discord Leaderboard section
             item(key = "discord_leaderboard_section") {
                 Subtitle(text = stringResource(id = R.string.discord_leaderboard))
             }
@@ -348,7 +336,6 @@ fun RpcSettings(
                     navigateToLeaderboardScreen?.invoke()
                 }
             }
-
             item(key = "oauth2_authorize_slot2") {
                 val token2 = Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN_2, ""]
                 val appId2 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, "1573725984845201438"]
@@ -358,10 +345,11 @@ fun RpcSettings(
                     description = if (token2.isNotEmpty()) "Authorized • app $appId2" else "Tap to authorize app $appId2",
                     icon = Icons.AutoMirrored.Filled.Login,
                 ) {
+                    val currentActivity = activity ?: return@SettingItem
                     oauth2Error = ""
                     scope.launch {
                         try {
-                            val result = discordAuth.authorize(activity, "2")
+                            val result = discordAuth.authorize(currentActivity, "2")
                             Log.d("RpcSettings", "OAuth2 slot 2 authorized: len=${result.accessToken.length}")
                             Toast.makeText(context, "RPC App 2 authorized", Toast.LENGTH_SHORT).show()
                         } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
@@ -381,10 +369,11 @@ fun RpcSettings(
                     description = if (token3.isNotEmpty()) "Authorized • app $appId3" else "Tap to authorize app $appId3",
                     icon = Icons.AutoMirrored.Filled.Login,
                 ) {
+                    val currentActivity = activity ?: return@SettingItem
                     oauth2Error = ""
                     scope.launch {
                         try {
-                            val result = discordAuth.authorize(activity, "3")
+                            val result = discordAuth.authorize(currentActivity, "3")
                             Log.d("RpcSettings", "OAuth2 slot 3 authorized: len=${result.accessToken.length}")
                             Toast.makeText(context, "RPC App 3 authorized", Toast.LENGTH_SHORT).show()
                         } catch (e: DiscordOAuth2Auth.DiscordOAuth2Exception) {
@@ -396,29 +385,26 @@ fun RpcSettings(
                 }
             }
             item(key = "rpc_hide_cover_art") {
-                var hideCoverArt by remember(prefsMap) {
-                    mutableStateOf(prefsMap[Prefs.RPC_HIDE_COVER_ART] as? Boolean ?: false)
-                }
+                val hideCoverArt = prefsMap[Prefs.RPC_HIDE_COVER_ART] as? Boolean ?: false
                 PreferenceSwitch(
                     title = stringResource(id = R.string.rpc_hide_cover_art),
                     description = stringResource(id = R.string.rpc_hide_cover_art_desc),
-                    icon = Icons.Outlined.RemoveRedEye,
+                    icon = vectorResource(R.drawable.ic_remove_red_eye),
                     isChecked = hideCoverArt,
                 ) {
-                    hideCoverArt = !hideCoverArt
-                    Prefs[Prefs.RPC_HIDE_COVER_ART] = hideCoverArt
+                    Prefs[Prefs.RPC_HIDE_COVER_ART] = !hideCoverArt
                 }
             }
             item(key = "rpc_default_cover_art_large") {
                 var defaultLargeCoverArt by remember { mutableStateOf(Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE, ""]) }
-
-                // Image pickers for default cover art
                 val pickLargeCoverArt = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickVisualMedia()
                 ) { uri ->
-                    uri?.let { defaultLargeCoverArt = it.toString(); Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE] = defaultLargeCoverArt }
+                    uri?.let {
+                        defaultLargeCoverArt = it.toString()
+                        Prefs[Prefs.RPC_DEFAULT_COVER_ART_LARGE] = defaultLargeCoverArt
+                    }
                 }
-
                 RpcField(
                     value = defaultLargeCoverArt,
                     label = R.string.rpc_default_cover_art_large,
@@ -427,7 +413,7 @@ fun RpcSettings(
                             onClick = { pickLargeCoverArt.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Image,
+                                imageVector = vectorResource(R.drawable.ic_image),
                                 contentDescription = "Pick image"
                             )
                         }
@@ -439,13 +425,14 @@ fun RpcSettings(
             }
             item(key = "rpc_default_cover_art_small") {
                 var defaultSmallCoverArt by remember { mutableStateOf(Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL, ""]) }
-
                 val pickSmallCoverArt = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickVisualMedia()
                 ) { uri ->
-                    uri?.let { defaultSmallCoverArt = it.toString(); Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL] = defaultSmallCoverArt }
+                    uri?.let {
+                        defaultSmallCoverArt = it.toString()
+                        Prefs[Prefs.RPC_DEFAULT_COVER_ART_SMALL] = defaultSmallCoverArt
+                    }
                 }
-
                 RpcField(
                     value = defaultSmallCoverArt,
                     label = R.string.rpc_default_cover_art_small,
@@ -454,7 +441,7 @@ fun RpcSettings(
                             onClick = { pickSmallCoverArt.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Image,
+                                imageVector = vectorResource(R.drawable.ic_image),
                                 contentDescription = "Pick image"
                             )
                         }
@@ -468,7 +455,7 @@ fun RpcSettings(
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_custom_buttons),
                     description = stringResource(id = R.string.use_custom_buttons_desc),
-                    icon = Icons.Default.Tune,
+                    icon = vectorResource(R.drawable.ic_tune),
                     isChecked = useButtonConfigs,
                 ) {
                     useButtonConfigs = !useButtonConfigs
@@ -490,7 +477,7 @@ fun RpcSettings(
                 PreferenceSwitch(
                     title = stringResource(id = R.string.link_to_artist_channel),
                     description = stringResource(id = R.string.link_to_artist_channel_desc),
-                    icon = Icons.Outlined.Person,
+                    icon = vectorResource(R.drawable.ic_person),
                     isChecked = linkToArtistChannel,
                 ) {
                     linkToArtistChannel = !linkToArtistChannel
@@ -501,8 +488,8 @@ fun RpcSettings(
                 AnimatedVisibility(visible = useButtonConfigs) {
                     SettingItem(
                         title = stringResource(R.string.rpc_buttons),
-                        description = stringResource(id = R.string.rpc_settings_button_configs),
-                        icon = Icons.Outlined.SmartButton
+                        description = stringResource(R.string.rpc_settings_button_configs),
+                        icon = vectorResource(R.drawable.ic_smart_button)
                     ) {
                         showButtonsConfigDialog = true
                     }
@@ -512,7 +499,7 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.custom_activity_type),
                     description = stringResource(id = R.string.custom_activity_type_desc),
-                    icon = Icons.Outlined.Code
+                    icon = vectorResource(R.drawable.ic_code)
                 ) {
                     showActivityTypeDialog = true
                 }
@@ -521,7 +508,7 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.custom_activity_status),
                     description = stringResource(id = R.string.custom_activity_status_desc),
-                    icon = Icons.Outlined.DoNotDisturbOn
+                    icon = vectorResource(R.drawable.ic_do_not_disturb_on)
                 ) {
                     showActivityStatusDialog = true
                 }
@@ -530,7 +517,7 @@ fun RpcSettings(
                 PreferenceSwitch(
                     title = stringResource(R.string.set_previous_run_config_in_custom_rpc),
                     description = stringResource(R.string.set_previous_run_config_in_custom_rpc_desc),
-                    icon = Icons.Default.Cached,
+                    icon = vectorResource(R.drawable.ic_cached),
                     isChecked = setLastRunRpcConfigOption
                 ) {
                     setLastRunRpcConfigOption = !setLastRunRpcConfigOption
@@ -541,7 +528,7 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.custom_application_id),
                     description = stringResource(id = R.string.custom_application_id_desc),
-                    icon = Icons.Outlined.Pin
+                    icon = vectorResource(R.drawable.ic_pin)
                 ) {
                     showApplicationIdDialog = true
                 }
@@ -553,7 +540,7 @@ fun RpcSettings(
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_imgur),
                     description = stringResource(id = R.string.use_imgur_desc),
-                    icon = Icons.Outlined.Image,
+                    icon = vectorResource(R.drawable.ic_image),
                     isChecked = useImgur
                 ) {
                     useImgur = !useImgur
@@ -565,7 +552,7 @@ fun RpcSettings(
                     SettingItem(
                         title = stringResource(id = R.string.set_imgur_client_id),
                         description = stringResource(id = R.string.set_imgur_client_id_desc),
-                        icon = Icons.Outlined.Code
+                        icon = vectorResource(R.drawable.ic_code)
                     ) {
                         showImgurClientIdDialog = true
                     }
@@ -575,7 +562,7 @@ fun RpcSettings(
                 PreferenceSwitch(
                     title = stringResource(id = R.string.use_low_res_icon),
                     description = stringResource(id = R.string.use_low_res_icon_desc),
-                    icon = Icons.Outlined.HighQuality,
+                    icon = vectorResource(R.drawable.ic_high_quality),
                     isChecked = isLowResIconsEnabled,
                 ) {
                     isLowResIconsEnabled = !isLowResIconsEnabled
@@ -586,7 +573,7 @@ fun RpcSettings(
                 SettingItem(
                     title = stringResource(id = R.string.delete_saved_icon_urls),
                     description = stringResource(id = R.string.delete_saved_icon_urls_desc),
-                    icon = Icons.Outlined.DeleteForever
+                    icon = vectorResource(R.drawable.ic_delete_forever)
                 ) {
                     Prefs.removeAsync(Prefs.SAVED_IMAGES)
                     Prefs.removeAsync(Prefs.SAVED_ARTWORK)
@@ -596,10 +583,7 @@ fun RpcSettings(
             item(key = "lastfm_settings") {
                 val sessionKey = Prefs[Prefs.LASTFM_SESSION_KEY, ""]
                 val lastFmAuthStatus = if (sessionKey.isNotBlank()) "Authenticated" else "Not authenticated"
-                val lastFmStatus = when {
-                    isLastFmEnabled -> "Enabled  •  $lastFmAuthStatus"
-                    else -> "Disabled"
-                }
+                val lastFmStatus = if (isLastFmEnabled) "Enabled  •  $lastFmAuthStatus" else "Disabled"
                 SettingItem(
                     title = stringResource(id = R.string.lastfm_settings_title),
                     description = stringResource(id = R.string.lastfm_enabled) + "  •  $lastFmStatus",
@@ -633,10 +617,7 @@ fun RpcSettings(
             item(key = "listenbrainz_settings") {
                 val listenbrainzToken = Prefs[Prefs.LISTENBRAINZ_USER_TOKEN, ""]
                 val listenbrainzAuthStatus = if (listenbrainzToken.isNotBlank()) "Authenticated" else "Not authenticated"
-                val listenbrainzStatus = when {
-                    listenbrainzEnabled -> "Enabled  •  $listenbrainzAuthStatus"
-                    else -> "Disabled"
-                }
+                val listenbrainzStatus = if (listenbrainzEnabled) "Enabled  •  $listenbrainzAuthStatus" else "Disabled"
                 SettingItem(
                     title = stringResource(id = R.string.listenbrainz_settings_title),
                     description = stringResource(id = R.string.listenbrainz_enabled) + "  •  $listenbrainzStatus",
@@ -651,14 +632,13 @@ fun RpcSettings(
                 }
             }
         }
+
         if (showDirConfigDialog) {
             AlertDialog(
                 onDismissRequest = { showDirConfigDialog = false },
                 confirmButton = {},
                 icon = {
-                    Icon(
-                        imageVector = Icons.Default.Storage, contentDescription = null
-                    )
+                    Icon(imageVector = vectorResource(R.drawable.ic_storage), contentDescription = null)
                 },
                 title = { Text(stringResource(R.string.select_directory)) },
                 text = {
@@ -680,8 +660,10 @@ fun RpcSettings(
                             showDirConfigDialog = false
                         }
                     }
-                })
+                }
+            )
         }
+
         if (showConnectionMethodDialog) {
             AlertDialog(
                 onDismissRequest = { showConnectionMethodDialog = false },
@@ -698,7 +680,7 @@ fun RpcSettings(
                             showConnectionMethodDialog = false
                             gatewayTokenMode = true
                             showUserLogin = true
-                            discordAuth.launchGatewayLogin(activity)
+                            activity?.let { discordAuth.launchGatewayLogin(it) }
                         }
                         SingleChoiceItem(
                             text = stringResource(id = R.string.rpc_connection_method_oauth2),
@@ -712,6 +694,7 @@ fun RpcSettings(
                 }
             )
         }
+
         if (showButtonsConfigDialog) {
             AlertDialog(
                 properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -719,17 +702,14 @@ fun RpcSettings(
                 onDismissRequest = { showButtonsConfigDialog = false },
                 confirmButton = {
                     TextButton(onClick = {
-                        Prefs[Prefs.RPC_BUTTONS_DATA] = Json.encodeToString(rpcButtons)
+                        Prefs[Prefs.RPC_BUTTONS_DATA] = rpcJson.encodeToString(rpcButtons)
                         showButtonsConfigDialog = false
-                    }
-                    ) {
-                        Text("Save")
+                    }) {
+                        Text(stringResource(R.string.save))
                     }
                 },
                 icon = {
-                    Icon(
-                        imageVector = Icons.Default.Storage, contentDescription = null
-                    )
+                    Icon(imageVector = vectorResource(R.drawable.ic_storage), contentDescription = null)
                 },
                 title = { Text(stringResource(R.string.enter_details)) },
                 text = {
@@ -767,24 +747,20 @@ fun RpcSettings(
                             }
                         }
                     }
-                })
+                }
+            )
         }
 
         if (showActivityTypeDialog) {
             AlertDialog(
-                onDismissRequest = {
-                    showActivityTypeDialog = false
-                },
+                onDismissRequest = { showActivityTypeDialog = false },
                 text = {
-                    var activityTypeisExpanded by remember {
-                        mutableStateOf(false)
+                    var activityTypeExpanded by remember { mutableStateOf(false) }
+                    val arrowIcon = if (activityTypeExpanded) {
+                        vectorResource(R.drawable.ic_keyboard_arrow_up)
+                    } else {
+                        vectorResource(R.drawable.ic_keyboard_arrow_down)
                     }
-                    val icon =
-                        if (activityTypeisExpanded) {
-                            Icons.Outlined.KeyboardArrowUp
-                        } else {
-                            Icons.Outlined.KeyboardArrowDown
-                        }
                     Column {
                         RpcField(
                             value = customActivityType,
@@ -792,27 +768,27 @@ fun RpcSettings(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             trailingIcon = {
                                 Icon(
-                                    imageVector = icon,
+                                    imageVector = arrowIcon,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
-                                        activityTypeisExpanded = !activityTypeisExpanded
-                                    })
-                            }) {
+                                        activityTypeExpanded = !activityTypeExpanded
+                                    }
+                                )
+                            }
+                        ) {
                             customActivityType = it
                         }
                         DropdownMenu(
-                            expanded = activityTypeisExpanded, onDismissRequest = {
-                                activityTypeisExpanded = !activityTypeisExpanded
-                            }, modifier = Modifier.fillMaxWidth()
+                            expanded = activityTypeExpanded,
+                            onDismissRequest = { activityTypeExpanded = false },
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Constants.ACTIVITY_TYPE.forEach { (label, value) ->
                                 DropdownMenuItem(
-                                    text = {
-                                        Text(text = label)
-                                    },
+                                    text = { Text(text = label) },
                                     onClick = {
                                         customActivityType = value.toString()
-                                        activityTypeisExpanded = false
+                                        activityTypeExpanded = false
                                     },
                                 )
                             }
@@ -834,9 +810,7 @@ fun RpcSettings(
 
         if (showActivityStatusDialog) {
             AlertDialog(
-                onDismissRequest = {
-                    showActivityStatusDialog = false
-                },
+                onDismissRequest = { showActivityStatusDialog = false },
                 confirmButton = {},
                 text = {
                     Column {
@@ -857,9 +831,7 @@ fun RpcSettings(
 
         if (showApplicationIdDialog) {
             AlertDialog(
-                onDismissRequest = {
-                    showApplicationIdDialog = false
-                },
+                onDismissRequest = { showApplicationIdDialog = false },
                 title = { Text("Application ID") },
                 text = {
                     Column {
@@ -911,9 +883,7 @@ fun RpcSettings(
                         RpcField(
                             value = imgurClientId,
                             label = R.string.imgur_client_id,
-                            onValueChange = { newText ->
-                                imgurClientId = newText
-                            }
+                            onValueChange = { imgurClientId = it }
                         )
                     }
                 },
@@ -943,20 +913,14 @@ fun RpcSettings(
                         RpcField(
                             value = discordOAuth2ClientId,
                             label = R.string.discord_oauth2_client_id,
-                            onValueChange = { newText ->
-                                discordOAuth2ClientId = newText
-                            }
+                            onValueChange = { discordOAuth2ClientId = it }
                         )
                     }
                 },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            if (discordOAuth2ClientId.isBlank()) {
-                                discordOAuth2ClientId = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID, ""]
-                            } else {
-                                Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID] = discordOAuth2ClientId
-                            }
+                            Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID] = discordOAuth2ClientId.trim()
                             showClientIdDialog = false
                         }
                     ) {
@@ -976,20 +940,14 @@ fun RpcSettings(
                         RpcField(
                             value = editingClientId2,
                             label = R.string.discord_oauth2_client_id,
-                            onValueChange = { newText ->
-                                editingClientId2 = newText
-                            }
+                            onValueChange = { editingClientId2 = it }
                         )
                     }
                 },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            if (editingClientId2.isBlank()) {
-                                editingClientId2 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2, ""]
-                            } else {
-                                Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2] = editingClientId2
-                            }
+                            Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_2] = editingClientId2.trim()
                             showClientIdDialog2 = false
                         }
                     ) {
@@ -1009,20 +967,14 @@ fun RpcSettings(
                         RpcField(
                             value = editingClientId3,
                             label = R.string.discord_oauth2_client_id,
-                            onValueChange = { newText ->
-                                editingClientId3 = newText
-                            }
+                            onValueChange = { editingClientId3 = it }
                         )
                     }
                 },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            if (editingClientId3.isBlank()) {
-                                editingClientId3 = Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3, ""]
-                            } else {
-                                Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3] = editingClientId3
-                            }
+                            Prefs[Prefs.DISCORD_OAUTH2_APPLICATION_CLIENT_ID_3] = editingClientId3.trim()
                             showClientIdDialog3 = false
                         }
                     ) {
@@ -1035,7 +987,10 @@ fun RpcSettings(
         if (showUserLogin) {
             DiscordUserLoginDialog(
                 token = "",
-                onDismiss = { showUserLogin = false; gatewayTokenMode = false },
+                onDismiss = {
+                    showUserLogin = false
+                    gatewayTokenMode = false
+                },
                 onConfirm = { token ->
                     if (gatewayTokenMode) {
                         Prefs[Prefs.TOKEN] = token
@@ -1049,12 +1004,9 @@ fun RpcSettings(
                         Toast.makeText(context, "Discord account connected", Toast.LENGTH_SHORT).show()
                     }
                     showUserLogin = false
+                    gatewayTokenMode = false
                     oauth2Error = ""
                     Log.d("RpcSettings", "Account token saved (len=${token.length}, parts=${token.count { it == '.' } + 1})")
-                    // Do NOT start DiscordOAuth2RpcService here. It builds an empty
-                    // presence (name/state/details = null) that overwrites the real
-                    // Media/Custom presence. The running RPC service already calls
-                    // KizzyRPC.refreshFromPrefs() and picks up the new token.
                 },
             )
         }
@@ -1119,7 +1071,7 @@ fun RpcSettings(
                             trailingIcon = {
                                 IconButton(onClick = { lastfmPasswordVisible = !lastfmPasswordVisible }) {
                                     Icon(
-                                        imageVector = Icons.Outlined.RemoveRedEye,
+                                        imageVector = vectorResource(R.drawable.ic_remove_red_eye),
                                         contentDescription = stringResource(if (lastfmPasswordVisible) R.string.lastfm_hide_password else R.string.lastfm_show_password)
                                     )
                                 }
@@ -1128,7 +1080,6 @@ fun RpcSettings(
                             lastfmPassword = it
                         }
 
-                        // Last.fm login / logout
                         Column(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp)
                         ) {
@@ -1142,19 +1093,18 @@ fun RpcSettings(
                                 color = if (isAuthenticated) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
                             )
-                            // Logout always available so user can clear credentials at any time
                             TextButton(
                                 onClick = {
                                     scope.launch {
                                         Prefs[Prefs.LASTFM_SESSION_KEY] = ""
                                         Prefs[Prefs.LASTFM_PASSWORD] = ""
                                         Prefs[Prefs.LASTFM_USERNAME] = ""
-                                        Prefs[Prefs.LASTFM_API_KEY] = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
-                                        Prefs[Prefs.LASTFM_SECRET] = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
+                                        Prefs[Prefs.LASTFM_API_KEY] = DEFAULT_LASTFM_API_KEY
+                                        Prefs[Prefs.LASTFM_SECRET] = DEFAULT_LASTFM_SECRET
                                         lastfmPassword = ""
                                         lastfmUsername = ""
-                                        lastfmApiKey = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_API_KEY
-                                        lastfmSecret = com.my.kizzy.feature_rpc_base.services.lastfm.DEFAULT_LASTFM_SECRET
+                                        lastfmApiKey = DEFAULT_LASTFM_API_KEY
+                                        lastfmSecret = DEFAULT_LASTFM_SECRET
                                     }
                                 }
                             ) {
@@ -1162,7 +1112,6 @@ fun RpcSettings(
                             }
                             if (!isAuthenticated) {
                                 Column {
-                                    // Step 1: Get request token from Last.fm
                                     TextButton(
                                         onClick = {
                                             if (lastfmApiKey.isBlank() || lastfmSecret.isBlank()) {
@@ -1189,7 +1138,6 @@ fun RpcSettings(
                                         Text(text = stringResource(R.string.lastfm_get_token))
                                     }
 
-                                    // Step 2: Exchange token for session key after user authorizes in browser
                                     if (lastfmPendingToken != null) {
                                         TextButton(
                                             onClick = {
@@ -1216,7 +1164,6 @@ fun RpcSettings(
                                         }
                                     }
 
-                                    // Direct username/password login via auth.getMobileSession
                                     TextButton(
                                         onClick = {
                                             if (lastfmUsername.isBlank() || lastfmPassword.isBlank()) {
@@ -1234,7 +1181,7 @@ fun RpcSettings(
                                                         Prefs[Prefs.LASTFM_SESSION_KEY] = session.key
                                                         Toast.makeText(context, "Logged in to Last.fm as ${session.name}", Toast.LENGTH_SHORT).show()
                                                     } else {
-                                                        Toast.makeText(context, "Last.fm login failed", Toast.LENGTH_LONG).show()
+                                                        Toast.makeText(context, "Last.fm login failed", Toast.LENGTH_SHORT).show()
                                                     }
                                                 }
                                             }
@@ -1285,9 +1232,9 @@ fun RpcSettings(
                     TextButton(onClick = {
                         val credentialsChanged =
                             Prefs[Prefs.LIBREFM_API_KEY, ""] != librefmApiKey ||
-                                    Prefs[Prefs.LIBREFM_SECRET, ""] != librefmSecret ||
-                                    Prefs[Prefs.LIBREFM_USERNAME, ""] != librefmUsername ||
-                                    Prefs[Prefs.LIBREFM_PASSWORD, ""] != librefmPassword
+                                Prefs[Prefs.LIBREFM_SECRET, ""] != librefmSecret ||
+                                Prefs[Prefs.LIBREFM_USERNAME, ""] != librefmUsername ||
+                                Prefs[Prefs.LIBREFM_PASSWORD, ""] != librefmPassword
                         Prefs[Prefs.LIBREFM_API_KEY] = librefmApiKey
                         Prefs[Prefs.LIBREFM_SECRET] = librefmSecret
                         Prefs[Prefs.LIBREFM_USERNAME] = librefmUsername
@@ -1340,7 +1287,7 @@ fun RpcSettings(
                             trailingIcon = {
                                 IconButton(onClick = { librefmPasswordVisible = !librefmPasswordVisible }) {
                                     Icon(
-                                        imageVector = Icons.Outlined.RemoveRedEye,
+                                        imageVector = vectorResource(R.drawable.ic_remove_red_eye),
                                         contentDescription = stringResource(if (librefmPasswordVisible) R.string.lastfm_hide_password else R.string.lastfm_show_password)
                                     )
                                 }
@@ -1349,7 +1296,6 @@ fun RpcSettings(
                             librefmPassword = it
                         }
 
-                        // Libre.fm login / logout
                         Column(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp)
                         ) {
@@ -1363,7 +1309,6 @@ fun RpcSettings(
                                 color = if (isAuthenticated) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
                             )
-                            // Logout always available so user can clear credentials at any time
                             TextButton(
                                 onClick = {
                                     scope.launch {
@@ -1452,7 +1397,6 @@ fun RpcSettings(
                             listenbrainzUserToken = it
                         }
 
-                        // ListenBrainz login / logout (token-based)
                         Column(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp)
                         ) {
@@ -1485,7 +1429,6 @@ fun RpcSettings(
                                         } else {
                                             scope.launch {
                                                 Prefs[Prefs.LISTENBRAINZ_USER_TOKEN] = listenbrainzUserToken
-                                                listenbrainzUserToken = listenbrainzUserToken
                                                 Toast.makeText(context, "ListenBrainz token saved", Toast.LENGTH_SHORT).show()
                                             }
                                         }

@@ -56,7 +56,6 @@ data class UiState(
     val showSongAsTitle: Boolean = false,
     val showAppNameInDetails: Boolean = false,
     val showChannelIcon: Boolean = false,
-    val useAppsRpc: Boolean = false,
     val titleSource: String = "title", // "title" = song name, "artist" = artist name
     val titleSourceExpanded: Boolean = false,
 

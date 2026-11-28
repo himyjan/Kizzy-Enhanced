@@ -41,10 +41,6 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -392,8 +388,8 @@ fun Home(
                             },
                         ) {
                             Icon(
-                                Icons.Outlined.Menu,
-                                Icons.Outlined.Menu.name,
+                                vectorResource(R.drawable.ic_menu),
+                                vectorResource(R.drawable.ic_menu).name,
                             )
                         }
                     },
@@ -422,14 +418,14 @@ fun Home(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Update,
+                                    imageVector = vectorResource(R.drawable.ic_update),
                                     contentDescription = "Update",
                                     modifier = Modifier.clickable(onClick = onUpdateClick)
                                 )
                             }
                         } else {
                             Icon(
-                                imageVector = Icons.Outlined.Update,
+                                imageVector = vectorResource(R.drawable.ic_update),
                                 contentDescription = "Update",
                                 modifier = Modifier.clickable(onClick = onUpdateClick)
                             )
@@ -452,8 +448,8 @@ fun Home(
                                 )
                             } else {
                                 Icon(
-                                    imageVector = Icons.Outlined.Person,
-                                    contentDescription = Icons.Default.Person.name,
+                                    imageVector = vectorResource(R.drawable.ic_person),
+                                    contentDescription = vectorResource(R.drawable.ic_person).name,
                                 )
                             }
                         }

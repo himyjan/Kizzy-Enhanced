@@ -15,7 +15,6 @@ package com.my.kizzy.feature_custom_rpc.components.sheet
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -68,7 +67,7 @@ fun DeleteConfigDialog(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.DeleteForever,
+                    imageVector = vectorResource(R.drawable.ic_delete_forever),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 2.dp),
                     tint = MaterialTheme.colorScheme.error

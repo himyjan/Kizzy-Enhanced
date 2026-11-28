@@ -13,28 +13,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_profile.ui.component.ActivityRow
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
 
 private val DISCORD_BG = Color(0xFF313338)
 private val DISCORD_CARD = Color(0xFF2B2D31)
@@ -48,12 +46,24 @@ fun ManualRpcPreview(
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    // Build a fake RpcConfig from template fields so ActivityRow can render it
+    val resolvedType = state.activityType.ifBlank { "0" }
+    val headerLabel = remember(resolvedType) {
+        Constants.ACTIVITY_TYPE.entries
+            .firstOrNull { it.value.toString() == resolvedType }
+            ?.key
+            ?.uppercase()
+            ?: "PLAYING A GAME"
+    }
+
     val rpcConfig = RpcConfig(
         name = state.templateName.ifEmpty { "App Name" },
         details = state.templateDetails,
         state = state.templateState,
-        type = "0",
+        type = resolvedType,
+        largeImage = state.largeImage,
+        smallImage = state.smallImage,
+        largeText = state.largeText,
+        smallText = state.smallText,
     )
 
     Column(
@@ -80,7 +90,7 @@ fun ManualRpcPreview(
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                imageVector = if (expanded) vectorResource(R.drawable.ic_keyboard_arrow_up) else vectorResource(R.drawable.ic_keyboard_arrow_down),
                 contentDescription = null,
                 tint = DISCORD_SUBTEXT,
             )
@@ -100,7 +110,7 @@ fun ManualRpcPreview(
                     .padding(bottom = 8.dp)
             ) {
                 Text(
-                    text = "PLAYING A GAME",
+                    text = headerLabel,
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.8.sp,

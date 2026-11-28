@@ -14,18 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.resources.R
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 
 private class TrimmedSingleLineTokenTransformation : InputTransformation {
     override fun TextFieldBuffer.transformInput() {
-        // TextFieldBuffer does not expose `.text`; read via `asCharSequence()`
-        // and mutate `this` in place (e.g., stripping newlines/whitespace).
         val raw = asCharSequence().toString()
         val cleaned = raw.replace("\n", "").replace("\r", "")
         if (cleaned != raw) {
@@ -46,16 +41,6 @@ fun DiscordUserLoginDialog(
         if (token != tokenState.text.toString()) {
             tokenState.setTextAndPlaceCursorAtEnd(token)
         }
-    }
-
-    LaunchedEffect(tokenState) {
-        snapshotFlow { tokenState.text.toString() }
-            .drop(1)
-            .distinctUntilChanged()
-            .collect {
-                // Observe live edits here if needed; OutlinedTextField(state = ...)
-                // does not take an `onValueChange` parameter.
-            }
     }
 
     AlertDialog(

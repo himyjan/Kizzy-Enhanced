@@ -24,7 +24,7 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.browser)
-    implementation(libs.material.icons.extended)
+    
 
     // Hilt annotation processor required for @HiltViewModel
     ksp(libs.hilt.compiler)

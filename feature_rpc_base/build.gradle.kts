@@ -32,7 +32,7 @@ dependencies {
     implementation(libs.compose.runtime)
     implementation(libs.material3.core)
     implementation(libs.material3.wsc)
-    implementation(libs.material.icons.extended)
+    
     implementation(libs.datastore.preferences)
     implementation(libs.tink.android)
     implementation(libs.work.runtime.ktx)

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,15 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +39,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,9 +48,7 @@ import coil3.compose.AsyncImage
 import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.Subtitle
-import com.my.kizzy.ui.components.chips
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsDrawer(
     user: User?,
@@ -80,6 +71,7 @@ fun SettingsDrawer(
             modifier = Modifier.padding(15.dp)
         ) {
             Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.padding(top = 8.dp, bottom = 10.dp)
             ) {
                 Text(
@@ -98,34 +90,30 @@ fun SettingsDrawer(
                 item(key = "display") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.display),
-                        icon = Icons.Outlined.Palette
-                    ) {
-                        navigateToStyleAndAppearance()
-                    }
+                        icon = vectorResource(R.drawable.ic_palette),
+                        onClick = navigateToStyleAndAppearance
+                    )
                 }
                 item(key = "language") {
                     SettingsItemCard(
-                        title = stringResource(R.string.language),
-                        icon = Icons.Outlined.Language,
-                    ) {
-                        navigateToLanguages()
-                    }
+                        title = stringResource(id = R.string.language),
+                        icon = vectorResource(R.drawable.ic_language),
+                        onClick = navigateToLanguages
+                    )
                 }
                 item(key = "logs") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.logs),
-                        icon = Icons.Outlined.BugReport
-                    ) {
-                        navigateToLogsScreen()
-                    }
+                        icon = vectorResource(R.drawable.ic_bug_report),
+                        onClick = navigateToLogsScreen
+                    )
                 }
                 item(key = "settings") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.settings),
-                        icon = Icons.Outlined.Settings
-                    ) {
-                        navigateToRpcSettings()
-                    }
+                        icon = vectorResource(R.drawable.ic_settings),
+                        onClick = navigateToRpcSettings
+                    )
                 }
                 item(key = "divider") {
                     HorizontalDivider()
@@ -147,10 +135,9 @@ fun SettingsDrawer(
                 item(key = "about") {
                     SettingsItemCard(
                         title = stringResource(id = R.string.about),
-                        icon = Icons.Outlined.Info
-                    ) {
-                        navigateToAbout()
-                    }
+                        icon = vectorResource(R.drawable.ic_info),
+                        onClick = navigateToAbout
+                    )
                 }
                 item(key = "qs_tile") {
                     RequestQsTile(
@@ -160,7 +147,10 @@ fun SettingsDrawer(
                 }
             }
             if (user != null) {
-                ProfileCardSmall(user = user) { navigateToProfile() }
+                ProfileCardSmall(
+                    user = user,
+                    navigateToProfile = navigateToProfile
+                )
             }
         }
     }
@@ -177,14 +167,12 @@ fun RequestQsTile(
     ) {
         SettingsItemCard(
             title = stringResource(R.string.qs_tile_label),
-            icon = Icons.Outlined.Star,
+            icon = vectorResource(R.drawable.ic_star),
             selected = true,
-        ) {
-            onRequestAddTile()
-        }
+            onClick = onRequestAddTile
+        )
     }
 }
-
 
 @Composable
 fun SettingsItemCard(
@@ -199,6 +187,7 @@ fun SettingsItemCard(
             Text(
                 text = title,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp)
                     .copy(fontWeight = FontWeight.SemiBold),
             )
@@ -213,7 +202,7 @@ fun SettingsItemCard(
             )
         },
         selected = selected,
-        onClick = { onClick() }
+        onClick = onClick
     )
 }
 
@@ -257,7 +246,7 @@ fun ProfileCardSmall(
                                 textAlign = TextAlign.Left
                             ).toSpanStyle()
                         ) {
-                            append((user?.globalName ?: user?.username) + "\r\n")
+                            append((user?.globalName ?: user?.username).orEmpty() + "\n")
                         }
                         withStyle(
                             style = MaterialTheme.typography.titleSmall.copy(
@@ -265,11 +254,14 @@ fun ProfileCardSmall(
                                 textAlign = TextAlign.Left
                             ).toSpanStyle()
                         ) {
-                            append(user?.username)
-                            if (user?.discriminator != "0")
-                                append("#${user?.discriminator}")
+                            append(user?.username.orEmpty())
+                            if (user?.discriminator != null && user.discriminator != "0") {
+                                append("#${user.discriminator}")
+                            }
                         }
-                    }
+                    },
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

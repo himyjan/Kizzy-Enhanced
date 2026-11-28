@@ -27,34 +27,38 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.data.rpc.CustomRpcBoardItem
 import com.my.kizzy.feature_rpc_base.CustomRpcBoardManager
 import com.my.kizzy.feature_rpc_base.services.CustomRpcService
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,14 +67,14 @@ fun CustomRpcBoardScreen(
     boardManager: CustomRpcBoardManager = CustomRpcBoardManager.getInstance(LocalContext.current.applicationContext)
 ) {
     val context = LocalContext.current
-    val scope = remember { CoroutineScope(Dispatchers.Main) }
+    val scope = rememberCoroutineScope()
     var showEditorDialog by remember { mutableStateOf(false) }
-    var editingBoard: CustomRpcBoardItem? by remember { mutableStateOf(null) }
+    var editingBoard by remember { mutableStateOf<CustomRpcBoardItem?>(null) }
 
     var boards by remember { mutableStateOf(boardManager.loadBoards()) }
     var activeBoardId by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(boardManager) {
         activeBoardId = boardManager.getActiveBoardId()
     }
 
@@ -79,8 +83,9 @@ fun CustomRpcBoardScreen(
     }
 
     fun startCustomRpcService() {
-        val intent = Intent(context, CustomRpcService::class.java)
-        intent.putExtra("RPC", "")
+        val intent = Intent(context, CustomRpcService::class.java).apply {
+            putExtra("RPC", "")
+        }
         context.startForegroundService(intent)
     }
 
@@ -88,79 +93,10 @@ fun CustomRpcBoardScreen(
         context.stopService(Intent(context, CustomRpcService::class.java))
     }
 
-    @Composable
-    fun BoardCard(board: CustomRpcBoardItem, isActive: Boolean, onToggle: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit, onMoveUp: () -> Unit, onMoveDown: () -> Unit) {
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clickable { onToggle() },
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(
-                        text = board.label.ifBlank { board.name.ifBlank { stringResource(R.string.custom_rpc_board_label) } },
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    val desc = buildString {
-                        if (board.applicationId.isNotBlank()) append("App ID: ${board.applicationId}  ")
-                        if (board.name.isNotBlank()) append("• Name: ${board.name}  ")
-                        if (board.details.isNotBlank()) append("• Details: ${board.details}")
-                    }
-                    if (desc.isNotBlank()) {
-                        Text(
-                            text = desc,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 2,
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.size(12.dp))
-                Column(
-                    modifier = Modifier.width(110.dp),
-                ) {
-                    Switch(
-                        checked = isActive,
-                        onCheckedChange = { onToggle() },
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        TextButton(onClick = onEdit) {
-                            Text(text = stringResource(R.string.custom_rpc_board_edit))
-                        }
-                        TextButton(onClick = onDelete) {
-                            Text(text = stringResource(R.string.custom_rpc_board_delete))
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        TextButton(onClick = onMoveUp) {
-                            Text(text = "▲")
-                        }
-                        TextButton(onClick = onMoveDown) {
-                            Text(text = "▼")
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        androidx.compose.material3.TopAppBar(
+        TopAppBar(
             title = {
                 Text(text = stringResource(R.string.custom_rpc_board_open))
             },
@@ -250,7 +186,10 @@ fun CustomRpcBoardScreen(
         if (showEditorDialog) {
             CustomRpcBoardEditorDialog(
                 board = editingBoard,
-                onDismiss = { showEditorDialog = false; editingBoard = null },
+                onDismiss = {
+                    showEditorDialog = false
+                    editingBoard = null
+                },
                 onSave = { board ->
                     scope.launch {
                         if (editingBoard == null) {
@@ -268,6 +207,90 @@ fun CustomRpcBoardScreen(
     }
 }
 
+@Composable
+private fun BoardCard(
+    board: CustomRpcBoardItem,
+    isActive: Boolean,
+    onToggle: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clickable { onToggle() },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(
+                    text = board.label.ifBlank {
+                        board.name.ifBlank { stringResource(R.string.custom_rpc_board_label) }
+                    },
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                val desc = buildString {
+                    if (board.applicationId.isNotBlank()) append("App ID: ${board.applicationId}  ")
+                    if (board.name.isNotBlank()) append("• Name: ${board.name}  ")
+                    if (board.details.isNotBlank()) append("• Details: ${board.details}")
+                }
+                if (desc.isNotBlank()) {
+                    Text(
+                        text = desc,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(12.dp))
+            Column(
+                modifier = Modifier.width(116.dp),
+            ) {
+                Switch(
+                    checked = isActive,
+                    onCheckedChange = { onToggle() },
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TextButton(onClick = onEdit) {
+                        Text(text = stringResource(R.string.custom_rpc_board_edit))
+                    }
+                    TextButton(onClick = onDelete) {
+                        Text(text = stringResource(R.string.custom_rpc_board_delete))
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TextButton(onClick = onMoveUp) {
+                        Text(text = "▲")
+                    }
+                    TextButton(onClick = onMoveDown) {
+                        Text(text = "▼")
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CustomRpcBoardEditorDialog(
@@ -275,49 +298,65 @@ private fun CustomRpcBoardEditorDialog(
     onDismiss: () -> Unit,
     onSave: (CustomRpcBoardItem) -> Unit,
 ) {
-    val scope = remember { CoroutineScope(Dispatchers.Main) }
     var activityTypeError by remember { mutableStateOf("") }
     val invalidTypeError = stringResource(R.string.custom_rpc_board_activity_type_invalid)
     val notRichPresenceError = stringResource(R.string.custom_rpc_board_activity_type_not_rich_presence)
 
-    var id by remember { mutableStateOf(board?.id ?: java.util.UUID.randomUUID().toString()) }
-    var label by remember { mutableStateOf(board?.label ?: "") }
-    var applicationId by remember { mutableStateOf(board?.applicationId ?: "") }
-    var activityType by remember { mutableStateOf(board?.activityType?.toString() ?: "0") }
-    var name by remember { mutableStateOf(board?.name ?: "") }
-    var details by remember { mutableStateOf(board?.details ?: "") }
-    var state by remember { mutableStateOf(board?.state ?: "") }
-    var largeImage by remember { mutableStateOf(board?.largeImage ?: "") }
-    var smallImage by remember { mutableStateOf(board?.smallImage ?: "") }
-    var largeText by remember { mutableStateOf(board?.largeText ?: "") }
-    var smallText by remember { mutableStateOf(board?.smallText ?: "") }
-    var button1Label by remember { mutableStateOf(board?.button1Label ?: "") }
-    var button1Url by remember { mutableStateOf(board?.button1Url ?: "") }
-    var button2Label by remember { mutableStateOf(board?.button2Label ?: "") }
-    var button2Url by remember { mutableStateOf(board?.button2Url ?: "") }
-    var timestampMode by remember { mutableStateOf(board?.timestampMode ?: "NONE") }
-    var customStartMs by remember { mutableStateOf(board?.customStartMs?.toString() ?: "") }
+    val id by remember(board) { mutableStateOf(board?.id ?: UUID.randomUUID().toString()) }
+    var label by remember(board) { mutableStateOf(board?.label ?: "") }
+    var applicationId by remember(board) { mutableStateOf(board?.applicationId ?: "") }
+    var activityType by remember(board) { mutableStateOf(board?.activityType?.toString() ?: "0") }
+    var name by remember(board) { mutableStateOf(board?.name ?: "") }
+    var details by remember(board) { mutableStateOf(board?.details ?: "") }
+    var state by remember(board) { mutableStateOf(board?.state ?: "") }
+    var largeImage by remember(board) { mutableStateOf(board?.largeImage ?: "") }
+    var smallImage by remember(board) { mutableStateOf(board?.smallImage ?: "") }
+    var largeText by remember(board) { mutableStateOf(board?.largeText ?: "") }
+    var smallText by remember(board) { mutableStateOf(board?.smallText ?: "") }
+    var button1Label by remember(board) { mutableStateOf(board?.button1Label ?: "") }
+    var button1Url by remember(board) { mutableStateOf(board?.button1Url ?: "") }
+    var button2Label by remember(board) { mutableStateOf(board?.button2Label ?: "") }
+    var button2Url by remember(board) { mutableStateOf(board?.button2Url ?: "") }
+    var timestampMode by remember(board) { mutableStateOf(board?.timestampMode ?: "NONE") }
+    var customStartMs by remember(board) { mutableStateOf(board?.customStartMs?.toString() ?: "") }
 
     BackHandler(onBack = onDismiss)
-        AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = if (board == null) stringResource(R.string.custom_rpc_board_add) else stringResource(R.string.custom_rpc_board_edit)) },
+        title = {
+            Text(
+                text = if (board == null) {
+                    stringResource(R.string.custom_rpc_board_add)
+                } else {
+                    stringResource(R.string.custom_rpc_board_edit)
+                }
+            )
+        },
         text = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp),
+                    .height(420.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 TextFieldRow(label = stringResource(R.string.custom_rpc_board_label), value = label, onValueChange = { label = it })
                 TextFieldRow(label = stringResource(R.string.custom_rpc_board_application_id), value = applicationId, onValueChange = { applicationId = it })
-                TextFieldRow(label = stringResource(R.string.custom_rpc_board_activity_type), value = activityType, onValueChange = { activityType = it })
+                TextFieldRow(
+                    label = stringResource(R.string.custom_rpc_board_activity_type),
+                    value = activityType,
+                    onValueChange = {
+                        activityType = it
+                        activityTypeError = ""
+                    }
+                )
                 if (activityTypeError.isNotEmpty()) {
                     Text(
                         text = activityTypeError,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 4.dp, start = 4.dp),
+                        modifier = Modifier.padding(start = 4.dp),
                     )
                 }
                 TextFieldRow(label = stringResource(R.string.custom_rpc_board_name), value = name, onValueChange = { name = it })
@@ -377,29 +416,28 @@ private fun CustomRpcBoardEditorDialog(
                     )
                 )
             }) {
-                Text(text = "Save")
+                Text(text = stringResource(R.string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
         },
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Suppress("DEPRECATION")
 @Composable
 private fun TextFieldRow(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
 ) {
-    androidx.compose.material3.TextField(
+    OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(text = label) },
+        singleLine = true,
         modifier = Modifier.fillMaxWidth(),
     )
 }

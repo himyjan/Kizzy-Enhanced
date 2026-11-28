@@ -38,9 +38,9 @@ data class Srgb(
     internal fun clamp(): Srgb = Srgb(r.coerceIn(0.0, 1.0), g.coerceIn(0.0, 1.0), b.coerceIn(0.0, 1.0))
 
     fun toHex(): String {
-        val r = (r * 255).roundToInt()
-        val g = (g * 255).roundToInt()
-        val b = (b * 255).roundToInt()
+        val r = (r.coerceIn(0.0, 1.0) * 255).roundToInt()
+        val g = (g.coerceIn(0.0, 1.0) * 255).roundToInt()
+        val b = (b.coerceIn(0.0, 1.0) * 255).roundToInt()
         return "#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${
             b.toString(
                 16
@@ -73,11 +73,23 @@ data class Srgb(
 
         private fun Vec3.asSrgb(): Srgb = Srgb(a, b, c)
 
-        fun String.toSrgb(): Srgb {
-            val r = substring(1, 3).toInt(16)
-            val g = substring(3, 5).toInt(16)
-            val b = substring(5, 7).toInt(16)
+        fun String.toSrgbOrNull(): Srgb? {
+            val clean = removePrefix("#").trim()
+            val rgb = when (clean.length) {
+                6 -> clean
+                8 -> clean.drop(2)
+                else -> return null
+            }
+            if (!rgb.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' }) return null
+            val r = rgb.substring(0, 2).toInt(16)
+            val g = rgb.substring(2, 4).toInt(16)
+            val b = rgb.substring(4, 6).toInt(16)
             return Srgb(r / 255.0, g / 255.0, b / 255.0)
+        }
+
+        fun String.toSrgb(): Srgb {
+            return toSrgbOrNull()
+                ?: throw IllegalArgumentException("Invalid hex color string: \"$this\"")
         }
 
         fun CieXyz.toSrgb(): Srgb {

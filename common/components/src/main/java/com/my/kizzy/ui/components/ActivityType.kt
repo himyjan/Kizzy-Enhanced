@@ -5,13 +5,14 @@
  *  *  * ActivityType.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  *  permission of yzziK(Vaibhav)
- *  *  ******************************************************************
+ *  *  *****************************************************************
  *
  *
  */
 
 package com.my.kizzy.ui.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,14 +20,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Headphones
-import androidx.compose.material.icons.outlined.LiveTv
-import androidx.compose.material.icons.outlined.SportsEsports
-import androidx.compose.material.icons.outlined.SportsMma
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -44,7 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,16 +91,16 @@ object ActivityType {
         else -> "Auto"
     }
 
-    @Composable
-    fun icon(type: Int): ImageVector = when (type) {
-        PLAYING -> Icons.Outlined.SportsEsports
-        STREAMING -> Icons.Outlined.LiveTv
-        LISTENING -> Icons.Outlined.Headphones
-        WATCHING -> Icons.Outlined.Visibility
-        CUSTOM_STATUS -> Icons.Outlined.Edit
-        COMPETING -> Icons.Outlined.SportsMma
-        HANG_STATUS -> Icons.Outlined.Headphones
-        else -> Icons.Outlined.Edit
+    @DrawableRes
+    fun icon(type: Int): Int = when (type) {
+        PLAYING -> R.drawable.ic_sports_esports
+        STREAMING -> R.drawable.ic_live_tv
+        LISTENING -> R.drawable.ic_headphones
+        WATCHING -> R.drawable.ic_remove_red_eye
+        CUSTOM_STATUS -> R.drawable.ic_edit
+        COMPETING -> R.drawable.ic_sports_esports
+        HANG_STATUS -> R.drawable.ic_headphones
+        else -> R.drawable.ic_edit
     }
 
     @Composable
@@ -153,7 +146,7 @@ fun ActivityTypeChip(
             label = { Text(ActivityType.label(effectiveType)) },
             icon = {
                 Icon(
-                    imageVector = ActivityType.icon(effectiveType),
+                    painter = painterResource(ActivityType.icon(effectiveType)),
                     contentDescription = null,
                     tint = typeColor,
                 )
@@ -181,7 +174,7 @@ fun ActivityTypeChip(
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = ActivityType.icon(detectedTypeId),
+                        painter = painterResource(ActivityType.icon(detectedTypeId)),
                         contentDescription = null,
                         tint = typeColor,
                     )
@@ -189,7 +182,7 @@ fun ActivityTypeChip(
                 trailingIcon = {
                     if (isAuto) {
                         Icon(
-                            imageVector = Icons.Outlined.Check,
+                            painter = painterResource(R.drawable.ic_check),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                         )
@@ -214,7 +207,7 @@ fun ActivityTypeChip(
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = ActivityType.icon(type),
+                            painter = painterResource(ActivityType.icon(type)),
                             contentDescription = null,
                             tint = color,
                         )
@@ -222,7 +215,7 @@ fun ActivityTypeChip(
                     trailingIcon = {
                         if (!isAuto && selectedTypeId == type) {
                             Icon(
-                                imageVector = Icons.Outlined.Check,
+                                painter = painterResource(R.drawable.ic_check),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                             )

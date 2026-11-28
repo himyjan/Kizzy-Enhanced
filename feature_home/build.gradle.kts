@@ -25,7 +25,7 @@ dependencies {
     implementation(projects.common.navigation)
 
     implementation(libs.coil.compose)
-    implementation(libs.material.icons.extended)
+    
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.activity.compose)
 }

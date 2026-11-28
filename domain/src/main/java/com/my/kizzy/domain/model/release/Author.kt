@@ -12,7 +12,6 @@
 
 package com.my.kizzy.domain.model.release
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

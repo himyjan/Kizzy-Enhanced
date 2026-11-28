@@ -15,7 +15,7 @@ data class Hct(
     val t: Double
 ) {
     fun toSrgb(): Srgb {
-        if (c < 1.0 || t.roundToInt() <= 0.0 || t.roundToInt() >= 100.0) {
+        if (c < 1.0 || t.roundToInt() <= 0 || t.roundToInt() >= 100) {
             return neutralColor()
         }
         var high = c
@@ -49,7 +49,7 @@ data class Hct(
         return when {
             t < 1.0 -> Srgb(0.0, 0.0, 0.0)
             t > 99.0 -> Srgb(1.0, 1.0, 1.0)
-            else -> Cam16(CieLab(t, 0.0, 0.0).toCieXyz().toCam16().j, c, h).toCieXyz().toSrgb().clamp()
+            else -> Cam16(CieLab(t, 0.0, 0.0).toCieXyz().toCam16().j, 0.0, h).toCieXyz().toSrgb().clamp()
         }
     }
 

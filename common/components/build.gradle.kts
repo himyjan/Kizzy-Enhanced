@@ -16,5 +16,5 @@ dependencies {
     implementation(libs.coil.network.ktor3)
 
     implementation(projects.common.resources)
-    implementation(libs.material.icons.extended)
+    
 }

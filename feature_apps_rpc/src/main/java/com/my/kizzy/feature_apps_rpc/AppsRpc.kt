@@ -25,8 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AppsOutage
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -112,7 +110,7 @@ fun AppsRPC(
                     actions = {
                         IconButton(onClick = { isSearchBarVisible = true }) {
                             Icon(
-                                imageVector = Icons.Outlined.Search,
+                                imageVector = vectorResource(R.drawable.ic_search),
                                 contentDescription = stringResource(id = R.string.search)
                             )
                         }
@@ -153,7 +151,7 @@ fun AppsRPC(
                             PreferencesHint(
                                 title = stringResource(id = R.string.usage_access),
                                 description = stringResource(id = R.string.usage_access_desc),
-                                icon = Icons.Outlined.AppsOutage,
+                                icon = vectorResource(R.drawable.ic_apps_outage),
                             ) {
                                 if (!hasUsageAccess) {
                                     ctx.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))

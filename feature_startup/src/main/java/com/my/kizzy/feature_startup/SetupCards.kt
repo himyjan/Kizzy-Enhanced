@@ -14,11 +14,13 @@ package com.my.kizzy.feature_startup
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.NavigateNext
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,30 +43,30 @@ fun SetupCard(
     status: Boolean,
     onClick: () -> Unit = {},
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(20.dp))
-        .background(
-            MaterialTheme.colorScheme.inverseOnSurface
-        )
-        .clickable { onClick() }
-        .padding(horizontal = 12.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.inverseOnSurface)
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
         with(MaterialTheme) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = title,
                     maxLines = 1,
                     style = typography.titleLarge.copy(fontSize = 20.sp).copy(fontWeight = FontWeight.SemiBold),
-                    color = colorScheme.onSecondaryContainer
+                    color = colorScheme.onSecondaryContainer,
                 )
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                    painter = painterResource(R.drawable.ic_open_in_new),
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = colorScheme.primary
+                    tint = colorScheme.primary,
                 )
             }
             Text(
@@ -85,37 +88,36 @@ fun SetupCard(
     }
 }
 
-
 @Composable
 fun SetupCard(
     title: String = "Title ".repeat(2),
     description: String = "Description text ".repeat(3),
     onClick: () -> Unit = {},
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(20.dp))
-        .background(
-            MaterialTheme.colorScheme.inverseOnSurface
-        )
-        .clickable { onClick() }
-        .padding(horizontal = 12.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.inverseOnSurface)
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
         with(MaterialTheme) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = title,
                     maxLines = 1,
                     style = typography.titleLarge.copy(fontSize = 20.sp).copy(fontWeight = FontWeight.SemiBold),
-                    color = colorScheme.onSecondaryContainer
+                    color = colorScheme.onSecondaryContainer,
                 )
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.NavigateNext,
+                    painter = painterResource(R.drawable.ic_chevron_right),
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = colorScheme.primary
+                    tint = colorScheme.primary,
                 )
             }
             Text(

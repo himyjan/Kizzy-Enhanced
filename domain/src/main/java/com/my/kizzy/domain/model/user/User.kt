@@ -46,7 +46,7 @@ data class User(
     @SerialName("verified")
     val verified: Boolean = false,
     @SerialName("global_name")
-val globalName: String? = null
+    val globalName: String? = null
 ) {
     fun getAvatarImage(): String? {
         // 沒有使用者 ID 時無法建構頭像 URL
@@ -69,24 +69,27 @@ val globalName: String? = null
         return if (avatar.isNullOrEmpty() || id.isNullOrEmpty()) {
             null
         } else {
-            return "${DISCORD_CDN}/avatars/${id}/${avatar}.png?size=512"
+            "${DISCORD_CDN}/avatars/${id}/${avatar}.png?size=512"
         }
     }
+
     fun getBannerImage(): String? {
-        if (banner.isNullOrEmpty()) return null
-        return if (banner.startsWith("a_"))
+        if (banner.isNullOrEmpty() || id.isNullOrBlank()) return null
+        return if (banner.startsWith("a_")) {
             "$DISCORD_CDN/banners/${id}/${banner}.gif?size=480"
-        else
+        } else {
             "$DISCORD_CDN/banners/${id}/${banner}.png?size=480"
+        }
     }
+
     fun getStaticBannerImage(): String? {
-        if (banner.isNullOrEmpty()) return null
+        if (banner.isNullOrEmpty() || id.isNullOrBlank()) return null
         return "$DISCORD_CDN/banners/${id}/${banner}.png?size=480"
     }
 
     fun getAvatarDecorationImage(): String? {
         val decoration = avatarDecoration
-        if (decoration.isNullOrEmpty()) return null
+        if (decoration.isNullOrEmpty() || id.isNullOrBlank()) return null
         if (decoration.startsWith("a_")) {
             return "$DISCORD_CDN/app-assets/${id}/avatar-decorations/${decoration}.gif?size=512"
         }
@@ -99,18 +102,18 @@ val globalName: String? = null
 
         // Badges computed from publicFlags bitmask
         val flagBadges = listOf(
-            1          to Badge("${BADGE_CDN}5e74e9b61934fc1f67c65515d1f7e60d.png", "Discord Staff"),
-            2          to Badge("${BADGE_CDN}3f9748e53446a137a052f3454e2de41e.png", "Discord Partner"),
-            4          to Badge("${BADGE_CDN}bf01d1073931f921909045f3a39fd264.png", "HypeSquad Events"),
-            8          to Badge("${BADGE_CDN}44539473a4cf7343d6bb3d154cce31ce.png", "Bug Hunter"),
-            64         to Badge("${BADGE_CDN}8a88d63823d8a71cd5e390baa45efa02.png", "HypeSquad Bravery"),
-            128        to Badge("${BADGE_CDN}011940fd013082d85d96680e1f40dafa.png", "HypeSquad Brilliance"),
-            256        to Badge("${BADGE_CDN}3aa41de486fa12454c3761e8e223442e.png", "HypeSquad Balance"),
-            512        to Badge("${BADGE_CDN}7060786766c9c840eb3019e725d2b358.png", "Early Supporter"),
-            16384      to Badge("${BADGE_CDN}848f79194d4be5ff5f81505cbd0ce1e6.png", "Bug Hunter Level 2"),
-            131072     to Badge("${BADGE_CDN}6df5892e0f35b051f8b61eace34f4967.png", "Early Verified Bot Developer"),
-            262144     to Badge("${BADGE_CDN}fee1624003e2fee35cb398e125dc479a.png", "Moderator Programs Alumni"),
-            4194304    to Badge("${BADGE_CDN}6bdc42827a38498929a4920da12695d9.png", "Active Developer"),
+            1 to Badge("${BADGE_CDN}5e74e9b61934fc1f67c65515d1f7e60d.png", "Discord Staff"),
+            2 to Badge("${BADGE_CDN}3f9748e53446a137a052f3454e2de41e.png", "Discord Partner"),
+            4 to Badge("${BADGE_CDN}bf01d1073931f921909045f3a39fd264.png", "HypeSquad Events"),
+            8 to Badge("${BADGE_CDN}44539473a4cf7343d6bb3d154cce31ce.png", "Bug Hunter"),
+            64 to Badge("${BADGE_CDN}8a88d63823d8a71cd5e390baa45efa02.png", "HypeSquad Bravery"),
+            128 to Badge("${BADGE_CDN}011940fd013082d85d96680e1f40dafa.png", "HypeSquad Brilliance"),
+            256 to Badge("${BADGE_CDN}3aa41de486fa12454c3761e8e223442e.png", "HypeSquad Balance"),
+            512 to Badge("${BADGE_CDN}7060786766c9c840eb3019e725d2b358.png", "Early Supporter"),
+            16384 to Badge("${BADGE_CDN}848f79194d4be5ff5f81505cbd0ce1e6.png", "Bug Hunter Level 2"),
+            131072 to Badge("${BADGE_CDN}6df5892e0f35b051f8b61eace34f4967.png", "Early Verified Bot Developer"),
+            262144 to Badge("${BADGE_CDN}fee1624003e2fee35cb398e125dc479a.png", "Moderator Programs Alumni"),
+            4194304 to Badge("${BADGE_CDN}6bdc42827a38498929a4920da12695d9.png", "Active Developer"),
         )
         flagBadges.forEach { (flag, badge) ->
             if (flags and flag != 0) result.add(badge)

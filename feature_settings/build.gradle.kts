@@ -16,7 +16,7 @@ android {
 
 dependencies {
     implementation(libs.material)
-    implementation(libs.material.icons.extended)
+    
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor3)
 

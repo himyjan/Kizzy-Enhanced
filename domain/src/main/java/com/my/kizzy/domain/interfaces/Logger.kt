@@ -20,7 +20,7 @@ interface Logger {
     fun w(tag: String, event: String)
 }
 
-object NoOpLogger: Logger {
+object NoOpLogger : Logger {
     override fun clear() {}
     override fun i(tag: String, event: String) {}
     override fun e(tag: String, event: String) {}

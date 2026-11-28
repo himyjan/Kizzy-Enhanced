@@ -39,12 +39,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.outlined.FilterList
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Pause
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -216,7 +210,7 @@ fun LogScreenContent(
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             ) {
-                Icon(Icons.Default.ContentCopy, contentDescription = stringResource(R.string.copy))
+                Icon(vectorResource(R.drawable.ic_content_copy), contentDescription = stringResource(R.string.copy))
             }
         }
     ) { paddingValues ->
@@ -444,20 +438,20 @@ fun ToolBarContent(
             actions = {
                 IconButton(onClick = onTogglePause) {
                     Icon(
-                        imageVector = if (uiState.isPaused) Icons.Outlined.PlayArrow else Icons.Outlined.Pause,
+                        imageVector = if (uiState.isPaused) vectorResource(R.drawable.ic_play_arrow) else vectorResource(R.drawable.ic_pause),
                         contentDescription = stringResource(
                             if (uiState.isPaused) R.string.resume_logs else R.string.pause_logs
                         )
                     )
                 }
                 IconButton(onClick = onFilterToggle) {
-                    Icon(Icons.Outlined.FilterList, contentDescription = stringResource(R.string.filter_logs))
+                    Icon(vectorResource(R.drawable.ic_filter_list), contentDescription = stringResource(R.string.filter_logs))
                 }
                 IconButton(onClick = onSearchToggle) {
-                    Icon(Icons.Outlined.Search, stringResource(id = R.string.search))
+                    Icon(vectorResource(R.drawable.ic_search), stringResource(id = R.string.search))
                 }
                 IconButton(onClick = { menuClicked = !menuClicked }) {
-                    Icon(imageVector = Icons.Outlined.MoreVert, contentDescription = stringResource(R.string.more))
+                    Icon(imageVector = vectorResource(R.drawable.ic_more_vert), contentDescription = stringResource(R.string.more))
                     DropdownMenu(
                         expanded = menuClicked,
                         onDismissRequest = { menuClicked = false }

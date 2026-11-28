@@ -12,7 +12,7 @@ android {
 dependencies {
     implementation(projects.featureRpcBase)
     implementation(projects.data)
-    implementation(libs.material.icons.extended)
+    
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor3)
 

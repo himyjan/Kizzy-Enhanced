@@ -27,8 +27,6 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -137,7 +135,7 @@ fun SearchBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Outlined.Search,
+            imageVector = vectorResource(R.drawable.ic_search),
             contentDescription = null,
             tint = colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
@@ -186,7 +184,7 @@ fun SearchBar(
             }
         ) {
             Icon(
-                imageVector = Icons.Filled.Close,
+                imageVector = vectorResource(R.drawable.ic_close),
                 contentDescription = stringResource(
                     id = if (textState.text.isNotEmpty()) R.string.clear else R.string.cancel
                 ),

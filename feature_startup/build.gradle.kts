@@ -10,6 +10,6 @@ android {
 
 dependencies {
     implementation(libs.activity.compose)
-    implementation(libs.material.icons.extended)
+    
     implementation(libs.kotlinx.serialization.json)
 }

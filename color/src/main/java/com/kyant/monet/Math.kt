@@ -11,8 +11,7 @@ internal class Vec3(
     val c: Double
 ) {
     inline fun map(transform: (Double) -> Double): Vec3 {
-        val mapped = doubleArrayOf(a, b, c).map(transform)
-        return Vec3(mapped[0], mapped[1], mapped[2])
+        return Vec3(transform(a), transform(b), transform(c))
     }
 
     fun diag(): Mat3x3 {
@@ -24,7 +23,11 @@ internal class Vec3(
     }
 
     fun hadamardInverse(): Vec3 {
-        return Vec3(1 / a, 1 / b, 1 / c)
+        return Vec3(
+            if (a != 0.0) 1.0 / a else 0.0,
+            if (b != 0.0) 1.0 / b else 0.0,
+            if (c != 0.0) 1.0 / c else 0.0
+        )
     }
 
     operator fun component1(): Double = a

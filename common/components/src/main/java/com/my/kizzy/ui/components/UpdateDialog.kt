@@ -38,7 +38,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -184,7 +183,7 @@ fun UpdateDialog(
     AlertDialog(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
-        icon = { Icon(imageVector = Icons.Outlined.Update, contentDescription = "Update") },
+        icon = { Icon(imageVector = vectorResource(R.drawable.ic_update), contentDescription = "Update") },
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = stringResource(R.string.change_log))
