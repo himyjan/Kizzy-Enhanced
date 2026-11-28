@@ -58,18 +58,20 @@ class MultiRpcManager @Inject constructor(
         return groups[slotId]?.instances[builtInInstanceId(slotId)]
     }
 
-    /** Returns a dedicated [KizzyRPC] for one Custom RPC instance. */
+    /** Returns a dedicated [KizzyRPC] for any Custom/Manual/Media RPC instance. */
     fun customSession(instanceId: String): KizzyRPC? {
         customSessions[instanceId]?.let { return it }
         val instance = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId } ?: return null
-        val slotId = when(instance.type) {
+        val slotId = when (instance.type) {
             "custom_rpc" -> "2"
+            "manual_rpc" -> "3"
+            "media_rpc"  -> "1"
             else -> return null
         }
         groups[slotId]?.instances[instanceId]?.let { return it }
         val credential = instance.oauthIndex?.takeIf { it > 0 }
             ?.let { Prefs.getOAuthApp(it) }
-            ?: credentialForSlot("2")
+            ?: credentialForSlot(slotId)
             ?: return null
         val appId = assignAppId(instanceId)
         val socket = createSocket(credential, instanceId)
