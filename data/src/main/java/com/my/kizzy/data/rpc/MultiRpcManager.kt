@@ -68,6 +68,12 @@ class MultiRpcManager @Inject constructor(
             "media_rpc"  -> "1"
             else -> return null
         }
+        // Built-in instances share one socket per slot (same token). Creating a
+        // separate socket with the same token causes Discord INVALID_SESSION
+        // errors and no RPC shows. Reuse the slot's built-in socket instead.
+        if (instanceId == builtInInstanceId(slotId)) {
+            return session(slotId)
+        }
         groups[slotId]?.instances[instanceId]?.let { return it }
         val credential = instance.oauthIndex?.takeIf { it > 0 }
             ?.let { Prefs.getOAuthApp(it) }
