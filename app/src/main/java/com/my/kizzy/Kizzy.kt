@@ -30,7 +30,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.toVersion
 import com.my.kizzy.feature_about.about.About
 import com.my.kizzy.feature_about.about.Credits
@@ -59,7 +58,6 @@ import com.my.kizzy.feature_settings.style.DarkThemePreferences
 import com.my.kizzy.feature_startup.StartUp
 import com.my.kizzy.navigation.AppRoute
 import com.my.kizzy.preference.Prefs
-import kotlinx.serialization.json.Json
 import xyz.dead8309.feature_manual_rpc.ManualRpcScreen
 import xyz.dead8309.feature_manual_rpc.ManualRpcViewmodel
 import xyz.dead8309.feature_manual_rpc.apps.ManualRpcAppsScreen
@@ -138,7 +136,7 @@ internal fun Kizzy(
                     }
                     val user = Prefs.getUser()
                     val viewModel = hiltViewModel<HomeScreenViewModel>()
-                    val state by viewModel.aboutScreenState.collectAsState()
+                    val state by viewModel.homeScreenState.collectAsState()
                     val showBadge = release
                         ?.toVersion()
                         ?.whetherNeedUpdate(BuildConfig.VERSION_NAME.toVersion())

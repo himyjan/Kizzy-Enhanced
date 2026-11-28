@@ -18,11 +18,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ImgurResponse(
     @SerialName("data")
-    val data: Data
+    val data: Data = Data(),
 ) {
     @Serializable
     data class Data(
         @SerialName("link")
-        val link: String,
+        val link: String = "",
     )
 }

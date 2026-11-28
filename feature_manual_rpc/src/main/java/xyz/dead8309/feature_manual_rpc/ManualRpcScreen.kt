@@ -1,26 +1,14 @@
 /*
-
  *
-
  *  ******************************************************************
-
  *  *  * Copyright (C) 2022
-
  *  *  * ManualRpcScreen.kt is part of Kizzy
-
  *  *  *  and can not be copied and/or distributed without the express
-
  *  *  * permission of yzziK(Vaibhav)
-
  *  *  *****************************************************************
-
  *
-
  *
-
  */
-
-
 
 package xyz.dead8309.feature_manual_rpc
 
@@ -29,242 +17,112 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.draw.clip
-import com.my.kizzy.data.utils.uriToFile
-import xyz.dead8309.feature_manual_rpc.components.ImagePicker
-
 import androidx.compose.foundation.layout.Arrangement
-
 import androidx.compose.foundation.layout.Column
-
-import androidx.compose.foundation.layout.fillMaxSize
-
-import androidx.compose.foundation.layout.fillMaxWidth
-
-import androidx.compose.foundation.layout.padding
-
-import androidx.compose.foundation.layout.Spacer
-
 import androidx.compose.foundation.layout.Row
-
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-
 import androidx.compose.foundation.layout.width
-
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
-
 import androidx.compose.foundation.lazy.LazyColumn
-
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Gamepad
-
-import androidx.compose.material.icons.filled.AppsOutage
-
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-
-import androidx.compose.material.icons.filled.PauseCircle
-
-import androidx.compose.material.icons.filled.PlayCircle
-
-import androidx.compose.material.icons.filled.Timer
-
-import androidx.compose.material.icons.filled.Warning
-
-import androidx.compose.material.icons.outlined.AppSettingsAlt
-
-import androidx.compose.material.icons.outlined.Apps
-
 import androidx.compose.material.icons.outlined.Album
-
-import androidx.compose.material.icons.outlined.Audiotrack
-
-import androidx.compose.material.icons.outlined.Image
-
-import androidx.compose.material.icons.outlined.Info
-
-import androidx.compose.foundation.shape.RoundedCornerShape
-
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-
-import androidx.compose.material.icons.outlined.BrokenImage
-
-import coil3.compose.AsyncImage
-
-
-
-import androidx.compose.material.icons.outlined.Title
-
-import androidx.compose.material.icons.outlined.Info
-
-import androidx.compose.material.icons.outlined.Title
-
-import androidx.compose.material3.DropdownMenu
-
-import androidx.compose.material3.DropdownMenuItem
-
-import androidx.compose.material3.ExperimentalMaterial3Api
-
-import androidx.compose.material3.Icon
-
-import androidx.compose.material3.LargeTopAppBar
-
-import androidx.compose.material3.MaterialTheme
-
-import androidx.compose.material3.Scaffold
-
-import androidx.compose.material3.Text
-
-import androidx.compose.material3.TextButton
-
-import androidx.compose.material3.TopAppBarDefaults
-
-import androidx.compose.material3.rememberTopAppBarState
-
-import androidx.compose.ui.tooling.preview.Preview
-
-import androidx.compose.runtime.Composable
-
-import androidx.compose.runtime.getValue
-
-import androidx.compose.runtime.mutableStateOf
-
-import androidx.compose.runtime.remember
-
-import androidx.compose.runtime.setValue
-
-import androidx.compose.ui.Alignment
-
-import androidx.compose.ui.Modifier
-
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-
-import androidx.compose.ui.platform.LocalContext
-
-import androidx.compose.ui.res.painterResource
-
-import androidx.compose.ui.res.stringResource
-
-import androidx.compose.ui.text.font.FontWeight
-
-import androidx.compose.ui.unit.dp
-
-import com.my.kizzy.data.rpc.Constants
-
-import com.my.kizzy.data.rpc.TemplateKeys
-
-import com.my.kizzy.domain.model.rpc.RpcConfig
-
-import com.my.kizzy.feature_rpc_base.AppUtils
-
-import com.my.kizzy.feature_rpc_base.RpcManager
-
-import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
-
-import com.my.kizzy.feature_rpc_base.services.AppDetectionService
-
-import com.my.kizzy.feature_rpc_base.services.CustomRpcService
-
-import com.my.kizzy.feature_rpc_base.services.ManualRpc
-
-import com.my.kizzy.feature_rpc_base.services.MediaRpcService
-
-import com.my.kizzy.feature_rpc_base.utils.stopMediaRpcService
-import com.my.kizzy.resources.R
-
-import com.my.kizzy.ui.components.BackButton
-
-import com.my.kizzy.ui.theme.KizzyTheme
-
-import com.my.kizzy.ui.components.RpcField
-
-import com.my.kizzy.ui.components.RpcFieldWithCompletions
-
-import com.my.kizzy.ui.components.SettingItem
-
-import com.my.kizzy.ui.components.Subtitle
-
-import com.my.kizzy.ui.components.SwitchBar
-
-import com.my.kizzy.ui.components.preference.PreferenceSwitch
-
-import com.my.kizzy.ui.components.preference.PreferencesHint
-
-import androidx.compose.runtime.rememberCoroutineScope
-
-import androidx.compose.runtime.LaunchedEffect
-
-import kotlinx.coroutines.launch
-
+import androidx.compose.material.icons.outlined.AppSettingsAlt
+import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.AppsOutage
-
+import androidx.compose.material.icons.outlined.Audiotrack
+import androidx.compose.material.icons.outlined.BrokenImage
 import androidx.compose.material.icons.outlined.ContentCopy
-
+import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-
 import androidx.compose.material.icons.outlined.PauseCircle
-
 import androidx.compose.material.icons.outlined.PlayCircle
-
 import androidx.compose.material.icons.outlined.Timer
-
+import androidx.compose.material.icons.outlined.Title
 import androidx.compose.material.icons.outlined.Warning
-
-
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.my.kizzy.data.rpc.Constants
+import com.my.kizzy.data.rpc.TemplateKeys
+import com.my.kizzy.data.utils.uriToFile
+import com.my.kizzy.domain.model.rpc.RpcConfig
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
+import com.my.kizzy.resources.R
+import com.my.kizzy.ui.components.BackButton
+import com.my.kizzy.ui.components.RpcField
+import com.my.kizzy.ui.components.RpcFieldWithCompletions
+import com.my.kizzy.ui.components.SettingItem
+import com.my.kizzy.ui.components.Subtitle
+import com.my.kizzy.ui.components.SwitchBar
+import com.my.kizzy.ui.components.preference.PreferenceSwitch
+import com.my.kizzy.ui.components.preference.PreferencesHint
+import com.my.kizzy.ui.theme.KizzyTheme
+import kotlinx.coroutines.launch
+import xyz.dead8309.feature_manual_rpc.components.ImagePicker
+import java.io.File
 
 private val completions = listOf(
-
     TemplateKeys.MEDIA_TITLE to R.string.completion_media_title,
-
     TemplateKeys.MEDIA_ARTIST to R.string.completion_media_artist,
-
     TemplateKeys.MEDIA_AUTHOR to R.string.completion_media_author,
-
     TemplateKeys.MEDIA_ALBUM to R.string.completion_media_album,
-
     TemplateKeys.MEDIA_ALBUM_ARTIST to R.string.completion_media_album_artist,
-
     TemplateKeys.MEDIA_DURATION to R.string.completion_media_duration,
-
     TemplateKeys.MEDIA_WRITER to R.string.completion_media_writer,
-
     TemplateKeys.MEDIA_COMPOSER to R.string.completion_media_composer,
-
     TemplateKeys.BATTERY to R.string.completion_battery,
-
     TemplateKeys.PLAYBACK to R.string.completion_playback,
-
     TemplateKeys.APP_NAME to R.string.completion_app_name,
-
 )
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
-
 fun ManualRpcScreen(
-
     onBackPressed: () -> Unit,
-
     state: UiState,
-
     hasUsageAccess: Boolean,
-
     hasNotificationAccess: Boolean,
-
     navigateToAppSelection: () -> Unit,
-
     onEvent: (UiEvent) -> Unit,
-
 ) {
-
     val context = LocalContext.current
     val rpcManager = RpcManager.getInstance(context)
     val scope = rememberCoroutineScope()
@@ -272,150 +130,86 @@ fun ManualRpcScreen(
         rpcManager.refreshFromServices()
     }
 
-    var ManualRpcRunning by remember { mutableStateOf(RpcType.ManualRpc in rpcManager.activeRpc.value) }
+    var manualRpcRunning by remember { mutableStateOf(RpcType.ManualRpc in rpcManager.activeRpc.value) }
     LaunchedEffect(rpcManager.activeRpc) {
-        ManualRpcRunning = RpcType.ManualRpc in rpcManager.activeRpc.value
+        manualRpcRunning = RpcType.ManualRpc in rpcManager.activeRpc.value
     }
 
-    // Observe the latest presence config built by ManualRpc so we can offer
-    // a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
     var copyConfig by remember { mutableStateOf<RpcConfig?>(null) }
     LaunchedEffect(rpcManager.currentPresenceConfig) {
         copyConfig = rpcManager.currentPresenceConfig.value
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-
         rememberTopAppBarState(),
-
         canScroll = { true }
-
     )
 
-
     Scaffold(
-
         modifier = Modifier
-
             .fillMaxSize()
-
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-
         topBar = {
-
             LargeTopAppBar(
-
                 title = {
-
                     Text(
-
                         text = stringResource(id = R.string.main_ManualRpc),
-
                         style = MaterialTheme.typography.headlineMedium,
-
                     )
-
                 },
-
                 navigationIcon = { BackButton { onBackPressed() } },
-
                 scrollBehavior = scrollBehavior
-
             )
-
         }
-
     ) { paddingValues ->
-
-
-
         Column(modifier = Modifier.padding(paddingValues)) {
-
-            AnimatedVisibility(
-
-                visible = !hasUsageAccess
-
-            ) {
-
+            AnimatedVisibility(visible = !hasUsageAccess) {
                 PreferencesHint(
-
                     title = stringResource(id = R.string.usage_access),
-
                     description = stringResource(id = R.string.usage_access_desc),
-
                     icon = Icons.Outlined.AppsOutage,
-
                 ) {
-
-                    when (hasUsageAccess) {
-
-                        false -> context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-
-                        else -> Unit
-
+                    if (!hasUsageAccess) {
+                        context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                     }
-
                 }
-
             }
 
-            AnimatedVisibility(
-
-                visible = !hasNotificationAccess
-
-            ) {
-
+            AnimatedVisibility(visible = !hasNotificationAccess) {
                 PreferencesHint(
-
                     title = stringResource(id = R.string.permission_required),
-
                     description = stringResource(id = R.string.request_for_notification_access),
-
                     icon = Icons.Outlined.Warning,
-
                 ) {
-
                     if (!hasNotificationAccess) {
-
                         context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
-
                     }
-
                 }
-
             }
-
-
 
             SwitchBar(
-
                 title = stringResource(id = R.string.enable_manualRpc),
-
-                isChecked = ManualRpcRunning,
-
+                isChecked = manualRpcRunning,
                 enabled = hasUsageAccess && hasNotificationAccess,
-
             ) {
-
-                val newValue = !ManualRpcRunning
-                ManualRpcRunning = newValue
+                val newValue = !manualRpcRunning
+                manualRpcRunning = newValue
                 scope.launch {
-                    // Toggle Manual RPC independently — does not stop Custom/Console/Media RPC.
                     if (newValue) {
                         rpcManager.switchTo(setOf(RpcType.ManualRpc), add = true)
                     } else {
                         rpcManager.stopRpcTypes(setOf(RpcType.ManualRpc))
                     }
                 }
-
             }
 
-            // Copy current manual presence to the Custom RPC editor.
             val currentConfig = copyConfig
             if (currentConfig != null) {
                 val copyToast = stringResource(id = R.string.copied_to_custom_rpc)
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     TextButton(
                         onClick = {
@@ -444,1099 +238,565 @@ fun ManualRpcScreen(
             }
 
             LazyColumn {
+                item {
+                    ManualRpcPreview(state = state)
+                }
 
                 item {
-
                     Subtitle(text = stringResource(R.string.general_settings))
-
                 }
 
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.enable_appsRpc),
-
                         description = stringResource(R.string.manual_rpc_detect_apps),
-
                         isChecked = state.isAppsRpcPartEnabled,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleAppsRpcPart(!state.isAppsRpcPartEnabled))
-
                         },
-
                         icon = {
-
                             Icon(
-
                                 painter = painterResource(R.drawable.ic_apps),
-
                                 modifier = Modifier
-
                                     .padding(start = 8.dp, end = 16.dp)
-
                                     .size(24.dp),
-
                                 contentDescription = null
-
                             )
-
                         },
-
                     )
-
                 }
 
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.enable_mediaRpc),
-
                         description = stringResource(R.string.manual_rpc_detect_media),
-
                         isChecked = state.isMediaRpcPartEnabled,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleMediaRpcPart(!state.isMediaRpcPartEnabled))
-
                         },
-
                         icon = {
-
                             Icon(
-
                                 painter = painterResource(R.drawable.ic_media_rpc),
-
                                 modifier = Modifier
-
                                     .padding(start = 8.dp, end = 16.dp)
-
                                     .size(24.dp),
-
                                 contentDescription = null
-
                             )
-
                         },
-
                     )
-
                 }
 
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.auto_detect_activity_type),
-
                         description = stringResource(R.string.auto_detect_activity_type_desc),
-
                         isChecked = state.isAutoActivityTypeEnabled,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleAutoActivityType(!state.isAutoActivityTypeEnabled))
-
                         },
-
                         icon = {
-
                             Icon(
-
                                 painter = painterResource(R.drawable.ic_apps),
-
                                 modifier = Modifier
-
                                     .padding(start = 8.dp, end = 16.dp)
-
                                     .size(24.dp),
-
                                 contentDescription = null
-
                             )
-
                         },
-
                     )
-
                 }
 
                 item {
-
                     SettingItem(
-
                         title = stringResource(R.string.app_preferences),
-
                         description = stringResource(R.string.app_preferences_desc),
-
                         icon = Icons.Outlined.AppSettingsAlt
-
                     ) {
-
                         navigateToAppSelection()
-
                     }
-
                 }
 
                 item {
-
-                    Subtitle(
-
-                        text = stringResource(R.string.main_mediaRpc)
-
-                    )
-
+                    Subtitle(text = stringResource(R.string.main_mediaRpc))
                 }
 
-
-
-                // Media Display Options - same order as Media RPC settings
-
-                // 1. Enable artist name
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.enable_artist_name),
-
                         description = stringResource(R.string.manual_rpc_detect_artist),
-
                         isChecked = state.showArtistName,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleShowArtistName(!state.showArtistName))
-
                         },
-
                         icon = Icons.Outlined.Audiotrack,
-
                     )
-
                 }
 
-                // 2. Enable album name
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.enable_album_name),
-
                         description = stringResource(R.string.manual_rpc_detect_album),
-
                         isChecked = state.showAlbumName,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleShowAlbumName(!state.showAlbumName))
-
                         },
-
                         icon = Icons.Outlined.Album,
-
                     )
-
                 }
 
-                // 3. Show cover art
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.show_cover_art),
-
                         description = stringResource(R.string.show_cover_art_desc),
-
                         isChecked = state.showCoverArt,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleShowCoverArt(!state.showCoverArt))
-
                         },
-
                         icon = Icons.Outlined.Image,
-
                     )
-
                 }
 
-                // 4. Show app icon
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.show_app_icon),
-
                         isChecked = state.showAppIcon,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleShowAppIcon(!state.showAppIcon))
-
                         },
-
                         icon = Icons.Outlined.Apps,
-
                     )
-
                 }
 
-                // 5. Show channel icon
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.show_channel_icon),
-
                         description = stringResource(R.string.show_channel_icon_desc),
-
                         isChecked = state.showChannelIcon,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleShowChannelIcon(!state.showChannelIcon))
-
                         },
-
                         icon = Icons.Outlined.AccountCircle,
-
                     )
-
                 }
 
-                // 6. Show apps & games
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.media_rpc_use_apps_rpc),
-
                         description = stringResource(R.string.media_rpc_use_apps_rpc_desc),
-
                         icon = Icons.Outlined.Gamepad,
-
                         isChecked = state.useAppsRpc,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleUseAppsRpc(!state.useAppsRpc))
-
                         },
-
                     )
-
                 }
 
-                // 7. Enable timestamps
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.enable_timestamps),
-
                         isChecked = state.enableTimestamps,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleEnableTimestamps(!state.enableTimestamps))
-
                         },
-
                         icon = Icons.Outlined.Timer
-
                     )
-
                 }
 
                 if (state.enableTimestamps) {
-
                     item {
-
                         val tsIcon = if (state.timestampModeExpanded)
-
                             Icons.Outlined.KeyboardArrowUp
-
                         else
-
                             Icons.Outlined.KeyboardArrowDown
 
-
-
                         val tsModes = linkedMapOf(
-
                             stringResource(R.string.timestamp_mode_default) to "default",
-
                             stringResource(R.string.timestamp_mode_current) to "current",
-
                             stringResource(R.string.timestamp_mode_custom) to "custom",
-
                         )
-
                         val tsLabel = tsModes.entries
-
                             .firstOrNull { it.value == state.timestampMode }?.key ?: state.timestampMode
 
-
-
                         RpcField(
-
                             value = tsLabel,
-
                             label = R.string.timestamp_mode,
-
                             trailingIcon = {
-
                                 Icon(
-
                                     imageVector = tsIcon,
-
                                     contentDescription = null,
-
                                     modifier = Modifier.clickable {
-
                                         onEvent(UiEvent.TriggerTimestampModeDropDownMenu)
-
                                     })
-
                             },
-
                             content = {
-
                                 DropdownMenu(
-
                                     expanded = state.timestampModeExpanded,
-
                                     onDismissRequest = {
-
                                         onEvent(UiEvent.TriggerTimestampModeDropDownMenu)
-
                                     },
-
                                     modifier = Modifier.fillMaxWidth()
-
                                 ) {
-
                                     tsModes.forEach { (label, value) ->
-
                                         DropdownMenuItem(
-
                                             text = { Text(text = label) },
-
                                             onClick = { onEvent(UiEvent.SetTimestampMode(value)) },
-
                                         )
-
                                     }
-
                                 }
-
                             }
-
                         )
-
                     }
 
                     if (state.timestampMode == "custom") {
-
                         item {
-
                             RpcField(
-
                                 value = state.customTimestampStart,
-
                                 label = R.string.start_timestamp_ms,
-
                                 onValueChange = { onEvent(UiEvent.SetCustomTimestampStart(it)) }
-
                             )
-
                         }
 
                         item {
-
                             RpcField(
-
                                 value = state.customTimestampEnd,
-
                                 label = R.string.end_timestamp_ms,
-
                                 onValueChange = { onEvent(UiEvent.SetCustomTimestampEnd(it)) }
-
                             )
-
                         }
-
                     }
-
                 }
 
-                // 6. Show playback state
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.show_playback_state),
-
                         isChecked = state.showPlaybackState,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleShowPlaybackState(!state.showPlaybackState))
-
                         },
-
                         icon = Icons.Outlined.PlayCircle
-
                     )
-
                 }
 
-                // 7. Hide on pause
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.hide_on_pause),
-
                         isChecked = state.hideOnPause,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleHideOnPause(!state.hideOnPause))
-
                         },
-
                         icon = Icons.Outlined.PauseCircle
-
                     )
-
                 }
 
-                // 8. Show song as title
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.manual_rpc_title_toggle),
-
                         description = stringResource(R.string.manual_rpc_title_toggle_desc),
-
                         isChecked = state.showSongAsTitle,
-
                         onClick = { onEvent(UiEvent.ToggleShowSongAsTitle(!state.showSongAsTitle)) },
-
                         icon = Icons.Outlined.Title,
-
                     )
-
                 }
 
-                // Show app name in details
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.show_app_name_in_details),
-
                         description = stringResource(R.string.show_app_name_in_details_desc),
-
                         isChecked = state.showAppNameInDetails,
-
                         onClick = { onEvent(UiEvent.ToggleShowAppNameInDetails(!state.showAppNameInDetails)) },
-
                         icon = Icons.Outlined.Apps,
-
                     )
-
                 }
 
                 if (state.showSongAsTitle) {
-
                     item {
-
                         val titleSources = linkedMapOf(
-
                             stringResource(R.string.title_source_song) to "title",
-
                             stringResource(R.string.title_source_artist) to "artist",
-
                         )
-
                         val titleIcon = if (state.titleSourceExpanded)
-
                             Icons.Outlined.KeyboardArrowUp
-
                         else
-
                             Icons.Outlined.KeyboardArrowDown
-
                         val titleLabel = titleSources.entries
-
                             .firstOrNull { it.value == state.titleSource }?.key ?: ""
-
                         RpcField(
-
                             value = titleLabel,
-
                             label = R.string.manual_rpc_title_toggle,
-
                             trailingIcon = {
-
                                 Icon(
-
                                     imageVector = titleIcon,
-
                                     contentDescription = null,
-
                                     modifier = Modifier.clickable {
-
                                         onEvent(UiEvent.TriggerTitleSourceDropDown)
-
                                     }
-
                                 )
-
                             },
-
                             content = {
-
                                 DropdownMenu(
-
                                     expanded = state.titleSourceExpanded,
-
                                     onDismissRequest = { onEvent(UiEvent.TriggerTitleSourceDropDown) },
-
                                     modifier = Modifier.fillMaxWidth()
-
                                 ) {
-
                                     titleSources.forEach { (label, value) ->
-
                                         DropdownMenuItem(
-
                                             text = { Text(text = label) },
-
                                             onClick = { onEvent(UiEvent.SetTitleSource(value)) },
-
                                         )
-
                                     }
-
                                 }
-
                             }
-
                         )
-
                     }
-
-                }
-
-                // 9. Auto detect activity type
-                item {
-
-                    PreferenceSwitch(
-
-                        title = stringResource(R.string.auto_detect_activity_type),
-
-                        description = stringResource(R.string.auto_detect_activity_type_desc),
-
-                        isChecked = state.isAutoActivityTypeEnabled,
-
-                        onClick = {
-
-                            onEvent(UiEvent.ToggleAutoActivityType(!state.isAutoActivityTypeEnabled))
-
-                        },
-
-                        icon = {
-
-                            Icon(
-
-                                painter = painterResource(R.drawable.ic_apps),
-
-                                modifier = Modifier
-
-                                    .padding(start = 8.dp, end = 16.dp)
-
-                                    .size(24.dp),
-
-                                contentDescription = null
-
-                            )
-
-                        },
-
-                    )
-
                 }
 
                 item {
-
                     Subtitle(text = stringResource(R.string.advance_settings))
-
                 }
 
                 item {
-
                     RpcFieldWithCompletions(
-
                         value = state.templateName,
-
                         label = R.string.activity_name,
-
                         onValueChange = { onEvent(UiEvent.SetTemplateName(it)) },
-
                         completionList = completions
-
                     )
-
                 }
 
                 item {
-
                     RpcFieldWithCompletions(
-
                         value = state.templateDetails,
-
                         label = R.string.activity_details,
-
                         onValueChange = { onEvent(UiEvent.SetTemplateDetails(it)) },
-
                         completionList = completions
-
                     )
-
                 }
 
                 item {
-
                     RpcFieldWithCompletions(
-
                         value = state.templateState,
-
                         label = R.string.activity_state,
-
                         onValueChange = { onEvent(UiEvent.SetTemplateState(it)) },
-
                         completionList = completions
-
                     )
-
                 }
 
-
-
                 item {
-
                     val platformIcon = if (state.platformIsExpanded)
-
                         Icons.Outlined.KeyboardArrowUp
-
                     else
-
                         Icons.Outlined.KeyboardArrowDown
 
-
-
                     val platforms = linkedMapOf(
-
                         stringResource(R.string.platform_none_desktop) to "",
-
                         stringResource(R.string.platform_desktop) to "desktop",
-
                         stringResource(R.string.platform_web) to "web",
-
                         stringResource(R.string.platform_android) to "android",
-
                         stringResource(R.string.platform_ios) to "ios",
-
                         stringResource(R.string.platform_samsung) to "samsung",
-
                         stringResource(R.string.platform_xbox) to "xbox",
-
                         stringResource(R.string.platform_ps4) to "ps4",
-
                         stringResource(R.string.platform_ps5) to "ps5",
-
                         stringResource(R.string.platform_nintendo_switch_2) to "nintendo-switch-2",
-
                         stringResource(R.string.platform_droideck) to "droideck",
-
                         stringResource(R.string.platform_eden) to "eden",
-
                         stringResource(R.string.platform_playstation) to "playstation",
-
                         stringResource(R.string.platform_vr) to "vr",
-
                     )
-
                     val platformLabel = platforms.entries
-
                         .firstOrNull { it.value == state.platform }?.key ?: state.platform
 
-
-
                     RpcField(
-
                         value = platformLabel,
-
                         label = R.string.activity_platform,
-
                         trailingIcon = {
-
                             Icon(
-
                                 imageVector = platformIcon,
-
                                 contentDescription = null,
-
                                 modifier = Modifier.clickable {
-
                                     onEvent(UiEvent.TriggerPlatformDropDownMenu)
-
                                 })
-
                         },
-
                         content = {
-
                             DropdownMenu(
-
                                 expanded = state.platformIsExpanded,
-
                                 onDismissRequest = {
-
                                     onEvent(UiEvent.TriggerPlatformDropDownMenu)
-
                                 },
-
                                 modifier = Modifier.fillMaxWidth()
-
                             ) {
-
                                 platforms.forEach { (label, value) ->
-
                                     DropdownMenuItem(
-
                                         text = { Text(text = label) },
-
                                         onClick = { onEvent(UiEvent.SetPlatform(value)) },
-
                                     )
-
                                 }
-
                             }
-
                         }
-
                     ) {
-
                         // Selection is driven by the dropdown; ignore free-text input.
-
                     }
-
                 }
 
-
-
                 item {
-
                     Subtitle(text = stringResource(R.string.rpc_buttons))
-
                 }
 
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.use_custom_buttons),
-
                         isChecked = state.buttonsEnabled,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleButtons(!state.buttonsEnabled))
-
                         },
-
                     )
-
                 }
 
                 if (state.buttonsEnabled) {
-
                     item {
-
                         RpcField(
-
                             value = state.button1Text,
-
                             label = R.string.activity_button1_text,
-
                             onValueChange = { onEvent(UiEvent.SetButton1Text(it)) }
-
                         )
-
                     }
 
                     item {
-
                         RpcField(
-
                             value = state.button1Url,
-
                             label = R.string.activity_button1_url,
-
                             onValueChange = { onEvent(UiEvent.SetButton1Url(it)) }
-
                         )
-
                     }
 
                     item {
-
                         RpcField(
-
                             value = state.button2Text,
-
                             label = R.string.activity_button2_text,
-
                             onValueChange = { onEvent(UiEvent.SetButton2Text(it)) }
-
                         )
-
                     }
 
                     item {
-
                         RpcField(
-
                             value = state.button2Url,
-
                             label = R.string.activity_button2_url,
-
                             onValueChange = { onEvent(UiEvent.SetButton2Url(it)) }
-
                         )
-
                     }
-
                 }
 
-
-
                 item {
-
                     Subtitle(text = stringResource(R.string.application_id))
-
                 }
 
                 item {
-
                     PreferenceSwitch(
-
                         title = stringResource(R.string.custom_application_id),
-
                         description = stringResource(R.string.custom_application_id_desc),
-
                         isChecked = state.useCustomAppId,
-
                         onClick = {
-
                             onEvent(UiEvent.ToggleUseCustomAppId(!state.useCustomAppId))
-
                         },
-
                     )
-
                 }
 
                 if (state.useCustomAppId) {
-
                     item {
-
                         RpcField(
-
                             value = state.applicationId,
-
                             label = R.string.application_id,
-
                             onValueChange = { onEvent(UiEvent.SetApplicationId(it)) }
-
                         )
-
                     }
-
                 }
 
-                // Activity Type
                 item {
-
                     val activityTypeIcon = if (state.activityTypeIsExpanded)
-
                         Icons.Outlined.KeyboardArrowUp
-
                     else
-
                         Icons.Outlined.KeyboardArrowDown
-
                     val activityTypes = Constants.ACTIVITY_TYPE
-
                     val activityTypeLabel = activityTypes.entries
-
                         .firstOrNull { it.value.toString() == state.activityType }?.key ?: state.activityType
-
                     RpcField(
-
                         value = activityTypeLabel,
-
                         label = R.string.activity_type,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
                         trailingIcon = {
-
                             Icon(
-
                                 imageVector = activityTypeIcon,
-
                                 contentDescription = null,
-
                                 modifier = Modifier.clickable {
-
                                     onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
-
                                 })
-
-                        }) {
-
-                        onEvent(UiEvent.SetActivityType(it))
-
-                    }
-
-                    DropdownMenu(
-
-                        expanded = state.activityTypeIsExpanded, onDismissRequest = {
-
-                            onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
-
-                        }, modifier = Modifier.fillMaxWidth()
-
-                    ) {
-
-                        activityTypes.forEach { (label, value) ->
-
-                            DropdownMenuItem(
-
-                                text = {
-
-                                    Text(text = label)
-
-                                },
-
-                                onClick = {
-
-                                    onEvent(UiEvent.SetActivityType(value.toString()))
-
+                        },
+                        content = {
+                            DropdownMenu(
+                                expanded = state.activityTypeIsExpanded,
+                                onDismissRequest = {
                                     onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
-
                                 },
-
-                            )
-
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                activityTypes.forEach { (label, value) ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = label) },
+                                        onClick = {
+                                            onEvent(UiEvent.SetActivityType(value.toString()))
+                                            onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
+                                        },
+                                    )
+                                }
+                            }
                         }
-
+                    ) {
+                        onEvent(UiEvent.SetActivityType(it))
                     }
-
                 }
 
-                // Status
                 item {
-
                     val statusIcon = if (state.statusIsExpanded)
-
                         Icons.Outlined.KeyboardArrowUp
-
                     else
-
                         Icons.Outlined.KeyboardArrowDown
-
                     val statuses = Constants.ACTIVITY_STATUS
-
                     val statusLabel = statuses.entries
-
                         .firstOrNull { it.value == state.status }?.let { stringResource(it.key) } ?: state.status
-
                     RpcField(
-
                         value = statusLabel,
-
                         label = R.string.activity_status_online_idle_dnd,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
                         trailingIcon = {
-
                             Icon(
-
                                 imageVector = statusIcon,
-
                                 contentDescription = null,
-
                                 modifier = Modifier.clickable {
-
                                     onEvent(UiEvent.TriggerStatusDropDownMenu)
-
                                 })
-
-                        }) {
-
-                        onEvent(UiEvent.SetStatus(it))
-
-                    }
-
-                    DropdownMenu(
-
-                        expanded = state.statusIsExpanded, onDismissRequest = {
-
-                            onEvent(UiEvent.TriggerStatusDropDownMenu)
-
-                        }, modifier = Modifier.fillMaxWidth()
-
-                    ) {
-
-                        statuses.forEach { (label, value) ->
-
-                            DropdownMenuItem(
-
-                                text = {
-
-                                    Text(text = stringResource(label))
-
-                                },
-
-                                onClick = {
-
-                                    onEvent(UiEvent.SetStatus(value))
-
+                        },
+                        content = {
+                            DropdownMenu(
+                                expanded = state.statusIsExpanded,
+                                onDismissRequest = {
                                     onEvent(UiEvent.TriggerStatusDropDownMenu)
-
                                 },
-
-                            )
-
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                statuses.forEach { (label, value) ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = stringResource(label)) },
+                                        onClick = {
+                                            onEvent(UiEvent.SetStatus(value))
+                                            onEvent(UiEvent.TriggerStatusDropDownMenu)
+                                        },
+                                    )
+                                }
+                            }
                         }
-
+                    ) {
+                        onEvent(UiEvent.SetStatus(it))
                     }
-
                 }
 
                 // Large Image
@@ -1563,12 +823,15 @@ fun ManualRpcScreen(
                                 onDismiss = { openPickerDialog = false },
                                 showProgress = showProgress
                             ) { uri ->
+                                val file: File = context.uriToFile(uri) ?: return@ImagePicker
                                 showProgress = true
-                                onEvent(UiEvent.UploadImage(context.uriToFile(uri)) { result ->
-                                    showProgress = false
-                                    openPickerDialog = false
-                                    onEvent(UiEvent.SetLargeImage(result))
-                                })
+                                onEvent(
+                                    UiEvent.UploadImage(file) { result ->
+                                        showProgress = false
+                                        openPickerDialog = false
+                                        onEvent(UiEvent.SetLargeImage(result))
+                                    }
+                                )
                             }
                         }
                     ) {
@@ -1625,12 +888,15 @@ fun ManualRpcScreen(
                                 onDismiss = { openPickerDialog = false },
                                 showProgress = showProgress
                             ) { uri ->
+                                val file: File = context.uriToFile(uri) ?: return@ImagePicker
                                 showProgress = true
-                                onEvent(UiEvent.UploadImage(context.uriToFile(uri)) { result ->
-                                    showProgress = false
-                                    openPickerDialog = false
-                                    onEvent(UiEvent.SetSmallImage(result))
-                                })
+                                onEvent(
+                                    UiEvent.UploadImage(file) { result ->
+                                        showProgress = false
+                                        openPickerDialog = false
+                                        onEvent(UiEvent.SetSmallImage(result))
+                                    }
+                                )
                             }
                         }
                     ) {
@@ -1663,435 +929,223 @@ fun ManualRpcScreen(
                     }
                 }
 
-                // Large Text (hover text for large image)
                 item {
-
                     RpcField(
-
                         value = state.largeText,
-
                         label = R.string.activity_large_text,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                     ) {
-
                         onEvent(UiEvent.SetLargeText(it))
-
                     }
-
                 }
 
-                // Small Text (hover text for small image)
                 item {
-
                     RpcField(
-
                         value = state.smallText,
-
                         label = R.string.activity_small_text,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                     ) {
-
                         onEvent(UiEvent.SetSmallText(it))
-
                     }
-
                 }
 
-                // Stream URL (for type 1 / Streaming)
                 item {
-
                     RpcField(
-
                         value = state.streamUrl,
-
                         label = R.string.stream_url,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                     ) {
-
                         onEvent(UiEvent.SetStreamUrl(it))
-
                     }
-
                 }
 
-                // Details URL
                 item {
-
                     RpcField(
-
                         value = state.detailsUrl,
-
                         label = R.string.rpc_details_url,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                     ) {
-
                         onEvent(UiEvent.SetDetailsUrl(it))
-
                     }
-
                 }
 
-                // State URL
                 item {
-
                     RpcField(
-
                         value = state.stateUrl,
-
                         label = R.string.rpc_state_url,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                     ) {
-
                         onEvent(UiEvent.SetStateUrl(it))
-
                     }
-
                 }
 
-                // Large URL (clickable link on large image)
                 item {
-
                     RpcField(
-
                         value = state.largeUrl,
-
                         label = R.string.rpc_large_url,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                     ) {
-
                         onEvent(UiEvent.SetLargeUrl(it))
-
                     }
-
                 }
 
-                // Small URL (clickable link on small image)
                 item {
-
                     RpcField(
-
                         value = state.smallUrl,
-
                         label = R.string.rpc_small_url,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-
                     ) {
-
                         onEvent(UiEvent.SetSmallUrl(it))
-
                     }
-
                 }
 
-                // Party Current Size
                 item {
-
                     RpcField(
-
                         value = state.partyCurrentSize,
-
                         label = R.string.party_current,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
                     ) {
-
                         onEvent(UiEvent.SetPartyCurrentSize(it))
-
                     }
-
                 }
 
-                // Party Max Size
                 item {
-
                     RpcField(
-
                         value = state.partyMaxSize,
-
                         label = R.string.party_max,
-
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
                     ) {
-
                         onEvent(UiEvent.SetPartyMaxSize(it))
-
                     }
-
                 }
-
-
 
                 item {
-
                     Column(
-
                         modifier = Modifier
-
                             .padding(horizontal = 16.dp, vertical = 8.dp)
-
                             .fillMaxWidth(),
-
                         horizontalAlignment = Alignment.Start,
-
                         verticalArrangement = Arrangement.spacedBy(12.dp)
-
                     ) {
-
                         Icon(
-
                             imageVector = Icons.Outlined.Info,
-
                             contentDescription = null,
-
                         )
-
                         Text(
-
                             text = stringResource(R.string.rpc_templates_note),
-
                             style = MaterialTheme.typography.bodySmall,
-
                             fontWeight = FontWeight.Light,
-
                         )
-
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }
-
-
 
 @Preview(name = "ManualRpcScreen (Light)")
-
 @Composable
-
 fun ManualRpcScreenLightPreview() {
-
     val uiState = UiState(
-
         isLoading = false,
-
         error = null,
-
         isAppsRpcPartEnabled = true,
-
         isMediaRpcPartEnabled = true,
-
         templateName = "Media Playback",
-
         templateDetails = "Playing Spotify",
-
         templateState = "Artist - Song Title",
-
         showCoverArt = true,
-
         showAppIcon = true,
-
         showPlaybackState = true,
-
         enableTimestamps = true,
-
         hideOnPause = false,
-
         platform = "desktop",
-
         platformIsExpanded = false,
-
         buttonsEnabled = true,
-
         button1Text = "Play / Pause",
-
         button1Url = "https://spotify.com",
-
         button2Text = "Next Track",
-
         button2Url = "https://spotify.com",
-
         useCustomAppId = false,
-
         applicationId = "",
-
         timestampMode = "default",
-
         timestampModeExpanded = false,
-
         customTimestampStart = "",
-
         customTimestampEnd = "",
-
         showSongAsTitle = false,
-
         titleSource = "title",
-
         titleSourceExpanded = false,
-
-        // Advanced settings
         activityType = "",
-
         status = "online",
-
         largeImage = "",
-
         smallImage = "",
-
         largeText = "",
-
         smallText = "",
-
         streamUrl = "",
-
         partyCurrentSize = "",
-
         partyMaxSize = "",
-
         activityTypeIsExpanded = false,
-
         statusIsExpanded = false,
-
     )
-
     ManualRpcScreen(
-
         onBackPressed = {},
-
         state = uiState,
-
         hasUsageAccess = true,
-
         hasNotificationAccess = true,
-
         navigateToAppSelection = {},
-
         onEvent = {},
-
     )
-
 }
 
-
-
 @Preview(name = "ManualRpcScreen (Dark)")
-
 @Composable
-
 fun ManualRpcScreenDarkPreview() {
-
     val uiState = UiState(
-
         isLoading = false,
-
         error = null,
-
         isAppsRpcPartEnabled = true,
-
         isMediaRpcPartEnabled = true,
-
         templateName = "Media Playback",
-
         templateDetails = "Playing Spotify",
-
         templateState = "Artist - Song Title",
-
         showCoverArt = true,
-
         showAppIcon = true,
-
         showPlaybackState = true,
-
         enableTimestamps = true,
-
         hideOnPause = false,
-
         platform = "desktop",
-
         platformIsExpanded = false,
-
         buttonsEnabled = true,
-
         button1Text = "Play / Pause",
-
         button1Url = "https://spotify.com",
-
         button2Text = "Next Track",
-
         button2Url = "https://spotify.com",
-
         useCustomAppId = false,
-
         applicationId = "",
-
         timestampMode = "default",
-
         timestampModeExpanded = false,
-
         customTimestampStart = "",
-
         customTimestampEnd = "",
-
         showSongAsTitle = false,
-
         titleSource = "title",
-
         titleSourceExpanded = false,
-
-        // Advanced settings
         activityType = "",
-
         status = "online",
-
         largeImage = "",
-
         smallImage = "",
-
         largeText = "",
-
         smallText = "",
-
         streamUrl = "",
-
         partyCurrentSize = "",
-
         partyMaxSize = "",
-
         activityTypeIsExpanded = false,
-
         statusIsExpanded = false,
-
     )
-
     KizzyTheme(
-
         darkTheme = true,
-
         isHighContrastModeEnabled = false,
-
         isDynamicColorEnabled = false,
-
     ) {
-
         ManualRpcScreen(
             onBackPressed = {},
             state = uiState,
@@ -2112,7 +1166,3 @@ private fun coverArtPreviewUrl(url: String?): String? {
         else -> withoutMp
     }
 }
-
-
-
-

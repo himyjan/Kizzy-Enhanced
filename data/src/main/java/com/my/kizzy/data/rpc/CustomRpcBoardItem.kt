@@ -1,26 +1,10 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * CustomRpcBoardItem.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.data.rpc
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * A custom Discord RPC board that the user can define and activate.
- *
- * Boards are stored in DataStore as a JSON list. One board can be active at a
- * time; when active, its fields override the normal Custom RPC presence for
- * slot "2".
+ * User-defined custom Discord RPC preset board stored in DataStore.
  */
 @Serializable
 data class CustomRpcBoardItem(
@@ -63,5 +47,5 @@ data class CustomRpcBoardItem(
     @SerialName("sortOrder")
     val sortOrder: Int = 0,
     @SerialName("createdAt")
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = 0L,
 )

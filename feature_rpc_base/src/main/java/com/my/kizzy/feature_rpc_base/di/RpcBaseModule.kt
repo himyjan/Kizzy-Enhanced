@@ -32,25 +32,23 @@ object RpcBaseModule {
 
     @Provides
     fun providesComponentName(
-        @ApplicationContext context: Context
-    ) = ComponentName(context, NotificationListener::class.java)
+        @ApplicationContext context: Context,
+    ): ComponentName = ComponentName(context, NotificationListener::class.java)
 
     @Provides
     fun providesNotificationManager(
-        @ApplicationContext context: Context
-    ): NotificationManager {
-        return context.getSystemService(NotificationManager::class.java)
-    }
+        @ApplicationContext context: Context,
+    ): NotificationManager = context.getSystemService(NotificationManager::class.java)
 
     @Provides
     fun providesNotificationBuilder(
         @ApplicationContext context: Context,
-        notificationManager: NotificationManager
+        notificationManager: NotificationManager,
     ): Notification.Builder {
         val channel = NotificationChannel(
             Constants.CHANNEL_ID,
             Constants.CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_LOW
+            NotificationManager.IMPORTANCE_LOW,
         ).apply {
             description = Constants.CHANNEL_DESCRIPTION
             setShowBadge(false)

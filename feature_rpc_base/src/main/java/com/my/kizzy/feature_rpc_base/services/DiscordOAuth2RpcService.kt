@@ -2,10 +2,10 @@
  *
  *  ******************************************************************
  *  *  * Copyright (C) 2022
- *  *  *  * DiscordOAuth2RpcService.kt is part of Kizzy
- *  *  *  *  and can not be copied and/or distributed without the express
- *  *  *  * permission of yzziK(Vaibhav)
- *  *  *  ******************************************************************
+ *  *  * DiscordOAuth2RpcService.kt is part of Kizzy
+ *  *  *  and can not be copied and/or distributed without the express
+ *  *  * permission of yzziK(Vaibhav)
+ *  *  *****************************************************************
  *
  *
  */
@@ -24,14 +24,16 @@ import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch // <-- Added missing import for launch extension
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * Discord OAuth2 RPC Service.
  *
- * Uses Discord OAuth2 token (obtained via OAuth2 authorization flow) instead of
- * a bot token to identify with the Discord Gateway. This allows users to show
- * their own Discord account as the RPC source instead of the Kizzy bot.
+ * Uses Discord OAuth2 token (obtained via OAuth2 authorization flow) to identify
+ * with the Discord Gateway on session slot "5".
  */
 @AndroidEntryPoint
 class DiscordOAuth2RpcService : Service() {
@@ -54,26 +56,32 @@ class DiscordOAuth2RpcService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand")
-        // Wire OAuth2 RPC to slot "1" (default application token)
         kizzyRPC = multiRpc.session("5")
         Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.DiscordOAuth2Rpc.name
 
-        // Refresh the gateway token and identify properties from prefs.
-        // Also send presence so Discord shows this account as online.
-        // Unlike build() which sends an empty presence, updateRPC() reuses the
-        // existing presence object which may already contain user data.
         scope.launch {
             kizzyRPC?.refreshFromPrefs()
         }
 
-        return Service.START_STICKY
+        return START_STICKY
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         Log.d(TAG, "onDestroy")
+        val rpc = kizzyRPC
+        kizzyRPC = null
+        scope.cancel()
         AppUtils.unregisterRpcService(this)
-        kizzyRPC?.closeRPC()
+        if (rpc != null) {
+            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                try {
+                    rpc.clearPresence()
+                } catch (_: Exception) {
+                }
+                rpc.closeRPC()
+            }
+        }
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

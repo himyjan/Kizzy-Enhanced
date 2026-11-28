@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.my.kizzy.preference.Prefs
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,6 +33,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.milliseconds
 
 private val Context.leaderboardStoreDataStore: DataStore<Preferences> by preferencesDataStore(
@@ -50,7 +52,11 @@ class DiscordLeaderboardManager private constructor(
         ignoreUnknownKeys = true
     }
 
-    private val client = OkHttpClient.Builder().build()
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
+        .build()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var periodicJob: Job? = null
 
@@ -114,7 +120,6 @@ class DiscordLeaderboardManager private constructor(
                         return
                     }
                     429 -> {
-                        // Discord returns retry_after in seconds (float), convert to ms
                         val retryAfterMs = try {
                             val retrySeconds = serializer.decodeFromString<JsonObject>(body)["retry_after"]
                                 ?.jsonPrimitive
@@ -132,6 +137,8 @@ class DiscordLeaderboardManager private constructor(
                         return
                     }
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 logger.error("Leaderboard update failed (attempt $attempt/$maxAttempts): ${e.message}")
                 if (attempt < maxAttempts) {
@@ -187,6 +194,8 @@ class DiscordLeaderboardManager private constructor(
                     if (entries.isNotEmpty()) {
                         updateLeaderboard(entries)
                     }
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (e: Exception) {
                     logger.error("Periodic update failed: ${e.message}")
                 }

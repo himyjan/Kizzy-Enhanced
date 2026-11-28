@@ -11,14 +11,20 @@ import android.media.session.PlaybackState
 import android.net.Uri
 import android.os.SystemClock
 import com.my.kizzy.data.rpc.ActivityTypeResolver
+import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.data.rpc.Timestamps
+import com.my.kizzy.data.rpc.YouTubeResolver
 import com.my.kizzy.data.utils.toRpcImage
 import com.my.kizzy.domain.interfaces.Logger
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 
+/**
+ * Resolves a [RichMediaMetadata] snapshot for the highest-priority active media session
+ * enabled in either the Experimental/Manual RPC list or the Media RPC list.
+ */
 class GetCurrentPlayingMediaAll @Inject constructor(
     private val metadataResolver: MetadataResolver,
     private val componentName: ComponentName,
@@ -48,12 +54,11 @@ class GetCurrentPlayingMediaAll @Inject constructor(
     }
 
     /**
-     * The media that is playing right now.
+     * Resolves the currently playing media session into a [RichMediaMetadata] model.
      *
-     * It is a suspending function because the link of the track and of the
-     * artist are resolved, which may need a network call.
+     * Suspending because resolving direct track/artist URLs may perform network lookups.
      */
-    suspend operator fun invoke(): RichMediaMetadata {
+    suspend operator fun invoke(instanceId: String? = null): RichMediaMetadata {
         val mediaSessionManager =
             context.getSystemService(Service.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val sessions: List<android.media.session.MediaController> = try {
@@ -67,147 +72,216 @@ class GetCurrentPlayingMediaAll @Inject constructor(
         val skipped = mutableListOf<String>()
 
         for (mediaController in sorted) {
-            // Respect the app selections. The Manual RPC list is the explicit
-            // user selection; the Media RPC list allows every app until the user edits it.
-            // An app is broadcast when it is enabled in EITHER list.
-            val isEnabled = Prefs.isExperimentalAppEnabled(mediaController.packageName) ||
-                Prefs.isMediaAppEnabled(mediaController.packageName)
+            val pkg = mediaController.packageName
+
+            val isEnabled = Prefs.isExperimentalAppEnabled(pkg) ||
+                    Prefs.isMediaAppEnabled(pkg)
             if (!isEnabled) {
-                logger.d("MediaRPC", "Skipping session ${mediaController.packageName}: app not enabled for media RPC")
-                skipped += "${mediaController.packageName} (app not enabled for media RPC)"
+                logger.d("MediaRPC", "Skipping session $pkg: app not enabled for media RPC")
+                skipped += "$pkg (app not enabled for media RPC)"
                 continue
             }
 
+            // Bind non-null metadata up front so Kotlin smart-casts `metadata` to `MediaMetadata`.
             val metadata = mediaController.metadata
-            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()?.takeIf { it.isNotEmpty() }
+            if (metadata == null) {
+                logger.d("MediaRPC", "Skipping session $pkg: no metadata object")
+                skipped += "$pkg (session has no metadata)"
+                continue
+            }
+
+            val title = runCatching {
+                metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()?.takeIf { it.isNotEmpty() }
+            }.getOrNull()
 
             if (title == null) {
-                logger.d("MediaRPC", "Skipping session ${mediaController.packageName}: session has no title metadata")
-                skipped += "${mediaController.packageName} (session has no title metadata)"
+                logger.d("MediaRPC", "Skipping session $pkg: session has no title metadata")
+                skipped += "$pkg (session has no title metadata)"
                 continue
             }
-            val appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(mediaController.packageName, 0)).toString()
-                .takeIf { it.isNotBlank() }
-                ?: ActivityTypeResolver.knownAppName(mediaController.packageName)
-                ?: mediaController.packageName
-            val author = metadata.let { metadataResolver.formatArtists(it) }
-            val album = metadata.let { metadataResolver.getAlbum(it) }
+
+            val appName = runCatching {
+                context.packageManager.getApplicationLabel(
+                    context.packageManager.getApplicationInfo(pkg, 0)
+                ).toString()
+            }.getOrNull()
+                ?.takeIf { it.isNotBlank() }
+                ?: ActivityTypeResolver.knownAppName(pkg)
+                ?: pkg
+
+            val author = metadataResolver.formatArtists(metadata)
+            val album = metadataResolver.getAlbum(metadata)
+
+            val artistEnabled = Prefs[Prefs.MEDIA_RPC_ARTIST_NAME, true]
+            val albumEnabled = Prefs[Prefs.MEDIA_RPC_ALBUM_NAME, true]
+            val showCoverArt = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true]
 
             val stateParts = buildList {
-                author.takeIf { it.isNotBlank() }?.let { add(it) }
-                metadata.let { metadataResolver.getAudioChannels(it) }?.takeIf { it.isNotBlank() }?.let { add(it) }
+                if (artistEnabled) author.takeIf { it.isNotBlank() }?.let { add(it) }
+                metadataResolver.getAudioChannels(metadata)?.takeIf { it.isNotBlank() }?.let { add(it) }
             }
             val state = stateParts.joinToString(" · ").takeIf { it.isNotEmpty() }
 
-            val duration = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
+            val duration = runCatching {
+                metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
+            }.getOrDefault(0L)
             val position = mediaController.playbackState?.position?.coerceAtLeast(0L) ?: 0L
             val playbackState = mediaController.playbackState?.state
 
+            // Keep timeline timestamps consistent with GetCurrentPlayingMedia across
+            // active, buffering, and paused sessions so Discord progress bars render reliably.
             var timestamps: Timestamps? = null
-            if (playbackState == PlaybackState.STATE_PLAYING) {
-                val durationForTs = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
-                var positionForTs = position
+            if (duration > 0L) {
+                var extrapolated = position
                 val lastUpdate = mediaController.playbackState?.lastPositionUpdateTime ?: 0L
-                if (lastUpdate > 0L) {
+                if (isPlaybackActive(playbackState) && lastUpdate > 0L) {
                     val sinceUpdate = SystemClock.elapsedRealtime() - lastUpdate
                     val speed = mediaController.playbackState?.playbackSpeed?.takeIf { it > 0f } ?: 1f
-                    positionForTs = (positionForTs + (sinceUpdate * speed).toLong()).coerceAtLeast(0L)
+                    extrapolated = (extrapolated + (sinceUpdate * speed).toLong()).coerceAtLeast(0L)
                 }
-                if (durationForTs > 0L) positionForTs = positionForTs.coerceAtMost(durationForTs)
+                extrapolated = extrapolated.coerceAtMost(duration)
                 val now = System.currentTimeMillis()
-                val start = now - positionForTs
-                timestamps = if (durationForTs > 0L) Timestamps(start = start, end = start + durationForTs)
-                else Timestamps(start = start)
+                val start = now - extrapolated
+                timestamps = Timestamps(start = start, end = start + duration)
+            } else if (position > 0L) {
+                val now = System.currentTimeMillis()
+                timestamps = Timestamps(start = now - position)
             }
 
-            val appIcon = RpcImage.ApplicationIcon(mediaController.packageName, context)
+            val appIcon = RpcImage.ApplicationIcon(pkg, context)
 
             var coverArt: RpcImage? = null
             var coverBitmap: Bitmap? = null
-            // Try the artwork URI first: it points to the actual album art file
-            // (content://... or https://...), which is more reliable than the
-            // embedded bitmap that may be the app icon (e.g. Spotify's logo)
-            // instead of the album art.
-            val artworkUri = metadata.let { metadataResolver.getArtworkUri(it) }
-            if (artworkUri != null) {
-                val parsedUri = Uri.parse(artworkUri)
-                if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
-                    val bmp = runCatching {
-                        context.contentResolver.openInputStream(parsedUri)?.use { BitmapFactory.decodeStream(it) }
-                    }.getOrNull()
+            if (showCoverArt) {
+                val artworkUri = metadataResolver.getArtworkUri(metadata)
+                if (artworkUri != null) {
+                    val parsedUri = Uri.parse(artworkUri)
+                    if (parsedUri.scheme in listOf("content", "file", "android.resource")) {
+                        val bmp = runCatching {
+                            context.contentResolver.openInputStream(parsedUri)?.use { BitmapFactory.decodeStream(it) }
+                        }.getOrNull()
+                        if (bmp != null) {
+                            coverBitmap = bmp
+                            coverArt = RpcImage.BitmapImage(
+                                context = context,
+                                bitmap = bmp,
+                                packageName = pkg,
+                                title = "${metadataResolver.getAlbumArtists(metadata)}|${album ?: "unknown"}|$title"
+                            )
+                            logger.d("MediaImage", "'$title': coverBitmap=bitmap, chosenCover=BitmapImage(decoded from artworkUri=$artworkUri)")
+                        } else {
+                            coverArt = artworkUri.toRpcImage()
+                            logger.d("MediaImage", "'$title': coverBitmap=null, artworkUri=$artworkUri, chosenCover=ImageUrl")
+                        }
+                    } else {
+                        coverArt = artworkUri.toRpcImage()
+                        logger.d("MediaImage", "'$title': coverBitmap=null, artworkUri=$artworkUri, chosenCover=ImageUrl")
+                    }
+                } else {
+                    val bmp = metadataResolver.getCoverArt(metadata)
+                    coverBitmap = bmp
                     if (bmp != null) {
-                        coverBitmap = bmp
                         coverArt = RpcImage.BitmapImage(
                             context = context,
                             bitmap = bmp,
-                            packageName = mediaController.packageName,
-                            title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title}"
+                            packageName = pkg,
+                            title = "${metadataResolver.getAlbumArtists(metadata)}|${album ?: "unknown"}|$title"
                         )
-                        logger.d("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(decoded from artworkUri=$artworkUri)")
+                        logger.i("MediaImage", "'$title': coverBitmap=bitmap, chosenCover=BitmapImage(from embedded bitmap)")
                     } else {
-                        coverArt = artworkUri.toRpcImage()
-                        logger.d("MediaImage", "YT '$title': coverBitmap=null, artworkUri=$artworkUri, chosenCover=ImageUrl")
+                        logger.d("MediaImage", "'$title': coverBitmap=null, chosenCover=null")
                     }
-                } else {
-                    coverArt = artworkUri.toRpcImage()
-                    logger.d("MediaImage", "YT '$title': coverBitmap=null, artworkUri=$artworkUri, chosenCover=ImageUrl")
-                }
-            } else {
-                // Fall back to the embedded bitmap (ALBUM_ART / ART only, not DISPLAY_ICON)
-                val bmp = metadata.let { metadataResolver.getCoverArt(it) }
-                coverBitmap = bmp
-                if (bmp != null) {
-                    coverArt = RpcImage.BitmapImage(
-                        context = context,
-                        bitmap = bmp,
-                        packageName = mediaController.packageName,
-                        title = "${metadata.let { metadataResolver.getAlbumArtists(it) }}|${metadata.let { metadataResolver.getAlbum(it) }?: "unknown"}|${title}"
-                    )
-                    logger.i("MediaImage", "YT '$title': coverBitmap=bitmap, chosenCover=BitmapImage(from embedded bitmap)")
-                } else {
-                    logger.d("MediaImage", "YT '$title': coverBitmap=null, chosenCover=null")
                 }
             }
 
-            logger.d("MediaRPC", "Session package=${mediaController.packageName} title='$title' artist=$author album=$album playbackState=$playbackState coverBitmap=${coverBitmap != null}")
+            logger.d(
+                "MediaRPC",
+                "Session package=$pkg title='$title' artist=$author album=$album playbackState=$playbackState coverBitmap=${coverBitmap != null}"
+            )
 
             val playbackStateIcon = getPlaybackStateIcon(playbackState ?: PlaybackState.STATE_PAUSED)
 
-            // Get media URL for details_url and large_url
-            val mediaUrl = metadata.let { metadataResolver.getMediaUrl(it, mediaController.packageName) }
-                ?: metadataResolver.getDirectMediaUrl(metadata, mediaController.packageName)
+            val channelIconKey = Prefs.scopedKey(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, instanceId)
+            val appIconKey = Prefs.scopedKey(Prefs.MEDIA_RPC_APP_ICON, instanceId)
+            val playbackIconKey = Prefs.scopedKey(Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE, instanceId)
+            val showChannelIcon = Prefs[channelIconKey, false]
+            val showAppIconSmall = Prefs[appIconKey, false]
+            val showPlaybackIconSmall = Prefs[playbackIconKey, false]
 
-            // Get artist/channel URL for state_url
-            val artistUrl = metadata.let { metadataResolver.getArtistUrl(it, mediaController.packageName) }
+            val channelAvatarUrl = if (showChannelIcon && MediaServiceResolver.isYouTube(pkg)) {
+                metadataResolver.getChannelAvatarUrl(metadata, pkg)
+            } else null
 
-            // Album / playlist / channel URLs for the link fallback chains.
-            val albumUrl = metadata.let { metadataResolver.getAlbumUrl(it, mediaController.packageName) }
-            val playlistUrl = metadata.let { metadataResolver.getPlaylistUrl(it, mediaController.packageName) }
+            val smallImageRpc: RpcImage? = when {
+                channelAvatarUrl != null -> RpcImage.ExternalImage(channelAvatarUrl)
+                showAppIconSmall -> appIcon
+                showPlaybackIconSmall -> playbackStateIcon
+                else -> null
+            }
+            val smallTextRpc: String? = when {
+                channelAvatarUrl != null -> author.takeIf { it.isNotBlank() }
+                showAppIconSmall -> appName
+                else -> null
+            }
+
+            // Resolve direct YouTube video/channel/playlist links before generic/search fallbacks.
+            val mediaUrl = metadataResolver.getDirectMediaUrl(metadata, pkg)
+                ?: metadataResolver.getMediaUrl(metadata, pkg)
+
+            val detailsUrl = mediaUrl
+                ?: MediaServiceResolver.mediaSearchUrl(pkg, title)
+                ?: MediaServiceResolver.browserSearchUrl(title)
+
+            val artistUrl = metadataResolver.getArtistUrl(metadata, pkg)
+                ?: MediaServiceResolver.artistUrl(pkg, author)
+
+            val smallImageChannelUrl = if (channelAvatarUrl != null) {
+                artistUrl.takeIf { YouTubeResolver.isYoutubeFamilyUrl(it) }
+            } else null
+
+            val albumUrl = metadataResolver.getAlbumUrl(metadata, pkg)
+            val playlistUrl = metadataResolver.getPlaylistUrl(metadata, pkg)
             val channelUrl = artistUrl
+
+            val albumText = album?.takeIf { it.isNotBlank() }
+            val playlistName = metadataResolver.getPlaylistName(metadata)
+            val largeTextIsPlaylist = albumText == null && !playlistName.isNullOrBlank()
+            val largeTextValue = when {
+                albumText != null -> albumText.takeIf { albumEnabled }
+                else -> playlistName
+            }
 
             return RichMediaMetadata(
                 appName = appName,
-                packageName = mediaController.packageName,
+                packageName = pkg,
                 title = title,
                 artist = author,
                 state = state,
                 album = album,
-                playlistName = metadata.let { metadataResolver.getPlaylistName(it) },
+                playlistName = playlistName,
+                largeText = largeTextValue,
+                largeTextIsPlaylist = largeTextIsPlaylist,
                 coverArt = coverArt,
                 appIcon = appIcon,
                 playbackStateIcon = playbackStateIcon,
+                smallImage = smallImageRpc,
+                smallText = smallTextRpc,
+                smallImageChannelUrl = smallImageChannelUrl,
                 playbackState = playbackState,
                 duration = duration,
                 position = position,
-                isMusicMetadata = album != null || !author.isNullOrBlank(),
+                isMusicMetadata = album != null || author.isNotBlank(),
                 timestamps = timestamps,
-                audioChannels = metadata.let { metadataResolver.getAudioChannels(it) },
-                allArtists = metadata.let { metadataResolver.getAllArtists(it) },
+                audioChannels = metadataResolver.getAudioChannels(metadata),
+                allArtists = metadataResolver.getAllArtists(metadata),
                 mediaUrl = mediaUrl,
+                detailsUrl = detailsUrl,
+                stateUrl = artistUrl,
                 artistUrl = artistUrl,
                 albumUrl = albumUrl,
                 playlistUrl = playlistUrl,
                 channelUrl = channelUrl,
+                statusDisplayType = null,
             )
         }
         logger.i("MediaRPC", "No media presence built. Sessions seen: ${skipped.joinToString(", ")}")

@@ -11,22 +11,13 @@ import jakarta.inject.Inject
 
 /**
  * Dynamically detects AI/LLM applications and games on the device without hardcoded package lists.
- *
- * AI detection strategies:
- *   1. Semantic keyword matching on the app label (catches ChatGPT, Gemini, Grok, Claude, Perplexity, Copilot, etc.)
- *   2. Android RoleManager for the default assistant (catches power-button / "Hey Google" triggers)
- *
- * Game detection strategy:
- *   1. ApplicationInfo.FLAG_IS_GAME / CATEGORY_GAME (catches all Android-flagged games across Samsung,
- *      Xiaomi, Google Play Games, OnePlus, etc.)
- *
- * Zero maintenance required — new AI apps and games are detected automatically.
  */
 class DynamicActivityDetectionEngine @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
     private val packageManager: PackageManager = context.packageManager
+    private val labelCache = HashMap<String, String>()
 
     /** Semantic keywords found in AI app names, developer names, or descriptions. */
     private val aiSemanticKeywords = listOf(
@@ -35,30 +26,24 @@ class DynamicActivityDetectionEngine @Inject constructor(
         "openai", "x.ai", "bard"
     )
 
-    // ============================================================================
-    // AI Detection
-    // ============================================================================
+    private fun getCachedLabel(packageName: String, appInfo: ApplicationInfo): String {
+        return labelCache[packageName] ?: run {
+            val label = packageManager.getApplicationLabel(appInfo).toString()
+            labelCache[packageName] = label
+            label
+        }
+    }
 
-    /**
-     * Identifies whether [packageName] is an AI application.
-     * Returns null if not an AI app, otherwise returns [DetectedAiApp] with display info.
-     */
     fun identifyAiApp(packageName: String): DetectedAiApp? {
         return try {
             val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-            val appLabel = packageManager.getApplicationLabel(appInfo).toString()
+            val appLabel = getCachedLabel(packageName, appInfo)
             val appLabelLower = appLabel.lowercase()
 
-            // 1. Semantic Matcher: catches 99% of AI apps by title signature
+            // Require semantic AI match so non-AI productivity or undefined-category apps are not misclassified.
             val isSemanticMatch = aiSemanticKeywords.any { appLabelLower.contains(it) }
 
-            // 2. Platform Category Matcher: productivity/tools category hint
-            val isTargetCategory = if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
-                appInfo.category == ApplicationInfo.CATEGORY_PRODUCTIVITY ||
-                        appInfo.category == ApplicationInfo.CATEGORY_UNDEFINED
-            } else false
-
-            if (isSemanticMatch || isTargetCategory) {
+            if (isSemanticMatch) {
                 DetectedAiApp(
                     displayName = appLabel,
                     packageName = packageName,
@@ -67,18 +52,14 @@ class DynamicActivityDetectionEngine @Inject constructor(
             } else {
                 null
             }
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
+            labelCache.remove(packageName)
             null
         }
     }
 
-    /**
-     * Queries the Android system for the currently active default assistant package.
-     * This catches power-button / "Hey Google" assistant triggers that launch as
-     * floating overlays rather than full-screen foreground activities.
-     */
     fun getActiveAssistantPackage(): String? {
-        return if (Build.VERSION_CODES.Q <= Build.VERSION.SDK_INT) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             try {
                 val roleManager = context.getSystemService(Context.ROLE_SERVICE) as RoleManager
                 if (roleManager.isRoleHeld(RoleManager.ROLE_ASSISTANT)) {
@@ -96,40 +77,22 @@ class DynamicActivityDetectionEngine @Inject constructor(
         }
     }
 
-    /**
-     * Checks whether the currently active assistant (power-button trigger) is an AI app.
-     */
     fun isAiAssistantActive(): Boolean {
         val assistantPkg = getActiveAssistantPackage() ?: return false
         return identifyAiApp(assistantPkg) != null
     }
 
-    // ============================================================================
-    // Game Detection
-    // ============================================================================
-
-    /**
-     * Identifies whether [packageName] is a game using Android's system game flags.
-     * Works on all manufacturers (Samsung Game Hub, Xiaomi Game Turbo, Google Play Games,
-     * OnePlus Games, etc.) because they all set FLAG_IS_GAME / CATEGORY_GAME.
-     *
-     * Returns null if not a game, otherwise returns [DetectedGameApp] with display info.
-     */
     fun identifyGame(packageName: String): DetectedGameApp? {
         return try {
             val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-            val appLabel = packageManager.getApplicationLabel(appInfo).toString()
+            val appLabel = getCachedLabel(packageName, appInfo)
 
-            // 1. CATEGORY_GAME — explicit category hint
-            val isGameCategory = if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
+            val isGameCategory = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 appInfo.category == ApplicationInfo.CATEGORY_GAME
             } else false
 
-            // 2. FLAG_IS_GAME — set by Samsung Game Hub, Xiaomi Game Turbo,
-            //    Google Play Games, OnePlus Games, and many individual games
-            //    that do not set CATEGORY_GAME.
             @Suppress("DEPRECATION")
-            val isGameFlag = if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
+            val isGameFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 (appInfo.flags and ApplicationInfo.FLAG_IS_GAME) != 0
             } else false
 
@@ -142,29 +105,23 @@ class DynamicActivityDetectionEngine @Inject constructor(
             } else {
                 null
             }
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
+            labelCache.remove(packageName)
             null
         }
     }
 
-    /**
-     * Checks whether the currently active foreground app is a game.
-     * Call this alongside [identifyAiApp] — games and AI apps are mutually exclusive
-     * categories, so check game first.
-     */
     fun isCurrentAppAGame(packageName: String): Boolean {
         return identifyGame(packageName) != null
     }
 }
 
-/** Result of AI app detection. */
 data class DetectedAiApp(
     val displayName: String,
     val packageName: String,
     val iconUrl: String
 )
 
-/** Result of game detection. */
 data class DetectedGameApp(
     val displayName: String,
     val packageName: String,

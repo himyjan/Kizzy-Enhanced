@@ -17,7 +17,12 @@ import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import jakarta.inject.Inject
 import java.io.File
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
+/**
+ * Ktor client wrapper for Kizzy's backend endpoints, GitHub releases, and game catalog API.
+ */
 class ApiService @Inject constructor(
     private val client: HttpClient,
     @Base private val baseUrl: String,
@@ -32,21 +37,24 @@ class ApiService @Inject constructor(
     }
 
     suspend fun uploadImage(file: File) = runCatching {
+        val bytes = file.readBytes()
         client.post {
             url("$baseUrl/upload")
-            setBody(MultiPartFormDataContent(
-                formData {
-                    // The field name must be exactly "temp". It used to be sent as
-                    // "\"temp\"" (with the quotes as part of the name), which the
-                    // worker rejected with "No image file uploaded" - so EVERY
-                    // cover art / app icon upload failed and Discord never got an
-                    // image for the presence.
-                    append("temp", file.readBytes(), Headers.build {
-                        append(HttpHeaders.ContentType, "image/*")
-                        append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
-                    })
-                }
-            ))
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        // Field name must remain "temp" (unquoted) so the upload worker accepts it.
+                        append(
+                            "temp",
+                            bytes,
+                            Headers.build {
+                                append(HttpHeaders.ContentType, "image/*")
+                                append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                            }
+                        )
+                    }
+                )
+            )
         }
     }
 
@@ -57,8 +65,9 @@ class ApiService @Inject constructor(
     }
 
     suspend fun getUser(userid: String) = runCatching {
+        val encodedId = URLEncoder.encode(userid.trim(), StandardCharsets.UTF_8.toString())
         client.get {
-            url("$baseUrl/user/$userid")
+            url("$baseUrl/user/$encodedId")
         }
     }
 

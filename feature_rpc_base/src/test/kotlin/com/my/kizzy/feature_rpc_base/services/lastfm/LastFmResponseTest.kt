@@ -8,7 +8,7 @@ class LastFmResponseTest {
 
     @Test
     fun `decodes session from Last fm response envelope`() {
-        val session = LastFM.decodeSessionResponse(
+        val session = LastFMandLibreFM.decodeSessionResponse(
             """{"session":{"name":"listener","key":"session-key","subscriber":1}}"""
         )
 
@@ -20,7 +20,7 @@ class LastFmResponseTest {
     @Test
     fun `reports Last fm API errors in successful HTTP response`() {
         try {
-            LastFM.decodeSessionResponse("""{"error":9,"message":"Invalid session key"}""")
+            LastFMandLibreFM.decodeSessionResponse("""{"error":9,"message":"Invalid session key"}""")
             fail("Expected Last.fm API error")
         } catch (error: LastFmException) {
             assertEquals(9, error.code)
@@ -30,15 +30,15 @@ class LastFmResponseTest {
 
     @Test
     fun `uses independent Last fm compatible sessions and API endpoints`() {
-        LastFM.sessionKey = "lastfm-session"
-        LibreFM.sessionKey = "librefm-session"
+        LastFMandLibreFM.sessionKey = "lastfm-session"
+        LibreFMandLibreFM.sessionKey = "librefm-session"
 
-        assertEquals("https://ws.audioscrobbler.com/2.0/", LastFM.API_BASE_URL)
-        assertEquals("https://libre.fm/2.0/", LibreFM.API_BASE_URL)
-        assertEquals("lastfm-session", LastFM.sessionKey)
-        assertEquals("librefm-session", LibreFM.sessionKey)
+        assertEquals("https://ws.audioscrobbler.com/2.0/", LastFMandLibreFM.API_BASE_URL)
+        assertEquals("https://libre.fm/2.0/", LibreFMandLibreFM.API_BASE_URL)
+        assertEquals("lastfm-session", LastFMandLibreFM.sessionKey)
+        assertEquals("librefm-session", LibreFMandLibreFM.sessionKey)
 
-        LastFM.sessionKey = null
-        LibreFM.sessionKey = null
+        LastFMandLibreFM.sessionKey = null
+        LibreFMandLibreFM.sessionKey = null
     }
 }

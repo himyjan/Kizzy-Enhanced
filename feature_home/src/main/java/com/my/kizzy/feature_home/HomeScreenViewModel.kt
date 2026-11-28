@@ -2,7 +2,7 @@
  *
  *  ******************************************************************
  *  *  * Copyright (C) 2022
- *  *  * AboutScreenViewModel.kt is part of Kizzy
+ *  *  * HomeScreenViewModel.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
@@ -32,35 +32,33 @@ class HomeScreenViewModel @Inject constructor(
     private val checkForUpdateUseCase: CheckForUpdateUseCase
 ) : ViewModel() {
 
-    private val _aboutScreenState: MutableStateFlow<HomeScreenState> = MutableStateFlow(
+    private val _homeScreenState: MutableStateFlow<HomeScreenState> = MutableStateFlow(
         HomeScreenState.Loading
     )
-    val aboutScreenState: StateFlow<HomeScreenState> = _aboutScreenState
+    val homeScreenState: StateFlow<HomeScreenState> = _homeScreenState
 
-    // Triggers an asynchronous check for the latest release from the domain use case
     fun getLatestUpdate() {
         checkForUpdateUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _aboutScreenState.value =
+                    _homeScreenState.value =
                         HomeScreenState.LoadingCompleted(result.data ?: Release())
                 }
 
                 is Resource.Error -> {
-                    _aboutScreenState.value =
+                    _homeScreenState.value =
                         HomeScreenState.Error(result.message ?: "An unexpected error occurred")
                 }
 
                 is Resource.Loading -> {
-                    _aboutScreenState.value = HomeScreenState.Loading
+                    _homeScreenState.value = HomeScreenState.Loading
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    // Populates release state directly from cached preferences
     fun setReleaseFromPrefs(release: Release) {
-        _aboutScreenState.value = HomeScreenState.LoadingCompleted(release)
+        _homeScreenState.value = HomeScreenState.LoadingCompleted(release)
     }
 }
 

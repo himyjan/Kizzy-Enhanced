@@ -10,6 +10,7 @@ import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.google.android.material.color.DynamicColors
+import com.my.kizzy.data.rpc.DynamicActivityDetectionEngine
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.feature_logs.LoggerProvider
 import com.my.kizzy.feature_rpc_base.AppUtils
@@ -18,10 +19,15 @@ import com.my.kizzy.preference.PreferenceConfig
 import com.my.kizzy.preference.Prefs
 import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.system.exitProcess
-import kotlinx.coroutines.*
 
 @HiltAndroidApp
 class App : Application(), Configuration.Provider {
@@ -29,12 +35,15 @@ class App : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    @Inject
+    lateinit var dynamicActivityDetectionEngine: DynamicActivityDetectionEngine
+
     private val scope = CoroutineScope(
         SupervisorJob() +
-            CoroutineExceptionHandler { _, exception ->
-                Log.e("AppCoroutineScope", "Uncaught coroutine exception", exception)
-            } +
-            Dispatchers.Main.immediate
+                CoroutineExceptionHandler { _, exception ->
+                    Log.e("AppCoroutineScope", "Uncaught coroutine exception", exception)
+                } +
+                Dispatchers.Main.immediate
     )
 
     override val workManagerConfiguration: Configuration
@@ -45,8 +54,6 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        // StrictMode - catch main thread violations in debug builds (log only,
-        // no dialog to avoid interrupting the user during development)
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
@@ -62,15 +69,6 @@ class App : Application(), Configuration.Provider {
             )
         }
 
-        // Initialize components with error handling to prevent startup crashes
-        // on emulators and OEM devices with restricted background access
-
-        // 0. Compose stack traces.
-        //
-        // Without them a crash inside a composable only shows "somewhere in the
-        // composition", which makes the crash reports useless. The debug build
-        // shows the source information of the composables, the release build
-        // keeps only the group keys so the source information is not leaked.
         try {
             Composer.setDiagnosticStackTraceMode(
                 if (BuildConfig.DEBUG) {
@@ -79,67 +77,51 @@ class App : Application(), Configuration.Provider {
                     ComposeStackTraceMode.GroupKeys
                 }
             )
-        } catch (e: Exception) {
-            // The compose runtime is not available - non-critical
+        } catch (_: Exception) {
         }
 
-        // 1. Dynamic Colors (API 31+ only - safe on older devices)
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 DynamicColors.applyToActivitiesIfAvailable(this)
             }
-        } catch (e: Exception) {
-            // Dynamic colors not available on this device - non-critical
+        } catch (_: Exception) {
         }
 
-        // 3. Preferences (DataStore) - wrap in try-catch for storage issues on emulators
         try {
             PreferenceConfig.apply(this)
-        } catch (e: Exception) {
-            // Preferences initialization failed - non-critical
+        } catch (_: Exception) {
         }
 
-        // 4. Logger (Hilt EntryPoint) - wrap in try-catch for Hilt issues
         try {
             LoggerProvider.init(this)
-        } catch (e: Exception) {
-            // Logger not available - non-critical
+        } catch (_: Exception) {
         }
 
-        // 5. AppUtils (ActivityManager) - should always work but wrap for safety
         try {
             AppUtils.init(this)
-        } catch (e: Exception) {
-            // AppUtils not available - non-critical
+        } catch (_: Exception) {
         }
 
-        // 6. WorkManager - schedule cleanup work (non-blocking)
         try {
             WorkManagerHelper.scheduleDailyCleanup(this)
-        } catch (e: Exception) {
-            // WorkManager not available - non-critical
+        } catch (_: Exception) {
         }
 
-        // 7. Restore the RPC the user had enabled before the cold start.
-        //
-        // The preference mirror is primed from disk asynchronously, so the
-        // restore has to wait for it. Reading earlier only sees the defaults
-        // and treats an enabled RPC as disabled, which left every switch off
-        // until the user toggled it again.
         try {
             val appContext = this@App
             scope.launch {
                 Prefs.awaitInitialized()
+                withContext(Dispatchers.IO) {
+                    runCatching { dynamicActivityDetectionEngine.refreshPresets(force = false) }
+                }
                 withContext(Dispatchers.Main) {
                     RpcManager.getInstance(appContext).restoreActiveRpc()
-                    android.util.Log.d("App", "Restored RPC state after cold start")
+                    Log.d("App", "Restored RPC state after cold start")
                 }
             }
-        } catch (e: Exception) {
-            // RPC auto-start failed - non-critical
+        } catch (_: Exception) {
         }
 
-        // Install native uncaught exception handler for crash reporting
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             val stringWriter = StringWriter()
             throwable.printStackTrace(PrintWriter(stringWriter))
@@ -151,7 +133,6 @@ class App : Application(), Configuration.Provider {
             }
             startActivity(intent)
 
-            // Terminate the crashed process so it doesn't leak memory
             exitProcess(2)
         }
     }

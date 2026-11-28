@@ -12,8 +12,13 @@
 
 package com.my.kizzy.feature_rpc_base
 
+/**
+ * Shared notification channel IDs, foreground notification IDs, intent actions,
+ * and extras for RPC services and multi-instance management.
+ */
 object Constants {
     const val CHANNEL_ID = "kizzy.notification"
+
     // New channel with IMPORTANCE_DEFAULT so each RPC instance notification
     // stays a separate card. Notification channel importance is immutable
     // once created, so a NEW id is required (bumping the old one has no effect).
@@ -38,6 +43,7 @@ object Constants {
 
     @Deprecated("Use per-service NOTIFICATION_ID_* instead", ReplaceWith("NOTIFICATION_ID_MEDIA_RPC"))
     const val NOTIFICATION_ID = NOTIFICATION_ID_MEDIA_RPC
+
     const val ACTION_STOP_SERVICE = "Stop Service"
     const val ACTION_RESTART_SERVICE = "Restart Service"
     const val ACTION_TOGGLE = "Toggle Playback"

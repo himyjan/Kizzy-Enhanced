@@ -18,7 +18,19 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ExternalAsset(
     @SerialName("external_asset_path")
-    val externalAssetPath: String,
+    val externalAssetPath: String = "",
     @SerialName("url")
-    val url: String
+    val url: String = "",
+)
+
+@Serializable
+data class ExternalAssetsRequest(
+    @SerialName("urls")
+    val urls: List<String>,
+)
+
+@Serializable
+data class ExternalAssetsResponse(
+    @SerialName("data")
+    val data: List<ExternalAsset> = emptyList(),
 )

@@ -1,10 +1,11 @@
 package com.my.kizzy.feature_rpc_base.security
 
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import jakarta.inject.Inject
-import jakarta.inject.Singleton
+import kotlinx.coroutines.flow.update
 
 @Singleton
 class KizzyStateRepository @Inject constructor() {
@@ -47,31 +48,31 @@ class KizzyStateRepository @Inject constructor() {
     val pausedPositionMs: StateFlow<Long?> = _pausedPositionMs.asStateFlow()
 
     fun setPaused(paused: Boolean) {
-        _isPaused.value = paused
+        _isPaused.update { paused }
     }
 
     fun setConnected(connected: Boolean) {
-        _isConnected.value = connected
+        _isConnected.update { connected }
     }
 
     fun setTrackInfo(title: String?, artist: String?, album: String?) {
-        _currentTrackTitle.value = title
-        _currentArtist.value = artist
-        _currentAlbum.value = album
+        _currentTrackTitle.update { title }
+        _currentArtist.update { artist }
+        _currentAlbum.update { album }
     }
 
     fun setTimestamps(start: Long?, stop: Long?) {
-        _currentTimestampStart.value = start
-        _currentTimestampStop.value = stop
+        _currentTimestampStart.update { start }
+        _currentTimestampStop.update { stop }
     }
 
     fun setImageUrls(large: String?, small: String?) {
-        _currentLargeImageUrl.value = large
-        _currentSmallImageUrl.value = small
+        _currentLargeImageUrl.update { large }
+        _currentSmallImageUrl.update { small }
     }
 
     fun setPausedPosition(positionMs: Long?) {
-        _pausedPositionMs.value = positionMs
+        _pausedPositionMs.update { positionMs }
     }
 
     fun clearTrackInfo() {

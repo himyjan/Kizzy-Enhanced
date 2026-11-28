@@ -1368,7 +1368,7 @@ private fun RpcTextFieldsColumn(
 
                             showProgress = true
 
-                            onEvent(UiEvent.UploadImage(context.uriToFile(uri)) { result ->
+                            onEvent(UiEvent.UploadImage(context.uriToFile(uri) ?: return@showImagePicker) { result ->>
 
                                 showProgress = false
 
@@ -1506,7 +1506,7 @@ private fun RpcTextFieldsColumn(
 
                             showProgress = true
 
-                            onEvent(UiEvent.UploadImage(context.uriToFile(uri)) { result ->
+                            onEvent(UiEvent.UploadImage(context.uriToFile(uri) ?: return@showImagePicker) { result ->>
 
                                 showProgress = false
 

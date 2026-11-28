@@ -13,6 +13,7 @@
 package com.my.kizzy.feature_rpc_base
 
 import android.content.Context
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -22,93 +23,110 @@ import com.my.kizzy.data.rpc.CustomRpcBoardItem
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 
-/**
- * Provides a DataStore for custom RPC boards, scoped to a Context.
- * Follows the same pattern as Prefs.appPreferencesDataStore.
- */
-private val Context.customRpcBoardsDataStore: androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences> by
-    preferencesDataStore(name = "custom_rpc_boards")
+private val Context.customRpcBoardsDataStore: DataStore<Preferences> by
+preferencesDataStore(name = "custom_rpc_boards")
 
 private val boardListSerializer = ListSerializer(CustomRpcBoardItem.serializer())
 
 /**
- * Manages custom Discord RPC boards.
- *
- * Boards are persisted to DataStore as a JSON list under the key
- * "custom_rpc_boards". The active board id is persisted under
- * "custom_rpc_active_board_id".
+ * Manages custom Discord RPC boards backed by Jetpack DataStore and an
+ * in-memory snapshot guarded against concurrent mutations.
  */
 @Singleton
 class CustomRpcBoardManager @Inject constructor(
     @ApplicationContext private val appContext: Context
 ) {
 
-    private val dataStore = appContext.customRpcBoardsDataStore
+    private val dataStore: DataStore<Preferences> = appContext.customRpcBoardsDataStore
 
     private val boardsKey = stringPreferencesKey("custom_rpc_boards")
     private val activeBoardIdKey = stringPreferencesKey("custom_rpc_active_board_id")
 
     private val json = Json { ignoreUnknownKeys = true }
+    private val stateMutex = Mutex()
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    private val _boardsFlow = MutableStateFlow<List<CustomRpcBoardItem>>(emptyList())
+    val boardsFlow: StateFlow<List<CustomRpcBoardItem>> = _boardsFlow.asStateFlow()
+
+    @Volatile
     private var _boards: List<CustomRpcBoardItem> = emptyList()
 
-    private val scope = CoroutineScope(Dispatchers.IO)
-
     init {
-        scope.launch(Dispatchers.IO) {
-            loadBoardsFromStore()
-        }
-    }
-
-    /**
-     * Returns the current in-memory list of boards.
-     */
-    fun loadBoards(): List<CustomRpcBoardItem> = _boards
-
-    /**
-     * Persists the given boards to DataStore and updates the in-memory copy.
-     */
-    suspend fun saveBoards(boards: List<CustomRpcBoardItem>) {
-        _boards = boards
-        persistBoards(boards)
-    }
-
-    /**
-     * Loads boards from DataStore into memory.
-     */
-    private suspend fun loadBoardsFromStore() {
-        val prefs = appContext.customRpcBoardsDataStore.data.first()
-        val stored: String? = prefs[boardsKey]
-        if (stored != null && stored.isNotBlank()) {
+        scope.launch {
             try {
-                _boards = Json.decodeFromString(boardListSerializer, stored)
+                loadBoardsFromStore()
+            } catch (e: CancellationException) {
+                throw e
             } catch (_: Exception) {
-                _boards = emptyList()
+                // Keep empty list if initial store read fails.
             }
         }
     }
 
-    /**
-     * Adds a new board and persists it.
-     */
-    suspend fun addBoard(board: CustomRpcBoardItem) {
-        _boards = _boards + board
-        persistBoards(_boards)
+    /** Returns the current in-memory list of boards. */
+    fun loadBoards(): List<CustomRpcBoardItem> = _boards
+
+    /** Persists the given boards to DataStore and updates the in-memory copy. */
+    suspend fun saveBoards(boards: List<CustomRpcBoardItem>) {
+        stateMutex.withLock {
+            _boards = boards
+            _boardsFlow.value = boards
+            persistBoards(boards)
+        }
     }
 
-    /**
-     * Updates an existing board (matched by id) and persists it.
-     */
+    private suspend fun loadBoardsFromStore() {
+        val prefs = dataStore.data.first()
+        val stored: String? = prefs[boardsKey]
+        if (!stored.isNullOrBlank()) {
+            try {
+                val decoded = json.decodeFromString(boardListSerializer, stored)
+                stateMutex.withLock {
+                    _boards = decoded
+                    _boardsFlow.value = decoded
+                }
+            } catch (_: Exception) {
+                stateMutex.withLock {
+                    _boards = emptyList()
+                    _boardsFlow.value = emptyList()
+                }
+            }
+        }
+    }
+
+    /** Adds a new board and persists it. */
+    suspend fun addBoard(board: CustomRpcBoardItem) {
+        stateMutex.withLock {
+            val updated = _boards + board
+            _boards = updated
+            _boardsFlow.value = updated
+            persistBoards(updated)
+        }
+    }
+
+    /** Updates an existing board (matched by id) and persists it. */
     suspend fun updateBoard(board: CustomRpcBoardItem) {
-        _boards = _boards.map { if (it.id == board.id) board else it }
-        persistBoards(_boards)
+        stateMutex.withLock {
+            val updated = _boards.map { if (it.id == board.id) board else it }
+            _boards = updated
+            _boardsFlow.value = updated
+            persistBoards(updated)
+        }
     }
 
     /**
@@ -116,12 +134,15 @@ class CustomRpcBoardManager @Inject constructor(
      * If the deleted board was active, clears the active board id.
      */
     suspend fun deleteBoard(boardId: String) {
-        _boards = _boards.filter { it.id != boardId }
-        val activeId = getActiveBoardId()
-        if (activeId == boardId) {
-            setActiveBoardId(null)
+        stateMutex.withLock {
+            val updated = _boards.filter { it.id != boardId }
+            _boards = updated
+            _boardsFlow.value = updated
+            if (getActiveBoardId() == boardId) {
+                setActiveBoardId(null)
+            }
+            persistBoards(updated)
         }
-        persistBoards(_boards)
     }
 
     /**
@@ -129,80 +150,70 @@ class CustomRpcBoardManager @Inject constructor(
      * within the board list and persists the new order.
      */
     suspend fun moveBoard(boardId: String, delta: Int) {
-        val index = _boards.indexOfFirst { it.id == boardId }
-        if (index < 0 || delta == 0) return
-        val newIndex = (index + delta).coerceIn(0, _boards.lastIndex)
-        if (newIndex == index) return
-        val mutable = _boards.toMutableList()
-        val board = mutable.removeAt(index)
-        mutable.add(newIndex, board)
-        _boards = mutable.toList()
-        persistBoards(_boards)
+        stateMutex.withLock {
+            val index = _boards.indexOfFirst { it.id == boardId }
+            if (index < 0 || delta == 0) return
+            val newIndex = (index + delta).coerceIn(0, _boards.lastIndex)
+            if (newIndex == index) return
+            val mutable = _boards.toMutableList()
+            val board = mutable.removeAt(index)
+            mutable.add(newIndex, board)
+            val updated = mutable.toList()
+            _boards = updated
+            _boardsFlow.value = updated
+            persistBoards(updated)
+        }
     }
 
-    /**
-     * Returns the board with the given id, or null if not found.
-     */
+    /** Returns the board with the given id, or null if not found. */
     fun getBoard(boardId: String): CustomRpcBoardItem? = _boards.firstOrNull { it.id == boardId }
 
-    /**
-     * Returns the currently active board id, or null if none.
-     */
+    /** Returns the currently active board id, or null if none. */
     suspend fun getActiveBoardId(): String? {
-        val prefs = appContext.customRpcBoardsDataStore.data.first()
+        val prefs = dataStore.data.first()
         return prefs[activeBoardIdKey]
     }
 
-    /**
-     * Sets the active board id and persists it.
-     */
+    /** Sets the active board id and persists it. */
     suspend fun setActiveBoardId(boardId: String?) {
-        appContext.customRpcBoardsDataStore.edit(transform = { prefs: MutablePreferences ->
+        dataStore.edit { prefs: MutablePreferences ->
             if (boardId == null) {
                 prefs.remove(activeBoardIdKey)
             } else {
                 prefs[activeBoardIdKey] = boardId
             }
-        })
+        }
     }
 
-    /**
-     * Returns the currently active board, or null if none / not found.
-     */
+    /** Returns the currently active board, or null if none / not found. */
     suspend fun getActiveBoard(): CustomRpcBoardItem? {
         val id = getActiveBoardId()
         return if (id != null) getBoard(id) else null
     }
 
-    /**
-     * Activates the given board: persists it (if not already), sets it as active.
-     */
+    /** Activates the given board: persists it (if not already), sets it as active. */
     suspend fun activateBoard(board: CustomRpcBoardItem) {
-        if (!_boards.any { it.id == board.id }) {
-            _boards = _boards + board
+        stateMutex.withLock {
+            val updated = if (_boards.any { it.id == board.id }) _boards else _boards + board
+            _boards = updated
+            _boardsFlow.value = updated
+            setActiveBoardId(board.id)
+            persistBoards(updated)
         }
-        setActiveBoardId(board.id)
-        persistBoards(_boards)
     }
 
-    /**
-     * Deactivates the currently active board (clears the active board id).
-     */
+    /** Deactivates the currently active board (clears the active board id). */
     suspend fun deactivateBoard() {
         setActiveBoardId(null)
     }
 
-    /**
-     * Returns true if the board with the given id is currently active.
-     */
-    suspend fun isBoardActive(boardId: String): Boolean {
-        return getActiveBoardId() == boardId
-    }
+    /** Returns true if the board with the given id is currently active. */
+    suspend fun isBoardActive(boardId: String): Boolean = getActiveBoardId() == boardId
 
     private suspend fun persistBoards(boards: List<CustomRpcBoardItem>) {
-        appContext.customRpcBoardsDataStore.edit(transform = { prefs: MutablePreferences ->
-            prefs[boardsKey] = Json.encodeToString(boardListSerializer, boards)
-        })
+        dataStore.edit { prefs: MutablePreferences ->
+            prefs[boardsKey] = json.encodeToString(boardListSerializer, boards)
+        }
     }
 
     companion object {

@@ -20,6 +20,9 @@ import io.ktor.http.*
 import jakarta.inject.Inject
 import java.io.File
 
+/**
+ * Ktor client service for resolving Discord external assets and uploading images to Imgur.
+ */
 class ImgurApiService @Inject constructor(
     private val client: HttpClient,
     @Discord private val discordBaseUrl: String,
@@ -30,23 +33,30 @@ class ImgurApiService @Inject constructor(
             url("$discordBaseUrl/applications/$APPLICATION_ID/external-assets")
             headers {
                 append(HttpHeaders.Authorization, token)
-                append(HttpHeaders.ContentType, "application/json")
             }
-            setBody(mapOf("urls" to arrayOf(url)))
+            contentType(ContentType.Application.Json)
+            setBody(ExternalAssetsRequest(urls = listOf(url)))
         }
     }
 
     suspend fun uploadImage(file: File, clientId: String) = runCatching {
+        val bytes = file.readBytes()
         client.post {
             url("$imgurBaseUrl/image")
             headers {
                 append(HttpHeaders.Authorization, "Client-ID $clientId")
             }
-            contentType(ContentType.MultiPart.FormData)
             setBody(
                 MultiPartFormDataContent(
                     formData {
-                        append("image", file.readBytes())
+                        append(
+                            "image",
+                            bytes,
+                            Headers.build {
+                                append(HttpHeaders.ContentType, "image/*")
+                                append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                            }
+                        )
                         append("type", "raw")
                     }
                 )

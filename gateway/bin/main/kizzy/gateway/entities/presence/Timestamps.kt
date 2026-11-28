@@ -1,12 +1,7 @@
-package kizzy.gateway.entities.presence
+package com.my.kizzy.data.rpc
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
+/** Start and end epoch timestamps (in milliseconds) for a Rich Presence timeline. */
 data class Timestamps(
-    @SerialName("end")
+    val start: Long? = null,
     val end: Long? = null,
-    @SerialName("start")
-    val start: Long? = null
 )

@@ -14,7 +14,6 @@ package com.my.kizzy.feature_rpc_base.services
 
 import android.app.Dialog
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
@@ -29,11 +28,23 @@ import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 
 class KizzyTileService : TileService() {
+
+    private fun startRpcService(serviceClass: Class<*>) {
+        val intent = Intent(this, serviceClass)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+    }
+
     override fun onClick() {
         super.onClick()
         val ctx = this
         when (qsTile.state) {
             Tile.STATE_ACTIVE -> {
+                Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
+                Prefs[Prefs.MEDIA_RPC_ENABLED] = false
                 ctx.stopService(Intent(ctx, AppDetectionService::class.java))
                 ctx.stopService(Intent(ctx, MediaRpcService::class.java))
                 ctx.stopService(Intent(ctx, ManualRpc::class.java))
@@ -43,9 +54,10 @@ class KizzyTileService : TileService() {
                 if (!isLocked) {
                     showDialog(createRpcChoosingDialog(ctx))
                 } else {
-                    val intent = Intent(ctx, DialogActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    ContextWrapper(ctx).startActivity(intent)
+                    val intent = Intent(ctx, DialogActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    startActivityAndCollapse(intent)
                 }
             }
             else -> {}
@@ -69,23 +81,24 @@ class KizzyTileService : TileService() {
             getString(R.string.main_mediaRpc),
             getString(R.string.main_ManualRpc)
         )
-        return MaterialAlertDialogBuilder(ContextThemeWrapper(ctx, com.my.kizzy.feature_rpc_base.R.style.MyTileDialogTheme))
+        return MaterialAlertDialogBuilder(
+            ContextThemeWrapper(ctx, com.my.kizzy.feature_rpc_base.R.style.MyTileDialogTheme)
+        )
             .setTitle(getString(R.string.choose_rpc))
             .setSingleChoiceItems(rpc, -1) { dialog, which ->
                 when (which) {
                     0 -> {
-                        ctx.startForegroundService(Intent(ctx, AppDetectionService::class.java))
+                        startRpcService(AppDetectionService::class.java)
                         Toast.makeText(ctx, getString(R.string.start_appDetection_toast), Toast.LENGTH_SHORT).show()
                     }
                     1 -> {
-                        ctx.startForegroundService(Intent(ctx, MediaRpcService::class.java))
+                        startRpcService(MediaRpcService::class.java)
                         Toast.makeText(ctx, getString(R.string.start_media_rpc_toast), Toast.LENGTH_SHORT).show()
                     }
                     2 -> {
-                        ctx.startForegroundService(Intent(ctx, ManualRpc::class.java))
+                        startRpcService(ManualRpc::class.java)
                         Toast.makeText(ctx, getString(R.string.start_manual_rpc_toast), Toast.LENGTH_SHORT).show()
                     }
-                    else -> {}
                 }
                 dialog.dismiss()
             }
@@ -118,16 +131,14 @@ class KizzyTileService : TileService() {
     }
 
     private fun getSubtitle(): String {
-        return if (AppUtils.appDetectionRunning())
-            getString(R.string.main_appDetection)
-        else if (AppUtils.mediaRpcRunning())
-            getString(R.string.main_mediaRpc)
-        else
-            getString(R.string.main_ManualRpc)
+        return when {
+            AppUtils.appDetectionRunning() -> getString(R.string.main_appDetection)
+            AppUtils.mediaRpcRunning() -> getString(R.string.main_mediaRpc)
+            else -> getString(R.string.main_ManualRpc)
+        }
     }
 
     companion object {
         val tileAdded = mutableStateOf(false)
     }
 }
-

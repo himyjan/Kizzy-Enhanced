@@ -68,8 +68,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.rpc.RpcButtons
-import com.my.kizzy.feature_rpc_base.services.lastfm.LastFM
-import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFM
+import com.my.kizzy.feature_rpc_base.services.lastfm.LastFMandLibreFM
+import com.my.kizzy.feature_rpc_base.services.lastfm.LibreFMandLibreFM
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.RpcField
@@ -81,7 +81,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1170,9 +1169,9 @@ fun RpcSettings(
                                                 Toast.makeText(context, "Enter API key and secret first", Toast.LENGTH_SHORT).show()
                                             } else {
                                                 scope.launch {
-                                                    LastFM.init(lastfmApiKey, lastfmSecret)
+                                                    LastFMandLibreFM.init(lastfmApiKey, lastfmSecret)
                                                     val token = try {
-                                                        LastFM.getToken()
+                                                        LastFMandLibreFM.getToken()
                                                     } catch (e: Exception) {
                                                         Toast.makeText(context, "Last.fm get token failed: ${e.message}", Toast.LENGTH_LONG).show()
                                                         null
@@ -1195,15 +1194,15 @@ fun RpcSettings(
                                         TextButton(
                                             onClick = {
                                                 scope.launch {
-                                                    LastFM.init(lastfmApiKey, lastfmSecret)
+                                                    LastFMandLibreFM.init(lastfmApiKey, lastfmSecret)
                                                     val session = try {
-                                                        LastFM.getSession(lastfmPendingToken!!)
+                                                        LastFMandLibreFM.getSession(lastfmPendingToken!!)
                                                     } catch (e: Exception) {
                                                         Toast.makeText(context, "Last.fm get session failed: ${e.message}", Toast.LENGTH_LONG).show()
                                                         null
                                                     }
                                                     if (session != null && session.key.isNotEmpty()) {
-                                                        LastFM.sessionKey = session.key
+                                                        LastFMandLibreFM.sessionKey = session.key
                                                         Prefs[Prefs.LASTFM_SESSION_KEY] = session.key
                                                         lastfmPendingToken = null
                                                         Toast.makeText(context, "Logged in to Last.fm", Toast.LENGTH_SHORT).show()
@@ -1224,9 +1223,9 @@ fun RpcSettings(
                                                 Toast.makeText(context, "Enter username and password first", Toast.LENGTH_SHORT).show()
                                             } else {
                                                 scope.launch {
-                                                    LastFM.init(lastfmApiKey, lastfmSecret)
+                                                    LastFMandLibreFM.init(lastfmApiKey, lastfmSecret)
                                                     val session = try {
-                                                        LastFM.getMobileSession(lastfmUsername, lastfmPassword)
+                                                        LastFMandLibreFM.getMobileSession(lastfmUsername, lastfmPassword)
                                                     } catch (e: Exception) {
                                                         Toast.makeText(context, "Last.fm login failed: ${e.message}", Toast.LENGTH_LONG).show()
                                                         null
@@ -1385,9 +1384,9 @@ fun RpcSettings(
                                             Toast.makeText(context, "Enter username and password first", Toast.LENGTH_SHORT).show()
                                         } else {
                                             scope.launch {
-                                                LibreFM.init(librefmApiKey, librefmSecret)
+                                                LibreFMandLibreFM.init(librefmApiKey, librefmSecret)
                                                 val session = try {
-                                                    LibreFM.getMobileSession(librefmUsername, librefmPassword)
+                                                    LibreFMandLibreFM.getMobileSession(librefmUsername, librefmPassword)
                                                 } catch (e: Exception) {
                                                     Toast.makeText(context, "Libre.fm login failed: ${e.message}", Toast.LENGTH_LONG).show()
                                                     null

@@ -148,7 +148,6 @@ fun Home(
 ) {
     val ctx = LocalContext.current
     val uriHandler = LocalUriHandler.current
-    // Resolve string resources up front for dialogs, toasts, and Quick Settings tiles
     val updateCheckText = stringResource(R.string.update_check_for_update)
     val noUpdatesText = stringResource(R.string.update_no_updates_available)
     val qsTileLabel = stringResource(R.string.qs_tile_label)
@@ -156,7 +155,6 @@ fun Home(
     val manualRpcLabel = stringResource(R.string.main_ManualRpc)
     val customRpcLabel = stringResource(R.string.main_customRpc)
 
-    // Dialog and drawer UI states
     var showUpdateDialog by remember { mutableStateOf(false) }
     var showAddRpcDialog by remember { mutableStateOf(false) }
     var selectedRpcType by remember { mutableStateOf<String?>(null) }
@@ -173,19 +171,16 @@ fun Home(
 
     val rpcManager = RpcManager.getInstance(ctx)
 
-    // Optimistic UI overrides for instant feedback before persisted preferences update
     var prefsRefreshCounter by remember { mutableIntStateOf(0) }
     val pendingAddedInstances = remember { mutableStateListOf<RpcInstance>() }
     val deletedInstanceIds = remember { mutableStateListOf<String>() }
     val labelOverrides = remember { mutableStateMapOf<String, String>() }
 
-    // Observe preference map and read current RPC instances (built-ins + user clones)
     val prefsMap by Prefs.prefsState.collectAsState(initial = emptyMap<String, Any?>())
     val homeRpcInstances = remember(prefsMap, prefsRefreshCounter) {
         Prefs.getHomeRpcInstances()
     }
 
-    // Build feature cards directly from current preferences and AppRoute navigation callback
     val features = homeFeaturesProvider(
         prefsMap = prefsMap,
         navigateTo = navigateTo,
@@ -206,7 +201,6 @@ fun Home(
         },
     )
 
-    // Clear optimistic state once persisted instances reflect the changes
     LaunchedEffect(homeRpcInstances) {
         val instanceMap = homeRpcInstances.associateBy { it.id }
         pendingAddedInstances.removeAll { it.id in instanceMap }
@@ -216,7 +210,6 @@ fun Home(
         }
     }
 
-    // Merge persisted instances with newly created pending instances
     val effectiveInstances = remember(
         homeRpcInstances,
         pendingAddedInstances.toList(),
@@ -226,7 +219,6 @@ fun Home(
         homeRpcInstances + pendingAddedInstances.filter { it.id !in existingIds }
     }
 
-    // Find a built-in template feature matching an RPC type for synthesizing clone cards
     fun templateFeatureForType(type: String): HomeFeature? {
         val lowerTitle = when (type) {
             "media_rpc" -> mediaRpcLabel.lowercase()
@@ -239,7 +231,6 @@ fun Home(
         } ?: features.firstOrNull { it.instanceId.isBlank() }
     }
 
-    // Combine base features with synthesized clones, apply overrides, and keep built-ins pinned first
     val visibleFeatures = remember(
         features,
         effectiveInstances,
@@ -285,7 +276,6 @@ fun Home(
         }
     }
 
-    // Backing list for live drag-and-drop card reordering in the LazyColumn
     val displayFeatures = remember { mutableStateListOf<HomeFeature>() }
     LaunchedEffect(visibleFeatures) {
         displayFeatures.clear()
@@ -296,7 +286,6 @@ fun Home(
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
     val itemPitchPx = with(LocalDensity.current) { (84.dp + 12.dp).toPx() }
 
-    // Persist current display order for instance cards
     fun persistCurrentOrder() {
         val orderedIds = displayFeatures.mapNotNull { it.instanceId.takeIf(String::isNotBlank) }
         if (orderedIds.isEmpty()) return
@@ -307,7 +296,6 @@ fun Home(
         prefsRefreshCounter++
     }
 
-    // Apply an immediate label override and persist the renamed instance
     fun renameInstance(target: HomeFeature, newLabel: String) {
         val trimmed = newLabel.trim()
         if (trimmed.isEmpty() || target.instanceId.isBlank()) return
@@ -325,19 +313,17 @@ fun Home(
         prefsRefreshCounter++
     }
 
-    // Remove a clone instance immediately and persist deletion
     fun deleteInstance(target: HomeFeature) {
         if (target.instanceId.isNotBlank() && target.instanceId !in deletedInstanceIds) {
             deletedInstanceIds.add(target.instanceId)
         }
         pendingAddedInstances.removeAll { it.id == target.instanceId }
         displayFeatures.removeAll { it.instanceId == target.instanceId }
+        target.onDelete()
         Prefs.deleteHomeRpcInstance(target.instanceId)
         prefsRefreshCounter++
-        onReloadHome()
     }
 
-    // Refresh running RPC service state whenever Home resumes
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
             rpcManager.refreshFromServices()
@@ -520,7 +506,6 @@ fun Home(
                         (feature.instanceId.ifBlank { "${feature.title}_${feature.route}" }) == itemKey
                     }
 
-                    // Swap adjacent deletable items when dragged past half a row pitch
                     val handleDragDelta: (Float) -> Unit = { deltaY ->
                         if (item.isDeletable && currentIndex >= 0) {
                             dragOffsetY += deltaY
@@ -609,7 +594,6 @@ fun Home(
                 }
             }
 
-            // Dialog to rename a user-added RPC instance
             renamingTarget?.let { target ->
                 val nameState = rememberTextFieldState(initialText = target.title)
                 LaunchedEffect(target.instanceId, target.title) {
@@ -645,7 +629,6 @@ fun Home(
                 )
             }
 
-            // Dialog to pick an RPC type and create a new clone instance
             if (showAddRpcDialog) {
                 AlertDialog(
                     onDismissRequest = {
@@ -695,7 +678,6 @@ fun Home(
                             val existingCount = effectiveInstances.count { it.type == type }
                             val label = if (existingCount > 0) "$baseLabel #${existingCount + 1}" else baseLabel
 
-                            // Assign OAuth slots in round-robin order across authenticated applications
                             val newInstance = RpcInstance(
                                 id = RpcInstance.newId(type),
                                 type = type,
@@ -722,7 +704,6 @@ fun Home(
                 )
             }
 
-            // Show release update dialog when an update check finishes with a newer version
             when (state) {
                 is HomeScreenState.LoadingCompleted -> {
                     if (showUpdateDialog) {
@@ -757,9 +738,6 @@ fun Home(
     }
 }
 
-/**
- * Single selectable RPC type row inside the "Add RPC" dialog.
- */
 @Composable
 private fun RpcTypeRow(
     type: String,
@@ -789,10 +767,6 @@ private fun RpcTypeRow(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 }
 
-/**
- * Individual Home feature/clone row supporting click navigation, toggle switch,
- * rename, long-press drag reordering, and deletion.
- */
 @Composable
 private fun FeatureCard(
     feature: HomeFeature,
@@ -840,7 +814,7 @@ private fun FeatureCard(
             .height(84.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(brush = brush)
-            .clickable {
+            .clickable(enabled = feature.route != null) {
                 feature.route?.let { feature.onClick(it) }
             }
             .padding(start = 22.dp, end = 12.dp, top = 16.dp, bottom = 16.dp),
@@ -871,7 +845,6 @@ private fun FeatureCard(
                 )
             }
         }
-        // Rename, long-press drag handle, and delete controls for added RPC instances
         if (feature.isDeletable && !feature.isAddButton) {
             Spacer(modifier = Modifier.width(4.dp))
             Row(
@@ -938,9 +911,6 @@ private fun FeatureCard(
     }
 }
 
-/**
- * Registers a temporary [LifecycleEventObserver] for the current [LocalLifecycleOwner].
- */
 @Composable
 fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {
     val eventHandler = rememberUpdatedState(onEvent)

@@ -5,7 +5,6 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.header
-import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -15,12 +14,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.serialization.json.Json
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 import java.security.MessageDigest
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val LASTFM_API_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
 private const val LIBREFM_API_BASE_URL = "https://libre.fm/2.0/"
@@ -35,9 +34,9 @@ const val DEFAULT_LASTFM_SECRET = "7c3200d4a626f3d546da37eecd0849a2"
 const val DEFAULT_LIBREFM_API_KEY = "kizzy_librefm_client"
 const val DEFAULT_LIBREFM_SECRET = "kizzy_librefm_secret"
 
-open class LastFmApiClient(
+open class LastFMandLibreFMApiClient(
     private val apiBaseUrl: String,
-    loggerName: String
+    private val serviceName: String
 ) {
 
     private var apiKey: String = ""
@@ -68,15 +67,11 @@ open class LastFmApiClient(
         }
     }
 
-    private val logger: Logger = LoggerFactory.getLogger(loggerName)
+    private val logger: Logger = LoggerFactory.getLogger(serviceName)
 
     /**
-     * Maximum number of retry attempts for failed Last.fm API calls.
-     * Exponential backoff: 1s, 2s, 4s
-     */
-    /**
-     * Execute a Last.fm API call with retry logic and exponential backoff.
-     * Returns null if all retries fail.
+     * Execute a scrobbling API call with retry logic and exponential backoff.
+     * Exponential backoff: 1s, 2s, 4s. Returns null if all retries fail.
      */
     private suspend fun <T> apiCallWithRetry(call: suspend () -> T): T? {
         var delayMs = 1000L
@@ -96,18 +91,17 @@ open class LastFmApiClient(
             }
             if (result != null) return result
             if (attempt < MAX_API_RETRIES) {
-                logger.debug("LastFM API call attempt $attempt failed, retrying in ${delayMs}ms")
+                logger.debug("$serviceName API call attempt $attempt failed, retrying in ${delayMs}ms")
                 delay(delayMs.milliseconds)
                 delayMs *= 2L
             }
         }
-        logger.warn("LastFM API call failed after $MAX_API_RETRIES attempts: $lastError")
+        logger.warn("$serviceName API call failed after $MAX_API_RETRIES attempts: $lastError")
         return null
     }
 
     /**
-     * Initialize Last.fm with API credentials.
-     * Called once during app initialization.
+     * Initialize API credentials.
      */
     fun init(apiKey: String, secret: String) {
         this.apiKey = apiKey
@@ -160,64 +154,53 @@ open class LastFmApiClient(
         }
     }
 
-    /**
-     * Get an OAuth token from Last.fm (first step of authentication).
-     */
-    suspend fun getToken(): LastFmTokenResponse? = apiCallWithRetry {
-        val postData = buildPostData("auth.getToken")
+    private suspend fun postForm(body: String): String {
         val response = client.post {
             url(apiBaseUrl)
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-            setBody(postData)
+            setBody(body)
         }
-        val responseCode = response.status.value
         val responseBody = response.bodyAsText()
-        validateResponse(responseCode, responseBody)
-        json.decodeFromString<LastFmTokenResponse>(responseBody)
+        validateResponse(response.status.value, responseBody)
+        return responseBody
+    }
+
+    /**
+     * Get an OAuth token (first step of authentication).
+     */
+    suspend fun getToken(): LastFmTokenResponse? = apiCallWithRetry {
+        val body = postForm(buildPostData("auth.getToken"))
+        json.decodeFromString<LastFmTokenResponse>(body)
     }
 
     /**
      * Get a session key from a token (second step of authentication).
      */
     suspend fun getSession(token: String): LastFmSession? = apiCallWithRetry {
-        val response = client.post {
-            url(apiBaseUrl)
-            header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-            setBody(
-                buildPostData(
-                    method = "auth.getSession",
-                    extra = mapOf("token" to token)
-                )
+        val body = postForm(
+            buildPostData(
+                method = "auth.getSession",
+                extra = mapOf("token" to token)
             )
-        }
-        val responseText = response.bodyAsText()
-        validateResponse(response.status.value, responseText)
-        decodeSessionResponse(responseText)
+        )
+        decodeSessionResponse(body)
     }
 
     /**
      * Authenticate using username and password (mobile auth).
      */
     suspend fun getMobileSession(username: String, password: String): LastFmSession? = apiCallWithRetry {
-        val response = client.post {
-            url(apiBaseUrl)
-            header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-            setBody(
-                buildPostData(
-                    method = "auth.getMobileSession",
-                    extra = mapOf("username" to username, "password" to password)
-                )
+        val body = postForm(
+            buildPostData(
+                method = "auth.getMobileSession",
+                extra = mapOf("username" to username, "password" to password)
             )
-            parameter("format", "json")
-        }
-
-        val responseText = response.bodyAsText()
-        validateResponse(response.status.value, responseText)
-        decodeSessionResponse(responseText)
+        )
+        decodeSessionResponse(body)
     }
 
     /**
-     * Scrobble a track to Last.fm.
+     * Scrobble a track.
      */
     suspend fun scrobble(
         artist: String,
@@ -229,27 +212,21 @@ open class LastFmApiClient(
         url: String? = null
     ): Boolean = apiCallWithRetry {
         val currentSession = sessionKey ?: return@apiCallWithRetry false
-        val response = client.post {
-            url(apiBaseUrl)
-            header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-            setBody(
-                buildPostData(
-                    method = "track.scrobble",
-                    sessionKey = currentSession,
-                    extra = buildMap {
-                        put("artist[0]", artist)
-                        put("track[0]", track)
-                        put("timestamp[0]", timestamp.toString())
-                        album?.let { put("album[0]", it) }
-                        trackNumber?.let { put("trackNumber[0]", it.toString()) }
-                        duration?.let { put("duration[0]", duration.toString()) }
-                        url?.let { put("url[0]", it) }
-                    }
-                )
+        postForm(
+            buildPostData(
+                method = "track.scrobble",
+                sessionKey = currentSession,
+                extra = buildMap {
+                    put("artist[0]", artist)
+                    put("track[0]", track)
+                    put("timestamp[0]", timestamp.toString())
+                    album?.let { put("album[0]", it) }
+                    trackNumber?.let { put("trackNumber[0]", it.toString()) }
+                    duration?.let { put("duration[0]", duration.toString()) }
+                    url?.let { put("url[0]", it) }
+                }
             )
-            parameter("format", "json")
-        }
-        validateResponse(response.status.value, response.bodyAsText())
+        )
         true
     } != null
 
@@ -265,26 +242,20 @@ open class LastFmApiClient(
         url: String? = null
     ): Boolean = apiCallWithRetry {
         val currentSession = sessionKey ?: return@apiCallWithRetry false
-        val response = client.post {
-            url(apiBaseUrl)
-            header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-            setBody(
-                buildPostData(
-                    method = "track.updateNowPlaying",
-                    sessionKey = currentSession,
-                    extra = buildMap {
-                        put("artist", artist)
-                        put("track", track)
-                        album?.let { put("album", it) }
-                        trackNumber?.let { put("trackNumber", it.toString()) }
-                        duration?.let { put("duration", it.toString()) }
-                        url?.let { put("url", it) }
-                    }
-                )
+        postForm(
+            buildPostData(
+                method = "track.updateNowPlaying",
+                sessionKey = currentSession,
+                extra = buildMap {
+                    put("artist", artist)
+                    put("track", track)
+                    album?.let { put("album", it) }
+                    trackNumber?.let { put("trackNumber", it.toString()) }
+                    duration?.let { put("duration", it.toString()) }
+                    url?.let { put("url", it) }
+                }
             )
-            parameter("format", "json")
-        }
-        validateResponse(response.status.value, response.bodyAsText())
+        )
         true
     } != null
 
@@ -298,31 +269,25 @@ open class LastFmApiClient(
     ): Boolean = apiCallWithRetry {
         val currentSession = sessionKey ?: return@apiCallWithRetry false
         val method = if (love) "track.love" else "track.unlove"
-        val response = client.post {
-            url(apiBaseUrl)
-            header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-            setBody(
-                buildPostData(
-                    method = method,
-                    sessionKey = currentSession,
-                    extra = mapOf(
-                        "artist" to artist,
-                        "track" to track
-                    )
+        postForm(
+            buildPostData(
+                method = method,
+                sessionKey = currentSession,
+                extra = mapOf(
+                    "artist" to artist,
+                    "track" to track
                 )
             )
-            parameter("format", "json")
-        }
-        validateResponse(response.status.value, response.bodyAsText())
+        )
         true
     } != null
 }
 
-object LastFM : LastFmApiClient(LASTFM_API_BASE_URL, "LastFM") {
+object LastFMandLibreFM : LastFMandLibreFMApiClient(LASTFM_API_BASE_URL, "LastFM") {
     const val API_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
 }
 
-object LibreFM : LastFmApiClient(LIBREFM_API_BASE_URL, "LibreFM") {
+object LibreFMandLibreFM : LastFMandLibreFMApiClient(LIBREFM_API_BASE_URL, "LibreFM") {
     const val API_BASE_URL = "https://libre.fm/2.0/"
 }
 

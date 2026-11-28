@@ -1,31 +1,34 @@
 package com.my.kizzy.data.repository
 
-import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.repository.RpcConfigRepository
 import com.my.kizzy.preference.Prefs
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * SharedPreferences-backed implementation of [RpcConfigRepository] executing
+ * preference reads and writes off the main thread.
+ */
 class RpcConfigRepositoryImpl @Inject constructor() : RpcConfigRepository {
 
     override suspend fun getLastRunCustomRpc(): String? =
         withContext(Dispatchers.IO) { Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""] }
 
     override suspend fun setLastRunCustomRpc(configJson: String?) =
-        withContext(Dispatchers.IO) { Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = configJson }
+        withContext(Dispatchers.IO) { Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = configJson ?: "" }
 
     override suspend fun getLastRunConsoleRpc(): String? =
         withContext(Dispatchers.IO) { Prefs[Prefs.LAST_RUN_CONSOLE_RPC, ""] }
 
     override suspend fun setLastRunConsoleRpc(configJson: String?) =
-        withContext(Dispatchers.IO) { Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = configJson }
+        withContext(Dispatchers.IO) { Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = configJson ?: "" }
 
     override suspend fun getRpcButtons(): String? =
         withContext(Dispatchers.IO) { Prefs[Prefs.RPC_BUTTONS_DATA, ""] }
 
     override suspend fun setRpcButtons(buttonsJson: String?) =
-        withContext(Dispatchers.IO) { Prefs[Prefs.RPC_BUTTONS_DATA] = buttonsJson }
+        withContext(Dispatchers.IO) { Prefs[Prefs.RPC_BUTTONS_DATA] = buttonsJson ?: "" }
 
     override suspend fun getApplyFieldsFromLastRunRpc(): Boolean =
         withContext(Dispatchers.IO) { Prefs[Prefs.APPLY_FIELDS_FROM_LAST_RUN_RPC, false] }
@@ -46,8 +49,12 @@ class RpcConfigRepositoryImpl @Inject constructor() : RpcConfigRepository {
         withContext(Dispatchers.IO) { Prefs[Prefs.CUSTOM_ACTIVITY_TYPE] = type }
 
     override suspend fun getCustomActivityStatus(): String =
-        withContext(Dispatchers.IO) { Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"] }
+        withContext(Dispatchers.IO) {
+            Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"].trim().ifEmpty { "dnd" }
+        }
 
     override suspend fun setCustomActivityStatus(status: String) =
-        withContext(Dispatchers.IO) { Prefs[Prefs.CUSTOM_ACTIVITY_STATUS] = status }
+        withContext(Dispatchers.IO) {
+            Prefs[Prefs.CUSTOM_ACTIVITY_STATUS] = status.trim().ifEmpty { "dnd" }
+        }
 }

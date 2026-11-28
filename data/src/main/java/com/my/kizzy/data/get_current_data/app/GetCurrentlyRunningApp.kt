@@ -21,12 +21,15 @@ import com.my.kizzy.data.rpc.CommonRpc
 import com.my.kizzy.data.rpc.RpcImage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
-import java.util.*
 
+/**
+ * Queries Android [UsageStatsManager] events to find the most recently resumed
+ * foreground application and builds a [CommonRpc] snapshot for it.
+ */
 class GetCurrentlyRunningApp @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    // MOVE_TO_FOREGROUND is deprecated on API 29+ in favour of ACTIVITY_RESUMED.
+    // ACTIVITY_RESUMED was introduced on Android 10 (API 29); use MOVE_TO_FOREGROUND on older APIs.
     private val foregroundEventType: Int =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             UsageEvents.Event.ACTIVITY_RESUMED
@@ -35,41 +38,71 @@ class GetCurrentlyRunningApp @Inject constructor(
             UsageEvents.Event.MOVE_TO_FOREGROUND
         }
 
-    operator fun invoke(beginTime: Long = System.currentTimeMillis() - 30000): CommonRpc {
+    /**
+     * Returns a [CommonRpc] representing the foreground app within the last [lookBackMs]
+     * milliseconds, or an empty [CommonRpc] if none is found or the app is excluded.
+     */
+    operator fun invoke(lookBackMs: Long = DEFAULT_LOOK_BACK_MS): CommonRpc {
+        val safeLookBackMs = lookBackMs.coerceAtLeast(1_000L)
         val usageStatsManager =
-            context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val currentTimeMillis = System.currentTimeMillis()
-        val events = usageStatsManager.queryEvents(
-            currentTimeMillis - beginTime,
-            currentTimeMillis
-        )
-        val event = UsageEvents.Event()
+            context.getSystemService(Context.USAGE_STATS_SERVICE) as? UsageStatsManager
+                ?: return CommonRpc()
+
+        val now = System.currentTimeMillis()
         var latestPackage: String? = null
         var latestTimestamp = 0L
         var eventCount = 0
-        while (events.hasNextEvent()) {
-            events.getNextEvent(event)
-            eventCount++
-            val isForegroundEvent = event.eventType == foregroundEventType
-            if (!isForegroundEvent) continue
-            if (event.timeStamp >= latestTimestamp) {
-                latestTimestamp = event.timeStamp
-                latestPackage = event.packageName
+
+        try {
+            val events = usageStatsManager.queryEvents(now - safeLookBackMs, now)
+            val event = UsageEvents.Event()
+            while (events != null && events.hasNextEvent()) {
+                events.getNextEvent(event)
+                eventCount++
+                if (event.eventType != foregroundEventType) continue
+                // Use >= so events sharing the exact same millisecond keep the latest in stream order.
+                if (event.timeStamp >= latestTimestamp) {
+                    latestTimestamp = event.timeStamp
+                    latestPackage = event.packageName
+                }
             }
+        } catch (e: Exception) {
+            Log.w("GetCurrentlyRunningApp", "Failed to query usage events", e)
+            return CommonRpc()
         }
+
         val packageName = latestPackage
-        Log.d("GetCurrentlyRunningApp", "queryEvents: eventCount=$eventCount latestPackage=$packageName latestTimestamp=$latestTimestamp lookbackMs=$beginTime")
-        if (packageName.isNullOrBlank() || packageName == "com.my.kizzy" || packageName == "com.discord") {
+        Log.d(
+            "GetCurrentlyRunningApp",
+            "queryEvents: eventCount=$eventCount latestPackage=$packageName latestTimestamp=$latestTimestamp lookBackMs=$safeLookBackMs"
+        )
+
+        if (packageName.isNullOrBlank() || packageName in EXCLUDED_PACKAGES) {
             Log.d("GetCurrentlyRunningApp", "Returning empty (package null/blank/excluded: $packageName)")
             return CommonRpc()
         }
-        Log.d("GetCurrentlyRunningApp", "Returning app: $packageName")
+
+        val appLabel = runCatching {
+            val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
+            context.packageManager.getApplicationLabel(appInfo).toString().takeIf { it.isNotBlank() }
+        }.getOrNull() ?: packageName
+
+        Log.d("GetCurrentlyRunningApp", "Returning app: $packageName ($appLabel)")
         return CommonRpc(
-            name = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(packageName, 0)).toString(),
+            name = appLabel,
             details = null,
             state = null,
             largeImage = RpcImage.ApplicationIcon(packageName, context),
-            packageName = packageName
+            packageName = packageName,
+        )
+    }
+
+    private companion object {
+        const val DEFAULT_LOOK_BACK_MS = 30_000L
+        val EXCLUDED_PACKAGES = setOf(
+            "com.my.kizzy",
+            "com.my.kizzy.enhanced",
+            "com.discord",
         )
     }
 }

@@ -4,8 +4,8 @@
  *  *  * Copyright (C) 2022
  *  *  * GatewayModule.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
- *  *  *  permission of yzziK(Vaibhav)
- *  *  ******************************************************************
+ *  *  * permission of yzziK(Vaibhav)
+ *  *  *****************************************************************
  *
  *
  */
@@ -27,13 +27,9 @@ import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
 
 /**
- * The gateway and the RPC are shared by the whole process.
- *
- * They used to be provided per service, so every service (and the recovery
- * worker) opened its own gateway connection and kept its own "last presence".
- * A stale presence of one of them could then overwrite the current presence of
- * another one on Discord, and Discord rejected the second connection with a
- * "4003 Not authenticated" error.
+ * Provides process-wide singletons for the Discord gateway connection, RPC engine,
+ * and multi-instance RPC manager so active services share presence state and avoid
+ * conflicting gateway sessions.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -44,12 +40,10 @@ object GatewayModule {
     fun providesDiscordWebsocket(
         logger: Logger
     ): DiscordWebSocket {
-        // Spoof the gateway IDENTIFY "browser" (what platform-indicator plugins read)
-        // based on the platform selected in Manual RPC.
-        // Blank stored value (old default "") should identify as Android/mobile,
-        // not fall through to the desktop identify.
+        // Default blank/unset platform values to Android/mobile identify properties.
         val platform = Prefs[Prefs.MANUAL_RPC_PLATFORM, "android"]
-            .takeIf { it.isNotBlank() } ?: "android"
+            .trim()
+            .takeIf { it.isNotEmpty() } ?: "android"
         val (browser, os, device) = Constants.spoofIdentifyProperties(platform)
         return DiscordWebSocketImpl(
             token = Prefs[Prefs.TOKEN, ""],
@@ -66,14 +60,19 @@ object GatewayModule {
         kizzyRepository: KizzyRepository,
         discordWebSocket: DiscordWebSocket,
         logger: Logger
-    ) = KizzyRPC(Prefs[Prefs.TOKEN, ""], kizzyRepository, discordWebSocket, logger)
+    ): KizzyRPC = KizzyRPC(
+        Prefs[Prefs.TOKEN, ""],
+        kizzyRepository,
+        discordWebSocket,
+        logger
+    )
 
     @Provides
     @Singleton
     fun provideMultiRpcManager(
         kizzyRepository: KizzyRepository,
         logger: Logger
-    ) = MultiRpcManager(kizzyRepository, logger).also {
+    ): MultiRpcManager = MultiRpcManager(kizzyRepository, logger).also {
         it.loadSessionsFromPrefs()
     }
 }

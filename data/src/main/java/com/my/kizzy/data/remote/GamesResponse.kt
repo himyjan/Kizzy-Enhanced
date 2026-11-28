@@ -12,7 +12,6 @@
 
 package com.my.kizzy.data.remote
 
-
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.domain.model.Game
 import kotlinx.serialization.SerialName
@@ -21,23 +20,32 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GamesResponse(
     @SerialName("label")
-    val label: String,
+    val label: String = "",
     @SerialName("link")
     val link: String? = null,
     @SerialName("title")
-    val title: String
+    val title: String = "",
 )
 
-fun GamesResponse.toGame() : Game {
+fun GamesResponse.toGame(): Game {
+    val normalizedLabel = label.trim().lowercase()
     return Game(
-        platform = when (label) {
+        platform = when (normalizedLabel) {
             "nintendo" -> Constants.NINTENDO
             "nintendo-switch-2" -> Constants.NINTENDO_SWITCH_2
             "wii" -> Constants.WII_U
             "nintendo-3ds" -> Constants.NINTENDO_3DS
+            "xbox" -> Constants.XBOX_LINK
+            "ps5" -> Constants.PS5_LINK
+            "ps4" -> Constants.PS4_LINK
+            "android" -> Constants.ANDROID_LINK
+            "ios" -> Constants.IOS_LINK
+            "samsung" -> Constants.SAMSUNG_LINK
+            "droideck" -> Constants.DROIDDECK_LINK
+            "eden" -> Constants.EDEN_LINK
             else -> Constants.ANDROID_LINK
         },
-        small_image = when (label) {
+        small_image = when (normalizedLabel) {
             "nintendo" -> Constants.NINTENDO_LINK
             "nintendo-switch-2" -> Constants.NINTENDO_SWITCH_2_LINK
             "wii" -> Constants.WII_U_LINK
@@ -53,6 +61,6 @@ fun GamesResponse.toGame() : Game {
             else -> Constants.ANDROID_LINK
         },
         large_image = link,
-        game_title = title
+        game_title = title,
     )
 }

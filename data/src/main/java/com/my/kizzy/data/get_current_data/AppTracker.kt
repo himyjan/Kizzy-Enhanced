@@ -15,32 +15,50 @@ package com.my.kizzy.data.get_current_data
 import android.util.Log
 import com.my.kizzy.data.get_current_data.app.GetCurrentlyRunningApp
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
+import com.my.kizzy.data.rpc.CommonRpc
 import jakarta.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 
+/**
+ * Periodically polls active media sessions and foreground app state to produce a
+ * stream of [CommonRpc] presence updates.
+ */
 class AppTracker @Inject constructor(
     private val getCurrentlyRunningApp: GetCurrentlyRunningApp,
-    private val getCurrentPlayingMedia: GetCurrentPlayingMedia
+    private val getCurrentPlayingMedia: GetCurrentPlayingMedia,
 ) {
-    fun getCurrentAppData() = flow {
+    /**
+     * Emits [CommonRpc] snapshots every [POLL_INTERVAL_MS], prioritizing active/enabled
+     * media sessions and falling back to the current foreground app.
+     */
+    fun getCurrentAppData(instanceId: String? = null): Flow<CommonRpc> = flow {
         while (currentCoroutineContext().isActive) {
-            val getCurrentMedia = getCurrentPlayingMedia()
-            if (getCurrentMedia.name.isNotEmpty()) {
-                emit(getCurrentMedia)
+            val currentMedia = getCurrentPlayingMedia(instanceId)
+            if (currentMedia.name.isNotEmpty()) {
+                emit(currentMedia)
             } else {
-                val getCurrentApp = getCurrentlyRunningApp()
-                if (getCurrentApp.name.isNotEmpty()) {
-                    emit(getCurrentApp)
+                val currentApp = getCurrentlyRunningApp()
+                if (currentApp.name.isNotEmpty()) {
+                    emit(currentApp)
                 }
             }
-            delay(5000)
+            delay(POLL_INTERVAL_MS)
         }
-    }.catch { exception ->
-        Log.e("Error", exception.message.toString())
+    }.distinctUntilChanged()
+        .catch { exception ->
+            if (exception is CancellationException) throw exception
+            Log.e(TAG, "Error while tracking current app/media data", exception)
+        }
+
+    private companion object {
+        const val TAG = "AppTracker"
+        const val POLL_INTERVAL_MS = 5_000L
     }
 }
-

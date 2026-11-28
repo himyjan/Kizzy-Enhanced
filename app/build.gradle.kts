@@ -13,6 +13,9 @@ val enableAbiSplits = providers.gradleProperty("enableAbiSplits")
     .map { it.toBoolean() }
     .orElse(true)
 
+val gamesApiUrl = providers.gradleProperty("GAMES_API_URL")
+    .orElse("https://raw.githubusercontent.com/himyjan/Kizzy-Enhanced/refs/heads/master/games.json")
+
 android {
     namespace = "com.my.kizzy"
 
@@ -22,6 +25,7 @@ android {
             .orElse(null)?.requiredVersion?.toInt() ?: 1
         versionName = libsCatalog.findVersion("version-name")
             .orElse(null)?.requiredVersion ?: "1.0.0"
+        buildConfigField("String", "GAMES_API_URL", "\"${gamesApiUrl.get()}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true

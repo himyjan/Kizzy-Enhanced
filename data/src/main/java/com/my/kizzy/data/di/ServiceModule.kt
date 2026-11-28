@@ -17,29 +17,24 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ServiceComponent
+import dagger.hilt.android.scopes.ServiceScoped
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
+/**
+ * Service-scoped bindings shared by Android services running RPC and media tracking.
+ */
 @Module
 @InstallIn(ServiceComponent::class)
 object ServiceModule {
-    /**
-     * The gateway and the RPC are provided by [GatewayModule] as singletons of
-     * the whole process.
-     *
-     * They used to be provided per service, so every service (and the recovery
-     * worker) opened its own gateway connection and kept its own "last
-     * presence". A stale presence of one of them could then overwrite the
-     * current presence of another one on Discord, and Discord rejected the
-     * second connection with a "4003 Not authenticated" error.
-     */
+
     @Provides
+    @ServiceScoped
     fun providesCoroutineScope(): CoroutineScope {
         val handler = CoroutineExceptionHandler { _, exception ->
-            // Log uncaught coroutine exceptions instead of crashing the app
-            android.util.Log.e("CoroutineExceptionHandler", "Uncaught coroutine exception", exception)
+            Log.e("CoroutineExceptionHandler", "Uncaught coroutine exception", exception)
         }
         return CoroutineScope(SupervisorJob() + handler + Dispatchers.IO)
     }

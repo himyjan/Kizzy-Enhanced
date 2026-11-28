@@ -70,11 +70,9 @@ fun Features(
 ) {
     val uriHandler = LocalUriHandler.current
 
-    // Dialog visibility and selected RPC template type
     var showAddRpcDialog by remember { mutableStateOf(false) }
     var selectedRpcType by remember { mutableStateOf<String?>(null) }
 
-    // Resolve localized labels in composable scope before passing to click handlers
     val mediaRpcLabel = stringResource(R.string.main_mediaRpc)
     val manualRpcLabel = stringResource(R.string.main_ManualRpc)
     val customRpcLabel = stringResource(R.string.main_customRpc)
@@ -83,12 +81,9 @@ fun Features(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        homeItems.forEach { item ->
-            val instance = instances.firstOrNull { it.id == item.instanceId }
-            val idx = homeItems.indexOf(item)
+        homeItems.forEachIndexed { idx, item ->
             val isBuiltIn = !item.isDeletable
 
-            // Allow moving deletable clone items only within adjacent deletable items
             val canMoveUp = !isBuiltIn && idx > 0 && homeItems[idx - 1].isDeletable
             val canMoveDown = !isBuiltIn && idx < homeItems.lastIndex - 1 && homeItems[idx + 1].isDeletable
 
@@ -105,11 +100,16 @@ fun Features(
             val moveDown: () -> Unit = {
                 val newInstances = instances.toMutableList()
                 val instanceIdx = newInstances.indexOfFirst { it.id == item.instanceId }
-                if (instanceIdx < newInstances.lastIndex) {
+                if (instanceIdx >= 0 && instanceIdx < newInstances.lastIndex) {
                     val moved = newInstances.removeAt(instanceIdx)
                     newInstances.add(instanceIdx + 1, moved)
                     onReorder(newInstances)
                 }
+            }
+
+            val deleteAction: () -> Unit = {
+                item.onDelete()
+                onDeleteInstance(item.instanceId)
             }
 
             if (item.tooltipText.isNotBlank()) {
@@ -125,8 +125,10 @@ fun Features(
                             },
                             text = { Text(item.tooltipText) },
                             action = {
-                                TextButton(onClick = { uriHandler.openUri(item.featureDocsLink) }) {
-                                    Text(text = stringResource(R.string.learn_more))
+                                if (item.featureDocsLink.isNotBlank()) {
+                                    TextButton(onClick = { uriHandler.openUri(item.featureDocsLink) }) {
+                                        Text(text = stringResource(R.string.learn_more))
+                                    }
                                 }
                             },
                         )
@@ -134,12 +136,11 @@ fun Features(
                 ) {
                     FeatureCard(
                         feature = item,
-                        instance = instance,
                         onToggle = {
                             item.onCheckedChange(!item.isChecked)
                             onValueUpdate(idx)
                         },
-                        onDelete = { onDeleteInstance(item.instanceId) },
+                        onDelete = deleteAction,
                         isDeletable = item.isDeletable,
                         canMoveUp = canMoveUp,
                         canMoveDown = canMoveDown,
@@ -150,12 +151,11 @@ fun Features(
             } else {
                 FeatureCard(
                     feature = item,
-                    instance = instance,
                     onToggle = {
                         item.onCheckedChange(!item.isChecked)
                         onValueUpdate(idx)
                     },
-                    onDelete = { onDeleteInstance(item.instanceId) },
+                    onDelete = deleteAction,
                     isDeletable = item.isDeletable,
                     canMoveUp = canMoveUp,
                     canMoveDown = canMoveDown,
@@ -165,7 +165,6 @@ fun Features(
             }
         }
 
-        // Trailing "Add RPC" action card aligned to the right
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
@@ -180,7 +179,6 @@ fun Features(
                     isAddButton = true,
                     tooltipText = "Add a new RPC instance (Media, Manual, or Custom)",
                 ),
-                instance = null,
                 onToggle = {},
                 onDelete = {},
                 isDeletable = false,
@@ -195,7 +193,6 @@ fun Features(
         }
     }
 
-    // RPC type selection dialog for adding a new clone instance
     if (showAddRpcDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -211,11 +208,9 @@ fun Features(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        RpcTypeRow("media_rpc", mediaRpcLabel, selectedRpcType) { selectedRpcType = it }
-                        RpcTypeRow("manual_rpc", manualRpcLabel, selectedRpcType) { selectedRpcType = it }
-                        RpcTypeRow("custom_rpc", customRpcLabel, selectedRpcType) { selectedRpcType = it }
-                    }
+                    RpcTypeRow("media_rpc", mediaRpcLabel, selectedRpcType) { selectedRpcType = it }
+                    RpcTypeRow("manual_rpc", manualRpcLabel, selectedRpcType) { selectedRpcType = it }
+                    RpcTypeRow("custom_rpc", customRpcLabel, selectedRpcType) { selectedRpcType = it }
                 }
             },
             confirmButton = {
@@ -252,9 +247,6 @@ fun Features(
     }
 }
 
-/**
- * Single selectable row inside the "Add RPC" type dialog.
- */
 @Composable
 private fun RpcTypeRow(
     type: String,
@@ -284,13 +276,9 @@ private fun RpcTypeRow(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 }
 
-/**
- * Card representing a single RPC feature, clone instance, or the "Add RPC" button.
- */
 @Composable
 private fun FeatureCard(
     feature: HomeFeature,
-    instance: RpcInstance?,
     onToggle: () -> Unit,
     onDelete: () -> Unit,
     isDeletable: Boolean,
@@ -304,7 +292,7 @@ private fun FeatureCard(
         Brush.linearGradient(
             listOf(
                 MaterialTheme.colorScheme.primaryContainer,
-                MaterialTheme.colorScheme.primaryContainer.copy(0.8f),
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
             )
         )
@@ -312,7 +300,7 @@ private fun FeatureCard(
         Brush.linearGradient(
             listOf(
                 MaterialTheme.colorScheme.secondaryContainer,
-                MaterialTheme.colorScheme.secondaryContainer.copy(0.8f),
+                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
                 MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
             )
         )
@@ -355,7 +343,6 @@ private fun FeatureCard(
                 onClick = onToggle
             )
         }
-        // Reorder and delete controls for user-added clone instances
         if (isDeletable && !feature.isAddButton) {
             Spacer(modifier = Modifier.width(12.dp))
             Column(

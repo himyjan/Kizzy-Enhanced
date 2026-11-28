@@ -49,6 +49,9 @@ import kotlinx.serialization.json.Json
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 
+private const val MIN_RPC_INTERVAL_MS = 500L
+private const val MAX_RPC_IDLE_INTERVAL_MS = 14_500L
+
 @AndroidEntryPoint
 @SuppressLint("MissingPermission")
 class AppDetectionService : Service() {
@@ -78,6 +81,19 @@ class AppDetectionService : Service() {
     private lateinit var restartPendingIntent: PendingIntent
 
     private var runningPackage = ""
+    private var activeStartTimestampMs: Long? = null
+    private val rpcPacer = RpcPacer(
+        minIntervalMs = MIN_RPC_INTERVAL_MS,
+        maxIdleIntervalMs = MAX_RPC_IDLE_INTERVAL_MS,
+    )
+
+    private fun resolveStartTimestamp(packageName: String): Long {
+        if (runningPackage != packageName || activeStartTimestampMs == null) {
+            activeStartTimestampMs = System.currentTimeMillis()
+        }
+        return activeStartTimestampMs!!
+    }
+
     override fun onTaskRemoved(intent: Intent?) {
         Log.d(TAG, "onTaskRemoved: app swiped from Recents - keeping App Detection alive")
         com.my.kizzy.data.work.WorkManagerHelper.scheduleRpcRecovery(this)
@@ -92,22 +108,17 @@ class AppDetectionService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Wire App Detection to slot "4"
         kizzyRPC = multiRpc.session("4")
 
         when (intent?.action) {
             Constants.ACTION_STOP_SERVICE -> {
-                // Explicit stop: the next cold start must not bring it back.
                 Prefs[Prefs.ACTIVE_RPC_TYPE] = ""
-                // Remove AppDetectionRpc from ACTIVE_RPC_TYPES so a cold start doesn't restore it.
                 val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
                     .split(',')
                     .mapNotNull { runCatching { RpcManager.RpcType.valueOf(it.trim()) }.getOrNull() }
                     .filter { it != RpcManager.RpcType.AppDetectionRpc }
                     .joinToString(",") { it.name }
                 Prefs[Prefs.ACTIVE_RPC_TYPES] = remainingTypes
-                // Also clear RpcManager's active set so refreshFromServices() doesn't
-                // resurrect this service when the screen resumes.
                 rpcManager.stopRpcTypes(setOf(RpcManager.RpcType.AppDetectionRpc))
                 stopSelf()
             }
@@ -116,6 +127,7 @@ class AppDetectionService : Service() {
                 startService(Intent(this, AppDetectionService::class.java))
             }
             else -> {
+                rpcPacer.reset()
                 Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.AppDetectionRpc.name
                 handleAppDetection()
             }
@@ -124,7 +136,6 @@ class AppDetectionService : Service() {
     }
 
     override fun onDestroy() {
-        // Cancel pending work first, then clear/close off the main thread.
         scope.cancel()
         val rpc = kizzyRPC
         AppUtils.unregisterRpcService(this)
@@ -151,11 +162,6 @@ class AppDetectionService : Service() {
             this,
             0, restartIntent, PendingIntent.FLAG_IMMUTABLE
         )
-        Notification.Builder(this, Constants.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_apps)
-            .addAction(R.drawable.ic_apps, getString(R.string.restart), restartPendingIntent)
-            .addAction(R.drawable.ic_apps, getString(R.string.exit), pendingIntent)
-
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification())
@@ -166,17 +172,11 @@ class AppDetectionService : Service() {
         scope.launch {
             while (isActive) {
                 try {
-                    // Re-read the enabled apps and buttons on every cycle instead of caching
-                    // them once at service start. Caching them meant that toggling an app in
-                    // the apps list had no effect until the service was restarted, which is
-                    // exactly the "app list does not switch the shown app" symptom.
                     val enabledPackages = getEnabledPackages()
                     val rpcButtons = getRpcButtons()
 
                     val queryUsageStats = getUsageStats()
 
-                    // Prefer the raw foreground event stream; fall back to the coarse usage
-                    // stats when the event stream is unavailable.
                     val packageName = getForegroundPackage()
                         ?: (if (queryUsageStats != null && queryUsageStats.size > 1) {
                             getLatestPackageName(queryUsageStats)
@@ -188,15 +188,12 @@ class AppDetectionService : Service() {
                         Log.d(TAG, "Foreground package: $packageName (enabled=${packageName in enabledPackages}, game=${dynamicActivityDetectionEngine.identifyGame(packageName) != null}, ai=${dynamicActivityDetectionEngine.identifyAiApp(packageName) != null})")
                         handleValidPackage(packageName, enabledPackages, rpcButtons)
                     } else if (packageName == null && runningPackage != "") {
-                        // No foreground package detected (media/music closed, app switched away).
-                        // Clear the old presence so Discord doesn't keep showing the previous app.
                         Log.d(TAG, "No foreground package detected, clearing old presence for: $runningPackage")
                         handleDisabledPackage()
                         runningPackage = ""
+                        activeStartTimestampMs = null
                     }
 
-                    // Also check the active assistant (power-button / "Hey Google" triggers)
-                    // that may appear as a floating overlay rather than a foreground activity.
                     if (dynamicActivityDetectionEngine.isAiAssistantActive()) {
                         val assistantPkg = dynamicActivityDetectionEngine.getActiveAssistantPackage()
                         if (assistantPkg != null && assistantPkg !in EXCLUDED_APPS) {
@@ -239,15 +236,6 @@ class AppDetectionService : Service() {
         }
     }
 
-    /**
-     * Resolves the package that is actually in the foreground right now.
-     *
-     * `queryUsageStats` with `INTERVAL_DAILY` only returns coarse daily buckets, so the
-     * "last used" entry is frequently a background app and the foreground app never gets
-     * picked up. Querying the raw usage EVENT stream and looking for the most recent
-     * foreground transition is the reliable way to know which app the user is looking at
-     * right now — this is what makes the apps list actually switch between apps.
-     */
     private fun getForegroundPackage(): String? {
         return try {
             val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
@@ -288,34 +276,28 @@ class AppDetectionService : Service() {
         enabledPackages: List<String>,
         rpcButtons: RpcButtons,
     ) {
-        // Check if this is an AI app via dynamic detection (no hardcoded list needed).
         val aiApp = dynamicActivityDetectionEngine.identifyAiApp(packageName)
         val isAiApp = aiApp != null
 
-        // Check if this is a game via Android system game flags (no hardcoded list needed).
         val gameApp = dynamicActivityDetectionEngine.identifyGame(packageName)
         val isGameApp = gameApp != null
 
-        // Determine if this package should be shown on Discord.
-        // This is evaluated independently of runningPackage so that disabling
-        // an app in Preferences immediately removes its presence even if the
-        // app is still playing in the foreground.
         val shouldShow = packageName in enabledPackages || isAiApp || isGameApp
 
         if (shouldShow) {
-            // Show the app. When it is a DIFFERENT app than the one currently shown, the
-            // presence has to be replaced. When it is the SAME app, the presence is
-            // already correct and re-sending it would only spam the gateway - but the
-            // check is skipped entirely when the app was never shown before (the user
-            // just enabled it), so that enabling an app takes effect immediately.
-            if (packageName != runningPackage || runningPackage == "") {
-                handleEnabledPackage(packageName, rpcButtons, aiApp = aiApp, gameApp = gameApp)
-                runningPackage = packageName
-            }
+            val appChanged = packageName != runningPackage || runningPackage == ""
+            handleEnabledPackage(
+                packageName = packageName,
+                rpcButtons = rpcButtons,
+                aiApp = aiApp,
+                gameApp = gameApp,
+                hasMeaningfulChange = appChanged,
+            )
+            runningPackage = packageName
         } else if (runningPackage != "") {
-            // App was disabled in prefs or is no longer relevant — clear presence.
             handleDisabledPackage()
             runningPackage = ""
+            activeStartTimestampMs = null
         }
     }
 
@@ -323,8 +305,14 @@ class AppDetectionService : Service() {
         packageName: String,
         rpcButtons: RpcButtons,
         aiApp: DetectedAiApp? = null,
-        gameApp: DetectedGameApp? = null
+        gameApp: DetectedGameApp? = null,
+        hasMeaningfulChange: Boolean = true,
     ) {
+        val startMs = resolveStartTimestamp(packageName)
+        if (!rpcPacer.acquireSendSlot(hasMeaningfulChange = hasMeaningfulChange, forceRefresh = false)) {
+            return
+        }
+
         val isAiApp = aiApp != null
         val isGameApp = gameApp != null
         val displayName = if (isAiApp) aiApp.displayName else if (isGameApp) gameApp.displayName else null
@@ -339,18 +327,13 @@ class AppDetectionService : Service() {
         val largeImage = iconUrl?.let { RpcImage.ExternalImage(it) }
             ?: RpcImage.ApplicationIcon(packageName, this@AppDetectionService)
 
-        // Configure the RPC the same way for both the "already connected" and the
-        // "not connected yet" path. Previously the update path silently dropped the
-        // buttons and the status, so the presence changed depending on whether the
-        // gateway happened to be connected already.
         kizzyRPC?.apply {
             setName(appLabel)
             setDetails(details)
             setState(state)
-            setStartTimestamps(System.currentTimeMillis())
+            setStartTimestamps(startMs)
             setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
             setLargeImage(largeImage)
-            // Buttons are additive, so clear them first or they pile up on every app switch.
             clearButtons()
             if (Prefs[Prefs.USE_RPC_BUTTONS, false]) {
                 with(rpcButtons) {
@@ -360,11 +343,6 @@ class AppDetectionService : Service() {
             }
         }
 
-        // Always send the presence update - the gateway connection will be
-        // established asynchronously, and updateRPC handles the connection state
-        // internally. Previously we skipped sending when isRpcRunning() was false,
-        // which meant the presence was never sent if the WebSocket hadn't connected
-        // yet when the app first came to the foreground.
         kizzyRPC?.updateRPC(
             CommonRpc(
                 name = appLabel,
@@ -376,15 +354,14 @@ class AppDetectionService : Service() {
                 details = details,
                 state = state,
                 largeImage = largeImage,
-                time = Timestamps(start = System.currentTimeMillis()),
+                time = Timestamps(start = startMs),
                 packageName = packageName,
                 appPackage = packageName
             ),
             enableTimestamps = true,
-            priority = 4, // App Detection: lower priority than user-configured RPCs
+            priority = 4,
         )
 
-        // Expose the presence config so the profile preview shows it.
         val detectedType = ActivityTypeResolver.resolve(
             packageName = packageName,
             fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
@@ -397,7 +374,7 @@ class AppDetectionService : Service() {
                 details = details.orEmpty(),
                 state = state.orEmpty(),
                 type = detectedType.toString(),
-                timestampsStart = System.currentTimeMillis().toString(),
+                timestampsStart = startMs.toString(),
                 timestampsStop = "",
                 largeImg = largeImage.toUrlString().orEmpty(),
             ),
@@ -414,9 +391,6 @@ class AppDetectionService : Service() {
 
     private suspend fun handleDisabledPackage() {
         if (kizzyRPC?.isRpcRunning() == true) {
-            // Clear the activity instead of tearing down the gateway connection. Closing it
-            // meant the next app switch had to reconnect from scratch, and the reconnect
-            // could fail, leaving Discord stuck showing the previous app.
             kizzyRPC?.clearPresence()
         }
         notificationManager.notify(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification())
@@ -448,28 +422,14 @@ class AppDetectionService : Service() {
     }
 
     companion object {
-        /**
-         * How far back the usage event stream is searched for a foreground transition.
-         * Long enough to survive a short trip to another app, short enough that switching
-         * apps is picked up quickly.
-         */
         private const val EVENT_LOOKBACK_MS = 30000L
 
         val EXCLUDED_APPS = listOf("com.my.kizzy", "com.my.kizzy.enhanced", "com.discord")
 
-        /** Tag used for Logcat output from AppDetectionService. */
         internal const val TAG = "AppDetectionService"
     }
 }
 
-/**
- * Posts one independent notification per RPC clone.
- *
- * Android shows only ONE foreground notification per Service, so clones cannot
- * use startForeground(). Instead each clone gets a separate notification via
- * NotificationManager.notify() with a unique id on a DEFAULT-importance
- * channel, which keeps the cards ungrouped and visible.
- */
 object CloneNotificationHelper {
 
     private val ids = mutableMapOf<String, Int>()
@@ -542,8 +502,6 @@ object CloneNotificationHelper {
             )
             .build()
 
-        // Throttle notification updates to at most once per second to avoid
-        // Android's notification rate limit which mutes the app as noisy.
         val now = System.currentTimeMillis()
         if (now - (lastNotificationUpdateMs[instanceId] ?: 0L) < 1000) return
         lastNotificationUpdateMs[instanceId] = now

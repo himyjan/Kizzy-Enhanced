@@ -14,18 +14,31 @@ package com.my.kizzy.feature_rpc_base.services
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build.VERSION.SDK_INT
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.view.ContextThemeWrapper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.my.kizzy.resources.R
 
 class DialogActivity : Activity() {
+
+    private var finishingFromSelection = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (SDK_INT >= 27)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
+        }
         showDialog()
+    }
+
+    private fun startRpcService(serviceClass: Class<*>) {
+        val intent = Intent(this, serviceClass)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
     }
 
     private fun showDialog() {
@@ -34,19 +47,26 @@ class DialogActivity : Activity() {
             getString(R.string.main_mediaRpc),
             getString(R.string.main_ManualRpc)
         )
-        val dialog = MaterialAlertDialogBuilder(ContextThemeWrapper(this, com.my.kizzy.feature_rpc_base.R.style.MyTileDialogTheme))
+        val dialog = MaterialAlertDialogBuilder(
+            ContextThemeWrapper(this, com.my.kizzy.feature_rpc_base.R.style.MyTileDialogTheme)
+        )
             .setTitle(getString(R.string.choose_rpc))
-            .setSingleChoiceItems(rpc, -1) { dialog, which ->
+            .setSingleChoiceItems(rpc, -1) { dialogInterface, which ->
+                finishingFromSelection = true
                 when (which) {
-                    0 -> startService(Intent(this, AppDetectionService::class.java))
-                    1 -> startService(Intent(this, MediaRpcService::class.java))
-                    2 -> startService(Intent(this, ManualRpc::class.java))
+                    0 -> startRpcService(AppDetectionService::class.java)
+                    1 -> startRpcService(MediaRpcService::class.java)
+                    2 -> startRpcService(ManualRpc::class.java)
                 }
-                dialog.dismiss()
+                dialogInterface.dismiss()
                 finish()
             }
             .create()
-        dialog.setOnDismissListener { finish() }
+        dialog.setOnDismissListener {
+            if (!finishingFromSelection && !isFinishing) {
+                finish()
+            }
+        }
         dialog.show()
     }
 }

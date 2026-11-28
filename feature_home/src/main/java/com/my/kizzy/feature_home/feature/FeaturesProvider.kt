@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -51,19 +52,17 @@ fun homeFeaturesProvider(
     val rpcManager = RpcManager.getInstance(ctx)
     val scope = rememberCoroutineScope()
 
-    // Refresh active RPC service state when entering the home feature builder
     LaunchedEffect(Unit) {
         rpcManager.refreshFromServices()
     }
 
-    val instances = Prefs.getHomeRpcInstances()
+    val instances = remember(prefsMap) { Prefs.getHomeRpcInstances() }
     val activeInstances by rpcManager.activeInstances.collectAsState()
-    val builtInIds = BUILT_IN_INSTANCES.map { it.id }.toSet()
+    val builtInIds = remember { BUILT_IN_INSTANCES.map { it.id }.toSet() }
 
     return instances.map { instance ->
         val isClone = instance.id !in builtInIds
 
-        // Map each RPC type and instance to its typed `AppRoute` (`instanceId` is null for built-ins)
         val route: AppRoute? = when (instance.type) {
             "media_rpc" -> AppRoute.MediaRpc(instanceId = if (isClone) instance.id else null)
             "manual_rpc" -> AppRoute.ManualRpc(instanceId = if (isClone) instance.id else null)
@@ -75,15 +74,23 @@ fun homeFeaturesProvider(
             "media_rpc" -> RpcType.MediaRpc
             "manual_rpc" -> RpcType.ManualRpc
             "custom_rpc" -> RpcType.CustomRpc
+            "app_detection_rpc" -> RpcType.AppDetectionRpc
             else -> null
         }
 
-        // Check per-instance active status so built-ins and clones toggle independently
         val isRunning = instance.id in activeInstances
         val requiresUsageAccess = rpcType == RpcType.AppDetectionRpc
 
+        val stopAndDelete: () -> Unit = {
+            scope.launch {
+                if (rpcType != null && isRunning) {
+                    rpcManager.stopInstance(instance.id, rpcType)
+                }
+                onDeleteInstance(instance.id)
+            }
+        }
+
         HomeFeature(
-            // Built-ins resolve to translated resources; clones keep their stored label.
             title = instance.displayLabel(ctx),
             icon = when (instance.type) {
                 "media_rpc" -> R.drawable.ic_media_rpc
@@ -99,7 +106,6 @@ fun homeFeaturesProvider(
                 navigateTo(key)
             },
             onCheckedChange = { enabled ->
-                // Guard App Detection behind Android Usage Access settings
                 if (enabled && requiresUsageAccess && !hasUsageAccess.value) {
                     Toast.makeText(
                         ctx,
@@ -142,14 +148,7 @@ fun homeFeaturesProvider(
                 "app_detection_rpc" -> ToolTipContent.APP_DETECTION_DOCS_LINK
                 else -> ""
             },
-            onDelete = {
-                scope.launch {
-                    if (rpcType != null && isRunning) {
-                        rpcManager.stopInstance(instance.id, rpcType)
-                    }
-                    onDeleteInstance(instance.id)
-                }
-            },
+            onDelete = { stopAndDelete() },
         )
     }
 }

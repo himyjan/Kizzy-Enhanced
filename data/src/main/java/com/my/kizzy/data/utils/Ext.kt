@@ -1,11 +1,11 @@
 /*
  *
--  ******************************************************************
--  *  * Copyright (C) 2022
--  *  * Ext.kt is part of Kizzy
--  *  *  and can not be copied and/or distributed without the express
--  *  * permission of yzziK(Vaibhav)
--  *  *****************************************************************
+ *  ******************************************************************
+ *  *  * Copyright (C) 2022
+ *  *  * Ext.kt is part of Kizzy
+ *  *  *  and can not be copied and/or distributed without the express
+ *  *  * permission of yzziK(Vaibhav)
+ *  *  *****************************************************************
  *
  *
  */
@@ -25,12 +25,16 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import com.my.kizzy.data.remote.ApiResponse
 import com.my.kizzy.data.remote.ExternalAsset
+import com.my.kizzy.data.remote.ExternalAssetsResponse
 import com.my.kizzy.data.remote.ImgurResponse
 import com.my.kizzy.data.rpc.RpcImage
 import com.my.kizzy.preference.Prefs
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.CancellationException
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileOutputStream
 
@@ -49,71 +53,102 @@ private val MIME_TO_EXTENSION = mapOf(
     "application/zip" to "zip",
 )
 
+private val extJson = Json {
+    ignoreUnknownKeys = true
+    encodeDefaults = true
+}
+
+/** Extracts the uploaded image link from a successful Imgur response. */
 suspend fun HttpResponse.toImageURL(): String? {
     return try {
-        if (this.status == HttpStatusCode.OK)
-            this.body<ImgurResponse>().data.link
-        else
+        if (this.status == HttpStatusCode.OK) {
+            this.body<ImgurResponse>().data.link.takeIf { it.isNotBlank() }
+        } else {
             null
-    } catch (e: Exception) {
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
         null
     }
 }
 
+/** Extracts an `mp:` external asset path from a successful Discord external-assets response. */
 suspend fun HttpResponse.toExternalAsset(): String? {
     return try {
-        if (this.status == HttpStatusCode.OK)
-            "mp:" + this.body<Array<ExternalAsset>>().first().externalAssetPath
-        else
+        if (this.status != HttpStatusCode.OK) return null
+        val raw = this.bodyAsText().trim()
+        if (raw.isEmpty()) return null
+
+        val path = if (raw.startsWith("[")) {
+            extJson.decodeFromString<List<ExternalAsset>>(raw)
+                .firstOrNull()?.externalAssetPath
+        } else if (raw.contains("\"data\"")) {
+            extJson.decodeFromString<ExternalAssetsResponse>(raw)
+                .data.firstOrNull()?.externalAssetPath
+        } else {
+            extJson.decodeFromString<ExternalAsset>(raw).externalAssetPath
+        }?.trim()
+
+        if (!path.isNullOrEmpty()) {
+            if (path.startsWith("mp:")) path else "mp:$path"
+        } else {
             null
-    } catch (e: Exception) {
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
         null
     }
 }
 
+/** Extracts the uploaded attachment ID from a successful Kizzy worker response. */
 suspend fun HttpResponse.toAttachmentAsset(): String? {
     return try {
-        if (this.status == HttpStatusCode.OK)
-            this.body<ApiResponse>().id
-        else
+        if (this.status == HttpStatusCode.OK) {
+            this.body<ApiResponse>().id.takeIf { it.isNotBlank() }
+        } else {
             null
-    } catch (e: Exception) {
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
         null
     }
 }
 
 /**
-- Converts Bitmap to file
-- @param context Context
-- @param outputPathFolder Folder name for storing the image file eg (images, media, custom)
-- @param compressFormat PNG keeps transparency (app icons); JPEG is much smaller and is
--        used for album art. A 500x500 PNG cover was ~400 KB and blocked the presence
--        update on a slow connection for almost two seconds.
-- @param quality compression quality for lossy formats
+ * Converts a [Bitmap] to a file under `filesDir/<outputPathFolder>`.
+ *
+ * Returns `null` if the bitmap is `null` or compression fails.
  */
 fun Bitmap?.toFile(
     context: Context,
     outputPathFolder: String,
     compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG,
     quality: Int = 100,
-): File {
-    val dir = File(context.filesDir.toString() + File.separator + outputPathFolder)
-    dir.mkdirs()
+): File? {
+    val bmp = this ?: return null
+    val dir = File(context.filesDir, outputPathFolder)
+    if (!dir.exists() && !dir.mkdirs()) return null
     val extension = if (compressFormat == Bitmap.CompressFormat.JPEG) "jpg" else "png"
     val image = File(dir, "Temp.$extension")
-    FileOutputStream(image).use {
-        this?.compress(compressFormat, quality, it)
+    val ok = runCatching {
+        FileOutputStream(image).use { out ->
+            bmp.compress(compressFormat, quality.coerceIn(0, 100), out)
+        }
+    }.getOrDefault(false)
+    return if (ok) image else {
+        image.delete()
+        null
     }
-    return image
 }
 
 /**
-- Scales the bitmap down so its largest side is at most [maxDimension].
- *
-- Album art is shown at a few dozen pixels in Discord, so uploading a full-size
-- YouTube thumbnail (1280x720) wastes bandwidth and delays the presence update.
+ * Scales the bitmap down so its largest side is at most [maxDimension].
  */
 fun Bitmap.scaleToMaxDimension(maxDimension: Int): Bitmap {
+    if (maxDimension <= 0) return this
     val largest = maxOf(width, height)
     if (largest <= maxDimension || largest <= 0) return this
     val scale = maxDimension.toFloat() / largest
@@ -122,52 +157,55 @@ fun Bitmap.scaleToMaxDimension(maxDimension: Int): Bitmap {
     return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
 }
 
-@Suppress("DEPRECATION")
+/** Queries [ApplicationInfo] with metadata flags for [packageName]. */
 fun Context.getAppInfo(packageName: String): ApplicationInfo {
-    return this.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-}
-
-@Suppress("DEPRECATION")
-fun ApplicationInfo.toBitmap(context: Context): Bitmap? {
-    val res = context.packageManager.getResourcesForApplication(this)
-    val icon = if (Prefs[Prefs.RPC_USE_LOW_RES_ICON, false])
-        context.packageManager.getApplicationIcon(this.packageName)
-    else res.getDrawableForDensity(
-        this.icon,
-        DisplayMetrics.DENSITY_XXXHIGH
-    )
-
-    val bitmap = icon?.let {
-        Bitmap.createBitmap(
-            it.intrinsicWidth,
-            icon.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        this.packageManager.getApplicationInfo(
+            packageName,
+            PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA.toLong())
         )
+    } else {
+        @Suppress("DEPRECATION")
+        this.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     }
-    val canvas = bitmap?.let { Canvas(it) }
-    if (icon != null) {
-        if (canvas != null) {
-            icon.setBounds(0, 0, canvas.width, canvas.height)
-            icon.draw(canvas)
-        }
-    }
-    return bitmap
 }
 
+/** Renders an [ApplicationInfo] icon into a non-null [Bitmap] when available. */
+fun ApplicationInfo.toBitmap(context: Context): Bitmap? {
+    return runCatching {
+        val res = context.packageManager.getResourcesForApplication(this)
+        val icon = if (Prefs[Prefs.RPC_USE_LOW_RES_ICON, false]) {
+            context.packageManager.getApplicationIcon(this.packageName)
+        } else {
+            @Suppress("DEPRECATION")
+            res.getDrawableForDensity(this.icon, DisplayMetrics.DENSITY_XXXHIGH)
+        } ?: return@runCatching null
+
+        val width = icon.intrinsicWidth.coerceAtLeast(1)
+        val height = icon.intrinsicHeight.coerceAtLeast(1)
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        icon.setBounds(0, 0, canvas.width, canvas.height)
+        icon.draw(canvas)
+        bitmap
+    }.getOrNull()
+}
+
+/** Converts a raw asset path or URL string into an [RpcImage]. */
 fun String.toRpcImage(): RpcImage? {
-    return if (this.isBlank())
-        null
-    else if (this.startsWith("attachments") || this.startsWith("external"))
-        RpcImage.DiscordImage(this)
-    else
-        RpcImage.ExternalImage(this)
+    val trimmed = this.trim()
+    return when {
+        trimmed.isEmpty() -> null
+        trimmed.startsWith("attachments") ||
+                trimmed.startsWith("external") ||
+                trimmed.startsWith("mp:") ||
+                trimmed.startsWith("app-assets/") -> RpcImage.DiscordImage(trimmed)
+        else -> RpcImage.ExternalImage(trimmed)
+    }
 }
 
 /**
-- Extracts the URL/identifier string from an [RpcImage] without resolving or uploading it.
-- Returns the raw string for [RpcImage.DiscordImage] and [RpcImage.ExternalImage];
-- returns null for [RpcImage.ApplicationIcon] and [RpcImage.BitmapImage] since those
-- require async resolution/upload to obtain a URL.
+ * Extracts the URL/identifier string from an [RpcImage] without resolving or uploading it.
  */
 fun RpcImage.toUrlString(): String? = when (this) {
     is RpcImage.DiscordImage -> image
@@ -176,7 +214,11 @@ fun RpcImage.toUrlString(): String? = when (this) {
     is RpcImage.BitmapImage -> null
 }
 
-fun Context.getFileName(uri: Uri): String = "temp_file.${getFileExtension(this, uri)}"
+/** Builds a temporary filename using the resolved extension for [uri]. */
+fun Context.getFileName(uri: Uri): String {
+    val ext = getFileExtension(this, uri)
+    return if (ext.isNullOrBlank()) "temp_file" else "temp_file.$ext"
+}
 
 private fun getFileExtension(context: Context, uri: Uri): String? {
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
@@ -193,19 +235,27 @@ private fun getFileExtension(context: Context, uri: Uri): String? {
     return path.substring(dotIndex + 1).lowercase()
 }
 
-fun Context.uriToFile(uri: Uri): File {
+/** Copies content from [uri] into a temporary file inside [Context.getCacheDir]. */
+fun Context.uriToFile(uri: Uri): File? {
     val file = File(cacheDir, getFileName(uri))
-    val inputStream = contentResolver.openInputStream(uri)
-    inputStream?.use { input ->
-        file.outputStream().use { out ->
-            input.copyTo(out)
+    return runCatching {
+        val inputStream = contentResolver.openInputStream(uri) ?: return@runCatching null
+        inputStream.use { input ->
+            FileOutputStream(file).use { out ->
+                input.copyTo(out)
+            }
         }
+        file
+    }.getOrElse {
+        file.delete()
+        null
     }
-    return file
 }
 
+/** Writes [content] to a temporary file and launches a share sheet for it. */
 fun Context.shareAsFile(content: String?, fileName: String) {
-    val tempFile = File("$filesDir/$fileName")
+    val safeName = File(fileName).name.ifBlank { "shared.txt" }
+    val tempFile = File(filesDir, safeName)
     if (tempFile.exists()) {
         tempFile.delete()
     }
@@ -213,11 +263,18 @@ fun Context.shareAsFile(content: String?, fileName: String) {
     shareFile(tempFile)
 }
 
+/** Launches a chooser share intent for [file] via [FileProvider]. */
 fun Context.shareFile(file: File?) {
-    if (file == null) return
-    val uri = FileProvider.getUriForFile(this, "$packageName.provider", file)
-    val intent = ShareCompat.IntentBuilder(this).setType("text/plain")
-        .setStream(uri).intent.setAction(Intent.ACTION_SEND).setDataAndType(uri, "text/*")
-        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    this.startActivity(Intent.createChooser(intent, "Share File With"))
+    if (file == null || !file.exists()) return
+    runCatching {
+        val uri = FileProvider.getUriForFile(this, "$packageName.provider", file)
+        val intent = ShareCompat.IntentBuilder(this)
+            .setType("text/plain")
+            .setStream(uri)
+            .intent
+            .setAction(Intent.ACTION_SEND)
+            .setDataAndType(uri, "text/*")
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        this.startActivity(Intent.createChooser(intent, "Share File With"))
+    }
 }

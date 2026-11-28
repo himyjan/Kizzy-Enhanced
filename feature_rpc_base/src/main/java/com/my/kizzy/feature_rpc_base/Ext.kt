@@ -11,9 +11,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
-import kotlin.coroutines.resume
+import kotlinx.coroutines.CancellationException
 
-// Reuse a single HttpClient instance across requests for optimal connection pooling
+// Reuse a single HttpClient instance across requests for connection pooling.
 private val httpClient = HttpClient(OkHttp) {
     engine {
         config {
@@ -22,7 +22,11 @@ private val httpClient = HttpClient(OkHttp) {
     }
 }
 
-internal suspend fun Notification.Builder.setLargeIcon(
+/**
+ * Resolves an [RpcImage] into a [Bitmap] and applies it as the notification's large icon
+ * when available.
+ */
+suspend fun Notification.Builder.setLargeIcon(
     rpcImage: RpcImage?,
     context: Context,
 ): Notification.Builder {
@@ -30,21 +34,29 @@ internal suspend fun Notification.Builder.setLargeIcon(
         return this
     }
 
-    val data = when (rpcImage) {
-        is RpcImage.ApplicationIcon -> context.getAppInfo(rpcImage.packageName).toBitmap(context)
+    val data: Any? = when (rpcImage) {
+        is RpcImage.ApplicationIcon -> runCatching {
+            context.getAppInfo(rpcImage.packageName).toBitmap(context)
+        }.getOrNull()
         is RpcImage.BitmapImage -> rpcImage.bitmap
         is RpcImage.DiscordImage -> "https://cdn.discordapp.com/${rpcImage.image}"
         is RpcImage.ExternalImage -> rpcImage.image
     }
 
-    val bitmap = when (data) {
+    val bitmap: Bitmap? = when (data) {
         is Bitmap -> data
         is String -> {
-            try {
-                val bytes = httpClient.get(data).bodyAsBytes()
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            } catch (e: Exception) {
+            if (data.isBlank()) {
                 null
+            } else {
+                try {
+                    val bytes = httpClient.get(data).bodyAsBytes()
+                    if (bytes.isEmpty()) null else BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    null
+                }
             }
         }
         else -> null
@@ -57,7 +69,7 @@ internal suspend fun Notification.Builder.setLargeIcon(
 }
 
 /**
- * Sets the large icon from a Bitmap directly (no network download needed).
+ * Sets the large icon from a [Bitmap] directly without any network download.
  */
 internal fun Notification.Builder.setLargeIcon(bitmap: Bitmap): Notification.Builder {
     this.setLargeIcon(bitmap)

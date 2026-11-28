@@ -1,6 +1,5 @@
 package com.my.kizzy.feature_rpc_base.services.listenbrainz
 
-import com.my.kizzy.preference.Prefs
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -16,12 +15,13 @@ import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlin.time.Duration.Companion.milliseconds
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import kotlin.time.Duration.Companion.milliseconds
 
 object ListenBrainz {
 
@@ -143,31 +143,31 @@ object ListenBrainz {
     ): Boolean = apiCallWithRetry {
         if (userToken.isEmpty()) return@apiCallWithRetry false
 
-        val payload = buildMap {
-            put("listened_at", timestamp)
-            put("track_metadata", buildMap {
-                put("artist_name", artist)
-                put("track_name", track)
-                album?.let { put("release_name", it) }
-                put("additional_info", buildMap {
-                    duration?.let { put("duration_ms", it * 1000L) }
-                    songId?.let { put("origin_url", "https://music.youtube.com/watch?v=$songId") }
-                    put("submission_client", "Kizzy")
-                    put("submission_client_version", "1.0")
-                })
-            })
-        }
-
-        val requestBody = buildMap {
-            put("listen_type", "single")
-            put("payload", listOf(payload))
-        }
+        val requestPayload = ListenBrainzSubmitRequest(
+            listenType = "single",
+            payload = listOf(
+                ListenBrainzListenPayload(
+                    listenedAt = timestamp,
+                    trackMetadata = ListenBrainzTrackMetadata(
+                        artistName = artist,
+                        trackName = track,
+                        releaseName = album,
+                        additionalInfo = ListenBrainzAdditionalInfo(
+                            durationMs = duration?.times(1000L),
+                            originUrl = songId?.let { "https://music.youtube.com/watch?v=$it" },
+                            submissionClient = "Kizzy",
+                            submissionClientVersion = "1.0"
+                        )
+                    )
+                )
+            )
+        )
 
         val response = client.post {
             url("submit-listens")
             header(HttpHeaders.Authorization, "Token $userToken")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(json.encodeToString(requestBody))
+            setBody(json.encodeToString(requestPayload))
         }
         validateResponse(response)
         true
@@ -185,30 +185,31 @@ object ListenBrainz {
     ): Boolean = apiCallWithRetry {
         if (userToken.isEmpty()) return@apiCallWithRetry false
 
-        val payload = buildMap {
-            put("track_metadata", buildMap {
-                put("artist_name", artist)
-                put("track_name", track)
-                album?.let { put("release_name", it) }
-                put("additional_info", buildMap {
-                    duration?.let { put("duration_ms", it * 1000L) }
-                    songId?.let { put("origin_url", "https://music.youtube.com/watch?v=$songId") }
-                    put("submission_client", "Kizzy")
-                    put("submission_client_version", "1.0")
-                })
-            })
-        }
-
-        val requestBody = buildMap {
-            put("listen_type", "playing_now")
-            put("payload", listOf(payload))
-        }
+        val requestPayload = ListenBrainzSubmitRequest(
+            listenType = "playing_now",
+            payload = listOf(
+                ListenBrainzListenPayload(
+                    listenedAt = null,
+                    trackMetadata = ListenBrainzTrackMetadata(
+                        artistName = artist,
+                        trackName = track,
+                        releaseName = album,
+                        additionalInfo = ListenBrainzAdditionalInfo(
+                            durationMs = duration?.times(1000L),
+                            originUrl = songId?.let { "https://music.youtube.com/watch?v=$it" },
+                            submissionClient = "Kizzy",
+                            submissionClientVersion = "1.0"
+                        )
+                    )
+                )
+            )
+        )
 
         val response = client.post {
             url("submit-listens?return_msid=true")
             header(HttpHeaders.Authorization, "Token $userToken")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(json.encodeToString(requestBody))
+            setBody(json.encodeToString(requestPayload))
         }
         validateResponse(response)
         true
@@ -223,4 +224,32 @@ class ListenBrainzException(val code: Int, val errorMessage: String) : Exception
 @Serializable
 private data class ValidateTokenResponse(
     @SerialName("valid") val valid: Boolean
+)
+
+@Serializable
+private data class ListenBrainzSubmitRequest(
+    @SerialName("listen_type") val listenType: String,
+    @SerialName("payload") val payload: List<ListenBrainzListenPayload>
+)
+
+@Serializable
+private data class ListenBrainzListenPayload(
+    @SerialName("listened_at") val listenedAt: Long? = null,
+    @SerialName("track_metadata") val trackMetadata: ListenBrainzTrackMetadata
+)
+
+@Serializable
+private data class ListenBrainzTrackMetadata(
+    @SerialName("artist_name") val artistName: String,
+    @SerialName("track_name") val trackName: String,
+    @SerialName("release_name") val releaseName: String? = null,
+    @SerialName("additional_info") val additionalInfo: ListenBrainzAdditionalInfo
+)
+
+@Serializable
+private data class ListenBrainzAdditionalInfo(
+    @SerialName("duration_ms") val durationMs: Long? = null,
+    @SerialName("origin_url") val originUrl: String? = null,
+    @SerialName("submission_client") val submissionClient: String,
+    @SerialName("submission_client_version") val submissionClientVersion: String
 )

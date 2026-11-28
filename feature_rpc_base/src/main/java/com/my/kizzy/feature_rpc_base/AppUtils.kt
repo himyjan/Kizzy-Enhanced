@@ -22,20 +22,17 @@ import com.my.kizzy.feature_rpc_base.services.ManualRpc
 import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.preference.Prefs
 import jakarta.inject.Singleton
+import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * Tracks alive RPC services in-process and caches running system service queries
+ * to avoid excessive binder IPC during UI recompositions.
+ */
 @Singleton
 object AppUtils {
     private lateinit var activityManager: ActivityManager
 
-    /**
-     * The running services are cached for a short time.
-     *
-     * The list of the running services is a binder call into the system, and
-     * the screens ask for it on every recomposition. Without the cache the
-     * binder was called several times a second, which shows up in the battery
-     * statistics.
-     */
-    private const val RUNNING_SERVICES_CACHE_MS = 1000L
+    private const val RUNNING_SERVICES_CACHE_MS = 1_000L
 
     @Volatile
     private var cachedRunningServices: List<String>? = null
@@ -44,7 +41,8 @@ object AppUtils {
     private var cachedRunningServicesAt: Long = 0L
 
     fun init(context: Context) {
-        activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        activityManager = context.applicationContext
+            .getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     }
 
     /**
@@ -54,8 +52,7 @@ object AppUtils {
      * that is being destroyed must not close the gateway (or clear the activity)
      * while another RPC service is still using it.
      */
-    private val activeRpcServices: MutableSet<String> =
-        java.util.concurrent.ConcurrentHashMap.newKeySet()
+    private val activeRpcServices: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     fun registerRpcService(service: Any) {
         activeRpcServices.add(service.javaClass.name)
@@ -70,40 +67,26 @@ object AppUtils {
         activeRpcServices.any { it != service.javaClass.name }
 
     /**
-     * Drops the cached list of running services.
-     *
-     * Called after starting or stopping an RPC so the next check does not
-     * return the state from before the switch (the cache lives for one second,
-     * which is long enough for a screen to show the wrong switch state).
+     * Drops the cached list of running services so subsequent checks reflect
+     * immediate start/stop transitions.
      */
     fun invalidateRunningServicesCache() {
         cachedRunningServices = null
         cachedRunningServicesAt = 0L
     }
-    fun appDetectionRunning(): Boolean {
-        return checkForRunningService<AppDetectionService>()
-    }
 
-    fun mediaRpcRunning(): Boolean {
-        return checkForRunningService<MediaRpcService>()
-    }
+    fun appDetectionRunning(): Boolean = checkForRunningService<AppDetectionService>()
 
-    fun customRpcRunning(): Boolean {
-        // Several RPCs can run at once, so ACTIVE_RPC_TYPE (a single "primary"
-        // type) cannot be trusted here. The service is alive and its persisted
-        // mode tells us whether this is a Custom or Console session.
-        return checkForRunningService<CustomRpcService>()
-            && !Prefs[Prefs.CUSTOM_RPC_CONSOLE_MODE, false]
-    }
+    fun mediaRpcRunning(): Boolean = checkForRunningService<MediaRpcService>()
 
-    fun consoleRpcRunning(): Boolean {
-        return checkForRunningService<CustomRpcService>()
-            && Prefs[Prefs.CUSTOM_RPC_CONSOLE_MODE, false]
-    }
+    fun customRpcRunning(): Boolean =
+        checkForRunningService<CustomRpcService>() && !Prefs[Prefs.CUSTOM_RPC_CONSOLE_MODE, false]
 
-    fun ManualRpcRunning(): Boolean {
-        return checkForRunningService<ManualRpc>()
-    }
+    fun consoleRpcRunning(): Boolean =
+        checkForRunningService<CustomRpcService>() && Prefs[Prefs.CUSTOM_RPC_CONSOLE_MODE, false]
+
+    fun ManualRpcRunning(): Boolean = checkForRunningService<ManualRpc>()
+
     private fun isActivityManagerInitialized(): Boolean = ::activityManager.isInitialized
 
     private inline fun <reified T : Any> checkForRunningService(): Boolean {
@@ -117,9 +100,6 @@ object AppUtils {
         return runningServiceNames().contains(className)
     }
 
-    /**
-     * The names of the services that are currently running.
-     */
     private fun runningServiceNames(): List<String> {
         val now = System.currentTimeMillis()
         val cached = cachedRunningServices
@@ -127,9 +107,8 @@ object AppUtils {
             return cached
         }
         val names = try {
-            // Fetch running services with a reasonable limit to avoid expensive system IPC
             activityManager.getRunningServices(50)
-                .map { it.service.className }
+                .mapNotNull { it.service?.className }
         } catch (_: Exception) {
             emptyList()
         }

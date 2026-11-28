@@ -36,6 +36,10 @@ import io.ktor.serialization.kotlinx.json.*
 import jakarta.inject.Singleton
 import kotlinx.serialization.json.Json
 
+/**
+ * Application-scoped Hilt module providing base endpoint URLs, JSON serialization,
+ * shared HTTP client instances, and repository bindings.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -65,6 +69,7 @@ object AppModule {
     fun provideImgurBaseUrl(): String = BuildConfig.IMGUR_API_BASE_URL
 
     @Provides
+    @Singleton
     fun provideJson(): Json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
@@ -83,6 +88,7 @@ object AppModule {
     }
 
     @Provides
+    @Singleton
     fun provideHttpClient(
         json: Json,
         kLogger: com.my.kizzy.domain.interfaces.Logger
@@ -97,7 +103,7 @@ object AppModule {
                 socketTimeoutMillis = 30_000
             }
             install(Logging) {
-                level = LogLevel.HEADERS
+                level = if (BuildConfig.DEBUG) LogLevel.HEADERS else LogLevel.NONE
                 sanitizeHeader { header -> header == HttpHeaders.Authorization }
                 logger = object : Logger {
                     override fun log(message: String) {
@@ -107,5 +113,4 @@ object AppModule {
             }
         }
     }
-
 }

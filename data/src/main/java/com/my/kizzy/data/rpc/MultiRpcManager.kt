@@ -10,9 +10,11 @@ import com.my.kizzy.preference.Prefs.DEFAULT_OAUTH_APP_ID_3
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kizzy.gateway.DiscordWebSocketImpl
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 /**
@@ -22,60 +24,59 @@ import kotlinx.coroutines.launch
  * Multiple sockets with the same token kill each other with INVALID_SESSION,
  * causing infinite reconnect loops. Each RPC instance therefore gets its own
  * socket keyed by token plus instance id.
- *   - A single account token used by Media/Custom/Manual RPC shares ONE socket.
- *   - Different OAuth2 app tokens each get their OWN parallel socket.
- * Each [KizzyRPC] instance owns its own presence data.
  */
 @Singleton
 class MultiRpcManager @Inject constructor(
     private val kizzyRepository: KizzyRepository,
-    private val logger: Logger
+    private val logger: Logger,
 ) : CoroutineScope {
 
-    override val coroutineContext = Dispatchers.IO + SupervisorJob()
+    private val job = SupervisorJob()
+    override val coroutineContext = Dispatchers.IO + job
 
     private data class RpcGroup(
         val slotId: String,
         val instances: MutableMap<String, KizzyRPC> = LinkedHashMap(),
     )
 
+    private val lock = Any()
     private val groups = LinkedHashMap<String, RpcGroup>()
-
-    /** Custom RPC instances keep their own KizzyRPC outside slot groups. */
     private val customSessions = LinkedHashMap<String, KizzyRPC>()
-
-    /** Globally unique presence application ID per instance. */
     private val appIdAssignments = LinkedHashMap<String, String>()
 
-    /** Returns the [KizzyRPC] for a slot, creating its group lazily on first use. */
     fun session(slotId: String): KizzyRPC? {
-        val group = groups[slotId] ?: createGroup(slotId) ?: return null
-        return group.instances[builtInInstanceId(slotId)]
+        val group = synchronized(lock) { groups[slotId] } ?: createGroup(slotId) ?: return null
+        return synchronized(lock) { group.instances[builtInInstanceId(slotId)] }
     }
 
-    /** Returns the slot's KizzyRPC without creating the built-in instance's socket. */
-    fun sessionWithoutBuiltIn(slotId: String): KizzyRPC? {
-        return groups[slotId]?.instances[builtInInstanceId(slotId)]
+    fun sessionWithoutBuiltIn(slotId: String): KizzyRPC? = synchronized(lock) {
+        groups[slotId]?.instances?.get(builtInInstanceId(slotId))
     }
 
-    /** Returns a dedicated [KizzyRPC] for any Custom/Manual/Media RPC instance. Each instance gets its own independent Discord gateway socket — uses the already-authenticated main token by default, falls back to a per-slot OAuth2 app if configured. */
     fun customSession(instanceId: String): KizzyRPC? {
-        customSessions[instanceId]?.let { return it }
+        if (instanceId.isBlank()) return null
+        synchronized(lock) {
+            customSessions[instanceId]?.let { return it }
+        }
         val instance = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId } ?: return null
         val slotId = when (instance.type) {
             "custom_rpc" -> "2"
             "manual_rpc" -> "3"
-            "media_rpc"  -> "1"
+            "media_rpc" -> "1"
             else -> return null
         }
-        // Each instance gets its own independent socket using the main auth token.
-        // No socket sharing — every instance keeps its own presence forever.
-        groups[slotId]?.instances[instanceId]?.let { return it }
+        synchronized(lock) {
+            groups[slotId]?.instances?.get(instanceId)?.let { return it }
+            customSessions[instanceId]?.let { return it }
+        }
+
         val credential = instance.oauthIndex?.takeIf { it > 0 }
             ?.let { Prefs.getOAuthApp(it) }
             ?: credentialForSlot(slotId)
             ?: return null
-        val appId = assignAppId(instanceId)
+        if (credential.token.isBlank()) return null
+
+        val appId = synchronized(lock) { assignAppId(instanceId) }
         val socket = createSocket(credential, instanceId)
         val rpc = KizzyRPC(
             credential.token,
@@ -84,45 +85,50 @@ class MultiRpcManager @Inject constructor(
             logger,
             appId.takeIf { it.isNotBlank() },
         )
-        customSessions[instanceId] = rpc
-        launch { socket.connect() }
+        synchronized(lock) {
+            customSessions[instanceId]?.let { return it }
+            customSessions[instanceId] = rpc
+        }
+        launch { connectSocketSafely(socket, instanceId) }
         return rpc
     }
 
     fun closeCustomSession(instanceId: String) {
-        customSessions.remove(instanceId)?.let { rpc ->
-            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-                try {
-                    rpc.clearPresence()
-                } catch (_: Exception) {
-                }
-                rpc.closeRPC()
-            }
-        }
+        val rpc = synchronized(lock) {
+            appIdAssignments.remove(instanceId)
+            customSessions.remove(instanceId)
+        } ?: return
+        launch { closeRpcSafely(rpc) }
     }
 
-    fun isSessionActive(slotId: String): Boolean {
-        val group = groups[slotId] ?: return false
-        return group.instances.values.any { it.isRpcRunning() }
+    fun isSessionActive(slotId: String): Boolean = synchronized(lock) {
+        groups[slotId]?.instances?.values?.any { it.isRpcRunning() } == true
     }
 
-    fun activeSlots(): List<String> =
-        groups.filter { it.value.instances.values.any { it.isRpcRunning() } }.map { it.key }
+    fun activeSlots(): List<String> = synchronized(lock) {
+        groups.filterValues { group -> group.instances.values.any { it.isRpcRunning() } }
+            .keys
+            .toList()
+    }
 
-    /** Adds an independent socket for [instanceId] to [slotId]'s group. */
     fun addInstance(slotId: String, instanceId: String, oauthIndex: Int) {
-        val group = groups[slotId] ?: createGroup(slotId) ?: return
+        if (instanceId.isBlank()) return
+        val group = synchronized(lock) { groups[slotId] } ?: createGroup(slotId) ?: return
+        val index = slotIndex(slotId)
         val credential = Prefs.getOAuthApp(oauthIndex)
-            ?: Prefs.getOAuthApp(slotIndex(slotId))
+            ?: Prefs.getOAuthApp(index)
             ?: OAuthAppCredential(
-                index = slotIndex(slotId),
+                index = index,
                 token = mainToken(),
-                appId = defaultAppId(slotIndex(slotId)),
+                appId = defaultAppId(index),
             )
         if (credential.token.isBlank()) return
-        if (group.instances.containsKey(instanceId)) return
 
-        val appId = assignAppId(instanceId)
+        synchronized(lock) {
+            if (group.instances.containsKey(instanceId)) return
+        }
+
+        val appId = synchronized(lock) { assignAppId(instanceId) }
         val socket = createSocket(credential, instanceId)
         val rpc = KizzyRPC(
             credential.token,
@@ -131,61 +137,89 @@ class MultiRpcManager @Inject constructor(
             logger,
             appId.takeIf { it.isNotBlank() },
         )
-        group.instances[instanceId] = rpc
-        launch { socket.connect() }
+        synchronized(lock) {
+            if (group.instances.containsKey(instanceId)) return
+            group.instances[instanceId] = rpc
+        }
+        launch { connectSocketSafely(socket, instanceId) }
     }
 
-    /** Closes and removes only [instanceId]'s socket; other instances keep running. */
     fun removeInstance(slotId: String, instanceId: String) {
-        val group = groups[slotId] ?: return
-        group.instances.remove(instanceId)?.let { rpc ->
-            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-                try {
-                    rpc.clearPresence()
-                } catch (_: Exception) {
-                }
-                rpc.closeRPC()
-            }
-        }
+        val rpc = synchronized(lock) {
+            appIdAssignments.remove(instanceId)
+            groups[slotId]?.instances?.remove(instanceId)
+        } ?: return
+        launch { closeRpcSafely(rpc) }
     }
 
-    /** Number of live sockets in a slot (including the built-in instance). */
-    fun instanceCount(slotId: String): Int = groups[slotId]?.instances?.size ?: 0
+    fun instanceCount(slotId: String): Int = synchronized(lock) {
+        groups[slotId]?.instances?.size ?: 0
+    }
 
-    fun hasInstance(slotId: String, instanceId: String): Boolean =
+    fun hasInstance(slotId: String, instanceId: String): Boolean = synchronized(lock) {
         groups[slotId]?.instances?.containsKey(instanceId) == true
+    }
 
-    /** Stops every socket in a slot, closing all of its instance connections. */
     fun stopSession(slotId: String) {
-        val group = groups.remove(slotId) ?: return
-        group.instances.values.forEach { rpc ->
-            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-                try {
-                    rpc.clearPresence()
-                } catch (_: Exception) {
-                }
-                rpc.closeRPC()
-            }
+        val toClose = synchronized(lock) {
+            val group = groups.remove(slotId) ?: return
+            appIdAssignments.remove(builtInInstanceId(slotId))
+            group.instances.keys.forEach { appIdAssignments.remove(it) }
+            group.instances.values.toList()
         }
-        appIdAssignments.remove(builtInInstanceId(slotId))
-        group.instances.keys.forEach { appIdAssignments.remove(it) }
+        toClose.forEach { rpc ->
+            launch { closeRpcSafely(rpc) }
+        }
     }
 
     fun stopAllSessions() {
-        groups.keys.toList().forEach { stopSession(it) }
-        customSessions.keys.toList().forEach { closeCustomSession(it) }
+        val slotIds = synchronized(lock) { groups.keys.toList() }
+        val customIds = synchronized(lock) { customSessions.keys.toList() }
+        slotIds.forEach { stopSession(it) }
+        customIds.forEach { closeCustomSession(it) }
     }
 
-    /** Recreates the groups the user had enabled before the process was killed. */
     fun loadSessionsFromPrefs() {
         val activeTypes = Prefs.getActiveRpcInstanceIds()
         listOf("1", "2", "3").forEach { slot ->
             val builtInId = builtInInstanceId(slot)
-            if (activeTypes.isEmpty() || builtInId in activeTypes) createGroup(slot)
+            if (activeTypes.isEmpty() || builtInId in activeTypes) {
+                createGroup(slot)
+            }
+        }
+    }
+
+    private suspend fun connectSocketSafely(socket: DiscordWebSocketImpl, instanceId: String) {
+        try {
+            socket.connect()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logger.w("MultiRpcManager", "Failed to connect socket for $instanceId: ${e.message}")
+        }
+    }
+
+    private suspend fun closeRpcSafely(rpc: KizzyRPC) {
+        try {
+            rpc.clearPresence()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // Best-effort presence clear before closing socket.
+        }
+        try {
+            rpc.closeRPC()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // Ignore close errors.
         }
     }
 
     private fun createGroup(slotId: String): RpcGroup? {
+        synchronized(lock) {
+            groups[slotId]?.let { return it }
+        }
         val credential = credentialForSlot(slotId)
         if (credential == null || credential.token.isBlank()) return null
 
@@ -198,14 +232,15 @@ class MultiRpcManager @Inject constructor(
             logger,
             credential.appId.takeIf { it.isNotBlank() },
         )
-        val group = RpcGroup(
-            slotId = slotId,
-            instances = LinkedHashMap(),
-        )
-        group.instances[builtInId] = kizzyRpc
-        launch { socket.connect() }
-        groups[slotId] = group
-        return group
+        val createdGroup = synchronized(lock) {
+            groups[slotId]?.let { return it }
+            RpcGroup(
+                slotId = slotId,
+                instances = linkedMapOf(builtInId to kizzyRpc),
+            ).also { groups[slotId] = it }
+        }
+        launch { connectSocketSafely(socket, builtInId) }
+        return createdGroup
     }
 
     private fun credentialForSlot(slotId: String): OAuthAppCredential? {
@@ -235,12 +270,13 @@ class MultiRpcManager @Inject constructor(
                         DEFAULT_OAUTH_APP_ID_2,
                         DEFAULT_OAUTH_APP_ID_3,
                     )
-            ).distinct()
+            ).filter { it.isNotBlank() }.distinct()
 
     private fun assignAppId(instanceId: String): String {
         appIdAssignments[instanceId]?.let { return it }
-        val used = appIdAssignments.values.toSet()
         val pool = appIdPool()
+        if (pool.isEmpty()) return Constants.APPLICATION_ID
+        val used = appIdAssignments.values.toSet()
         val appId = pool.firstOrNull { it !in used }
             ?: pool[appIdAssignments.size % pool.size]
         appIdAssignments[instanceId] = appId
@@ -254,15 +290,6 @@ class MultiRpcManager @Inject constructor(
         else -> "slot_$slotId"
     }
 
-    /**
-     * Creates a fresh, independent [DiscordWebSocketImpl] for one RPC instance.
-     *
-     * Each instance gets its own socket so parallel clones each send their own
-     * presence to Discord instead of sharing one socket where only the last
-     * presence sent is visible. The device string includes [instanceId] so
-     * Discord treats instances as separate clients rather than reconnecting
-     * the same session.
-     */
     private fun createSocket(credential: OAuthAppCredential, instanceId: String): DiscordWebSocketImpl {
         val token = Prefs.formatIdentifyToken(credential.token)
         return DiscordWebSocketImpl(
@@ -276,5 +303,6 @@ class MultiRpcManager @Inject constructor(
 
     fun onDestroy() {
         stopAllSessions()
+        job.cancel()
     }
 }

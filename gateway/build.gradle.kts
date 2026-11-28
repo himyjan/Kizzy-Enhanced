@@ -1,3 +1,5 @@
+import java.io.File
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlinx.serialization)
@@ -35,15 +37,17 @@ private fun patchClassFileMajorVersion(file: File, newMajor: Int) {
     }
 }
 
+val classesDirProvider = layout.buildDirectory.dir("classes/kotlin/main")
+
 tasks.register("patchJvm28To21") {
     group = "build"
     description = "Patch JVM 28 class files (major 72) down to JVM 21 (major 65) for Kotlin compiler compatibility"
     dependsOn(tasks.named("compileKotlin"))
-    val buildDir = project.buildDir
+    val classesDir = classesDirProvider
     doLast {
-        val classesDir = File(buildDir, "classes/kotlin/main")
-        if (classesDir.exists()) {
-            classesDir.walkTopDown().filter { it.extension == "class" }.forEach { file ->
+        val dir = classesDir.get().asFile
+        if (dir.exists()) {
+            dir.walkTopDown().filter { it.extension == "class" }.forEach { file ->
                 patchClassFileMajorVersion(file, 65)
             }
         }

@@ -2,6 +2,8 @@ package com.my.kizzy.data.work
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.ListenableWorker.Result
 import androidx.work.WorkerParameters
 import com.my.kizzy.data.get_current_data.media.GetCurrentPlayingMedia
 import com.my.kizzy.data.rpc.ActivityTypeResolver
@@ -12,113 +14,108 @@ import com.my.kizzy.preference.Prefs
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
-import com.my.kizzy.preference.Prefs.USE_RPC_BUTTONS
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import androidx.work.ListenableWorker.Result
 import java.io.File
 
 /**
- * Hilt-injected worker for Discord RPC sync.
- * Uses dependency injection to access repository and other dependencies.
+ * Hilt-injected worker for periodic Discord RPC synchronization.
  */
 @HiltWorker
 class RpcSyncHiltWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val kizzyRepository: KizzyRepository
-) : androidx.work.CoroutineWorker(appContext, workerParams) {
+    private val kizzyRepository: KizzyRepository,
+    private val logger: Logger,
+) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result {
-        return withContext(Dispatchers.IO) {
-            try {
-                // Sync RPC status using the repository
-                // kizzyRepository.syncPresence()
-                Result.success()
-            } catch (e: Exception) {
-                Result.failure()
-            }
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        try {
+            // Refresh cached metadata/config if needed without failing on transient network errors.
+            kizzyRepository.getGames()
+            Result.success()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logger.w("RpcSyncHiltWorker", "RPC sync failed: ${e.message}")
+            Result.retry()
         }
     }
 }
 
 /**
- * Hilt-injected worker for log cleanup.
- * Clears application cache and log files daily.
+ * Hilt-injected worker for periodic cache and log directory cleanup.
  */
 @HiltWorker
 class CleanupHiltWorker @AssistedInject constructor(
     @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters
-) : androidx.work.CoroutineWorker(appContext, workerParams) {
+    @Assisted workerParams: WorkerParameters,
+) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result {
-        return withContext(Dispatchers.IO) {
-            try {
-                // 1. Clear application cache directory
-                val cacheDir = applicationContext.cacheDir
-                deleteRecursive(cacheDir)
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        try {
+            val cacheDir = applicationContext.cacheDir
+            deleteContentsRecursively(cacheDir, keepRoot = true)
 
-                // 2. Clear application logs directory (if stored locally)
-                val logsDir = File(applicationContext.filesDir, "logs")
-                if (logsDir.exists()) {
-                    deleteRecursive(logsDir)
-                }
-
-                Result.success()
-            } catch (e: Exception) {
-                // If an error occurs, WorkManager can safely retry later
-                Result.retry()
+            val logsDir = File(applicationContext.filesDir, "logs")
+            if (logsDir.exists()) {
+                deleteContentsRecursively(logsDir, keepRoot = true)
             }
+
+            Result.success()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            Result.retry()
         }
     }
 
     /**
-     * Recursively deletes file contents while preserving the root directory itself.
+     * Recursively deletes children of [fileOrDirectory]. When [keepRoot] is true,
+     * [fileOrDirectory] itself is preserved.
      */
-    private fun deleteRecursive(fileOrDirectory: File) {
+    private fun deleteContentsRecursively(fileOrDirectory: File, keepRoot: Boolean) {
         if (fileOrDirectory.isDirectory) {
-            fileOrDirectory.listFiles()?.forEach { child ->
-                deleteRecursive(child)
+            val children = fileOrDirectory.listFiles() ?: return
+            for (child in children) {
+                deleteContentsRecursively(child, keepRoot = false)
             }
         }
-        // Keep the root folder itself, only delete its contents
-        if (fileOrDirectory != applicationContext.cacheDir &&
-            fileOrDirectory != File(applicationContext.filesDir, "logs")
-        ) {
+        if (!keepRoot) {
             fileOrDirectory.delete()
         }
     }
 }
 
 /**
- * Hilt-injected worker for app detection.
+ * Hilt-injected worker for background app/catalog checks.
  */
 @HiltWorker
 class AppDetectionHiltWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val kizzyRepository: KizzyRepository
-) : androidx.work.CoroutineWorker(appContext, workerParams) {
+    private val kizzyRepository: KizzyRepository,
+    private val logger: Logger,
+) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result {
-        return withContext(Dispatchers.IO) {
-            try {
-                // Check for running apps and update presence
-                Result.success()
-            } catch (e: Exception) {
-                Result.failure()
-            }
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        try {
+            kizzyRepository.getGames()
+            Result.success()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logger.w("AppDetectionHiltWorker", "App detection check failed: ${e.message}")
+            Result.retry()
         }
     }
 }
 
 /**
- * Hilt-injected worker for RPC state recovery after process termination.
- * Restores Rich Presence if the user has RPC enabled and the app was
- * killed by the system or removed from Recents.
+ * Hilt-injected worker for RPC state recovery after process termination or task removal.
  */
 @HiltWorker
 class RpcRecoveryHiltWorker @AssistedInject constructor(
@@ -126,62 +123,59 @@ class RpcRecoveryHiltWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val kizzyRPC: KizzyRPC,
     private val getCurrentPlayingMedia: GetCurrentPlayingMedia,
-    private val logger: Logger
-) : androidx.work.CoroutineWorker(appContext, workerParams) {
+    private val logger: Logger,
+) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result {
-        return withContext(Dispatchers.IO) {
-            val startTime = System.currentTimeMillis()
-            logger.d("MediaRPC", "[$startTime] Recovery worker started")
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        val startTime = System.currentTimeMillis()
+        logger.d("MediaRPC", "[$startTime] Recovery worker started")
 
-            try {
-                val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
+        try {
+            val rpcFeaturesEnabled = Prefs[Prefs.USE_RPC_BUTTONS, false] ||
+                    Prefs[MEDIA_RPC_MEDIA_BUTTON, false] ||
+                    Prefs[MEDIA_RPC_ARTIST_LINK, false]
 
-                if (!Prefs[Prefs.USE_RPC_BUTTONS, false] &&
-                    !Prefs[MEDIA_RPC_MEDIA_BUTTON, false] &&
-                    !Prefs[MEDIA_RPC_ARTIST_LINK, false]
-                ) {
-                    logger.d("MediaRPC", "Recovery work skipped: RPC not enabled")
-                    return@withContext Result.success()
-                }
-
-                val playingMedia = getCurrentPlayingMedia()
-                if (playingMedia.name.isBlank()) {
-                    logger.d("MediaRPC", "Recovery work: no active media session")
-                    return@withContext Result.success()
-                }
-
-                // Restore presence state
-                kizzyRPC.apply {
-                    setName(playingMedia.name)
-                    // The activity type is resolved per app, exactly like the Media
-                    // RPC does it, so the restored presence shows the same card.
-                    setType(
-                        ActivityTypeResolver.resolve(
-                            packageName = playingMedia.appPackage,
-                            isMusicMetadata = playingMedia.isMusicMetadata,
-                            fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
-                            useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
-                        )
-                    )
-                    setDetails(playingMedia.state)
-                    setState(playingMedia.state)
-                    setStartTimestamps(if (enableTimestamps) playingMedia.time?.start else null)
-                    setStopTimestamps(if (enableTimestamps) playingMedia.time?.end else null)
-                    setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
-                    setLargeImage(playingMedia.largeImage, playingMedia.largeText)
-                    setSmallImage(playingMedia.smallImage, playingMedia.smallText)
-                    build()
-                }
-
-                val endTime = System.currentTimeMillis()
-                logger.d("MediaRPC", "Recovery work completed in ${endTime - startTime}ms: RPC presence restored for ${playingMedia.name}")
-                Result.success()
-            } catch (e: Exception) {
-                val endTime = System.currentTimeMillis()
-                logger.e("MediaRPC", "RPC recovery failed after ${endTime - startTime}ms: ${e.message}")
-                Result.retry()
+            if (!rpcFeaturesEnabled) {
+                logger.d("MediaRPC", "Recovery work skipped: RPC not enabled")
+                return@withContext Result.success()
             }
+
+            val playingMedia = getCurrentPlayingMedia()
+            if (playingMedia.name.isBlank()) {
+                logger.d("MediaRPC", "Recovery work: no active media session")
+                return@withContext Result.success()
+            }
+
+            val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
+            kizzyRPC.apply {
+                setName(playingMedia.name)
+                setType(
+                    ActivityTypeResolver.resolve(
+                        packageName = playingMedia.appPackage,
+                        isMusicMetadata = playingMedia.isMusicMetadata,
+                        fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                        useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+                    )
+                )
+                setDetails(playingMedia.details)
+                setState(playingMedia.state)
+                setStartTimestamps(if (enableTimestamps) playingMedia.time?.start else null)
+                setStopTimestamps(if (enableTimestamps) playingMedia.time?.end else null)
+                setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "dnd"])
+                setLargeImage(playingMedia.largeImage, playingMedia.largeText)
+                setSmallImage(playingMedia.smallImage, playingMedia.smallText)
+                build()
+            }
+
+            val elapsed = System.currentTimeMillis() - startTime
+            logger.d("MediaRPC", "Recovery work completed in ${elapsed}ms: RPC presence restored for ${playingMedia.name}")
+            Result.success()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            val elapsed = System.currentTimeMillis() - startTime
+            logger.e("MediaRPC", "RPC recovery failed after ${elapsed}ms: ${e.message}")
+            Result.retry()
         }
     }
 }
