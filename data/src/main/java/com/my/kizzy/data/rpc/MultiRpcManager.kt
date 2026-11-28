@@ -58,7 +58,7 @@ class MultiRpcManager @Inject constructor(
         return groups[slotId]?.instances[builtInInstanceId(slotId)]
     }
 
-    /** Returns a dedicated [KizzyRPC] for any Custom/Manual/Media RPC instance. */
+    /** Returns a dedicated [KizzyRPC] for any Custom/Manual/Media RPC instance. Built-in instances share one socket per slot (Discord allows only one WebSocket per token). Clone instances get their own socket since they may use different OAuth2 app tokens. */
     fun customSession(instanceId: String): KizzyRPC? {
         customSessions[instanceId]?.let { return it }
         val instance = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId } ?: return null
@@ -67,6 +67,12 @@ class MultiRpcManager @Inject constructor(
             "manual_rpc" -> "3"
             "media_rpc"  -> "1"
             else -> return null
+        }
+        // Built-in instances share one socket per slot. Creating a separate socket
+        // with the same token causes Discord INVALID_SESSION — only one WebSocket
+        // per user token is allowed. Reuse the slot's built-in socket instead.
+        if (instanceId == builtInInstanceId(slotId)) {
+            return session(slotId)
         }
         groups[slotId]?.instances[instanceId]?.let { return it }
         val credential = instance.oauthIndex?.takeIf { it > 0 }
