@@ -12,6 +12,8 @@
 
 package com.my.kizzy.ui.components.dialog
 
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -68,10 +70,14 @@ fun TextFieldDialog(
                     value = value,
                     onValueChange = onValueChange,
                     placeholder = placeholder,
-                    errorText = errorText,
-                    imeAction = imeAction,
-                    focusManager = focusManager,
-                    onConfirm = onConfirm,
+                    errorMessage = errorText,
+                    keyboardOptions = KeyboardOptions(imeAction = imeAction),
+                    onKeyboardAction = KeyboardActionHandler {
+                        if (value.isNotBlank()) {
+                            focusManager.clearFocus()
+                            onConfirm(value)
+                        }
+                    },
                 )
             },
             confirmButton = {

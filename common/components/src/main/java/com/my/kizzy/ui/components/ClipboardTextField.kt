@@ -1,95 +1,118 @@
-/*
- *
- *  ******************************************************************
- *  *  * Copyright (C) 2022
- *  *  * ClipboardTextField.kt is part of Kizzy
- *  *  *  and can not be copied and/or distributed without the express
- *  *  * permission of yzziK(Vaibhav)
- *  *  *****************************************************************
- *
- *
- */
-
 package com.my.kizzy.ui.components
 
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActionScope
-import androidx.compose.foundation.text.KeyboardActions
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.my.kizzy.resources.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClipboardTextField(
-    modifier: Modifier = Modifier,
-    readOnly: Boolean = false,
-    value: String = "",
-    onValueChange: (String) -> Unit = {},
-    placeholder: String = "",
-    errorText: String = "",
-    imeAction: ImeAction = ImeAction.Done,
-    focusManager: FocusManager? = null,
-    onConfirm: (String) -> Unit = {},
-) {
-    Column(modifier = modifier) {
-        Spacer(modifier = Modifier.height(10.dp))
-        KTextField(
-            readOnly = readOnly,
-            value = value,
-            onValueChange = onValueChange,
-            placeholder = placeholder,
-            errorMessage = errorText,
-            keyboardActions = KeyboardActions(
-                onDone = if (imeAction == ImeAction.Done)
-                    action(focusManager, onConfirm, value) else null,
-                onGo = if (imeAction == ImeAction.Go)
-                    action(focusManager, onConfirm, value) else null,
-                onNext = if (imeAction == ImeAction.Next)
-                    action(focusManager, onConfirm, value) else null,
-                onPrevious = if (imeAction == ImeAction.Previous)
-                    action(focusManager, onConfirm, value) else null,
-                onSearch = if (imeAction == ImeAction.Search)
-                    action(focusManager, onConfirm, value) else null,
-                onSend = if (imeAction == ImeAction.Send)
-                    action(focusManager, onConfirm, value) else null,
-            ),
-            keyboardOptions = KeyboardOptions(
-                imeAction = imeAction
-            ),
-        )
-        if (errorText.isNotEmpty()) {
-            SelectionContainer {
-                Text(
-                    modifier = Modifier
-                        .padding(start = 16.dp)
-                        .horizontalScroll(rememberScrollState()),
-                    text = errorText,
-                    color = MaterialTheme.colorScheme.error,
-                    maxLines = 1,
-                    softWrap = false,
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-    }
-}
-
-private fun action(
-    focusManager: FocusManager?,
-    onConfirm: (String) -> Unit,
+    readOnly: Boolean,
     value: String,
-): KeyboardActionScope.() -> Unit = {
-    focusManager?.clearFocus()
-    onConfirm(value)
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    errorMessage: String = "",
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    onKeyboardAction: KeyboardActionHandler? = null,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val clipboardManager = remember(context) {
+        context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    }
+    val focusRequester = remember { FocusRequester() }
+    val textFieldState = rememberTextFieldState(initialText = value)
+
+    LaunchedEffect(value) {
+        if (textFieldState.text.toString() != value) {
+            textFieldState.setTextAndPlaceCursorAtEnd(value)
+        }
+    }
+
+    LaunchedEffect(textFieldState) {
+        snapshotFlow { textFieldState.text.toString() }
+            .drop(1)
+            .distinctUntilChanged()
+            .collect { updated ->
+                if (!readOnly) onValueChange(updated)
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequester.requestFocus()
+    }
+
+    TextField(
+        state = textFieldState,
+        modifier = modifier.focusRequester(focusRequester),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+        ),
+        lineLimits = TextFieldLineLimits.SingleLine,
+        enabled = !readOnly,
+        placeholder = {
+            Text(
+                text = placeholder,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        isError = errorMessage.isNotEmpty(),
+        trailingIcon = {
+            if (value.isNotEmpty()) {
+                IconButton(onClick = {
+                    if (!readOnly) onValueChange("")
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = "clear",
+                        tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    )
+                }
+            } else {
+                IconButton(onClick = {
+                    if (!readOnly) {
+                        val clipText = clipboardManager?.primaryClip?.getItemAt(0)?.text?.toString().orEmpty()
+                        onValueChange(clipText)
+                    }
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_content_paste),
+                        contentDescription = "paste",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
+        },
+        keyboardOptions = keyboardOptions,
+        onKeyboardAction = onKeyboardAction,
+    )
 }
