@@ -6,9 +6,15 @@ import com.my.kizzy.data.rpc.MediaServiceResolver
 import com.my.kizzy.data.rpc.YouTubeResolver
 import com.my.kizzy.domain.interfaces.Logger
 import jakarta.inject.Inject
+import java.net.URI
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
+/**
+ * Resolves media metadata fields, cover art, collaborating artists, and canonical
+ * track/album/playlist/artist/watch URLs from Android [MediaMetadata] across
+ * streaming apps, YouTube clients, and web browsers.
+ */
 class MetadataResolver @Inject constructor(
     private val logger: Logger,
 ) {
@@ -16,8 +22,9 @@ class MetadataResolver @Inject constructor(
         private const val METADATA_KEY_SOURCE_URL = "android.media.metadata.SOURCE_URL"
         private const val METADATA_KEY_MEDIA_URI = "android.media.metadata.MEDIA_URI"
 
-        // Known non-string MediaMetadata keys (integers, ratings, dimensions) that
-        // should never be read as text strings.
+        // Known non-string MediaMetadata keys (integers, longs, ratings, bitmaps,
+        // dimensions) that must never be read via getString()/getCharSequence(),
+        // preventing Android Bundle ClassCastException log spam.
         private val NON_STRING_METADATA_KEYS = setOf(
             MediaMetadata.METADATA_KEY_DURATION,
             MediaMetadata.METADATA_KEY_NUM_TRACKS,
@@ -31,19 +38,37 @@ class MetadataResolver @Inject constructor(
             MediaMetadata.METADATA_KEY_ART,
             MediaMetadata.METADATA_KEY_DISPLAY_ICON,
             "com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX",
-            "com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX"
+            "com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX",
         )
     }
 
+    /**
+     * Safely reads a string value for [key] from [metadata], skipping known
+     * non-string keys and catching [ClassCastException] if a player stores an
+     * unexpected non-CharSequence type under a custom key.
+     */
+    private fun safeGetString(metadata: MediaMetadata, key: String): String? {
+        if (key in NON_STRING_METADATA_KEYS) return null
+        return try {
+            metadata.getString(key)
+        } catch (_: ClassCastException) {
+            null
+        }
+    }
+
+    /**
+     * Returns album or track cover bitmap, intentionally avoiding DISPLAY_ICON
+     * since media apps frequently put their launcher logo there.
+     */
     fun getCoverArt(metadata: MediaMetadata): Bitmap? {
-        val albumArt = metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
-        val art = metadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
-        // Do NOT fall through to DISPLAY_ICON: that is typically the app icon
-        // (e.g. Spotify's green logo), not the album art. Returning the app icon
-        // as cover art makes every track show the same wrong image.
+        val albumArt = runCatching { metadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART) }.getOrNull()
+        val art = runCatching { metadata.getBitmap(MediaMetadata.METADATA_KEY_ART) }.getOrNull()
         return albumArt ?: art
     }
 
+    /**
+     * Checks standard artwork URI fields in priority order.
+     */
     fun getArtworkUri(metadata: MediaMetadata): String? {
         val keys = listOf(
             MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
@@ -51,49 +76,67 @@ class MetadataResolver @Inject constructor(
             MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI,
         )
         for (key in keys) {
-            val value = metadata.getString(key)
+            val value = safeGetString(metadata, key)?.trim()
             if (!value.isNullOrEmpty()) return value
         }
         return null
     }
 
+    /**
+     * Reads ARTIST first and falls back to AUTHOR if ARTIST is blank or absent.
+     */
     fun getArtistOrAuthor(metadata: MediaMetadata): String? {
-        return if (!metadata.getString(MediaMetadata.METADATA_KEY_ARTIST).isNullOrEmpty()) metadata.getString(
-            MediaMetadata.METADATA_KEY_ARTIST
-        ) else if (!metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR).isNullOrEmpty()) metadata.getString(
-            MediaMetadata.METADATA_KEY_AUTHOR
-        ) else null
+        return safeGetString(metadata, MediaMetadata.METADATA_KEY_ARTIST)?.takeIf { it.isNotBlank() }
+            ?: safeGetString(metadata, MediaMetadata.METADATA_KEY_AUTHOR)?.takeIf { it.isNotBlank() }
     }
 
+    /**
+     * Splits combined artist strings into distinct artist names.
+     */
     fun getAllArtists(metadata: MediaMetadata): List<String> {
         val artist = getArtistOrAuthor(metadata) ?: return emptyList()
         return splitArtists(artist)
     }
 
+    /**
+     * Returns the first parsed artist name, or null if none is available.
+     */
     fun getPrimaryArtist(metadata: MediaMetadata): String? {
         return getAllArtists(metadata).firstOrNull()
     }
 
+    /**
+     * Joins distinct artist names into a comma-separated string capped at [maxLength].
+     */
     fun formatArtists(metadata: MediaMetadata, maxLength: Int = 128): String {
         val artists = getAllArtists(metadata)
-        return if (artists.isEmpty()) "" else if (artists.size == 1) artists[0]
-        else artists.joinToString(", ").take(maxLength)
+        return when {
+            artists.isEmpty() -> ""
+            artists.size == 1 -> artists[0].take(maxLength)
+            else -> artists.joinToString(", ").take(maxLength)
+        }
     }
 
+    /**
+     * Splits common collaboration delimiters while preserving unique entries in order.
+     */
     private fun splitArtists(artist: String): List<String> {
-        val separators = listOf(" ft. ", " featuring ", " x ", " & ", ", ", "; ")
+        val separators = listOf(" ft. ", " feat. ", " featuring ", " x ", " & ", ", ", "; ")
         var result = listOf(artist)
         for (sep in separators) {
-            result = result.flatMap { it.split(sep) }.map { it.trim() }.filter { it.isNotEmpty() }
+            result = result.flatMap { it.split(sep, ignoreCase = true) }
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
             if (result.size > 1) break
         }
         return result.distinct()
     }
 
+    /**
+     * Returns the non-blank ALBUM string if present.
+     */
     fun getAlbum(metadata: MediaMetadata): String? {
-        return if (!metadata.getString(MediaMetadata.METADATA_KEY_ALBUM).isNullOrEmpty()) metadata.getString(
-            MediaMetadata.METADATA_KEY_ALBUM
-        ) else null
+        return safeGetString(metadata, MediaMetadata.METADATA_KEY_ALBUM)?.takeIf { it.isNotBlank() }
     }
 
     /**
@@ -101,7 +144,7 @@ class MetadataResolver @Inject constructor(
      *
      * Android's [MediaMetadata] has no standard playlist-title field, so this
      * only returns a value for players that publish a custom key (e.g.
-     * "playlist_name" / "playlist_title"). Url-valued keys are ignored.
+     * "playlist_name" / "playlist_title"). URL-valued keys are ignored.
      */
     fun getPlaylistName(metadata: MediaMetadata): String? {
         val customKeys = listOf(
@@ -109,36 +152,41 @@ class MetadataResolver @Inject constructor(
             "android.media.metadata.PLAYLIST_TITLE", "android.media.metadata.PLAYLIST_NAME",
         )
         for (key in customKeys) {
-            metadata.getString(key)?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
+            safeGetString(metadata, key)?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
         }
         return runCatching {
             metadata.keySet().firstNotNullOfOrNull { key ->
+                if (key in NON_STRING_METADATA_KEYS) return@firstNotNullOfOrNull null
                 val lowerKey = key.lowercase()
-                // Only keys that clearly name the playlist, never ids/urls.
                 val looksLikeName = lowerKey == "playlist" ||
-                    (lowerKey.contains("playlist") &&
-                        (lowerKey.contains("name") || lowerKey.contains("title")))
+                        (lowerKey.contains("playlist") &&
+                                (lowerKey.contains("name") || lowerKey.contains("title")))
                 if (!looksLikeName) return@firstNotNullOfOrNull null
-                val value = metadata.getString(key)?.trim() ?: return@firstNotNullOfOrNull null
+                val value = safeGetString(metadata, key)?.trim() ?: return@firstNotNullOfOrNull null
                 value.takeIf {
                     it.isNotEmpty() &&
-                        !it.startsWith("http://", ignoreCase = true) &&
-                        !it.startsWith("https://", ignoreCase = true)
+                            !it.startsWith("http://", ignoreCase = true) &&
+                            !it.startsWith("https://", ignoreCase = true)
                 }
             }
         }.getOrNull()
     }
 
+    /**
+     * Reads ALBUM_ARTIST or falls back to [getArtistOrAuthor].
+     */
     fun getAlbumArtists(metadata: MediaMetadata): String? {
-        return if (!metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST).isNullOrEmpty()) metadata.getString(
-            MediaMetadata.METADATA_KEY_ALBUM_ARTIST
-        ) else getArtistOrAuthor(metadata)
+        return safeGetString(metadata, MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.takeIf { it.isNotBlank() }
+            ?: getArtistOrAuthor(metadata)
     }
 
+    /**
+     * Detects channel layout or spatial audio format from custom metadata keys or album text.
+     */
     fun getAudioChannels(metadata: MediaMetadata): String? {
         val channelKeys = listOf("audio_channels", "audio_channel_count", "channel_count", "surround", "audio_format")
         for (key in channelKeys) {
-            val value = metadata.getString(key)
+            val value = safeGetString(metadata, key)?.trim()
             if (value.isNullOrEmpty()) continue
             return when (value.lowercase()) {
                 "5.1", "5.1ch", "51" -> "5.1 Surround"
@@ -148,11 +196,14 @@ class MetadataResolver @Inject constructor(
                 else -> value
             }
         }
-        val album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
+        val album = safeGetString(metadata, MediaMetadata.METADATA_KEY_ALBUM) ?: ""
         val channelMatch = Regex("""(5\.1|7\.1|2\.0|stereo|surround|atmos)""", RegexOption.IGNORE_CASE).find(album)
         return channelMatch?.value?.replaceFirstChar { it.uppercase() }
     }
 
+    /**
+     * Resolves and normalizes the primary media URL for Discord Rich Presence.
+     */
     fun getMediaUrl(
         metadata: MediaMetadata,
         packageName: String?,
@@ -162,48 +213,33 @@ class MetadataResolver @Inject constructor(
     }
 
     /**
-     * YMusic (ymusicapp.com / www.ymusicapp.com) and every other YouTube-family
-     * watch url must land on https://youtu.be/ID in the RPC button.
-     *
-     * Non-YouTube URLs (e.g. github.com/morphe-patches for Morphe,
-     * github.com/.../revanced-patches for AndDea Revanced Patches) are kept
-     * as-is so the cover art stays clickable for YouTube clients that publish
-     * their own page instead of a YouTube video URL.
+     * Normalizes YouTube-family URLs via [YouTubeResolver] while preserving
+     * valid non-YouTube HTTP(S) URLs (excluding search result pages).
      */
     private fun toRpcMediaUrl(url: String?): String? {
         if (url.isNullOrBlank()) return null
 
-        // Delegate directly to YouTubeResolver's robust unwrapping and normalization logic
         YouTubeResolver.toRpcUrl(url)?.let { canonicalUrl ->
-            // Additional safety check: ensure it's either ayoutu.be video,
-            // a channel link, or a playlist link, and not an accidental search query.
             if (!canonicalUrl.contains("/results?search_query=")) {
                 return canonicalUrl
             }
         }
 
-        // Non-YouTube URL: keep it as-is if it is a real http(s) URL.
-        // This keeps the cover art clickable for clients like Morphe and
-        // AndDea Revanced Patches that publish their project page instead
-        // of a YouTube video link.
         return url.takeIf {
-            (it.startsWith("http://") || it.startsWith("https://")) &&
-                !it.contains("/results?search_query=")
+            (it.startsWith("http://", ignoreCase = true) || it.startsWith("https://", ignoreCase = true)) &&
+                    !it.contains("/results?search_query=")
         }
     }
 
+    /**
+     * Extracts a raw media or web-page URL from browser sessions, YouTube clients,
+     * source/custom metadata fields, or fallback search URLs.
+     */
     private fun resolveRawMediaUrl(
         metadata: MediaMetadata,
         packageName: String?,
         extraValues: List<String>,
     ): String? {
-        // A browser media session (Chrome / Edge / Firefox / Vivaldi / ...)
-        // plays a WEB PAGE (e.g. music.apple.com/jp/album/...). The page url
-        // is published in one of the metadata string fields, so extract it
-        // before applying any app-specific normalisation.
-        // Prefer a supported webpage URL for browsers, including browsers whose
-        // package names are not in the known list. Unknown players are scanned
-        // too, since they may be browser-based media sessions.
         if (MediaServiceResolver.isBrowser(packageName) || MediaServiceResolver.service(packageName) == null) {
             browserPageUrl(metadata, extraValues)?.let { return it }
         }
@@ -217,10 +253,12 @@ class MetadataResolver @Inject constructor(
             val normalized = normalizeMediaUrl(sourceUrl, packageName)
             if (normalized != null) return normalized
         }
-        val customKeys = listOf("youtube_url", "video_url", "source_url", "media_url", "content_url",
-            "spotify_url", "apple_music_url", "deezer_url", "soundcloud_url")
+        val customKeys = listOf(
+            "youtube_url", "video_url", "source_url", "media_url", "content_url",
+            "spotify_url", "apple_music_url", "deezer_url", "soundcloud_url",
+        )
         for (key in customKeys) {
-            val value = metadata.getString(key)
+            val value = safeGetString(metadata, key)
             if (value != null && value.isValidMediaUrl()) {
                 val normalized = normalizeMediaUrl(value, packageName)
                 if (normalized != null) return normalized
@@ -236,130 +274,168 @@ class MetadataResolver @Inject constructor(
             extractYouTubeUrl(metadata)?.let { url ->
                 normalizeMediaUrl(url, packageName)?.let { return it }
             }
-            // YouTube wrapper clients (Morphe, AndDea Revanced, Metrolist, etc.)
-            // publish their own metadata and should not fall back to a YouTube
-            // search page when no video URL is found. Return null instead so no
-            // misleading search link is sent to Discord.
             if (MediaServiceResolver.isYouTubeWrapper(packageName)) {
                 return null
             }
-            // No direct video/playlist id was published by the session.
-            // Fall back to the title search instead of returning null: the
-            // artist link still gets a search page, so the media link must too,
-            // otherwise Discord shows only "Artist on ..." and the
-            // video/music/playlist button disappears entirely.
-            val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+            val title = safeGetString(metadata, MediaMetadata.METADATA_KEY_TITLE)
             return MediaServiceResolver.mediaSearchUrl(packageName, title)
         }
         if (MediaServiceResolver.isBrowser(packageName)) {
-            val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+            val title = safeGetString(metadata, MediaMetadata.METADATA_KEY_TITLE)
             return MediaServiceResolver.browserSearchUrl(title)
         }
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+        val title = safeGetString(metadata, MediaMetadata.METADATA_KEY_TITLE)
         return MediaServiceResolver.mediaSearchUrl(packageName, title)
     }
 
-    /** Resolves a track URL from sourceUrl or custom metadata keys. */
+    /** Resolves a canonical track URL from sourceUrl, media URI/ID, or custom metadata keys. */
     fun getTrackUrl(metadata: MediaMetadata, packageName: String?): String? {
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
-        if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
-            val url = resolveTrackUrl(sourceUrl, packageName)
-            if (url != null) return url
-        }
-        val customKeys = listOf(
+        val candidateKeys = listOf(
+            METADATA_KEY_SOURCE_URL,
+            METADATA_KEY_MEDIA_URI,
+            MediaMetadata.METADATA_KEY_MEDIA_ID,
             "youtube_url", "video_url", "source_url", "media_url", "content_url",
             "spotify_url", "spotify_track_url", "apple_music_url", "apple_track_url",
             "deezer_url", "deezer_track_url", "soundcloud_url", "amazon_url",
             "amazon_track_url", "tidal_url", "tidal_track_url", "kkbox_url",
             "kkbox_track_url", "linemusic_url", "linemusic_track_url", "joox_url",
-            "joox_track_url"
+            "joox_track_url", "bilibili_url", "nicovideo_url", "streetvoice_url",
         )
-        for (key in customKeys) {
-            val value = metadata.getString(key)
-            if (value != null && value.isValidMediaUrl()) {
-                val url = resolveTrackUrl(value, packageName)
-                if (url != null) return url
+        for (key in candidateKeys) {
+            val value = safeGetString(metadata, key)?.trim() ?: continue
+            if (value.isEmpty()) continue
+            if (value.isValidMediaUrl() || value.startsWith("spotify:track:", ignoreCase = true)) {
+                resolveTrackUrl(value, packageName)?.let { return it }
             }
         }
         scanAllMetadataForUrl(metadata)?.let { url ->
-            val resolved = resolveTrackUrl(url, packageName)
-            if (resolved != null) return resolved
+            resolveTrackUrl(url, packageName)?.let { return it }
         }
         return null
     }
 
-    /** Resolves an album URL from sourceUrl or custom metadata keys. */
+    /** Resolves a canonical album URL from source/media URI/ID or custom metadata keys. */
     fun getAlbumUrl(metadata: MediaMetadata, packageName: String?): String? {
-        // YouTube Music clients often publish the album only through the media
-        // uri / media id (a browse page or a list=OLAK5uy_... url), so those are
-        // checked in addition to the source url.
         val candidateKeys = listOf(
             METADATA_KEY_SOURCE_URL,
             METADATA_KEY_MEDIA_URI,
             MediaMetadata.METADATA_KEY_MEDIA_ID,
-        )
-        for (key in candidateKeys) {
-            val value = metadata.getString(key)
-            if (value != null && value.isValidMediaUrl()) {
-                val url = resolveAlbumUrl(value, packageName)
-                if (url != null) return url
-            }
-        }
-        val customKeys = listOf(
             "spotify_album_url", "apple_music_album_url", "deezer_album_url",
             "amazon_album_url", "tidal_album_url", "kkbox_album_url",
             "linemusic_album_url", "joox_album_url", "soundcloud_album_url",
-            "bandcamp_album_url"
+            "bandcamp_album_url",
         )
-        for (key in customKeys) {
-            val value = metadata.getString(key)
-            if (value != null && value.isValidMediaUrl()) {
-                val url = resolveAlbumUrl(value, packageName)
-                if (url != null) return url
+        for (key in candidateKeys) {
+            val value = safeGetString(metadata, key)?.trim() ?: continue
+            if (value.isEmpty()) continue
+            // Allow raw YouTube Music browse/album IDs (MPREb... / OLAK5uy_...) and spotify:album: URIs.
+            val isRawAlbumId = value.startsWith("MPREb", ignoreCase = true) ||
+                    value.startsWith("OLAK5uy", ignoreCase = true) ||
+                    value.startsWith("spotify:album:", ignoreCase = true)
+            if (value.isValidMediaUrl() || isRawAlbumId) {
+                resolveAlbumUrl(value, packageName)?.let { return it }
             }
+        }
+        scanAllMetadataForUrl(metadata)?.let { url ->
+            resolveAlbumUrl(url, packageName)?.let { return it }
         }
         return null
     }
 
-    /** Resolves a playlist URL from sourceUrl or custom metadata keys. */
+    /** Resolves a canonical playlist URL from source/media URI/ID or custom metadata keys. */
     fun getPlaylistUrl(metadata: MediaMetadata, packageName: String?): String? {
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
-        if (sourceUrl != null && sourceUrl.isValidMediaUrl()) {
-            val url = resolvePlaylistUrl(sourceUrl, packageName)
-            if (url != null) return url
-        }
-        val customKeys = listOf(
+        val candidateKeys = listOf(
+            METADATA_KEY_SOURCE_URL,
+            METADATA_KEY_MEDIA_URI,
+            MediaMetadata.METADATA_KEY_MEDIA_ID,
             "spotify_playlist_url", "apple_music_playlist_url", "deezer_playlist_url",
             "amazon_playlist_url", "tidal_playlist_url", "kkbox_playlist_url",
-            "linemusic_playlist_url", "joox_playlist_url", "soundcloud_playlist_url"
+            "linemusic_playlist_url", "joox_playlist_url", "soundcloud_playlist_url",
         )
-        for (key in customKeys) {
-            val value = metadata.getString(key)
-            if (value != null && value.isValidMediaUrl()) {
-                val url = resolvePlaylistUrl(value, packageName)
-                if (url != null) return url
+        for (key in candidateKeys) {
+            val value = safeGetString(metadata, key)?.trim() ?: continue
+            if (value.isEmpty()) continue
+            val isRawPlaylistId = value.startsWith("spotify:playlist:", ignoreCase = true) ||
+                    value.startsWith("VLPL", ignoreCase = true) ||
+                    value.startsWith("VLRDCLAK", ignoreCase = true)
+            if (value.isValidMediaUrl() || isRawPlaylistId) {
+                resolvePlaylistUrl(value, packageName)?.let { return it }
             }
+        }
+        scanAllMetadataForUrl(metadata)?.let { url ->
+            resolvePlaylistUrl(url, packageName)?.let { return it }
         }
         return null
     }
 
+    /**
+     * Normalizes supported streaming platform track URLs into clean shareable web URLs.
+     */
     private fun resolveTrackUrl(url: String, packageName: String?): String? {
         val trimmed = url.trim()
         val lower = trimmed.lowercase()
-        val pkg = packageName?.lowercase().orEmpty()
 
-        // YouTube / YouTube Music / YMusic (ymusicapp.com, www.ymusicapp.com)
+        // Spotify URI (spotify:track:{id})
+        if (lower.startsWith("spotify:track:")) {
+            val id = trimmed.substringAfter("spotify:track:").substringBefore('?').trim()
+            if (id.isNotBlank()) return "https://open.spotify.com/track/$id"
+        }
+
+        // YouTube / YouTube Music / YMusic
         if (YouTubeResolver.isYoutubeFamilyUrl(trimmed)) {
             return YouTubeResolver.toRpcUrl(trimmed)
         }
 
-        // Spotify track: open.spotify.com/track/{id}
+        // Bilibili video: bilibili.com/video/{BV...|av...} or b23.tv/{code}
+        if (lower.contains("bilibili.com") || lower.contains("b23.tv")) {
+            try {
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val videoIndex = segments.indexOf("video")
+                if (videoIndex != -1 && segments.size > videoIndex + 1) {
+                    return "https://www.bilibili.com/video/${segments[videoIndex + 1]}"
+                }
+                if (lower.contains("b23.tv") && segments.isNotEmpty()) {
+                    return "https://b23.tv/${segments[0]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Niconico video: nicovideo.jp/watch/{id} or nico.ms/{id}
+        if (lower.contains("nicovideo.jp") || lower.contains("nico.ms")) {
+            try {
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val watchIndex = segments.indexOf("watch")
+                if (watchIndex != -1 && segments.size > watchIndex + 1) {
+                    return "https://www.nicovideo.jp/watch/${segments[watchIndex + 1]}"
+                }
+                if (lower.contains("nico.ms") && segments.isNotEmpty()) {
+                    return "https://www.nicovideo.jp/watch/${segments[0]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // StreetVoice track: streetvoice.com/{user}/songs/{id}
+        if (lower.contains("streetvoice.com")) {
+            try {
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val songsIndex = segments.indexOf("songs")
+                if (songsIndex >= 1 && segments.size > songsIndex + 1) {
+                    return "https://streetvoice.com/${segments[songsIndex - 1]}/songs/${segments[songsIndex + 1]}/"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Spotify track (handles optional /intl-xx/ locale prefix)
         if (lower.contains("spotify.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
-                if (segments.size >= 2 && segments[0] == "track") {
-                    return "https://open.spotify.com/track/${segments[1]}"
+                val trackIndex = segments.indexOf("track")
+                if (trackIndex != -1 && segments.size > trackIndex + 1) {
+                    return "https://open.spotify.com/track/${segments[trackIndex + 1]}"
                 }
             } catch (_: Exception) {}
         }
@@ -367,22 +443,24 @@ class MetadataResolver @Inject constructor(
         // Apple Music track: music.apple.com/{country}/album/{slug}/{album-id}?i={track-id}
         if (lower.contains("music.apple.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val query = uri.query ?: ""
                 val trackIdParam = query.split("&").find { it.startsWith("i=") }?.substringAfter("i=")
-                if (trackIdParam != null && trackIdParam.isNotBlank()) {
-                    val albumSlug = if (segments.size >= 4) segments[2] else ""
-                    val albumId = if (segments.size >= 4) segments[3] else ""
-                    return "https://music.apple.com/us/album/$albumSlug/$albumId?i=$trackIdParam"
+                val albumIndex = segments.indexOf("album")
+                if (!trackIdParam.isNullOrBlank() && albumIndex != -1 && segments.size > albumIndex + 2) {
+                    val storefront = if (albumIndex >= 1) segments[0] else "us"
+                    val albumSlug = segments[albumIndex + 1]
+                    val albumId = segments[albumIndex + 2]
+                    return "https://music.apple.com/$storefront/album/$albumSlug/$albumId?i=$trackIdParam"
                 }
             } catch (_: Exception) {}
         }
 
-        // Amazon Music track: music.amazon.com/{asin}/{slug} or music.amazon.com/{asin}
+        // Amazon Music track
         if (lower.contains("amazon.com") || lower.contains("amazon.co.jp")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 if (segments.isNotEmpty()) {
                     val domain = uri.host ?: "music.amazon.com"
@@ -391,10 +469,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Deezer track: deezer.com/{lang}/track/{id}
+        // Deezer track
         if (lower.contains("deezer.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val trackIndex = segments.indexOf("track")
                 if (trackIndex != -1 && segments.size > trackIndex + 1) {
@@ -403,26 +481,22 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // TIDAL track: tidal.com/track/{id}
+        // TIDAL track
         if (lower.contains("tidal.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val trackIndex = segments.indexOf("track")
                 if (trackIndex != -1 && segments.size > trackIndex + 1) {
                     return "https://tidal.com/track/${segments[trackIndex + 1]}"
                 }
-                // Also match direct /{id}
-                if (segments.size >= 2 && segments[0] == "track") {
-                    return "https://tidal.com/track/${segments[1]}"
-                }
             } catch (_: Exception) {}
         }
 
-        // KKBOX track: kkbox.com/{region}/{lang}/song/{id}
+        // KKBOX track
         if (lower.contains("kkbox.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val songIndex = segments.indexOf("song")
                 if (songIndex != -1 && segments.size > songIndex + 1) {
@@ -432,10 +506,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // LINE MUSIC track: music.line.me/webapp/track/{id}
+        // LINE MUSIC track
         if (lower.contains("music.line.me") || lower.contains("music-tw.line.me")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val trackIndex = segments.indexOf("track")
                 if (trackIndex != -1 && segments.size > trackIndex + 1) {
@@ -446,10 +520,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // JOOX track: joox.com/{region}/single/{id}
+        // JOOX track
         if (lower.contains("joox.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val singleIndex = segments.indexOf("single")
                 if (singleIndex != -1 && segments.size > singleIndex + 1) {
@@ -458,39 +532,34 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Kugou Music track: kugou.com/{encode_id}.html
+        // Kugou Music track
         if (lower.contains("kugou.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val path = uri.path ?: ""
                 val segments = path.split("/").filter { it.isNotEmpty() }
                 val lastSegment = segments.lastOrNull() ?: ""
-                // kugou.com/mixsong/{encode_id}.html or kugou.com/{encode_id}.html
                 if (lastSegment.endsWith(".html")) {
                     val id = lastSegment.substringBefore(".html")
                     if (id.isNotBlank()) return "https://www.kugou.com/${id}.html"
                 }
-                // kugou.com/{hash} (32-char MD5)
                 if (lastSegment.length == 32 && lastSegment.matches(Regex("[0-9a-fA-F]{32}"))) {
                     return "https://www.kugou.com/${lastSegment}.html"
                 }
             } catch (_: Exception) {}
         }
 
-        // QQ Music track: qq.com{nmid} or y.qq.com/n/yqq/song/{mid}.html
+        // QQ Music track
         if (lower.contains("qq.com") || lower.contains("y.qq.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val path = uri.path ?: ""
                 val segments = path.split("/").filter { it.isNotEmpty() }
-                // y.qq.com/n/yqq/song/{mid}.html
                 val songIndex = segments.indexOf("song")
                 if (songIndex != -1 && segments.size > songIndex + 1) {
-                    val songSegment = segments[songIndex + 1]
-                    val mid = songSegment.substringBefore(".html")
+                    val mid = segments[songIndex + 1].substringBefore(".html")
                     if (mid.isNotBlank()) return "https://y.qq.com/n/yqq/song/${mid}.html"
                 }
-                // qq.com{nmid} — 14-char mid
                 val lastSegment = segments.lastOrNull() ?: ""
                 if (lastSegment.length >= 10 && lastSegment.matches(Regex("[0-9A-Za-z]{10,}"))) {
                     return "https://y.qq.com/n/yqq/song/${lastSegment}.html"
@@ -498,75 +567,66 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Qishui Music (汽水音樂): music.douyin.com/qishui/(track|album|artist|playlist)?{type}_id={id}
+        // Qishui Music
         if (lower.contains("music.douyin.com") || lower.contains("douyin.com/qishui")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
-                // qishui/track?track_id=12345
                 val trackIdParam = query.split("&").find { it.startsWith("track_id=") }?.substringAfter("track_id=")
-                if (trackIdParam != null && trackIdParam.isNotBlank()) {
-                    return "https://music.douyin.com/qishui/track?track_id=${trackIdParam}"
+                if (!trackIdParam.isNullOrBlank()) {
+                    return "https://music.douyin.com/qishui/track?track_id=$trackIdParam"
                 }
                 val albumIdParam = query.split("&").find { it.startsWith("album_id=") }?.substringAfter("album_id=")
-                if (albumIdParam != null && albumIdParam.isNotBlank()) {
-                    return "https://music.douyin.com/qishui/album?album_id=${albumIdParam}"
+                if (!albumIdParam.isNullOrBlank()) {
+                    return "https://music.douyin.com/qishui/album?album_id=$albumIdParam"
                 }
                 val artistIdParam = query.split("&").find { it.startsWith("artist_id=") }?.substringAfter("artist_id=")
-                if (artistIdParam != null && artistIdParam.isNotBlank()) {
-                    return "https://music.douyin.com/qishui/artist?artist_id=${artistIdParam}"
+                if (!artistIdParam.isNullOrBlank()) {
+                    return "https://music.douyin.com/qishui/artist?artist_id=$artistIdParam"
                 }
                 val playlistIdParam = query.split("&").find { it.startsWith("playlist_id=") }?.substringAfter("playlist_id=")
-                if (playlistIdParam != null && playlistIdParam.isNotBlank()) {
-                    return "https://music.douyin.com/qishui/playlist?playlist_id=${playlistIdParam}"
+                if (!playlistIdParam.isNullOrBlank()) {
+                    return "https://music.douyin.com/qishui/playlist?playlist_id=$playlistIdParam"
                 }
             } catch (_: Exception) {}
         }
 
-        // Douyin Music track: douyin.com{share_code}/
+        // Douyin Music track
         if (lower.contains("douyin.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val code = segments.lastOrNull() ?: ""
-                    if (code.isNotBlank()) return "https://www.douyin.com/${code}/"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val code = segments.lastOrNull() ?: ""
+                if (code.isNotBlank()) return "https://www.douyin.com/$code/"
             } catch (_: Exception) {}
         }
 
-        // NetEase Cloud Music track: 163.com{id}
+        // NetEase Cloud Music track
         if (lower.contains("163.com") || lower.contains("163cn.tv")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
-                // music.163.com/song?id=123456
                 val songIdParam = query.split("&").find { it.startsWith("id=") }?.substringAfter("id=")
-                if (songIdParam != null && songIdParam.isNotBlank()) {
-                    return "https://music.163.com/song?id=${songIdParam}"
+                if (!songIdParam.isNullOrBlank()) {
+                    return "https://music.163.com/song?id=$songIdParam"
                 }
-                // 163.com/{id} or 163cn.tv/{code}
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val lastSegment = segments.lastOrNull() ?: ""
                 if (lastSegment.isNotBlank() && lastSegment.matches(Regex("[0-9A-Za-z]{5,}"))) {
-                    return "https://music.163.com/song?id=${lastSegment}"
+                    return "https://music.163.com/song?id=$lastSegment"
                 }
             } catch (_: Exception) {}
         }
 
-        // Kuwo Music track: kuwo.cn/play_detail/{id}
+        // Kuwo Music track
         if (lower.contains("kuwo.cn")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playIndex = segments.indexOf("play_detail")
                 if (playIndex != -1 && segments.size > playIndex + 1) {
                     return "https://kuwo.cn/play_detail/${segments[playIndex + 1]}"
                 }
-                // m.kuwo.cn/yinyue/{id}
                 val yinyueIndex = segments.indexOf("yinyue")
                 if (yinyueIndex != -1 && segments.size > yinyueIndex + 1) {
                     return "https://m.kuwo.cn/yinyue/${segments[yinyueIndex + 1]}"
@@ -574,38 +634,31 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // JioSaavn track: jiosaavn.com{slug}/{token}
+        // JioSaavn track
         if (lower.contains("jiosaavn.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val token = segments.lastOrNull() ?: ""
-                    if (token.isNotBlank()) return "https://www.jiosaavn.com/${token}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val token = segments.lastOrNull() ?: ""
+                if (token.isNotBlank()) return "https://www.jiosaavn.com/$token"
             } catch (_: Exception) {}
         }
 
-        // Gaana track: gaana.com{slug}
+        // Gaana track
         if (lower.contains("gaana.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val slug = segments.lastOrNull() ?: ""
-                    if (slug.isNotBlank()) return "https://gaana.com/${slug}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val slug = segments.lastOrNull() ?: ""
+                if (slug.isNotBlank()) return "https://gaana.com/$slug"
             } catch (_: Exception) {}
         }
 
-        // Wynk Music track: wynk.in/music/song/{slug}/{id}
+        // Wynk Music track
         if (lower.contains("wynk.in")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val songIndex = segments.indexOf("song")
                 if (songIndex != -1 && segments.size > songIndex + 2) {
                     return "https://wynk.in/music/song/${segments[songIndex + 1]}/${segments[songIndex + 2]}"
@@ -613,46 +666,40 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Boomplay track: boomplay.com{id}
+        // Boomplay track
         if (lower.contains("boomplay.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val id = segments.lastOrNull() ?: ""
-                    if (id.isNotBlank()) return "https://www.boomplay.com/${id}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val id = segments.lastOrNull() ?: ""
+                if (id.isNotBlank()) return "https://www.boomplay.com/$id"
             } catch (_: Exception) {}
         }
 
-        // Audiomack track: audiomack.com{artist-slug}/song/{song-slug}
+        // Audiomack track
         if (lower.contains("audiomack.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val songIndex = segments.indexOf("song")
                 if (songIndex != -1 && segments.size > songIndex + 1) {
                     val artistSlug = if (songIndex > 0) segments[songIndex - 1] else ""
-                    if (artistSlug.isNotBlank()) return "https://www.audiomack.com/${artistSlug}/song/${segments[songIndex + 1]}"
+                    if (artistSlug.isNotBlank()) return "https://www.audiomack.com/$artistSlug/song/${segments[songIndex + 1]}"
                     return "https://www.audiomack.com/song/${segments[songIndex + 1]}"
                 }
             } catch (_: Exception) {}
         }
 
-        // Yandex Music track: music.yandex.ru/album/{album-id}/track/{track-id}
+        // Yandex Music track
         if (lower.contains("music.yandex.ru") || lower.contains("music.yandex.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val trackIndex = segments.indexOf("track")
                 if (trackIndex != -1 && segments.size > trackIndex + 1) {
                     val albumId = if (trackIndex > 0) segments[trackIndex - 1] else ""
-                    return "https://music.yandex.ru/album/${albumId}/track/${segments[trackIndex + 1]}"
+                    return "https://music.yandex.ru/album/$albumId/track/${segments[trackIndex + 1]}"
                 }
-                // music.yandex.ru/artist/{artist-id}
                 val artistIndex = segments.indexOf("artist")
                 if (artistIndex != -1 && segments.size > artistIndex + 1) {
                     return "https://music.yandex.ru/artist/${segments[artistIndex + 1]}"
@@ -660,36 +707,30 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // VK Music: vk.com/audio?section=search&q=...
+        // VK Music
         if (lower.contains("vk.com") || lower.contains("vk.me")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
-                if (query.contains("audio")) {
-                    return trimmed
-                }
+                if (query.contains("audio")) return trimmed
             } catch (_: Exception) {}
         }
 
-        // Anghami track: anghami.com{id}
+        // Anghami track
         if (lower.contains("anghami.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val id = segments.lastOrNull() ?: ""
-                    if (id.isNotBlank()) return "https://anghami.com/${id}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val id = segments.lastOrNull() ?: ""
+                if (id.isNotBlank()) return "https://anghami.com/$id"
             } catch (_: Exception) {}
         }
 
-        // AWA track: s.awa.fm/track/{id}
+        // AWA track
         if (lower.contains("awa.fm")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val trackIndex = segments.indexOf("track")
                 if (trackIndex != -1 && segments.size > trackIndex + 1) {
                     return "https://s.awa.fm/track/${segments[trackIndex + 1]}"
@@ -697,50 +738,59 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Recochoku track: recochoku.jp - search by title fallback
+        // Recochoku track
         if (lower.contains("recochoku.jp")) return trimmed
 
-        // Melon track: melon.com{id}
+        // Melon track
         if (lower.contains("melon.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
                 val songIdParam = query.split("&").find { it.startsWith("songId=") }?.substringAfter("songId=")
-                if (songIdParam != null && songIdParam.isNotBlank()) {
-                    return "https://www.melon.com/song/detail.htm?songId=${songIdParam}"
+                if (!songIdParam.isNullOrBlank()) {
+                    return "https://www.melon.com/song/detail.htm?songId=$songIdParam"
                 }
             } catch (_: Exception) {}
         }
 
-        // Genie Music track: genie.co.kr/detail/songInfo?xgnm={id}
+        // Genie Music track
         if (lower.contains("genie.co.kr")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
                 val songIdParam = query.split("&").find { it.startsWith("xgnm=") }?.substringAfter("xgnm=")
-                if (songIdParam != null && songIdParam.isNotBlank()) {
-                    return "https://www.genie.co.kr/detail/songInfo?xgnm=${songIdParam}"
+                if (!songIdParam.isNullOrBlank()) {
+                    return "https://www.genie.co.kr/detail/songInfo?xgnm=$songIdParam"
                 }
             } catch (_: Exception) {}
         }
 
-        // Beatport track: beatport.com{slug}/{id}
+        // Bugs! track
+        if (lower.contains("bugs.co.kr")) {
+            try {
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val trackIndex = segments.indexOf("track")
+                if (trackIndex != -1 && segments.size > trackIndex + 1) {
+                    return "https://music.bugs.co.kr/track/${segments[trackIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Beatport track
         if (lower.contains("beatport.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val id = segments.lastOrNull() ?: ""
-                    if (id.isNotBlank()) return "https://www.beatport.com/${id}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val id = segments.lastOrNull() ?: ""
+                if (id.isNotBlank()) return "https://www.beatport.com/$id"
             } catch (_: Exception) {}
         }
 
-        // SoundCloud track: soundcloud.com/{user}/{track}
+        // SoundCloud track
         if (lower.contains("soundcloud.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 if (segments.size >= 2) {
                     return "https://soundcloud.com/${segments[0]}/${segments[1]}"
@@ -748,18 +798,13 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Bandcamp track: {artist-subdomain}.bandcamp.com/track/{track-slug}
+        // Bandcamp track
         if (lower.contains("bandcamp.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val trackIndex = segments.indexOf("track")
                 if (trackIndex != -1 && segments.size > trackIndex + 1) {
-                    return trimmed
-                }
-                // Also handle direct track URLs: /track/{slug}
-                if (segments.size >= 2 && segments[0] == "track") {
                     return trimmed
                 }
             } catch (_: Exception) {}
@@ -768,29 +813,51 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /**
+     * Normalizes supported streaming platform album URLs (and raw browse/album IDs)
+     * into canonical web URLs.
+     */
     private fun resolveAlbumUrl(url: String, packageName: String?): String? {
         val trimmed = url.trim()
         val lower = trimmed.lowercase()
 
-        // Spotify album: open.spotify.com/album/{id}
+        // Raw YouTube Music browse ID or album playlist ID
+        if (trimmed.startsWith("MPREb", ignoreCase = true)) {
+            val id = trimmed.substringBefore('?').substringBefore('&').substringBefore('/')
+            if (id.isNotBlank()) return "https://music.youtube.com/browse/$id"
+        }
+        if (trimmed.startsWith("OLAK5uy", ignoreCase = true)) {
+            val id = trimmed.substringBefore('?').substringBefore('&').substringBefore('/')
+            if (id.isNotBlank()) return "https://music.youtube.com/playlist?list=$id"
+        }
+
+        // Spotify URI (spotify:album:{id})
+        if (lower.startsWith("spotify:album:")) {
+            val id = trimmed.substringAfter("spotify:album:").substringBefore('?').trim()
+            if (id.isNotBlank()) return "https://open.spotify.com/album/$id"
+        }
+
+        // Spotify album (handles optional /intl-xx/ locale prefix)
         if (lower.contains("spotify.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
-                if (segments.size >= 2 && segments[0] == "album") {
-                    return "https://open.spotify.com/album/${segments[1]}"
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    return "https://open.spotify.com/album/${segments[albumIndex + 1]}"
                 }
             } catch (_: Exception) {}
         }
 
-        // Apple Music album: music.apple.com/{country}/album/{slug}/{id}
+        // Apple Music album
         if (lower.contains("music.apple.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 2) {
-                    return "https://music.apple.com/us/album/${segments[albumIndex + 1]}/${segments[albumIndex + 2]}"
+                    val storefront = if (albumIndex >= 1) segments[0] else "us"
+                    return "https://music.apple.com/$storefront/album/${segments[albumIndex + 1]}/${segments[albumIndex + 2]}"
                 }
             } catch (_: Exception) {}
         }
@@ -798,7 +865,7 @@ class MetadataResolver @Inject constructor(
         // Amazon Music album
         if (lower.contains("amazon.com") || lower.contains("amazon.co.jp")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 if (segments.isNotEmpty()) {
                     val domain = uri.host ?: "music.amazon.com"
@@ -807,10 +874,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Deezer album: deezer.com/{lang}/album/{id}
+        // Deezer album
         if (lower.contains("deezer.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
@@ -819,10 +886,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // TIDAL album: tidal.com/album/{id}
+        // TIDAL album
         if (lower.contains("tidal.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
@@ -831,10 +898,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // KKBOX album: kkbox.com/{region}/{lang}/album/{id}
+        // KKBOX album
         if (lower.contains("kkbox.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
@@ -844,10 +911,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // LINE MUSIC album: music.line.me/webapp/album/{id}
+        // LINE MUSIC album
         if (lower.contains("music.line.me") || lower.contains("music-tw.line.me")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
@@ -858,10 +925,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // JOOX album: joox.com/{region}/album/{id}
+        // JOOX album
         if (lower.contains("joox.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
@@ -870,32 +937,28 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Kugou Music album: kugou.com/{album_id}/
+        // Kugou Music album
         if (lower.contains("kugou.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val path = uri.path ?: ""
                 val segments = path.split("/").filter { it.isNotEmpty() }
-                // kugou.com/album/{id}/ or kugou.com/{id}/
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
                     return "https://www.kugou.com/album/${segments[albumIndex + 1]}/"
                 }
-                // Last segment could be album id
-                val lastSegment = segments.lastOrNull() ?: ""
-                if (lastSegment.endsWith("/") || lastSegment.isBlank()) {
-                    val secondLast = segments.getOrNull(segments.size - 2) ?: ""
-                    if (secondLast.isNotBlank()) return "https://www.kugou.com/${secondLast}/"
+                if (path.endsWith("/") && segments.isNotEmpty()) {
+                    val last = segments.last()
+                    if (last.isNotBlank()) return "https://www.kugou.com/$last/"
                 }
             } catch (_: Exception) {}
         }
 
-        // QQ Music album: qq.com{album_mid}
+        // QQ Music album
         if (lower.contains("qq.com") || lower.contains("y.qq.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
                     val mid = segments[albumIndex + 1].substringBefore(".html")
@@ -904,41 +967,37 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Douyin Music album: douyin.com{share_code}/
+        // Douyin Music album
         if (lower.contains("douyin.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val code = segments.lastOrNull() ?: ""
-                    if (code.isNotBlank()) return "https://www.douyin.com/${code}/"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val code = segments.lastOrNull() ?: ""
+                if (code.isNotBlank()) return "https://www.douyin.com/$code/"
             } catch (_: Exception) {}
         }
 
-        // NetEase Cloud Music album: 163.com{id}
+        // NetEase Cloud Music album
         if (lower.contains("163.com") || lower.contains("163cn.tv")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
                 val albumIdParam = query.split("&").find { it.startsWith("id=") }?.substringAfter("id=")
-                if (albumIdParam != null && albumIdParam.isNotBlank()) {
-                    return "https://music.163.com/album?id=${albumIdParam}"
+                if (!albumIdParam.isNullOrBlank()) {
+                    return "https://music.163.com/album?id=$albumIdParam"
                 }
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val lastSegment = segments.lastOrNull() ?: ""
                 if (lastSegment.isNotBlank() && lastSegment.matches(Regex("[0-9A-Za-z]{5,}"))) {
-                    return "https://music.163.com/album?id=${lastSegment}"
+                    return "https://music.163.com/album?id=$lastSegment"
                 }
             } catch (_: Exception) {}
         }
 
-        // Kuwo Music album: kuwo.cn/album_detail/{id}
+        // Kuwo Music album
         if (lower.contains("kuwo.cn")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album_detail")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
@@ -947,38 +1006,31 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // JioSaavn album: jiosaavn.com{slug}/{token}
+        // JioSaavn album
         if (lower.contains("jiosaavn.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val token = segments.lastOrNull() ?: ""
-                    if (token.isNotBlank()) return "https://www.jiosaavn.com/${token}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val token = segments.lastOrNull() ?: ""
+                if (token.isNotBlank()) return "https://www.jiosaavn.com/$token"
             } catch (_: Exception) {}
         }
 
-        // Gaana album: gaana.com{slug}
+        // Gaana album
         if (lower.contains("gaana.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val slug = segments.lastOrNull() ?: ""
-                    if (slug.isNotBlank()) return "https://gaana.com/${slug}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val slug = segments.lastOrNull() ?: ""
+                if (slug.isNotBlank()) return "https://gaana.com/$slug"
             } catch (_: Exception) {}
         }
 
-        // Wynk Music album: wynk.in/music/album/{slug}/{id}
+        // Wynk Music album
         if (lower.contains("wynk.in")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 2) {
                     return "https://wynk.in/music/album/${segments[albumIndex + 1]}/${segments[albumIndex + 2]}"
@@ -986,40 +1038,35 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Boomplay album: boomplay.com{id}
+        // Boomplay album
         if (lower.contains("boomplay.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val id = segments.lastOrNull() ?: ""
-                    if (id.isNotBlank()) return "https://www.boomplay.com/${id}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val id = segments.lastOrNull() ?: ""
+                if (id.isNotBlank()) return "https://www.boomplay.com/$id"
             } catch (_: Exception) {}
         }
 
-        // Audiomack album: audiomack.com{artist-slug}/album/{album-slug}
+        // Audiomack album
         if (lower.contains("audiomack.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
                     val artistSlug = if (albumIndex > 0) segments[albumIndex - 1] else ""
-                    if (artistSlug.isNotBlank()) return "https://www.audiomack.com/${artistSlug}/album/${segments[albumIndex + 1]}"
+                    if (artistSlug.isNotBlank()) return "https://www.audiomack.com/$artistSlug/album/${segments[albumIndex + 1]}"
                     return "https://www.audiomack.com/album/${segments[albumIndex + 1]}"
                 }
             } catch (_: Exception) {}
         }
 
-        // Yandex Music album: music.yandex.ru/album/{album-id}
+        // Yandex Music album
         if (lower.contains("music.yandex.ru") || lower.contains("music.yandex.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
                     return "https://music.yandex.ru/album/${segments[albumIndex + 1]}"
@@ -1027,36 +1074,30 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // VK Music playlist/album: vk.com/audio
+        // VK Music
         if (lower.contains("vk.com") || lower.contains("vk.me")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
-                if (query.contains("audio")) {
-                    return trimmed
-                }
+                if (query.contains("audio")) return trimmed
             } catch (_: Exception) {}
         }
 
-        // Anghami album: anghami.com{id}
+        // Anghami album
         if (lower.contains("anghami.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val id = segments.lastOrNull() ?: ""
-                    if (id.isNotBlank()) return "https://anghami.com/${id}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val id = segments.lastOrNull() ?: ""
+                if (id.isNotBlank()) return "https://anghami.com/$id"
             } catch (_: Exception) {}
         }
 
-        // AWA album: s.awa.fm/album/{id}
+        // AWA album
         if (lower.contains("awa.fm")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
                     return "https://s.awa.fm/album/${segments[albumIndex + 1]}"
@@ -1064,52 +1105,60 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Recochoku album: recochoku.jp - search by title fallback
+        // Recochoku album
         if (lower.contains("recochoku.jp")) return trimmed
 
-        // Melon album: melon.com{id}
+        // Melon album
         if (lower.contains("melon.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
                 val albumIdParam = query.split("&").find { it.startsWith("albumId=") }?.substringAfter("albumId=")
-                if (albumIdParam != null && albumIdParam.isNotBlank()) {
-                    return "https://www.melon.com/album/detail.htm?albumId=${albumIdParam}"
+                if (!albumIdParam.isNullOrBlank()) {
+                    return "https://www.melon.com/album/detail.htm?albumId=$albumIdParam"
                 }
             } catch (_: Exception) {}
         }
 
-        // Genie Music album: genie.co.kr/detail/albumInfo?axnm={id}
+        // Genie Music album
         if (lower.contains("genie.co.kr")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
                 val albumIdParam = query.split("&").find { it.startsWith("axnm=") }?.substringAfter("axnm=")
-                if (albumIdParam != null && albumIdParam.isNotBlank()) {
-                    return "https://www.genie.co.kr/detail/albumInfo?axnm=${albumIdParam}"
+                if (!albumIdParam.isNullOrBlank()) {
+                    return "https://www.genie.co.kr/detail/albumInfo?axnm=$albumIdParam"
                 }
             } catch (_: Exception) {}
         }
 
-        // Beatport album: beatport.com{slug}/{id}
+        // Bugs! album
+        if (lower.contains("bugs.co.kr")) {
+            try {
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    return "https://music.bugs.co.kr/album/${segments[albumIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // Beatport album
         if (lower.contains("beatport.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val id = segments.lastOrNull() ?: ""
-                    if (id.isNotBlank()) return "https://www.beatport.com/${id}"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val id = segments.lastOrNull() ?: ""
+                if (id.isNotBlank()) return "https://www.beatport.com/$id"
             } catch (_: Exception) {}
         }
 
-        // Bandcamp album: {artist-subdomain}.bandcamp.com/album/{album-slug}
+        // Bandcamp album
         if (lower.contains("bandcamp.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val albumIndex = segments.indexOf("album")
                 if (albumIndex != -1 && segments.size > albumIndex + 1) {
                     return trimmed
@@ -1117,9 +1166,7 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // YouTube Music album:
-        //  - browse page: music.youtube.com/browse/MPREb...
-        //  - album playlist: any YouTube url carrying list=OLAK5uy_...
+        // YouTube Music browse or OLAK5uy_ album playlist URLs
         if (lower.contains("youtube.com") || lower.contains("youtu.be")) {
             val browseIndex = lower.indexOf("/browse/")
             if (browseIndex != -1) {
@@ -1132,7 +1179,6 @@ class MetadataResolver @Inject constructor(
                 if (id.isNotBlank()) return "https://music.youtube.com/browse/$id"
             }
             val listId = YouTubeResolver.extractPlaylistId(trimmed)
-            // OLAK5uy_... is the id YouTube Music uses for an album playlist.
             if (listId != null && listId.startsWith("OLAK5uy")) {
                 return "https://music.youtube.com/playlist?list=$listId"
             }
@@ -1141,29 +1187,48 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /**
+     * Normalizes supported streaming platform playlist URLs (and raw playlist IDs)
+     * into canonical web URLs.
+     */
     private fun resolvePlaylistUrl(url: String, packageName: String?): String? {
         val trimmed = url.trim()
         val lower = trimmed.lowercase()
 
-        // Spotify playlist: open.spotify.com/playlist/{id}
+        // Raw YouTube Music VL-prefixed playlist ID
+        if (trimmed.startsWith("VLPL", ignoreCase = true) || trimmed.startsWith("VLRDCLAK", ignoreCase = true)) {
+            val listId = trimmed.removePrefix("VL").removePrefix("vl")
+                .substringBefore('?').substringBefore('&').substringBefore('/')
+            if (listId.isNotBlank()) return "https://music.youtube.com/playlist?list=$listId"
+        }
+
+        // Spotify URI (spotify:playlist:{id})
+        if (lower.startsWith("spotify:playlist:")) {
+            val id = trimmed.substringAfter("spotify:playlist:").substringBefore('?').trim()
+            if (id.isNotBlank()) return "https://open.spotify.com/playlist/$id"
+        }
+
+        // Spotify playlist (handles optional /intl-xx/ locale prefix)
         if (lower.contains("spotify.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
-                if (segments.size >= 2 && segments[0] == "playlist") {
-                    return "https://open.spotify.com/playlist/${segments[1]}"
+                val playlistIndex = segments.indexOf("playlist")
+                if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
+                    return "https://open.spotify.com/playlist/${segments[playlistIndex + 1]}"
                 }
             } catch (_: Exception) {}
         }
 
-        // Apple Music playlist: music.apple.com/{country}/playlist/{slug}/{id}
+        // Apple Music playlist
         if (lower.contains("music.apple.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playlistIndex = segments.indexOf("playlist")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 2) {
-                    return "https://music.apple.com/us/playlist/${segments[playlistIndex + 1]}/${segments[playlistIndex + 2]}"
+                    val storefront = if (playlistIndex >= 1) segments[0] else "us"
+                    return "https://music.apple.com/$storefront/playlist/${segments[playlistIndex + 1]}/${segments[playlistIndex + 2]}"
                 }
             } catch (_: Exception) {}
         }
@@ -1171,7 +1236,7 @@ class MetadataResolver @Inject constructor(
         // Amazon Music playlist
         if (lower.contains("amazon.com") || lower.contains("amazon.co.jp")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 if (segments.isNotEmpty()) {
                     val domain = uri.host ?: "music.amazon.com"
@@ -1180,10 +1245,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Deezer playlist: deezer.com/{lang}/playlist/{id}
+        // Deezer playlist
         if (lower.contains("deezer.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playlistIndex = segments.indexOf("playlist")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
@@ -1192,10 +1257,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // TIDAL playlist: tidal.com/playlist/{id}
+        // TIDAL playlist
         if (lower.contains("tidal.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playlistIndex = segments.indexOf("playlist")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
@@ -1204,10 +1269,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // KKBOX playlist: kkbox.com/{region}/{lang}/playlist/{id}
+        // KKBOX playlist
         if (lower.contains("kkbox.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playlistIndex = segments.indexOf("playlist")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
@@ -1217,10 +1282,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // LINE MUSIC playlist: music.line.me/webapp/playlist/{id}
+        // LINE MUSIC playlist
         if (lower.contains("music.line.me") || lower.contains("music-tw.line.me")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playlistIndex = segments.indexOf("playlist")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
@@ -1231,10 +1296,10 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // JOOX playlist: joox.com/{region}/playlist/{id}
+        // JOOX playlist
         if (lower.contains("joox.com")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playlistIndex = segments.indexOf("playlist")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
@@ -1243,12 +1308,11 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Kugou Music playlist: kugou.com/{id}.html
+        // Kugou Music playlist
         if (lower.contains("kugou.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val lastSegment = segments.lastOrNull() ?: ""
                 if (lastSegment.endsWith(".html")) {
                     val id = lastSegment.substringBefore(".html")
@@ -1257,12 +1321,11 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // QQ Music playlist: qq.com{id}
+        // QQ Music playlist
         if (lower.contains("qq.com") || lower.contains("y.qq.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playlistIndex = segments.indexOf("playlist")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
                     val id = segments[playlistIndex + 1].substringBefore(".html")
@@ -1271,41 +1334,37 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Douyin Music playlist: douyin.com{share_code}/
+        // Douyin Music playlist
         if (lower.contains("douyin.com")) {
             try {
-                val uri = java.net.URI(trimmed)
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
-                if (segments.isNotEmpty()) {
-                    val code = segments.lastOrNull() ?: ""
-                    if (code.isNotBlank()) return "https://www.douyin.com/${code}/"
-                }
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val code = segments.lastOrNull() ?: ""
+                if (code.isNotBlank()) return "https://www.douyin.com/$code/"
             } catch (_: Exception) {}
         }
 
-        // NetEase Cloud Music playlist: 163.com{id}
+        // NetEase Cloud Music playlist
         if (lower.contains("163.com") || lower.contains("163cn.tv")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val query = uri.query ?: ""
                 val playlistIdParam = query.split("&").find { it.startsWith("id=") }?.substringAfter("id=")
-                if (playlistIdParam != null && playlistIdParam.isNotBlank()) {
-                    return "https://music.163.com/#/playlist?id=${playlistIdParam}"
+                if (!playlistIdParam.isNullOrBlank()) {
+                    return "https://music.163.com/#/playlist?id=$playlistIdParam"
                 }
-                val path = uri.path ?: ""
-                val segments = path.split("/").filter { it.isNotEmpty() }
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val lastSegment = segments.lastOrNull() ?: ""
                 if (lastSegment.isNotBlank() && lastSegment.matches(Regex("[0-9A-Za-z]{5,}"))) {
-                    return "https://music.163.com/#/playlist?id=${lastSegment}"
+                    return "https://music.163.com/#/playlist?id=$lastSegment"
                 }
             } catch (_: Exception) {}
         }
 
-        // Kuwo Music playlist: kuwo.cn/playlist_detail/{id}
+        // Kuwo Music playlist
         if (lower.contains("kuwo.cn")) {
             try {
-                val uri = java.net.URI(trimmed)
+                val uri = URI(trimmed)
                 val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
                 val playlistIndex = segments.indexOf("playlist_detail")
                 if (playlistIndex != -1 && segments.size > playlistIndex + 1) {
@@ -1314,28 +1373,35 @@ class MetadataResolver @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // YouTube playlist handled by extractPlaylistId (incl. www.ymusicapp.com)
+        // Bugs! playlist/album list
+        if (lower.contains("bugs.co.kr")) {
+            try {
+                val uri = URI(trimmed)
+                val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+                val albumIndex = segments.indexOf("album")
+                if (albumIndex != -1 && segments.size > albumIndex + 1) {
+                    return "https://music.bugs.co.kr/album/${segments[albumIndex + 1]}"
+                }
+            } catch (_: Exception) {}
+        }
+
+        // YouTube / YouTube Music playlist URLs
         if (YouTubeResolver.isYoutubeFamilyUrl(trimmed)) {
             val playlistId = YouTubeResolver.extractPlaylistId(trimmed)
-            if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
+            if (playlistId != null) {
+                val host = if (lower.contains("music.youtube.com")) "music.youtube.com" else "www.youtube.com"
+                return "https://$host/playlist?list=$playlistId"
+            }
         }
 
         return null
     }
 
     /**
-     * Scans EVERY string metadata value for a YouTube video id.
-     *
-     * YouTube Music wrapper clients (Morphe, AndDea Revanced, InnerTune, ...)
-     * publish the playing video id under custom keys that vary by client, so a
-     * hardcoded key list misses them. Falling back to a network scrape of the
-     * YouTube search page is unreliable (often blocked) and produced search
-     * links like `youtube.com/results?search_query=...` instead of a direct
-     * `youtu.be/ID`. This local scan needs no network and makes the details /
-     * cover links resolve to the real video.
+     * Scans string metadata keys (ordered by ID/URL relevance) for a valid YouTube
+     * video ID without making network requests, skipping non-string keys safely.
      */
     private fun findVideoIdInMetadata(metadata: MediaMetadata): String? {
-        // Check id/url-ish keys first, then everything else.
         val orderedKeys = metadata.keySet().sortedByDescending { key ->
             val k = key.lowercase()
             when {
@@ -1347,7 +1413,8 @@ class MetadataResolver @Inject constructor(
             }
         }
         for (key in orderedKeys) {
-            val value = metadata.getString(key)?.trim() ?: continue
+            if (key in NON_STRING_METADATA_KEYS) continue
+            val value = safeGetString(metadata, key)?.trim() ?: continue
             if (value.isEmpty()) continue
             val id = YouTubeResolver.extractVideoId(value) ?: continue
             if (YouTubeResolver.isValidVideoId(id)) return id
@@ -1355,28 +1422,27 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /**
+     * Resolves a direct YouTube video, channel, or playlist URL locally or via
+     * [resolveYouTubeVideo] when playing from a YouTube-family package.
+     */
     suspend fun getDirectMediaUrl(metadata: MediaMetadata, packageName: String?): String? {
         if (!MediaServiceResolver.isYouTube(packageName)) return null
-        // Local full-metadata scan first — no network needed. Handles clients
-        // that publish the video id under a custom key.
         findVideoIdInMetadata(metadata)?.let { return "https://youtu.be/$it" }
         firstMetadataUrl(metadata)?.let { url ->
             if (YouTubeResolver.isYoutubeFamilyUrl(url)) {
                 toRpcMediaUrl(url)?.let { return it }
             }
         }
-        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
+        val mediaId = safeGetString(metadata, MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
             if (YouTubeResolver.isYoutubeFamilyUrl(mediaId)) {
                 toRpcMediaUrl(mediaId)?.let { return it }
             }
             YouTubeResolver.extractVideoId(mediaId)?.let { return "https://youtu.be/$it" }
-            // Channel URL — keep as a channel link (supports /channel/UC..., /@handle, /c/, /user/)
             YouTubeResolver.extractChannelUrl(mediaId)?.let { return it }
-            // Playlist URL — keep as a playlist link
             val playlistId = YouTubeResolver.extractPlaylistId(mediaId)
             if (playlistId != null) return "https://www.youtube.com/playlist?list=$playlistId"
-            // yt:video:VIDEO_ID or t:VIDEO_ID
             val id = mediaId.substringAfterLast(":").substringAfterLast("/")
                 .substringBefore('?').substringBefore('&')
                 .takeIf { it.isNotBlank() && it.length >= 11 }?.take(11)
@@ -1390,29 +1456,31 @@ class MetadataResolver @Inject constructor(
         return toRpcMediaUrl(video.watchUrl)
     }
 
+    /**
+     * Looks up a [YouTubeResolver.Video] from an explicit YouTube URL in metadata
+     * or by searching track title and artist.
+     */
     suspend fun resolveYouTubeVideo(metadata: MediaMetadata): YouTubeResolver.Video? {
         val sourceUrl = firstMetadataUrl(metadata)
         if (!sourceUrl.isNullOrEmpty() && YouTubeResolver.isYoutubeFamilyUrl(sourceUrl)) {
             YouTubeResolver.lookup(YouTubeResolver.unwrapYmusicUrl(sourceUrl))?.let { return it }
         }
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim()
+        val title = safeGetString(metadata, MediaMetadata.METADATA_KEY_TITLE)?.trim()
         if (title.isNullOrEmpty()) return null
         val artist = MetadataResolverArtistName(metadata)
         return YouTubeResolver.lookupByTitle(title, artist)
     }
 
     /**
-     * Channel avatar URL for the "Show Channel Icon" small-image option.
-     * Resolves the uploader's channel avatar from the YouTube watch page.
-     * Works for single-artist and multi-artist tracks alike.
+     * Resolves the uploader's channel avatar URL for YouTube sessions.
      */
     suspend fun getChannelAvatarUrl(
         metadata: MediaMetadata,
         packageName: String?,
     ): String? {
         if (!MediaServiceResolver.isYouTube(packageName)) return null
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: "unknown"
-        val artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?: "unknown"
+        val title = safeGetString(metadata, MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: "unknown"
+        val artist = safeGetString(metadata, MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?: "unknown"
         val video = resolveYouTubeVideo(metadata)
         if (video == null) {
             logger.d("MediaImage", "Channel avatar: resolveYouTubeVideo returned null for '$title' by $artist")
@@ -1430,33 +1498,29 @@ class MetadataResolver @Inject constructor(
     }
 
     /**
-     * Extracts the page url of a web player from a browser MediaSession.
-     *
-     * Browsers (Chrome, Edge, Firefox, Vivaldi, ...) publish the page url in
-     * different metadata fields depending on the site. We scan every string
-     * metadata value for a known media host and keep the FULL url - e.g.
-     * https://music.apple.com/jp/album/celestia-fragments/1856761201 -
-     * instead of replacing it with a search page.
-     *
-     * YouTube / YMusic pages are rewritten to https://youtu.be/ID.
-     * Returns null when no page url was published so the caller can fall back.
+     * Extracts a supported web player URL from standard and custom string fields
+     * on a browser or generic [MediaMetadata] bundle without casting non-string keys.
      */
     private fun browserPageUrl(metadata: MediaMetadata, extraValues: List<String> = emptyList()): String? {
         val mediaHosts = listOf(
-            "music.apple.com", "itunes.apple.com", "open.spotify.com",
+            "music.apple.com", "itunes.apple.com", "open.spotify.com", "play.spotify.com",
             "youtube.com", "youtu.be", "ymusicapp.com",
             "music.youtube.com", "deezer.com", "soundcloud.com",
-            "music.amazon.com", "amazon.com/music", "tidal.com", "bandcamp.com",
-            "nicovideo.jp", "bilibili.com", "twitch.tv", "netflix.com",
-            "disneyplus.com", "music.163.com", "y.qq.com", "streetvoice.com",
+            "music.amazon.com", "music.amazon.co.jp", "amazon.com/music",
+            "tidal.com", "bandcamp.com", "qobuz.com", "play.qobuz.com",
+            "nicovideo.jp", "sp.nicovideo.jp", "bilibili.com", "m.bilibili.com",
+            "twitch.tv", "netflix.com", "disneyplus.com",
+            "music.163.com", "y.qq.com", "streetvoice.com",
+            "kkbox.com", "music.line.me", "music-tw.line.me",
+            "bugs.co.kr", "melon.com", "genie.co.kr", "flo-music.co.kr",
+            "vibe.naver.com", "archive.org",
         )
         val skipHosts = listOf(
             "blob:", "data:", "googlevideo.com", "mzstatic.com", "googleusercontent.com",
-            "ytimg.com", "ggpht.com", "akamaized.net",
+            "ytimg.com", "ggpht.com", "akamaized.net", "hdslb.com",
         )
         val candidates = mutableListOf<String>()
         extraValues.forEach { candidates.add(it) }
-        // Standard keys first (most browsers put the url here).
         listOf(
             METADATA_KEY_MEDIA_URI,
             METADATA_KEY_SOURCE_URL,
@@ -1473,18 +1537,16 @@ class MetadataResolver @Inject constructor(
             MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
             MediaMetadata.METADATA_KEY_ART_URI,
         ).forEach { key ->
-            metadata.getString(key)?.takeIf { it.isNotBlank() }?.let { candidates.add(it) }
+            safeGetString(metadata, key)?.takeIf { it.isNotBlank() }?.let { candidates.add(it) }
         }
-        // Then every key available in the bundle (sites use custom keys).
         metadata.keySet().forEach { key ->
-            runCatching { metadata.getString(key) }
-                .getOrNull()
+            safeGetString(metadata, key)
                 ?.takeIf { it.isNotBlank() }
                 ?.let { candidates.add(it) }
         }
         for (candidate in candidates) {
             val url = Regex("https?://[^\\s\"<>]+").find(candidate)?.value
-                ?: candidate.takeIf { it.startsWith("http") }
+                ?: candidate.takeIf { it.startsWith("http", ignoreCase = true) }
                 ?: continue
             val cleaned = url.trim().trimEnd(')', ',', ']', '"', '\'')
             if (skipHosts.any { host -> cleaned.contains(host, ignoreCase = true) }) continue
@@ -1495,6 +1557,10 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /**
+     * Returns the first valid HTTP(S) media URL from [extraValues], standard URI/ID keys,
+     * or fallback text metadata fields.
+     */
     private fun firstMetadataUrl(
         metadata: MediaMetadata,
         extraValues: List<String> = emptyList(),
@@ -1505,11 +1571,14 @@ class MetadataResolver @Inject constructor(
             METADATA_KEY_SOURCE_URL,
             MediaMetadata.METADATA_KEY_MEDIA_ID,
         ).forEach { key ->
-            metadata.getString(key)?.takeIf { it.isValidMediaUrl() }?.let { return it }
+            safeGetString(metadata, key)?.takeIf { it.isValidMediaUrl() }?.let { return it }
         }
         return scanAllMetadataForUrl(metadata)
     }
 
+    /**
+     * Scans standard text fields for a valid HTTP(S) URL.
+     */
     private fun scanAllMetadataForUrl(metadata: MediaMetadata): String? {
         val keys = listOf(
             MediaMetadata.METADATA_KEY_TITLE, MediaMetadata.METADATA_KEY_ARTIST,
@@ -1518,12 +1587,15 @@ class MetadataResolver @Inject constructor(
             MediaMetadata.METADATA_KEY_MEDIA_ID,
         )
         for (key in keys) {
-            val value = metadata.getString(key)
+            val value = safeGetString(metadata, key)
             if (!value.isNullOrEmpty() && value.isValidMediaUrl()) return value
         }
         return null
     }
 
+    /**
+     * Normalizes browse and YouTube-family URLs into RPC-compatible links.
+     */
     private fun normalizeMediaUrl(url: String, packageName: String?): String? {
         val trimmed = url.trim()
         if (trimmed.contains("/browse/")) return toRpcMediaUrl(trimmed)
@@ -1533,10 +1605,11 @@ class MetadataResolver @Inject constructor(
         return trimmed
     }
 
+    /**
+     * Extracts a YouTube video, channel, playlist, or search URL from [metadata].
+     */
     private fun extractYouTubeUrl(metadata: MediaMetadata): String? {
-        val title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)
-        // Local full-metadata scan first (no network), so wrapper clients resolve
-        // to youtu.be/ID instead of a search page.
+        val title = safeGetString(metadata, MediaMetadata.METADATA_KEY_TITLE)
         findVideoIdInMetadata(metadata)?.let { return "https://youtu.be/$it" }
         fun fromRaw(raw: String?): String? {
             if (raw.isNullOrBlank()) return null
@@ -1545,9 +1618,9 @@ class MetadataResolver @Inject constructor(
             YouTubeResolver.extractVideoId(raw)?.let { return "https://youtu.be/$it" }
             return null
         }
-        fromRaw(metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID))?.let { return it }
+        val mediaId = safeGetString(metadata, MediaMetadata.METADATA_KEY_MEDIA_ID)
+        fromRaw(mediaId)?.let { return it }
         fromRaw(firstMetadataUrl(metadata))?.let { return it }
-        val mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)
         if (!mediaId.isNullOrEmpty()) {
             val channelId = YouTubeResolver.extractChannelId(mediaId)
             if (channelId != null) return "https://www.youtube.com/channel/$channelId"
@@ -1558,10 +1631,12 @@ class MetadataResolver @Inject constructor(
             val rawId = mediaId.trim()
             if (YouTubeResolver.isValidVideoId(rawId)) return "https://youtu.be/$rawId"
         }
-        val youtubeKeys = listOf("youtube_url", "video_url", "source_url", "media_url", "content_url",
-            "yt_url", "youtube_video_url", "youtube_watch_url")
+        val youtubeKeys = listOf(
+            "youtube_url", "video_url", "source_url", "media_url", "content_url",
+            "yt_url", "youtube_video_url", "youtube_watch_url",
+        )
         for (key in youtubeKeys) {
-            fromRaw(metadata.getString(key))?.let { return it }
+            fromRaw(safeGetString(metadata, key))?.let { return it }
         }
         if (!title.isNullOrEmpty()) {
             return "https://www.youtube.com/results?search_query=${URLEncoder.encode(title, StandardCharsets.UTF_8.toString())}"
@@ -1569,22 +1644,25 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /**
+     * Helper alias returning the primary artist or author string.
+     */
     private fun MetadataResolverArtistName(metadata: MediaMetadata): String? {
         return getArtistOrAuthor(metadata)
     }
 
+    /**
+     * Resolves a platform-specific artist/channel URL or falls back to a search URL.
+     */
     suspend fun getArtistUrl(metadata: MediaMetadata, packageName: String?): String? {
         val artist = MetadataResolverArtistName(metadata)
         if (artist.isNullOrEmpty()) return null
         val artists = getAllArtists(metadata)
-        // Use blank-safe fall-through so an empty ARTIST field still resolves the
-        // AUTHOR / ALBUM_ARTIST below, keeping parsedCollaborators consistent with
-        // the multi-artist detection in `artists`.
-        val rawArtistString = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)
+        val rawArtistString = safeGetString(metadata, MediaMetadata.METADATA_KEY_ARTIST)
             ?.takeIf { it.isNotBlank() }
-            ?: metadata.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+            ?: safeGetString(metadata, MediaMetadata.METADATA_KEY_AUTHOR)
                 ?.takeIf { it.isNotBlank() }
-                ?: metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+            ?: safeGetString(metadata, MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
         val parsedCollaborators = parseCollaboratingArtists(rawArtistString)
         val isMultiArtist = artists.size > 1 || parsedCollaborators.size > 1
         val pkg = packageName?.lowercase().orEmpty()
@@ -1592,22 +1670,26 @@ class MetadataResolver @Inject constructor(
             val combinedQuery = parsedCollaborators.joinToString(" ").ifBlank { artist }
             return MediaServiceResolver.artistUrl(packageName, combinedQuery)
         }
-        val sourceUrl = metadata.getString(METADATA_KEY_SOURCE_URL)
+        val sourceUrl = safeGetString(metadata, METADATA_KEY_SOURCE_URL)?.takeIf { it.isNotBlank() }
+            ?: safeGetString(metadata, METADATA_KEY_MEDIA_URI)?.takeIf { it.isNotBlank() }
         val parsedArtistUrl = when {
             "soundcloud" in pkg -> soundcloudArtistUrl(sourceUrl)
             "spotify" in pkg -> spotifyArtistUrl(sourceUrl)
             "bandcamp" in pkg -> bandcampArtistUrl(sourceUrl)
             "youtube" in pkg || "ymusic" in pkg || "simpmusic" in pkg ||
-            "vimusic" in pkg || "innertune" in pkg -> youtubeArtistUrl(sourceUrl)
+                    "vimusic" in pkg || "innertune" in pkg -> youtubeArtistUrl(sourceUrl)
             "spotube" in pkg -> if (sourceUrl?.contains("spotify.com") == true) {
                 spotifyArtistUrl(sourceUrl)
-            } else { youtubeArtistUrl(sourceUrl) }
+            } else {
+                youtubeArtistUrl(sourceUrl)
+            }
             "deezer" in pkg -> deezerArtistUrl(sourceUrl)
             "apple" in pkg -> appleMusicArtistUrl(sourceUrl)
             "amazon" in pkg -> amazonMusicArtistUrl(sourceUrl)
             "streetvoice" in pkg -> streetVoiceArtistUrl(sourceUrl)
             "kkbox" in pkg -> kkboxArtistUrl(sourceUrl)
             "nicobox" in pkg || "nicovideo" in pkg -> nicoBoxArtistUrl(sourceUrl)
+            "bilibili" in pkg -> bilibiliArtistUrl(sourceUrl)
             "linemusic" in pkg || "linecorp.linemusic" in pkg -> lineMusicArtistUrl(sourceUrl)
             "tidal" in pkg -> tidalArtistUrl(sourceUrl)
             "joox" in pkg -> jooxArtistUrl(sourceUrl)
@@ -1616,6 +1698,10 @@ class MetadataResolver @Inject constructor(
             "douyin" in pkg || "snapvideo" in pkg -> douyinMusicArtistUrl(sourceUrl)
             "163" in pkg || "netease" in pkg || "cloudmusic" in pkg -> neteaseArtistUrl(sourceUrl)
             "kuwo" in pkg -> kuwoArtistUrl(sourceUrl)
+            "qobuz" in pkg -> qobuzArtistUrl(sourceUrl)
+            "bugs" in pkg -> bugsArtistUrl(sourceUrl)
+            "melon" in pkg -> melonArtistUrl(sourceUrl)
+            "genie" in pkg -> genieArtistUrl(sourceUrl)
             "archivetune" in pkg || "archive.org" in pkg -> archiveTuneArtistUrl(sourceUrl)
             "lxmusic" in pkg || "yesplaymusic" in pkg -> null
             else -> null
@@ -1634,62 +1720,64 @@ class MetadataResolver @Inject constructor(
         return MediaServiceResolver.artistUrl(packageName, artist)
     }
 
+    /** Parses collaborating artist names from a raw artist string. */
     private fun parseCollaboratingArtists(rawArtistString: String?): List<String> {
         if (rawArtistString.isNullOrBlank()) return emptyList()
         return splitArtists(rawArtistString)
     }
 
+    /** Extracts a YouTube channel URL from [sourceUrl] after unwrapping YMusic links if needed. */
     private fun youtubeArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl?.let { YouTubeResolver.unwrapYmusicUrl(it) } ?: return null
         if (!YouTubeResolver.isYoutubeFamilyUrl(url)) return null
-        // Reuse the canonical resolver so /@handle, /c/, /user/ and /channel/UC...
-        // all map to a real, clickable channel url (the @ must be kept).
-        YouTubeResolver.extractChannelUrl(url)?.let { return it }
-        return null
+        return YouTubeResolver.extractChannelUrl(url)
     }
 
+    /** Extracts a SoundCloud artist profile URL. */
     private fun soundcloudArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("soundcloud.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             if (segments.isNotEmpty()) return "https://soundcloud.com/${segments[0]}"
         } catch (_: Exception) {}
         return null
     }
 
+    /** Extracts a Spotify artist, album, or playlist URL (supporting locale-prefixed paths). */
     private fun spotifyArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("spotify.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
-            if (segments.size >= 2) {
-                when (segments[0]) {
-                    "artist", "album", "playlist" -> return "https://open.spotify.com/${segments[0]}/${segments[1]}"
-                }
+            val typeIndex = segments.indexOfFirst { it in listOf("artist", "album", "playlist") }
+            if (typeIndex != -1 && segments.size > typeIndex + 1) {
+                return "https://open.spotify.com/${segments[typeIndex]}/${segments[typeIndex + 1]}"
             }
         } catch (_: Exception) {}
         return null
     }
 
+    /** Extracts a Bandcamp artist subdomain URL. */
     private fun bandcampArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("bandcamp.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val host = uri.host ?: return null
             if (host.endsWith("bandcamp.com") && host != "bandcamp.com") return "https://$host"
         } catch (_: Exception) {}
         return null
     }
 
+    /** Extracts a Deezer artist URL. */
     private fun deezerArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("deezer.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val artistIndex = segments.indexOf("artist")
             if (artistIndex != -1 && segments.size > artistIndex + 1) {
@@ -1699,26 +1787,29 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts an Apple Music artist URL while preserving storefront locale. */
     private fun appleMusicArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("music.apple.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val artistIndex = segments.indexOf("artist")
             if (artistIndex != -1 && segments.size > artistIndex + 1) {
-                val artistId = segments[artistIndex + 1]
-                return "https://music.apple.com/us/artist/$artistId"
+                val storefront = if (artistIndex >= 1) segments[0] else "us"
+                val artistId = segments.last()
+                return "https://music.apple.com/$storefront/artist/$artistId"
             }
         } catch (_: Exception) {}
         return null
     }
 
+    /** Extracts an Amazon Music artist URL. */
     private fun amazonMusicArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("amazon.com") && !url.contains("amazon.co.jp")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val artistIndex = segments.indexOf("artists")
             if (artistIndex != -1 && segments.size > artistIndex + 1) {
@@ -1729,11 +1820,12 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts a StreetVoice artist profile URL. */
     private fun streetVoiceArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("streetvoice.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             if (segments.isNotEmpty()) {
                 val username = segments[0]
@@ -1743,11 +1835,12 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts a KKBOX artist URL. */
     private fun kkboxArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("kkbox.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val artistIndex = segments.indexOf("artist")
             if (artistIndex != -1 && segments.size > artistIndex + 1) {
@@ -1758,17 +1851,15 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts a Niconico watch, channel, or user URL. */
     private fun nicoBoxArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("nicovideo.jp") && !url.contains("nico.ms")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val host = uri.host ?: ""
-            // Watch video URL — return as-is
-            if (segments.size >= 2 && segments[0] == "watch") {
-                return url
-            }
+            if (segments.size >= 2 && segments[0] == "watch") return url
             if (host == "ch.nicovideo.jp" && segments.isNotEmpty()) {
                 return "https://ch.nicovideo.jp/${segments[0]}"
             }
@@ -1780,11 +1871,27 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts a Bilibili uploader space URL when present. */
+    private fun bilibiliArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("bilibili.com")) return null
+        try {
+            val uri = URI(url)
+            val host = uri.host ?: ""
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            if (host == "space.bilibili.com" && segments.isNotEmpty()) {
+                return "https://space.bilibili.com/${segments[0]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /** Extracts a LINE MUSIC artist URL. */
     private fun lineMusicArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("music.line.me") && !url.contains("music-tw.line.me")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val host = uri.host ?: ""
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val artistIndex = segments.indexOf("artist")
@@ -1797,11 +1904,12 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts a TIDAL artist URL. */
     private fun tidalArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("tidal.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val artistIndex = segments.indexOf("artist")
             if (artistIndex != -1 && segments.size > artistIndex + 1) {
@@ -1811,11 +1919,12 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts a JOOX artist URL. */
     private fun jooxArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("joox.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val artistIndex = segments.indexOf("artist")
             if (artistIndex != -1 && segments.size > artistIndex + 1) {
@@ -1825,34 +1934,33 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts a Kugou Music singer/artist URL. */
     private fun kugouArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("kugou.com")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val path = uri.path ?: ""
             val segments = path.split("/").filter { it.isNotEmpty() }
-            // kugou.com/singer/{id}/ or kugou.com/{id}/
             val singerIndex = segments.indexOf("singer")
             if (singerIndex != -1 && segments.size > singerIndex + 1) {
                 return "https://www.kugou.com/singer/${segments[singerIndex + 1]}/"
             }
-            val lastSegment = segments.lastOrNull() ?: ""
-            if (lastSegment.endsWith("/") && lastSegment.length > 1) {
-                val id = lastSegment.substringBefore("/")
-                if (id.isNotBlank()) return "https://www.kugou.com/${id}/"
+            if (path.endsWith("/") && segments.isNotEmpty()) {
+                val id = segments.last()
+                if (id.isNotBlank()) return "https://www.kugou.com/$id/"
             }
         } catch (_: Exception) {}
         return null
     }
 
+    /** Extracts a QQ Music singer URL. */
     private fun qqMusicArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("qq.com") && !url.contains("y.qq.com")) return null
         try {
-            val uri = java.net.URI(url)
-            val path = uri.path ?: ""
-            val segments = path.split("/").filter { it.isNotEmpty() }
+            val uri = URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val singerIndex = segments.indexOf("singer")
             if (singerIndex != -1 && segments.size > singerIndex + 1) {
                 val mid = segments[singerIndex + 1].substringBefore(".html")
@@ -1862,46 +1970,45 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
+    /** Extracts a Douyin Music profile URL. */
     private fun douyinMusicArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("douyin.com")) return null
         try {
-            val uri = java.net.URI(url)
-            val path = uri.path ?: ""
-            val segments = path.split("/").filter { it.isNotEmpty() }
-            if (segments.isNotEmpty()) {
-                val code = segments.lastOrNull() ?: ""
-                if (code.isNotBlank()) return "https://www.douyin.com/${code}/"
-            }
+            val uri = URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            val code = segments.lastOrNull() ?: ""
+            if (code.isNotBlank()) return "https://www.douyin.com/$code/"
         } catch (_: Exception) {}
         return null
     }
 
+    /** Extracts a NetEase Cloud Music artist URL. */
     private fun neteaseArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("163.com") && !url.contains("163cn.tv")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val query = uri.query ?: ""
             val artistIdParam = query.split("&").find { it.startsWith("id=") }?.substringAfter("id=")
-            if (artistIdParam != null && artistIdParam.isNotBlank()) {
-                return "https://music.163.com/#/artist?id=${artistIdParam}"
+            if (!artistIdParam.isNullOrBlank()) {
+                return "https://music.163.com/#/artist?id=$artistIdParam"
             }
-            val path = uri.path ?: ""
-            val segments = path.split("/").filter { it.isNotEmpty() }
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val lastSegment = segments.lastOrNull() ?: ""
             if (lastSegment.isNotBlank() && lastSegment.matches(Regex("[0-9A-Za-z]{5,}"))) {
-                return "https://music.163.com/#/artist?id=${lastSegment}"
+                return "https://music.163.com/#/artist?id=$lastSegment"
             }
         } catch (_: Exception) {}
         return null
     }
 
+    /** Extracts a Kuwo Music singer URL. */
     private fun kuwoArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("kuwo.cn")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val singerIndex = segments.indexOf("singer_detail")
             if (singerIndex != -1 && segments.size > singerIndex + 1) {
@@ -1911,17 +2018,79 @@ class MetadataResolver @Inject constructor(
         return null
     }
 
-    private fun String.isValidMediaUrl(): Boolean {
-    if (isNullOrBlank()) return false
-    val lower = lowercase()
-    return lower.startsWith("http://") || lower.startsWith("https://")
-}
+    /** Extracts a Qobuz artist URL. */
+    private fun qobuzArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("qobuz.com")) return null
+        try {
+            val uri = URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            val interpreterIndex = segments.indexOf("interpreter")
+            if (interpreterIndex != -1 && segments.size > interpreterIndex + 2) {
+                return "https://www.qobuz.com/interpreter/${segments[interpreterIndex + 1]}/${segments[interpreterIndex + 2]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
 
-private fun archiveTuneArtistUrl(sourceUrl: String?): String? {
+    /** Extracts a Bugs! artist URL. */
+    private fun bugsArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("bugs.co.kr")) return null
+        try {
+            val uri = URI(url)
+            val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
+            val artistIndex = segments.indexOf("artist")
+            if (artistIndex != -1 && segments.size > artistIndex + 1) {
+                return "https://music.bugs.co.kr/artist/${segments[artistIndex + 1]}"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /** Extracts a Melon artist URL. */
+    private fun melonArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("melon.com")) return null
+        try {
+            val uri = URI(url)
+            val query = uri.query ?: ""
+            val artistIdParam = query.split("&").find { it.startsWith("artistId=") }?.substringAfter("artistId=")
+            if (!artistIdParam.isNullOrBlank()) {
+                return "https://www.melon.com/artist/timeline.htm?artistId=$artistIdParam"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /** Extracts a Genie Music artist URL. */
+    private fun genieArtistUrl(sourceUrl: String?): String? {
+        val url = sourceUrl ?: return null
+        if (!url.contains("genie.co.kr")) return null
+        try {
+            val uri = URI(url)
+            val query = uri.query ?: ""
+            val artistIdParam = query.split("&").find { it.startsWith("xxnm=") }?.substringAfter("xxnm=")
+            if (!artistIdParam.isNullOrBlank()) {
+                return "https://www.genie.co.kr/detail/artistInfo?xxnm=$artistIdParam"
+            }
+        } catch (_: Exception) {}
+        return null
+    }
+
+    /** Checks whether a string is a non-blank HTTP or HTTPS URL. */
+    private fun String?.isValidMediaUrl(): Boolean {
+        if (this.isNullOrBlank()) return false
+        val lower = lowercase()
+        return lower.startsWith("http://") || lower.startsWith("https://")
+    }
+
+    /** Extracts an Internet Archive item details URL. */
+    private fun archiveTuneArtistUrl(sourceUrl: String?): String? {
         val url = sourceUrl ?: return null
         if (!url.contains("archive.org")) return null
         try {
-            val uri = java.net.URI(url)
+            val uri = URI(url)
             val segments = (uri.path ?: "").split("/").filter { it.isNotEmpty() }
             val detailsIndex = segments.indexOf("details")
             if (detailsIndex != -1 && segments.size > detailsIndex + 1) {

@@ -53,6 +53,9 @@ class CustomRpcService : Service() {
 
     private var kizzyRPC: com.my.kizzy.data.rpc.KizzyRPC? = null
 
+    /** Track last notification update time per instance to prevent rate limit. */
+    private val lastNotificationUpdateMs = mutableMapOf<String, Long>()
+
     /** Per-instance Custom RPC sessions and their own RpcConfig. */
     private val customRpcs = LinkedHashMap<String, KizzyRPC>()
     private val customConfigs = LinkedHashMap<String, RpcConfig>()
@@ -403,6 +406,13 @@ class CustomRpcService : Service() {
             )
             .setLargeIcon(data.largeImg.toRpcImage(), this@CustomRpcService)
             .build()
+
+        // Throttle notification updates to at most once per second to avoid
+        // Android's notification rate limit which mutes the app as noisy.
+        val now = System.currentTimeMillis()
+        if (now - (lastNotificationUpdateMs[instanceId] ?: 0L) < 1000) return
+        lastNotificationUpdateMs[instanceId] = now
+
         notificationManager.notify(instanceNotificationId, notification)
     }
 
