@@ -474,6 +474,7 @@ object CloneNotificationHelper {
 
     private val ids = mutableMapOf<String, Int>()
     private var nextId = Constants.NOTIFICATION_ID_CLONE_BASE
+    private val lastNotificationUpdateMs = mutableMapOf<String, Long>()
 
     @Synchronized
     fun notificationIdFor(instanceId: String): Int =
@@ -540,6 +541,12 @@ object CloneNotificationHelper {
                 ).build()
             )
             .build()
+
+        // Throttle notification updates to at most once per second to avoid
+        // Android's notification rate limit which mutes the app as noisy.
+        val now = System.currentTimeMillis()
+        if (now - (lastNotificationUpdateMs[instanceId] ?: 0L) < 1000) return
+        lastNotificationUpdateMs[instanceId] = now
 
         notificationManager.notify(id, notification)
     }
