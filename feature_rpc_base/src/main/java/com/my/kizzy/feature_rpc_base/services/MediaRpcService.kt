@@ -1726,9 +1726,9 @@ class MediaRpcService : Service() {
                 if (!instanceId.isNullOrBlank()) {
                     currentInstanceId = instanceId
                     val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
+                    multiRpc.addInstance("1", instanceId, oauthIndex)
                     // Skip clone notification for built-in instance (already has foreground notification from onCreate).
                     if (instanceId != RPC_INSTANCE_MEDIA) {
-                        multiRpc.addInstance("1", instanceId, oauthIndex)
                         // Each Media clone gets its own independent notification.
                         CloneNotificationHelper.show(
                             context = this@MediaRpcService,
