@@ -1,122 +1,86 @@
 package com.my.kizzy.macrobenchmark
 
-import android.content.ComponentName
-import android.content.Intent
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode
+import androidx.benchmark.macro.FrameTimingMetric
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Startup benchmarks for Kizzy.
- *
- * Measures cold / warm / hot start plus the cost of opening each RPC screen,
- * both with and without the baseline profile applied:
- *
- *   - startupCompilationBaselineProfile (CompilationMode.Partial + BaselineProfileMode.Require)
- *   - startupCompilationNone             (CompilationMode.None)
- *
- * The delta between the two compilation modes is the startup / screen-open win
- * the baseline profile buys.
- *
- * Run all:
- *   ./gradlew :macrobenchmark:connectedBenchmarkAndroidTest \
- *       -Pandroid.testInstrumentationRunnerArguments.class=com.my.kizzy.macrobenchmark.StartupBenchmark
- *
- * Compose composition tracing (opens in https://ui.perfetto.dev):
- *   -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.fullTracing.enable=true
- */
 @RunWith(AndroidJUnit4::class)
 class StartupBenchmark {
-
-    private val device: UiDevice
-        get() = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
-    /* ── Cold / warm / hot start ────────────────────────────────────────── */
+    private val baselineProfileCompilation =
+        CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require)
+    private val noCompilation = CompilationMode.None()
 
     @Test
-    fun coldStartBaselineProfile() = startup(
-        compilationMode = CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require),
+    fun coldStartBaselineProfile() = measureStartup(baselineProfileCompilation, StartupMode.COLD)
+
+    @Test
+    fun coldStartNone() = measureStartup(noCompilation, StartupMode.COLD)
+
+    @Test
+    fun warmStartBaselineProfile() = measureStartup(baselineProfileCompilation, StartupMode.WARM)
+
+    @Test
+    fun warmStartNone() = measureStartup(noCompilation, StartupMode.WARM)
+
+    @Test
+    fun hotStartBaselineProfile() = measureStartup(baselineProfileCompilation, StartupMode.HOT)
+
+    @Test
+    fun hotStartNone() = measureStartup(noCompilation, StartupMode.HOT)
+
+    @Test
+    fun openMediaRpcBaselineProfile() = measureScreenOpen("Media RPC", baselineProfileCompilation)
+
+    @Test
+    fun openMediaRpcNone() = measureScreenOpen("Media RPC", noCompilation)
+
+    @Test
+    fun openManualRpcBaselineProfile() = measureScreenOpen("Manual RPC", baselineProfileCompilation)
+
+    @Test
+    fun openManualRpcNone() = measureScreenOpen("Manual RPC", noCompilation)
+
+    @Test
+    fun openCustomRpcBaselineProfile() = measureScreenOpen("Custom RPC", baselineProfileCompilation)
+
+    @Test
+    fun openCustomRpcNone() = measureScreenOpen("Custom RPC", noCompilation)
+
+    @Test
+    fun homeScrollFrameTimingBaselineProfile() = benchmarkRule.measureRepeated(
+        packageName = TARGET_PACKAGE,
+        metrics = listOf(FrameTimingMetric()),
+        compilationMode = baselineProfileCompilation,
+        iterations = ITERATIONS,
         startupMode = StartupMode.COLD,
-    )
+        setupBlock = {
+            pressHome()
+            startActivityAndWait()
+            device.wait(Until.hasObject(By.text(FEATURES_HEADER)), LONG_TIMEOUT_MS)
+        },
+    ) {
+        val scrollable = device.findObject(By.scrollable(true))
+        scrollable?.scroll(Direction.DOWN, 0.75f)
+        device.waitForIdle()
+        scrollable?.scroll(Direction.UP, 0.75f)
+        device.waitForIdle()
+    }
 
-    @Test
-    fun coldStartNone() = startup(
-        compilationMode = CompilationMode.None(),
-        startupMode = StartupMode.COLD,
-    )
-
-    @Test
-    fun warmStartBaselineProfile() = startup(
-        compilationMode = CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require),
-        startupMode = StartupMode.WARM,
-    )
-
-    @Test
-    fun warmStartNone() = startup(
-        compilationMode = CompilationMode.None(),
-        startupMode = StartupMode.WARM,
-    )
-
-    @Test
-    fun hotStartBaselineProfile() = startup(
-        compilationMode = CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require),
-        startupMode = StartupMode.HOT,
-    )
-
-    /* ── RPC screen open / close ────────────────────────────────────────── */
-
-    @Test
-    fun openMediaRpcBaselineProfile() = openScreen(
-        title = "Media RPC",
-        compilationMode = CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require),
-    )
-
-    @Test
-    fun openMediaRpcNone() = openScreen(
-        title = "Media RPC",
-        compilationMode = CompilationMode.None(),
-    )
-
-    @Test
-    fun openManualRpcBaselineProfile() = openScreen(
-        title = "Manual RPC",
-        compilationMode = CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require),
-    )
-
-    @Test
-    fun openManualRpcNone() = openScreen(
-        title = "Manual RPC",
-        compilationMode = CompilationMode.None(),
-    )
-
-    @Test
-    fun openCustomRpcBaselineProfile() = openScreen(
-        title = "Custom RPC",
-        compilationMode = CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require),
-    )
-
-    @Test
-    fun openCustomRpcNone() = openScreen(
-        title = "Custom RPC",
-        compilationMode = CompilationMode.None(),
-    )
-
-    /* ── Implementation ─────────────────────────────────────────────────── */
-
-    private fun startup(
+    private fun measureStartup(
         compilationMode: CompilationMode,
         startupMode: StartupMode,
     ) = benchmarkRule.measureRepeated(
@@ -126,64 +90,39 @@ class StartupBenchmark {
         iterations = ITERATIONS,
         startupMode = startupMode,
         setupBlock = {
-            if (startupMode == StartupMode.COLD) {
-                // Force-stop so a cold start really starts from a dead process.
-                device.executeShellCommand("am force-stop $TARGET_PACKAGE")
+            if (startupMode != StartupMode.HOT) {
+                pressHome()
             }
-            device.waitForIdle()
         },
     ) {
-        if (startupMode == StartupMode.HOT) {
-            // HOT mode: app is already running; just bring the existing task
-            // forward without restarting it.
-            val ctx = InstrumentationRegistry.getInstrumentation().targetContext
-            val intent = Intent()
-                .setComponent(ComponentName(TARGET_PACKAGE, "com.my.kizzy.MainActivity"))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            ctx.startActivity(intent)
-        } else {
-            startActivityAndWait()
-        }
+        startActivityAndWait()
+        device.wait(Until.hasObject(By.text(FEATURES_HEADER)), LONG_TIMEOUT_MS)
     }
 
-    private fun openScreen(title: String, compilationMode: CompilationMode) {
-        // Each iteration cold-launches MainActivity, taps the card, and measures
-        // startup to that screen. RPC screens are Compose composables inside
-        // MainActivity (no separate activity), so a cold start + tap is the only
-        // way to get StartupTimingMetric slices (activityResume / doFrame).
-        benchmarkRule.measureRepeated(
-            packageName = TARGET_PACKAGE,
-            metrics = listOf(StartupTimingMetric()),
-            compilationMode = compilationMode,
-            iterations = ITERATIONS,
-            startupMode = StartupMode.COLD,
-            setupBlock = {
-                device.executeShellCommand("am force-stop $TARGET_PACKAGE")
-                device.waitForIdle()
-            },
-        ) {
-            startActivityAndWait()
-            device.wait(Until.hasObject(By.text(FEATURES_HEADER)), 10_000)
-            val card = device.findObject(By.text(title)) ?: return@measureRepeated
-            card.click()
-            device.waitForIdle()
-            // Wait for the destination composable to finish its first frame.
-            device.waitForIdle(2_000)
-        }
-    }
-
-    private fun startActivityAndWait() {
-        val ctx = InstrumentationRegistry.getInstrumentation().targetContext
-        val intent = Intent()
-            .setComponent(ComponentName(TARGET_PACKAGE, "com.my.kizzy.MainActivity"))
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        ctx.startActivity(intent)
+    private fun measureScreenOpen(
+        screenTitle: String,
+        compilationMode: CompilationMode,
+    ) = benchmarkRule.measureRepeated(
+        packageName = TARGET_PACKAGE,
+        metrics = listOf(StartupTimingMetric()),
+        compilationMode = compilationMode,
+        iterations = ITERATIONS,
+        startupMode = StartupMode.COLD,
+        setupBlock = {
+            pressHome()
+        },
+    ) {
+        startActivityAndWait()
+        device.wait(Until.hasObject(By.text(FEATURES_HEADER)), LONG_TIMEOUT_MS)
+        device.wait(Until.findObject(By.text(screenTitle)), SHORT_TIMEOUT_MS)?.click()
         device.waitForIdle()
     }
 
     private companion object {
         const val TARGET_PACKAGE = "com.my.kizzy.enhanced"
         const val FEATURES_HEADER = "Features"
+        const val LONG_TIMEOUT_MS = 10_000L
+        const val SHORT_TIMEOUT_MS = 5_000L
         const val ITERATIONS = 5
     }
 }

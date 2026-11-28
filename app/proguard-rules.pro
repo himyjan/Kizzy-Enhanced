@@ -1,14 +1,14 @@
 # ============================================================
 # Stack Traces, Attributes & Coroutines (R8 Full Mode)
 # ============================================================
--keepattributes SourceFile,LineNumberTable,InnerClasses,EnclosingMethod,Signature
+-keepattributes SourceFile,LineNumberTable,InnerClasses,EnclosingMethod,Signature,RuntimeVisibleAnnotations
 -keep class kotlin.coroutines.Continuation
 
 # ============================================================
 # kotlinx.serialization (Named Companions Only, if used)
 # ============================================================
-# Standard @Serializable classes & companions are covered by kotlinx-serialization's
-# consumer rules. Only add -if rules for specific classes with NAMED companion objects:
+# Standard @Serializable classes & companions are provided via consumer rules.
+# Add -if rules only for specific classes using a NAMED companion object:
 # -if @kotlinx.serialization.Serializable class com.my.kizzy.path.ToNamedCompanionClass {
 #     public static ** NamedCompanion;
 # }
@@ -17,10 +17,10 @@
 # }
 
 # ============================================================
-# Dynamic Activity Detection (Reflection / Dynamic Lookup)
+# Dynamic Activity Detection
 # ============================================================
-# Note: Only keep classes/members here that are instantiated or invoked dynamically
-# (e.g., via reflection or external/dynamic callers) rather than normal direct calls.
+# Use <init>(...); only if instantiated with a Class/KClass/constructor reference.
+# If instantiated via Class.forName("..."), remove `allowobfuscation` and add `-keep`.
 -keepclassmembers,allowobfuscation class com.my.kizzy.feature_rpc_base.services.DetectedAiApp {
     <init>(...);
 }
@@ -40,7 +40,8 @@
 -dontwarn org.openjsse.**
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 -dontwarn java.lang.invoke.StringConcatFactory
--dontwarn com.my.kizzy.resources.R$drawable
+
+# Audit these periodically; avoid masking real missing references:
 -dontwarn dagger.hilt.internal.**
 -dontwarn dagger.hilt.lifecycle.**
 -dontwarn com.google.auto.service.AutoService
