@@ -6,9 +6,9 @@
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
- *  *
- *  */
-
+ *
+ *
+ */
 
 package com.my.kizzy.ui.components
 
@@ -26,7 +26,6 @@ import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +44,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -135,7 +135,7 @@ fun SearchBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = vectorResource(R.drawable.ic_search),
+            painter = painterResource(R.drawable.ic_search),
             contentDescription = null,
             tint = colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
@@ -144,12 +144,12 @@ fun SearchBar(
         Box(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 10.dp, end = 6.dp)
+                .padding(start = 10.dp, end = 6.dp),
         ) {
             BasicTextField(
                 state = textState,
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
-                    color = colorScheme.onSurface
+                    color = colorScheme.onSurface,
                 ),
                 cursorBrush = SolidColor(colorScheme.primary),
                 lineLimits = TextFieldLineLimits.SingleLine,
@@ -181,12 +181,12 @@ fun SearchBar(
                 } else {
                     onClose()
                 }
-            }
+            },
         ) {
             Icon(
-                imageVector = vectorResource(R.drawable.ic_close),
+                painter = painterResource(R.drawable.ic_close),
                 contentDescription = stringResource(
-                    id = if (textState.text.isNotEmpty()) R.string.clear else R.string.cancel
+                    id = if (textState.text.isNotEmpty()) R.string.clear else R.string.cancel,
                 ),
                 tint = colorScheme.onSurfaceVariant,
             )
@@ -200,6 +200,6 @@ fun Search() {
     SearchBar(
         text = "test",
         placeholder = "Search…",
-        onTextChanged = {}
+        onTextChanged = {},
     )
 }

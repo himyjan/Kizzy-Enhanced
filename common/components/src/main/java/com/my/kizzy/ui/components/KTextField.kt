@@ -2,8 +2,8 @@ package com.my.kizzy.ui.components
 
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -24,7 +24,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import com.my.kizzy.resources.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -39,7 +38,7 @@ fun KTextField(
     placeholder: String,
     errorMessage: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions(),
+    onKeyboardAction: KeyboardActionHandler? = null,
 ) {
     val context = LocalContext.current
     val clipboardManager = remember(context) {
@@ -82,7 +81,7 @@ fun KTextField(
             Text(
                 text = placeholder,
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
         isError = errorMessage.isNotEmpty(),
@@ -92,7 +91,7 @@ fun KTextField(
                     if (!readOnly) onValueChange("")
                 }) {
                     Icon(
-                        imageVector = vectorResource(R.drawable.ic_close),
+                        painter = painterResource(R.drawable.ic_close),
                         contentDescription = "clear",
                         tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                     )
@@ -107,12 +106,12 @@ fun KTextField(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_content_paste),
                         contentDescription = "paste",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
         },
         keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
+        onKeyboardAction = onKeyboardAction,
     )
 }

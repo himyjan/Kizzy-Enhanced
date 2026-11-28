@@ -37,7 +37,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +60,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -101,9 +101,9 @@ fun WavyProgressIndicator(
         targetValue = 2f * PI.toFloat(),
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "phase"
+        label = "phase",
     )
 
     Canvas(modifier = modifier.height(strokeWidth * 3)) {
@@ -114,16 +114,14 @@ fun WavyProgressIndicator(
         val isIndeterminate = progress < 0f
         val fillX = if (isIndeterminate) w else (progress * w).coerceIn(0f, w)
 
-        // Track (background)
         drawLine(
             color = trackColor,
             start = Offset(0f, cy),
             end = Offset(w, cy),
             strokeWidth = sw,
-            cap = StrokeCap.Round
+            cap = StrokeCap.Round,
         )
 
-        // Wavy filled part
         val path = Path()
         var started = false
         var x = 0f
@@ -131,19 +129,22 @@ fun WavyProgressIndicator(
         while (x <= fillX) {
             val angle = (x / waveLength) * 2f * PI.toFloat() - phaseShift
             val y = cy + sin(angle) * waveAmplitude
-            if (!started) { path.moveTo(x, y); started = true }
-            else path.lineTo(x, y)
+            if (!started) {
+                path.moveTo(x, y)
+                started = true
+            } else {
+                path.lineTo(x, y)
+            }
             x += step
         }
         if (started) {
             drawPath(
                 path = path,
                 color = color,
-                style = Stroke(width = sw, cap = StrokeCap.Round)
+                style = Stroke(width = sw, cap = StrokeCap.Round),
             )
         }
 
-        // Flat filled part (deterministic) - when more than 5% done, flatten the tail
         if (!isIndeterminate && fillX > w * 0.05f) {
             val flatEnd = (fillX - waveLength / 2).coerceAtLeast(0f)
             if (flatEnd > 0f) {
@@ -152,7 +153,7 @@ fun WavyProgressIndicator(
                     start = Offset(0f, cy),
                     end = Offset(flatEnd, cy),
                     strokeWidth = sw,
-                    cap = StrokeCap.Round
+                    cap = StrokeCap.Round,
                 )
             }
         }
@@ -166,7 +167,7 @@ fun UpdateDialog(
     newVersionSize: Int,
     newVersionLog: String,
     apkUrl: String? = null,
-    onDismissRequest: () -> Unit = {}
+    onDismissRequest: () -> Unit = {},
 ) {
     var showDownloadDialog by remember { mutableStateOf(false) }
 
@@ -176,14 +177,19 @@ fun UpdateDialog(
             onDismiss = {
                 showDownloadDialog = false
                 onDismissRequest()
-            }
+            },
         )
     }
 
     AlertDialog(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
-        icon = { Icon(imageVector = vectorResource(R.drawable.ic_update), contentDescription = "Update") },
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_update),
+                contentDescription = "Update",
+            )
+        },
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = stringResource(R.string.change_log))
@@ -295,13 +301,13 @@ private fun DownloadProgressDialog(apkUrl: String, onDismiss: () -> Unit) {
 
     Dialog(
         onDismissRequest = { if (downloadState != DownloadState.DOWNLOADING) onDismiss() },
-        properties = DialogProperties(dismissOnBackPress = downloadState != DownloadState.DOWNLOADING)
+        properties = DialogProperties(dismissOnBackPress = downloadState != DownloadState.DOWNLOADING),
     ) {
         Surface(shape = MaterialTheme.shapes.extraLarge, tonalElevation = 6.dp) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
                     text = when (downloadState) {
@@ -346,19 +352,18 @@ fun UpdateDialogPreview() {
         newVersionSize = 1000000,
         apkUrl = null,
         onDismissRequest = {},
-        modifier = Modifier.height(500.dp).width(300.dp)
+        modifier = Modifier.height(500.dp).width(300.dp),
     )
 }
 
 private fun launchInstaller(context: Context, downloadId: Long, dm: DownloadManager) {
-    // On API 26+, check if we can install unknown apps; if not, open settings first
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         if (!context.packageManager.canRequestPackageInstalls()) {
             context.startActivity(
                 Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
                     data = Uri.parse("package:${context.packageName}")
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
+                },
             )
             return
         }
@@ -366,14 +371,15 @@ private fun launchInstaller(context: Context, downloadId: Long, dm: DownloadMana
 
     val file = java.io.File(
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-        "kizzy-enhanced-update.apk"
+        "kizzy-enhanced-update.apk",
     )
 
-    // Build URI — FileProvider for N+, raw file URI for older
     val uri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         try {
             androidx.core.content.FileProvider.getUriForFile(
-                context, "${context.packageName}.provider", file
+                context,
+                "${context.packageName}.provider",
+                file,
             )
         } catch (_: Exception) {
             dm.getUriForDownloadedFile(downloadId) ?: return
@@ -383,10 +389,12 @@ private fun launchInstaller(context: Context, downloadId: Long, dm: DownloadMana
     }
 
     try {
-        context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/vnd.android.package-archive")
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        })
+        context.startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/vnd.android.package-archive")
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            },
+        )
     } catch (_: Exception) {}
 }

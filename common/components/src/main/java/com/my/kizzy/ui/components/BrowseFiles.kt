@@ -28,18 +28,18 @@ import com.my.kizzy.resources.R
 @Composable
 fun BrowseFilesButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
     ) {
         Text(text = stringResource(R.string.browse_files))
         Spacer(modifier = Modifier.width(5.dp))
         Icon(
             painter = painterResource(R.drawable.ic_open_in_new),
-            contentDescription = null
+            contentDescription = null,
         )
     }
 }
