@@ -554,6 +554,12 @@ class RpcManager @Inject constructor(
             removePresenceConfig(instanceIdFor(rpcType))
         }
 
+        // Clear saved Custom/Console RPC config so cold start does not auto-restart it.
+        if (typesToStop.any { it == RpcType.CustomRpc || it == RpcType.ConsoleRpc }) {
+            Prefs[Prefs.LAST_RUN_CUSTOM_RPC] = ""
+            Prefs[Prefs.LAST_RUN_CONSOLE_RPC] = ""
+        }
+
         for (rpcType in typesToStop.toList()) {
             when (rpcType) {
                 RpcType.MediaRpc -> context.stopService(Intent(context, MediaRpcService::class.java))
