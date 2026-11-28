@@ -224,12 +224,7 @@ class MultiRpcManager @Inject constructor(
         .takeIf { it.isNotBlank() }
         ?: Prefs[Prefs.DISCORD_OAUTH2_ACCESS_TOKEN, ""]
 
-    private fun slotIndex(slotId: String): Int = when (slotId) {
-        "1" -> 1
-        "2" -> 2
-        "3" -> 3
-        else -> 1
-    }
+    private fun slotIndex(slotId: String): Int = slotId.toIntOrNull() ?: 1
 
     private fun defaultAppId(index: Int): String = when (index) {
         2 -> DEFAULT_OAUTH_APP_ID_2
