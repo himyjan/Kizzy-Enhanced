@@ -605,4 +605,13 @@
     <string name="discord_leaderboard_game_id_optional">ID hry (voliteľné)</string>
     <string name="discord_leaderboard_score_saved">Skóre odoslané</string>
     <string name="discord_leaderboard_entry_points">%1$d b.</string>
+    <string name="copy">Copy</string>
+    <string name="tap_to_collapse">Tap to collapse</string>
+    <string name="pause_logs">Pause Logs</string>
+    <string name="resume_logs">Resume Logs</string>
+    <string name="filter_logs">Filter Logs</string>
+    <string name="jump_to_top">Jump to Top</string>
+    <string name="jump_to_bottom">Jump to Bottom</string>
+    <string name="developer_mode">Developer Mode</string>
+    <string name="all">ALL</string>
 </resources>
