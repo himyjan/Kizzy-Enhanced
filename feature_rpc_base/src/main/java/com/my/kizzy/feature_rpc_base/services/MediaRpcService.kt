@@ -41,6 +41,7 @@ import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_LINK
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_MEDIA_BUTTON
 import com.my.kizzy.preference.Prefs.TOKEN
+import com.my.kizzy.preference.RPC_INSTANCE_MEDIA
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
@@ -1725,18 +1726,21 @@ class MediaRpcService : Service() {
                 if (!instanceId.isNullOrBlank()) {
                     currentInstanceId = instanceId
                     val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
-                    multiRpc.addInstance("1", instanceId, oauthIndex)
-                    // Each Media clone gets its own independent notification.
-                    CloneNotificationHelper.show(
-                        context = this@MediaRpcService,
-                        notificationManager = notificationManager,
-                        serviceClass = MediaRpcService::class.java,
-                        instanceId = instanceId,
-                        label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
-                            ?: getString(R.string.main_mediaRpc),
-                        content = currentMediaTitle ?: getString(R.string.rich_presence_active),
-                        iconRes = R.drawable.ic_media_rpc,
-                    )
+                    // Skip clone notification for built-in instance (already has foreground notification from onCreate).
+                    if (instanceId != RPC_INSTANCE_MEDIA) {
+                        multiRpc.addInstance("1", instanceId, oauthIndex)
+                        // Each Media clone gets its own independent notification.
+                        CloneNotificationHelper.show(
+                            context = this@MediaRpcService,
+                            notificationManager = notificationManager,
+                            serviceClass = MediaRpcService::class.java,
+                            instanceId = instanceId,
+                            label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
+                                ?: getString(R.string.main_mediaRpc),
+                            content = currentMediaTitle ?: getString(R.string.rich_presence_active),
+                            iconRes = R.drawable.ic_media_rpc,
+                        )
+                    }
                     // Broadcast the current media presence to the new socket.
                     restartInPlace()
                 }

@@ -42,6 +42,7 @@ import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
+import com.my.kizzy.preference.RPC_INSTANCE_MANUAL
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
@@ -63,6 +64,10 @@ class ManualRpc : Service() {
 
     /** Instance id this service is currently publishing (built-in "manual_rpc" or a clone id). */
     private var currentInstanceId: String = "manual_rpc"
+
+    /** Track clone instance IDs so their notifications can be cleaned up
+     *  when the service is destroyed. */
+    private val manualCloneInstanceIds = mutableSetOf<String>()
 
     /**
      * True when the user explicitly stopped the service via the notification "Exit" action.
@@ -371,19 +376,23 @@ class ManualRpc : Service() {
                 val instanceId = intent.getStringExtra(Constants.EXTRA_INSTANCE_ID)
                 if (!instanceId.isNullOrBlank()) {
                     currentInstanceId = instanceId
+                    manualCloneInstanceIds.add(instanceId)
                     val oauthIndex = intent.getIntExtra(Constants.EXTRA_OAUTH_INDEX, 1)
                     multiRpc.addInstance("3", instanceId, oauthIndex)
-                    // Each Manual clone gets its own independent notification.
-                    CloneNotificationHelper.show(
-                        context = this@ManualRpc,
-                        notificationManager = notificationManager,
-                        serviceClass = ManualRpc::class.java,
-                        instanceId = instanceId,
-                        label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
-                            ?: getString(R.string.main_ManualRpc),
-                        content = getString(R.string.rich_presence_active),
-                        iconRes = R.drawable.ic_manual_rpc,
-                    )
+                    // Skip clone notification for built-in instance (already has foreground notification from onCreate).
+                    if (instanceId != RPC_INSTANCE_MANUAL) {
+                        // Each Manual clone gets its own independent notification.
+                        CloneNotificationHelper.show(
+                            context = this@ManualRpc,
+                            notificationManager = notificationManager,
+                            serviceClass = ManualRpc::class.java,
+                            instanceId = instanceId,
+                            label = Prefs.getHomeRpcInstances().firstOrNull { it.id == instanceId }?.label
+                                ?: getString(R.string.main_ManualRpc),
+                            content = getString(R.string.rich_presence_active),
+                            iconRes = R.drawable.ic_manual_rpc,
+                        )
+                    }
                 }
             }
 
@@ -1287,6 +1296,9 @@ class ManualRpc : Service() {
         if (!explicitStop && manualStillEnabled) {
             WorkManagerHelper.scheduleRpcRecovery(this)
         }
+        // Clean up clone notifications so they don't linger after the service stops.
+        manualCloneInstanceIds.forEach { CloneNotificationHelper.cancel(notificationManager, it) }
+        manualCloneInstanceIds.clear()
         super.onDestroy()
     }
 
