@@ -62,6 +62,9 @@ class ManualRpc : Service() {
 
     private var kizzyRPC: KizzyRPC? = null
 
+    /** Track last notification update time to prevent rate limit. */
+    private var lastNotificationUpdateMs: Long = 0
+
     /** Instance id this service is currently publishing (built-in "manual_rpc" or a clone id). */
     private var currentInstanceId: String = "manual_rpc"
 
@@ -635,6 +638,11 @@ class ManualRpc : Service() {
                         .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), stopPendingIntent)
                         .build()
                 )
+
+        // Throttle notification updates
+        val now = System.currentTimeMillis()
+        if (now - lastNotificationUpdateMs < 1000) return
+        lastNotificationUpdateMs = now
             }
             return
         }
@@ -811,6 +819,11 @@ class ManualRpc : Service() {
                         .addAction(R.drawable.ic_manual_rpc, getString(R.string.exit), stopPendingIntent)
                         .build()
                 )
+
+        // Throttle notification updates
+        val now = System.currentTimeMillis()
+        if (now - lastNotificationUpdateMs < 1000) return
+        lastNotificationUpdateMs = now
             }
             return
         }
