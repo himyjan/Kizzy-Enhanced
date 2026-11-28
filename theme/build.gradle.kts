@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.material3.wsc)
     implementation(projects.domain)
     implementation(projects.common.preference)
+    implementation(projects.common.resources)
     implementation(projects.color)
     implementation(libs.material)
 }
