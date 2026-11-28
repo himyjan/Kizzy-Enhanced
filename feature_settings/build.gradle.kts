@@ -15,13 +15,13 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.material)
+    implementation(libs.material)
     implementation(libs.material.icons.extended)
-    implementation(libs.coil)
-    implementation(libs.coil.network)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
 
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.okhttp.android)
     implementation(libs.androidx.browser)
     implementation(libs.activity.compose)
 

@@ -12,8 +12,8 @@ android {
 dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.activity.compose)
-    implementation(libs.coil)
-    implementation(libs.coil.network)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     implementation(projects.featureRpcBase)

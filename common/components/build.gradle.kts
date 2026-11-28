@@ -9,11 +9,11 @@ android {
 
 dependencies {
     implementation(projects.theme)
-    implementation(libs.material3)
-    implementation(libs.material3.windows.size)
+    implementation(libs.material3.core)
+    implementation(libs.material3.wsc)
     implementation(projects.color)
-    implementation(libs.coil)
-    implementation(libs.coil.network)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
 
     implementation(projects.common.resources)
     implementation(libs.material.icons.extended)

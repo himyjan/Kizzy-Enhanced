@@ -1,116 +1,113 @@
 [versions]
-# project level
-gradle = "9.9.2"
-version-name = "6.2-enhanced-0"
-version-code = "14"
-
-# app level
+# AndroidX & Compose
 activity-compose = "1.14.0-alpha03"
+# Build & language toolchain
 agp = "9.6.0-alpha07"
-androidx-baselineprofile = "1.6.0-alpha02"
 androidx-browser = "1.10.0"
-androidx-material = "1.14.0"
-androidx-profileinstaller = "1.4.1"
-androidx-tracing = "1.0.1"
-androidxMacroBenchmark = "1.6.0-alpha02"
+androidx-test-ext-junit = "1.4.0-alpha04"
+androidx-test-uiautomator = "2.4.1"
 app-compat = "1.8.0"
+# Baseline profile, benchmark & tracing
+baselineprofile = "1.6.0-alpha02"
+# Networking, media & security
 coil = "3.6.3"
 compose-bom = "2026.11.01"
 core-ktx = "1.20.0-alpha01"
 datastore-preferences = "1.3.0"
+# Project & build metadata (keep in versionCatalogUpdate)
+gradle = "9.9.2"
 guava-listenablefuture = "9999.0-empty-to-avoid-conflict-with-guava"
+# Dependency injection
 hilt = "2.60.1"
-hilt-jetpack = "1.4.0"
-hiltWork = "1.4.0"
+hilt-androidx = "1.4.0"
 jakarta-inject = "2.0.1"
+# Diagnostics & testing
 junit = "4.13.2"
 kotlin = "2.5.0-RC2"
-kotlinx-coroutine = "1.11.0"
+kotlinx-coroutines = "1.11.0"
 kotlinx-serialization-json = "1.13.0"
 ksp = "2.3.14"
 ktor = "3.6.2"
 leakcanary = "3.0-alpha-9"
 lifecycle-viewmodel-navigation3 = "2.12.0-alpha06"
-material3 = "1.5.0"
+macrobenchmark = "1.6.0-alpha02"
+material = "1.14.0"
+material3 = "1.6.0-alpha01"
+material3-adaptive = "1.4.0-alpha03"
 navigation3 = "1.3.0-alpha05"
+profileinstaller = "1.4.1"
 tink-android = "1.24.0"
+tracing = "1.0.1"
+version-code = "14"
+version-name = "6.2-enhanced-0"
 workmanager = "2.12.0"
 
 [libraries]
+# AndroidX
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
-# Gradle plugins
+# Gradle plugins (for build-logic)
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle-viewmodel-navigation3" }
-androidx-macro-benchmark = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidxMacroBenchmark" }
-androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
-androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
-androidx-test-ext-junit = "androidx.test.ext:junit:1.4.0-alpha04"
-androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.4.1"
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle-viewmodel-navigation3" }
+# Benchmark, tracing & testing
+androidx-macrobenchmark-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "macrobenchmark" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-ext-junit" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
 app-compat = { module = "androidx.appcompat:appcompat", version.ref = "app-compat" }
-baselineprofile = { module = "androidx.baselineprofile:androidx.baselineprofile.gradle.plugin", version.ref = "androidx-baselineprofile" }
-# Third-party libraries
-coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-# Coil 3 splits the HTTP fetcher out of "coil-compose". Without this artifact the
-# ImageLoader has no way to load an image from a URL, so every remote image
-# (the Discord avatar, the banner, the RPC cover art) silently failed to load.
-coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
-# Compose BOM (manages all androidx.compose.* versions)
+baselineprofile-gradle-plugin = { module = "androidx.baselineprofile:androidx.baselineprofile.gradle.plugin", version.ref = "baselineprofile" }
+# Coil 3, security & utility
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+# Compose (no leaf alias sharing a prefix with a deeper alias)
 compose-bom = { module = "androidx.compose:compose-bom-alpha", version.ref = "compose-bom" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
-# Compose — versions from BOM
+compose-runtime-tracing = { module = "androidx.compose.runtime:runtime-tracing" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-composeRuntimeTracing = { module = "androidx.compose.runtime:runtime-tracing" }
-# Androidx
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
-# Guava ListenableFuture interface (required by WorkManager ListenableWorker.startWork())
 guava-listenablefuture = { module = "com.google.guava:listenablefuture", version.ref = "guava-listenablefuture" }
-# Hilt
-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+# Hilt & DI
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
-hiltLifecycleViewmodelCompose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hilt-jetpack" }
-# Jakarta
+hilt-lifecycle-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hilt-androidx" }
+hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-androidx" }
 jakarta-inject = { module = "jakarta.inject:jakarta.inject-api", version.ref = "jakarta-inject" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlinx-coroutine = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine" }
-# KotlinX
+# KotlinX & Ktor
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
-ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-okhttp-android = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-okhttp-jvm = { module = "io.ktor:ktor-client-okhttp-jvm", version.ref = "ktor" }
-ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-# Ktor (v3.x)
-ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-kotlinx-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
-ktor-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
-leakcanary-instrumentation = { module = "com.squareup.leakcanary:leakcanary-android-instrumentation", version.ref = "leakcanary" }
+leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcanary-android-instrumentation", version.ref = "leakcanary" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
-# Material3 — version from BOM
-material3 = { module = "androidx.compose.material3:material3" }
-material3-adaptive = "androidx.compose.material3.adaptive:adaptive:1.4.0-alpha03"
-material3-windows-size = { module = "androidx.compose.material3:material3-window-size-class" }
-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileinstaller" }
+material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
+material3-core = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+material3-wsc = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3" }
+profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tink-android" }
-# In-process Perfetto tracing used by macrobenchmark fullTracing (composition traces)
-tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-tracing" }
-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing" }
+tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "tracing" }
+tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "tracing" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workmanager" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidx-baselineprofile" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -120,9 +117,9 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [bundles]
 network-ktor = [
-    "ktor-client-okhttp",
-    "ktor-core",
-    "ktor-kotlinx-serialization",
+    "ktor-client-core",
+    "ktor-client-okhttp-android",
+    "ktor-serialization-kotlinx-json",
 ]
 secure-storage = [
     "datastore-preferences",

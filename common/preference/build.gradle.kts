@@ -12,10 +12,10 @@ dependencies {
     implementation(projects.color)
     implementation(projects.domain)
     implementation(projects.common.resources)
-    implementation(libs.material3)
+    implementation(libs.material3.core)
     implementation(libs.datastore.preferences)
     implementation(libs.tink.android)
-    implementation(libs.kotlinx.coroutine)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.compose.ui)
     implementation(libs.kotlinx.serialization.json)
 }

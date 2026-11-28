@@ -139,16 +139,16 @@ dependencies {
     // Extras
     implementation(libs.androidx.browser)
     implementation(libs.app.compat)
-    implementation(libs.navigation3.runtime)
-    implementation(libs.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.hiltLifecycleViewmodelCompose)
+    implementation(libs.hilt.lifecycle.viewmodel.compose)
 
     // Material
-    implementation(libs.material3)
-    implementation(libs.androidx.material)
-    implementation(libs.material3.windows.size)
+    implementation(libs.material3.core)
+    implementation(libs.material)
+    implementation(libs.material3.wsc)
 
     // WorkManager + Hilt Work
     implementation(libs.work.runtime.ktx)
@@ -159,19 +159,19 @@ dependencies {
 
     // Baseline Profiles for faster startup
     implementation(libs.profileinstaller)
-    androidTestImplementation(libs.baselineprofile)
+    androidTestImplementation(libs.androidx.macrobenchmark.junit4)
 
     // Compose Runtime Tracing for Perfetto performance tracing
-    debugImplementation(libs.composeRuntimeTracing)
-    implementation(libs.composeRuntimeTracing)
+    debugImplementation(libs.compose.runtime.tracing)
+    implementation(libs.compose.runtime.tracing)
 
     // LeakCanary - memory leak detection (debug builds only)
     debugImplementation(libs.leakcanary.android)
-    debugImplementation(libs.leakcanary.instrumentation)
+    debugImplementation(libs.leakcanary.android.instrumentation)
 
     // Coil image loading - configured in App.onCreate()
-    implementation(libs.coil)
-    implementation(libs.coil.network)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
 }
 
 configurations {

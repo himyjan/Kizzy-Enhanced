@@ -22,16 +22,16 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.material)
+    implementation(libs.material)
     implementation(libs.core.ktx)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.coil)
-    implementation(libs.coil.network)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
 
     implementation(libs.compose.ui)
     implementation(libs.compose.runtime)
-    implementation(libs.material3)
-    implementation(libs.material3.windows.size)
+    implementation(libs.material3.core)
+    implementation(libs.material3.wsc)
     implementation(libs.material.icons.extended)
     implementation(libs.datastore.preferences)
     implementation(libs.tink.android)
@@ -40,10 +40,10 @@ dependencies {
     implementation(projects.gateway)
     implementation(projects.domain)
     implementation(projects.data)
-    implementation(libs.ktor.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.kotlinx.serialization)
-    implementation(libs.ktor.content.negotiation)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp.android)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.content.negotiation)
     testImplementation(libs.junit)
 
     // Hilt annotation processor

@@ -11,7 +11,7 @@ kotlin {
 
 dependencies {
     implementation(projects.domain)
-    implementation(libs.kotlinx.coroutine)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.bundles.network.ktor)
     testImplementation(libs.junit)
 }

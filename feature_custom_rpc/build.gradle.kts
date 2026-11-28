@@ -10,11 +10,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.material3)
+    implementation(libs.material3.core)
     implementation(libs.material.icons.extended)
     implementation(libs.activity.compose)
-    implementation(libs.coil)
-    implementation(libs.coil.network)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)

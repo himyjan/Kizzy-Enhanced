@@ -18,8 +18,8 @@ dependencies {
     implementation(projects.featureSettings)
     implementation(projects.data)
 
-    implementation(libs.coil)
-    implementation(libs.coil.network)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
     implementation(libs.bundles.network.ktor)
     implementation(libs.activity.compose)
     implementation(libs.kotlinx.serialization.json)

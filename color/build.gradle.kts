@@ -9,5 +9,5 @@ android {
 dependencies {
     api(libs.compose.ui)
     api(libs.core.ktx)
-    api(libs.material3)
+    api(libs.material3.core)
 }

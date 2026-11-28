@@ -10,6 +10,6 @@ android {
 
 dependencies {
     implementation(libs.compose.ui)
-    implementation(libs.navigation3.runtime)
+    implementation(libs.androidx.navigation3.runtime)
     implementation(libs.kotlinx.serialization.json)
 }

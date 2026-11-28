@@ -34,7 +34,7 @@ class AndroidFeaturePlugin : Plugin<Project> {
                 add("implementation", project(":domain"))
                 add("implementation", project(":data"))
 
-                add("implementation", libs.findLibrary("material3").get())
+                add("implementation", libs.findLibrary("material3-core").get())
             }
         }
     }

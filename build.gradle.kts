@@ -19,6 +19,14 @@ versionCatalogUpdate {
         !candidate.candidate.version.isBlank()
     }
     keep {
+        keepUnusedVersions.set(true)
+        versions.addAll(
+            "gradle",
+            "version-name",
+            "version-code",
+        )
+    }
+    pin {
         versions.addAll(
             "gradle",
             "version-name",
@@ -30,7 +38,7 @@ versionCatalogUpdate {
 allprojects {
     configurations.all {
         resolutionStrategy {
-            force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.5.0-RC")
+            force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.5.0-RC2")
         }
     }
 }
