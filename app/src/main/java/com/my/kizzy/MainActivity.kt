@@ -10,9 +10,9 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.auth.AuthTabIntent
@@ -22,13 +22,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.os.LocaleListCompat
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.lifecycleScope
 import com.my.kizzy.preference.getLanguageConfig
 import com.my.kizzy.ui.theme.KizzyTheme
 import com.my.kizzy.ui.theme.LocalDarkTheme
 import com.my.kizzy.ui.theme.LocalDynamicColorSwitch
 import com.my.kizzy.ui.theme.SettingsProvider
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -136,6 +136,12 @@ class MainActivity : AppCompatActivity() {
         notificationListenerAccess.value = hasNotificationAccess()
         usageAccessStatus.value = hasUsageAccess()
         batteryOptimizationStatus.value = isIgnoringBatteryOptimizations()
+    }
+
+    override fun onDestroy() {
+        activeAuthTabCallback = null
+        pendingOAuthCallbackIntent = null
+        super.onDestroy()
     }
 
     @Suppress("DEPRECATION")

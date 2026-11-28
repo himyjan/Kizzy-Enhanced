@@ -15,7 +15,7 @@ package com.my.kizzy.feature_custom_rpc.components.sheet
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,16 +31,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.resources.R
-import java.io.File
 import com.my.kizzy.ui.components.dialog.MultiChoiceItem
-import androidx.compose.material.icons.outlined.DeleteForever
+import java.io.File
 
 @Composable
 fun DeleteConfigDialog(
     onDismiss: () -> Unit,
     onFilesDeleted: (String) -> Unit
 ) {
-
     val configs: MutableState<List<String>> = remember {
         mutableStateOf(listOf())
     }
@@ -48,14 +46,20 @@ fun DeleteConfigDialog(
     val dir = ctx.dir()
     dir.mkdirs()
 
-    AlertDialog(onDismissRequest = { onDismiss() },
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
         confirmButton = {
             Button(
                 onClick = {
                     onDismiss()
                     configs.value.forEach {
                         File("$dir/$it").deleteRecursively()
-                        onFilesDeleted(ctx.getString(R.string.delete_config_successfully_toast, it.dropLast(5)))
+                        onFilesDeleted(
+                            ctx.getString(
+                                R.string.delete_config_successfully_toast,
+                                it.dropLast(5)
+                            )
+                        )
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -82,17 +86,13 @@ fun DeleteConfigDialog(
                             text = files[item].dropLast(5),
                             checked = configs.value.contains(files[item])
                         ) {
-                            val newList = mutableListOf<String>()
-                            configs.value.forEach {
-                                newList.add(it)
-                            }
-                            if (configs.value.contains(files[item])) newList.remove(files[item])
+                            val newList = configs.value.toMutableList()
+                            if (newList.contains(files[item])) newList.remove(files[item])
                             else newList += files[item]
-                            newList.also { configs.value = it }
+                            configs.value = newList
                         }
                     }
                 }
-
             }
         }
     )

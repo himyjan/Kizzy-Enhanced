@@ -20,8 +20,6 @@ import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.data.utils.getFileName
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.preference.Prefs
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FilenameFilter
@@ -38,7 +36,8 @@ internal fun Context.dir() =
         if (selected == Constants.DOWNLOADS_DIRECTORY)
             File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                "Kizzy")
+                "Kizzy"
+            )
         else
             File(this.filesDir, "Configs")
     }
@@ -61,6 +60,7 @@ internal fun Context.handleUriResult(uri: Uri?, onSuccess: (json: String) -> Uni
         onSuccess(json)
     }
 }
+
 internal val json = Json {
     ignoreUnknownKeys = true
 }
@@ -69,10 +69,9 @@ internal fun RpcConfig.dataToString(): String {
     return json.encodeToString(this)
 }
 
-
 internal fun String.stringToData(): RpcConfig {
     return try {
-        return json.decodeFromString(this)
+        json.decodeFromString(this)
     } catch (ex: Exception) {
         RpcConfig()
     }

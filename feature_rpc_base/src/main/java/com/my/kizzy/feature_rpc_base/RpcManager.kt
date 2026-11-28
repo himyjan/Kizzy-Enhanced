@@ -89,7 +89,15 @@ class RpcManager @Inject constructor(
     val presenceConfigs = _presenceConfigs.asStateFlow()
 
     private val _singleConfig = _presenceConfigs
-        .map { configs -> configs.values.firstOrNull() }
+        .map { configs ->
+            configs[RPC_INSTANCE_MANUAL]
+                ?: configs.entries.firstOrNull { it.key.startsWith("manual_") }?.value
+                ?: configs[RPC_INSTANCE_MEDIA]
+                ?: configs.entries.firstOrNull { it.key.startsWith("media_") }?.value
+                ?: configs[RPC_INSTANCE_CUSTOM]
+                ?: configs.entries.firstOrNull { it.key.startsWith("custom_") }?.value
+                ?: configs.values.firstOrNull()
+        }
         .distinctUntilChanged()
     val currentPresenceConfig: StateFlow<RpcConfig?> = _singleConfig
         .stateIn(scope, SharingStarted.Eagerly, null)
@@ -142,6 +150,7 @@ class RpcManager @Inject constructor(
         _activeInstances.value = filtered
         _activeRpc.value = filtered.mapNotNull(::typeFor).toSet()
         Prefs.setActiveRpcInstanceIds(filtered)
+        AppUtils.invalidateRunningServicesCache()
     }
 
     init {
@@ -165,6 +174,7 @@ class RpcManager @Inject constructor(
     fun refreshFromServices() {
         if (System.currentTimeMillis() < ignoreServiceDetectionUntil) return
 
+        AppUtils.invalidateRunningServicesCache()
         val running = runningRpcTypes()
         val toStart = _activeInstances.value.filter { id ->
             val type = typeFor(id)
@@ -205,7 +215,7 @@ class RpcManager @Inject constructor(
             stopAllRpcServices()
             _activeRpc.value = emptySet()
         } else {
-            ignoreServiceDetectionUntil = System.currentTimeMillis() + 1_500L
+            ignoreServiceDetectionUntil = System.currentTimeMillis() + 600L
         }
 
         val typesToStart = rpcTypes - setOf(RpcType.None)
@@ -264,7 +274,7 @@ class RpcManager @Inject constructor(
         config: String? = null,
     ) {
         if (instanceId.isBlank() || rpcType == RpcType.None) return
-        ignoreServiceDetectionUntil = System.currentTimeMillis() + 1_500L
+        ignoreServiceDetectionUntil = System.currentTimeMillis() + 600L
         applyActive(_activeInstances.value + instanceId)
         persistActiveRpcTypes(_activeInstances.value.mapNotNull(::typeFor).toSet())
 
@@ -283,7 +293,7 @@ class RpcManager @Inject constructor(
 
     fun stopInstance(instanceId: String, rpcType: RpcType) {
         if (instanceId.isBlank()) return
-        ignoreServiceDetectionUntil = System.currentTimeMillis() + 1_500L
+        ignoreServiceDetectionUntil = System.currentTimeMillis() + 600L
         val remaining = _activeInstances.value - instanceId
         applyActive(remaining)
         persistActiveRpcTypes(remaining.mapNotNull(::typeFor).toSet())
@@ -317,9 +327,11 @@ class RpcManager @Inject constructor(
             RpcType.MediaRpc -> Intent(context, MediaRpcService::class.java)
             RpcType.CustomRpc, RpcType.ConsoleRpc -> Intent(context, CustomRpcService::class.java).apply {
                 val rpcData = Prefs.getCustomRpcConfig(instanceId.takeIf { it != "custom_rpc" })
-                    ?: config
-                    ?: instance?.config?.takeIf { it.isNotBlank() }
-                    ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                    .ifBlank {
+                        config
+                            ?: instance?.config?.takeIf { it.isNotBlank() }
+                            ?: Prefs[Prefs.LAST_RUN_CUSTOM_RPC, ""]
+                    }
                 putExtra("RPC", rpcData)
                 putExtra(CustomRpcService.EXTRA_CONSOLE_RPC, rpcType == RpcType.ConsoleRpc)
             }
@@ -341,7 +353,10 @@ class RpcManager @Inject constructor(
             context.startForegroundService(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start foreground instance $instanceId", e)
-            runCatching { context.startService(intent) }
+            try {
+                context.startService(intent)
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -408,7 +423,10 @@ class RpcManager @Inject constructor(
             context.startForegroundService(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start ${intent.component?.className}", e)
-            runCatching { context.startService(intent) }
+            try {
+                context.startService(intent)
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -417,7 +435,7 @@ class RpcManager @Inject constructor(
         if (typesToStop.isEmpty()) return
         Log.d(TAG, "Stopping RPC services: $typesToStop")
 
-        ignoreServiceDetectionUntil = System.currentTimeMillis() + 1_500L
+        ignoreServiceDetectionUntil = System.currentTimeMillis() + 600L
         val effectiveStops = if (typesToStop.any {
                 it == RpcType.CustomRpc || it == RpcType.ConsoleRpc
             }
@@ -453,6 +471,7 @@ class RpcManager @Inject constructor(
 
     fun stopAllRpcServices() {
         Log.d(TAG, "Stopping all RPC services")
+        ignoreServiceDetectionUntil = System.currentTimeMillis() + 600L
         context.stopService(Intent(context, MediaRpcService::class.java))
         context.stopService(Intent(context, CustomRpcService::class.java))
         context.stopService(Intent(context, ManualRpc::class.java))

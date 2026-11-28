@@ -12,6 +12,7 @@
 
 package com.my.kizzy.feature_custom_rpc.components.sheet
 
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -23,14 +24,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.ui.platform.LocalContext
-import java.io.File
 import androidx.compose.ui.res.stringResource
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.resources.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import java.io.File
 
 @Composable
 fun SaveConfigDialog(
@@ -71,7 +71,8 @@ fun SaveConfigDialog(
                     onDismiss()
                     File("$dir/$configName.json").writeText(rpc.dataToString())
                     onSaved(ctx.getString(R.string.saved_config_toast, configName))
-                }) {
+                }
+            ) {
                 Text(text = stringResource(R.string.save))
             }
         },
@@ -81,7 +82,10 @@ fun SaveConfigDialog(
                 state = configNameState,
                 label = { Text(text = stringResource(R.string.config_name)) },
                 isError = isError,
-                supportingText = { if (isError) Text(stringResource(R.string.config_name_empty)) else Unit }
+                supportingText = {
+                    if (isError) Text(stringResource(R.string.config_name_empty)) else Unit
+                }
             )
-        })
+        }
+    )
 }

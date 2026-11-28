@@ -30,23 +30,38 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-
-import com.my.kizzy.data.rpc.*
+import com.my.kizzy.data.rpc.ActivityTypeResolver
+import com.my.kizzy.data.rpc.CommonRpc
+import com.my.kizzy.data.rpc.DetectedActivityApp
+import com.my.kizzy.data.rpc.DynamicActivityDetectionEngine
+import com.my.kizzy.data.rpc.KizzyRPC
 import com.my.kizzy.data.rpc.MultiRpcManager
+import com.my.kizzy.data.rpc.RpcImage
+import com.my.kizzy.data.rpc.Timestamps
 import com.my.kizzy.data.utils.toUrlString
+import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.model.rpc.RpcButtons
 import com.my.kizzy.domain.model.rpc.RpcConfig
-import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.setLargeIcon
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import java.util.*
+import java.util.SortedMap
+import java.util.TreeMap
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val MIN_RPC_INTERVAL_MS = 500L
@@ -65,9 +80,6 @@ class AppDetectionService : Service() {
     lateinit var rpcManager: RpcManager
 
     @Inject
-    lateinit var scope: CoroutineScope
-
-    @Inject
     lateinit var notificationBuilder: Notification.Builder
 
     @Inject
@@ -76,16 +88,15 @@ class AppDetectionService : Service() {
     @Inject
     lateinit var dynamicActivityDetectionEngine: DynamicActivityDetectionEngine
 
-    private lateinit var pendingIntent: PendingIntent
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var detectionJob: Job? = null
 
+    private lateinit var pendingIntent: PendingIntent
     private lateinit var restartPendingIntent: PendingIntent
 
     private var runningPackage = ""
     private var activeStartTimestampMs: Long? = null
-    private val rpcPacer = RpcPacer(
-        minIntervalMs = MIN_RPC_INTERVAL_MS,
-        maxIdleIntervalMs = MAX_RPC_IDLE_INTERVAL_MS,
-    )
+    private var lastSentAtMs: Long = 0L
 
     private fun resolveStartTimestamp(packageName: String): Long {
         if (runningPackage != packageName || activeStartTimestampMs == null) {
@@ -94,9 +105,23 @@ class AppDetectionService : Service() {
         return activeStartTimestampMs!!
     }
 
+    private fun shouldSendNow(hasMeaningfulChange: Boolean): Boolean {
+        val now = System.currentTimeMillis()
+        val elapsed = now - lastSentAtMs
+        val allowed = if (hasMeaningfulChange) {
+            elapsed >= MIN_RPC_INTERVAL_MS
+        } else {
+            elapsed >= MAX_RPC_IDLE_INTERVAL_MS
+        }
+        if (allowed) {
+            lastSentAtMs = now
+        }
+        return allowed
+    }
+
     override fun onTaskRemoved(intent: Intent?) {
         Log.d(TAG, "onTaskRemoved: app swiped from Recents - keeping App Detection alive")
-        com.my.kizzy.data.work.WorkManagerHelper.scheduleRpcRecovery(this)
+        WorkManagerHelper.scheduleRpcRecovery(this)
         super.onTaskRemoved(intent)
     }
 
@@ -127,16 +152,17 @@ class AppDetectionService : Service() {
                 startService(Intent(this, AppDetectionService::class.java))
             }
             else -> {
-                rpcPacer.reset()
+                lastSentAtMs = 0L
                 Prefs[Prefs.ACTIVE_RPC_TYPE] = RpcManager.RpcType.AppDetectionRpc.name
                 handleAppDetection()
             }
         }
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     override fun onDestroy() {
-        scope.cancel()
+        detectionJob?.cancel()
+        serviceScope.cancel()
         val rpc = kizzyRPC
         AppUtils.unregisterRpcService(this)
         if (rpc != null) {
@@ -160,16 +186,23 @@ class AppDetectionService : Service() {
         val restartIntent = createRestartIntent()
         restartPendingIntent = PendingIntent.getService(
             this,
-            0, restartIntent, PendingIntent.FLAG_IMMUTABLE
+            0,
+            restartIntent,
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification())
         } else {
-            startForeground(Constants.NOTIFICATION_ID_APP_DETECTION, createDefaultNotification(), FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+            startForeground(
+                Constants.NOTIFICATION_ID_APP_DETECTION,
+                createDefaultNotification(),
+                FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            )
         }
 
-        scope.launch {
+        detectionJob?.cancel()
+        detectionJob = serviceScope.launch {
             while (isActive) {
                 try {
                     val enabledPackages = getEnabledPackages()
@@ -178,14 +211,17 @@ class AppDetectionService : Service() {
                     val queryUsageStats = getUsageStats()
 
                     val packageName = getForegroundPackage()
-                        ?: (if (queryUsageStats != null && queryUsageStats.size > 1) {
+                        ?: if (queryUsageStats != null && queryUsageStats.size > 1) {
                             getLatestPackageName(queryUsageStats)
                         } else {
                             null
-                        })
+                        }
 
                     if (packageName != null && packageName !in EXCLUDED_APPS) {
-                        Log.d(TAG, "Foreground package: $packageName (enabled=${packageName in enabledPackages}, game=${dynamicActivityDetectionEngine.identifyGame(packageName) != null}, ai=${dynamicActivityDetectionEngine.identifyAiApp(packageName) != null})")
+                        Log.d(
+                            TAG,
+                            "Foreground package: $packageName (enabled=${packageName in enabledPackages}, game=${dynamicActivityDetectionEngine.identifyGame(packageName) != null}, ai=${dynamicActivityDetectionEngine.identifyAiApp(packageName) != null})"
+                        )
                         handleValidPackage(packageName, enabledPackages, rpcButtons)
                     } else if (packageName == null && runningPackage != "") {
                         Log.d(TAG, "No foreground package detected, clearing old presence for: $runningPackage")
@@ -193,19 +229,10 @@ class AppDetectionService : Service() {
                         runningPackage = ""
                         activeStartTimestampMs = null
                     }
-
-                    if (dynamicActivityDetectionEngine.isAiAssistantActive()) {
-                        val assistantPkg = dynamicActivityDetectionEngine.getActiveAssistantPackage()
-                        if (assistantPkg != null && assistantPkg !in EXCLUDED_APPS) {
-                            val aiApp = dynamicActivityDetectionEngine.identifyAiApp(assistantPkg)
-                            handleEnabledPackage(assistantPkg, rpcButtons, aiApp = aiApp)
-                            runningPackage = assistantPkg
-                        }
-                    }
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    Log.e("AppDetectionService", "Detection cycle failed: ${e.message}")
+                    Log.e(TAG, "Detection cycle failed: ${e.message}")
                 }
                 delay(2000.milliseconds)
             }
@@ -277,12 +304,9 @@ class AppDetectionService : Service() {
         rpcButtons: RpcButtons,
     ) {
         val aiApp = dynamicActivityDetectionEngine.identifyAiApp(packageName)
-        val isAiApp = aiApp != null
-
         val gameApp = dynamicActivityDetectionEngine.identifyGame(packageName)
-        val isGameApp = gameApp != null
 
-        val shouldShow = packageName in enabledPackages || isAiApp || isGameApp
+        val shouldShow = packageName in enabledPackages || aiApp != null || gameApp != null
 
         if (shouldShow) {
             val appChanged = packageName != runningPackage || runningPackage == ""
@@ -304,24 +328,25 @@ class AppDetectionService : Service() {
     private suspend fun handleEnabledPackage(
         packageName: String,
         rpcButtons: RpcButtons,
-        aiApp: DetectedAiApp? = null,
-        gameApp: DetectedGameApp? = null,
+        aiApp: DetectedActivityApp? = null,
+        gameApp: DetectedActivityApp? = null,
         hasMeaningfulChange: Boolean = true,
     ) {
         val startMs = resolveStartTimestamp(packageName)
-        if (!rpcPacer.acquireSendSlot(hasMeaningfulChange = hasMeaningfulChange, forceRefresh = false)) {
+        if (!shouldSendNow(hasMeaningfulChange = hasMeaningfulChange)) {
             return
         }
 
+        val detectedApp = aiApp ?: gameApp
         val isAiApp = aiApp != null
         val isGameApp = gameApp != null
-        val displayName = if (isAiApp) aiApp.displayName else if (isGameApp) gameApp.displayName else null
+        val displayName = detectedApp?.displayName
         val appLabel = displayName
             ?: this.packageManager.getApplicationLabel(
                 this.packageManager.getApplicationInfo(packageName, 0)
             ).toString()
         Log.d(TAG, "Sending RPC for: $packageName (label=$appLabel, isGame=$isGameApp, isAI=$isAiApp)")
-        val iconUrl = if (isAiApp) aiApp.iconUrl else if (isGameApp) gameApp.iconUrl else null
+        val iconUrl = detectedApp?.iconUrl
         val details = if (isAiApp) "Chatting with AI" else if (isGameApp) "Playing game" else null
         val state = if (isAiApp) "Thinking..." else if (isGameApp) "In-game" else null
         val largeImage = iconUrl?.let { RpcImage.ExternalImage(it) }
@@ -382,7 +407,8 @@ class AppDetectionService : Service() {
         )
 
         notificationManager.notify(
-            Constants.NOTIFICATION_ID_APP_DETECTION, notificationBuilder
+            Constants.NOTIFICATION_ID_APP_DETECTION,
+            notificationBuilder
                 .setContentText(displayName ?: packageName)
                 .setLargeIcon(largeImage, this@AppDetectionService)
                 .build()

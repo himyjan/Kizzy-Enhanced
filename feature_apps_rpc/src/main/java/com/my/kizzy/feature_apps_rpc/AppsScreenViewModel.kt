@@ -57,8 +57,12 @@ class AppsScreenViewModel @Inject constructor(
     fun updateAppEnabled(pkg: String) {
         viewModelScope.launch(Dispatchers.IO) {
             Prefs.saveToPrefs(pkg)
-            // Refresh the full app list from updated preferences
-            getInstalledApps()
+            val updatedEnabled = Prefs.isAppEnabled(pkg)
+            _state.update { current ->
+                current.copy(
+                    enabledApps = current.enabledApps + (pkg to updatedEnabled)
+                )
+            }
         }
     }
 }

@@ -30,9 +30,11 @@ fun ShareConfig(
     val ctx = LocalContext.current
     val dir = ctx.dir()
     dir.mkdirs()
-    AlertDialog(onDismissRequest = { onDismiss() },
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
         confirmButton = {},
-        title = { Text(text = stringResource(id = R.string.select_a_config)) }, text = {
+        title = { Text(text = stringResource(id = R.string.select_a_config)) },
+        text = {
             LazyColumn {
                 val files = dir.list(FILE_FILTER)?.asList()
                 files?.forEach { file ->
@@ -42,10 +44,11 @@ fun ShareConfig(
                             selected = false
                         ) {
                             onDismiss()
-                            ctx.shareFile(File(dir,file))
+                            ctx.shareFile(File(dir, file))
                         }
                     }
                 }
             }
-        })
+        }
+    )
 }

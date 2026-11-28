@@ -57,13 +57,16 @@ class App : Application(), Configuration.Provider {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork()
                     .penaltyLog()
                     .build()
             )
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder()
-                    .detectAll()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
                     .penaltyLog()
                     .build()
             )
@@ -107,9 +110,9 @@ class App : Application(), Configuration.Provider {
         } catch (_: Exception) {
         }
 
-        try {
-            val appContext = this@App
-            scope.launch {
+        val appContext = this@App
+        scope.launch {
+            try {
                 Prefs.awaitInitialized()
                 withContext(Dispatchers.IO) {
                     runCatching { dynamicActivityDetectionEngine.refreshPresets(force = false) }
@@ -118,22 +121,29 @@ class App : Application(), Configuration.Provider {
                     RpcManager.getInstance(appContext).restoreActiveRpc()
                     Log.d("App", "Restored RPC state after cold start")
                 }
+            } catch (e: Exception) {
+                Log.e("App", "Failed during startup RPC restoration", e)
             }
-        } catch (_: Exception) {
         }
 
+        val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            val stringWriter = StringWriter()
-            throwable.printStackTrace(PrintWriter(stringWriter))
-            val traceText = stringWriter.toString()
+            try {
+                val stringWriter = StringWriter()
+                throwable.printStackTrace(PrintWriter(stringWriter))
+                val traceText = stringWriter.toString()
 
-            val intent = Intent(this, CrashReportActivity::class.java).apply {
-                putExtra("KEY_ERROR_LOG", "Thread: [${thread.name}]\n\n$traceText")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                val intent = Intent(this, CrashReportActivity::class.java).apply {
+                    putExtra("KEY_ERROR_LOG", "Thread: [${thread.name}]\n\n$traceText")
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+            } catch (e: Exception) {
+                Log.e("App", "Failed to launch CrashReportActivity", e)
+                previousHandler?.uncaughtException(thread, throwable)
+            } finally {
+                exitProcess(2)
             }
-            startActivity(intent)
-
-            exitProcess(2)
         }
     }
 }

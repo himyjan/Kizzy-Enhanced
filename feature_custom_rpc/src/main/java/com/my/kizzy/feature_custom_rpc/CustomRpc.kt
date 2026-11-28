@@ -1,23 +1,13 @@
 /*
-
  *
-
  *  ******************************************************************
-
  *  *  * Copyright (C) 2022
-
  *  *  * CustomRpc.kt is part of Kizzy
-
  *  *  *  and can not be copied and/or distributed without the express
-
  *  *  * permission of yzziK(Vaibhav)
-
  *  *  *****************************************************************
-
  *
-
  *
-
  */
 package com.my.kizzy.feature_custom_rpc
 
@@ -26,26 +16,36 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.filled.DesktopWindows
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.BrokenImage
+import androidx.compose.material.icons.outlined.ClearAll
+import androidx.compose.material.icons.outlined.EditCalendar
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,321 +53,184 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import coil3.compose.AsyncImage
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.foundation.layout.height
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.data.rpc.Constants.MAX_ALLOWED_CHARACTER_LENGTH
 import com.my.kizzy.data.utils.uriToFile
-import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.domain.model.rpc.RpcConfig
+import com.my.kizzy.domain.model.user.User
 import com.my.kizzy.feature_custom_rpc.components.BottomSheet
 import com.my.kizzy.feature_custom_rpc.components.DateTimePickerDialog
 import com.my.kizzy.feature_custom_rpc.components.ImagePicker
 import com.my.kizzy.feature_custom_rpc.components.sheet.DeleteConfigDialog
 import com.my.kizzy.feature_custom_rpc.components.sheet.LoadConfig
-import com.my.kizzy.feature_rpc_base.RpcManager
-import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.feature_custom_rpc.components.sheet.PreviewDialog
 import com.my.kizzy.feature_custom_rpc.components.sheet.RequestStoragePermissionDialog
 import com.my.kizzy.feature_custom_rpc.components.sheet.SaveConfigDialog
 import com.my.kizzy.feature_custom_rpc.components.sheet.ShareConfig
+import com.my.kizzy.feature_rpc_base.RpcManager
+import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
 import com.my.kizzy.preference.Prefs
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.BackButton
 import com.my.kizzy.ui.components.RpcField
 import com.my.kizzy.ui.components.SwitchBar
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import androidx.compose.material.icons.outlined.EditCalendar
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.BrokenImage
 
 @Composable
-
 fun CustomRPC(
-
     state: UiState = UiState(),
-
     onBackPressed: () -> Unit,
-
     onEvent: (UiEvent) -> Unit = {},
-
 ) {
-
     val snackBarHostState = remember { SnackbarHostState() }
-
     val scope = rememberCoroutineScope()
-
     CustomRpcScreen(
-
         onBackPressed = onBackPressed,
-
         onEvent = onEvent,
-
         snackBarHostState = snackBarHostState,
-
         state = state
-
     )
-
     if (state.showBottomSheet) {
-
         BottomSheet(onEvent = onEvent, onDismiss = {
-
             onEvent(UiEvent.TriggerBottomSheet)
-
         })
-
     }
-
     if (state.showLoadDialog) {
-
         LoadConfig(
-
             onDismiss = {
-
                 onEvent(UiEvent.SheetEvent.TriggerLoadDialog)
-
             },
-
             onConfigSelected = {
-
                 onEvent(UiEvent.SetFieldsFromConfig(it))
-
             }
-
         )
-
     }
-
     if (state.showShareDialog) {
-
         ShareConfig(
-
             onDismiss = {
-
                 onEvent(UiEvent.SheetEvent.TriggerShareDialog)
-
             }
-
         )
-
     }
-
     if (state.showStoragePermissionRequestDialog) {
-
         RequestStoragePermissionDialog(
-
             onDismiss = { onEvent(UiEvent.SheetEvent.TriggerStoragePermissionRequest) },
-
             context = LocalContext.current
-
         )
-
     }
-
     if (state.showSaveDialog) {
-
         SaveConfigDialog(
-
             rpc = state.rpcConfig,
-
             onDismiss = { onEvent(UiEvent.SheetEvent.TriggerSaveDialog) },
-
             onSaved = {
-
                 scope.launch {
-
                     snackBarHostState.showSnackbar(it)
-
                 }
-
             }
-
         )
-
     }
-
     if (state.showDeleteDialog) {
-
         DeleteConfigDialog(
-
             onDismiss = {
-
                 onEvent(UiEvent.SheetEvent.TriggerDeleteDialog)
-
             },
-
             onFilesDeleted = {
-
                 scope.launch {
-
                     snackBarHostState.showSnackbar(it)
-
                 }
-
             }
-
         )
-
     }
-
     if (state.showPreviewDialog) {
-
         val json = Prefs[Prefs.USER_DATA, "{}"]
-
         val user = Json.decodeFromString<User>(json)
-
         PreviewDialog(
-
             user = user,
-
             rpc = state.rpcConfig,
-
             onDismiss = {
-
                 onEvent(UiEvent.SheetEvent.TriggerPreviewDialog)
-
             },
-
         )
-
     }
-
 }
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
-
 fun CustomRpcScreen(
-
     snackBarHostState: SnackbarHostState,
-
     state: UiState,
-
     onBackPressed: () -> Unit,
-
     onEvent: (UiEvent) -> Unit,
-
-
-
-    ) {
-
+) {
     val scrollBehavior =
-
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-
             rememberTopAppBarState(),
-
             canScroll = { true })
 
-
-
     Scaffold(
-
         snackbarHost = { SnackbarHost(snackBarHostState) },
-
         modifier = Modifier
-
             .fillMaxSize()
-
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-
         topBar = {
-
             LargeTopAppBar(
-
                 title = {
-
                     Text(
-
                         text = stringResource(id = R.string.main_customRpc),
-
                         style = MaterialTheme.typography.headlineMedium,
-
                     )
-
                 },
-
                 navigationIcon = { BackButton { onBackPressed() } },
-
                 scrollBehavior = scrollBehavior,
-
                 actions = {
-
                     IconButton(onClick = { onEvent(UiEvent.TriggerBottomSheet) }) {
-
                         Icon(
-
                             imageVector = Icons.Outlined.MoreVert,
-
                             contentDescription = "menu"
-
                         )
-
                     }
-
                     IconButton(onClick = { onEvent(UiEvent.SheetEvent.ClearAllFields) }) {
-
                         Icon(
-
                             imageVector = Icons.Outlined.ClearAll,
-
                             contentDescription = stringResource(id = R.string.clear_all_fields)
-
                         )
-
                     }
-
                 })
-
         }) { padding ->
-
-        // Two tabs: the regular Custom RPC settings and the quick select for the
-        // Console RPC presets. Picking a preset jumps back to the settings tab so
-        // the user can fine tune every value there.
         var selectedTab by remember { mutableStateOf(0) }
 
         Column(modifier = Modifier.padding(padding)) {
-
             PrimaryTabRow(
                 selectedTabIndex = selectedTab,
                 modifier = Modifier.fillMaxWidth()
@@ -401,62 +264,38 @@ fun CustomRpcScreen(
             }
 
             RpcTextFieldsColumn(
-
                 snackBarHostState = snackBarHostState,
-
                 uiState = state,
-
                 onEvent = onEvent,
-
                 selectedTab = selectedTab,
-
                 onPresetSelected = { selectedTab = 0 }
-
             )
-
         }
-
     }
-
 }
 
-
-
 @Composable
-
 private fun RpcTextFieldsColumn(
-
     onEvent: (UiEvent) -> Unit,
-
     uiState: UiState,
-
     snackBarHostState: SnackbarHostState,
-
     selectedTab: Int = 0,
-
     onPresetSelected: () -> Unit = {},
-
 ) {
-
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val rpcManager = RpcManager.getInstance(context)
-    // Cover art preview toggles
     var showLargeCoverArtPreview by remember { mutableStateOf(uiState.showLargeCoverArt) }
     var showSmallCoverArtPreview by remember { mutableStateOf(uiState.showSmallCoverArt) }
-    // Re-sync from services every time this screen enters so UI matches reality
+
     LaunchedEffect(Unit) {
         rpcManager.refreshFromServices()
     }
     var isCustomRpcEnabled by remember {
         mutableStateOf(RpcType.CustomRpc in rpcManager.activeRpc.value)
     }
-    var isConsoleRpcEnabled by remember {
-        mutableStateOf(RpcType.ConsoleRpc in rpcManager.activeRpc.value)
-    }
     LaunchedEffect(rpcManager.activeRpc) {
         isCustomRpcEnabled = RpcType.CustomRpc in rpcManager.activeRpc.value
-        isConsoleRpcEnabled = RpcType.ConsoleRpc in rpcManager.activeRpc.value
     }
     var consolePlatform by remember {
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"])
@@ -485,18 +324,9 @@ private fun RpcTextFieldsColumn(
     var consoleButton2Url by remember {
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_BUTTON2_URL, ""])
     }
-    var showConsolePlatformDialog by remember { mutableStateOf(false) }
-    var showConsoleActivityTypeDialog by remember { mutableStateOf(false) }
-    var showConsoleStatusDialog by remember { mutableStateOf(false) }
-    var showConsoleButtonsDialog by remember { mutableStateOf(false) }
 
-    // Console RPC presets. The user presets are kept in a state so a preset
-    // created or edited in the dialog shows up in the list immediately.
     var consoleCustomPresets by remember { mutableStateOf(ConsolePresetStore.custom()) }
     var consoleSelectedPresetId by remember {
-        // Restore the last selected preset. When there is none (first run after
-        // the update), highlight the preset that matches the saved platform so
-        // the list reflects the current Console RPC configuration.
         mutableStateOf(
             ConsolePresetStore.selectedId().ifBlank {
                 val platform = Prefs[Prefs.CONSOLE_RPC_PLATFORM, "xbox"]
@@ -513,7 +343,6 @@ private fun RpcTextFieldsColumn(
         mutableStateOf(Prefs[Prefs.CONSOLE_RPC_INCLUDE_SPOOFED, false])
     }
 
-    // Custom RPC advanced settings
     var customEnableTimestamps by remember {
         mutableStateOf(Prefs[Prefs.MANUAL_RPC_ENABLE_TIMESTAMPS, true])
     }
@@ -521,7 +350,6 @@ private fun RpcTextFieldsColumn(
         mutableStateOf(Prefs[Prefs.MANUAL_RPC_USE_CUSTOM_APP_ID, false])
     }
 
-    // Console RPC game list state
     var consoleSearchText by remember { mutableStateOf("") }
     val consoleSearchTextState = rememberTextFieldState(initialText = "")
 
@@ -533,7 +361,6 @@ private fun RpcTextFieldsColumn(
     }
     var consoleSelectedGameTitle by remember { mutableStateOf("") }
 
-    // Image pickers for preset cover art URLs
     val pickLargeCoverArt = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
@@ -559,7 +386,6 @@ private fun RpcTextFieldsColumn(
         }
     }
 
-    /** Writes the console values to the preferences so they survive a restart. */
     fun persistConsoleSettings() {
         Prefs[Prefs.CONSOLE_RPC_PLATFORM] = consolePlatform
         Prefs[Prefs.CONSOLE_RPC_ACTIVITY_TYPE] = consoleActivityType
@@ -568,7 +394,6 @@ private fun RpcTextFieldsColumn(
         Prefs[Prefs.CONSOLE_RPC_SHOW_COVER_ART] = consoleShowCoverArt
     }
 
-    /** The presence that Console RPC sends with the current values. */
     fun buildConsoleConfig(): RpcConfig {
         val startTs = if (consoleEnableTimestamps) System.currentTimeMillis().toString() else ""
         val endTs = if (consoleEnableTimestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
@@ -580,9 +405,6 @@ private fun RpcTextFieldsColumn(
             timestampsStart = startTs,
             timestampsStop = endTs,
             platform = consolePlatform,
-            // Use the cover art URLs that were set on uiState.rpcConfig (by
-            // applyConsolePreset / applyConsoleGame / SetFieldsFromConfig) when
-            // cover art is enabled, otherwise clear them.
             largeImg = if (consoleShowCoverArt) uiState.rpcConfig.largeImg else "",
             smallImg = if (consoleShowCoverArt) uiState.rpcConfig.smallImg else "",
             button1 = consoleButton1Text,
@@ -592,7 +414,6 @@ private fun RpcTextFieldsColumn(
         )
     }
 
-    /** Re-sends the presence when Console RPC is already running. */
     fun applyConsoleSettingsIfRunning() {
         if (RpcType.ConsoleRpc !in rpcManager.activeRpc.value) return
         scope.launch {
@@ -605,9 +426,6 @@ private fun RpcTextFieldsColumn(
         }
     }
 
-    /** Applies a preset to the console values and, when running, to Discord.
-     *  Also updates the Custom RPC tab text fields so the user can see and edit them.
-     *  If Console RPC is not running, starts it so the preset takes effect immediately. */
     fun applyConsolePreset(preset: ConsolePreset, presetName: String) {
         consolePlatform = preset.platform
         consoleActivityType = preset.activityType
@@ -615,7 +433,6 @@ private fun RpcTextFieldsColumn(
         consoleEnableTimestamps = preset.timestamps
         consoleShowCoverArt = preset.coverArt
 
-        // Also update Custom RPC tab fields so the user sees and can edit them
         val startTs = if (preset.timestamps) System.currentTimeMillis().toString() else ""
         val endTs = if (preset.timestamps) (System.currentTimeMillis() + 3600000L).toString() else ""
         onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(
@@ -625,12 +442,8 @@ private fun RpcTextFieldsColumn(
             status = preset.status,
             timestampsStart = startTs,
             timestampsStop = endTs,
-            // Do NOT overwrite the Custom RPC tab's Activity Platform field.
-            // Console presets set consolePlatform (Console RPC tab) only.
-            // The Custom RPC tab keeps its own Activity Platform setting.
             largeImg = if (preset.coverArt) preset.largeCoverArtUrl else uiState.rpcConfig.largeImg,
             smallImg = if (preset.coverArt) preset.smallCoverArtUrl else uiState.rpcConfig.smallImg,
-            // Preserve existing button values instead of clearing them
             button1 = uiState.rpcConfig.button1,
             button1link = uiState.rpcConfig.button1link,
             button2 = uiState.rpcConfig.button2,
@@ -639,7 +452,6 @@ private fun RpcTextFieldsColumn(
 
         persistConsoleSettings()
 
-        // If Console RPC is not running, start it so the preset takes effect immediately
         if (RpcType.ConsoleRpc !in rpcManager.activeRpc.value) {
             scope.launch {
                 rpcManager.switchTo(
@@ -654,28 +466,20 @@ private fun RpcTextFieldsColumn(
         }
     }
 
-    /** Applies a game to the console values and, when running, to Discord. */
     fun applyConsoleGame(game: com.my.kizzy.domain.model.Game, startTs: String, endTs: String) {
         consolePlatform = game.platform
         onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(
-            // The game title belongs in Activity Name (not Activity Details).
-            // The platform goes into Activity Details so no information is lost.
             name = game.game_title,
             details = game.platform,
             timestampsStart = startTs,
             timestampsStop = endTs,
-            // 4th line (Activity Large Text) shows the game title again, clickable via largeUrl.
             largeText = game.game_title,
-            // No URL field available in Game model yet for clickable link.
             largeUrl = "",
-            // Do NOT overwrite the Custom RPC tab's Activity Platform field.
-            // Console games set consolePlatform (Console RPC tab) only.
             largeImg = if (consoleShowCoverArt) game.large_image.orEmpty() else "",
             smallImg = if (consoleShowCoverArt) game.small_image.orEmpty() else "",
         )))
         persistConsoleSettings()
 
-        // If Console RPC is not running, start it so the game takes effect immediately
         if (RpcType.ConsoleRpc !in rpcManager.activeRpc.value) {
             scope.launch {
                 rpcManager.switchTo(
@@ -691,33 +495,20 @@ private fun RpcTextFieldsColumn(
     }
 
     LazyColumn(
-
         modifier = Modifier.fillMaxSize()
-
     ) {
-
-        // Enable Custom RPC switch - only on the Custom RPC tab. Console RPC is
-        // started by selecting a preset, no separate enable switch is needed.
         if (selectedTab == 0) {
             item {
-
                 SwitchBar(
-
                     title = stringResource(R.string.enable_customRpc),
-
                     isChecked = isCustomRpcEnabled,
-
                 ) {
                     val newValue = !isCustomRpcEnabled
                     isCustomRpcEnabled = newValue
                     when (newValue) {
                         true -> {
-                            // Send the config the user typed on the Custom RPC tab.
-                            // This used to send buildConsoleConfig(), so the service
-                            // always received "Console RPC / Console RPC running".
                             val customConfig = uiState.rpcConfig
                             scope.launch {
-                                // Add Custom RPC without stopping Console RPC or other RPCs.
                                 rpcManager.switchTo(
                                     setOf(RpcType.CustomRpc),
                                     add = true,
@@ -727,1260 +518,781 @@ private fun RpcTextFieldsColumn(
                             }
                         }
                         false -> scope.launch {
-                            // Stop only Custom RPC, leave Console RPC and others running.
                             rpcManager.stopRpcTypes(setOf(RpcType.CustomRpc))
                         }
                     }
                 }
             }
-
         }
 
         if (selectedTab == 0) {
-
-        with(uiState.rpcConfig) {
-
-            item {
-
-                RpcField(
-
-                    value = name, label = R.string.activity_name
-
-                ) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(name = it)))
-
-                }
-
-            }
-
-
-
-            item {
-
-                RpcField(
-
-                    value = details, label = R.string.activity_details
-
-                ) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(details = it)))
-
-                }
-
-            }
-
-
-
-            item {
-
-                RpcField(
-
-                    value = state, label = R.string.activity_state
-
-                ) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(state = it)))
-
-                }
-
-            }
-
-
-
-            item {
-
-                Row {
-
+            with(uiState.rpcConfig) {
+                item {
                     RpcField(
+                        value = name, label = R.string.activity_name
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(name = it)))
+                    }
+                }
 
-                        value = partyCurrentSize,
+                item {
+                    RpcField(
+                        value = details, label = R.string.activity_details
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(details = it)))
+                    }
+                }
 
-                        label = R.string.party_current,
+                item {
+                    RpcField(
+                        value = state, label = R.string.activity_state
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(state = it)))
+                    }
+                }
 
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-
-                        isError =
-
-                            partyCurrentSize.isNotEmpty() && (
-
-                                    partyCurrentSize.toIntOrNull() == null ||
-
-                                            0 >= partyCurrentSize.toInt() ||
-
-                                            (partyMaxSize.toIntOrNull() != null && partyCurrentSize.toInt() > partyMaxSize.toInt())
-
-                                    ),
-
-                        errorMessage =
-
-                            if (partyCurrentSize.isNotEmpty()) {
-
-                                if (partyCurrentSize.toIntOrNull() == null) {
-
-                                    stringResource(R.string.party_invalid_number)
-
-                                } else if (0 >= partyCurrentSize.toInt()) {
-
-                                    stringResource(R.string.party_less_than_zero)
-
-                                } else if (partyMaxSize.toIntOrNull() != null && partyCurrentSize.toInt() > partyMaxSize.toInt()) {
-
-                                    stringResource(R.string.party_greater_than_max)
-
+                item {
+                    Row {
+                        RpcField(
+                            value = partyCurrentSize,
+                            label = R.string.party_current,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            isError =
+                                partyCurrentSize.isNotEmpty() && (
+                                        partyCurrentSize.toIntOrNull() == null ||
+                                                0 >= partyCurrentSize.toInt() ||
+                                                (partyMaxSize.toIntOrNull() != null && partyCurrentSize.toInt() > partyMaxSize.toInt())
+                                        ),
+                            errorMessage =
+                                if (partyCurrentSize.isNotEmpty()) {
+                                    if (partyCurrentSize.toIntOrNull() == null) {
+                                        stringResource(R.string.party_invalid_number)
+                                    } else if (0 >= partyCurrentSize.toInt()) {
+                                        stringResource(R.string.party_less_than_zero)
+                                    } else if (partyMaxSize.toIntOrNull() != null && partyCurrentSize.toInt() > partyMaxSize.toInt()) {
+                                        stringResource(R.string.party_greater_than_max)
+                                    } else {
+                                        ""
+                                    }
                                 } else {
-
                                     ""
-
                                 }
-
-                            } else {
-
-                                ""
-
-                            }
-
-
-
-                    ) {
-
-                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(partyCurrentSize = it)))
-
+                        ) {
+                            onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(partyCurrentSize = it)))
+                        }
                     }
-
                 }
 
-            }
-
-
-
-            item {
-
-                AnimatedVisibility(visible = partyCurrentSize.isNotBlank()) {
-
-                    RpcField(
-
-                        value = partyMaxSize,
-
-                        label = R.string.party_max,
-
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-
-                        isError =
-
-                            partyMaxSize.isNotEmpty() && (
-
-                                    partyMaxSize.toIntOrNull() == null ||
-
-                                            0 >= partyMaxSize.toInt() ||
-
-                                            (partyCurrentSize.toIntOrNull() != null && partyCurrentSize.toInt() > partyMaxSize.toInt())
-
-                                    ),
-
-                        errorMessage =
-
-                            if (partyMaxSize.isNotEmpty()) {
-
-                                if (partyMaxSize.toIntOrNull() == null) {
-
-                                    stringResource(R.string.party_invalid_number)
-
-                                } else if (0 >= partyMaxSize.toInt()) {
-
-                                    stringResource(R.string.party_less_than_zero)
-
-                                } else if (partyCurrentSize.toIntOrNull() != null && partyCurrentSize.toInt() > partyMaxSize.toInt()) {
-
-                                    stringResource(R.string.party_greater_than_max)
-
+                item {
+                    AnimatedVisibility(visible = partyCurrentSize.isNotBlank()) {
+                        RpcField(
+                            value = partyMaxSize,
+                            label = R.string.party_max,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            isError =
+                                partyMaxSize.isNotEmpty() && (
+                                        partyMaxSize.toIntOrNull() == null ||
+                                                0 >= partyMaxSize.toInt() ||
+                                                (partyCurrentSize.toIntOrNull() != null && partyCurrentSize.toInt() > partyMaxSize.toInt())
+                                        ),
+                            errorMessage =
+                                if (partyMaxSize.isNotEmpty()) {
+                                    if (partyMaxSize.toIntOrNull() == null) {
+                                        stringResource(R.string.party_invalid_number)
+                                    } else if (0 >= partyMaxSize.toInt()) {
+                                        stringResource(R.string.party_less_than_zero)
+                                    } else if (partyCurrentSize.toIntOrNull() != null && partyCurrentSize.toInt() > partyMaxSize.toInt()) {
+                                        stringResource(R.string.party_greater_than_max)
+                                    } else {
+                                        ""
+                                    }
+                                } else if (partyCurrentSize.isNotEmpty() && partyMaxSize.isBlank()) {
+                                    stringResource(R.string.party_max_cannot_be_empty)
                                 } else {
-
                                     ""
-
                                 }
-
-                            } else if (partyCurrentSize.isNotEmpty() && partyMaxSize.isBlank()) {
-
-                                stringResource(R.string.party_max_cannot_be_empty)
-
-                            } else {
-
-                                ""
-
-                            }
-
-                    ) {
-
-                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(partyMaxSize = it)))
-
-                    }
-
-                }
-
-            }
-
-
-
-            item {
-
-                RpcField(
-
-                    value = timestampsStart,
-
-                    label = R.string.activity_start_timestamps,
-
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
-                    trailingIcon = {
-
-                        Icon(
-
-                            imageVector = Icons.Outlined.EditCalendar,
-
-                            contentDescription = null,
-
-                            modifier = Modifier.clickable {
-
-                                onEvent(UiEvent.TriggerStartTimeStampsDialog)
-
-                            })
-
-                    },
-
-                    content = {
-
-                        if (uiState.showStartTimeStampsPickerDialog) {
-
-                            DateTimePickerDialog(
-
-                                selectedDate = timestampsStart.toLongOrNull(),
-
-                                onDismiss = { onEvent(UiEvent.TriggerStartTimeStampsDialog) }
-
-                            ) {
-
-                                onEvent(
-
-                                    UiEvent.SetFieldsFromConfig(
-
-                                        uiState.rpcConfig.copy(
-
-                                            timestampsStart = it.toString()
-
-                                        )
-
-                                    )
-
-                                )
-
-                            }
-
-                        }
-
-                    }) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(timestampsStart = it)))
-
-                }
-
-            }
-
-
-
-            item {
-
-                RpcField(
-
-                    value = timestampsStop,
-
-                    label = R.string.activity_stop_timestamps,
-
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
-                    trailingIcon = {
-
-                        Icon(
-
-                            imageVector = Icons.Outlined.EditCalendar,
-
-                            contentDescription = null,
-
-                            modifier = Modifier.clickable {
-
-                                onEvent(UiEvent.TriggerStopTimeStampsDialog)
-
-                            })
-
-                    },
-
-                    content = {
-
-                        if (uiState.showStopTimeStampsPickerDialog) {
-
-                            DateTimePickerDialog(
-
-                                selectedDate = timestampsStop.toLongOrNull(),
-
-                                onDismiss = { onEvent(UiEvent.TriggerStopTimeStampsDialog) }
-
-                            ) {
-
-                                onEvent(
-
-                                    UiEvent.SetFieldsFromConfig(
-
-                                        uiState.rpcConfig.copy(
-
-                                            timestampsStop = it.toString()
-
-                                        )
-
-                                    )
-
-                                )
-
-                            }
-
-                        }
-
-                    }) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(timestampsStop = it)))
-
-                }
-
-            }
-
-
-
-            val iconStatus = if (uiState.activityTypeIsExpanded)
-
-                Icons.Outlined.KeyboardArrowUp
-
-            else
-
-                Icons.Outlined.KeyboardArrowDown
-
-
-
-            item {
-
-                RpcField(
-
-                    value = platform,
-
-                    label = R.string.activity_platform,
-
-                    trailingIcon = {
-
-                        Icon(
-
-                            imageVector = iconStatus,
-
-                            contentDescription = null,
-
-                            modifier = Modifier.clickable {
-
-                                onEvent(UiEvent.TriggerPlatformDropDownMenu)
-
-                            })
-
-                    },
-
-                    content = {
-
-                        DropdownMenu(
-
-                            expanded = uiState.platformIsExpanded, onDismissRequest = {
-
-                                onEvent(UiEvent.TriggerPlatformDropDownMenu)
-
-                            },
-
-                            modifier = Modifier.fillMaxWidth()
-
                         ) {
-
-                            Constants.ACTIVITY_PLATFORMS.forEach { (label, value) ->
-
-                                DropdownMenuItem(
-
-                                    text = {
-
-                                        Text(text = label)
-
-                                    },
-
-                                    onClick = {
-
-                                        onEvent(
-
-                                            UiEvent.SetFieldsFromConfig(
-
-                                                uiState.rpcConfig.copy(
-
-                                                    platform = value,
-
-                                                    smallImg = platformLogoUrl(value)
-
-                                                )
-
-                                            )
-
-                                        )
-
-                                        onEvent(UiEvent.TriggerPlatformDropDownMenu)
-
-                                    },
-
-                                )
-
-                            }
-
-                        }
-
-                    }
-
-                ) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(platform = it)))
-
-                }
-
-            }
-
-
-
-            item {
-
-                RpcField(
-
-                    value = status,
-
-                    label = R.string.activity_status_online_idle_dnd,
-
-                    trailingIcon = {
-
-                        Icon(
-
-                            imageVector = iconStatus,
-
-                            contentDescription = null,
-
-                            modifier = Modifier.clickable {
-
-                                onEvent(UiEvent.TriggerStatusDropDownMenu)
-
-                            })
-
-                    },
-
-                    content = {
-
-                        DropdownMenu(
-
-                            expanded = uiState.statusIsExpanded, onDismissRequest = {
-
-                                onEvent(UiEvent.TriggerStatusDropDownMenu)
-
-                            },
-
-                            modifier = Modifier.fillMaxWidth()
-
-                        ) {
-
-                            Constants.ACTIVITY_STATUS.forEach { (resId, value) ->
-
-                                DropdownMenuItem(
-
-                                    text = {
-
-                                        Text(text = stringResource(resId))
-
-                                    },
-
-                                    onClick = {
-
-                                        onEvent(
-
-                                            UiEvent.SetFieldsFromConfig(
-
-                                                uiState.rpcConfig.copy(
-
-                                                    status = value
-
-                                                )
-
-                                            )
-
-                                        )
-
-                                        onEvent(UiEvent.TriggerStatusDropDownMenu)
-
-                                    },
-
-                                )
-
-                            }
-
-                        }
-
-                    }
-
-                ) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(status = it)))
-
-                }
-
-            }
-
-
-
-            item {
-
-                RpcField(
-
-                    value = button1, label = R.string.activity_button1_text,
-
-                    isError = button1.length >= MAX_ALLOWED_CHARACTER_LENGTH,
-
-                    errorMessage = stringResource(R.string.activity_button_max_character)
-
-                ) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(button1 = it)))
-
-                }
-
-            }
-
-            item {
-
-                AnimatedVisibility(visible = button1.isNotBlank()) {
-
-                    RpcField(
-
-                        value = button1link,
-
-                        label = R.string.activity_button1_url
-
-                    ) {
-
-                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(button1link = it)))
-
-                    }
-
-                }
-
-            }
-
-
-
-            item {
-
-                RpcField(
-
-                    value = button2, label = R.string.activity_button2_text,
-
-                    isError = button2.length >= MAX_ALLOWED_CHARACTER_LENGTH,
-
-                    errorMessage = stringResource(R.string.activity_button_max_character)
-
-                ) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(button2 = it)))
-
-                }
-
-            }
-
-
-
-            item {
-
-                AnimatedVisibility(visible = button2.isNotBlank()) {
-
-                    RpcField(
-
-                        value = button2link,
-
-                        label = R.string.activity_button2_url
-
-                    ) {
-
-                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(button2link = it)))
-
-                    }
-
-                }
-
-            }
-
-            item {
-
-                var openPickerDialog by remember {
-
-                    mutableStateOf(false)
-
-                }
-
-                var showProgress by remember {
-
-                    mutableStateOf(false)
-
-                }
-
-                RpcField(
-
-                    value = largeImg,
-
-                    label = R.string.activity_large_image,
-
-                    trailingIcon = {
-
-                        Icon(
-
-                            imageVector = Icons.Outlined.Image,
-
-                            contentDescription = "openGallery",
-
-                            modifier = Modifier.clickable {
-
-                                openPickerDialog = true
-
-                            })
-
-                    },
-
-                    content = {
-
-                        ImagePicker(
-
-                            visible = openPickerDialog,
-
-                            onDismiss = { openPickerDialog = false },
-
-                            showProgress = showProgress
-
-                        ) { uri ->
-
-                            showProgress = true
-
-                            onEvent(UiEvent.UploadImage(context.uriToFile(uri) ?: return@showImagePicker) { result ->>
-
-                                showProgress = false
-
-                                openPickerDialog = false
-
-                                onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeImg = result)))
-
-                            })
-
-                        }
-
-                    }) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeImg = it)))
-
-                }
-
-            }
-
-            item {
-
-                AnimatedVisibility(visible = showLargeCoverArtPreview && largeImg.isNotBlank()) {
-
-                    Column(
-
-                        modifier = Modifier
-
-                            .fillMaxWidth()
-
-                            .padding(16.dp, 8.dp)
-
-                    ) {
-
-                        Text(
-
-                            text = stringResource(id = R.string.activity_large_image_preview),
-
-                            style = MaterialTheme.typography.bodySmall,
-
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-
-                        )
-
-                        AsyncImage(
-
-                            model = coverArtPreviewUrl(largeImg),
-
-                            contentDescription = null,
-
-                            modifier = Modifier
-
-                                .size(200.dp)
-
-                                .clip(RoundedCornerShape(8.dp)),
-
-                            placeholder = rememberVectorPainter(Icons.Outlined.Image),
-
-                            error = rememberVectorPainter(Icons.Outlined.BrokenImage)
-
-                        )
-
-                    }
-
-                }
-
-            }
-
-            item {
-
-                AnimatedVisibility(visible = largeImg.isNotBlank()) {
-
-                    RpcField(
-
-                        value = largeText,
-
-                        label = R.string.activity_large_text
-
-                    ) {
-
-                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeText = it)))
-
-                    }
-
-                }
-
-            }
-
-            item {
-
-                var openPickerDialog by remember {
-
-                    mutableStateOf(false)
-
-                }
-
-                var showProgress by remember {
-
-                    mutableStateOf(false)
-
-                }
-
-                RpcField(
-
-                    value = smallImg,
-
-                    label = R.string.activity_small_image,
-
-                    trailingIcon = {
-
-                        Icon(
-
-                            imageVector = Icons.Outlined.Image,
-
-                            contentDescription = "openGallery",
-
-                            modifier = Modifier.clickable {
-
-                                openPickerDialog = true
-
-                            })
-
-                    },
-
-                    content = {
-
-                        ImagePicker(
-
-                            visible = openPickerDialog,
-
-                            onDismiss = { openPickerDialog = false },
-
-                            showProgress = showProgress
-
-                        ) { uri ->
-
-                            showProgress = true
-
-                            onEvent(UiEvent.UploadImage(context.uriToFile(uri) ?: return@showImagePicker) { result ->>
-
-                                showProgress = false
-
-                                openPickerDialog = false
-
-                                onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallImg = result)))
-
-                            })
-
-                        }
-
-                    }) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallImg = it)))
-
-                }
-
-            }
-
-            item {
-
-                AnimatedVisibility(visible = showSmallCoverArtPreview && smallImg.isNotBlank()) {
-
-                    Column(
-
-                        modifier = Modifier
-
-                            .fillMaxWidth()
-
-                            .padding(16.dp, 8.dp)
-
-                    ) {
-
-                        Text(
-
-                            text = stringResource(id = R.string.activity_small_image_preview),
-
-                            style = MaterialTheme.typography.bodySmall,
-
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-
-                        )
-
-                        AsyncImage(
-
-                            model = coverArtPreviewUrl(smallImg),
-
-                            contentDescription = null,
-
-                            modifier = Modifier
-
-                                .size(120.dp)
-
-                                .clip(RoundedCornerShape(8.dp)),
-
-                            placeholder = rememberVectorPainter(Icons.Outlined.Image),
-
-                            error = rememberVectorPainter(Icons.Outlined.BrokenImage)
-
-                        )
-
-                    }
-
-                }
-
-            }
-
-            item {
-
-                AnimatedVisibility(visible = smallImg.isNotBlank()) {
-
-                    RpcField(
-
-                        value = smallText,
-
-                        label = R.string.activity_small_text
-
-                    ) {
-
-                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallText = it)))
-
-                    }
-
-                }
-
-            }
-
-            val icon = if (uiState.activityTypeIsExpanded)
-
-                Icons.Outlined.KeyboardArrowUp
-
-            else
-
-                Icons.Outlined.KeyboardArrowDown
-
-
-
-            item {
-
-                RpcField(
-
-                    value = type,
-
-                    label = R.string.activity_type,
-
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
-                    trailingIcon = {
-
-                        Icon(
-
-                            imageVector = icon,
-
-                            contentDescription = null,
-
-                            modifier = Modifier.clickable {
-
-                                onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
-
-                            })
-
-                    }) {
-
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(type = it)))
-
-                }
-
-
-
-                DropdownMenu(
-
-                    expanded = uiState.activityTypeIsExpanded, onDismissRequest = {
-
-                        onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
-
-                    }, modifier = Modifier.fillMaxWidth()
-
-                ) {
-
-                    Constants.ACTIVITY_TYPE.forEach { (label, value) ->
-
-                        DropdownMenuItem(
-
-                            text = {
-
-                                Text(text = label)
-
-                            },
-
-                            onClick = {
-
-                                onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(type = value.toString())))
-
-                                onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
-
-                            },
-
-                        )
-
-                    }
-
-                }
-
-            }
-
-            // ===== Console RPC Settings =====
-
-            item {
-                var consolePlatformExpanded by remember { mutableStateOf(false) }
-                val consolePlatformIcon = if (consolePlatformExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
-
-                RpcField(
-                    value = consolePlatform,
-                    label = R.string.console_platform,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = consolePlatformIcon,
-                            contentDescription = null,
-                            modifier = Modifier.clickable {
-                                consolePlatformExpanded = !consolePlatformExpanded
-                            }
-                        )
-                    },
-                    content = {
-                        DropdownMenu(
-                            expanded = consolePlatformExpanded,
-                            onDismissRequest = { consolePlatformExpanded = false },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Constants.ACTIVITY_PLATFORMS.forEach { (label, value) ->
-                                DropdownMenuItem(
-                                    text = { Text(text = label) },
-                                    onClick = {
-                                        consolePlatform = value
-                                        consolePlatformExpanded = false
-                                    }
-                                )
-                            }
+                            onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(partyMaxSize = it)))
                         }
                     }
-                ) { }
-            }
-
-            item {
-                var consoleActivityTypeExpanded by remember { mutableStateOf(false) }
-                val consoleActivityTypeIcon = if (consoleActivityTypeExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
-
-                RpcField(
-                    value = consoleActivityType,
-                    label = R.string.console_activity_type,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    trailingIcon = {
-                        Icon(
-                            imageVector = consoleActivityTypeIcon,
-                            contentDescription = null,
-                            modifier = Modifier.clickable {
-                                consoleActivityTypeExpanded = !consoleActivityTypeExpanded
-                            }
-                        )
-                    },
-                    content = {
-                        DropdownMenu(
-                            expanded = consoleActivityTypeExpanded,
-                            onDismissRequest = { consoleActivityTypeExpanded = false },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Constants.ACTIVITY_TYPE.forEach { (label, value) ->
-                                DropdownMenuItem(
-                                    text = { Text(text = label) },
-                                    onClick = {
-                                        consoleActivityType = value.toString()
-                                        consoleActivityTypeExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                ) { }
-            }
-
-            item {
-                var consoleStatusExpanded by remember { mutableStateOf(false) }
-                val consoleStatusIcon = if (consoleStatusExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
-
-                RpcField(
-                    value = consoleStatus,
-                    label = R.string.console_status,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    trailingIcon = {
-                        Icon(
-                            imageVector = consoleStatusIcon,
-                            contentDescription = null,
-                            modifier = Modifier.clickable {
-                                consoleStatusExpanded = !consoleStatusExpanded
-                            }
-                        )
-                    },
-                    content = {
-                        DropdownMenu(
-                            expanded = consoleStatusExpanded,
-                            onDismissRequest = { consoleStatusExpanded = false },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Constants.ACTIVITY_STATUS.forEach { (resId, value) ->
-                                DropdownMenuItem(
-                                    text = { Text(text = stringResource(resId)) },
-                                    onClick = {
-                                        consoleStatus = value
-                                        consoleStatusExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                ) { }
-            }
-
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.console_enable_timestamps),
-                    isChecked = consoleEnableTimestamps,
-                ) {
-                    consoleEnableTimestamps = !consoleEnableTimestamps
                 }
-            }
 
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.console_show_cover_art),
-                    isChecked = consoleShowCoverArt,
-                ) {
-                    consoleShowCoverArt = !consoleShowCoverArt
-                }
-            }
-
-            item {
-                RpcField(
-                    value = consoleButton1Text,
-                    label = R.string.activity_button1_text,
-                ) {
-                    consoleButton1Text = it
-                }
-            }
-
-            item {
-                AnimatedVisibility(visible = consoleButton1Text.isNotBlank()) {
+                item {
                     RpcField(
-                        value = consoleButton1Url,
-                        label = R.string.activity_button1_url,
-                    ) {
-                        consoleButton1Url = it
-                    }
-                }
-            }
-
-            item {
-                RpcField(
-                    value = consoleButton2Text,
-                    label = R.string.activity_button2_text,
-                ) {
-                    consoleButton2Text = it
-                }
-            }
-
-            item {
-                AnimatedVisibility(visible = consoleButton2Text.isNotBlank()) {
-                    RpcField(
-                        value = consoleButton2Url,
-                        label = R.string.activity_button2_url,
-                    ) {
-                        consoleButton2Url = it
-                    }
-                }
-            }
-
-            item {
-
-                AnimatedVisibility(visible = type == "1") {
-
-                    val streamUrlInfoText = stringResource(id = R.string.stream_url_info)
-
-                    RpcField(
-
-                        value = url,
-
-                        label = R.string.stream_url,
-
+                        value = timestampsStart,
+                        label = R.string.activity_start_timestamps,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         trailingIcon = {
-
                             Icon(
-
-                                imageVector = Icons.Outlined.Info,
-
+                                imageVector = Icons.Outlined.EditCalendar,
                                 contentDescription = null,
-
                                 modifier = Modifier.clickable {
-
-                                    scope.launch {
-
-                                        snackBarHostState.showSnackbar(
-
-                                            message = streamUrlInfoText
-
-                                        )
-
-                                    }
-
+                                    onEvent(UiEvent.TriggerStartTimeStampsDialog)
                                 })
-
-                        }
-
-                    ) {
-
-                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(url = it)))
-
+                        },
+                        content = {
+                            if (uiState.showStartTimeStampsPickerDialog) {
+                                DateTimePickerDialog(
+                                    selectedDate = timestampsStart.toLongOrNull(),
+                                    onDismiss = { onEvent(UiEvent.TriggerStartTimeStampsDialog) }
+                                ) {
+                                    onEvent(
+                                        UiEvent.SetFieldsFromConfig(
+                                            uiState.rpcConfig.copy(
+                                                timestampsStart = it.toString()
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(timestampsStart = it)))
                     }
-
                 }
-            }
 
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.console_enable_timestamps),
-                    isChecked = customEnableTimestamps,
-                ) {
-                    customEnableTimestamps = !customEnableTimestamps
-                }
-            }
-
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.custom_application_id),
-                    isChecked = customUseAppId,
-                ) {
-                    customUseAppId = !customUseAppId
-                }
-            }
-
-            item {
-                AnimatedVisibility(visible = customUseAppId) {
+                item {
                     RpcField(
-                        value = Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""],
-                        label = R.string.custom_application_id,
-                    ) {
-                        Prefs[Prefs.MANUAL_RPC_APPLICATION_ID] = it
+                        value = timestampsStop,
+                        label = R.string.activity_stop_timestamps,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.EditCalendar,
+                                contentDescription = null,
+                                modifier = Modifier.clickable {
+                                    onEvent(UiEvent.TriggerStopTimeStampsDialog)
+                                })
+                        },
+                        content = {
+                            if (uiState.showStopTimeStampsPickerDialog) {
+                                DateTimePickerDialog(
+                                    selectedDate = timestampsStop.toLongOrNull(),
+                                    onDismiss = { onEvent(UiEvent.TriggerStopTimeStampsDialog) }
+                                ) {
+                                    onEvent(
+                                        UiEvent.SetFieldsFromConfig(
+                                            uiState.rpcConfig.copy(
+                                                timestampsStop = it.toString()
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(timestampsStop = it)))
                     }
                 }
-            }
 
-            // ===== Copy Current RPC =====
-            item {
-                androidx.compose.material3.OutlinedButton(
-                    onClick = {
-                        val mediaCfg = rpcManager.presenceConfigs.value["media_rpc"]
-                        val manualCfg = rpcManager.presenceConfigs.value["manual_rpc"]
-                        val source = mediaCfg ?: manualCfg
-                        if (source != null) {
-                            onEvent(UiEvent.SetFieldsFromConfig(source))
+                val iconStatus = if (uiState.activityTypeIsExpanded)
+                    Icons.Outlined.KeyboardArrowUp
+                else
+                    Icons.Outlined.KeyboardArrowDown
+
+                item {
+                    RpcField(
+                        value = platform,
+                        label = R.string.activity_platform,
+                        trailingIcon = {
+                            Icon(
+                                imageVector = iconStatus,
+                                contentDescription = null,
+                                modifier = Modifier.clickable {
+                                    onEvent(UiEvent.TriggerPlatformDropDownMenu)
+                                })
+                        },
+                        content = {
+                            DropdownMenu(
+                                expanded = uiState.platformIsExpanded, onDismissRequest = {
+                                    onEvent(UiEvent.TriggerPlatformDropDownMenu)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Constants.ACTIVITY_PLATFORMS.forEach { (label, value) ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(text = label)
+                                        },
+                                        onClick = {
+                                            onEvent(
+                                                UiEvent.SetFieldsFromConfig(
+                                                    uiState.rpcConfig.copy(
+                                                        platform = value,
+                                                        smallImg = platformLogoUrl(value)
+                                                    )
+                                                )
+                                            )
+                                            onEvent(UiEvent.TriggerPlatformDropDownMenu)
+                                        },
+                                    )
+                                }
+                            }
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                     ) {
-                        androidx.compose.material3.Text(
-                            text = stringResource(R.string.copy_to_custom_rpc),
-                            modifier = Modifier.weight(1f),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(platform = it)))
                     }
                 }
+
+                item {
+                    RpcField(
+                        value = status,
+                        label = R.string.activity_status_online_idle_dnd,
+                        trailingIcon = {
+                            Icon(
+                                imageVector = iconStatus,
+                                contentDescription = null,
+                                modifier = Modifier.clickable {
+                                    onEvent(UiEvent.TriggerStatusDropDownMenu)
+                                })
+                        },
+                        content = {
+                            DropdownMenu(
+                                expanded = uiState.statusIsExpanded, onDismissRequest = {
+                                    onEvent(UiEvent.TriggerStatusDropDownMenu)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Constants.ACTIVITY_STATUS.forEach { (resId, value) ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(text = stringResource(resId))
+                                        },
+                                        onClick = {
+                                            onEvent(
+                                                UiEvent.SetFieldsFromConfig(
+                                                    uiState.rpcConfig.copy(
+                                                        status = value
+                                                    )
+                                                )
+                                            )
+                                            onEvent(UiEvent.TriggerStatusDropDownMenu)
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(status = it)))
+                    }
+                }
+
+                item {
+                    RpcField(
+                        value = button1, label = R.string.activity_button1_text,
+                        isError = button1.length >= MAX_ALLOWED_CHARACTER_LENGTH,
+                        errorMessage = stringResource(R.string.activity_button_max_character)
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(button1 = it)))
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = button1.isNotBlank()) {
+                        RpcField(
+                            value = button1link,
+                            label = R.string.activity_button1_url
+                        ) {
+                            onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(button1link = it)))
+                        }
+                    }
+                }
+
+                item {
+                    RpcField(
+                        value = button2, label = R.string.activity_button2_text,
+                        isError = button2.length >= MAX_ALLOWED_CHARACTER_LENGTH,
+                        errorMessage = stringResource(R.string.activity_button_max_character)
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(button2 = it)))
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = button2.isNotBlank()) {
+                        RpcField(
+                            value = button2link,
+                            label = R.string.activity_button2_url
+                        ) {
+                            onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(button2link = it)))
+                        }
+                    }
+                }
+
+                item {
+                    var openPickerDialog by remember {
+                        mutableStateOf(false)
+                    }
+                    var showProgress by remember {
+                        mutableStateOf(false)
+                    }
+                    RpcField(
+                        value = largeImg,
+                        label = R.string.activity_large_image,
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Image,
+                                contentDescription = "openGallery",
+                                modifier = Modifier.clickable {
+                                    openPickerDialog = true
+                                })
+                        },
+                        content = {
+                            ImagePicker(
+                                visible = openPickerDialog,
+                                onDismiss = { openPickerDialog = false },
+                                showProgress = showProgress
+                            ) { uri ->
+                                val file = context.uriToFile(uri)
+                                if (file != null) {
+                                    showProgress = true
+                                    onEvent(UiEvent.UploadImage(file) { result ->
+                                        showProgress = false
+                                        openPickerDialog = false
+                                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeImg = result)))
+                                    })
+                                } else {
+                                    openPickerDialog = false
+                                }
+                            }
+                        }) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeImg = it)))
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = showLargeCoverArtPreview && largeImg.isNotBlank()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp, 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.activity_large_image_preview),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            AsyncImage(
+                                model = coverArtPreviewUrl(largeImg),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                placeholder = rememberVectorPainter(Icons.Outlined.Image),
+                                error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = largeImg.isNotBlank()) {
+                        RpcField(
+                            value = largeText,
+                            label = R.string.activity_large_text
+                        ) {
+                            onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeText = it)))
+                        }
+                    }
+                }
+
+                item {
+                    var openPickerDialog by remember {
+                        mutableStateOf(false)
+                    }
+                    var showProgress by remember {
+                        mutableStateOf(false)
+                    }
+                    RpcField(
+                        value = smallImg,
+                        label = R.string.activity_small_image,
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Image,
+                                contentDescription = "openGallery",
+                                modifier = Modifier.clickable {
+                                    openPickerDialog = true
+                                })
+                        },
+                        content = {
+                            ImagePicker(
+                                visible = openPickerDialog,
+                                onDismiss = { openPickerDialog = false },
+                                showProgress = showProgress
+                            ) { uri ->
+                                val file = context.uriToFile(uri)
+                                if (file != null) {
+                                    showProgress = true
+                                    onEvent(UiEvent.UploadImage(file) { result ->
+                                        showProgress = false
+                                        openPickerDialog = false
+                                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallImg = result)))
+                                    })
+                                } else {
+                                    openPickerDialog = false
+                                }
+                            }
+                        }) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallImg = it)))
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = showSmallCoverArtPreview && smallImg.isNotBlank()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp, 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.activity_small_image_preview),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            AsyncImage(
+                                model = coverArtPreviewUrl(smallImg),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                placeholder = rememberVectorPainter(Icons.Outlined.Image),
+                                error = rememberVectorPainter(Icons.Outlined.BrokenImage)
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = smallImg.isNotBlank()) {
+                        RpcField(
+                            value = smallText,
+                            label = R.string.activity_small_text
+                        ) {
+                            onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallText = it)))
+                        }
+                    }
+                }
+
+                val icon = if (uiState.activityTypeIsExpanded)
+                    Icons.Outlined.KeyboardArrowUp
+                else
+                    Icons.Outlined.KeyboardArrowDown
+
+                item {
+                    RpcField(
+                        value = type,
+                        label = R.string.activity_type,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                modifier = Modifier.clickable {
+                                    onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
+                                })
+                        }) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(type = it)))
+                    }
+
+                    DropdownMenu(
+                        expanded = uiState.activityTypeIsExpanded, onDismissRequest = {
+                            onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
+                        }, modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Constants.ACTIVITY_TYPE.forEach { (label, value) ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(text = label)
+                                },
+                                onClick = {
+                                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(type = value.toString())))
+                                    onEvent(UiEvent.TriggerActivityTypeDropDownMenu)
+                                },
+                            )
+                        }
+                    }
+                }
+
+                // ===== Console RPC Settings =====
+                item {
+                    var consolePlatformExpanded by remember { mutableStateOf(false) }
+                    val consolePlatformIcon = if (consolePlatformExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+
+                    RpcField(
+                        value = consolePlatform,
+                        label = R.string.console_platform,
+                        trailingIcon = {
+                            Icon(
+                                imageVector = consolePlatformIcon,
+                                contentDescription = null,
+                                modifier = Modifier.clickable {
+                                    consolePlatformExpanded = !consolePlatformExpanded
+                                }
+                            )
+                        },
+                        content = {
+                            DropdownMenu(
+                                expanded = consolePlatformExpanded,
+                                onDismissRequest = { consolePlatformExpanded = false },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Constants.ACTIVITY_PLATFORMS.forEach { (label, value) ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = label) },
+                                        onClick = {
+                                            consolePlatform = value
+                                            consolePlatformExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    ) { }
+                }
+
+                item {
+                    var consoleActivityTypeExpanded by remember { mutableStateOf(false) }
+                    val consoleActivityTypeIcon = if (consoleActivityTypeExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+
+                    RpcField(
+                        value = consoleActivityType,
+                        label = R.string.console_activity_type,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = consoleActivityTypeIcon,
+                                contentDescription = null,
+                                modifier = Modifier.clickable {
+                                    consoleActivityTypeExpanded = !consoleActivityTypeExpanded
+                                }
+                            )
+                        },
+                        content = {
+                            DropdownMenu(
+                                expanded = consoleActivityTypeExpanded,
+                                onDismissRequest = { consoleActivityTypeExpanded = false },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Constants.ACTIVITY_TYPE.forEach { (label, value) ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = label) },
+                                        onClick = {
+                                            consoleActivityType = value.toString()
+                                            consoleActivityTypeExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    ) { }
+                }
+
+                item {
+                    var consoleStatusExpanded by remember { mutableStateOf(false) }
+                    val consoleStatusIcon = if (consoleStatusExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown
+
+                    RpcField(
+                        value = consoleStatus,
+                        label = R.string.console_status,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = consoleStatusIcon,
+                                contentDescription = null,
+                                modifier = Modifier.clickable {
+                                    consoleStatusExpanded = !consoleStatusExpanded
+                                }
+                            )
+                        },
+                        content = {
+                            DropdownMenu(
+                                expanded = consoleStatusExpanded,
+                                onDismissRequest = { consoleStatusExpanded = false },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Constants.ACTIVITY_STATUS.forEach { (resId, value) ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = stringResource(resId)) },
+                                        onClick = {
+                                            consoleStatus = value
+                                            consoleStatusExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    ) { }
+                }
+
+                item {
+                    SwitchBar(
+                        title = stringResource(id = R.string.console_enable_timestamps),
+                        isChecked = consoleEnableTimestamps,
+                    ) {
+                        consoleEnableTimestamps = !consoleEnableTimestamps
+                    }
+                }
+
+                item {
+                    SwitchBar(
+                        title = stringResource(id = R.string.console_show_cover_art),
+                        isChecked = consoleShowCoverArt,
+                    ) {
+                        consoleShowCoverArt = !consoleShowCoverArt
+                    }
+                }
+
+                item {
+                    RpcField(
+                        value = consoleButton1Text,
+                        label = R.string.activity_button1_text,
+                    ) {
+                        consoleButton1Text = it
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = consoleButton1Text.isNotBlank()) {
+                        RpcField(
+                            value = consoleButton1Url,
+                            label = R.string.activity_button1_url,
+                        ) {
+                            consoleButton1Url = it
+                        }
+                    }
+                }
+
+                item {
+                    RpcField(
+                        value = consoleButton2Text,
+                        label = R.string.activity_button2_text,
+                    ) {
+                        consoleButton2Text = it
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = consoleButton2Text.isNotBlank()) {
+                        RpcField(
+                            value = consoleButton2Url,
+                            label = R.string.activity_button2_url,
+                        ) {
+                            consoleButton2Url = it
+                        }
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = type == "1") {
+                        val streamUrlInfoText = stringResource(id = R.string.stream_url_info)
+                        RpcField(
+                            value = url,
+                            label = R.string.stream_url,
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Info,
+                                    contentDescription = null,
+                                    modifier = Modifier.clickable {
+                                        scope.launch {
+                                            snackBarHostState.showSnackbar(
+                                                message = streamUrlInfoText
+                                            )
+                                        }
+                                    })
+                            }
+                        ) {
+                            onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(url = it)))
+                        }
+                    }
+                }
+
+                item {
+                    SwitchBar(
+                        title = stringResource(id = R.string.console_enable_timestamps),
+                        isChecked = customEnableTimestamps,
+                    ) {
+                        customEnableTimestamps = !customEnableTimestamps
+                    }
+                }
+
+                item {
+                    SwitchBar(
+                        title = stringResource(id = R.string.custom_application_id),
+                        isChecked = customUseAppId,
+                    ) {
+                        customUseAppId = !customUseAppId
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(visible = customUseAppId) {
+                        RpcField(
+                            value = Prefs[Prefs.MANUAL_RPC_APPLICATION_ID, ""],
+                            label = R.string.custom_application_id,
+                        ) {
+                            Prefs[Prefs.MANUAL_RPC_APPLICATION_ID] = it
+                        }
+                    }
+                }
+
+                // ===== Copy Current RPC =====
+                item {
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = {
+                            val mediaCfg = rpcManager.presenceConfigs.value["media_rpc"]
+                            val manualCfg = rpcManager.presenceConfigs.value["manual_rpc"]
+                            val source = mediaCfg ?: manualCfg
+                            if (source != null) {
+                                onEvent(UiEvent.SetFieldsFromConfig(source))
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            androidx.compose.material3.Text(
+                                text = stringResource(R.string.copy_to_custom_rpc),
+                                modifier = Modifier.weight(1f),
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
+                }
+
+                item {
+                    // RPC Link Fields - Discord Social SDK URLs
+                    RpcField(
+                        value = detailsUrl,
+                        label = R.string.rpc_details_url,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(detailsUrl = it)))
+                    }
+                    RpcField(
+                        value = stateUrl,
+                        label = R.string.rpc_state_url,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(stateUrl = it)))
+                    }
+                    RpcField(
+                        value = largeUrl,
+                        label = R.string.rpc_large_url,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeUrl = it)))
+                    }
+                    RpcField(
+                        value = smallUrl,
+                        label = R.string.rpc_small_url,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    ) {
+                        onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallUrl = it)))
+                    }
+                    Spacer(modifier = Modifier.size(100.dp))
+                }
             }
-
-            item {
-                // RPC Link Fields - Discord Social SDK URLs
-                RpcField(
-                    value = detailsUrl,
-                    label = R.string.rpc_details_url,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                ) {
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(detailsUrl = it)))
-                }
-                RpcField(
-                    value = stateUrl,
-                    label = R.string.rpc_state_url,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                ) {
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(stateUrl = it)))
-                }
-                RpcField(
-                    value = largeUrl,
-                    label = R.string.rpc_large_url,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                ) {
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(largeUrl = it)))
-                }
-                RpcField(
-                    value = smallUrl,
-                    label = R.string.rpc_small_url,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                ) {
-                    onEvent(UiEvent.SetFieldsFromConfig(uiState.rpcConfig.copy(smallUrl = it)))
-                }
-                Spacer(modifier = Modifier.size(100.dp))
-            }
-
-        }
-
-        // ===== Console RPC Presets =====
-
         } else {
-
             item {
                 Text(
                     text = stringResource(id = R.string.rpc_tab_console_presets_desc),
@@ -1988,94 +1300,6 @@ private fun RpcTextFieldsColumn(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                 )
-            }
-
-            // Console RPC enable switch - independent from Custom RPC.
-            // Toggling it starts/stops only Console RPC, leaving Custom RPC running.
-            item {
-                SwitchBar(
-                    title = stringResource(id = R.string.enable_console_rpc),
-                    isChecked = isConsoleRpcEnabled,
-                ) {
-                    val newValue = !isConsoleRpcEnabled
-                    isConsoleRpcEnabled = newValue
-                    when (newValue) {
-                        true -> {
-                            persistConsoleSettings()
-                            val consoleConfig = buildConsoleConfig()
-                            scope.launch {
-                                rpcManager.switchTo(
-                                    setOf(RpcType.ConsoleRpc),
-                                    add = true,
-                                    rpcConfigString = Json.encodeToString(consoleConfig),
-                                    isConsoleRpc = true
-                                )
-                            }
-                        }
-                        false -> scope.launch {
-                            rpcManager.stopRpcTypes(setOf(RpcType.ConsoleRpc))
-                        }
-                    }
-                }
-            }
-
-            // ===== Console RPC Presets =====
-            item {
-                Text(
-                    text = stringResource(id = R.string.console_presets_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-            }
-
-            item {
-                // Built-in presets first, then the ones the user created. The
-                // list is rebuilt from the state so a new preset appears here
-                // without leaving the tab.
-                val presets = ConsolePresetStore.builtIns() + consoleCustomPresets
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    presets.forEach { preset ->
-                        val presetName = if (preset.nameRes != 0) stringResource(preset.nameRes) else preset.name
-                        val presetAppliedMessage = stringResource(R.string.console_preset_applied)
-                        ConsolePresetChip(
-                            preset = preset,
-                            selected = consoleSelectedPresetId == preset.id,
-                            onClick = {
-                                consoleSelectedPresetId = preset.id
-                                ConsolePresetStore.select(preset.id)
-                                applyConsolePreset(preset, presetName)
-                                scope.launch {
-                                    snackBarHostState.showSnackbar(presetAppliedMessage)
-                                }
-                            },
-                            onEdit = if (preset.builtIn) null else ({
-                                consolePresetBeingEdited = preset
-                                consolePresetEditorOpen = true
-                            })
-                        )
-                    }
-                }
-            }
-
-            item {
-                androidx.compose.material3.OutlinedButton(
-                    onClick = {
-                        consolePresetBeingEdited = ConsolePresetStore.newPreset()
-                        consolePresetEditorOpen = true
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Text(text = stringResource(id = R.string.console_preset_new))
-                }
             }
 
             item {
@@ -2204,10 +1428,6 @@ private fun RpcTextFieldsColumn(
                             }
                         }
                     } else {
-                        // game_title is not unique (e.g. "Call of Duty: Modern Warfare II"
-                        // can appear multiple times in the catalog), so do not use it as
-                        // the LazyColumn key — a duplicate key crashes with
-                        // IllegalArgumentException. Use index-based keys (the default).
                         items(games) { game ->
                             val gameSelectedText = stringResource(R.string.console_game_selected, game.game_title)
                             ConsoleGameItem(
@@ -2235,17 +1455,11 @@ private fun RpcTextFieldsColumn(
             item {
                 Spacer(modifier = Modifier.size(24.dp))
             }
-
         }
-
     }
 
-    // Editor dialog for the presets. It lives outside the LazyColumn so it stays
-    // open while the list scrolls underneath it.
     val presetToEdit = consolePresetBeingEdited
     if (consolePresetEditorOpen && presetToEdit != null) {
-        // A preset can only be deleted once it has been saved. A brand new one
-        // is simply dismissed with Cancel.
         val isSavedCustomPreset =
             !presetToEdit.builtIn && consoleCustomPresets.any { it.id == presetToEdit.id }
         ConsolePresetEditorDialog(
@@ -2255,9 +1469,6 @@ private fun RpcTextFieldsColumn(
                 ConsolePresetStore.upsert(saved)
                 consoleCustomPresets = ConsolePresetStore.custom()
                 consolePresetEditorOpen = false
-                // Always apply when saving — whether creating a new preset or
-                // editing an existing one, the user just confirmed this preset
-                // is what they want on Discord.
                 applyConsolePreset(saved, saved.name)
                 consoleSelectedPresetId = saved.id
             },
@@ -2265,8 +1476,6 @@ private fun RpcTextFieldsColumn(
                 ConsolePresetStore.delete(presetToEdit.id)
                 consoleCustomPresets = ConsolePresetStore.custom()
                 consolePresetEditorOpen = false
-                // Clear the selection if we deleted the currently selected
-                // preset, so the UI doesn't point at a missing preset.
                 if (consoleSelectedPresetId == presetToEdit.id) {
                     consoleSelectedPresetId = ""
                 }
@@ -2275,19 +1484,12 @@ private fun RpcTextFieldsColumn(
             pickSmallImage = { pickSmallCoverArt.launch(it) },
         )
     }
-
 }
 
-
-
 @Preview
-
 @Composable
-
 fun CustomRpcPreview() {
-
     CustomRPC(onBackPressed = {})
-
 }
 
 /**
@@ -2296,7 +1498,6 @@ fun CustomRpcPreview() {
  * Shows the game title and platform, marks the selected game, and displays cover art.
  */
 @Composable
-
 fun ConsoleGameItem(
     game: com.my.kizzy.domain.model.Game,
     selected: Boolean,
@@ -2310,7 +1511,7 @@ fun ConsoleGameItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
     ) {
         Row(
             modifier = Modifier
@@ -2319,23 +1520,23 @@ fun ConsoleGameItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            androidx.compose.foundation.layout.Box(
+            Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
             ) {
-                coil3.compose.AsyncImage(
+                AsyncImage(
                     model = game.large_image,
                     contentDescription = game.game_title,
                     modifier = Modifier
                         .size(60.dp)
-                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
                 )
                 androidx.compose.animation.AnimatedVisibility(
                     visible = selected,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .clip(androidx.compose.foundation.shape.CircleShape)
+                        .clip(CircleShape)
                         .background(colorScheme.primary)
                         .size(24.dp)
                 ) {
@@ -2353,14 +1554,14 @@ fun ConsoleGameItem(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                androidx.compose.material3.Text(
+                Text(
                     text = game.game_title,
                     style = MaterialTheme.typography.titleMedium,
                     color = contentColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                androidx.compose.material3.Text(
+                Text(
                     text = game.platform,
                     style = MaterialTheme.typography.bodySmall,
                     color = colorScheme.onSurfaceVariant,
@@ -2379,14 +1580,12 @@ fun ConsoleGameItem(
  * selected preset, and offers an edit action for the presets the user created.
  */
 @Composable
-
 fun ConsolePresetChip(
     preset: ConsolePreset,
     selected: Boolean,
     onClick: () -> Unit,
     onEdit: (() -> Unit)? = null,
 ) {
-
     val colorScheme = MaterialTheme.colorScheme
     val contentColor = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurface
     val name = if (preset.nameRes != 0) stringResource(preset.nameRes) else preset.name
@@ -2394,7 +1593,7 @@ fun ConsolePresetChip(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(
                 if (selected) colorScheme.primaryContainer else colorScheme.surfaceVariant
             )
@@ -2463,7 +1662,6 @@ private fun coverArtPreviewUrl(url: String?): String? {
         else -> withoutMp
     }
 }
-
 
 /** Returns the cover art logo URL for a given platform value, or empty string if none. */
 private fun platformLogoUrl(platform: String): String = when (platform) {

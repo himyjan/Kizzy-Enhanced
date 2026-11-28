@@ -16,23 +16,22 @@ import com.my.kizzy.domain.model.rpc.RpcConfig
 import java.io.File
 
 sealed interface UiEvent {
-    object TriggerBottomSheet: UiEvent
-    object TriggerActivityTypeDropDownMenu: UiEvent
-    object TriggerStatusDropDownMenu: UiEvent
-    object TriggerPlatformDropDownMenu: UiEvent
-    class SetFieldsFromConfig(val config: RpcConfig): UiEvent
-    object TriggerStartTimeStampsDialog: UiEvent
-    object TriggerStopTimeStampsDialog: UiEvent
-    class UploadImage(val file: File,val callback: (result: String) -> Unit): UiEvent
+    data object TriggerBottomSheet : UiEvent
+    data object TriggerActivityTypeDropDownMenu : UiEvent
+    data object TriggerStatusDropDownMenu : UiEvent
+    data object TriggerPlatformDropDownMenu : UiEvent
+    data class SetFieldsFromConfig(val config: RpcConfig) : UiEvent
+    data object TriggerStartTimeStampsDialog : UiEvent
+    data object TriggerStopTimeStampsDialog : UiEvent
+    data class UploadImage(val file: File, val callback: (result: String) -> Unit) : UiEvent
 
-    sealed interface SheetEvent: UiEvent {
-        object TriggerLoadDialog: SheetEvent
-        object TriggerShareDialog: SheetEvent
-        object TriggerSaveDialog: SheetEvent
-        object TriggerDeleteDialog: SheetEvent
-        object TriggerPreviewDialog: SheetEvent
-        object TriggerStoragePermissionRequest: SheetEvent
-        object ClearAllFields: SheetEvent
+    sealed interface SheetEvent : UiEvent {
+        data object TriggerLoadDialog : SheetEvent
+        data object TriggerShareDialog : SheetEvent
+        data object TriggerSaveDialog : SheetEvent
+        data object TriggerDeleteDialog : SheetEvent
+        data object TriggerPreviewDialog : SheetEvent
+        data object TriggerStoragePermissionRequest : SheetEvent
+        data object ClearAllFields : SheetEvent
     }
 }
-

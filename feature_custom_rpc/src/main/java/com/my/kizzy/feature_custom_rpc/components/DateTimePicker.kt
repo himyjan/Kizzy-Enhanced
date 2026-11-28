@@ -13,7 +13,15 @@
 package com.my.kizzy.feature_custom_rpc.components
 
 import android.text.format.DateFormat.is24HourFormat
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,8 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerLayoutType
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,15 +83,19 @@ fun DateTimePickerDialog(
                 }) {
                     Text(stringResource(id = R.string.cancel))
                 }
-            })
-        {
-            DatePicker(state = datePickerState,
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
                 title = {
                     Text(
                         text = stringResource(R.string.set_timestamps),
-                        modifier = Modifier.padding(PaddingValues(start = 24.dp, end = 12.dp, top = 16.dp))
+                        modifier = Modifier.padding(
+                            PaddingValues(start = 24.dp, end = 12.dp, top = 16.dp)
+                        )
                     )
-                })
+                }
+            )
         }
     }
     if (showTimePickerDialog) {
@@ -178,7 +190,7 @@ internal fun getDateTimeInMillis(
     val utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
         timeInMillis = dateMillis
     }
-    
+
     val localCalendar = Calendar.getInstance().apply {
         set(Calendar.YEAR, utcCalendar.get(Calendar.YEAR))
         set(Calendar.MONTH, utcCalendar.get(Calendar.MONTH))
@@ -188,7 +200,7 @@ internal fun getDateTimeInMillis(
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
     }
-    
+
     return localCalendar.timeInMillis
 }
 

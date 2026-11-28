@@ -1,18 +1,18 @@
 package com.my.kizzy.data.rpc
 
+import com.my.kizzy.data.remote.GamesApi
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import javax.inject.Inject
-import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class GamesApiUrl
 
 data class DetectedActivityApp(
     val displayName: String,
@@ -34,14 +34,14 @@ data class GamePresetEntry(
     val iconUrl: String?,
 )
 
-interface GamePresetProvider {
+fun interface GamePresetProvider {
     suspend fun fetchGamePresets(): List<GamePresetEntry>
 }
 
 @Singleton
 class ApiGamePresetProvider @Inject constructor(
     private val httpClient: HttpClient,
-    @GamesApiUrl private val gamesApiUrl: String,
+    @GamesApi private val gamesApiUrl: String,
 ) : GamePresetProvider {
 
     private val ignoredTitles = setOf("updatecheck", "broadcastobj")
@@ -64,6 +64,17 @@ class ApiGamePresetProvider @Inject constructor(
             )
         }
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class GamePresetProviderModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindGamePresetProvider(
+        impl: ApiGamePresetProvider,
+    ): GamePresetProvider
 }
 
 @Singleton

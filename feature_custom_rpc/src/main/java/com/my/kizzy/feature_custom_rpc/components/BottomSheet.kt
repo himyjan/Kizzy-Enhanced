@@ -5,7 +5,7 @@
  *  *  * BottomSheet.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  *  ******************************************************************
+ *  *  *****************************************************************
  *
  *
  */
@@ -25,8 +25,7 @@ import androidx.compose.material.icons.outlined.SaveAs
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberBottomSheetState
-import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -45,8 +44,7 @@ fun BottomSheet(
     onDismiss: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    // Modal sheet state; starts hidden and is shown by ModalBottomSheet.
-    val state = rememberBottomSheetState(initialValue = SheetValue.Hidden)
+    val state = rememberModalBottomSheetState()
 
     fun dismissAndRun(action: () -> Unit) {
         scope.launch {

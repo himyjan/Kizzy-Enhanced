@@ -25,7 +25,8 @@ android {
             .orElse(null)?.requiredVersion?.toInt() ?: 1
         versionName = libsCatalog.findVersion("version-name")
             .orElse(null)?.requiredVersion ?: "1.0.0"
-        buildConfigField("String", "GAMES_API_URL", "\"${gamesApiUrl.get()}\"")
+        val normalizedGamesApiUrl = gamesApiUrl.get().trim().removeSurrounding("\"")
+        buildConfigField("String", "GAMES_API_URL", "\"$normalizedGamesApiUrl\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true

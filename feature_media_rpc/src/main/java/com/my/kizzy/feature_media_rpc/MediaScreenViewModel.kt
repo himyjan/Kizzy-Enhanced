@@ -23,6 +23,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -31,13 +33,13 @@ class MediaScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
     private val _state: MutableStateFlow<MediaAppsState> = MutableStateFlow(MediaAppsState())
-    val state = _state
+    val state: StateFlow<MediaAppsState> = _state.asStateFlow()
 
     init {
-        getInstalledApps()
+        loadInstalledApps()
     }
 
-    private fun getInstalledApps() {
+    private fun loadInstalledApps() {
         viewModelScope.launch(context = Dispatchers.Default) {
             val appList = getInstalledApps(
                 context = context,
@@ -53,33 +55,25 @@ class MediaScreenViewModel @Inject constructor(
                 )
             }
         }
-
     }
 
     fun updateMediaAppEnabled(pkg: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            // Toggle the app, then persist the COMPLETE enabled list. Persisting a single
-            // entry would otherwise reset the list to the default package set, which
-            // silently disabled every app the user had actually chosen.
-            val currentlyEnabled = _state.value.enabledApps[pkg] ?: false
-            val newEnabled = !currentlyEnabled
-
-            val updated = _state.value.enabledApps.toMutableMap().apply {
+            val currentMap = _state.value.enabledApps
+            val newEnabled = !(currentMap[pkg] ?: false)
+            val updated = currentMap.toMutableMap().apply {
                 this[pkg] = newEnabled
             }
             Prefs.setMediaAppsEnabled(updated.filterValues { it }.keys)
-
-            _state.update { currentState ->
-                currentState.copy(enabledApps = updated)
-            }
+            _state.update { it.copy(enabledApps = updated) }
         }
     }
 
     fun selectAllMediaApps() {
         viewModelScope.launch(Dispatchers.IO) {
-            val allApps = state.value.apps.map { it.pkg }
-            Prefs.setMediaAppsEnabled(allApps)
-            val updated = allApps.associate { it to true }
+            val allAppPkgs = state.value.apps.map { it.pkg }
+            Prefs.setMediaAppsEnabled(allAppPkgs)
+            val updated = allAppPkgs.associate { it to true }
             _state.update { currentState ->
                 currentState.copy(enabledApps = updated)
             }
@@ -107,15 +101,11 @@ class MediaScreenViewModel @Inject constructor(
             } else {
                 Prefs.saveAppActivityType(pkg, activityType)
             }
-            // The resolver caches the overrides for a short while.
             ActivityTypeResolver.invalidateCache()
 
             _state.update { currentState ->
-                val updated = currentState.activityTypes.toMutableMap()
-                if (activityType == null) {
-                    updated.remove(pkg)
-                } else {
-                    updated[pkg] = activityType
+                val updated = currentState.activityTypes.toMutableMap().apply {
+                    if (activityType == null) remove(pkg) else this[pkg] = activityType
                 }
                 currentState.copy(activityTypes = updated)
             }

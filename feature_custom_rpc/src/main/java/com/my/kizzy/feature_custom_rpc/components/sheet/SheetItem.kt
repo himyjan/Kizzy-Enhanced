@@ -68,10 +68,7 @@ fun SheetItem(
                 contentDescription = null,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 16.dp)
-                    .size(28.dp
-                       /* Icons.Outlined.FileOpen.defaultWidth,
-                        Icons.Outlined.FileOpen.defaultHeight
-                    */),
+                    .size(28.dp),
                 tint = MaterialTheme.colorScheme.secondary
             )
         },

@@ -6,7 +6,7 @@
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
  *  *  *****************************************************************
- *  
+ *
  *
  */
 
@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.outlined.BrokenImage
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -40,9 +40,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
-import com.my.kizzy.ui.components.BrowseFilesButton
 import com.my.kizzy.resources.R
-import androidx.compose.material.icons.outlined.BrokenImage
+import com.my.kizzy.ui.components.BrowseFilesButton
 
 @Composable
 fun ImagePicker(
@@ -57,11 +56,15 @@ fun ImagePicker(
     ) {
         imageUri.value = it
     }
-    if (visible){
+    if (visible) {
         UploadDialog(
             image = imageUri,
             onBrowse = {
-                launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*")))
+                launcher.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*")
+                    )
+                )
             },
             onPicked = {
                 onImageSelected(it)
@@ -115,13 +118,14 @@ fun UploadDialog(
                 ) {
                     onBrowse()
                 }
-                if (image.value != null)
+                if (image.value != null) {
                     AsyncImage(
                         model = image.value,
                         contentDescription = "",
                         modifier = Modifier.size(200.dp),
                         error = rememberVectorPainter(Icons.Outlined.BrokenImage)
                     )
+                }
             }
         }
     )

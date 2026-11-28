@@ -46,7 +46,7 @@ internal fun RequestStoragePermissionDialog(
 ) {
     val activity = context as Activity
     val shouldShowRationale = remember {
-        mutableStateOf<Boolean>(
+        mutableStateOf(
             activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         )
     }
@@ -58,17 +58,17 @@ internal fun RequestStoragePermissionDialog(
             ) == PackageManager.PERMISSION_GRANTED
         )
     }
-    val storageLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
-            onResult = { isGranted ->
-                storagePermissionGranted = isGranted
-                shouldShowRationale.value = activity.shouldShowRequestPermissionRationale(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-            })
+    val storageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            storagePermissionGranted = isGranted
+            shouldShowRationale.value = activity.shouldShowRequestPermissionRationale(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        }
+    )
     if (!storagePermissionGranted) {
         if (shouldShowRationale.value) {
-            // Educational dialog — first denial, explain why permission is needed
             AlertDialog(
                 onDismissRequest = onDismiss,
                 title = {
@@ -93,7 +93,6 @@ internal fun RequestStoragePermissionDialog(
                 },
             )
         } else {
-            // Permanently denied — route to App Settings
             AlertDialog(
                 onDismissRequest = onDismiss,
                 title = {

@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,8 +34,6 @@ import androidx.compose.ui.unit.sp
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_profile.ui.component.ActivityRow
 import com.my.kizzy.resources.R
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
 
 private val DISCORD_BG = Color(0xFF313338)
 private val DISCORD_CARD = Color(0xFF2B2D31)
@@ -49,14 +47,14 @@ fun RpcLivePreview(
 ) {
     var expanded by rememberSaveable { mutableStateOf(true) }
 
-    val showTs = !rpcConfig.timestampsStart.isNullOrEmpty() ||
-            !rpcConfig.timestampsStop.isNullOrEmpty()
+    val showTs = rpcConfig.timestampsStart.isNotEmpty() ||
+            rpcConfig.timestampsStop.isNotEmpty()
 
     val typeLabel = when (rpcConfig.type.toIntOrNull()) {
-        1 -> stringResource(R.string.activity_streaming_title, rpcConfig.name.orEmpty())
-        2 -> stringResource(R.string.activity_listening_title, rpcConfig.name.orEmpty().ifEmpty { "music" })
-        3 -> stringResource(R.string.activity_watching_title, rpcConfig.name.orEmpty().ifEmpty { "video" })
-        5 -> stringResource(R.string.activity_competiting_title, rpcConfig.name.orEmpty())
+        1 -> stringResource(R.string.activity_streaming_title, rpcConfig.name)
+        2 -> stringResource(R.string.activity_listening_title, rpcConfig.name.ifEmpty { "music" })
+        3 -> stringResource(R.string.activity_watching_title, rpcConfig.name.ifEmpty { "video" })
+        5 -> stringResource(R.string.activity_competiting_title, rpcConfig.name)
         else -> stringResource(R.string.activity_playing_title)
     }
 

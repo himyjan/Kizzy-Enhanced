@@ -5,7 +5,7 @@
  *  *  * MediaRpc.kt is part of Kizzy
  *  *  *  and can not be copied and/or distributed without the express
  *  *  * permission of yzziK(Vaibhav)
- *  *  ******************************************************************
+ *  *  *****************************************************************
  *
  *
  */
@@ -19,57 +19,71 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.Audiotrack
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.PlaylistAddCircle
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.my.kizzy.data.rpc.ActivityTypeResolver
+import com.my.kizzy.data.utils.AppsInfo
 import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.feature_rpc_base.AppUtils
+import com.my.kizzy.feature_rpc_base.Constants
 import com.my.kizzy.feature_rpc_base.RpcManager
 import com.my.kizzy.feature_rpc_base.RpcManager.RpcType
-import com.my.kizzy.ui.theme.KizzyTheme
+import com.my.kizzy.feature_rpc_base.services.MediaRpcService
 import com.my.kizzy.preference.Prefs
-import com.my.kizzy.preference.Prefs.LAST_RUN_CUSTOM_RPC
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ALBUM_NAME
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_APP_ICON
-import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_COVER_ART
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_NAME
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_HIDE_ON_PAUSE
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_COVER_ART
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_USE_APPS_RPC
+import com.my.kizzy.preference.RPC_INSTANCE_MEDIA
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.ActivityTypeChip
 import com.my.kizzy.ui.components.ActivityTypePreference
@@ -80,20 +94,8 @@ import com.my.kizzy.ui.components.Subtitle
 import com.my.kizzy.ui.components.SwitchBar
 import com.my.kizzy.ui.components.preference.PreferenceSwitch
 import com.my.kizzy.ui.components.preference.PreferencesHint
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Gamepad
-import androidx.compose.material.icons.outlined.Audiotrack
-import androidx.compose.material.icons.outlined.PauseCircle
-import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.PlaylistAddCircle
-import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.Warning
-import com.my.kizzy.preference.RPC_INSTANCE_MEDIA
+import com.my.kizzy.ui.theme.KizzyTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,41 +109,96 @@ fun MediaRPC(
     updateAppActivityType: (String, Int?) -> Unit = { _, _ -> },
     instanceId: String? = null,
 ) {
+    val targetInstanceId = instanceId ?: RPC_INSTANCE_MEDIA
     fun key(prefKey: String) = Prefs.scopedKey(prefKey, instanceId)
+    fun readBool(prefKey: String, default: Boolean): Boolean =
+        if (instanceId == null) Prefs[prefKey, default] else Prefs[key(prefKey), default]
+
+    fun writeBool(prefKey: String, value: Boolean) {
+        if (instanceId == null) {
+            Prefs[prefKey] = value
+        } else {
+            Prefs[key(prefKey)] = value
+        }
+    }
+
+    fun readInt(prefKey: String, default: Int): Int =
+        if (instanceId == null) Prefs[prefKey, default] else Prefs[key(prefKey), default]
+
+    fun writeInt(prefKey: String, value: Int) {
+        if (instanceId == null) {
+            Prefs[prefKey] = value
+        } else {
+            Prefs[key(prefKey)] = value
+        }
+    }
+
     val context = LocalContext.current
     val rpcManager = RpcManager.getInstance(context)
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(targetInstanceId) {
         rpcManager.refreshFromServices()
     }
-    var mediaRpcRunning by remember {
+
+    var mediaRpcRunning by remember(targetInstanceId) {
         mutableStateOf(RpcType.MediaRpc in rpcManager.activeRpc.value)
     }
-    LaunchedEffect(rpcManager.activeRpc) {
+    LaunchedEffect(rpcManager.activeRpc, targetInstanceId) {
         mediaRpcRunning = RpcType.MediaRpc in rpcManager.activeRpc.value
     }
 
-    var isArtistEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ARTIST_NAME, true]) }
-    var isAlbumEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ALBUM_NAME, true]) }
-    var isCoverArtEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_COVER_ART, true]) }
-    var isAppIconEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_APP_ICON, false]) }
-    var isChannelIconEnabled by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false]) }
-    var useAppsRpc by remember { mutableStateOf(Prefs[MEDIA_RPC_USE_APPS_RPC, false]) }
-    var isTimestampsEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]) }
-    var hideOnPause by remember { mutableStateOf(Prefs[MEDIA_RPC_HIDE_ON_PAUSE, false]) }
-    var isShowPlaybackState by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE, false]) }
-    var showSongAsTitle by remember {
-        mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true])
+    var isArtistEnabled by remember(targetInstanceId) {
+        mutableStateOf(readBool(MEDIA_RPC_ARTIST_NAME, true))
     }
-    var showAppNameInDetails by remember {
-        mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS, true])
+    var isAlbumEnabled by remember(targetInstanceId) {
+        mutableStateOf(readBool(MEDIA_RPC_ALBUM_NAME, true))
     }
-    var isAutoActivityTypeEnabled by remember {
-        mutableStateOf(Prefs[Prefs.AUTO_ACTIVITY_TYPE, true])
+    var isCoverArtEnabled by remember(targetInstanceId) {
+        mutableStateOf(readBool(MEDIA_RPC_SHOW_COVER_ART, true))
     }
-    var activityType by remember {
-        mutableStateOf(Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, Prefs.ACTIVITY_TYPE_AUTO])
+    var isAppIconEnabled by remember(targetInstanceId) {
+        mutableStateOf(readBool(MEDIA_RPC_APP_ICON, false))
+    }
+    var isChannelIconEnabled by remember(targetInstanceId) {
+        mutableStateOf(readBool(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false))
+    }
+    var useAppsRpc by remember(targetInstanceId) {
+        mutableStateOf(readBool(MEDIA_RPC_USE_APPS_RPC, false))
+    }
+    var isTimestampsEnabled by remember(targetInstanceId) {
+        mutableStateOf(readBool(MEDIA_RPC_ENABLE_TIMESTAMPS, true))
+    }
+    var hideOnPause by remember(targetInstanceId) {
+        mutableStateOf(readBool(MEDIA_RPC_HIDE_ON_PAUSE, false))
+    }
+    var isShowPlaybackState by remember(targetInstanceId) {
+        mutableStateOf(readBool(MEDIA_RPC_SHOW_PLAYBACK_STATE, false))
+    }
+    var showSongAsTitle by remember(targetInstanceId) {
+        mutableStateOf(readBool(Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true))
+    }
+    var showAppNameInDetails by remember(targetInstanceId) {
+        mutableStateOf(readBool(Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS, true))
+    }
+    var isAutoActivityTypeEnabled by remember(targetInstanceId) {
+        mutableStateOf(readBool(Prefs.AUTO_ACTIVITY_TYPE, true))
+    }
+    var activityType by remember(targetInstanceId) {
+        mutableStateOf(readInt(Prefs.MEDIA_RPC_ACTIVITY_TYPE, Prefs.ACTIVITY_TYPE_AUTO))
+    }
+
+    fun notifyInstanceConfigChanged() {
+        if (mediaRpcRunning) {
+            try {
+                val intent = Intent(context, MediaRpcService::class.java).apply {
+                    action = Constants.ACTION_RESTART_SERVICE
+                    instanceId?.let { putExtra(Constants.EXTRA_INSTANCE_ID, it) }
+                }
+                context.startService(intent)
+            } catch (_: Exception) {
+            }
+        }
     }
 
     MediaRPCContent(
@@ -156,9 +213,6 @@ fun MediaRPC(
             val newValue = !mediaRpcRunning
             mediaRpcRunning = newValue
             scope.launch {
-                // Toggle THIS instance's socket (built-in or this clone).
-                // Other instances stay connected and unaffected.
-                val targetInstanceId = instanceId ?: RPC_INSTANCE_MEDIA
                 if (newValue) {
                     rpcManager.switchToInstance(
                         instanceId = targetInstanceId,
@@ -171,70 +225,100 @@ fun MediaRPC(
             }
         },
         isArtistEnabled = isArtistEnabled,
-        onArtistEnabledChanged = { isArtistEnabled = !isArtistEnabled; Prefs[MEDIA_RPC_ARTIST_NAME] = isArtistEnabled },
+        onArtistEnabledChanged = {
+            isArtistEnabled = !isArtistEnabled
+            writeBool(MEDIA_RPC_ARTIST_NAME, isArtistEnabled)
+            notifyInstanceConfigChanged()
+        },
         isAlbumEnabled = isAlbumEnabled,
-        onAlbumEnabledChanged = { isAlbumEnabled = !isAlbumEnabled; Prefs[MEDIA_RPC_ALBUM_NAME] = isAlbumEnabled },
+        onAlbumEnabledChanged = {
+            isAlbumEnabled = !isAlbumEnabled
+            writeBool(MEDIA_RPC_ALBUM_NAME, isAlbumEnabled)
+            notifyInstanceConfigChanged()
+        },
         isCoverArtEnabled = isCoverArtEnabled,
         onCoverArtEnabledChanged = {
             isCoverArtEnabled = !isCoverArtEnabled
-            Prefs[MEDIA_RPC_SHOW_COVER_ART] = isCoverArtEnabled
+            writeBool(MEDIA_RPC_SHOW_COVER_ART, isCoverArtEnabled)
+            notifyInstanceConfigChanged()
         },
         isAppIconEnabled = isAppIconEnabled,
         onAppIconEnabledChanged = {
             isAppIconEnabled = !isAppIconEnabled
-            Prefs[MEDIA_RPC_APP_ICON] = isAppIconEnabled
+            writeBool(MEDIA_RPC_APP_ICON, isAppIconEnabled)
             if (isAppIconEnabled) {
                 isShowPlaybackState = false
-                Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = false
+                writeBool(MEDIA_RPC_SHOW_PLAYBACK_STATE, false)
                 isChannelIconEnabled = false
-                Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = false
+                writeBool(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false)
             }
+            notifyInstanceConfigChanged()
         },
         isChannelIconEnabled = isChannelIconEnabled,
         onChannelIconEnabledChanged = {
             isChannelIconEnabled = !isChannelIconEnabled
-            Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = isChannelIconEnabled
+            writeBool(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, isChannelIconEnabled)
             if (isChannelIconEnabled) {
                 isAppIconEnabled = false
-                Prefs[MEDIA_RPC_APP_ICON] = false
+                writeBool(MEDIA_RPC_APP_ICON, false)
                 isShowPlaybackState = false
-                Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = false
+                writeBool(MEDIA_RPC_SHOW_PLAYBACK_STATE, false)
             }
+            notifyInstanceConfigChanged()
         },
         useAppsRpc = useAppsRpc,
         onUseAppsRpcChanged = {
             useAppsRpc = !useAppsRpc
-            Prefs[MEDIA_RPC_USE_APPS_RPC] = useAppsRpc
+            writeBool(MEDIA_RPC_USE_APPS_RPC, useAppsRpc)
+            notifyInstanceConfigChanged()
         },
         isTimestampsEnabled = isTimestampsEnabled,
-        onTimestampsEnabledChanged = { isTimestampsEnabled = !isTimestampsEnabled; Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS] = isTimestampsEnabled },
+        onTimestampsEnabledChanged = {
+            isTimestampsEnabled = !isTimestampsEnabled
+            writeBool(MEDIA_RPC_ENABLE_TIMESTAMPS, isTimestampsEnabled)
+            notifyInstanceConfigChanged()
+        },
         isShowPlaybackState = isShowPlaybackState,
         onShowPlaybackStateChanged = {
-            val newValue = !isShowPlaybackState
-            isShowPlaybackState = newValue
-            Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE] = isShowPlaybackState
+            isShowPlaybackState = !isShowPlaybackState
+            writeBool(MEDIA_RPC_SHOW_PLAYBACK_STATE, isShowPlaybackState)
             if (isShowPlaybackState) {
                 isAppIconEnabled = false
-                Prefs[MEDIA_RPC_APP_ICON] = false
+                writeBool(MEDIA_RPC_APP_ICON, false)
                 isChannelIconEnabled = false
-                Prefs[Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON] = false
+                writeBool(Prefs.MEDIA_RPC_SHOW_CHANNEL_ICON, false)
             }
+            notifyInstanceConfigChanged()
         },
         hideOnPause = hideOnPause,
-        onHideOnPauseChanged = { hideOnPause = !hideOnPause; Prefs[MEDIA_RPC_HIDE_ON_PAUSE] = hideOnPause },
+        onHideOnPauseChanged = {
+            hideOnPause = !hideOnPause
+            writeBool(MEDIA_RPC_HIDE_ON_PAUSE, hideOnPause)
+            notifyInstanceConfigChanged()
+        },
         showSongAsTitle = showSongAsTitle,
-        onShowSongAsTitleChanged = { showSongAsTitle = !showSongAsTitle; Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE] = showSongAsTitle },
+        onShowSongAsTitleChanged = {
+            showSongAsTitle = !showSongAsTitle
+            writeBool(Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, showSongAsTitle)
+            notifyInstanceConfigChanged()
+        },
         showAppNameInDetails = showAppNameInDetails,
-        onShowAppNameInDetailsChanged = { showAppNameInDetails = !showAppNameInDetails; Prefs[Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS] = showAppNameInDetails },
+        onShowAppNameInDetailsChanged = {
+            showAppNameInDetails = !showAppNameInDetails
+            writeBool(Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS, showAppNameInDetails)
+            notifyInstanceConfigChanged()
+        },
         isAutoActivityTypeEnabled = isAutoActivityTypeEnabled,
         onAutoActivityTypeEnabledChanged = {
             isAutoActivityTypeEnabled = !isAutoActivityTypeEnabled
-            Prefs[Prefs.AUTO_ACTIVITY_TYPE] = isAutoActivityTypeEnabled
+            writeBool(Prefs.AUTO_ACTIVITY_TYPE, isAutoActivityTypeEnabled)
+            notifyInstanceConfigChanged()
         },
         activityType = activityType,
         onActivityTypeChanged = {
             activityType = it
-            Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE] = it
+            writeInt(Prefs.MEDIA_RPC_ACTIVITY_TYPE, it)
+            notifyInstanceConfigChanged()
         },
         onAppActivityTypeChanged = updateAppActivityType,
     )
@@ -287,8 +371,6 @@ fun MediaRPCContent(
     var searchText by remember { mutableStateOf("") }
     var isSearchBarVisible by remember { mutableStateOf(false) }
 
-    // Observe the latest presence config built by MediaRpcService so we can offer
-    // a "Copy to Custom RPC" button that pre-fills the Custom RPC editor.
     val rpcManager = RpcManager.getInstance(context)
     var copyConfig by remember { mutableStateOf<RpcConfig?>(null) }
     LaunchedEffect(rpcManager.currentPresenceConfig) {
@@ -346,9 +428,7 @@ fun MediaRPCContent(
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            AnimatedVisibility(
-                visible = !hasNotificationAccess
-            ) {
+            AnimatedVisibility(visible = !hasNotificationAccess) {
                 PreferencesHint(
                     title = stringResource(id = R.string.permission_required),
                     description = stringResource(id = R.string.request_for_notification_access),
@@ -365,21 +445,18 @@ fun MediaRPCContent(
                 enabled = hasNotificationAccess && !AppUtils.ManualRpcRunning(),
             ) { onMediaRpcRunningChanged() }
 
-            // Copy current media presence to the Custom RPC editor.
             val currentConfig = copyConfig
             if (currentConfig != null) {
                 val copyToast = stringResource(id = R.string.copied_to_custom_rpc)
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     TextButton(
                         onClick = {
                             rpcManager.copyToCustomRpc(currentConfig)
-                            Toast.makeText(
-                                context,
-                                copyToast,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, copyToast, Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -564,70 +641,57 @@ fun MediaRPCLightPreview() {
         darkTheme = false,
         isHighContrastModeEnabled = false,
         isDynamicColorEnabled = false,
-        content = {
-            MediaRPCContent(
-                onBackPressed = {},
-                state = MediaAppsState(
-                    apps = listOf(
-                        com.my.kizzy.data.utils.AppsInfo(
-                            name = "Spotify",
-                            pkg = "com.spotify.music",
-                            isChecked = true,
-                        ),
-                        com.my.kizzy.data.utils.AppsInfo(
-                            name = "YouTube Music",
-                            pkg = "com.google.android.apps.youtube.music",
-                            isChecked = false,
-                        ),
-                        com.my.kizzy.data.utils.AppsInfo(
-                            name = "Apple Music",
-                            pkg = "com.apple.android.music",
-                            isChecked = true,
-                        ),
-                    ),
-                    enabledApps = mapOf(
-                        "com.spotify.music" to true,
-                        "com.google.android.apps.youtube.music" to false,
-                        "com.apple.android.music" to true,
-                    ),
-                    isLoading = false,
+    ) {
+        MediaRPCContent(
+            onBackPressed = {},
+            state = MediaAppsState(
+                apps = listOf(
+                    AppsInfo(name = "Spotify", pkg = "com.spotify.music", isChecked = true),
+                    AppsInfo(name = "YouTube Music", pkg = "com.google.android.apps.youtube.music", isChecked = false),
+                    AppsInfo(name = "Apple Music", pkg = "com.apple.android.music", isChecked = true),
                 ),
-                hasNotificationAccess = true,
-                updateMediaAppEnabled = {},
-                selectAllMediaApps = {},
-                deselectAllMediaApps = {},
-                mediaRpcRunning = true,
-                onMediaRpcRunningChanged = {},
-                isArtistEnabled = true,
-                onArtistEnabledChanged = {},
-                isAlbumEnabled = true,
-                onAlbumEnabledChanged = {},
-                isCoverArtEnabled = true,
-                onCoverArtEnabledChanged = {},
-                isAppIconEnabled = false,
-                onAppIconEnabledChanged = {},
-                isChannelIconEnabled = false,
-                onChannelIconEnabledChanged = {},
-                isTimestampsEnabled = true,
-                onTimestampsEnabledChanged = {},
-                isShowPlaybackState = false,
-                onShowPlaybackStateChanged = {},
-                hideOnPause = false,
-                onHideOnPauseChanged = {},
-                showSongAsTitle = false,
-                onShowSongAsTitleChanged = {},
-                showAppNameInDetails = true,
-                onShowAppNameInDetailsChanged = {},
-                useAppsRpc = false,
-                onUseAppsRpcChanged = {},
-                isAutoActivityTypeEnabled = true,
-                onAutoActivityTypeEnabledChanged = {},
-                activityType = 3,
-                onActivityTypeChanged = {},
-                onAppActivityTypeChanged = { _, _ -> },
-            )
-        }
-    )
+                enabledApps = mapOf(
+                    "com.spotify.music" to true,
+                    "com.google.android.apps.youtube.music" to false,
+                    "com.apple.android.music" to true,
+                ),
+                isLoading = false,
+            ),
+            hasNotificationAccess = true,
+            updateMediaAppEnabled = {},
+            selectAllMediaApps = {},
+            deselectAllMediaApps = {},
+            mediaRpcRunning = true,
+            onMediaRpcRunningChanged = {},
+            isArtistEnabled = true,
+            onArtistEnabledChanged = {},
+            isAlbumEnabled = true,
+            onAlbumEnabledChanged = {},
+            isCoverArtEnabled = true,
+            onCoverArtEnabledChanged = {},
+            isAppIconEnabled = false,
+            onAppIconEnabledChanged = {},
+            isChannelIconEnabled = false,
+            onChannelIconEnabledChanged = {},
+            isTimestampsEnabled = true,
+            onTimestampsEnabledChanged = {},
+            isShowPlaybackState = false,
+            onShowPlaybackStateChanged = {},
+            hideOnPause = false,
+            onHideOnPauseChanged = {},
+            showSongAsTitle = false,
+            onShowSongAsTitleChanged = {},
+            showAppNameInDetails = true,
+            onShowAppNameInDetailsChanged = {},
+            useAppsRpc = false,
+            onUseAppsRpcChanged = {},
+            isAutoActivityTypeEnabled = true,
+            onAutoActivityTypeEnabledChanged = {},
+            activityType = 3,
+            onActivityTypeChanged = {},
+            onAppActivityTypeChanged = { _, _ -> },
+        )
+    }
 }
 
 @Preview(name = "MediaRPC Dark")
@@ -637,68 +701,55 @@ fun MediaRPCDarkPreview() {
         darkTheme = true,
         isHighContrastModeEnabled = false,
         isDynamicColorEnabled = false,
-        content = {
-            MediaRPCContent(
-                onBackPressed = {},
-                state = MediaAppsState(
-                    apps = listOf(
-                        com.my.kizzy.data.utils.AppsInfo(
-                            name = "Spotify",
-                            pkg = "com.spotify.music",
-                            isChecked = true,
-                        ),
-                        com.my.kizzy.data.utils.AppsInfo(
-                            name = "YouTube Music",
-                            pkg = "com.google.android.apps.youtube.music",
-                            isChecked = false,
-                        ),
-                        com.my.kizzy.data.utils.AppsInfo(
-                            name = "Apple Music",
-                            pkg = "com.apple.android.music",
-                            isChecked = true,
-                        ),
-                    ),
-                    enabledApps = mapOf(
-                        "com.spotify.music" to true,
-                        "com.google.android.apps.youtube.music" to false,
-                        "com.apple.android.music" to true,
-                    ),
-                    isLoading = false,
+    ) {
+        MediaRPCContent(
+            onBackPressed = {},
+            state = MediaAppsState(
+                apps = listOf(
+                    AppsInfo(name = "Spotify", pkg = "com.spotify.music", isChecked = true),
+                    AppsInfo(name = "YouTube Music", pkg = "com.google.android.apps.youtube.music", isChecked = false),
+                    AppsInfo(name = "Apple Music", pkg = "com.apple.android.music", isChecked = true),
                 ),
-                hasNotificationAccess = true,
-                updateMediaAppEnabled = {},
-                selectAllMediaApps = {},
-                deselectAllMediaApps = {},
-                mediaRpcRunning = true,
-                onMediaRpcRunningChanged = {},
-                isArtistEnabled = true,
-                onArtistEnabledChanged = {},
-                isAlbumEnabled = true,
-                onAlbumEnabledChanged = {},
-                isCoverArtEnabled = true,
-                onCoverArtEnabledChanged = {},
-                isAppIconEnabled = false,
-                onAppIconEnabledChanged = {},
-                isChannelIconEnabled = false,
-                onChannelIconEnabledChanged = {},
-                isTimestampsEnabled = true,
-                onTimestampsEnabledChanged = {},
-                isShowPlaybackState = false,
-                onShowPlaybackStateChanged = {},
-                hideOnPause = false,
-                onHideOnPauseChanged = {},
-                showSongAsTitle = false,
-                onShowSongAsTitleChanged = {},
-                showAppNameInDetails = true,
-                onShowAppNameInDetailsChanged = {},
-                useAppsRpc = false,
-                onUseAppsRpcChanged = {},
-                isAutoActivityTypeEnabled = true,
-                onAutoActivityTypeEnabledChanged = {},
-                activityType = 3,
-                onActivityTypeChanged = {},
-                onAppActivityTypeChanged = { _, _ -> },
-            )
-        }
-    )
+                enabledApps = mapOf(
+                    "com.spotify.music" to true,
+                    "com.google.android.apps.youtube.music" to false,
+                    "com.apple.android.music" to true,
+                ),
+                isLoading = false,
+            ),
+            hasNotificationAccess = true,
+            updateMediaAppEnabled = {},
+            selectAllMediaApps = {},
+            deselectAllMediaApps = {},
+            mediaRpcRunning = true,
+            onMediaRpcRunningChanged = {},
+            isArtistEnabled = true,
+            onArtistEnabledChanged = {},
+            isAlbumEnabled = true,
+            onAlbumEnabledChanged = {},
+            isCoverArtEnabled = true,
+            onCoverArtEnabledChanged = {},
+            isAppIconEnabled = false,
+            onAppIconEnabledChanged = {},
+            isChannelIconEnabled = false,
+            onChannelIconEnabledChanged = {},
+            isTimestampsEnabled = true,
+            onTimestampsEnabledChanged = {},
+            isShowPlaybackState = false,
+            onShowPlaybackStateChanged = {},
+            hideOnPause = false,
+            onHideOnPauseChanged = {},
+            showSongAsTitle = false,
+            onShowSongAsTitleChanged = {},
+            showAppNameInDetails = true,
+            onShowAppNameInDetailsChanged = {},
+            useAppsRpc = false,
+            onUseAppsRpcChanged = {},
+            isAutoActivityTypeEnabled = true,
+            onAutoActivityTypeEnabledChanged = {},
+            activityType = 3,
+            onActivityTypeChanged = {},
+            onAppActivityTypeChanged = { _, _ -> },
+        )
+    }
 }

@@ -39,14 +39,16 @@ fun LoadConfig(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        ctx.handleUriResult(uri){
+        ctx.handleUriResult(uri) {
             onDismiss()
             onConfigSelected(it.stringToData())
         }
     }
-    AlertDialog(onDismissRequest = { onDismiss() },
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
         confirmButton = {},
-        title = { Text(text = stringResource(id = R.string.select_a_config)) }, text = {
+        title = { Text(text = stringResource(id = R.string.select_a_config)) },
+        text = {
             LazyColumn {
                 item {
                     BrowseFilesButton(modifier = Modifier.fillMaxWidth()) {
@@ -61,12 +63,13 @@ fun LoadConfig(
                             selected = false
                         ) {
                             onDismiss()
-                            File(dir,file).readText().also {
+                            File(dir, file).readText().also {
                                 onConfigSelected(it.stringToData())
                             }
                         }
                     }
                 }
             }
-        })
+        }
+    )
 }

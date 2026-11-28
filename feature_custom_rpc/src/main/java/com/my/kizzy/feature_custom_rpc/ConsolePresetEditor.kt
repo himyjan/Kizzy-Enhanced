@@ -1,14 +1,15 @@
 package com.my.kizzy.feature_custom_rpc
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Image
@@ -22,8 +23,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,11 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.my.kizzy.data.rpc.Constants
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.SwitchBar
@@ -77,12 +74,6 @@ fun ConsolePresetEditorDialog(
     val smallCoverArtUrlState = rememberTextFieldState(initialText = initial.smallCoverArtUrl)
     var confirmDelete by remember(initial.id) { mutableStateOf(false) }
 
-    LaunchedEffect(initial.name) {
-        if (initial.name != nameState.text.toString()) {
-            nameState.setTextAndPlaceCursorAtEnd(initial.name)
-        }
-    }
-
     LaunchedEffect(nameState) {
         snapshotFlow { nameState.text.toString() }
             .drop(1)
@@ -90,23 +81,11 @@ fun ConsolePresetEditorDialog(
             .collect { name = it }
     }
 
-    LaunchedEffect(initial.largeCoverArtUrl) {
-        if (initial.largeCoverArtUrl != largeCoverArtUrlState.text.toString()) {
-            largeCoverArtUrlState.setTextAndPlaceCursorAtEnd(initial.largeCoverArtUrl)
-        }
-    }
-
     LaunchedEffect(largeCoverArtUrlState) {
         snapshotFlow { largeCoverArtUrlState.text.toString() }
             .drop(1)
             .distinctUntilChanged()
             .collect { largeCoverArtUrl = it }
-    }
-
-    LaunchedEffect(initial.smallCoverArtUrl) {
-        if (initial.smallCoverArtUrl != smallCoverArtUrlState.text.toString()) {
-            smallCoverArtUrlState.setTextAndPlaceCursorAtEnd(initial.smallCoverArtUrl)
-        }
     }
 
     LaunchedEffect(smallCoverArtUrlState) {
@@ -181,7 +160,15 @@ fun ConsolePresetEditorDialog(
                         .padding(bottom = 8.dp, top = 8.dp),
                     trailingIcon = {
                         pickLargeImage?.let { launcher ->
-                            IconButton(onClick = { launcher(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }) {
+                            IconButton(
+                                onClick = {
+                                    launcher(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*")
+                                        )
+                                    )
+                                }
+                            ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Image,
                                     contentDescription = "Pick large cover art"
@@ -199,7 +186,15 @@ fun ConsolePresetEditorDialog(
                         .padding(bottom = 8.dp),
                     trailingIcon = {
                         pickSmallImage?.let { launcher ->
-                            IconButton(onClick = { launcher(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*"))) }) {
+                            IconButton(
+                                onClick = {
+                                    launcher(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.SingleMimeType("image/*")
+                                        )
+                                    )
+                                }
+                            ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Image,
                                     contentDescription = "Pick small cover art"

@@ -37,8 +37,8 @@ import com.my.kizzy.data.rpc.YouTubeResolver
 import com.my.kizzy.data.utils.toUrlString
 import com.my.kizzy.data.work.WorkManagerHelper
 import com.my.kizzy.domain.interfaces.Logger
-import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.model.rpc.RpcButtons
+import com.my.kizzy.domain.model.rpc.RpcConfig
 import com.my.kizzy.domain.repository.KizzyRepository
 import com.my.kizzy.feature_rpc_base.AppUtils
 import com.my.kizzy.feature_rpc_base.BuildConfig
@@ -92,8 +92,8 @@ class MediaRpcService : Service() {
     private val serviceScope = CoroutineScope(serviceJob + Dispatchers.Main.immediate)
 
     private var kizzyRPC: KizzyRPC? = null
-
     private var currentInstanceId: String? = null
+    private val activeInstanceIds = LinkedHashSet<String>()
 
     @Inject
     lateinit var multiRpc: MultiRpcManager
@@ -187,6 +187,25 @@ class MediaRpcService : Service() {
     private var isPaused = false
     private var explicitStop = false
 
+    private fun readInstanceBool(instanceId: String?, prefKey: String, default: Boolean): Boolean =
+        if (instanceId == null || instanceId == RPC_INSTANCE_MEDIA) {
+            Prefs[prefKey, default]
+        } else {
+            Prefs[Prefs.scopedKey(prefKey, instanceId), default]
+        }
+
+    private fun readInstanceInt(instanceId: String?, prefKey: String, default: Int): Int =
+        if (instanceId == null || instanceId == RPC_INSTANCE_MEDIA) {
+            Prefs[prefKey, default]
+        } else {
+            Prefs[Prefs.scopedKey(prefKey, instanceId), default]
+        }
+
+    private fun targetInstances(): List<String?> {
+        val tracked = activeInstanceIds.map { id -> if (id == RPC_INSTANCE_MEDIA) null else id }
+        return if (tracked.isEmpty()) listOf(currentInstanceId) else tracked
+    }
+
     private suspend fun withWakeLock(block: suspend () -> Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             wakeLock?.acquire(10_000)
@@ -217,6 +236,7 @@ class MediaRpcService : Service() {
 
     private var detectedAppPackage: String? = null
     private var detectedAppStartMs: Long? = null
+    private var activeAppOverride: Boolean = false
 
     private val rpcPacer = RpcPacer(
         minIntervalMs = MIN_RPC_INTERVAL_MS,
@@ -321,6 +341,98 @@ class MediaRpcService : Service() {
     private fun clearDetectedAppTimestamp() {
         detectedAppPackage = null
         detectedAppStartMs = null
+        activeAppOverride = false
+    }
+
+    private suspend fun tryPublishPriorityAppActivity(forceRefresh: Boolean): Boolean {
+        if (!readInstanceBool(currentInstanceId, Prefs.MEDIA_RPC_USE_APPS_RPC, false)) {
+            if (activeAppOverride) {
+                activeAppOverride = false
+                detectedAppPackage = null
+                detectedAppStartMs = null
+            }
+            return false
+        }
+
+        val activeRpcTypes = rpcManager.activeRpc.value
+        val customOrManualRpcActive = activeRpcTypes.contains(RpcManager.RpcType.CustomRpc) ||
+                activeRpcTypes.contains(RpcManager.RpcType.ConsoleRpc) ||
+                activeRpcTypes.contains(RpcManager.RpcType.ManualRpc)
+        if (customOrManualRpcActive) {
+            return false
+        }
+
+        val runningApp = getCurrentlyRunningApp()
+        if (runningApp.name.isEmpty() || runningApp.packageName in AppDetectionService.EXCLUDED_APPS) {
+            if (activeAppOverride) {
+                activeAppOverride = false
+                detectedAppPackage = null
+                detectedAppStartMs = null
+                return true
+            }
+            return false
+        }
+
+        val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
+        val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
+        val enabledApps = runCatching {
+            Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_APPS, "[]"])
+        }.getOrDefault(emptyList())
+        val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
+        if (!shouldShow) {
+            if (activeAppOverride) {
+                activeAppOverride = false
+                detectedAppPackage = null
+                detectedAppStartMs = null
+                return true
+            }
+            return false
+        }
+
+        val appChanged = runningApp.packageName != detectedAppPackage || !activeAppOverride
+        activeAppOverride = true
+        val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
+        val details = when {
+            isGameApp -> "Playing game"
+            isAiApp -> "Chatting with AI"
+            else -> null
+        }
+        val state = when {
+            isGameApp -> "In-game"
+            isAiApp -> "Thinking..."
+            else -> null
+        }
+        val startMs = resolveAppStartTimestamp(runningApp.packageName)
+
+        if (rpcPacer.acquireSendSlot(hasMeaningfulChange = appChanged, forceRefresh = forceRefresh || appChanged)) {
+            kizzyRPC?.apply {
+                setName(appLabel)
+                setDetails(details)
+                setState(state)
+                setStartTimestamps(startMs)
+                setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
+                setLargeImage(runningApp.largeImage)
+                clearButtons()
+            }
+            kizzyRPC?.updateRPC(
+                CommonRpc(
+                    name = appLabel,
+                    type = ActivityTypeResolver.resolve(
+                        packageName = runningApp.packageName,
+                        fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
+                        useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
+                    ),
+                    details = details,
+                    state = state,
+                    largeImage = runningApp.largeImage,
+                    time = Timestamps(start = startMs),
+                    packageName = runningApp.packageName,
+                    appPackage = runningApp.packageName
+                ),
+                enableTimestamps = readInstanceBool(currentInstanceId, MEDIA_RPC_ENABLE_TIMESTAMPS, true)
+            )
+        }
+        return true
     }
 
     private fun createNotificationChannel() {
@@ -336,6 +448,7 @@ class MediaRpcService : Service() {
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
         super.onCreate()
+        activeInstanceIds.add(RPC_INSTANCE_MEDIA)
         AppUtils.registerRpcService(this)
         createNotificationChannel()
         val basicNotification = NotificationCompat.Builder(
@@ -463,27 +576,11 @@ class MediaRpcService : Service() {
         logger.d(MEDIA_RPC, "Starting app detection coroutine")
 
         appDetectionJob = serviceScope.launch {
-            var currentPackage = ""
             var cycleCount = 0
             while (isActive) {
                 cycleCount++
                 try {
-                    val activeRpcTypes = rpcManager.activeRpc.value
-                    val customOrManualRpcActive = activeRpcTypes.contains(RpcManager.RpcType.CustomRpc) ||
-                            activeRpcTypes.contains(RpcManager.RpcType.ConsoleRpc) ||
-                            activeRpcTypes.contains(RpcManager.RpcType.ManualRpc)
-                    if (customOrManualRpcActive) {
-                        if (cycleCount % 6 == 1) {
-                            logger.d(
-                                MEDIA_RPC,
-                                "App detection loop running but Custom/Manual RPC is active - skipping app detection"
-                            )
-                        }
-                        delay(5000.milliseconds)
-                        continue
-                    }
-
-                    val useAppsRpc = Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]
+                    val useAppsRpc = readInstanceBool(currentInstanceId, Prefs.MEDIA_RPC_USE_APPS_RPC, false)
                     if (!useAppsRpc) {
                         if (cycleCount % 6 == 1) {
                             logger.d(
@@ -491,75 +588,20 @@ class MediaRpcService : Service() {
                                 "App detection loop running but MEDIA_RPC_USE_APPS_RPC is false - skipping"
                             )
                         }
+                        if (activeAppOverride) {
+                            activeAppOverride = false
+                            detectedAppPackage = null
+                            detectedAppStartMs = null
+                            updatePresence(forceRefresh = true)
+                        }
                         delay(5000.milliseconds)
                         continue
                     }
 
-                    val runningApp = getCurrentlyRunningApp()
-
-                    if (
-                        runningApp.name.isNotEmpty() &&
-                        runningApp.packageName != currentPackage &&
-                        runningApp.packageName !in AppDetectionService.EXCLUDED_APPS
-                    ) {
-                        val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
-                        val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
-                        val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_APPS, "[]"])
-                        val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
-
-                        if (shouldShow) {
-                            currentPackage = runningApp.packageName
-                            val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
-                            val details = when {
-                                isGameApp -> "Playing game"
-                                isAiApp -> "Chatting with AI"
-                                else -> null
-                            }
-                            val state = when {
-                                isGameApp -> "In-game"
-                                isAiApp -> "Thinking..."
-                                else -> null
-                            }
-                            val startMs = resolveAppStartTimestamp(runningApp.packageName)
-
-                            if (rpcPacer.acquireSendSlot(hasMeaningfulChange = true, forceRefresh = false)) {
-                                kizzyRPC?.apply {
-                                    setName(appLabel)
-                                    setDetails(details)
-                                    setState(state)
-                                    setStartTimestamps(startMs)
-                                    setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
-                                    setLargeImage(runningApp.largeImage)
-                                    clearButtons()
-                                }
-                                kizzyRPC?.updateRPC(
-                                    CommonRpc(
-                                        name = appLabel,
-                                        type = ActivityTypeResolver.resolve(
-                                            packageName = runningApp.packageName,
-                                            fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
-                                            useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
-                                        ),
-                                        details = details,
-                                        state = state,
-                                        largeImage = runningApp.largeImage,
-                                        time = Timestamps(start = startMs),
-                                        packageName = runningApp.packageName,
-                                        appPackage = runningApp.packageName
-                                    ),
-                                    enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
-                                )
-                            }
-                        } else if (currentPackage.isNotEmpty()) {
-                            currentPackage = ""
-                            clearDetectedAppTimestamp()
-                            kizzyRPC?.clearPresence()
-                        }
-                    } else if (runningApp.name.isEmpty() && currentPackage.isNotEmpty()) {
-                        currentPackage = ""
-                        clearDetectedAppTimestamp()
-                        kizzyRPC?.clearPresence()
-                        logger.d(MEDIA_RPC, "App detection: foreground app cleared")
+                    val hadOverride = activeAppOverride
+                    val overrideApplied = tryPublishPriorityAppActivity(forceRefresh = false)
+                    if (hadOverride && !overrideApplied) {
+                        updatePresence(forceRefresh = true)
                     }
                 } catch (e: CancellationException) {
                     throw e
@@ -949,10 +991,15 @@ class MediaRpcService : Service() {
     private suspend fun updatePresenceLocked(forceRefresh: Boolean = false) {
         if (BuildConfig.DEBUG) Trace.beginSection("MediaRpc.updatePresence")
         try {
-            val enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
-            val coverArtKey = Prefs.scopedKey(Prefs.MEDIA_RPC_SHOW_COVER_ART, currentInstanceId)
-            val showCoverArt = Prefs[coverArtKey, true]
-            val playingMedia = getCurrentPlayingMedia(currentInstanceId)
+            if (tryPublishPriorityAppActivity(forceRefresh = forceRefresh)) {
+                return
+            }
+
+            val instances = targetInstances()
+            val primaryInstance = currentInstanceId
+            val enableTimestamps = readInstanceBool(primaryInstance, MEDIA_RPC_ENABLE_TIMESTAMPS, true)
+            val showCoverArt = readInstanceBool(primaryInstance, Prefs.MEDIA_RPC_SHOW_COVER_ART, true)
+            val playingMedia = getCurrentPlayingMedia(primaryInstance)
 
             currentMediaTitle = playingMedia.name.takeIf { it.isNotBlank() }
             currentMediaArtist = playingMedia.state?.takeIf { it.isNotBlank() }
@@ -992,121 +1039,7 @@ class MediaRpcService : Service() {
                 stateRepository.setPaused(false)
             }
 
-            val activeRpcTypes = rpcManager.activeRpc.value
-            val customOrManualRpcActive = activeRpcTypes.contains(RpcManager.RpcType.CustomRpc) ||
-                    activeRpcTypes.contains(RpcManager.RpcType.ConsoleRpc) ||
-                    activeRpcTypes.contains(RpcManager.RpcType.ManualRpc)
-            val mediaPaused = isPaused
-            if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false] && !customOrManualRpcActive && mediaPaused && playingPkg != null) {
-                val runningApp = getCurrentlyRunningApp()
-                if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
-                    val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
-                    val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
-                    val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_APPS, "[]"])
-                    val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
-                    if (shouldShow && runningApp.packageName != currentPackageName) {
-                        currentPackageName = runningApp.packageName
-                        val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
-                        val details = when {
-                            isGameApp -> "Playing game"
-                            isAiApp -> "Chatting with AI"
-                            else -> null
-                        }
-                        val state = when {
-                            isGameApp -> "In-game"
-                            isAiApp -> "Thinking..."
-                            else -> null
-                        }
-                        val startMs = resolveAppStartTimestamp(runningApp.packageName)
-
-                        if (rpcPacer.acquireSendSlot(hasMeaningfulChange = true, forceRefresh = forceRefresh)) {
-                            kizzyRPC?.apply {
-                                setName(appLabel)
-                                setDetails(details)
-                                setState(state)
-                                setStartTimestamps(startMs)
-                                setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
-                                setLargeImage(runningApp.largeImage)
-                                clearButtons()
-                            }
-                            kizzyRPC?.updateRPC(
-                                CommonRpc(
-                                    name = appLabel,
-                                    type = ActivityTypeResolver.resolve(
-                                        packageName = runningApp.packageName,
-                                        fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
-                                        useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
-                                    ),
-                                    details = details,
-                                    state = state,
-                                    largeImage = runningApp.largeImage,
-                                    time = Timestamps(start = startMs),
-                                    packageName = runningApp.packageName,
-                                    appPackage = runningApp.packageName
-                                ),
-                                enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
-                            )
-                        }
-                        return
-                    }
-                }
-            }
-
             if (playingPkg == null) {
-                if (Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false]) {
-                    val runningApp = getCurrentlyRunningApp()
-                    if (runningApp.name.isNotEmpty() && runningApp.packageName !in AppDetectionService.EXCLUDED_APPS) {
-                        val isGameApp = dynamicActivityDetectionEngine.identifyGame(runningApp.packageName) != null
-                        val isAiApp = dynamicActivityDetectionEngine.identifyAiApp(runningApp.packageName) != null
-                        val enabledApps = Json.decodeFromString<List<String>>(Prefs[Prefs.ENABLED_APPS, "[]"])
-                        val shouldShow = isGameApp || isAiApp || runningApp.packageName in enabledApps
-                        if (shouldShow) {
-                            val appChanged = runningApp.packageName != detectedAppPackage
-                            val appLabel = runningApp.name.takeIf { it.isNotBlank() } ?: runningApp.packageName
-                            val details = when {
-                                isGameApp -> "Playing game"
-                                isAiApp -> "Chatting with AI"
-                                else -> null
-                            }
-                            val state = when {
-                                isGameApp -> "In-game"
-                                isAiApp -> "Thinking..."
-                                else -> null
-                            }
-                            val startMs = resolveAppStartTimestamp(runningApp.packageName)
-
-                            if (rpcPacer.acquireSendSlot(hasMeaningfulChange = appChanged, forceRefresh = forceRefresh)) {
-                                kizzyRPC?.apply {
-                                    setName(appLabel)
-                                    setDetails(details)
-                                    setState(state)
-                                    setStartTimestamps(startMs)
-                                    setStatus(Prefs[Prefs.CUSTOM_ACTIVITY_STATUS, "online"])
-                                    setLargeImage(runningApp.largeImage)
-                                    clearButtons()
-                                }
-                                kizzyRPC?.updateRPC(
-                                    CommonRpc(
-                                        name = appLabel,
-                                        type = ActivityTypeResolver.resolve(
-                                            packageName = runningApp.packageName,
-                                            fallback = Prefs[Prefs.CUSTOM_ACTIVITY_TYPE, ActivityTypeResolver.PLAYING],
-                                            useAutomaticDetection = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true],
-                                        ),
-                                        details = details,
-                                        state = state,
-                                        largeImage = runningApp.largeImage,
-                                        time = Timestamps(start = startMs),
-                                        packageName = runningApp.packageName,
-                                        appPackage = runningApp.packageName
-                                    ),
-                                    enableTimestamps = Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, true]
-                                )
-                            }
-                            return
-                        }
-                    }
-                }
                 if (currentPackageName != null) {
                     currentPackageName = null
                     isPaused = false
@@ -1137,7 +1070,7 @@ class MediaRpcService : Service() {
             lastKnownTrackArtist = playingMedia.state
             updateScrobblers(playingMedia)
 
-            val shouldKeepTimelineRunning = trackName != null && (!isPaused || Prefs[Prefs.MEDIA_RPC_USE_APPS_RPC, false])
+            val shouldKeepTimelineRunning = trackName != null && (!isPaused || readInstanceBool(primaryInstance, Prefs.MEDIA_RPC_USE_APPS_RPC, false))
             if (shouldKeepTimelineRunning) {
                 if (timelineJob?.isActive != true) {
                     startTimelineUpdates()
@@ -1204,7 +1137,23 @@ class MediaRpcService : Service() {
                 playingMedia
             }
 
-            sendPresenceUpdate(mediaForDispatch, enableTimestamps, showCoverArt)
+            for (instanceKey in instances) {
+                val instTimestamps = readInstanceBool(instanceKey, MEDIA_RPC_ENABLE_TIMESTAMPS, enableTimestamps)
+                val instCoverArt = readInstanceBool(instanceKey, Prefs.MEDIA_RPC_SHOW_COVER_ART, showCoverArt)
+                val instMedia = if (instanceKey == primaryInstance) {
+                    mediaForDispatch
+                } else {
+                    getCurrentPlayingMedia(instanceKey).let { inst ->
+                        if (effectiveTimestamps != null) inst.copy(time = effectiveTimestamps) else inst
+                    }
+                }
+                sendPresenceUpdate(
+                    playingMedia = instMedia,
+                    enableTimestamps = instTimestamps,
+                    showCoverArt = instCoverArt,
+                    instanceId = instanceKey,
+                )
+            }
 
             lastSentName = currentName
             lastSentDetails = currentDetails
@@ -1229,9 +1178,9 @@ class MediaRpcService : Service() {
         return metadataResolver.getMediaUrl(metadata, pkg)
     }
 
-    private fun resolveActivityType(playingMedia: CommonRpc): Int {
-        val configured = Prefs[Prefs.MEDIA_RPC_ACTIVITY_TYPE, Prefs.ACTIVITY_TYPE_AUTO]
-        val useAuto = Prefs[Prefs.AUTO_ACTIVITY_TYPE, true]
+    private fun resolveActivityType(playingMedia: CommonRpc, instanceId: String? = currentInstanceId): Int {
+        val configured = readInstanceInt(instanceId, Prefs.MEDIA_RPC_ACTIVITY_TYPE, Prefs.ACTIVITY_TYPE_AUTO)
+        val useAuto = readInstanceBool(instanceId, Prefs.AUTO_ACTIVITY_TYPE, true)
         val detectionEnabled = useAuto && configured == Prefs.ACTIVITY_TYPE_AUTO
 
         return ActivityTypeResolver.resolve(
@@ -1250,6 +1199,7 @@ class MediaRpcService : Service() {
         playingMedia: CommonRpc,
         enableTimestamps: Boolean,
         showCoverArt: Boolean = Prefs[Prefs.MEDIA_RPC_SHOW_COVER_ART, true],
+        instanceId: String? = currentInstanceId,
     ) {
         if (playingMedia.name.isBlank()) {
             stateRepository.setConnected(false)
@@ -1278,8 +1228,8 @@ class MediaRpcService : Service() {
             null
         }
 
-        val showSongAsTitle = Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true]
-        val showAppNameInDetails = Prefs[Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS, true]
+        val showSongAsTitle = readInstanceBool(instanceId, Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, true)
+        val showAppNameInDetails = readInstanceBool(instanceId, Prefs.MEDIA_RPC_SHOW_APP_NAME_IN_DETAILS, true)
         val songName = playingMedia.details?.takeIf { it.isNotBlank() }
             ?: playingMedia.name
         val appName = playingMedia.appName.takeIf { it.isNotBlank() }
@@ -1316,7 +1266,7 @@ class MediaRpcService : Service() {
 
         val commonRpc = CommonRpc(
             name = rpcName,
-            type = resolveActivityType(playingMedia),
+            type = resolveActivityType(playingMedia, instanceId),
             details = rpcDetails,
             state = rpcState,
             detailsUrl = detailsUrl,
@@ -1338,7 +1288,7 @@ class MediaRpcService : Service() {
         )
 
         try {
-            val instanceKey = currentInstanceId ?: RPC_INSTANCE_MEDIA
+            val instanceKey = instanceId ?: RPC_INSTANCE_MEDIA
             rpcManager.setCurrentPresenceConfig(
                 commonRpcToRpcConfig(commonRpc).copy(instanceId = instanceKey),
                 instanceKey
@@ -1631,6 +1581,7 @@ class MediaRpcService : Service() {
             com.my.kizzy.feature_rpc_base.Constants.ACTION_ADD_INSTANCE -> {
                 val instanceId = intent.getStringExtra(com.my.kizzy.feature_rpc_base.Constants.EXTRA_INSTANCE_ID)
                 if (!instanceId.isNullOrBlank()) {
+                    activeInstanceIds.add(instanceId)
                     currentInstanceId = instanceId
                     val oauthIndex = intent.getIntExtra(com.my.kizzy.feature_rpc_base.Constants.EXTRA_OAUTH_INDEX, 1)
                     multiRpc.addInstance("1", instanceId, oauthIndex)
@@ -1646,27 +1597,36 @@ class MediaRpcService : Service() {
                             iconRes = R.drawable.ic_media_rpc,
                         )
                     }
-                    restartInPlace()
+                    serviceScope.launch {
+                        updatePresence(forceRefresh = true)
+                    }
                 }
             }
 
             com.my.kizzy.feature_rpc_base.Constants.ACTION_REMOVE_INSTANCE -> {
                 val instanceId = intent.getStringExtra(com.my.kizzy.feature_rpc_base.Constants.EXTRA_INSTANCE_ID)
                 if (!instanceId.isNullOrBlank()) {
+                    activeInstanceIds.remove(instanceId)
                     multiRpc.removeInstance("1", instanceId)
                     CloneNotificationHelper.cancel(notificationManager, instanceId)
                     rpcManager.removePresenceConfig(instanceId)
+                    if (currentInstanceId == instanceId) {
+                        currentInstanceId = activeInstanceIds.lastOrNull()
+                    }
                 }
-                if (multiRpc.instanceCount("1") == 0) {
+                if (activeInstanceIds.isEmpty() || multiRpc.instanceCount("1") == 0) {
                     explicitStop = true
                     stopSelf()
                 } else {
-                    restartInPlace()
+                    serviceScope.launch {
+                        updatePresence(forceRefresh = true)
+                    }
                 }
             }
 
             com.my.kizzy.feature_rpc_base.Constants.ACTION_STOP_SERVICE -> {
                 explicitStop = true
+                activeInstanceIds.clear()
                 val remainingTypes = Prefs[Prefs.ACTIVE_RPC_TYPES, ""]
                     .split(',')
                     .mapNotNull { runCatching { RpcManager.RpcType.valueOf(it.trim()) }.getOrNull() }
